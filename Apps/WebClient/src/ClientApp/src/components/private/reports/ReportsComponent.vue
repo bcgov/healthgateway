@@ -226,7 +226,7 @@ function downloadReport(): void {
             );
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("page");
             } else {

@@ -33,7 +33,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         logger.LogInformation("Retrieving all-time counts");
         try
         {
-            AllTimeCounts response = await dashboardApi.GetAllTimeCounts().ConfigureAwait(true);
+            AllTimeCounts response = await dashboardApi.GetAllTimeCountsAsync();
             logger.LogInformation("All-time counts retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetAllTimeCountsSuccessAction { Data = response });
         }
@@ -52,7 +52,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
 
         try
         {
-            DailyUsageCounts response = await dashboardApi.GetDailyUsageCountsAsync(action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
+            DailyUsageCounts response = await dashboardApi.GetDailyUsageCountsAsync(action.StartDateLocal, action.EndDateLocal);
             logger.LogInformation("Daily usage counts retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsSuccessAction { Data = response });
         }
@@ -71,7 +71,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
 
         try
         {
-            int response = await dashboardApi.GetRecurringUserCountAsync(action.Days, action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
+            int response = await dashboardApi.GetRecurringUserCountAsync(action.Days, action.StartDateLocal, action.EndDateLocal);
             logger.LogInformation("Recurring user count retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountSuccessAction { Data = response });
         }
@@ -90,7 +90,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
 
         try
         {
-            AppLoginCounts response = await dashboardApi.GetAppLoginCountsAsync(action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
+            AppLoginCounts response = await dashboardApi.GetAppLoginCountsAsync(action.StartDateLocal, action.EndDateLocal);
             logger.LogInformation("App login counts retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsSuccessAction { Data = response });
         }
@@ -109,7 +109,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
 
         try
         {
-            IDictionary<string, int> response = await dashboardApi.GetRatingsSummaryAsync(action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
+            IDictionary<string, int> response = await dashboardApi.GetRatingsSummaryAsync(action.StartDateLocal, action.EndDateLocal);
             logger.LogInformation("Ratings summary retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetRatingsSummarySuccessAction { Data = response });
         }
@@ -128,7 +128,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
 
         try
         {
-            IDictionary<int, int> response = await dashboardApi.GetAgeCountsAsync(action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
+            IDictionary<int, int> response = await dashboardApi.GetAgeCountsAsync(action.StartDateLocal, action.EndDateLocal);
             logger.LogInformation("Age counts retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetAgeCountsSuccessAction { Data = response });
         }

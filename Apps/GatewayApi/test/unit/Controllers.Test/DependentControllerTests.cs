@@ -61,13 +61,13 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResourcePayload = expectedDependents,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             DependentController dependentController = new(
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

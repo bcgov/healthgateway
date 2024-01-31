@@ -37,7 +37,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         logger.LogInformation("Adding broadcast");
         try
         {
-            RequestResult<Broadcast> response = await api.AddAsync(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await api.AddAsync(action.Broadcast);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("Broadcast added successfully!");
@@ -63,7 +63,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         logger.LogInformation("Loading broadcasts");
         try
         {
-            RequestResult<IEnumerable<Broadcast>> response = await api.GetAllAsync().ConfigureAwait(true);
+            RequestResult<IEnumerable<Broadcast>> response = await api.GetAllAsync();
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("Broadcasts loaded successfully!");
@@ -89,7 +89,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         logger.LogInformation("Updating broadcast");
         try
         {
-            RequestResult<Broadcast> response = await api.UpdateAsync(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await api.UpdateAsync(action.Broadcast);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("Broadcast updated successfully!");
@@ -115,7 +115,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         logger.LogInformation("Deleting broadcast");
         try
         {
-            RequestResult<Broadcast> response = await api.DeleteAsync(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await api.DeleteAsync(action.Broadcast);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("Broadcast deleted successfully!");

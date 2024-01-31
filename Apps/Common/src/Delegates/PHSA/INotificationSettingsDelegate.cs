@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates.PHSA
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
@@ -29,7 +30,8 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// </summary>
         /// <param name="notificationSettings">The notification settings request to send to PHSA.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The notification settings response returned from PHSA wrapped in a RequestResult.</returns>
-        Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, string bearerToken);
+        Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, string bearerToken, CancellationToken ct = default);
     }
 }

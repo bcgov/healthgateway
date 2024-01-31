@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Laboratory.Models;
@@ -30,16 +31,18 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="pageIndex">The page index to return.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of COVID-19 lab orders available for the authenticated user.</returns>
-        Task<RequestResult<Covid19OrderResult>> GetCovid19Orders(string hdid, int pageIndex = 0);
+        Task<RequestResult<Covid19OrderResult>> GetCovid19OrdersAsync(string hdid, int pageIndex = 0, CancellationToken ct = default);
 
         /// <summary>
         /// Returns result containing a collection of lab orders for the authenticated user.
         /// Each order has a collection of one or more lab results depending on the tests ordered.
         /// </summary>
         /// <param name="hdid">The requested hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns collection of lab orders available for the authenticated user.</returns>
-        Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid);
+        Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrdersAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the Lab report for the supplied id belonging to the authenticated user.
@@ -47,7 +50,8 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="id">The ID of the lab report to get.</param>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned..</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, bool isCovid19);
+        Task<RequestResult<LaboratoryReport>> GetLabReportAsync(string id, string hdid, bool isCovid19, CancellationToken ct = default);
     }
 }

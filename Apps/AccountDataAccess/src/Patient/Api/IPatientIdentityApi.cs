@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Refit;
 
@@ -27,8 +28,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Api
         /// Get patient identity by Hdid.
         /// </summary>
         /// <param name="hdid">The Hdid to lookup.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient identity matching the id.</returns>
         [Get("/patient-identity/hdid/{hdid}")]
-        Task<PatientIdentity> GetPatientIdentityAsync(string hdid);
+        Task<PatientIdentity> GetPatientIdentityAsync(string hdid, CancellationToken ct = default);
     }
 }

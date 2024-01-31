@@ -22,14 +22,14 @@ namespace HealthGateway.Medication.MapProfiles
     /// <summary>
     /// An AutoMapper profile that defines mappings between ODR and Health Gateway Models.
     /// </summary>
-    public class MedicationStatementHistoryProfile : Profile
+    public class MedicationStatementProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationStatementHistoryProfile"/> class.
+        /// Initializes a new instance of the <see cref="MedicationStatementProfile"/> class.
         /// </summary>
-        public MedicationStatementHistoryProfile()
+        public MedicationStatementProfile()
         {
-            this.CreateMap<MedicationResult, MedicationStatementHistory>()
+            this.CreateMap<MedicationResult, MedicationStatement>()
                 .ForMember(dest => dest.PrescriptionStatus, opt => opt.Ignore())
                 .ForMember(dest => dest.DispensedDate, opt => opt.MapFrom(src => src.DispenseDate))
                 .ForMember(dest => dest.PractitionerSurname, opt => opt.MapFrom(src => src.Practitioner != null ? src.Practitioner.Surname : string.Empty))

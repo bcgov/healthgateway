@@ -18,6 +18,7 @@ namespace HealthGateway.JobScheduler.Jobs
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
@@ -74,19 +75,19 @@ namespace HealthGateway.JobScheduler.Jobs
         }
 
         /// <inheritdoc/>
-        public void SendEmail(Guid emailId)
+        public async Task SendEmailAsync(Guid emailId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Sending email... {EmailId}", emailId.ToString());
-            Email? email = this.emailDelegate.GetStandardEmail(emailId);
+            Email? email = await this.emailDelegate.GetStandardEmailAsync(emailId, ct);
             if (email != null)
             {
                 if (this.notifyConfiguration.Enabled)
                 {
-                    this.SendEmailUsingNotify(email).GetAwaiter().GetResult();
+                    await this.SendEmailUsingNotifyAsync(email, ct);
                 }
                 else
                 {
-                    this.SendEmail(email);
+                    await this.SendEmailAsync(email, ct);
                 }
             }
             else
@@ -99,11 +100,11 @@ namespace HealthGateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendEmails()
+        public async Task SendEmailsAsync(CancellationToken ct = default)
         {
             this.logger.LogDebug("Sending low priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
-            IList<Email> resendEmails = this.emailDelegate.GetUnsentEmails(this.retryFetchSize);
-            this.ProcessEmails(resendEmails);
+            IList<Email> resendEmails = await this.emailDelegate.GetUnsentEmailsAsync(this.retryFetchSize, ct);
+            await this.ProcessEmailsAsync(resendEmails, ct);
             this.logger.LogDebug("Finished sending low priority emails");
         }
 
@@ -120,7 +121,7 @@ namespace HealthGateway.JobScheduler.Jobs
             return msg;
         }
 
-        private void ProcessEmails(IList<Email> resendEmails)
+        private async Task ProcessEmailsAsync(IList<Email> resendEmails, CancellationToken ct)
         {
             if (resendEmails.Count > 0)
             {
@@ -131,11 +132,11 @@ namespace HealthGateway.JobScheduler.Jobs
                     {
                         if (this.notifyConfiguration.Enabled)
                         {
-                            this.SendEmailUsingNotify(email).GetAwaiter().GetResult();
+                            await this.SendEmailUsingNotifyAsync(email, ct);
                         }
                         else
                         {
-                            this.SendEmail(email);
+                            await this.SendEmailAsync(email, ct);
                         }
                     }
                     catch (Exception e)
@@ -147,7 +148,7 @@ namespace HealthGateway.JobScheduler.Jobs
             }
         }
 
-        private async Task SendEmailUsingNotify(Email email)
+        private async Task SendEmailUsingNotifyAsync(Email email, CancellationToken ct)
         {
             email.Attempts++;
             try
@@ -160,11 +161,11 @@ namespace HealthGateway.JobScheduler.Jobs
                     Personalization = email.Personalization,
                     Reference = email.Id.ToString("D"),
                 };
-                EmailResponse response = await this.notifyApi.SendEmail(emailRequest).ConfigureAwait(true);
+                EmailResponse response = await this.notifyApi.SendEmailAsync(emailRequest, ct);
                 email.NotificationId = response.Id;
                 email.EmailStatusCode = EmailStatus.Processed;
                 email.SentDateTime = DateTime.UtcNow;
-                this.emailDelegate.UpdateEmail(email);
+                await this.emailDelegate.UpdateEmailAsync(email, ct);
             }
             catch (Exception e)
             {
@@ -174,12 +175,12 @@ namespace HealthGateway.JobScheduler.Jobs
                     e.ToString());
                 email.LastRetryDateTime = DateTime.UtcNow;
                 email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
-                this.emailDelegate.UpdateEmail(email);
+                await this.emailDelegate.UpdateEmailAsync(email, ct);
                 throw;
             }
         }
 
-        private void SendEmail(Email email)
+        private async Task SendEmailAsync(Email email, CancellationToken ct)
         {
             Exception? caught = null;
             email.Attempts++;
@@ -189,15 +190,15 @@ namespace HealthGateway.JobScheduler.Jobs
                 {
                     try
                     {
-                        smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
+                        await smtpClient.ConnectAsync(this.host, this.port, SecureSocketOptions.None, ct);
                         try
                         {
                             using MimeMessage message = PrepareMessage(email);
-                            smtpClient.Send(message);
+                            await smtpClient.SendAsync(message, ct);
                             email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
                             email.EmailStatusCode = EmailStatus.Processed;
                             email.SentDateTime = DateTime.UtcNow;
-                            this.emailDelegate.UpdateEmail(email);
+                            await this.emailDelegate.UpdateEmailAsync(email, ct);
                         }
                         catch (SmtpCommandException e)
                         {
@@ -205,7 +206,7 @@ namespace HealthGateway.JobScheduler.Jobs
                             this.logger.LogError("Unexpected error while sending email {Id}, SMTP Error = {SmtpStatusCode}\n{Exception}", email.Id.ToString(), email.SmtpStatusCode, e.ToString());
                         }
 
-                        smtpClient.Disconnect(true);
+                        await smtpClient.DisconnectAsync(true, ct);
                     }
                     catch (SmtpCommandException e)
                     {
@@ -235,7 +236,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     email.SmtpStatusCode = (int)smtpCommandException.StatusCode;
                 }
 
-                this.emailDelegate.UpdateEmail(email);
+                await this.emailDelegate.UpdateEmailAsync(email, ct);
 
                 // Rethrow our exception, Hangfire will catch it and re-schedule the job.
                 throw caught;

@@ -19,6 +19,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.CacheProviders;
@@ -128,20 +129,20 @@ namespace HealthGateway.MedicationTests.Delegates
             };
 
             Mock<IOdrApi> mockOdrApi = new();
-            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>()))
+            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(medicationHistory);
-            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GetProtectiveWord());
 
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
+            IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
+                this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
                 new Mock<ICacheProvider>().Object,
                 GetHashDelegate());
 
             RequestResult<MedicationHistoryResponse> response =
-                await medStatementDelegate.GetMedicationStatementsAsync(
+                await medicationStatementDelegate.GetMedicationStatementsAsync(
                     this.query,
                     string.Empty,
                     string.Empty,
@@ -182,23 +183,23 @@ namespace HealthGateway.MedicationTests.Delegates
             };
 
             Mock<IOdrApi> mockOdrApi = new();
-            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>()))
+            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(medicationHistory);
-            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GetProtectiveWord());
 
             IHashDelegate mockHashDelegate = GetHashDelegate();
             Mock<ICacheProvider> mockCacheProvider = new();
             mockCacheProvider.Setup(s => s.GetItem<IHash>(It.IsAny<string>())).Returns(mockHashDelegate.Hash(string.Empty));
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
+            IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
+                this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate);
 
             RequestResult<MedicationHistoryResponse> response =
-                await medStatementDelegate.GetMedicationStatementsAsync(
+                await medicationStatementDelegate.GetMedicationStatementsAsync(
                     this.query,
                     string.Empty,
                     string.Empty,
@@ -220,7 +221,7 @@ namespace HealthGateway.MedicationTests.Delegates
             ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
 
             Mock<IOdrApi> mockOdrApi = new();
-            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(protectiveWord);
 
             Mock<ICacheProvider> mockCacheProvider = new();
@@ -231,15 +232,15 @@ namespace HealthGateway.MedicationTests.Delegates
             };
             mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
             mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(false);
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
+            IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
+                this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
             RequestResult<MedicationHistoryResponse> response =
-                await medStatementDelegate.GetMedicationStatementsAsync(
+                await medicationStatementDelegate.GetMedicationStatementsAsync(
                     this.query,
                     string.Empty,
                     string.Empty,
@@ -269,23 +270,23 @@ namespace HealthGateway.MedicationTests.Delegates
             mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(true);
 
             Mock<IOdrApi> mockOdrApi = new();
-            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException("Bad things happen in Unit Tests"));
 
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
+            IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
+                this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = await medStatementDelegate.GetMedicationStatementsAsync(
+            RequestResult<MedicationHistoryResponse> response = await medicationStatementDelegate.GetMedicationStatementsAsync(
                 this.query,
                 string.Empty,
                 string.Empty,
                 string.Empty);
 
-            Assert.True(response.ResultStatus == ResultType.Error);
+            Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
         /// <summary>
@@ -308,75 +309,24 @@ namespace HealthGateway.MedicationTests.Delegates
 
             ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
             Mock<IOdrApi> mockOdrApi = new();
-            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>()))
+            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException("Fake Exception"));
-            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>())).ReturnsAsync(protectiveWord);
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>())).ReturnsAsync(protectiveWord);
+            IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
+                this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
             RequestResult<MedicationHistoryResponse> response =
-                await medStatementDelegate.GetMedicationStatementsAsync(
+                await medicationStatementDelegate.GetMedicationStatementsAsync(
                     this.query,
                     string.Empty,
                     string.Empty,
                     string.Empty);
 
-            Assert.True(response.ResultStatus == ResultType.Error);
-        }
-
-        /// <summary>
-        /// SetProtectiveWord - Not Implemented Exception.
-        /// </summary>
-        /// <returns>The asynchronous unit test.</returns>
-        [Fact]
-        public async Task SetProtectiveWordNotImplemented()
-        {
-            Mock<ICacheProvider> mockCacheProvider = new();
-            Mock<IHashDelegate> mockHashDelegate = new();
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                new Mock<IOdrApi>().Object,
-                this.configuration,
-                mockCacheProvider.Object,
-                mockHashDelegate.Object);
-
-            await Assert.ThrowsAsync<NotImplementedException>(
-                async () => await
-                    medStatementDelegate.SetProtectiveWordAsync(
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty));
-        }
-
-        /// <summary>
-        /// DeleteProtectiveWord - Not Implemented Exception.
-        /// </summary>
-        /// <returns>The asynchronous unit test.</returns>
-        [Fact]
-        public async Task DeleteProtectiveWordNotImplemented()
-        {
-            Mock<ICacheProvider> mockCacheProvider = new();
-            Mock<IHashDelegate> mockHashDelegate = new();
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                new Mock<IOdrApi>().Object,
-                this.configuration,
-                mockCacheProvider.Object,
-                mockHashDelegate.Object);
-
-            await Assert.ThrowsAsync<NotImplementedException>(
-                async () => await
-                    medStatementDelegate.DeleteProtectiveWordAsync(
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty));
+            Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

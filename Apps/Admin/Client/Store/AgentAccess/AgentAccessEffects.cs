@@ -35,7 +35,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         logger.LogInformation("Adding agent");
         try
         {
-            AdminAgent response = await api.ProvisionAgentAccessAsync(action.Agent).ConfigureAwait(true);
+            AdminAgent response = await api.ProvisionAgentAccessAsync(action.Agent);
             logger.LogInformation("Agent added successfully");
             dispatcher.Dispatch(new AgentAccessActions.AddSuccessAction { Data = response });
         }
@@ -59,7 +59,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         logger.LogInformation("Retrieving agents");
         try
         {
-            IEnumerable<AdminAgent> response = await api.GetAgentsAsync(action.Query).ConfigureAwait(true);
+            IEnumerable<AdminAgent> response = await api.GetAgentsAsync(action.Query);
             logger.LogInformation("Agents retrieved successfully");
             dispatcher.Dispatch(new AgentAccessActions.SearchSuccessAction { Data = response });
         }
@@ -77,7 +77,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         logger.LogInformation("Updating agent access");
         try
         {
-            AdminAgent agent = await api.UpdateAgentAccessAsync(action.Agent).ConfigureAwait(true);
+            AdminAgent agent = await api.UpdateAgentAccessAsync(action.Agent);
             logger.LogInformation("Agent access updated successfully");
             dispatcher.Dispatch(new AgentAccessActions.UpdateSuccessAction { Data = agent });
         }
@@ -95,7 +95,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         logger.LogInformation("Removing agent access");
         try
         {
-            await api.RemoveAgentAccessAsync(action.Id).ConfigureAwait(true);
+            await api.RemoveAgentAccessAsync(action.Id);
             logger.LogInformation("Agent access removed successfully");
             dispatcher.Dispatch(new AgentAccessActions.DeleteSuccessAction { Data = action.Id });
         }

@@ -63,7 +63,7 @@
                                    data-testid="comm-table-edit-btn" />
                 </MudTooltip>
                 <MudTooltip Text="Delete">
-                    <MudIconButton OnClick="@(() => DeleteCommunication(context.Id))"
+                    <MudIconButton OnClick="@(() => DeleteCommunicationAsync(context.Id))"
                                    Icon="fas fa-trash"
                                    Color="@Color.Primary"
                                    data-testid="comm-table-delete-btn" />

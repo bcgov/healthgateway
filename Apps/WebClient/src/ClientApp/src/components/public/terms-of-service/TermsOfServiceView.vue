@@ -39,7 +39,7 @@ userProfileService
         termsOfService.value = result.content;
     })
     .catch((err: ResultError) => {
-        logger.error(err.resultMessage);
+        logger.error(err.message);
         if (err.statusCode === 429) {
             errorStore.setTooManyRequestsWarning("page");
         } else {

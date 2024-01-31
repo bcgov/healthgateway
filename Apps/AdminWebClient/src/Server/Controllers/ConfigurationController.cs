@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using Asp.Versioning;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +45,7 @@ namespace HealthGateway.Admin.Controllers
         /// </summary>
         /// <returns>The Health Gatway Configuration.</returns>
         [HttpGet]
-        public Models.ExternalConfiguration Index()
+        public ExternalConfiguration Index()
         {
             return this.configservice.GetConfiguration();
         }

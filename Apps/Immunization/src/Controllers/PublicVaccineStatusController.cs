@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
+    using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Immunization.Models;
@@ -56,6 +58,7 @@ namespace HealthGateway.Immunization.Controllers
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
         /// <param name="dateOfVaccine">The date of one of the vaccine doses (yyyy-MM-dd) for the supplied PHN.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -66,10 +69,10 @@ namespace HealthGateway.Immunization.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, CancellationToken ct)
         {
             this.logger.LogTrace("Getting vaccine status for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
-            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetPublicVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
+            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetPublicVaccineStatusAsync(phn, dateOfBirth, dateOfVaccine, ct);
             this.logger.LogTrace("Finished getting vaccine status for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
 
             return result;
@@ -81,6 +84,7 @@ namespace HealthGateway.Immunization.Controllers
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
         /// <param name="dateOfVaccine">The date of one of the vaccine doses (yyyy-MM-dd) for the supplied PHN.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped vaccine proof.</returns>
         /// <response code="200">Returns the vaccine proof.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -92,10 +96,10 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Route("pdf")]
         [Produces("application/json")]
-        public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
+        public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, CancellationToken ct)
         {
             this.logger.LogDebug("Getting Vaccine Proof for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
-            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetPublicVaccineProof(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
+            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetPublicVaccineProofAsync(phn, dateOfBirth, dateOfVaccine, ct);
             this.logger.LogDebug("Finished getting Vaccine Proof for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
 
             return result;

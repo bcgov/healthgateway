@@ -19,6 +19,7 @@ namespace HealthGateway.JobScheduler.Jobs
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -30,7 +31,6 @@ namespace HealthGateway.JobScheduler.Jobs
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -58,8 +58,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly ILogger<CloseAccountJob> logger;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly int profilesPageSize;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
         private readonly IKeycloakAdminApi keycloakAdminApi;
         private readonly IMessageSender messageSender;
         private readonly bool accountsChangeFeedEnabled;
@@ -97,7 +96,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
                                  throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.accountsChangeFeedEnabled = changeFeedConfiguration?.Accounts.Enabled ?? false;
         }
@@ -105,17 +104,21 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <summary>
         /// Deletes any closed accounts that are over n hours old.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void Process()
+        public async Task ProcessAsync(CancellationToken ct = default)
         {
             DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
             this.logger.LogInformation("Looking for closed accounts that are earlier than {DeleteDate}", deleteDate);
             int page = 0;
-            DbResult<List<UserProfile>> profileResult;
+            List<UserProfile> userProfiles;
+
             do
             {
-                profileResult = this.profileDelegate.GetClosedProfiles(deleteDate, page, this.profilesPageSize);
-                foreach (UserProfile profile in profileResult.Payload)
+                userProfiles = await this.profileDelegate.GetClosedProfilesAsync(deleteDate, page, this.profilesPageSize, ct);
+
+                foreach (UserProfile profile in userProfiles)
                 {
                     this.dbContext.UserProfile.Remove(profile);
                     if (this.accountsChangeFeedEnabled)
@@ -124,23 +127,21 @@ namespace HealthGateway.JobScheduler.Jobs
                         {
                             new(new AccountClosedEvent(profile.HdId, DateTime.Now), profile.HdId),
                         };
-                        this.messageSender.SendAsync(
-                                events,
-                                CancellationToken.None)
-                            .GetAwaiter()
-                            .GetResult();
+                        await this.messageSender.SendAsync(
+                            events,
+                            ct);
                     }
 
                     if (!string.IsNullOrWhiteSpace(profile.Email))
                     {
-                        this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
+                        await this.emailService.QueueNewEmailAsync(profile.Email!, this.emailTemplate, false, ct);
                     }
 
-                    JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+                    JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
                     try
                     {
-                        this.keycloakAdminApi.DeleteUserAsync(profile.IdentityManagementId!.Value, jwtModel.AccessToken).GetAwaiter().GetResult();
+                        await this.keycloakAdminApi.DeleteUserAsync(profile.IdentityManagementId!.Value, jwtModel.AccessToken, ct);
                     }
                     catch (Exception e) when (e is ApiException or HttpRequestException)
                     {
@@ -151,11 +152,11 @@ namespace HealthGateway.JobScheduler.Jobs
                     }
                 }
 
-                this.logger.LogInformation("Removed and sent emails for {Count} closed profiles", profileResult.Payload.Count);
-                this.dbContext.SaveChanges(); // commit after every page
+                this.logger.LogInformation("Removed and sent emails for {Count} closed profiles", userProfiles.Count);
+                await this.dbContext.SaveChangesAsync(ct); // commit after every page
                 page++;
             }
-            while (profileResult.Payload.Count == this.profilesPageSize);
+            while (userProfiles.Count == this.profilesPageSize);
 
             this.logger.LogInformation("Completed processing {Page} page(s) with page size set to {ProfilesPageSize}", page, this.profilesPageSize);
         }

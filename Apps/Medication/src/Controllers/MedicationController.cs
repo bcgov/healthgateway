@@ -17,6 +17,9 @@ namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;
@@ -25,7 +28,7 @@ namespace HealthGateway.Medication.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// The Medication controller.
+    /// The medication controller.
     /// </summary>
     [EnableCors("allowAny")]
     [ApiVersion("1.0")]
@@ -34,40 +37,40 @@ namespace HealthGateway.Medication.Controllers
     public class MedicationController : ControllerBase
     {
         /// <summary>
-        /// Gets or sets the medication data service.
+        /// Gets or sets the medication service.
         /// </summary>
         private readonly IMedicationService medicationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationController"/> class.
         /// </summary>
-        /// <param name="medicationService">The injected medication data service.</param>
+        /// <param name="medicationService">The injected medication service.</param>
         public MedicationController(IMedicationService medicationService)
         {
             this.medicationService = medicationService;
         }
 
         /// <summary>
-        /// Gets a list of medications that match the requested drug identifier.
-        /// The drug identifier must be either a Health Canada DIN or a BC Pharmanet PIN.
+        /// Gets medication information matching the requested drug identifier.
+        /// The drug identifier must be either a Health Canada DIN or a BC PharmaNet PIN.
         /// </summary>
-        /// <returns>The medication statement records.</returns>
-        /// <param name="drugIdentifier">The medication identifier to retrieve.</param>
-        /// <response code="200">Returns the medication statement bundle.</response>
+        /// <returns>Medication information wrapped in a RequestResult.</returns>
+        /// <param name="drugIdentifier">The drug identifier to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <response code="200">Returns medication information wrapped in a RequestResult.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
-        public RequestResult<MedicationInformation> GetMedication(string drugIdentifier)
+        public async Task<RequestResult<MedicationInformation>> GetMedication(string drugIdentifier, CancellationToken ct)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
-            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string> { paddedDin });
+            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(new List<string> { paddedDin }, ct);
 
             medications.TryGetValue(paddedDin, out MedicationInformation? medication);
             RequestResult<MedicationInformation> result = new()
             {
                 ResultStatus = ResultType.Success,
-
                 ResourcePayload = medication,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
@@ -78,18 +81,19 @@ namespace HealthGateway.Medication.Controllers
         }
 
         /// <summary>
-        /// Gets a list of medications that match the requested drug identifiers.
+        /// Gets medication information matching the requested drug identifiers.
         /// </summary>
-        /// <returns>The medication statement records.</returns>
-        /// <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
-        /// <response code="200">Returns the medication statement bundle.</response>
+        /// <returns>A dictionary mapping drug identifiers to medication information wrapped in a RequestResult.</returns>
+        /// <param name="drugIdentifiers">The list of drug identifiers to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <response code="200">Returns a list of medication information wrapped in a RequestResult.</response>
         [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery] IList<string> drugIdentifiers)
+        public async Task<RequestResult<IDictionary<string, MedicationInformation>>> GetMedications([FromQuery] IList<string> drugIdentifiers, CancellationToken ct)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
-            IList<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
-            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(paddedDinList);
+            IList<string> paddedDrugIdentifiers = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
+            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(paddedDrugIdentifiers, ct);
 
             RequestResult<IDictionary<string, MedicationInformation>> result = new()
             {

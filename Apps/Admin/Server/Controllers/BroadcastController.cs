@@ -16,10 +16,12 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
+    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -38,6 +40,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Creates a broadcast.
         /// </summary>
         /// <param name="broadcast">The broadcast model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The created broadcast wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the created broadcast wrapped in a RequestResult.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -46,14 +49,15 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpPost]
-        public async Task<RequestResult<Broadcast>> CreateBroadcast(Broadcast broadcast)
+        public async Task<RequestResult<Broadcast>> CreateBroadcast(Broadcast broadcast, CancellationToken ct)
         {
-            return await broadcastService.CreateBroadcastAsync(broadcast).ConfigureAwait(true);
+            return await broadcastService.CreateBroadcastAsync(broadcast, ct);
         }
 
         /// <summary>
         /// Retrieves all broadcasts.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of broadcasts wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the collection of broadcasts wrapped in a RequestResult.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -62,15 +66,16 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        public async Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcasts()
+        public async Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcasts(CancellationToken ct)
         {
-            return await broadcastService.GetBroadcastsAsync().ConfigureAwait(true);
+            return await broadcastService.GetBroadcastsAsync(ct);
         }
 
         /// <summary>
         /// Updates a broadcast.
         /// </summary>
         /// <param name="broadcast">The broadcast model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The updated broadcast wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the updated broadcast wrapped in a RequestResult.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -79,15 +84,16 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpPut]
-        public async Task<RequestResult<Broadcast>> UpdateBroadcast(Broadcast broadcast)
+        public async Task<RequestResult<Broadcast>> UpdateBroadcast(Broadcast broadcast, CancellationToken ct)
         {
-            return await broadcastService.UpdateBroadcastAsync(broadcast).ConfigureAwait(true);
+            return await broadcastService.UpdateBroadcastAsync(broadcast, ct);
         }
 
         /// <summary>
         /// Deletes a broadcast.
         /// </summary>
         /// <param name="broadcast">The broadcast model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted broadcast wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the deleted broadcast wrapped in a RequestResult.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -96,9 +102,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpDelete]
-        public async Task<RequestResult<Broadcast>> DeleteBroadcast(Broadcast broadcast)
+        public async Task<RequestResult<Broadcast>> DeleteBroadcast(Broadcast broadcast, CancellationToken ct)
         {
-            return await broadcastService.DeleteBroadcastAsync(broadcast).ConfigureAwait(true);
+            return await broadcastService.DeleteBroadcastAsync(broadcast, ct);
         }
     }
 }

@@ -17,10 +17,13 @@ namespace HealthGateway.JobScheduler.Tasks
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -49,13 +52,11 @@ namespace HealthGateway.JobScheduler.Tasks
             this.notificationSettingsService = notificationSettingsService;
         }
 
-        /// <summary>
-        /// Runs the task that needs to be done for the IOneTimeTask.
-        /// </summary>
-        public void Run()
+        /// <inheritdoc/>
+        public async Task RunAsync(CancellationToken ct = default)
         {
             this.logger.LogInformation("Performing Task {Name}", this.GetType().Name);
-            IEnumerable<UserProfile> users = this.dbContext.UserProfile.Where(q => !string.IsNullOrEmpty(q.Email)).ToList();
+            IEnumerable<UserProfile> users = await this.dbContext.UserProfile.Where(q => !string.IsNullOrEmpty(q.Email)).ToListAsync(ct);
             this.logger.LogInformation("Queueing NotificationSettings for {Count} users", users.Count());
             foreach (UserProfile user in users)
             {
@@ -67,7 +68,7 @@ namespace HealthGateway.JobScheduler.Tasks
                 };
 
                 // Queue each push to PHSA in the Job Scheduler
-                this.notificationSettingsService.QueueNotificationSettings(nsr);
+                await this.notificationSettingsService.QueueNotificationSettingsAsync(nsr, ct);
             }
 
             this.logger.LogInformation("Task {Name} has completed", this.GetType().Name);

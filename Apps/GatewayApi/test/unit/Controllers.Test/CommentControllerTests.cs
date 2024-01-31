@@ -17,6 +17,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -37,8 +39,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Successfully Create Comment - Happy Path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateComment()
+        public async Task ShouldCreateComment()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -50,19 +53,21 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Add(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.AddAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(expectedResult));
 
-            CommentController service = new(commentServiceMock.Object);
+            CommentController controller = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await controller.Create(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
             expectedResult.ShouldDeepEqual(actualResult.Value);
         }
 
         /// <summary>
         /// Create Comment - Bad Request Error scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateCommentWithBadRequestError()
+        public async Task ShouldCreateCommentWithBadRequestError()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -71,11 +76,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Add(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.AddAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
-            CommentController service = new(commentServiceMock.Object);
+            CommentController controller = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await controller.Create(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
@@ -83,8 +88,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Update Comment - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateComment()
+        public async Task ShouldUpdateComment()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -97,11 +103,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.UpdateAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
-            CommentController service = new(commentServiceMock.Object);
+            CommentController controller = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await controller.Update(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             RequestResult<UserComment>? actualRequestResult = actualResult.Value;
             Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
@@ -111,8 +117,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Update Comment - ForbidResult Error scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateCommentWithForbidResultError()
+        public async Task ShouldUpdateCommentWithForbidResultError()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -124,11 +131,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.UpdateAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommentController service = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await service.Update(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             Assert.IsType<ForbidResult>(actualResult.Result);
         }
@@ -136,8 +143,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Update Comment - BadRequest Error scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateCommentWithBadRequestError()
+        public async Task ShouldUpdateCommentWithBadRequestError()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -146,11 +154,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.UpdateAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommentController service = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await service.Update(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
@@ -158,8 +166,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Delete Comment - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteComment()
+        public async Task ShouldDeleteComment()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -172,11 +181,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.DeleteAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommentController service = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await service.Delete(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             RequestResult<UserComment>? actualRequestResult = actualResult.Value;
             Assert.NotNull(actualRequestResult);
@@ -187,8 +196,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Delete Comment - ForbidResult Error scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteCommentWithForbidResultError()
+        public async Task ShouldDeleteCommentWithForbidResultError()
         {
             RequestResult<UserComment> expectedResult = new()
             {
@@ -200,20 +210,21 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.DeleteAsync(expectedResult.ResourcePayload, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommentController service = new(commentServiceMock.Object);
 
-            ActionResult<RequestResult<UserComment>> actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = await service.Delete(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             Assert.IsType<ForbidResult>(actualResult.Result);
         }
 
         /// <summary>
-        /// GetAllForEntry - Happy path scenario.
+        /// GetAllForEntryAsync - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetAllForEntry()
+        public async Task ShouldGetAllForEntry()
         {
             List<UserComment> mockedComments = new();
             for (int i = 0; i < 10; i++)
@@ -233,11 +244,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommentService> commentServiceMock = new();
-            commentServiceMock.Setup(s => s.GetEntryComments(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.GetEntryCommentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
-            CommentController service = new(commentServiceMock.Object);
+            CommentController controller = new(commentServiceMock.Object);
 
-            RequestResult<IEnumerable<UserComment>> actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
+            RequestResult<IEnumerable<UserComment>> actualResult = await controller.GetAllForEntry(Hdid, "parentEntryIdMock", It.IsAny<CancellationToken>());
 
             Assert.NotNull(actualResult);
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);

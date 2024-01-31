@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -29,7 +30,8 @@ namespace HealthGateway.Admin.Server.Services
         /// Returns inactive users exclusive of the days inactive.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>returns a Request Result of List.</returns>
-        Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays);
+        Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsersAsync(int inactiveDays, CancellationToken ct = default);
     }
 }

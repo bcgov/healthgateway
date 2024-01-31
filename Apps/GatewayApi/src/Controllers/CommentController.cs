@@ -17,6 +17,9 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
@@ -51,6 +54,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment request model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="400">The request is bad.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -61,7 +65,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserComment>> Create(string hdid, [FromBody] UserComment? comment)
+        public async Task<ActionResult<RequestResult<UserComment>>> Create(string hdid, [FromBody] UserComment? comment, CancellationToken ct)
         {
             if (comment == null)
             {
@@ -71,7 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
             comment.UserProfileId = hdid;
             comment.CreatedBy = hdid;
             comment.UpdatedBy = hdid;
-            return this.commentService.Add(comment);
+            return await this.commentService.AddAsync(comment, ct);
         }
 
         /// <summary>
@@ -80,6 +84,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The updated Comment wrapped in a RequestResult.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment to be updated.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The comment was saved.</response>
         /// <response code="400">The request is bad.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -90,7 +95,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserComment>> Update(string hdid, [FromBody] UserComment? comment)
+        public async Task<ActionResult<RequestResult<UserComment>>> Update(string hdid, [FromBody] UserComment? comment, CancellationToken ct)
         {
             if (comment == null)
             {
@@ -103,7 +108,7 @@ namespace HealthGateway.GatewayApi.Controllers
             }
 
             comment.UpdatedBy = hdid;
-            return this.commentService.Update(comment);
+            return await this.commentService.UpdateAsync(comment, ct);
         }
 
         /// <summary>
@@ -112,6 +117,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The deleted UserComment wrapped in a RequestResult.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The comment to be deleted.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="400">The request is bad.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -122,14 +128,14 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpDelete]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserComment>> Delete(string hdid, [FromBody] UserComment comment)
+        public async Task<ActionResult<RequestResult<UserComment>>> Delete(string hdid, [FromBody] UserComment comment, CancellationToken ct)
         {
             if (comment.UserProfileId != hdid)
             {
                 return new ForbidResult();
             }
 
-            return this.commentService.Delete(comment);
+            return await this.commentService.DeleteAsync(comment, ct);
         }
 
         /// <summary>
@@ -137,6 +143,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of comments wrapped in a request result.</returns>
         /// <response code="200">Returns the list of comments.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -147,15 +154,16 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/[controller]/Entry")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public RequestResult<IEnumerable<UserComment>> GetAllForEntry(string hdid, [FromQuery] string parentEntryId)
+        public async Task<RequestResult<IEnumerable<UserComment>>> GetAllForEntry(string hdid, [FromQuery] string parentEntryId, CancellationToken ct)
         {
-            return this.commentService.GetEntryComments(hdid, parentEntryId);
+            return await this.commentService.GetEntryCommentsAsync(hdid, parentEntryId, ct);
         }
 
         /// <summary>
         /// Gets all comments for the authorized user.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of comments wrapped in a request result.</returns>
         /// <response code="200">Returns the list of comments.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -167,9 +175,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [ExcludeFromCodeCoverage]
-        public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetAll(string hdid)
+        public async Task<RequestResult<IDictionary<string, IEnumerable<UserComment>>>> GetAll(string hdid, CancellationToken ct)
         {
-            return this.commentService.GetProfileComments(hdid);
+            return await this.commentService.GetProfileCommentsAsync(hdid, ct);
         }
     }
 }

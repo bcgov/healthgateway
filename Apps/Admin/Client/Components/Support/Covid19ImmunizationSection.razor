@@ -68,7 +68,7 @@
         RightMargin="Breakpoint.Always"
         Loading="@MailVaccineCardIsLoading"
         Disabled="@(IsLoading || !Rows.Any())"
-        OnClick="@OpenMailVaccineCardAddressConfirmationDialog"
+        OnClick="@OpenMailVaccineCardAddressConfirmationDialogAsync"
         data-testid="mail-button">
         Mail
     </HgButton>

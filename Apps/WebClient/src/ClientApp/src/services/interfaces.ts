@@ -16,7 +16,7 @@ import {
     LaboratoryReport,
 } from "@/models/laboratory";
 import MedicationRequest from "@/models/medicationRequest";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationStatement from "@/models/medicationStatement";
 import Notification from "@/models/notification";
 import Patient from "@/models/patient";
 import PatientDataResponse, {
@@ -77,10 +77,10 @@ export interface IPatientService {
 }
 
 export interface IMedicationService {
-    getPatientMedicationStatementHistory(
+    getPatientMedicationStatements(
         hdid: string,
         protectiveWord?: string
-    ): Promise<RequestResult<MedicationStatementHistory[]>>;
+    ): Promise<RequestResult<MedicationStatement[]>>;
 }
 
 export interface ISpecialAuthorityService {

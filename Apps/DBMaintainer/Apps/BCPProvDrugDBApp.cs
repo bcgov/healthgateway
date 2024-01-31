@@ -19,6 +19,8 @@ namespace HealthGateway.DBMaintainer.Apps
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.DBMaintainer.FileDownload;
@@ -59,15 +61,15 @@ namespace HealthGateway.DBMaintainer.Apps
         }
 
         /// <inheritdoc/>
-        public override void Process(string configSectionName)
+        public override async Task ProcessAsync(string configSectionName, CancellationToken ct = default)
         {
             this.Logger.LogInformation("Reading configuration for section {ConfigSectionName}", configSectionName);
 
-            FileDownload pharmaCareDrugFileDownload = this.GetFileDownload(this.Configuration.GetSection(configSectionName));
-            FileDownload pharmacyAssessmentFileDownload = this.GetFileDownload(this.Configuration.GetSection("PharmacyAssessmentFile"));
+            FileDownload pharmaCareDrugFileDownload = await this.GetFileDownloadAsync(this.Configuration.GetSection(configSectionName), ct);
+            FileDownload pharmacyAssessmentFileDownload = await this.GetFileDownloadAsync(this.Configuration.GetSection("PharmacyAssessmentFile"), ct);
 
-            bool isPharmaCareDrugFileProcessed = this.FileProcessed(pharmaCareDrugFileDownload);
-            bool isPharmacyAssessmentFileProcessed = this.FileProcessed(pharmacyAssessmentFileDownload);
+            bool isPharmaCareDrugFileProcessed = await this.FileProcessedAsync(pharmaCareDrugFileDownload, ct);
+            bool isPharmacyAssessmentFileProcessed = await this.FileProcessedAsync(pharmacyAssessmentFileDownload, ct);
 
             this.Logger.LogInformation(
                 "Pharma care drug file processed: {PharmaCareDrugFileProcessed} - Pharmacy assessment file processed: {PharmacyAssessmentFileProcessed}",
@@ -82,7 +84,7 @@ namespace HealthGateway.DBMaintainer.Apps
                 string pharmaCareDrugSourceFolder = this.ExtractFiles(pharmaCareDrugFileDownload);
 
                 // Load the pharma care drug file
-                this.ProcessDownload(pharmaCareDrugSourceFolder, pharmaCareDrugFileDownload, pharmacyAssessmentFileDownload);
+                await this.ProcessDownloadAsync(pharmaCareDrugSourceFolder, pharmaCareDrugFileDownload, pharmacyAssessmentFileDownload, ct);
 
                 // Delete downloaded files
                 this.RemoveExtractedFiles(pharmaCareDrugSourceFolder);
@@ -96,7 +98,7 @@ namespace HealthGateway.DBMaintainer.Apps
         }
 
         /// <inheritdoc/>
-        protected override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
+        protected override async Task ProcessDownloadAsync(string sourceFolder, FileDownload downloadedFile, CancellationToken ct = default)
         {
             string[] files = Directory.GetFiles(sourceFolder, "pddf*.csv");
             if (files.Length > 1)
@@ -106,10 +108,10 @@ namespace HealthGateway.DBMaintainer.Apps
 
             this.Logger.LogInformation("Parsing Provincial PharmaCare file");
             this.RemoveOldFiles(downloadedFile);
-            this.AddFileToDb(downloadedFile);
-            this.DrugDbContext.AddRange(this.Parser.ParsePharmaCareDrugFile(files[0], downloadedFile));
+            await this.AddFileToDbAsync(downloadedFile, ct);
+            await this.DrugDbContext.AddRangeAsync(this.Parser.ParsePharmaCareDrugFileAsync(files[0], downloadedFile, ct), ct);
             this.Logger.LogInformation("Saving PharmaCare Drugs");
-            this.DrugDbContext.SaveChanges();
+            await this.DrugDbContext.SaveChangesAsync(ct);
         }
 
         /// <summary>
@@ -149,7 +151,7 @@ namespace HealthGateway.DBMaintainer.Apps
 
         private void DeleteDownloadedFiles(FileDownload fileDownload)
         {
-            if (fileDownload.LocalFilePath != null && fileDownload.Name != null)
+            if (fileDownload is { LocalFilePath: not null, Name: not null })
             {
                 string filename = Path.Combine(fileDownload.LocalFilePath, fileDownload.Name);
                 this.Logger.LogInformation("Removing zip file: {Filename}", filename);
@@ -164,17 +166,17 @@ namespace HealthGateway.DBMaintainer.Apps
             }
         }
 
-        private FileDownload GetFileDownload(IConfigurationSection section)
+        private async Task<FileDownload> GetFileDownloadAsync(IConfigurationSection section, CancellationToken ct)
         {
             Uri? file = section.GetValue<Uri>("Url");
             string? targetFolder = section.GetValue<string>("TargetFolder");
-            FileDownload fileDownload = this.DownloadFile(file, targetFolder);
+            FileDownload fileDownload = await this.DownloadFileAsync(file, targetFolder, ct);
             fileDownload.ProgramCode = section.GetValue<string>("AppName");
             this.Logger.LogInformation("Downloaded file for program code: {ProgramCode}", fileDownload.ProgramCode);
             return fileDownload;
         }
 
-        private void ProcessDownload(string pharmaCareDrugSourceFolder, FileDownload pharmaCareDrugFileDownload, FileDownload pharmacyAssessmentFileDownload)
+        private async Task ProcessDownloadAsync(string pharmaCareDrugSourceFolder, FileDownload pharmaCareDrugFileDownload, FileDownload pharmacyAssessmentFileDownload, CancellationToken ct)
         {
             string pharmaCareDrugFile = GetDownloadedFile(pharmaCareDrugSourceFolder, "pddf*.csv");
             string pharmacyAssessmentFile = GetDownloadedFile(pharmacyAssessmentFileDownload.LocalFilePath, pharmacyAssessmentFileDownload.Name);
@@ -183,16 +185,16 @@ namespace HealthGateway.DBMaintainer.Apps
             this.RemoveOldFiles(pharmaCareDrugFileDownload);
 
             // Add new pharma care drug file download to database
-            this.AddFileToDb(pharmaCareDrugFileDownload);
+            await this.AddFileToDbAsync(pharmaCareDrugFileDownload, ct);
 
             // Remove old pharmacy assessment file download in database
             this.RemoveOldFiles(pharmacyAssessmentFileDownload);
 
             // Add new pharmacy assessment file download to database
-            this.AddFileToDb(pharmacyAssessmentFileDownload);
+            await this.AddFileToDbAsync(pharmacyAssessmentFileDownload, ct);
 
             this.Logger.LogInformation("Parsing Provincial PharmaCare Drug file");
-            IList<PharmaCareDrug> pharmaCareDrugs = this.Parser.ParsePharmaCareDrugFile(pharmaCareDrugFile, pharmaCareDrugFileDownload);
+            IList<PharmaCareDrug> pharmaCareDrugs = await this.Parser.ParsePharmaCareDrugFileAsync(pharmaCareDrugFile, pharmaCareDrugFileDownload, ct);
 
             this.Logger.LogInformation("Parsing Pharmacy Assessment file");
             IEnumerable<PharmacyAssessment> pharmacyAssessments = this.pharmacyAssessmentParser.ParsePharmacyAssessmentFile(pharmacyAssessmentFile, pharmacyAssessmentFileDownload);
@@ -200,9 +202,9 @@ namespace HealthGateway.DBMaintainer.Apps
             // If required, modify pharma care drug with pharmacy assessment
             pharmacyAssessments.ToList().ForEach(pa => ModifyPharmaCareDrug(pa, pharmaCareDrugs));
 
-            this.DrugDbContext.AddRange(pharmaCareDrugs);
+            await this.DrugDbContext.AddRangeAsync(pharmaCareDrugs, ct);
             this.Logger.LogInformation("Saving pharma care drugs to database");
-            this.DrugDbContext.SaveChanges();
+            await this.DrugDbContext.SaveChangesAsync(ct);
         }
     }
 }

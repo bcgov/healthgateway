@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Ui.Utils
         public static async ValueTask InitializeInactivityTimer<T>(this IJSRuntime js, DotNetObjectReference<T> dotNetObjectReference)
             where T : class
         {
-            await js.InvokeVoidAsync("initializeInactivityTimer", dotNetObjectReference).ConfigureAwait(true);
+            await js.InvokeVoidAsync("initializeInactivityTimer", dotNetObjectReference);
         }
     }
 }

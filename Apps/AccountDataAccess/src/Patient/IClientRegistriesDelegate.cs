@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
 
@@ -29,7 +30,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="type">The oid type value.</param>
         /// <param name="identifier">The associated oid type's identifier to retrieve the patient demographics information.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model wrapped in an api result object.</returns>
-        Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false);
+        Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default);
     }
 }

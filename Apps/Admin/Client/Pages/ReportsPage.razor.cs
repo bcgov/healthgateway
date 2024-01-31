@@ -78,13 +78,13 @@ public partial class ReportsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessAction());
     }
 
-    private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableData(TableState tableState)
+    private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableDataAsync(TableState tableState)
     {
         SortDirection sortDirection = tableState.SortDirection == MudBlazor.SortDirection.Descending ? SortDirection.Descending : SortDirection.Ascending;
         ProtectedDependentReport report;
         try
         {
-            report = await this.AdminReportApi.GetProtectedDependentsReport(tableState.Page, tableState.PageSize, sortDirection);
+            report = await this.AdminReportApi.GetProtectedDependentsReportAsync(tableState.Page, tableState.PageSize, sortDirection);
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
@@ -101,7 +101,7 @@ public partial class ReportsPage : FluxorComponent
         };
     }
 
-    private async Task HandleBlockedAccessRowClick(TableRowClickEventArgs<BlockedAccessRecord> args)
+    private async Task HandleBlockedAccessRowClickAsync(TableRowClickEventArgs<BlockedAccessRecord> args)
     {
         await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, args.Item.Hdid);
         this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);

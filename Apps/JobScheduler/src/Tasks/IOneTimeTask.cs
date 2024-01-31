@@ -15,6 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Tasks
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// A task that should be invoked only once from the OneTimeJob.
     /// Any DB access should not commit and should defer to the Job to do so.
@@ -24,6 +27,8 @@ namespace HealthGateway.JobScheduler.Tasks
         /// <summary>
         /// Runs the task that needs to be done for the IOneTimeTask.
         /// </summary>
-        void Run();
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task RunAsync(CancellationToken ct = default);
     }
 }

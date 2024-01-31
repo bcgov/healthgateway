@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Inserting user profile to DB...");
             DbResult<UserProfile> result = new();
-            await this.dbContext.AddAsync(profile, ct);
+            this.dbContext.Add(profile);
             try
             {
                 if (commit)
@@ -75,26 +75,30 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserProfile> Update(UserProfile profile, bool commit = true)
+        public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user profile in DB");
-            DbResult<UserProfile> result = this.GetUserProfile(profile.HdId);
-            if (result.Status == DbStatusCode.Read)
+            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, ct);
+            DbResult<UserProfile> result = new();
+
+            if (userProfile != null)
             {
                 // Copy certain attributes into the fetched User Profile
-                result.Payload.Email = profile.Email;
-                result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
-                result.Payload.UpdatedBy = profile.UpdatedBy;
-                result.Payload.Version = profile.Version;
-                result.Payload.YearOfBirth = profile.YearOfBirth;
-                result.Payload.LastLoginClientCode = profile.LastLoginClientCode;
+                userProfile.Email = profile.Email;
+                userProfile.TermsOfServiceId = profile.TermsOfServiceId;
+                userProfile.UpdatedBy = profile.UpdatedBy;
+                userProfile.Version = profile.Version;
+                userProfile.YearOfBirth = profile.YearOfBirth;
+                userProfile.LastLoginClientCode = profile.LastLoginClientCode;
                 result.Status = DbStatusCode.Deferred;
+                result.Payload = userProfile;
+                this.dbContext.UserProfile.Update(userProfile);
 
                 if (commit)
                 {
                     try
                     {
-                        this.dbContext.SaveChanges();
+                        await this.dbContext.SaveChangesAsync(ct);
                         result.Status = DbStatusCode.Updated;
                     }
                     catch (DbUpdateConcurrencyException e)
@@ -110,89 +114,33 @@ namespace HealthGateway.Database.Delegates
                     }
                 }
             }
-
-            this.logger.LogDebug("Finished updating user profile in DB");
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
-        {
-            DbResult<UserProfile> result = new()
-            {
-                Status = DbStatusCode.Error,
-                Payload = profile,
-            };
-
-            this.logger.LogTrace("Updating user profile in DB...");
-            this.dbContext.UserProfile.Update(profile);
-            if (commit)
-            {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Updated;
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    result.Status = DbStatusCode.Concurrency;
-                    result.Message = e.Message;
-                }
-                catch (DbUpdateException e)
-                {
-                    this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
-            }
-
-            this.logger.LogDebug("Finished updating user profile in DB");
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<UserProfile> GetUserProfile(string hdId)
-        {
-            this.logger.LogTrace("Getting user profile from DB... {HdId}", hdId);
-            DbResult<UserProfile> result = new();
-            UserProfile? profile = this.dbContext.UserProfile.Find(hdId);
-            if (profile != null)
-            {
-                result.Payload = profile;
-                result.Status = DbStatusCode.Read;
-            }
             else
             {
-                this.logger.LogInformation("Unable to find User by HDID {HdId}", hdId);
+                this.logger.LogInformation("Unable to find User to update for HDID {HdId}", profile.HdId);
                 result.Status = DbStatusCode.NotFound;
             }
 
-            this.logger.LogDebug("Finished getting user profile from DB");
+            this.logger.LogDebug("Finished updating user profile in DB");
             return result;
         }
 
         /// <inheritdoc/>
-        public async Task<UserProfile?> GetUserProfileAsync(string hdid)
+        public async Task<UserProfile?> GetUserProfileAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile.FindAsync(hdid).ConfigureAwait(true);
+            return await this.dbContext.UserProfile.FindAsync([hdid], ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(IList<string> hdIds, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profiles from DB...");
-            DbResult<List<UserProfile>> result = new();
-            result.Payload = this.dbContext.UserProfile
+            return await this.dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
-                .ToList();
-
-            result.Status = DbStatusCode.Read;
-            this.logger.LogDebug("Finished getting user profiles from DB");
-            return result;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString, CancellationToken ct = default)
         {
             IQueryable<UserProfile> dbQuery = this.dbContext.UserProfile;
             dbQuery = queryType switch
@@ -203,37 +151,19 @@ namespace HealthGateway.Database.Delegates
             };
             dbQuery = dbQuery.GroupBy(user => user.HdId).Select(x => x.First());
 
-            return await dbQuery.ToArrayAsync().ConfigureAwait(true);
+            return await dbQuery.ToArrayAsync(ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pageSize = 500)
+        public async Task<List<UserProfile>> GetClosedProfilesAsync(DateTime filterDateTime, int page = 0, int pageSize = 500, CancellationToken ct = default)
         {
-            DbResult<List<UserProfile>> result = new();
             int offset = page * pageSize;
-            result.Payload = this.dbContext.UserProfile
-                .Where(p => p.LastLoginDateTime < filterDateTime && p.ClosedDateTime == null && !string.IsNullOrWhiteSpace(p.Email))
-                .OrderBy(o => o.CreatedDateTime)
-                .Skip(offset)
-                .Take(pageSize)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500)
-        {
-            DbResult<List<UserProfile>> result = new();
-            int offset = page * pageSize;
-            result.Payload = this.dbContext.UserProfile
+            return await this.dbContext.UserProfile
                 .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
                 .OrderBy(o => o.ClosedDateTime)
                 .Skip(offset)
                 .Take(pageSize)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
@@ -288,14 +218,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
+        public async Task<IList<UserProfile>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving all the user profiles for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.UserProfile
-                    .OrderBy(userProfile => userProfile.CreatedDateTime),
-                page,
-                pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.UserProfile.OrderBy(userProfile => userProfile.CreatedDateTime), page, pageSize, ct);
         }
 
         /// <inheritdoc/>
@@ -335,25 +261,23 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
+        public async Task<IList<UserProfileHistory>> GetUserProfileHistoryListAsync(string hdid, int limit, CancellationToken ct = default)
         {
-            DbResult<IEnumerable<UserProfileHistory>> result = new();
-            result.Payload = this.dbContext.UserProfileHistory
+            return await this.dbContext.UserProfileHistory
                 .Where(p => p.HdId == hdid)
                 .OrderByDescending(p => p.LastLoginDateTime)
-                .Take(limit);
-            result.Status = DbStatusCode.Read;
-            return result;
+                .Take(limit)
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetUserProfileCount(CancellationToken ct = default)
+        public async Task<int> GetUserProfileCountAsync(CancellationToken ct = default)
         {
             return await this.dbContext.UserProfile.CountAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetClosedUserProfileCount(CancellationToken ct = default)
+        public async Task<int> GetClosedUserProfileCountAsync(CancellationToken ct = default)
         {
             return await this.dbContext.UserProfileHistory
                 .Where(h => h.Operation == "DELETE" && !this.dbContext.UserProfile.Any(p => p.HdId == h.HdId))

@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -126,11 +127,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public UserProfileServiceMock SetupGetOrSetCache<T>(T returnValue, string cacheKeyPattern)
         {
             this.cacheProviderMock.Setup(
-                    cp => cp.GetOrSet(
+                    cp => cp.GetOrSetAsync(
                         It.Is<string>(key => key.Contains(cacheKeyPattern)),
-                        It.IsAny<Func<T>>(),
-                        It.IsAny<TimeSpan?>()))
-                .Returns(returnValue);
+                        It.IsAny<Func<Task<T>>>(),
+                        It.IsAny<TimeSpan?>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(returnValue);
             return this;
         }
 
@@ -185,18 +187,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="hdid">User profile hdid to be returned.</param>
         /// <param name="userProfileData">The mocked user profile linked with the hdid.</param>
         /// <param name="userProfileDbResult">The mocked result from teh database.</param>
-        /// <param name="userProfileHistoryDbResult">Mocked user profile history.</param>
+        /// <param name="userProfileHistoryList">Mocked user profile history.</param>
+        /// <param name="updatedUserProfileResult">Updated user profile result.</param>
         /// <param name="limitRecords">Limit the number of records, if empty with extract from config, fallback is 2.</param>
         /// <returns>UserProfileServiceMock.</returns>
         public UserProfileServiceMock SetupUserProfileDelegateMockGetUpdateAndHistory(
             string hdid,
             UserProfile userProfileData,
             DbResult<UserProfile> userProfileDbResult,
-            DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult,
+            IList<UserProfileHistory> userProfileHistoryList,
+            DbResult<UserProfile>? updatedUserProfileResult,
             int? limitRecords = null)
         {
             int limit = limitRecords ?? this.configuration.GetSection(this.webClientConfigSection).GetValue(this.userProfileHistoryRecordLimitKey, 2);
-            this.userProfileDelegateMock = new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdid, userProfileHistoryDbResult, limit);
+            this.userProfileDelegateMock = new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdid, userProfileHistoryList, limit, updatedUserProfileResult);
             return this;
         }
 
@@ -239,7 +243,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="hdid">HDID of the user which owns the preference.</param>
         /// <param name="readResult">Mock preferences to be returned.</param>
         /// <returns>UserProfileServiceMock.</returns>
-        public UserProfileServiceMock SetupUserPreferenceDelegateMockReturnPreferences(string hdid, DbResult<IEnumerable<UserPreference>> readResult)
+        public UserProfileServiceMock SetupUserPreferenceDelegateMockReturnPreferences(string hdid, IEnumerable<UserPreference> readResult)
         {
             this.userPreferenceDelegateMock = new UserPreferenceDelegateMock(readResult, hdid);
             return this;
@@ -277,7 +281,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public UserProfileServiceMock SetupPatientServiceMockCustomPatient(string hdid, PatientModel patient)
         {
             this.patientServiceMock
-                .Setup(s => s.GetPatient(hdid, PatientIdentifierType.Hdid, false))
+                .Setup(s => s.GetPatientAsync(hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new RequestResult<PatientModel>
                     {

@@ -19,7 +19,8 @@ namespace HealthGateway.DBMaintainer.Parsers
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
-    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using CsvHelper;
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
@@ -44,7 +45,7 @@ namespace HealthGateway.DBMaintainer.Parsers
         }
 
         /// <inheritdoc/>
-        public IList<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload)
+        public async Task<IList<PharmaCareDrug>> ParsePharmaCareDrugFileAsync(string filename, FileDownload fileDownload, CancellationToken ct = default)
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");
             using StreamReader reader = new(filename);
@@ -56,9 +57,14 @@ namespace HealthGateway.DBMaintainer.Parsers
                 DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
-            PharmaCareDrugMapper mapper = new(filedownload);
+            PharmaCareDrugMapper mapper = new(fileDownload);
             csv.Context.RegisterClassMap(mapper);
-            List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();
+            List<PharmaCareDrug> records = new();
+            await foreach (PharmaCareDrug? record in csv.GetRecordsAsync<PharmaCareDrug>(ct))
+            {
+                records.Add(record);
+            }
+
             return records;
         }
     }

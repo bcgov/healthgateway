@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Jobs
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
 
     /// <summary>
@@ -26,6 +28,8 @@ namespace HealthGateway.Common.Jobs
         /// Sends an email to the Health Gateway Admin with the feedback included.
         /// </summary>
         /// <param name="clientFeedback">The client feedback to email to the admin.</param>
-        void SendEmail(ClientFeedback clientFeedback);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SendEmailAsync(ClientFeedback clientFeedback, CancellationToken ct = default);
     }
 }

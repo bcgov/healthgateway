@@ -57,7 +57,7 @@ public class DbOutboxStore : IOutboxStore
     public async Task StoreAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Storing messages in the DB");
-        var outboxItems = messages.Select(
+        IEnumerable<OutboxItem> outboxItems = messages.Select(
             m => new OutboxItem
             {
                 Content = Encoding.UTF8.GetString(m.Content.Serialize()),
@@ -69,10 +69,10 @@ public class DbOutboxStore : IOutboxStore
                     AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
                 },
             });
-        await this.outboxDelegate.Enqueue(outboxItems, ct);
-        await this.outboxDelegate.Commit(ct);
+        this.outboxDelegate.Enqueue(outboxItems);
+        await this.outboxDelegate.CommitAsync(ct);
 
-        this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItems(CancellationToken.None));
+        this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItemsAsync(CancellationToken.None));
     }
 
     /// <summary>
@@ -82,22 +82,22 @@ public class DbOutboxStore : IOutboxStore
     /// <returns>Awaitable task.</returns>
     [Queue(AzureServiceBusSettings.OutboxQueueName)]
     [DisableConcurrentExecution(timeoutInSeconds: 10 * 60)]
-    public async Task DispatchOutboxItems(CancellationToken ct = default)
+    public async Task DispatchOutboxItemsAsync(CancellationToken ct = default)
     {
         this.logger.LogDebug("Forwarding messages to destination");
 
         try
         {
-            var pendingItems = await this.outboxDelegate.Dequeue(ct);
+            IEnumerable<OutboxItem> pendingItems = await this.outboxDelegate.DequeueAsync(ct);
 
-            var messages = pendingItems.Select(
+            IEnumerable<MessageEnvelope> messages = pendingItems.Select(
                 i =>
                 {
-                    var message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
+                    MessageBase message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
                     return new MessageEnvelope(message, i.Metadata.SessionId);
                 });
             await this.messageSender.SendAsync(messages, ct);
-            await this.outboxDelegate.Commit(ct);
+            await this.outboxDelegate.CommitAsync(ct);
         }
         catch (Exception e)
         {

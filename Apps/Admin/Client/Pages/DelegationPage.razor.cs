@@ -142,7 +142,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private async Task SearchAsync()
         {
-            await this.Form.Validate().ConfigureAwait(true);
+            await this.Form.Validate();
             if (this.Form.IsValid)
             {
                 this.ResetDelegationState();
@@ -160,7 +160,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new DelegationActions.ProtectDependentAction { Reason = auditReason });
         }
 
-        private async Task OpenProtectConfirmationDialog()
+        private async Task OpenProtectConfirmationDialogAsync()
         {
             const string title = "Confirm Update";
             DialogParameters parameters = new()
@@ -181,24 +181,23 @@ namespace HealthGateway.Admin.Client.Pages
                     DelegationActions.ProtectDependentSuccessAction>>(
                     title,
                     parameters,
-                    options)
-                .ConfigureAwait(true);
+                    options);
 
-            DialogResult result = await dialog.Result.ConfigureAwait(true);
+            DialogResult result = await dialog.Result;
             if (!result.Canceled)
             {
                 this.SetEditMode(false);
             }
         }
 
-        private async Task OpenAddDialog()
+        private async Task OpenAddDialogAsync()
         {
             const string title = "Add to Guardian List";
             DialogParameters parameters = new();
             DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.Small };
-            IDialogReference dialog = await this.Dialog.ShowAsync<DelegateDialog>(title, parameters, options).ConfigureAwait(true);
+            IDialogReference dialog = await this.Dialog.ShowAsync<DelegateDialog>(title, parameters, options);
 
-            await dialog.Result.ConfigureAwait(true);
+            await dialog.Result;
         }
     }
 }

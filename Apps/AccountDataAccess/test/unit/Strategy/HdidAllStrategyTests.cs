@@ -47,7 +47,7 @@ namespace AccountDataAccessTest.Strategy
         /// GetPatientAsync by hdid - happy path.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -79,7 +79,7 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// Get patient identity by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityByHdid()
         {
@@ -122,7 +122,7 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// Get patient identity by hdid throws not found api exception.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityByHdidThrowsNotFoundApiException()
         {
@@ -151,12 +151,12 @@ namespace AccountDataAccessTest.Strategy
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false, It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
 
             HdidAllStrategy hdidAllStrategy = new(
                 GetConfiguration(),

@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
@@ -28,7 +30,8 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets a report based on the request provided.
         /// </summary>
         /// <param name="reportRequest">The report request model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The report data.</returns>
-        RequestResult<ReportModel> GetReport(ReportRequestModel reportRequest);
+        Task<RequestResult<ReportModel>> GetReportAsync(ReportRequestModel reportRequest, CancellationToken ct = default);
     }
 }

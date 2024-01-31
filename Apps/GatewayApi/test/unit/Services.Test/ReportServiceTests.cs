@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -38,6 +40,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <param name="templateType">Report Template Type.</param>
         /// <param name="reportName">Report Name.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(TemplateType.Medication, "HealthGatewayMedicationReport")]
         [InlineData(TemplateType.Notes, "HealthGatewayNotesReport")]
@@ -48,7 +51,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(TemplateType.Laboratory, "HealthGatewayLaboratoryReport")]
         [InlineData(TemplateType.DependentImmunization, "HealthGatewayDependentImmunizationReport")]
         [InlineData(TemplateType.HospitalVisit, "HealthGatewayHospitalVisitReport")]
-        public void ShouldGetReport(TemplateType templateType, string reportName)
+        public async Task ShouldGetReport(TemplateType templateType, string reportName)
         {
             RequestResult<ReportModel> expectedResult = new()
             {
@@ -67,12 +70,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();
-            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName))).ReturnsAsync(expectedResult);
+            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             IReportService service = new ReportService(
                 new Mock<ILogger<ReportService>>().Object,
                 cdogsDelegateMock.Object);
-            RequestResult<ReportModel> actualResult = service.GetReport(reportRequest);
+            RequestResult<ReportModel> actualResult = await service.GetReportAsync(reportRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedResult.ShouldDeepEqual(actualResult);

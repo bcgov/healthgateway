@@ -34,7 +34,7 @@ public interface IMessageReceiver
     /// it can return false to reject the messages or true when processed successfully.
     /// </param>
     /// <param name="errorHandler">Error handler that receives the exception when an error occurred.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Awaitable task.</returns>
-    Task Subscribe(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default);
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    Task SubscribeAsync(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default);
 }

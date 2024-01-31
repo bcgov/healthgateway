@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.LaboratoryTests.Mock
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -145,13 +144,8 @@ namespace HealthGateway.LaboratoryTests.Mock
                 AccessToken = token,
             };
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(
-                    s => s.AuthenticateAsSystem(
-                        It.IsAny<Uri>(),
-                        It.IsAny<ClientCredentialsTokenRequest>(),
-                        It.IsAny<bool>()))
-                .Returns(jwt);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(token);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(token);
             return mockAuthDelegate.Object;
         }
     }

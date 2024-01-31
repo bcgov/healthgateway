@@ -13,9 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -29,27 +30,31 @@ namespace HealthGateway.Common.Services
         /// Creates a broadcast.
         /// </summary>
         /// <param name="broadcast">The broadcast model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The created broadcast wrapped in a RequestResult.</returns>
-        Task<RequestResult<Broadcast>> CreateBroadcastAsync(Broadcast broadcast);
+        Task<RequestResult<Broadcast>> CreateBroadcastAsync(Broadcast broadcast, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves all broadcasts.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of broadcasts wrapped in a RequestResult.</returns>
-        Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcastsAsync();
+        Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcastsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Updates a broadcast.
         /// </summary>
         /// <param name="broadcast">The broadcast model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The updated broadcast wrapped in a RequestResult.</returns>
-        Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast);
+        Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes a broadcast.
         /// </summary>
         /// <param name="broadcast">The broadcast to delete.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted broadcast wrapped in a RequestResult.</returns>
-        Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast);
+        Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast, CancellationToken ct = default);
     }
 }

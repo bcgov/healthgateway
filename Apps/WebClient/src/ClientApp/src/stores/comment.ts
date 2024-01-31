@@ -86,7 +86,7 @@ export const useCommentStore = defineStore("comment", () => {
     function setCommentsError(errorRaised: ResultError) {
         error.value = errorRaised;
         status.value = LoadStatus.ERROR;
-        statusMessage.value = errorRaised.resultMessage;
+        statusMessage.value = errorRaised.message;
     }
 
     function handleError(errorRaised: ResultError, errorType: ErrorType) {
@@ -123,7 +123,7 @@ export const useCommentStore = defineStore("comment", () => {
                         setComments(result.resourcePayload);
                     } else {
                         if (result.resultError) {
-                            throw result.resultError;
+                            throw ResultError.fromModel(result.resultError);
                         }
                         logger.warn(
                             `Comments retrieval failed! ${JSON.stringify(

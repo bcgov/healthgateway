@@ -15,9 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.LaboratoryTests.Services
 {
-    using System;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -212,9 +212,9 @@ namespace HealthGateway.LaboratoryTests.Services
         {
             HttpRequestException httpRequestException = new("Error with HTTP Request");
             Mock<ILabTestKitApi> mockLabTestKitApi = new();
-            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(httpRequestException);
-            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(httpRequestException);
 
             JwtModel jwt = new()
@@ -222,7 +222,7 @@ namespace HealthGateway.LaboratoryTests.Services
                 AccessToken = this.accessToken,
             };
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
@@ -236,9 +236,9 @@ namespace HealthGateway.LaboratoryTests.Services
         private LabTestKitService GetLabTestKitService(HttpResponseMessage responseMessage, bool nullToken = false)
         {
             Mock<ILabTestKitApi> mockLabTestKitApi = new();
-            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(responseMessage);
-            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(responseMessage);
 
             JwtModel jwt = new()
@@ -246,8 +246,8 @@ namespace HealthGateway.LaboratoryTests.Services
                 AccessToken = !nullToken ? this.accessToken : null,
             };
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>()))
-                .Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(jwt);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,

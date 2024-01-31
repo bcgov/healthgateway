@@ -33,7 +33,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="dataSources">A list of data sources.</param>
         public PatientRepositoryMock(string hdid, IEnumerable<DataSource> dataSources)
         {
-            this.Setup(s => s.GetDataSources(hdid, It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
+            this.Setup(s => s.GetDataSourcesAsync(hdid, It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
         }
     }
 }

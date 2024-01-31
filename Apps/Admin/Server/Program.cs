@@ -35,7 +35,6 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
@@ -121,7 +120,7 @@ namespace HealthGateway.Admin.Server
             app.MapControllers();
             app.MapFallbackToFile("index.html");
 
-            await app.RunAsync().ConfigureAwait(true);
+            await app.RunAsync();
         }
 
         private static void AddModules(IServiceCollection services, ConfigurationManager configuration, ILogger logger, IWebHostEnvironment environment)
@@ -136,7 +135,7 @@ namespace HealthGateway.Admin.Server
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
-            ExceptionHandling.ConfigureProblemDetails(services, environment);
+            ExceptionHandling.ConfigureProblemDetails(services);
             MessageBus.ConfigureMessageBus(services, configuration);
             Utility.ConfigureTracing(services, logger, configuration);
         }
@@ -170,7 +169,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICommentDelegate, DbCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

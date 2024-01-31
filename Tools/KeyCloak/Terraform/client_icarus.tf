@@ -24,12 +24,12 @@ resource "keycloak_openid_client_default_scopes" "icarus_client_default_scopes" 
   default_scopes = [
     "profile",
     "web-origins",
-    "email"
-    # keycloak_openid_client_scope.audience_scope.name,
-    # keycloak_openid_client_scope.immunization_read_scope.name,
-    # keycloak_openid_client_scope.laboratory_read_scope.name,
-    # keycloak_openid_client_scope.notification_read_scope.name,
-    # keycloak_openid_client_scope.patient_read_scope.name
+    "email",
+    keycloak_openid_client_scope.audience_scope.name,
+    keycloak_openid_client_scope.immunization_read_scope.name,
+    keycloak_openid_client_scope.laboratory_read_scope.name,
+    keycloak_openid_client_scope.notification_read_scope.name,
+    keycloak_openid_client_scope.patient_read_scope.name
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "icarus_client_optional_scopes" {
@@ -76,11 +76,11 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "icarus_auth_method" {
   add_to_userinfo     = true
 }
 
-# resource "keycloak_openid_audience_protocol_mapper" "icarus_audience" {
-#   realm_id                 = data.keycloak_realm.hg_realm.id
-#   client_id                = keycloak_openid_client.icarus_client.id
-#   name                     = "health-gateway-audience"
-#   included_client_audience = keycloak_openid_client.hg_client.client_id
-#   add_to_id_token          = true
-#   add_to_access_token      = true
-# }
+resource "keycloak_openid_audience_protocol_mapper" "icarus_audience" {
+  realm_id                 = data.keycloak_realm.hg_realm.id
+  client_id                = keycloak_openid_client.icarus_client.id
+  name                     = "health-gateway-audience"
+  included_client_audience = keycloak_openid_client.hg_client.client_id
+  add_to_id_token          = true
+  add_to_access_token      = true
+}

@@ -19,11 +19,10 @@ namespace HealthGateway.PatientTests.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
     using HealthGateway.Patient.Models;
@@ -32,6 +31,8 @@ namespace HealthGateway.PatientTests.Controllers
     using Moq;
     using Shouldly;
     using Xunit;
+    using Address = HealthGateway.Common.Data.Models.Address;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// Unit Tests for PatientController.
@@ -74,7 +75,7 @@ namespace HealthGateway.PatientTests.Controllers
             };
 
             // Act
-            RequestResult<PatientModel> actualResult = await patientController.GetPatient("123");
+            RequestResult<PatientModel> actualResult = await patientController.GetPatient("123", default);
 
             // Assert
             expectedResult.ShouldDeepEqual(actualResult);
@@ -91,7 +92,7 @@ namespace HealthGateway.PatientTests.Controllers
             PatientController patientController = CreatePatientController();
 
             // Act
-            ActionResult<PatientDetails> actualResult = await patientController.GetPatientV2(MockedHdid);
+            ActionResult<PatientDetails> actualResult = await patientController.GetPatientV2(MockedHdid, default);
 
             // Assert
             OkObjectResult ok = actualResult.Result.ShouldBeOfType<OkObjectResult>();
@@ -130,7 +131,7 @@ namespace HealthGateway.PatientTests.Controllers
             return new()
             {
                 Birthdate = MockedBirthDate,
-                CommonName = new AccountDataAccess.Patient.Name
+                CommonName = new Name
                 {
                     GivenName = MockedFirstName,
                     Surname = MockedLastName,
@@ -166,7 +167,7 @@ namespace HealthGateway.PatientTests.Controllers
             PatientDetails patientDetails = GetPatientModelV2();
 
             patientServiceV2.Setup(x => x.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, new CancellationToken(false))).ReturnsAsync(patientDetails);
-            patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(requestResult);
+            patientServiceV1.Setup(x => x.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
             return new(patientServiceV1.Object, patientServiceV2.Object);
         }
     }

@@ -18,6 +18,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -46,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true)
+        public async Task<DbResult<UserPreference>> CreateUserPreferenceAsync(UserPreference userPreference, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating new User Preference in DB...");
             DbResult<UserPreference> result = new()
@@ -60,7 +62,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -80,7 +82,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true)
+        public async Task<DbResult<UserPreference>> UpdateUserPreferenceAsync(UserPreference userPreference, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating User Preference in DB...");
             DbResult<UserPreference> result = new()
@@ -95,7 +97,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -115,14 +117,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid)
+        public async Task<IEnumerable<UserPreference>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
         {
-            DbResult<IEnumerable<UserPreference>> result = new();
-            result.Payload = this.dbContext.UserPreference
+            return await this.dbContext.UserPreference
                 .Where(p => p.HdId == hdid)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
+                .ToListAsync(ct);
         }
     }
 }

@@ -98,7 +98,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     // ReSharper disable once CognitiveComplexity
 
     /// <inheritdoc/>
-    public virtual async Task Subscribe(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
+    public virtual async Task SubscribeAsync(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
     {
         this.sessionProcessor.ProcessMessageAsync += async args =>
         {

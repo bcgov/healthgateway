@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             logger.LogInformation("Retrieving delegation info");
             try
             {
-                DelegationInfo response = await api.GetDelegationInformationAsync(action.Phn).ConfigureAwait(true);
+                DelegationInfo response = await api.GetDelegationInformationAsync(action.Phn);
                 logger.LogInformation("Delegation info retrieved successfully");
                 dispatcher.Dispatch(
                     new DelegationActions.SearchSuccessAction
@@ -69,7 +69,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             logger.LogInformation("Retrieving delegate info");
             try
             {
-                DelegateInfo response = await api.GetDelegateInformationAsync(action.Phn).ConfigureAwait(true);
+                DelegateInfo response = await api.GetDelegateInformationAsync(action.Phn);
                 logger.LogInformation("Delegate info retrieved successfully");
                 dispatcher.Dispatch(new DelegationActions.DelegateSearchSuccessAction { Data = autoMapper.Map<DelegateInfo, ExtendedDelegateInfo>(response) });
             }
@@ -106,7 +106,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 ProtectDependentRequest protectDependentRequest = new(delegateHdids, action.Reason);
 
-                AgentAction change = await api.ProtectDependentAsync(dependentHdid, protectDependentRequest).ConfigureAwait(true);
+                AgentAction change = await api.ProtectDependentAsync(dependentHdid, protectDependentRequest);
                 logger.LogInformation("Dependent protected successfully");
                 dispatcher.Dispatch(new DelegationActions.ProtectDependentSuccessAction { AgentAction = change });
             }
@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 UnprotectDependentRequest unprotectDependentRequest = new(action.Reason);
 
-                AgentAction change = await api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest).ConfigureAwait(true);
+                AgentAction change = await api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest);
                 logger.LogInformation("Dependent unprotected successfully");
                 dispatcher.Dispatch(new DelegationActions.UnprotectDependentSuccessAction { AgentAction = change });
             }

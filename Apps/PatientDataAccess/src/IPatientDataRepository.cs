@@ -32,7 +32,7 @@ namespace HealthGateway.PatientDataAccess
         /// <param name="query">The query.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>The query result.</returns>
-        Task<PatientDataQueryResult> Query(PatientDataQuery query, CancellationToken ct);
+        Task<PatientDataQueryResult> QueryAsync(PatientDataQuery query, CancellationToken ct = default);
     }
 
     /// <summary>

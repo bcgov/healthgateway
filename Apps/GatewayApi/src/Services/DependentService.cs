@@ -110,7 +110,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatientAsync(addDependentRequest.Phn);
+            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatientAsync(addDependentRequest.Phn, ct);
             RequestResult<DependentModel>? validationResult = await this.ValidateDependentAsync(addDependentRequest, delegateHdid, dependentResult, ct);
             if (validationResult != null)
             {
@@ -130,26 +130,26 @@ namespace HealthGateway.GatewayApi.Services
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, !this.dependentsChangeFeedEnabled);
+            DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.InsertAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
             }
 
-            this.UpdateNotificationSettings(dependentHdid, delegateHdid);
+            await this.UpdateNotificationSettingsAsync(dependentHdid, delegateHdid, false, ct);
             if (this.dependentsChangeFeedEnabled)
             {
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
             }
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid });
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid }, ct);
             int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
 
             return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount, this.autoMapper));
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25, CancellationToken ct = default)
         {
             RequestResult<IEnumerable<DependentModel>> result = new()
             {
@@ -157,17 +157,17 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             // Get Dependents from database
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdid, page, pageSize);
+            IList<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(hdid, page, pageSize, ct);
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(dbResourceDelegates.Payload.Select(d => d.ResourceOwnerHdid));
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(resourceDelegates.Select(d => d.ResourceOwnerHdid), ct);
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new();
             StringBuilder resultErrorMessage = new();
-            foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
+            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
                 this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(resourceDelegate.ResourceOwnerHdid, ct: ct);
 
                 if (patientResult.ResourcePayload != null)
                 {
@@ -207,21 +207,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize)
+        public async Task<RequestResult<IEnumerable<GetDependentResponse>>> GetDependentsAsync(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize, CancellationToken ct = default)
         {
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
+            IList<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(
                 fromDateUtc,
                 toDateUtc,
                 page,
-                pageSize);
-
-            if (dbResourceDelegates.Status != DbStatusCode.Read)
-            {
-                return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
-            }
+                pageSize,
+                ct);
 
             IEnumerable<GetDependentResponse> getDependentResponses =
-                dbResourceDelegates.Payload
+                resourceDelegates
                     .Select(
                         g => new GetDependentResponse
                         {
@@ -237,7 +233,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default)
         {
-            ResourceDelegate? resourceDelegate = this.resourceDelegateDelegate.Get(dependent.DelegateId).Payload.FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
+            ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(dependent.DelegateId, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
             if (resourceDelegate == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
@@ -245,13 +241,13 @@ namespace HealthGateway.GatewayApi.Services
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(resourceDelegate, !this.dependentsChangeFeedEnabled);
+            DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.DeleteAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
             }
 
-            this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
+            await this.UpdateNotificationSettingsAsync(dependent.OwnerId, dependent.DelegateId, true, ct);
 
             if (this.dependentsChangeFeedEnabled)
             {
@@ -334,15 +330,15 @@ namespace HealthGateway.GatewayApi.Services
             }
         }
 
-        private async Task<RequestResult<PatientModel>> GetDependentAsPatientAsync(string phn)
+        private async Task<RequestResult<PatientModel>> GetDependentAsPatientAsync(string phn, CancellationToken ct)
         {
-            return await this.patientService.GetPatient(phn, PatientIdentifierType.Phn);
+            return await this.patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
         }
 
-        private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
+        private async Task UpdateNotificationSettingsAsync(string dependentHdid, string delegateHdid, bool isDelete = false, CancellationToken ct = default)
         {
-            DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
-            UserProfile delegateUserProfile = dbResult.Payload;
+            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct) ?? throw new ProblemDetailsException(
+                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.DelegateUserProfileNotFound));
 
             // Update the notification settings
             NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SmsNumber)
@@ -359,7 +355,7 @@ namespace HealthGateway.GatewayApi.Services
                 request.SmsVerified = false;
             }
 
-            this.notificationSettingsService.QueueNotificationSettings(request);
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(request, ct);
         }
     }
 }

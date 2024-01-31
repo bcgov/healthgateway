@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -25,9 +26,10 @@ namespace HealthGateway.Common.Services
     public interface IAccessTokenService
     {
         /// <summary>
-        /// Gets an access token from PHSA for the currently authenticated user..
+        /// Gets an access token from PHSA for the currently authenticated user.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The PHSA Access Token.</returns>
-        Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken();
+        Task<RequestResult<TokenSwapResponse>> GetPhsaAccessTokenAsync(CancellationToken ct = default);
     }
 }

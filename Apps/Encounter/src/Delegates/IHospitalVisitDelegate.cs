@@ -16,6 +16,7 @@
 namespace HealthGateway.Encounter.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -30,7 +31,8 @@ namespace HealthGateway.Encounter.Delegates
         /// Returns a PHSA Result including the load state and a list of hospital visits for the authenticated user.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The PhsaResult including the load state and the list of hospital visits available for the user hdid.</returns>
-        Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid);
+        Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default);
     }
 }

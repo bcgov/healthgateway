@@ -28,39 +28,45 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves a stream of UserProfiles in CSV format inclusive of the dates provided.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of User Profiles.</returns>
-        Stream GetUserProfiles();
+        Task<Stream> GetUserProfilesAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a stream of Notes in CSV format inclusive of the dates provided.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of Notes.</returns>
-        Stream GetNotes();
+        Task<Stream> GetNotesAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a stream of Comments in CSV format inclusive of the dates provided.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of the Comments.</returns>
-        Stream GetComments();
+        Task<Stream> GetCommentsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a stream of Ratings in CSV format inclusive of the dates provided.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of the Ratings.</returns>
-        Stream GetRatings();
+        Task<Stream> GetRatingsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a stream of inactive users in CSV format exclusive of the days inactive.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of inactive users.</returns>
-        Task<Stream> GetInactiveUsers(int inactiveDays);
+        Task<Stream> GetInactiveUsersAsync(int inactiveDays, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a stream of UserFeedback in CSV format.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of the User Feedback.</returns>
-        Stream GetUserFeedback();
+        Task<Stream> GetUserFeedbackAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves stream of logged in user year of birth counts over a date range.
@@ -69,6 +75,6 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of logged in user year of birth counts over a date range.</returns>
-        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct);
+        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
     }
 }

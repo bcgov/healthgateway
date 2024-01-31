@@ -15,6 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Controllers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.WebClient.Server.Models;
     using HealthGateway.WebClient.Server.Services;
     using Microsoft.AspNetCore.Mvc;
@@ -42,11 +45,12 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <summary>
         /// Returns the external Health Gateway configuration.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Health Gateway WebClient Configuration.</returns>
         [HttpGet]
-        public ExternalConfiguration Index()
+        public async Task<ExternalConfiguration> Index(CancellationToken ct)
         {
-            ExternalConfiguration config = this.configurationService.GetConfiguration();
+            ExternalConfiguration config = await this.configurationService.GetConfigurationAsync(ct);
             config.WebClient.ClientIp = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
             return config;
         }
@@ -54,13 +58,13 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <summary>
         /// Returns the Mobile Health Gateway configuration.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Health Gateway Mobile Configuration.</returns>
         [HttpGet]
         [Route("~/MobileConfiguration")]
-        public MobileConfiguration MobileConfiguration()
+        public async Task<MobileConfiguration> MobileConfiguration(CancellationToken ct)
         {
-            MobileConfiguration config = this.configurationService.GetMobileConfiguration();
-            return config;
+            return await this.configurationService.GetMobileConfigurationAsync(ct);
         }
     }
 }

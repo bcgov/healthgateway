@@ -19,6 +19,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -35,9 +36,9 @@ namespace HealthGateway.MedicationTests.Delegates
     using Xunit;
 
     /// <summary>
-    /// SalesforceDelegate's Unit Tests.
+    /// SalesforceMedicationRequestDelegate's Unit Tests.
     /// </summary>
-    public class SalesforceDelegateTests
+    public class SalesforceMedicationRequestDelegateTests
     {
         /// <summary>
         /// GetMedicationRequests - Happy Path.
@@ -54,7 +55,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Configuration
             string endpoint = "https://test-endpoint";
             Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
+            ClientCredentialsRequestParameters requestParameters = new()
             {
                 ClientId = "TEST_CLIENTID",
                 ClientSecret = "TEST_CLIENT_SECRET",
@@ -65,10 +66,10 @@ namespace HealthGateway.MedicationTests.Delegates
             {
                 new("Salesforce:Endpoint", endpoint),
                 new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
+                new("Salesforce:ClientAuthentication:ClientId", requestParameters.ClientId),
+                new("Salesforce:ClientAuthentication:ClientSecret", requestParameters.ClientSecret),
+                new("Salesforce:ClientAuthentication:Username", requestParameters.Username),
+                new("Salesforce:ClientAuthentication:Password", requestParameters.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -80,22 +81,22 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateAsUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                        true))
-                .Returns(() => authorizationJwt);
+                    s => s.AuthenticateUserAsync(
+                        It.IsAny<ClientCredentialsRequest>(),
+                        true,
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authorizationJwt);
 
             string jsonStr =
                 "{\"items\":[{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-13T00:00:00.000Z\",\"referenceNumber\":\"00001046\",\"prescriberLastName\":\"Provider\",\"prescriberFirstName\":\"Test\",\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"rabeprazole 10, 20 mg   NB4\"},{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001048\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":\"2021-02-17\",\"drugName\":\"abatacept w/e name here\"},{\"requestStatus\":\"Received\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001047\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"depakote sprinkle cap 125mg   (SAP)\"}]}";
             ResponseWrapper? result = JsonSerializer.Deserialize<ResponseWrapper>(jsonStr);
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(result!);
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
                 CreateLogger(),
                 mockSpecialAuthorityApi.Object,
                 configuration,
@@ -128,7 +129,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Configuration
             string endpoint = "https://test-endpoint";
             Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
+            ClientCredentialsRequestParameters requestParameters = new()
             {
                 ClientId = "TEST_CLIENTID",
                 ClientSecret = "TEST_CLIENT_SECRET",
@@ -139,10 +140,10 @@ namespace HealthGateway.MedicationTests.Delegates
             {
                 new("Salesforce:Endpoint", endpoint),
                 new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
+                new("Salesforce:ClientAuthentication:ClientId", requestParameters.ClientId),
+                new("Salesforce:ClientAuthentication:ClientSecret", requestParameters.ClientSecret),
+                new("Salesforce:ClientAuthentication:Username", requestParameters.Username),
+                new("Salesforce:ClientAuthentication:Password", requestParameters.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -150,14 +151,14 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateAsUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                        true))
-                .Returns(() => new JwtModel());
+                    s => s.AuthenticateUserAsync(
+                        It.IsAny<ClientCredentialsRequest>(),
+                        true,
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new JwtModel());
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
                 CreateLogger(),
                 new Mock<ISpecialAuthorityApi>().Object,
                 configuration,
@@ -190,7 +191,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Configuration
             string endpoint = "https://test-endpoint";
             Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
+            ClientCredentialsRequestParameters requestParameters = new()
             {
                 ClientId = "TEST_CLIENTID",
                 ClientSecret = "TEST_CLIENT_SECRET",
@@ -201,10 +202,10 @@ namespace HealthGateway.MedicationTests.Delegates
             {
                 new("Salesforce:Endpoint", endpoint),
                 new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
+                new("Salesforce:ClientAuthentication:ClientId", requestParameters.ClientId),
+                new("Salesforce:ClientAuthentication:ClientSecret", requestParameters.ClientSecret),
+                new("Salesforce:ClientAuthentication:Username", requestParameters.Username),
+                new("Salesforce:ClientAuthentication:Password", requestParameters.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -216,20 +217,20 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateAsUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                        true))
-                .Returns(() => authorizationJwt);
+                    s => s.AuthenticateUserAsync(
+                        It.IsAny<ClientCredentialsRequest>(),
+                        true,
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authorizationJwt);
 
             // Setup response
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException("A Test Exception"));
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
                 CreateLogger(),
                 mockSpecialAuthorityApi.Object,
                 configuration,
@@ -255,10 +256,10 @@ namespace HealthGateway.MedicationTests.Delegates
                 .Build();
         }
 
-        private static ILogger<SalesforceDelegate> CreateLogger()
+        private static ILogger<SalesforceMedicationRequestDelegate> CreateLogger()
         {
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            return loggerFactory.CreateLogger<SalesforceDelegate>();
+            return loggerFactory.CreateLogger<SalesforceMedicationRequestDelegate>();
         }
 
         private static JwtModel CreateJwtModel(string json)

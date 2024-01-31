@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System.Net;
     using System.ServiceModel;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
@@ -59,13 +60,13 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request)
+        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
-            PatientModel? patient = request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Hdid) : null;
+            PatientModel? patient = request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Hdid, ct) : null;
 
             try
             {
-                patient ??= await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
+                patient ??= await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation, ct);
             }
             catch (CommunicationException ce)
             {
@@ -73,7 +74,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 
                 try
                 {
-                    PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier).ConfigureAwait(true);
+                    PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
                     patient = this.mapper.Map<PatientModel>(result);
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
@@ -82,7 +83,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 }
             }
 
-            this.CachePatient(patient, request.DisabledValidation);
+            await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;
         }
     }

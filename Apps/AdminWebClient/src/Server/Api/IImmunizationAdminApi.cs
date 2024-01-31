@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Api;
 
+using System.Threading;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Models.CovidSupport;
 using HealthGateway.Admin.Models.Immunization;
@@ -32,36 +33,40 @@ public interface IImmunizationAdminApi
     /// </summary>
     /// <param name="request">The covid assessment request to use for submission.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>The response to the submitted covid anti viral therapeutic assessment form.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralScreenerSubmission")]
-    Task<CovidAssessmentResponse> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize] string token);
+    Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync([Body] CovidAssessmentRequest request, [Authorize] string token, CancellationToken ct = default);
 
     /// <summary>
     /// Get details to help support the covid anti viral therapeutic assessment form for a phn.
     /// </summary>
     /// <param name="request">The covid assessment details request to identity the covid therapy assessment.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>The details to help support covid anti viral therapeutic assessment.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
-    Task<CovidAssessmentDetailsResponse> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize] string token);
+    Task<CovidAssessmentDetailsResponse> GetCovidAssessmentDetailsAsync([Body] CovidAssessmentDetailsRequest request, [Authorize] string token, CancellationToken ct = default);
 
     /// <summary>
     /// Gets the vaccine validation details for the provided patient information.
     /// </summary>
     /// <param name="request">The covid immunization details request to identify the patient.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>The vaccine validation details for the patient request.</returns>
     [Post("/api/v1/Support/Immunizations/VaccineValidationDetails")]
-    Task<PhsaResult<VaccineDetailsResponse>> GetVaccineDetails([Body] CovidImmunizationsRequest request, [Authorize] string token);
+    Task<PhsaResult<VaccineDetailsResponse>> GetVaccineDetailsAsync([Body] CovidImmunizationsRequest request, [Authorize] string token, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.
     /// </summary>
     /// <param name="query">The model containing details of the request.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
     [Post("/api/v1/Support/Immunizations/VaccineStatusIndicator")]
-    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(VaccineStatusQuery query, [Authorize] string token);
+    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(VaccineStatusQuery query, [Authorize] string token, CancellationToken ct = default);
 }

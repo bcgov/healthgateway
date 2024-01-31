@@ -13,18 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Delegates
+namespace HealthGateway.Common.AccessManagement.Authentication.Models
 {
+    using System;
+
     /// <summary>
-    /// Delegate that retrieves drugs based on the drug identifier.
+    /// OAuth2 OIDC client credentials grant request information.
     /// </summary>
-    public interface ISequenceDelegate
+    public class ClientCredentialsRequest
     {
         /// <summary>
-        /// Gets the next sequence number for the given sequence name.
+        /// Gets the URI for the token endpoint.
         /// </summary>
-        /// <param name="sequenceName">The sequence name.</param>
-        /// <returns>The next sequence value.</returns>
-        long GetNextValueForSequence(string sequenceName);
+        public required Uri TokenUri { get; init; }
+
+        /// <summary>
+        /// Gets parameters for the request.
+        /// </summary>
+        public required ClientCredentialsRequestParameters Parameters { get; init; }
     }
 }

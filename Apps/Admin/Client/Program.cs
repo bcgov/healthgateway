@@ -104,7 +104,7 @@ namespace HealthGateway.Admin.Client
             builder.Services.AddTransient<IKeyInterceptorService, KeyInterceptorService>();
 
             app[0] = builder.Build();
-            await app[0].RunAsync().ConfigureAwait(true);
+            await app[0].RunAsync();
         }
 
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)

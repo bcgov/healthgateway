@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
+    using System.Threading;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -34,7 +35,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="patientModel">patient model.</param>
         public PatientServiceMock(string hdid, PatientModel patientModel)
         {
-            this.Setup(s => s.GetPatient(hdid, PatientIdentifierType.Hdid, false))
+            this.Setup(s => s.GetPatientAsync(hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new RequestResult<PatientModel>
                     {

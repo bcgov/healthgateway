@@ -18,11 +18,12 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -48,20 +49,14 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         [SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
         [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
-        public DbResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
+        public async Task<LegalAgreement?> GetActiveByAgreementTypeAsync(LegalAgreementType agreementTypeCode, CancellationToken ct = default)
         {
             this.logger.LogDebug("Getting active legal agreement by type {AgreementTypeCode}", agreementTypeCode);
-            LegalAgreement legalAgreement = this.dbContext.LegalAgreement
+            return await this.dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)
-                .First();
-
-            return new DbResult<LegalAgreement>
-            {
-                Payload = legalAgreement,
-                Status = DbStatusCode.Read,
-            };
+                .FirstOrDefaultAsync(ct);
         }
     }
 }

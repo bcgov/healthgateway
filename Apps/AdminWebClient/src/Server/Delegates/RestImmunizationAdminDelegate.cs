@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Delegates
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Admin.Api;
@@ -71,7 +72,7 @@ namespace HealthGateway.Admin.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetries(PatientModel patient, bool refresh)
+        public async Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetriesAsync(PatientModel patient, bool refresh, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<VaccineDetails> retVal;
@@ -80,7 +81,7 @@ namespace HealthGateway.Admin.Delegates
             bool refreshInProgress;
             do
             {
-                response = await this.GetVaccineDetailsResponse(patient, refresh).ConfigureAwait(true);
+                response = await this.GetVaccineDetailsResponseAsync(patient, refresh, ct);
 
                 refreshInProgress = response.ResultStatus == ResultType.Success &&
                                     response.ResourcePayload != null &&
@@ -89,7 +90,7 @@ namespace HealthGateway.Admin.Delegates
                 if (refreshInProgress)
                 {
                     this.logger.LogInformation("Waiting before we retry getting Vaccine Details");
-                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
+                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds), ct);
                 }
             }
             while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
@@ -132,8 +133,9 @@ namespace HealthGateway.Admin.Delegates
         /// </summary>
         /// <param name="patient">The patient to query for vaccine details.</param>
         /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped vaccine details response.</returns>
-        private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
+        private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetailsResponseAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting vaccine details...");
@@ -145,7 +147,7 @@ namespace HealthGateway.Admin.Delegates
                     PersonalHealthNumber = patient.PersonalHealthNumber,
                     IgnoreCache = refresh,
                 };
-                retVal = await this.ProcessResponse(requestContent).ConfigureAwait(true);
+                retVal = await this.ProcessResponseAsync(requestContent, ct);
                 this.logger.LogDebug("Finished getting vaccine details");
             }
             else
@@ -165,9 +167,9 @@ namespace HealthGateway.Admin.Delegates
         }
 
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
-        private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> ProcessResponse(CovidImmunizationsRequest request)
+        private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> ProcessResponseAsync(CovidImmunizationsRequest request, CancellationToken ct)
         {
-            string? bearerToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? bearerToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (bearerToken != null)
             {
                 RequestResult<PhsaResult<VaccineDetailsResponse>> retVal = new()
@@ -185,7 +187,7 @@ namespace HealthGateway.Admin.Delegates
                 {
                     using Activity? activity = Source.StartActivity();
 
-                    PhsaResult<VaccineDetailsResponse> response = await this.immunizationAdminApi.GetVaccineDetails(request, bearerToken).ConfigureAwait(true);
+                    PhsaResult<VaccineDetailsResponse> response = await this.immunizationAdminApi.GetVaccineDetailsAsync(request, bearerToken, ct);
                     retVal.ResultStatus = ResultType.Success;
                     retVal.ResourcePayload!.Result = response.Result;
                     retVal.TotalResultCount = 1;

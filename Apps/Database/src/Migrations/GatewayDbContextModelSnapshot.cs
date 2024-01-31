@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1761,6 +1761,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DrugIdentificationNumber");
+
                     b.HasIndex("FileDownloadId");
 
                     b.ToTable("DrugProduct", "gateway");
@@ -2602,6 +2604,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DinPin");
 
                     b.HasIndex("FileDownloadId");
 

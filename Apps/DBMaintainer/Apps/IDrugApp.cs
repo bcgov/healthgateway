@@ -15,6 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.DBMaintainer.Apps
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Common interface for all drug apps.
     /// </summary>
@@ -24,6 +27,10 @@ namespace HealthGateway.DBMaintainer.Apps
         /// Processes the downloaded files.
         /// </summary>
         /// <param name="configSectionName">The name of the configuration to use for configuration.</param>
-        void Process(string configSectionName);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous Job.
+        /// </returns>
+        Task ProcessAsync(string configSectionName, CancellationToken ct = default);
     }
 }

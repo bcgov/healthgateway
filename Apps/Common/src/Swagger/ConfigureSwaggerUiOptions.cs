@@ -18,8 +18,8 @@ namespace HealthGateway.Common.Swagger
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Asp.Versioning.ApiExplorer;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.SwaggerUI;
 

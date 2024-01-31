@@ -78,10 +78,17 @@ export const useSpecialAuthorityRequestStore = defineStore(
                     requestResults.resourcePayload
                 );
             } else {
+                const errorResult = requestResults.resultError
+                    ? ResultError.fromModel(requestResults.resultError)
+                    : new ResultError(
+                          "SpecialAuthorityStore",
+                          "Set Special Authority Error"
+                      );
+
                 datasetMapUtil.setStateError(
                     specialAuthorityRequestMap.value,
                     hdid,
-                    requestResults.resultError
+                    errorResult
                 );
             }
         }
@@ -139,7 +146,12 @@ export const useSpecialAuthorityRequestStore = defineStore(
                 .getPatientMedicationRequest(hdid)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Error) {
-                        throw result.resultError;
+                        throw result.resultError
+                            ? ResultError.fromModel(result.resultError)
+                            : new ResultError(
+                                  "SpecialAuthorityStore",
+                                  "Unknown API error when retrieving special authority requests."
+                              );
                     }
                     if (result.resourcePayload.length > 0) {
                         trackingService.trackEvent({

@@ -22,6 +22,6 @@
   <Property Name="sonar.cs.dotcover.reportsPaths">**/dotCover.Output.html</Property>
   <Property Name="sonar.sources">**/src/**</Property>
   <Property Name="sonar.scm.disabled">true</Property>
-  <Property Name="sonar.coverage.exclusions">**/*Controller.cs, Common/src/Models/**, Admin/**, Database/**, DBMaintainer/**, JobScheduler/**, WebClient/**</Property>
-  <Property Name="sonar.exclusions">**/node_modules/**, **/wwwroot/**, **/ClientApp/public/**, **/Startup.cs, Mock/**, AdminWebClient/**</Property>
+  <Property Name="sonar.coverage.exclusions">**/*Controller.cs, **/Common/src/Models/**, **/Admin/**, **/Database/**, **/DBMaintainer/**, **/JobScheduler/**, **/WebClient/**</Property>
+  <Property Name="sonar.exclusions">**/node_modules/**, **/wwwroot/**, **/ClientApp/public/**, **/Startup.cs, **/Mock/**, **/AdminWebClient/**</Property>
 </SonarQubeAnalysisProperties>

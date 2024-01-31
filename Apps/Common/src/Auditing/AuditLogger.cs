@@ -20,6 +20,8 @@ namespace HealthGateway.Common.Auditing
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -35,7 +37,7 @@ namespace HealthGateway.Common.Auditing
     public abstract class AuditLogger : IAuditLogger
     {
         /// <inheritdoc/>
-        public abstract void WriteAuditEvent(AuditEvent auditEvent);
+        public abstract Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default);
 
         /// <inheritdoc/>
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)

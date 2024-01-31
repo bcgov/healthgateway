@@ -59,7 +59,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by PHN - happy path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByPhn()
         {
@@ -75,7 +75,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -84,7 +84,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by Hdid - happy path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByHdid()
         {
@@ -100,7 +100,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -109,7 +109,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by Hdid - using cache.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByHdidUsingCache()
         {
@@ -129,7 +129,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientResult, cachedPatient);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -138,7 +138,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get patient identity by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityByHdid()
         {
@@ -172,7 +172,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
@@ -181,7 +181,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get patient identity by hdid throws not found api exception.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityThrowsNotFoundApiException()
         {
@@ -195,7 +195,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Null(actual.Items.SingleOrDefault());
@@ -223,7 +223,7 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await patientRepository.Query(patientQuery, CancellationToken.None);
+                await patientRepository.QueryAsync(patientQuery, CancellationToken.None);
             }
 
             // Verify
@@ -238,7 +238,7 @@ namespace AccountDataAccessTest
         /// The value indicates whether blocked data sources change feed should be enabled
         /// or not.
         /// </param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -281,7 +281,8 @@ namespace AccountDataAccessTest
                 d => d.UpdateBlockedAccessAsync(
                     It.Is<BlockedAccess>(ba => AssertBlockedAccess(blockedAccess, ba)),
                     It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa)),
-                    commit));
+                    commit,
+                    It.IsAny<CancellationToken>()));
 
             if (blockedDataSourcesEnabled)
             {
@@ -290,7 +291,7 @@ namespace AccountDataAccessTest
                         It.Is<IEnumerable<MessageEnvelope>>(
                             me => AssertDataSourcesBlockedEvent(
                                 blockedAccess,
-                                me.Select(envelope => envelope.Content as DataSourcesBlockedEvent)!.First())),
+                                me.Select(envelope => envelope.Content as DataSourcesBlockedEvent).First())),
                         It.IsAny<CancellationToken>()));
             }
         }
@@ -300,7 +301,7 @@ namespace AccountDataAccessTest
         /// </summary>
         /// <param name="dataSource">The data source to check for access.</param>
         /// <param name="canAccessDataSource">The value indicates whether the data source can be accessed or not.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(DataSource.Note, true)]
         [InlineData(DataSource.Medication, false)]
@@ -333,7 +334,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get blocked access by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetBlockedAccessByHdid()
         {
@@ -352,7 +353,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecords(hdid);
+            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecordsAsync(hdid);
 
             // Verify
             blockedAccess.ShouldDeepEqual(actual);
@@ -361,7 +362,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get data sources by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDataSourcesByHdid()
         {
@@ -383,7 +384,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid);
+            IEnumerable<DataSource> actual = await patientRepository.GetDataSourcesAsync(hdid);
 
             // Verify
             dataSources.ShouldDeepEqual(actual);
@@ -444,8 +445,8 @@ namespace AccountDataAccessTest
             Mock<IMessageSender>? messageSender = null)
         {
             blockedAccessDelegate ??= new();
-            blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources);
+            blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess);
+            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess.DataSources);
 
             bool changeFeedEnabled = blockedDataSourcesEnabled ?? false;
             messageSender ??= new();
@@ -465,7 +466,8 @@ namespace AccountDataAccessTest
                     p => p.GetOrSetAsync(
                         blockedAccessCacheKey,
                         It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                        It.IsAny<TimeSpan>()))
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess.DataSources);
 
             PatientRepository patientRepository = new(
@@ -507,12 +509,12 @@ namespace AccountDataAccessTest
             ServiceCollection serviceCollection = new();
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}")).Returns(cachedPatient);
+            cacheProvider.Setup(p => p.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}", It.IsAny<CancellationToken>())).ReturnsAsync(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false, It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
@@ -530,8 +532,9 @@ namespace AccountDataAccessTest
             serviceCollection.AddScoped<PhnEmpiStrategy>(_ => phnEmpiStrategy);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound)).Throws(MockRefitExceptionHelper.CreateApiException(HttpStatusCode.NotFound, HttpMethod.Get));
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound, It.IsAny<CancellationToken>()))
+                .Throws(MockRefitExceptionHelper.CreateApiException(HttpStatusCode.NotFound, HttpMethod.Get));
 
             HdidAllStrategy hdidAllStrategy = new(
                 GetConfiguration(),

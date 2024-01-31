@@ -15,11 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -45,36 +47,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void DeleteApplicationSetting(ApplicationSetting appSetting)
-        {
-            this.dbContext.Remove(appSetting);
-        }
-
-        /// <inheritdoc/>
-        public ApplicationSetting? GetApplicationSetting(string application, string component, string key)
+        public async Task<ApplicationSetting?> GetApplicationSettingAsync(string application, string component, string key, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting application setting for {Application}/{Component}/{Key} from DB...", application, component, key);
-            ApplicationSetting? retVal = this.dbContext.ApplicationSetting
+            ApplicationSetting? retVal = await this.dbContext.ApplicationSetting
                 .Where(
                     p => p.Application == application &&
                          p.Component == component &&
                          p.Key == key)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(ct);
             this.logger.LogDebug("Finished getting application setting for {Application}/{Component}/{Key} from DB...", application, component, key);
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public IList<ApplicationSetting> GetApplicationSettings(string application, string component)
-        {
-            this.logger.LogTrace("Getting application setting for {Application}/{Component} from DB...", application, component);
-            IList<ApplicationSetting> retVal = this.dbContext.ApplicationSetting
-                .Where(
-                    p => p.Application == application &&
-                         p.Component == component)
-                .ToList();
-            this.logger.LogDebug("Finished getting application setting for {Application}/{Component} from DB...", application, component);
 
             return retVal;
         }
@@ -85,14 +67,6 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Adding {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
             this.dbContext.ApplicationSetting.Add(appSetting);
             this.logger.LogTrace("Finished Adding {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
-        }
-
-        /// <inheritdoc/>
-        public void UpdateApplicationSetting(ApplicationSetting appSetting)
-        {
-            this.logger.LogTrace("Updating {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
-            this.dbContext.ApplicationSetting.Update(appSetting);
-            this.logger.LogTrace("Finished updating {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
         }
     }
 }

@@ -16,6 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -29,22 +31,25 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="userPreference">The preference to be created.</param>
         /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true);
+        Task<DbResult<UserPreference>> CreateUserPreferenceAsync(UserPreference userPreference, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Saves a UserPreference object in the database.
         /// </summary>
         /// <param name="userPreference">The preference to be saved.</param>
         /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true);
+        Task<DbResult<UserPreference>> UpdateUserPreferenceAsync(UserPreference userPreference, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the UserPreference from the database.
         /// </summary>
         /// <param name="hdid">The unique user profile key to find.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid);
+        Task<IEnumerable<UserPreference>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default);
     }
 }

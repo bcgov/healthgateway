@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
@@ -45,11 +47,13 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <summary>
         /// Runs the Database migrations.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void Migrate()
+        public async Task MigrateAsync(CancellationToken ct = default)
         {
             this.logger.LogTrace("Migrating database... {ConcurrencyTimeout}", ConcurrencyTimeout);
-            this.dbContext.Database.Migrate();
+            await this.dbContext.Database.MigrateAsync(ct);
             this.logger.LogTrace("Finished migrating database. {ConcurrencyTimeout}", ConcurrencyTimeout);
         }
     }

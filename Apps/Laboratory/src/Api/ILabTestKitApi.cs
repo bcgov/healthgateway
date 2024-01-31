@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Api
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Laboratory.Models.PHSA;
     using Refit;
@@ -29,14 +30,16 @@ namespace HealthGateway.Laboratory.Api
         /// Registers a lab test kit for a public user.
         /// </summary>
         /// <param name="testKit">The lab test kit to register.</param>
-        /// <param name="token">The bearer token to authorize the call.</param>\
+        /// <param name="token">The bearer token to authorize the call.</param>
         /// <param name="clientIp">The IP of the client accessing the public service.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/Public/LabTestKits/Registration")]
         Task<HttpResponseMessage> RegisterLabTestAsync(
             [Body] PublicLabTestKit testKit,
             [Authorize] string token,
-            [Header("X-Forwarded-For")] string clientIp);
+            [Header("X-Forwarded-For")] string clientIp,
+            CancellationToken ct);
 
         /// <summary>
         /// Registers a lab test kit for an authenticated user.
@@ -44,11 +47,13 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="hdid">The authenticated users health identifier.</param>
         /// <param name="testKit">The lab test kit to register.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/LabTestKits/Registration?subjectHdid={HdId}")]
         Task<HttpResponseMessage> RegisterLabTestAsync(
             string hdid,
             [Body] LabTestKit testKit,
-            [Authorize] string token);
+            [Authorize] string token,
+            CancellationToken ct);
     }
 }

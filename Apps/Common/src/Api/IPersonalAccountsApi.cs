@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.PHSA;
     using Refit;
@@ -28,24 +29,27 @@ namespace HealthGateway.Common.Api
         /// Retrieves the Personal Account by HDID.
         /// </summary>
         /// <param name="hdid">The HDID to lookup.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/hdid/{hdid}")]
-        Task<PersonalAccount> AccountLookupByHdidAsync(string hdid);
+        Task<PersonalAccount> AccountLookupByHdidAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the Personal Account by PID.
         /// </summary>
         /// <param name="pid">The PID to lookup.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/pid/{pid}")]
-        Task<PersonalAccount> AccountLookupByPidAsync(string pid);
+        Task<PersonalAccount> AccountLookupByPidAsync(string pid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the Personal Account by Account ID.
         /// </summary>
         /// <param name="accountId">The AccountID to lookup.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/accountid/{accountId}")]
-        Task<PersonalAccount> AccountLookupByIdAsync(string accountId);
+        Task<PersonalAccount> AccountLookupByIdAsync(string accountId, CancellationToken ct = default);
     }
 }

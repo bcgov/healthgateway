@@ -48,9 +48,9 @@ namespace HealthGateway.Admin.Client.Layouts
         {
             this.Dispatcher.Dispatch(new ConfigurationActions.LoadAction());
 
-            if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
+            if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey))
             {
-                this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey).ConfigureAwait(true);
+                this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey);
                 this.StateHasChanged();
             }
         }

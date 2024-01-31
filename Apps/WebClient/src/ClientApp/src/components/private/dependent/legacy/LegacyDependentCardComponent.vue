@@ -263,7 +263,7 @@ function deleteDependent(): void {
     dependentStore
         .removeDependent(user.value.hdid, props.dependent)
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
         })
         .finally(() => {
             emit("needs-update");
@@ -291,7 +291,7 @@ function downloadCovid19Report(): void {
                 );
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("page");
             } else {
@@ -343,7 +343,7 @@ function downloadLaboratoryOrderReport(): void {
                 );
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("page");
             } else {
@@ -387,7 +387,7 @@ function downloadImmunizationReport(): void {
             );
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("page");
             } else {
@@ -434,7 +434,7 @@ function downloadClinicalDocument(): void {
                 );
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("page");
             } else {

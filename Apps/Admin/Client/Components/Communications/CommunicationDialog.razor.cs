@@ -124,7 +124,7 @@ public partial class CommunicationDialog : FluxorComponent
     {
         this.Communication.EffectiveDateTime = (this.EffectiveDate!.Value + this.EffectiveTime!.Value).ToUniversalTime();
         this.Communication.ExpiryDateTime = (this.ExpiryDate!.Value + this.ExpiryTime!.Value).ToUniversalTime();
-        this.Communication.Text = await this.RichTextEditor.BlazoredComponent.GetHTML().ConfigureAwait(true);
+        this.Communication.Text = await this.RichTextEditor.BlazoredComponent.GetHTML();
     }
 
     private void HandleClickCancel()
@@ -136,10 +136,10 @@ public partial class CommunicationDialog : FluxorComponent
 
     private async Task HandleClickSaveAsync()
     {
-        await this.Form.Validate().ConfigureAwait(true);
+        await this.Form.Validate();
         if (this.Form.IsValid)
         {
-            await this.RetrieveFormValuesAsync().ConfigureAwait(true);
+            await this.RetrieveFormValuesAsync();
 
             if (this.IsNewCommunication)
             {

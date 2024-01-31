@@ -235,6 +235,7 @@ Cypress.Commands.add(
                 .should("be.visible")
                 .should("have.text", "KeyCloak")
                 .click();
+            cy.get("#kc-page-title", { timeout: 10000 }).should("be.visible");
             cy.get("#username").should("be.visible").type(username);
             cy.get("#password")
                 .should("be.visible")

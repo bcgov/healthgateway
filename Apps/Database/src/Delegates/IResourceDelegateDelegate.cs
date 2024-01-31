@@ -35,18 +35,19 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="resourceDelegate">The resource delegate to create.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DbResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit);
+        Task<DbResult<ResourceDelegate>> InsertAsync(ResourceDelegate resourceDelegate, bool commit, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
         /// </summary>
-        /// <param name="delegateId">The resource delegate to create.</param>
+        /// <param name="delegateId">The resource delegate to look up.</param>
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
-        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
-        [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
-        DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of ResourceDelegates.</returns>
+        Task<IList<ResourceDelegate>> GetAsync(string delegateId, int page = 0, int pageSize = 500, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the list of Resource Delegate records for a date range from the database.
@@ -55,9 +56,10 @@ namespace HealthGateway.Database.Delegates
         /// <param name="toDate">The to date.</param>
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
-        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of ResourceDelegates.</returns>
         [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
-        DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize);
+        Task<IList<ResourceDelegate>> GetAsync(DateTime fromDate, DateTime? toDate, int page, int pageSize, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a count of all dependents.
@@ -79,31 +81,35 @@ namespace HealthGateway.Database.Delegates
         /// Gets the total number of delegates associated with each specified dependent from the database.
         /// </summary>
         /// <param name="dependentHdids">The HDIDs corresponding to the dependents whose total delegate counts should be retrieved.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary that associates dependent HDIDs with their total number of delegates, wrapped in a DBResult.</returns>
-        Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids);
+        Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes a Resource Delegate record in the database.
         /// </summary>
         /// <param name="resourceDelegate">The model to be deleted.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DbResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit);
+        Task<DbResult<ResourceDelegate>> DeleteAsync(ResourceDelegate resourceDelegate, bool commit, CancellationToken ct = default);
 
         /// <summary>
         /// Finds a Resource Delegate record in the database.
         /// </summary>
         /// <param name="ownerId">The owner hdid.</param>
         /// <param name="delegateId">The delegated resource hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        bool Exists(string ownerId, string delegateId);
+        Task<bool> ExistsAsync(string ownerId, string delegateId, CancellationToken ct = default);
 
         /// <summary>
         /// Search resource delegates by criteria specified in the query.
         /// </summary>
         /// <param name="query">The query criteria.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        public Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query);
+        public Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query, CancellationToken ct = default);
     }
 
     public record ResourceDelegateQuery

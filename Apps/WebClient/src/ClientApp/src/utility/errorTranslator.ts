@@ -34,22 +34,19 @@ export default abstract class ErrorTranslator {
 
     public static internalNetworkError(
         error: HttpError,
-        service: ServiceCode
+        service: ServiceCode,
+        traceId?: string
     ): ResultError {
-        return {
-            errorCode: "ClientApp-CI-" + service,
-            resultMessage: error.message,
-            traceId: "",
-            statusCode: error.statusCode,
-        };
+        return new ResultError(
+            "ClientApp-CI-" + service,
+            error.message,
+            traceId ?? "",
+            error.statusCode
+        );
     }
 
     public static featureDisabledError(service: ServiceCode): ResultError {
-        return {
-            errorCode: "ClientApp-I-" + service,
-            resultMessage: "Feature Disabled",
-            traceId: "",
-        };
+        return new ResultError("ClientApp-I-" + service, "Feature Disabled");
     }
 
     private static getErrorTitle(

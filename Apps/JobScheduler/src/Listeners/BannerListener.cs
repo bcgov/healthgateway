@@ -84,28 +84,28 @@ namespace HealthGateway.JobScheduler.Listeners
                     using IServiceScope scope = this.services.CreateScope();
                     using GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
                     using NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
-                    await con.OpenAsync(stoppingToken).ConfigureAwait(true);
+                    await con.OpenAsync(stoppingToken);
                     con.Notification += this.ReceiveEvent;
                     using NpgsqlCommand cmd = new();
                     cmd.CommandText = @$"LISTEN ""{Channel}"";";
                     cmd.CommandType = CommandType.Text;
                     cmd.Connection = con;
-                    await cmd.ExecuteNonQueryAsync(stoppingToken).ConfigureAwait(true);
+                    await cmd.ExecuteNonQueryAsync(stoppingToken);
 
                     while (!stoppingToken.IsCancellationRequested)
                     {
                         // Wait for the event
-                        await con.WaitAsync(stoppingToken).ConfigureAwait(true);
+                        await con.WaitAsync(stoppingToken);
                     }
 
-                    await con.CloseAsync().ConfigureAwait(true);
+                    await con.CloseAsync();
                 }
                 catch (NpgsqlException e)
                 {
                     this.logger.LogError("DB Error encountered in WaitChannelNotification: {Channel}\n{Exception}", Channel, e.ToString());
                     if (!stoppingToken.IsCancellationRequested)
                     {
-                        await Task.Delay(SleepDuration, stoppingToken).ConfigureAwait(true);
+                        await Task.Delay(SleepDuration, stoppingToken);
                     }
                 }
 

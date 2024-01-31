@@ -31,11 +31,7 @@ namespace HealthGateway.CommonTests.Utils
         public static IMapper InitializeAutoMapper()
         {
             MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new UserProfileProfile());
-                    cfg.AddProfile(new BroadcastProfile());
-                });
+                cfg => { cfg.AddProfile(new UserProfileProfile()); });
 
             return config.CreateMapper();
         }

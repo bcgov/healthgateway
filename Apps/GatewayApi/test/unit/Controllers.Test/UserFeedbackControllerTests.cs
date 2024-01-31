@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -37,8 +39,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateUserFeedback - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateUserFeedback()
+        public async Task ShouldCreateUserFeedback()
         {
             UserFeedback userFeedback = new()
             {
@@ -54,10 +57,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDbResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback, default);
 
             Assert.IsType<OkResult>(actualResult);
         }
@@ -65,8 +68,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateUserFeedback - ConflictResult Error scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateUserFeedbackWithConflictResultError()
+        public async Task ShouldCreateUserFeedbackWithConflictResultError()
         {
             UserFeedback userFeedback = new()
             {
@@ -82,10 +86,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDbResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback, default);
 
             Assert.IsType<ConflictResult>(actualResult);
         }
@@ -93,8 +97,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateUserFeedback - BadRequestResult Error scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateUserFeedbackWithBadRequestResultError()
+        public async Task ShouldCreateUserFeedbackWithBadRequestResultError()
         {
             DbResult<UserFeedback> mockedDbResult = new()
             {
@@ -102,12 +107,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDbResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            IActionResult actualResult = controller.CreateUserFeedback(Hdid, null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, null, default);
 
             Assert.IsType<BadRequestResult>(actualResult);
         }
@@ -115,8 +118,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateRating - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateRating()
+        public async Task ShouldCreateRating()
         {
             Rating rating = new()
             {
@@ -131,10 +135,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateRating(It.IsAny<Rating>())).Returns(expectedResult);
+            userFeedbackServiceMock.Setup(s => s.CreateRatingAsync(It.IsAny<Rating>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            RequestResult<Rating> actualResult = controller.CreateRating(rating);
+            RequestResult<Rating> actualResult = await controller.CreateRating(rating, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

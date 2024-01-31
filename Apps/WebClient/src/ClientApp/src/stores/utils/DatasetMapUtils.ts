@@ -53,9 +53,7 @@ export class DatasetMapUtils<T, S extends DatasetState<T>> {
             ...state,
             error: error,
             statusMessage:
-                overrideStatusMessage ??
-                error?.resultMessage ??
-                "Error occurred",
+                overrideStatusMessage ?? error?.message ?? "Error occurred",
             status: LoadStatus.ERROR,
         });
     }

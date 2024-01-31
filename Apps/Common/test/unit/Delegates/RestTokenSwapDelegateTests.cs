@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
@@ -58,7 +59,7 @@ namespace HealthGateway.CommonTests.Delegates
             ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, false);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = await tokenSwapDelegate.SwapToken(It.IsAny<string>());
+            RequestResult<TokenSwapResponse> actualResult = await tokenSwapDelegate.SwapTokenAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -85,7 +86,7 @@ namespace HealthGateway.CommonTests.Delegates
             ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = await tokenSwapDelegate.SwapToken(It.IsAny<string>());
+            RequestResult<TokenSwapResponse> actualResult = await tokenSwapDelegate.SwapTokenAsync(It.IsAny<string>());
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
@@ -111,12 +112,12 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<ITokenSwapApi> mockTokenSwapApi = new();
             if (!throwException)
             {
-                mockTokenSwapApi.Setup(s => s.SwapTokenAsync(It.IsAny<FormUrlEncodedContent>()))
+                mockTokenSwapApi.Setup(s => s.SwapTokenAsync(It.IsAny<FormUrlEncodedContent>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(response);
             }
             else
             {
-                mockTokenSwapApi.Setup(s => s.SwapTokenAsync(It.IsAny<FormUrlEncodedContent>()))
+                mockTokenSwapApi.Setup(s => s.SwapTokenAsync(It.IsAny<FormUrlEncodedContent>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
