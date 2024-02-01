@@ -9,21 +9,19 @@ import RatingComponent from "@/components/site/RatingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ILogger } from "@/services/interfaces";
-import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
 const headerScrollThreshold = 100;
 
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 const authStore = useAuthStore();
-const navigationStore = useNavigationStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -37,14 +35,14 @@ const isHeaderVisible = ref();
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
 const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
 
-const isMobileWidth = computed(() => appStore.isMobile);
+const isMobileWidth = computed(() => layoutStore.isMobile);
 const isOffline = computed(() => configStore.isOffline);
 const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
 const isValidIdentityProvider = computed(
     () => userStore.isValidIdentityProvider
 );
 const isHeaderShown = computed(
-    () => navigationStore.isHeaderShown || isScrollNearBottom.value
+    () => layoutStore.isHeaderShown || isScrollNearBottom.value
 );
 const user = computed(() => userStore.user);
 const userIsRegistered = computed(() => userStore.userIsRegistered);
@@ -125,11 +123,11 @@ function testIfScrollIsNearBottom() {
 }
 
 function toggleSidebar(): void {
-    navigationStore.toggleSidebar();
+    layoutStore.toggleSidebar();
 }
 
 function setHeaderState(isOpen: boolean): void {
-    navigationStore.setHeaderState(isOpen);
+    layoutStore.setHeaderState(isOpen);
 }
 
 function handleNotificationCentreClick(): void {

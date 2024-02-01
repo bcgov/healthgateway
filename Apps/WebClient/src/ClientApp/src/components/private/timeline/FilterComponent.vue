@@ -8,13 +8,13 @@ import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.v
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { PatientDataType } from "@/models/patientDataResponse";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
-import { useAppStore } from "@/stores/app";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
 import { useHealthVisitStore } from "@/stores/healthVisit";
 import { useHospitalVisitStore } from "@/stores/hospitalVisit";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useLabResultStore } from "@/stores/labResult";
+import { useLayoutStore } from "@/stores/layout";
 import { useMedicationStore } from "@/stores/medication";
 import { useNoteStore } from "@/stores/note";
 import { usePatientDataStore } from "@/stores/patientData";
@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<Props>(), {
     entryTypes: () => [],
 });
 
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 const timelineStore = useTimelineStore();
 const clinicalDocumentStore = useClinicalDocumentStore();
 const covid19TestResultStore = useCovid19TestResultStore();
@@ -161,8 +161,8 @@ function getFormattedFilterCount(entryType: EntryType): string {
             persistent
             no-click-animation
             scrollable
-            :fullscreen="appStore.isMobile"
-            :width="appStore.isMobile ? 'auto' : 550"
+            :fullscreen="layoutStore.isMobile"
+            :width="layoutStore.isMobile ? 'auto' : 550"
         >
             <v-card>
                 <v-card-title class="px-0">
