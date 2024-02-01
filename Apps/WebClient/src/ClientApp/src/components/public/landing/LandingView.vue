@@ -8,9 +8,9 @@ import TileComponent from "@/components/public/landing/TileComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";
-import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
+import { useLayoutStore } from "@/stores/layout";
 import ConfigUtil from "@/utility/configUtil";
 
 enum PreviewDevice {
@@ -35,7 +35,7 @@ const serviceEntryTypes: EntryType[] = [EntryType.BcCancerScreening];
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp } = useDisplay();
@@ -400,7 +400,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </p>
                 <div
                     class="d-flex justify-center"
-                    :class="{ 'flex-column': appStore.isMobile }"
+                    :class="{ 'flex-column': layoutStore.isMobile }"
                 >
                     <a
                         href="https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US"

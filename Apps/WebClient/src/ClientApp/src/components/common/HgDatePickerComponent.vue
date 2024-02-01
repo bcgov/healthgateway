@@ -9,7 +9,7 @@ import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
-import { useAppStore } from "@/stores/app";
+import { useLayoutStore } from "@/stores/layout";
 import ValidationUtil from "@/utility/validationUtil";
 
 interface Props {
@@ -41,7 +41,7 @@ const maskOptions = {
     postProcess: (value: string) => value.toUpperCase(),
 };
 
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 
 const internalValue = ref(fromIsoFormat(props.modelValue));
 
@@ -140,7 +140,7 @@ watch(
                 :offset="16"
                 calendar-cell-class-name="rounded-circle"
                 :teleport="true"
-                :teleport-center="appStore.isMobile"
+                :teleport-center="layoutStore.isMobile"
             >
                 <template #trigger>
                     <HgIconButtonComponent icon="fas fa-calendar" />
