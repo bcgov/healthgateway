@@ -24,7 +24,7 @@ import {
 import { ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
-import { getGridCols } from "@/utility/gridUtilty";
+import { useGrid } from "@/utility/useGrid";
 
 interface Props {
     dependent: Dependent;
@@ -39,6 +39,7 @@ const configStore = useConfigStore();
 const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 
 const router = useRouter();
+const { columns } = useGrid();
 
 const recommendationsDialogComponent =
     ref<InstanceType<typeof RecommendationsDialogComponent>>();
@@ -141,7 +142,7 @@ watch(vaccineRecordState, () => {
         :text="vaccineRecordStatusMessage"
     />
     <v-row>
-        <v-col :cols="getGridCols" class="d-flex">
+        <v-col :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Health Records"
                 density="compact"
@@ -161,7 +162,7 @@ watch(vaccineRecordState, () => {
                 </template>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showRecommendations" :cols="getGridCols" class="d-flex">
+        <v-col v-if="showRecommendations" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Vaccine Recommendations"
                 density="compact"
@@ -180,7 +181,7 @@ watch(vaccineRecordState, () => {
         </v-col>
         <v-col
             v-if="showFederalProofOfVaccination"
-            :cols="getGridCols"
+            :cols="columns"
             class="d-flex"
         >
             <HgCardComponent
