@@ -440,8 +440,8 @@ watch(vaccineRecordState, () => {
                 </template>
                 <p class="text-body-1">
                     View and manage all your available health records, including
-                    dispensed medications, health visits, COVID‑19 test results,
-                    immunizations and more.
+                    dispensed medications, health visits, lab results,
+                    immunizations, BC Cancer cervix screenings and more.
                 </p>
             </HgCardComponent>
         </v-col>

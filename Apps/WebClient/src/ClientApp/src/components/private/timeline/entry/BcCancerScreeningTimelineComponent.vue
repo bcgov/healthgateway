@@ -95,9 +95,8 @@ function downloadFile(): void {
                 v-if="props.entry.isResult"
                 data-testid="bc-cancer-result-body"
             >
-                Download your cervix screening result notification. It may
-                include important information about next steps. If you have
-                questions,
+                Download your cervix screening result letter. It may include
+                important information about next steps. If you have questions,
                 <a
                     href="http://www.bccancer.bc.ca/screening/cervix"
                     target="_blank"
