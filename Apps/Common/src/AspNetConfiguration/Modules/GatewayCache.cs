@@ -38,29 +38,19 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="keyPrefix">an optional prefix that is appended to all keys.</param>
         public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration, string? keyPrefix = null)
         {
-            EnableRedis(services, logger, configuration);
-            services.TryAddSingleton<ICacheProvider, RedisCacheProvider>();
-        }
-
-        /// <summary>
-        /// Enables the Redis Multiplexer.
-        /// </summary>
-        /// <param name="services">The services collection provider.</param>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="configuration">The configuration to use.</param>
-        public static void EnableRedis(IServiceCollection services, ILogger logger, IConfiguration configuration)
-        {
-            string? GetRedisConnectionString() => configuration.GetValue<string>("RedisConnection");
-            if (string.IsNullOrEmpty(GetRedisConnectionString()))
+            string? redisConnectionString = configuration.GetValue<string>("RedisConnection");
+            if (string.IsNullOrEmpty(redisConnectionString))
             {
                 logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead");
                 services.AddDistributedMemoryCache();
+                services.TryAddSingleton<ICacheProvider, DistributedCacheProvider>();
             }
             else
             {
                 logger.LogInformation("Configuring Redis cache");
-                services.AddStackExchangeRedisCache(options => { options.Configuration = GetRedisConnectionString(); });
-                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(GetRedisConnectionString()));
+                services.AddStackExchangeRedisCache(options => { options.Configuration = redisConnectionString; });
+                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+                services.TryAddSingleton<ICacheProvider, RedisCacheProvider>();
             }
         }
     }
