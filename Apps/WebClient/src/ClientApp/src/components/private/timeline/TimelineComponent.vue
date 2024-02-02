@@ -699,9 +699,9 @@ setPageFromDate(linearDate.value);
                 variant="outlined"
                 border
             >
-                Only BC Cancer cervix screening notifications are available
-                here. Cervix or colon cancer screening lab reports are in your
-                Health Gateway lab results.
+                Only BC Cancer cervix screening letters are available here. Your
+                Health Gateway timeline may include these and other screening
+                test results in lab or imaging reports.
                 <a
                     href="http://www.bccancer.bc.ca/screening"
                     target="_blank"
