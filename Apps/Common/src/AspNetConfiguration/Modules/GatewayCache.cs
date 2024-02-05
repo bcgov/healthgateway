@@ -21,7 +21,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
-    using StackExchange.Redis;
 
     /// <summary>
     /// Provides ASP.Net Services related to Caching.
@@ -43,15 +42,19 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             {
                 logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead");
                 services.AddDistributedMemoryCache();
-                services.TryAddSingleton<ICacheProvider, DistributedCacheProvider>();
             }
             else
             {
                 logger.LogInformation("Configuring Redis cache");
-                services.AddStackExchangeRedisCache(options => { options.Configuration = redisConnectionString; });
-                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
-                services.TryAddSingleton<ICacheProvider, RedisCacheProvider>();
+                services.AddStackExchangeRedisCache(
+                    options =>
+                    {
+                        options.Configuration = redisConnectionString;
+                        options.InstanceName = "HG";
+                    });
             }
+
+            services.TryAddSingleton<ICacheProvider, DistributedCacheProvider>();
         }
     }
 }
