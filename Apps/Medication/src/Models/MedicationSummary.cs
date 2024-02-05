@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
-    using System;
-
     /// <summary>
     /// Contains information about a medication prescription or pharmacist assessment.
     /// </summary>
@@ -41,16 +39,6 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the quantity of the medication prescribed.
         /// </summary>
         public float Quantity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the medication max daily dosage.
-        /// </summary>
-        public float MaxDailyDosage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date the drug was discontinued if applicable.
-        /// </summary>
-        public DateTime? DrugDiscontinuedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the form.

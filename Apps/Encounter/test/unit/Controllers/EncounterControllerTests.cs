@@ -54,7 +54,7 @@ namespace HealthGateway.EncounterTests.Controllers
                     new()
                     {
                         Id = "1",
-                        EncounterDate = DateTime.Parse("2020-05-27", CultureInfo.InvariantCulture),
+                        EncounterDate = DateOnly.Parse("2020-05-27", CultureInfo.InvariantCulture),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
                         Clinic = new Clinic
@@ -65,7 +65,7 @@ namespace HealthGateway.EncounterTests.Controllers
                     new()
                     {
                         Id = "2",
-                        EncounterDate = DateTime.Parse("2020-06-27", CultureInfo.InvariantCulture),
+                        EncounterDate = DateOnly.Parse("2020-06-27", CultureInfo.InvariantCulture),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
                         Clinic = new Clinic

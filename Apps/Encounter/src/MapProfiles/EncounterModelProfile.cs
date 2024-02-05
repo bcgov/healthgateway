@@ -36,7 +36,7 @@ namespace HealthGateway.Encounter.MapProfiles
         public EncounterModelProfile()
         {
             this.CreateMap<Claim, EncounterModel>()
-                .ForMember(dest => dest.EncounterDate, opt => opt.MapFrom(src => src.ServiceDate))
+                .ForMember(dest => dest.EncounterDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.ServiceDate)))
                 .ForMember(dest => dest.SpecialtyDescription, opt => opt.MapFrom(src => src.SpecialtyDesc))
                 .ForMember(
                     dest => dest.Clinic,

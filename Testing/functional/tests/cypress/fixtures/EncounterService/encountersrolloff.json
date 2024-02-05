@@ -2,7 +2,7 @@
     "resourcePayload": [
         {
             "id": "f57bcb39-64ca-0a17-5477-92ea7f084fbf",
-            "encounterDate": "2022-09-25T00:00:00",
+            "encounterDate": "2022-09-25",
             "specialtyDescription": "FAMILY MEDICINE",
             "practitionerName": "ILCVAPPOJ CLPXWG",
             "clinic": {
@@ -11,7 +11,7 @@
         },
         {
             "id": "72c2d6c0-b370-24e6-0b5c-04e42b6511c8",
-            "encounterDate": "2010-07-14T00:00:00",
+            "encounterDate": "2010-07-14",
             "specialtyDescription": "LABORATORY MEDICINE",
             "practitionerName": "TFWBLV GBXIK LRNSOII",
             "clinic": {

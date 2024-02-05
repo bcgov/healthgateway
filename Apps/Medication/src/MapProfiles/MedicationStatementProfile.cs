@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.MapProfiles
 {
+    using System;
     using AutoMapper;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
@@ -30,8 +31,7 @@ namespace HealthGateway.Medication.MapProfiles
         public MedicationStatementProfile()
         {
             this.CreateMap<MedicationResult, MedicationStatement>()
-                .ForMember(dest => dest.PrescriptionStatus, opt => opt.Ignore())
-                .ForMember(dest => dest.DispensedDate, opt => opt.MapFrom(src => src.DispenseDate))
+                .ForMember(dest => dest.DispensedDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.DispenseDate)))
                 .ForMember(dest => dest.PractitionerSurname, opt => opt.MapFrom(src => src.Practitioner != null ? src.Practitioner.Surname : string.Empty))
                 .ForMember(dest => dest.PrescriptionIdentifier, opt => opt.MapFrom(src => src.PrescriptionNumber))
                 .ForMember(

@@ -6,7 +6,7 @@
         "immunizations": [
             {
                 "id": "f7b51d01-16a3-4616-6865-08d99fe36b9e",
-                "dateOfImmunization": "1988-08-08T00:00:00",
+                "dateOfImmunization": "1988-08-08T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": null,
@@ -26,7 +26,7 @@
             },
             {
                 "id": "55e4be9f-33ad-4b52-6866-08d99fe36b9e",
-                "dateOfImmunization": "2000-01-01T00:00:00",
+                "dateOfImmunization": "2000-01-01T08:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": null,
@@ -46,7 +46,7 @@
             },
             {
                 "id": "e9cc77a4-18ac-458d-6867-08d99fe36b9e",
-                "dateOfImmunization": "2010-10-10T00:00:00",
+                "dateOfImmunization": "2010-10-10T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": null,
@@ -66,7 +66,7 @@
             },
             {
                 "id": "4cf4bebe-c151-4e90-6868-08d99fe36b9e",
-                "dateOfImmunization": "2021-03-30T00:00:00",
+                "dateOfImmunization": "2021-03-30T07:00:00Z",
                 "status": "Completed",
                 "valid": false,
                 "providerOrClinic": null,
@@ -86,7 +86,7 @@
             },
             {
                 "id": "5231285a-ba80-4edc-6869-08d99fe36b9e",
-                "dateOfImmunization": "2021-07-14T00:00:00",
+                "dateOfImmunization": "2021-07-14T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": null,
@@ -104,11 +104,11 @@
                 },
                 "forecast": {
                     "recommendationId": "5588012_145363549",
-                    "createDate": "2021-08-18T00:00:00",
+                    "createDate": "2021-08-18",
                     "status": "Overdue",
                     "displayName": "COVID-19 Non-replicating Viral Vector",
-                    "eligibleDate": "2021-08-11T00:00:00",
-                    "dueDate": "2021-08-11T00:00:00"
+                    "eligibleDate": "2021-08-11",
+                    "dueDate": "2021-08-11"
                 }
             }
         ],
@@ -117,8 +117,8 @@
                 "recommendationSetId": "5588012_145363549",
                 "diseaseEligibleDate": null,
                 "diseaseDueDate": null,
-                "agentEligibleDate": "2021-08-11T00:00:00",
-                "agentDueDate": "2021-08-11T00:00:00",
+                "agentEligibleDate": "2021-08-11",
+                "agentDueDate": "2021-08-11",
                 "status": "Overdue",
                 "targetDiseases": [],
                 "immunization": {
@@ -135,8 +135,8 @@
             },
             {
                 "recommendationSetId": "5588012_145363549",
-                "diseaseEligibleDate": "2021-08-11T00:00:00",
-                "diseaseDueDate": "2021-08-11T00:00:00",
+                "diseaseEligibleDate": "2021-08-11",
+                "diseaseDueDate": "2021-08-11",
                 "agentEligibleDate": null,
                 "agentDueDate": null,
                 "status": "Overdue",

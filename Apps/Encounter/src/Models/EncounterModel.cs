@@ -33,7 +33,7 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the EncounterDate.
         /// </summary>
         [JsonPropertyName("encounterDate")]
-        public DateTime EncounterDate { get; set; }
+        public DateOnly EncounterDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Specialty Description.

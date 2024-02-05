@@ -109,7 +109,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the Last Update from the Fed DB.
         /// </summary>
-        public DateTime LastUpdate { get; set; }
+        [Column(TypeName = "Date")]
+        public DateOnly LastUpdate { get; set; }
 
         /// <summary>
         /// Gets or sets the AI Group Number.

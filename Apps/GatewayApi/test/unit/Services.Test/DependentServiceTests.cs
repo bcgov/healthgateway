@@ -252,7 +252,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ValidateAddDependentWithWrongDateOfBirth()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            addDependentRequest.DateOfBirth = DateTime.Now;
+            addDependentRequest.DateOfBirth = DateOnly.FromDateTime(DateTime.Now);
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
@@ -589,7 +589,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Phn = this.mockPhn,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
-                DateOfBirth = this.mockDateOfBirth,
+                DateOfBirth = DateOnly.FromDateTime(this.mockDateOfBirth),
             };
         }
     }

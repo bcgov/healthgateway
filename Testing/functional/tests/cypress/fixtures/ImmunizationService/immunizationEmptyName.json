@@ -8,7 +8,7 @@
             {
                 "id": "3209587_54397520",
                 "name": "COVID-19",
-                "dateOfImmunization": "2013-09-20T00:00:00",
+                "dateOfImmunization": "2013-09-20T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "targetedDisease": "Covid",
@@ -26,11 +26,11 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             }
         ]

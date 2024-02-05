@@ -127,6 +127,8 @@ namespace HealthGateway.LaboratoryTests.Mock
             Dictionary<string, string?> myConfiguration = new()
             {
                 { "Laboratory:BackOffMilliseconds", "0" },
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
             };
 
             return new ConfigurationBuilder()

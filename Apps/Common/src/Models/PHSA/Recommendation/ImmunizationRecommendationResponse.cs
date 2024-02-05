@@ -42,10 +42,10 @@ namespace HealthGateway.Common.Models.PHSA.Recommendation
         }
 
         /// <summary>
-        /// Gets or sets the Dissease Eligible Date.
+        /// Gets or sets the Forecast Creation Date.
         /// </summary>
         [JsonPropertyName("forecastCreationDate")]
-        public DateTime ForecastCreationDate { get; set; }
+        public DateOnly ForecastCreationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Recommendation Id.
