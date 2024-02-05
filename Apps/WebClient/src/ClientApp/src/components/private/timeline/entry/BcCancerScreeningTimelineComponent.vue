@@ -10,7 +10,7 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
-import { Action, Actor, Format, Text } from "@/plugins/extensions";
+import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import EventDataUtility from "@/utility/eventDataUtility";
@@ -55,6 +55,7 @@ function downloadFile(): void {
         trackingService.trackEvent({
             action: Action.Download,
             text: Text.Document,
+            dataset: Dataset.BcCancer,
             type: EventDataUtility.getType(props.entry.screeningType),
             format: Format.Pdf,
             actor: Actor.User,
@@ -95,9 +96,8 @@ function downloadFile(): void {
                 v-if="props.entry.isResult"
                 data-testid="bc-cancer-result-body"
             >
-                Download your cervix screening result notification. It may
-                include important information about next steps. If you have
-                questions,
+                Download your cervix screening result letter. It may include
+                important information about next steps. If you have questions,
                 <a
                     href="http://www.bccancer.bc.ca/screening/cervix"
                     target="_blank"

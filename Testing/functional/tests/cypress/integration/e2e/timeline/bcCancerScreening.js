@@ -38,7 +38,7 @@ describe("BC Cancer", () => {
     it("Validate screening file download", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")
-            .filter(`:contains("BC Cancer Screening Reminder Notification")`)
+            .filter(`:contains("BC Cancer Screening Reminder")`)
             .first()
             .within(() => {
                 validateFileDownload(
@@ -50,7 +50,7 @@ describe("BC Cancer", () => {
     it("Validate screening attachment download", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")
-            .filter(`:contains("BC Cancer Screening Reminder Notification")`)
+            .filter(`:contains("BC Cancer Screening Reminder")`)
             .first()
             .within(() => {
                 validateAttachmentDownload();
@@ -60,7 +60,7 @@ describe("BC Cancer", () => {
     it("Validate result file download", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")
-            .filter(`:contains("BC Cancer Screening Result Notification")`)
+            .filter(`:contains("BC Cancer Screening Result")`)
             .first()
             .within(() => {
                 validateFileDownload(
@@ -72,7 +72,7 @@ describe("BC Cancer", () => {
     it("Validate result attachment download", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")
-            .filter(`:contains("BC Cancer Screening Result Notification")`)
+            .filter(`:contains("BC Cancer Screening Result")`)
             .first()
             .within(() => {
                 validateAttachmentDownload();

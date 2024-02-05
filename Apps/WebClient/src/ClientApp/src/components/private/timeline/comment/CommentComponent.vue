@@ -10,6 +10,7 @@ import type { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useCommentStore } from "@/stores/comment";
+import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
 
 interface Props {
@@ -21,12 +22,13 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
 const commentStore = useCommentStore();
 const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 
 const commentInput = ref("");
 const isEditMode = ref(false);
 const isUpdating = ref(false);
 
-const isMobile = computed(() => appStore.isMobile);
+const isMobile = computed(() => layoutStore.isMobile);
 
 function formatDate(date: string): string {
     return DateWrapper.fromIso(date).format(

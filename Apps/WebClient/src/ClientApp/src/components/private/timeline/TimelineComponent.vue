@@ -38,7 +38,6 @@ import TimelineEntry, { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
 import { entryTypeToPatientDataTypeMap } from "@/services/restPatientDataService";
-import { useAppStore } from "@/stores/app";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCommentStore } from "@/stores/comment";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
@@ -47,6 +46,7 @@ import { useHealthVisitStore } from "@/stores/healthVisit";
 import { useHospitalVisitStore } from "@/stores/hospitalVisit";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useLabResultStore } from "@/stores/labResult";
+import { useLayoutStore } from "@/stores/layout";
 import { useMedicationStore } from "@/stores/medication";
 import { useNoteStore } from "@/stores/note";
 import { usePatientDataStore } from "@/stores/patientData";
@@ -75,7 +75,7 @@ enum FilterLabelType {
 const pageSize = 25;
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 const clinicalDocumentStore = useClinicalDocumentStore();
 const commentStore = useCommentStore();
 const covid19TestResultStore = useCovid19TestResultStore();
@@ -611,7 +611,7 @@ setPageFromDate(linearDate.value);
                             class="mr-1 mb-1"
                             :title="`${label} Filter`"
                             closable
-                            :size="appStore.isMobile ? 'small' : 'default'"
+                            :size="layoutStore.isMobile ? 'small' : 'default'"
                             @click:close="clearFilter(label, value)"
                         >
                             {{ value }}
@@ -699,9 +699,9 @@ setPageFromDate(linearDate.value);
                 variant="outlined"
                 border
             >
-                Only BC Cancer cervix screening notifications are available
-                here. Cervix or colon cancer screening lab reports are in your
-                Health Gateway lab results.
+                Only BC Cancer cervix screening letters are available here. Your
+                Health Gateway timeline may include these and other screening
+                test results in lab or imaging reports.
                 <a
                     href="http://www.bccancer.bc.ca/screening"
                     target="_blank"
@@ -742,8 +742,8 @@ setPageFromDate(linearDate.value);
                 v-model="currentPage"
                 data-testid="pagination"
                 :length="numberOfPages"
-                :total-visible="appStore.isMobile ? 3 : 8"
-                :density="appStore.isMobile ? 'comfortable' : 'default'"
+                :total-visible="layoutStore.isMobile ? 3 : 8"
+                :density="layoutStore.isMobile ? 'comfortable' : 'default'"
             />
         </div>
         <div

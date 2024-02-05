@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
 
-import { useAppStore } from "@/stores/app";
+import { useLayoutStore } from "@/stores/layout";
 
 interface Props {
     title: string;
@@ -9,7 +9,7 @@ interface Props {
 defineProps<Props>();
 
 const slots = useSlots();
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 
 const hasPrependSlot = computed(() => slots.prepend !== undefined);
 const hasAppendSlot = computed(() => slots.append !== undefined);
@@ -25,7 +25,7 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
                 <h1
                     id="subject"
                     class="text-primary font-weight-bold"
-                    :class="appStore.isMobile ? 'text-h5' : 'text-h4'"
+                    :class="layoutStore.isMobile ? 'text-h5' : 'text-h4'"
                 >
                     {{ title }}
                 </h1>

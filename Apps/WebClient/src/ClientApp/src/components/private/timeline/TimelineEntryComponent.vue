@@ -4,8 +4,8 @@ import { computed, ref, watch } from "vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import CommentSectionComponent from "@/components/private/timeline/comment/CommentSectionComponent.vue";
 import TimelineEntry from "@/models/timeline/timelineEntry";
-import { useAppStore } from "@/stores/app";
 import { EventName, useEventStore } from "@/stores/event";
+import { useLayoutStore } from "@/stores/layout";
 
 interface Props {
     cardId: string;
@@ -33,15 +33,15 @@ const emit = defineEmits<{
     (e: "click-attachment-button"): void;
 }>();
 
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 const eventStore = useEventStore();
 
 const detailsVisible = ref(props.isMobileDetails);
 
 const isInteractive = computed(
     () =>
-        (!appStore.isMobile && props.canShowDetails) ||
-        (appStore.isMobile && !props.isMobileDetails)
+        (!layoutStore.isMobile && props.canShowDetails) ||
+        (layoutStore.isMobile && !props.isMobileDetails)
 );
 const displayTitle = computed(() =>
     props.title === "" ? props.entry.type.toString() : props.title
@@ -50,15 +50,15 @@ const dateString = computed(() => props.entry.date.format());
 const commentCount = computed(() => props.entry.comments?.length ?? 0);
 
 function handleCardClick(): void {
-    if (appStore.isMobile && !props.isMobileDetails) {
+    if (layoutStore.isMobile && !props.isMobileDetails) {
         eventStore.emit(EventName.OpenFullscreenTimelineEntry, props.entry);
-    } else if (!appStore.isMobile && props.canShowDetails) {
+    } else if (!layoutStore.isMobile && props.canShowDetails) {
         detailsVisible.value = !detailsVisible.value;
     }
 }
 
 watch(
-    () => appStore.isMobile,
+    () => layoutStore.isMobile,
     (value) => {
         if (value && !props.isMobileDetails) {
             detailsVisible.value = false;
