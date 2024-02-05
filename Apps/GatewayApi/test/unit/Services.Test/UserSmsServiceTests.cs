@@ -20,10 +20,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
@@ -163,7 +164,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             else
             {
                 // Act and Assert
-                await Assert.ThrowsAsync<ProblemDetailsException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
+                if (userProfileExists)
+                {
+                    await Assert.ThrowsAsync<ValidationException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
+                }
+                else
+                {
+                    await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
+                }
             }
         }
 

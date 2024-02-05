@@ -28,8 +28,8 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Logging;
     using Refit;
 
@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (e.StatusCode == HttpStatusCode.Conflict)
                 {
                     this.logger.LogWarning(ErrorMessages.KeycloakUserAlreadyExists);
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.KeycloakUserAlreadyExists, HttpStatusCode.Conflict, nameof(AgentAccessService)));
+                    throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists);
                 }
 
                 this.logger.LogError(e, "Keycloak API call failed");
@@ -97,8 +97,7 @@ namespace HealthGateway.Admin.Server.Services
             string[] splitString = createdUser.Username.Split('@');
             if (splitString.Length != 2)
             {
-                string errorMessage = $"Agent username format is invalid: {createdUser.Username}";
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(errorMessage, HttpStatusCode.InternalServerError, nameof(AgentAccessService)));
+                throw new InvalidDataException($"Username {createdUser.Username} is not in the expected format");
             }
 
             string createdUserName = splitString[0];

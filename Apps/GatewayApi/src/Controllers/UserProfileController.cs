@@ -164,6 +164,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="500">Email template may not be present to send the closure email.</response>
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -188,6 +189,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="500">Email template may not be present to send the recover email.</response>
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -289,6 +291,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="404">User profile was not found.</response>
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]

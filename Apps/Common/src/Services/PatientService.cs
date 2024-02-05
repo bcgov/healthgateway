@@ -17,7 +17,6 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Diagnostics;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
@@ -28,6 +27,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
@@ -103,11 +103,7 @@ namespace HealthGateway.Common.Services
             RequestResult<PatientModel> patientResult = await this.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
             if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        patientResult.ResultError?.ResultMessage ?? "Unspecified error",
-                        HttpStatusCode.InternalServerError,
-                        nameof(PatientService)));
+                throw new NotFoundException(patientResult.ResultError?.ResultMessage ?? "Unspecified error");
             }
 
             return patientResult.ResourcePayload.HdId;

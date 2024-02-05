@@ -22,7 +22,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.AdminReports;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Serilog;
@@ -49,7 +49,7 @@ namespace HealthGateway.Admin.Server.Services
                         {
                             patient = await patientRepository.QueryAsync(query, ct);
                         }
-                        catch (ProblemDetailsException e)
+                        catch (NotFoundException e)
                         {
                             logger.Error("Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
                         }

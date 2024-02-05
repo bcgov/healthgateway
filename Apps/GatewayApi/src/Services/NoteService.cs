@@ -22,11 +22,11 @@ namespace HealthGateway.GatewayApi.Services
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -184,8 +184,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<UserProfile> userProfileUpdateResult = await this.profileDelegate.UpdateAsync(profile, false, ct);
             if (userProfileUpdateResult.Status != DbStatusCode.Deferred)
             {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", userProfileUpdateResult.Message));
+                throw new DatabaseException(userProfileUpdateResult.Message);
             }
 
             foreach (Note note in dbNotes)
@@ -197,8 +196,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<IEnumerable<Note>> batchUpdateResult = await this.noteDelegate.BatchUpdateAsync(dbNotes, ct: ct);
             if (batchUpdateResult.Status != DbStatusCode.Updated)
             {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", batchUpdateResult.Message));
+                throw new DatabaseException(batchUpdateResult.Message);
             }
 
             return key;

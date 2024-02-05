@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -38,8 +37,8 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -172,7 +171,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Get patient support details async throws problem details exception given client registry records not found.
+        /// Get patient support details async throws exception given client registry records not found.
         /// </summary>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -216,12 +215,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Get patient support details async throws problem details exception given null phn and invalid date of birth.
+        /// Get patient support details async throws exception given null phn and invalid date of birth.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -234,7 +233,7 @@ namespace HealthGateway.Admin.Tests.Services
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
             Address postalAddress = GenerateAddress(["PO BOX 1234"]);
 
-            // Invalid date causes problem details exception
+            // Invalid date causes exception
             PatientModel patient = GeneratePatientModel(string.Empty, Hdid, DateTime.MinValue, commonName, legalName, physicalAddress, postalAddress);
 
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
@@ -263,12 +262,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.PhnOrDateAndBirthInvalid, exception.ProblemDetails!.Detail);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
         }
 
         /// <summary>
-        /// Get patient support details async throws problem details exception given invalid phn.
+        /// Get patient support details async throws exception given invalid phn.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -308,8 +307,8 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.ProblemDetails!.Detail);
+            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(Actual);
+            Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
         }
 
         /// <summary>
@@ -538,17 +537,18 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientShouldThrowBadRequest()
+        public async Task GetPatientShouldValidationExceptionOnUnknownQueryType()
         {
             // Arrange
             ISupportService supportService = CreateSupportService();
 
             // Act
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
+            FluentValidation.ValidationException exception =
+                    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
                 ;
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, exception.ProblemDetails?.Status);
+            Assert.Contains(exception.Message, "Unknown queryType", StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>

@@ -19,15 +19,16 @@ namespace HealthGateway.GatewayApi.Services
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
@@ -195,25 +196,14 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Updating user email...");
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
-            if (userProfile == null)
-            {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        $"User profile not found for hdid {hdid}",
-                        HttpStatusCode.BadRequest,
-                        nameof(UserSmsService)));
-            }
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct) ??
+                                      throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             bool result = string.IsNullOrWhiteSpace(emailAddress)
                           || (await new OptionalEmailAddressValidator().ValidateAsync(emailAddress, ct))?.IsValid == true;
             if (!result)
             {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        $"Invalid email address {emailAddress}",
-                        HttpStatusCode.BadRequest,
-                        nameof(UserSmsService)));
+                throw new ValidationException("Invalid email address {emailAddress}");
             }
 
             this.logger.LogInformation("Removing email from user {Hdid}", hdid);
@@ -266,8 +256,8 @@ namespace HealthGateway.GatewayApi.Services
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            EmailTemplate emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ?? throw new ProblemDetailsException(
-                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.EmailTemplateNotFound));
+            EmailTemplate emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ??
+                                          throw new DatabaseException(ErrorMessages.EmailTemplateNotFound);
 
             MessagingVerification messageVerification = new()
             {

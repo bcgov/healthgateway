@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
@@ -28,11 +27,12 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Server.Services
             string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (accessToken == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(CovidSupportService)));
+                throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
             }
 
             return accessToken;
@@ -107,7 +107,7 @@ namespace HealthGateway.Admin.Server.Services
             PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
             if (patient == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(CovidSupportService)));
+                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
             }
 
             return patient;
@@ -119,7 +119,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (phsaResult.Result == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineStatus, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                throw new NotFoundException(ErrorMessages.CannotGetVaccineStatus);
             }
 
             return phsaResult.Result;
@@ -131,7 +131,7 @@ namespace HealthGateway.Admin.Server.Services
             VaccineState state = Enum.Parse<VaccineState>(result.StatusIndicator);
             if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.VaccineStatusNotFound, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                throw new NotFoundException(ErrorMessages.VaccineStatusNotFound);
             }
 
             VaccinationStatus status = state switch
@@ -145,7 +145,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (status == VaccinationStatus.Unknown)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.VaccinationStatusUnknown, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown);
             }
 
             return status;
@@ -162,8 +162,7 @@ namespace HealthGateway.Admin.Server.Services
             RequestResult<VaccineProofResponse> vaccineProof = await vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request, ct);
             if (vaccineProof.ResultStatus != ResultType.Success || vaccineProof.ResourcePayload == null)
             {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(vaccineProof.ResultError?.ResultMessage ?? ErrorMessages.CannotGetVaccineProof, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                throw new NotFoundException(vaccineProof.ResultError?.ResultMessage ?? ErrorMessages.CannotGetVaccineProof);
             }
 
             return vaccineProof.ResourcePayload;
@@ -188,10 +187,10 @@ namespace HealthGateway.Admin.Server.Services
             {
                 if (result.ResultError != null)
                 {
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(result.ResultError.ResultMessage, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                    throw new UpstreamServiceException(result.ResultError.ResultMessage, ErrorCodes.UpstreamError);
                 }
 
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineProofPdf, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                throw new NotFoundException(ErrorMessages.CannotGetVaccineProofPdf);
             }
 
             return result.ResourcePayload;
@@ -215,11 +214,9 @@ namespace HealthGateway.Admin.Server.Services
                     response.ResultError?.ErrorCode,
                     response.ResultError?.ResultMessage);
 
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        response.ResultError?.ResultMessage,
-                        HttpStatusCode.BadRequest,
-                        nameof(CovidSupportService)));
+                throw new UpstreamServiceException(
+                    response.ResultError?.ResultMessage,
+                    ErrorCodes.ServerError);
             }
         }
     }
