@@ -103,7 +103,7 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Error message to return when phn and date of birth are invalid.
         /// </summary>
-        public const string PhnOrDateAndBirthInvalid = "Personal Health Number and Date of Birth are invalid.";
+        public const string PhnOrDateOfBirthInvalid = "Personal Health Number and Date of Birth are invalid.";
 
         /// <summary>
         /// Error message to return when vaccine status not found.

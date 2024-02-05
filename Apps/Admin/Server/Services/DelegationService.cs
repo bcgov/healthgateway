@@ -18,11 +18,10 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
-    using FluentValidation.Results;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -32,6 +31,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
@@ -39,6 +39,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
+    using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
     /// <inheritdoc/>
     /// <param name="configuration">The injected configuration provider.</param>
@@ -74,13 +75,10 @@ namespace HealthGateway.Admin.Server.Services
         {
             // Get dependent patient information
             RequestResult<PatientModel> dependentPatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
-            this.ValidatePatientResult(dependentPatientResult);
+            ValidatePatientResult(dependentPatientResult);
 
-            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct);
-            if (!validationResults.IsValid)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Dependent age is above {this.maxDependentAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
-            }
+            await new DependentPatientValidator(this.maxDependentAge, $"Dependent age is above {this.maxDependentAge}")
+                .ValidateAndThrowAsync(dependentPatientResult.ResourcePayload!, ct);
 
             DelegationInfo delegationInfo = new();
             if (dependentPatientResult.ResourcePayload != null)
@@ -96,7 +94,7 @@ namespace HealthGateway.Admin.Server.Services
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
                     RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(resourceDelegate.ProfileHdid, ct: ct);
-                    this.ValidatePatientResult(delegatePatientResult);
+                    ValidatePatientResult(delegatePatientResult);
 
                     DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
                     delegateInfo.DelegationStatus = DelegationStatus.Added;
@@ -135,13 +133,10 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<DelegateInfo> GetDelegateInformationAsync(string phn, CancellationToken ct = default)
         {
             RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, false, ct);
-            this.ValidatePatientResult(delegatePatientResult);
+            ValidatePatientResult(delegatePatientResult);
 
-            ValidationResult? validationResults = await new DelegatePatientValidator(this.minDelegateAge).ValidateAsync(delegatePatientResult.ResourcePayload, ct);
-            if (!validationResults.IsValid)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Delegate age is below {this.minDelegateAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
-            }
+            await new DelegatePatientValidator(this.minDelegateAge, $"Delegate age is below {this.minDelegateAge}")
+                .ValidateAndThrowAsync(delegatePatientResult.ResourcePayload!, ct);
 
             DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
             return delegateInfo;
@@ -228,7 +223,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (dependent == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Dependent not found for hdid: {dependentHdid}", HttpStatusCode.NotFound, nameof(DelegationService)));
+                throw new NotFoundException($"Dependent not found for hdid: {dependentHdid}");
             }
 
             dependent.Protected = false;
@@ -266,24 +261,24 @@ namespace HealthGateway.Admin.Server.Services
             return autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
         }
 
+        private static void ValidatePatientResult(RequestResult<PatientModel> patientResult)
+        {
+            switch (patientResult)
+            {
+                case { ResultStatus: ResultType.ActionRequired, ResultError: { ActionCode: { } } error } when error.ActionCode.Equals(ActionType.Validation):
+                    throw new ValidationException(error.ResultMessage);
+                case { ResultStatus: ResultType.Error, ResultError: { } error } when error.ResultMessage.StartsWith("Communication Exception", StringComparison.InvariantCulture):
+                    throw new UpstreamServiceException(error.ResultMessage);
+                case { ResultStatus: ResultType.Error or ResultType.ActionRequired } or { ResourcePayload: null }:
+                    throw new NotFoundException("Patient not found");
+            }
+        }
+
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegatesAsync(string ownerHdid, CancellationToken ct)
         {
             ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
             ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query, ct);
             return result.Items.Select(c => c.ResourceDelegate);
-        }
-
-        private void ValidatePatientResult(RequestResult<PatientModel> patientResult)
-        {
-            switch (patientResult)
-            {
-                case { ResultStatus: ResultType.ActionRequired, ResultError: { ActionCode: { } } error } when error.ActionCode.Equals(ActionType.Validation):
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(error.ResultMessage, HttpStatusCode.BadRequest, nameof(DelegationService)));
-                case { ResultStatus: ResultType.Error, ResultError: { } error } when error.ResultMessage.StartsWith("Communication Exception", StringComparison.InvariantCulture):
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(error.ResultMessage, HttpStatusCode.BadGateway, nameof(DelegationService)));
-                case { ResultStatus: ResultType.Error or ResultType.ActionRequired } or { ResourcePayload: null }:
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails("Patient not found", HttpStatusCode.NotFound, nameof(DelegationService)));
-            }
         }
     }
 }

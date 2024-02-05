@@ -15,7 +15,7 @@ describe("BC Cancer Screening cards", () => {
             });
     }
 
-    before(() => {
+    beforeEach(() => {
         cy.intercept("GET", "**/PatientData/*?patientDataTypes=*", {
             fixture: "PatientData/bcCancerTypes.json",
         });
@@ -36,7 +36,7 @@ describe("BC Cancer Screening cards", () => {
     });
 
     it("Should display different cards for different types", () => {
-        testCard("BC Cancer Screening", "View Letter");
-        testCard("BC Cancer Result", "View Results");
+        testCard("BC Cancer Screening Reminder", "View Letter");
+        testCard("BC Cancer Screening Result", "View Letter");
     });
 });

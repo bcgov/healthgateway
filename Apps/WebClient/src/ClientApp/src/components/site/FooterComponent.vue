@@ -2,15 +2,15 @@
 import { computed } from "vue";
 
 import { Path } from "@/constants/path";
-import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
+import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
 
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 
 const isFooterShown = computed(
     () =>
@@ -19,7 +19,7 @@ const isFooterShown = computed(
             !userStore.isValidIdentityProvider ||
             userStore.userIsRegistered)
 );
-const isFooterFixed = computed(() => !appStore.isMobile);
+const isFooterFixed = computed(() => !layoutStore.isMobile);
 </script>
 
 <template>

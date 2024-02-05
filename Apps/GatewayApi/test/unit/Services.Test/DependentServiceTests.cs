@@ -27,6 +27,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -198,11 +199,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            ProblemDetailsException exception =
-                (await Should.ThrowAsync<ProblemDetailsException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
+            DatabaseException exception =
+                (await Should.ThrowAsync<DatabaseException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
-            exception.ProblemDetails!.Status.ShouldBe(HttpStatusCode.InternalServerError);
+            exception.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
         }
 
         /// <summary>

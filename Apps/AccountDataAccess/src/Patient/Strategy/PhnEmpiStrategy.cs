@@ -17,9 +17,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -51,11 +51,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <inheritdoc/>
         public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
-            if (!PhnValidator.IsValid(request.Identifier))
-            {
-                this.GetLogger().LogDebug("The PHN provided is invalid");
-                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(PhnEmpiStrategy), ErrorMessages.PhnInvalid));
-            }
+            await new PhnValidator(ErrorMessages.PhnInvalid).ValidateAndThrowAsync(request.Identifier, ct);
 
             PatientModel? patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null) ??
                                     await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation, ct);

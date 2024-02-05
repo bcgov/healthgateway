@@ -15,11 +15,11 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest.Strategy
 {
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -87,8 +87,8 @@ namespace AccountDataAccessTest.Strategy
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
+            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
+            Assert.Contains(ErrorMessages.PhnInvalid, exception.Message, StringComparison.OrdinalIgnoreCase);
         }
 
         private static PhnEmpiStrategy GetPhnEmpiStrategy(

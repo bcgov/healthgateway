@@ -17,13 +17,14 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Diagnostics;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
@@ -73,19 +74,19 @@ namespace HealthGateway.GatewayApi.Services
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", "Not found");
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(PatientDetailsService)));
+                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound, ErrorCodes.UpstreamError);
             }
 
             if (patientDetails.LegalName == null && patientDetails.CommonName == null)
             {
                 this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientDetailsService)));
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
             if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
             {
                 this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientDetailsService)));
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
             activity?.Stop();

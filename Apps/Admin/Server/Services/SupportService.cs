@@ -19,10 +19,10 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
@@ -36,9 +36,9 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Sms =>
                     await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString, ct),
                 _ =>
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
+                    throw new ValidationException($"Unknown {nameof(queryType)}"),
             };
 
             IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportResultAsync(profile, ct));
@@ -151,7 +151,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
             PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-            return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
+            return patient ?? throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
         }
 
         private async Task<PatientModel?> TryGetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
@@ -164,7 +164,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return await this.GetPatientAsync(query, ct);
             }
-            catch (ProblemDetailsException e) when (e.ProblemDetails?.Status == HttpStatusCode.NotFound)
+            catch (NotFoundException)
             {
                 return null;
             }
@@ -217,19 +217,19 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
-            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
             {
-                return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
+                logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+                throw new InvalidDataException(ErrorMessages.PhnOrDateOfBirthInvalid);
             }
 
-            logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
+            return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
         }
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
             string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
-            return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
+            return accessToken ?? throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
         }
 
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
