@@ -45,6 +45,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             {
                 logger.LogInformation("Configuring Auditing to use Redis");
                 services.AddScoped<IAuditLogger, RedisAuditLogger>();
+                GatewayCache.EnableRedis(services, logger, configuration);
             }
             else
             {
