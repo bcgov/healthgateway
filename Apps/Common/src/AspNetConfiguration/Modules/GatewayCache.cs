@@ -21,7 +21,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
-    using StackExchange.Redis;
 
     /// <summary>
     /// Provides ASP.Net Services related to Caching.
@@ -35,23 +34,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">The services collection provider.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use.</param>
-        /// <param name="keyPrefix">an optional prefix that is appended to all keys.</param>
-        public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration, string? keyPrefix = null)
+        public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            EnableRedis(services, logger, configuration);
-            services.TryAddSingleton<ICacheProvider, RedisCacheProvider>();
-        }
-
-        /// <summary>
-        /// Enables the Redis Multiplexer.
-        /// </summary>
-        /// <param name="services">The services collection provider.</param>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="configuration">The configuration to use.</param>
-        public static void EnableRedis(IServiceCollection services, ILogger logger, IConfiguration configuration)
-        {
-            string? GetRedisConnectionString() => configuration.GetValue<string>("RedisConnection");
-            if (string.IsNullOrEmpty(GetRedisConnectionString()))
+            string? redisConnectionString = configuration.GetValue<string>("RedisConnection");
+            if (string.IsNullOrEmpty(redisConnectionString))
             {
                 logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead");
                 services.AddDistributedMemoryCache();
@@ -59,9 +45,15 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             else
             {
                 logger.LogInformation("Configuring Redis cache");
-                services.AddStackExchangeRedisCache(options => { options.Configuration = GetRedisConnectionString(); });
-                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(GetRedisConnectionString()));
+                services.AddStackExchangeRedisCache(
+                    options =>
+                    {
+                        options.Configuration = redisConnectionString;
+                        options.InstanceName = "HG";
+                    });
             }
+
+            services.TryAddSingleton<ICacheProvider, DistributedCacheProvider>();
         }
     }
 }
