@@ -36,8 +36,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">The services collection provider.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use.</param>
-        /// <param name="keyPrefix">an optional prefix that is appended to all keys.</param>
-        public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration, string? keyPrefix = null)
+        public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
             EnableRedis(services, logger, configuration);
             services.TryAddSingleton<ICacheProvider, DistributedCacheProvider>();
