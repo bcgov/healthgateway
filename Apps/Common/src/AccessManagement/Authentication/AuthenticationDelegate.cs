@@ -154,7 +154,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        [ExcludeFromCodeCoverage(Justification = "Convenience method to extract claim from HttpContext")]
+        [ExcludeFromCodeCoverage(Justification = "Convenience method to extract access token from HttpContext")]
         public async Task<string?> FetchAuthenticatedUserTokenAsync(CancellationToken ct = default)
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
