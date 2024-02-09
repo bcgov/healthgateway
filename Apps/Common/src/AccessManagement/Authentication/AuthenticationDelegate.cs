@@ -17,6 +17,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
     using System.Net.Http.Json;
     using System.Security.Claims;
@@ -153,6 +154,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage(Justification = "Convenience method to extract access token from HttpContext")]
         public async Task<string?> FetchAuthenticatedUserTokenAsync(CancellationToken ct = default)
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
@@ -160,6 +162,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage(Justification = "Convenience method to extract claim from HttpContext")]
         public string? FetchAuthenticatedUserHdid()
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
@@ -167,6 +170,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage(Justification = "Convenience method to extract claim from HttpContext")]
         public string? FetchAuthenticatedUserId()
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
@@ -189,6 +193,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage(Justification = "Convenience method to extract claim from HttpContext")]
         public string? FetchAuthenticatedPreferredUsername()
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;

@@ -26,7 +26,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         // The Context maintains a reference to one of the Strategy objects. The
         // Context does not know the concrete class of a request. It should
         // work with all strategies via the Strategy interface.
-        private PatientQueryStrategy patientQueryStrategy;
+        private readonly PatientQueryStrategy patientQueryStrategy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientQueryContext"/> class.
@@ -35,15 +35,6 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         public PatientQueryContext(PatientQueryStrategy patientQueryStrategy)
         {
             this.patientQueryStrategy = patientQueryStrategy;
-        }
-
-        /// <summary>
-        /// Sets implemented strategy to use.
-        /// </summary>
-        /// <param name="strategy">The implemented strategy to set.</param>
-        public void SetStrategy(PatientQueryStrategy strategy)
-        {
-            this.patientQueryStrategy = strategy;
         }
 
         /// <summary>

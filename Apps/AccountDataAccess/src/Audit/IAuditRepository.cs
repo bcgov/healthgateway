@@ -16,6 +16,7 @@
 namespace HealthGateway.AccountDataAccess.Audit
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
@@ -40,6 +41,7 @@ namespace HealthGateway.AccountDataAccess.Audit
     /// </summary>
     /// <param name="Hdid">The hdid to search.</param>
     /// <param name="Group">The group to search.</param>
+    [ExcludeFromCodeCoverage]
     public record AgentAuditQuery(
         string Hdid,
         AuditGroup? Group = null);

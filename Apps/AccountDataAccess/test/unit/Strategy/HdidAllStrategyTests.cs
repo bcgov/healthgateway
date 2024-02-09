@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest.Strategy
 {
+    using System.Net;
     using System.ServiceModel;
     using AccountDataAccessTest.Utils;
     using AutoMapper;
@@ -154,9 +155,13 @@ namespace AccountDataAccessTest.Strategy
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false, It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdidNotFound, false, It.IsAny<CancellationToken>()))
+                .Throws(new CommunicationException("Unit test PHSA get patient identity. NotFound"));
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
             patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound, It.IsAny<CancellationToken>()))!.Throws(
+                RefitExceptionUtil.CreateApiException(HttpStatusCode.NotFound).Result);
 
             HdidAllStrategy hdidAllStrategy = new(
                 GetConfiguration(),

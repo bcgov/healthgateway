@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     using System;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Data.Constants;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -170,6 +173,39 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             JwtModel actualModel = await authDelegate.AuthenticateAsSystemAsync(SystemClientCredentialsRequest);
 
             expected.ShouldDeepEqual(actualModel);
+        }
+
+        [Theory]
+        [InlineData("hg", UserLoginClientType.Web)]
+        [InlineData("hg-mobile", UserLoginClientType.Mobile)]
+        [InlineData("should-be-null", null)]
+        public void ShouldBeAbleToDetermineLoginClientType(string clientAzp, UserLoginClientType? clientType)
+        {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            Mock<ICacheProvider> mockCacheProvider = new();
+
+            HttpContext httpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(
+                    new ClaimsIdentity(
+                        new Claim[]
+                        {
+                            new("azp", clientAzp),
+                        },
+                        "token")),
+            };
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
+            mockHttpContextAccessor.Setup(s => s.HttpContext).Returns(httpContext);
+            AuthenticationDelegate authDelegate = new(
+                logger,
+                mockHttpClientFactory.Object,
+                CreateConfiguration(),
+                mockCacheProvider.Object,
+                mockHttpContextAccessor.Object);
+            UserLoginClientType? result = authDelegate.FetchAuthenticatedUserClientType();
+            Assert.Equal(clientType, result);
         }
 
         private static IAuthenticationDelegate CreateAuthenticationDelegate(IMock<IHttpClientFactory> mockHttpClientFactory, IMock<ICacheProvider> mockCacheProvider)
