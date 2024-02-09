@@ -11,7 +11,7 @@ import { PatientData, PatientDataType } from "@/models/patientDataResponse";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
-import { getGridCols } from "@/utility/gridUtilty";
+import { useGrid } from "@/utility/useGrid";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -24,6 +24,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const userStore = useUserStore();
 const patientDataStore = usePatientDataStore();
+const { columns } = useGrid();
 
 const patientDataAreLoading = computed(
     () =>
@@ -57,7 +58,7 @@ if (isOrganDonorServiceEnabled.value) {
     <v-row>
         <v-col
             v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
-            :cols="getGridCols"
+            :cols="columns"
             class="pa-4"
         >
             <OrganDonorDetailsCard :hdid="userStore.hdid" />

@@ -168,7 +168,7 @@ public partial class BroadcastDialog : FluxorComponent
 
     private async Task HandleClickSaveAsync()
     {
-        await this.Form.Validate().ConfigureAwait(true);
+        await this.Form.Validate();
         if (this.Form.IsValid)
         {
             this.RetrieveFormValues();

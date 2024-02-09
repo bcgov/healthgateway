@@ -9,8 +9,8 @@ import { getTableRows } from "../../utilities/sharedUtilities";
 
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailNotFound = "fakeemail_noresults@healthgateway.gov.bc.ca";
-const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
-const emailPhn = "9735353759";
+const emailHdid = "R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ";
+const emailPhn = "9746209092";
 const phn = "9735353315";
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
@@ -40,14 +40,13 @@ describe("Support", () => {
         performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
         verifySearchInput("Sms", sms);
-        getTableRows("[data-testid=user-table]").should("have.length", 2);
 
         performSearch("Email", email);
         verifySingleSupportResult(emailHdid, emailPhn);
         verifySearchInput("Email", email);
     });
 
-    it("Verify no results hdid query.", () => {
+   it("Verify no results hdid query.", () => {
         performSearch("HDID", hdidNotFound);
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });

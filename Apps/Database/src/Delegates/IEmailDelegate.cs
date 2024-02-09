@@ -17,9 +17,10 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Interface for sending email.
@@ -27,18 +28,12 @@ namespace HealthGateway.Database.Delegates
     public interface IEmailDelegate
     {
         /// <summary>
-        /// Fetches the email object from the database.
-        /// </summary>
-        /// <param name="emailId">The Email ID to retrieve.</param>
-        /// <returns>The found Email object.</returns>
-        Email? GetEmail(Guid emailId);
-
-        /// <summary>
         /// Gets an email by id with standard priority or higher.
         /// </summary>
         /// <param name="emailId">The Email ID to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The found Email object.</returns>
-        Email? GetStandardEmail(Guid emailId);
+        Task<Email?> GetStandardEmailAsync(Guid emailId, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a sorted list of mail that needs to be sent.
@@ -46,37 +41,34 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.
         /// </summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of emails.</returns>
-        IList<Email> GetUnsentEmails(int maxRows);
+        Task<IList<Email>> GetUnsentEmailsAsync(int maxRows, CancellationToken ct = default);
 
         /// <summary>
         /// Inserts an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the guid of the saved email.</returns>
-        Guid InsertEmail(Email email, bool shouldCommit = true);
+        Task<Guid> InsertEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Updates an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
-        void UpdateEmail(Email email);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task UpdateEmailAsync(Email email, CancellationToken ct = default);
 
         /// <summary>
         /// Looks up an Email Template in the database.
         /// </summary>
         /// <param name="templateName">The name of the template.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The populated Email template or null if not found.</returns>
-        EmailTemplate GetEmailTemplate(string templateName);
-
-        /// <summary>
-        /// Gets a list of emails ordered by the create datetime descending.
-        /// </summary>
-        /// <param name="offset">The starting offset for the query.</param>
-        /// <param name="pageSize">The maximum amount of rows to return.</param>
-        /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DbResult<IList<Email>> GetEmails(int offset = 0, int pageSize = 1000);
+        Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes email records that were created after n days ago.
@@ -84,7 +76,8 @@ namespace HealthGateway.Database.Delegates
         /// <param name="daysAgo">Delete emails where created on or before days ago.</param>
         /// <param name="maxRows">The maximum amount of emails to delete at one time.</param>
         /// <param name="shouldCommit">If true, the records will be deleted from the DB immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The number of rows deleted.</returns>
-        int Delete(uint daysAgo, int maxRows, bool shouldCommit = true);
+        Task<int> DeleteAsync(uint daysAgo, int maxRows, bool shouldCommit = true, CancellationToken ct = default);
     }
 }

@@ -19,6 +19,8 @@ namespace HealthGateway.Common.Auditing
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
@@ -63,14 +65,14 @@ namespace HealthGateway.Common.Auditing
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team Decision")]
-        public override void WriteAuditEvent(AuditEvent auditEvent)
+        public override async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
-            this.logger.LogDebug(@"Writing Audit Event to Redis)");
+            this.logger.LogDebug("Writing Audit Event to Redis)");
             using Activity? activity = Source.StartActivity();
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditEvent.UpdatedDateTime = auditEvent.CreatedDateTime;
             string auditJson = JsonSerializer.Serialize(auditEvent);
-            this.connectionMultiplexer.GetDatabase().ListRightPush($"{AuditQueuePrefix}:{ActiveQueueName}", auditJson, flags: CommandFlags.FireAndForget);
+            await this.connectionMultiplexer.GetDatabase().ListRightPushAsync($"{AuditQueuePrefix}:{ActiveQueueName}", auditJson, flags: CommandFlags.FireAndForget);
             activity?.Stop();
         }
     }

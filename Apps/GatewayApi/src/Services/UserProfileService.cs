@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -148,14 +147,13 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Performance", "CA1849:Call async methods when in an async method", Justification = "Requires refactoring")]
-        public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime)
+        public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
-            DbResult<UserProfile> userProfileDbResult = this.userProfileDelegate.GetUserProfile(hdid);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
-            if (userProfileDbResult.Status == DbStatusCode.NotFound)
+            if (userProfile == null)
             {
                 return new RequestResult<UserProfileModel>
                 {
@@ -164,71 +162,67 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            DateTime previousLastLogin = userProfileDbResult.Payload.LastLoginDateTime;
+            DateTime previousLastLogin = userProfile.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
                 this.logger.LogTrace("Updating user last login and year of birth... {Hdid}", hdid);
-                userProfileDbResult.Payload.LastLoginDateTime = jwtAuthTime;
-                userProfileDbResult.Payload.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
+                userProfile.LastLoginDateTime = jwtAuthTime;
+                userProfile.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
                 // Update user year of birth.
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
-                userProfileDbResult.Payload.YearOfBirth = birthDate?.Year;
+                userProfile.YearOfBirth = birthDate?.Year;
 
-                this.userProfileDelegate.Update(userProfileDbResult.Payload);
+                // Try to update user profile with last login time; ignore any failures
+                await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
+
                 this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
 
-            DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult =
-                this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
-            UserProfileModel userProfile = this.BuildUserProfileModel(userProfileDbResult.Payload, userProfileHistoryDbResult.Payload.ToArray());
+            IList<UserProfileHistory> userProfileHistoryList =
+                await this.userProfileDelegate.GetUserProfileHistoryListAsync(hdid, this.userProfileHistoryRecordLimit, ct);
+            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(userProfile, [.. userProfileHistoryList], ct);
 
             // Populate most recent login date time
-            userProfile.LastLoginDateTimes.Add(userProfileDbResult.Payload.LastLoginDateTime);
-            foreach (UserProfileHistory userProfileHistory in userProfileHistoryDbResult.Payload)
+            userProfileModel.LastLoginDateTimes.Add(userProfile.LastLoginDateTime);
+            foreach (UserProfileHistory userProfileHistory in userProfileHistoryList)
             {
-                userProfile.LastLoginDateTimes.Add(userProfileHistory.LastLoginDateTime);
+                userProfileModel.LastLoginDateTimes.Add(userProfileHistory.LastLoginDateTime);
             }
 
-            if (!userProfile.IsEmailVerified)
+            if (!userProfileModel.IsEmailVerified)
             {
                 this.logger.LogTrace("Retrieving last email invite... {Hdid}", hdid);
                 MessagingVerification? emailInvite =
-                    this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                    await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
                 this.logger.LogDebug("Finished retrieving email invite... {Hdid}", hdid);
-                userProfile.Email = emailInvite?.Email?.To;
+                userProfileModel.Email = emailInvite?.Email?.To;
             }
 
-            if (!userProfile.IsSmsNumberVerified)
+            if (!userProfileModel.IsSmsNumberVerified)
             {
                 this.logger.LogTrace("Retrieving last sms invite... {Hdid}", hdid);
                 MessagingVerification? smsInvite =
-                    this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
+                    await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
                 this.logger.LogDebug("Finished retrieving sms invite... {Hdid}", hdid);
-                userProfile.SmsNumber = smsInvite?.SmsNumber;
+                userProfileModel.SmsNumber = smsInvite?.SmsNumber;
             }
 
             return new RequestResult<UserProfileModel>
             {
-                ResultStatus = userProfileDbResult.Status != DbStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultError = userProfileDbResult.Status != DbStatusCode.Error
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = userProfileDbResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-                ResourcePayload = userProfile,
+                ResultStatus = ResultType.Success,
+                ResultError = null,
+                ResourcePayload = userProfileModel,
             };
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
 
-            RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfile(createProfileRequest).ConfigureAwait(true);
+            RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfileAsync(createProfileRequest, ct);
             if (validationResult != null)
             {
                 return validationResult;
@@ -236,7 +230,7 @@ namespace HealthGateway.GatewayApi.Services
 
             string hdid = createProfileRequest.Profile.HdId;
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
             DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
 
             // Create profile
@@ -276,7 +270,7 @@ namespace HealthGateway.GatewayApi.Services
             string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
             string? requestedEmail = createProfileRequest.Profile.Email;
 
-            UserProfileModel userProfileModel = this.BuildUserProfileModel(dbModel);
+            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(dbModel, ct: ct);
 
             NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
 
@@ -305,7 +299,7 @@ namespace HealthGateway.GatewayApi.Services
                 userProfileModel.SmsNumber = requestedSmsNumber;
             }
 
-            this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
 
             this.logger.LogDebug("Finished creating user profile... {Hdid}", insertResult.Payload.HdId);
 
@@ -313,87 +307,72 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
+        public async Task<RequestResult<UserProfileModel>> CloseUserProfileAsync(string hdid, Guid userId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
 
-            DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
 
-            if (retrieveResult.Status != DbStatusCode.Read)
+            if (userProfile == null)
             {
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
             }
 
-            UserProfile profile = retrieveResult.Payload;
-            if (profile.ClosedDateTime != null)
+            if (userProfile.ClosedDateTime != null)
             {
                 this.logger.LogTrace("Finished. Profile already Closed");
-                return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
+                return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(userProfile, ct: ct));
             }
 
-            profile.ClosedDateTime = DateTime.UtcNow;
-            profile.IdentityManagementId = userId;
-            DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
-            if (!string.IsNullOrWhiteSpace(profile.Email))
-            {
-                this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
-            }
-
-            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload));
+            userProfile.ClosedDateTime = DateTime.UtcNow;
+            userProfile.IdentityManagementId = userId;
+            DbResult<UserProfile> updateResult = await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
+            return await this.HandleUpdateUserProfileResultAsync(updateResult, EmailTemplateName.AccountClosedTemplate, ct);
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
+        public async Task<RequestResult<UserProfileModel>> RecoverUserProfileAsync(string hdid, CancellationToken ct = default)
         {
             this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
-            DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
 
-            if (retrieveResult.Status != DbStatusCode.Read)
+            if (userProfile == null)
             {
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
             }
 
-            UserProfile profile = retrieveResult.Payload;
-            if (profile.ClosedDateTime == null)
+            if (userProfile.ClosedDateTime == null)
             {
                 this.logger.LogTrace("Finished. Profile already is active, recover not needed");
-                return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
+                return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(userProfile, ct: ct));
             }
 
             // Remove values set for deletion
-            profile.ClosedDateTime = null;
-            profile.IdentityManagementId = null;
-            DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
-            if (!string.IsNullOrWhiteSpace(profile.Email))
-            {
-                this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
-            }
-
-            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload));
+            userProfile.ClosedDateTime = null;
+            userProfile.IdentityManagementId = null;
+            DbResult<UserProfile> updateResult = await this.userProfileDelegate.UpdateAsync(userProfile, true, ct);
+            await this.HandleUpdateUserProfileResultAsync(updateResult, EmailTemplateName.AccountRecoveredTemplate, ct);
+            return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(updateResult.Payload, ct: ct));
         }
 
         /// <inheritdoc/>
-        public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
+        public async Task<RequestResult<TermsOfServiceModel>> GetActiveTermsOfServiceAsync(CancellationToken ct = default)
         {
-            DbResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsOfService);
-
-            if (retVal.Status == DbStatusCode.Error)
-            {
-                return RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, retVal.Message);
-            }
-
-            return RequestResultFactory.Success(this.autoMapper.Map<TermsOfServiceModel>(retVal.Payload));
+            LegalAgreement? legalAgreement = await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct);
+            return legalAgreement == null
+                ? RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.LegalAgreementNotFound)
+                : RequestResultFactory.Success(this.autoMapper.Map<TermsOfServiceModel>(legalAgreement));
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel)
+        public async Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
 
-            DbResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
+            DbResult<UserPreference> dbResult = await this.userPreferenceDelegate.UpdateUserPreferenceAsync(userPreference, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Updated)
             {
@@ -404,11 +383,11 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel)
+        public async Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
-            DbResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
+            DbResult<UserPreference> dbResult = await this.userPreferenceDelegate.CreateUserPreferenceAsync(userPreference, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Created)
             {
@@ -419,28 +398,22 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid)
+        public async Task<RequestResult<Dictionary<string, UserPreferenceModel>>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
-            DbResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
-
-            if (dbResult.Status != DbStatusCode.Read)
-            {
-                return RequestResultFactory.ServiceError<Dictionary<string, UserPreferenceModel>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
-            }
-
-            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(dbResult.Payload).ToDictionary(x => x.Preference, x => x));
+            IEnumerable<UserPreference> userPreferences = await this.userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
+            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(userPreferences).ToDictionary(x => x.Preference, x => x));
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<bool>> ValidateMinimumAge(string hdid)
+        public async Task<RequestResult<bool>> ValidateMinimumAgeAsync(string hdid, CancellationToken ct = default)
         {
             if (this.minPatientAge == 0)
             {
                 return RequestResultFactory.Success(true);
             }
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
 
             if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
@@ -454,42 +427,42 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId)
+        public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default)
         {
-            DbResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
 
-            if (profileResult.Status != DbStatusCode.Read)
+            if (userProfile == null)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to retrieve user profile");
             }
 
-            profileResult.Payload.TermsOfServiceId = termsOfServiceId;
-            profileResult = this.userProfileDelegate.Update(profileResult.Payload);
-            if (profileResult.Status != DbStatusCode.Updated)
+            userProfile.TermsOfServiceId = termsOfServiceId;
+            DbResult<UserProfile> result = await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
+            if (result.Status != DbStatusCode.Updated)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to update the terms of service: DB Error");
             }
 
-            return RequestResultFactory.Success(this.BuildUserProfileModel(profileResult.Payload));
+            return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(result.Payload, ct: ct));
         }
 
         /// <inheritdoc/>
-        public bool IsPhoneNumberValid(string phoneNumber)
+        public async Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default)
         {
-            return UserProfileValidator.ValidateUserProfileSmsNumber(phoneNumber);
+            return await UserProfileValidator.ValidateUserProfileSmsNumberAsync(phoneNumber, ct);
         }
 
-        private void QueueEmail(string toEmail, string templateName)
+        private async Task QueueEmailAsync(string toEmail, string templateName, CancellationToken ct)
         {
             Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = this.emailTemplateConfig.Host };
-            this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
+            await this.emailQueueService.QueueNewEmailAsync(toEmail, templateName, keyValues, ct: ct);
         }
 
-        private async Task<RequestResult<UserProfileModel>?> ValidateUserProfile(CreateUserRequest createProfileRequest)
+        private async Task<RequestResult<UserProfileModel>?> ValidateUserProfileAsync(CreateUserRequest createProfileRequest, CancellationToken ct)
         {
             // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
-            RequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            RequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAgeAsync(hdid, ct);
             if (isMinimumAgeResult.ResultStatus != ResultType.Success)
             {
                 return RequestResultFactory.Error<UserProfileModel>(isMinimumAgeResult.ResultError);
@@ -502,7 +475,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // Validate UserProfile inputs
-            ValidationResult profileValidationResult = await new UserProfileValidator().ValidateAsync(createProfileRequest.Profile);
+            ValidationResult profileValidationResult = await new UserProfileValidator().ValidateAsync(createProfileRequest.Profile, ct);
             if (!profileValidationResult.IsValid)
             {
                 this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
@@ -512,32 +485,52 @@ namespace HealthGateway.GatewayApi.Services
             return null;
         }
 
-        private UserProfileModel BuildUserProfileModel(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null)
+        private async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null, CancellationToken ct = default)
         {
-            Guid? termsOfServiceId = this.GetActiveTermsOfService().ResourcePayload?.Id;
-            DateTime? latestTourChangeDateTime = this.GetLatestTourChangeDateTime();
+            Guid? termsOfServiceId = (await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct))?.Id;
+            DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
             UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(userProfile, termsOfServiceId, this.autoMapper);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
                                               profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
-            userProfileModel.BlockedDataSources = this.patientRepository.GetDataSources(userProfile.HdId).Result;
+            userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
             return userProfileModel;
         }
 
-        private DateTime? GetLatestTourChangeDateTime()
+        private async Task<DateTime?> GetLatestTourChangeDateTimeAsync(CancellationToken ct)
         {
-            return this.cacheProvider.GetOrSet<DateTime?>(
+            return await this.cacheProvider.GetOrSetAsync(
                 $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}:{TourApplicationSettings.LatestChangeDateTime}",
-                () =>
+                async () =>
                 {
-                    ApplicationSetting? applicationSetting = this.applicationSettingsDelegate.GetApplicationSetting(
+                    ApplicationSetting? applicationSetting = await this.applicationSettingsDelegate.GetApplicationSettingAsync(
                         TourApplicationSettings.Application,
                         TourApplicationSettings.Component,
-                        TourApplicationSettings.LatestChangeDateTime);
-                    return applicationSetting?.Value != null ? DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime() : null;
+                        TourApplicationSettings.LatestChangeDateTime,
+                        ct);
+
+                    return applicationSetting?.Value != null
+                        ? DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime()
+                        : (DateTime?)null;
                 },
-                TimeSpan.FromMinutes(30));
+                TimeSpan.FromMinutes(30),
+                ct);
+        }
+
+        private async Task<RequestResult<UserProfileModel>> HandleUpdateUserProfileResultAsync(DbResult<UserProfile> result, string emailTemplateName, CancellationToken ct)
+        {
+            if (result.Status == DbStatusCode.Updated)
+            {
+                if (!string.IsNullOrWhiteSpace(result.Payload.Email))
+                {
+                    await this.QueueEmailAsync(result.Payload.Email, emailTemplateName, ct);
+                }
+
+                return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(result.Payload, ct: ct));
+            }
+
+            return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, result.Message);
         }
     }
 }

@@ -49,14 +49,13 @@ namespace HealthGateway.MedicationTests.Services
         public async Task ShouldGetMedications(bool canAccessDataSource)
         {
             // Setup
-            string hdid = "123912390123012";
-            string phn = "91985198";
+            const string hdid = "123912390123012";
+            const string phn = "91985198";
 
             // Setup Patient result
             RequestResult<PatientModel> patientResult = new()
             {
-                ResourcePayload = new PatientModel
-                    { PersonalHealthNumber = phn },
+                ResourcePayload = new() { PersonalHealthNumber = phn },
                 ResultStatus = ResultType.Success,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
@@ -66,17 +65,15 @@ namespace HealthGateway.MedicationTests.Services
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new List<MedicationRequest>
                 {
-                    new()
-                        { ReferenceNumber = "abc" },
-                    new()
-                        { ReferenceNumber = "xyz" },
+                    new() { ReferenceNumber = "abc" },
+                    new() { ReferenceNumber = "xyz" },
                 },
                 TotalResultCount = 2,
             };
 
             Mock<IMedicationRequestDelegate> mockDelegate = new();
             mockDelegate
-                .Setup(s => s.GetMedicationRequestsAsync(phn))
+                .Setup(s => s.GetMedicationRequestsAsync(phn, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedDelegateResult);
 
             Mock<IPatientRepository> patientRepository = new();
@@ -88,7 +85,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequestsAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -115,7 +112,7 @@ namespace HealthGateway.MedicationTests.Services
         public async Task ShouldErrorIfNoPatient()
         {
             // Setup
-            string hdid = "123912390123012";
+            const string hdid = "123912390123012";
 
             // Setup Patient result
             RequestResult<PatientModel> patientResult = new()
@@ -133,7 +130,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequestsAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -147,14 +144,13 @@ namespace HealthGateway.MedicationTests.Services
         public async Task ShouldErrorIfDelegateError()
         {
             // Setup
-            string hdid = "123912390123012";
-            string phn = "91985198";
+            const string hdid = "123912390123012";
+            const string phn = "91985198";
 
             // Setup Patient result
             RequestResult<PatientModel> patientResult = new()
             {
-                ResourcePayload = new PatientModel
-                    { PersonalHealthNumber = phn },
+                ResourcePayload = new() { PersonalHealthNumber = phn },
                 ResultStatus = ResultType.Success,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
@@ -166,7 +162,7 @@ namespace HealthGateway.MedicationTests.Services
             };
             Mock<IMedicationRequestDelegate> mockDelegate = new();
             mockDelegate
-                .Setup(s => s.GetMedicationRequestsAsync(phn))
+                .Setup(s => s.GetMedicationRequestsAsync(phn, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedDelegateResult);
 
             Mock<IPatientRepository> patientRepository = new();
@@ -178,7 +174,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequestsAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -187,7 +183,7 @@ namespace HealthGateway.MedicationTests.Services
         private static Mock<IPatientService> CreatePatientService(string hdid, RequestResult<PatientModel> response)
         {
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(hdid, It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(response);
+            mockPatientService.Setup(s => s.GetPatientAsync(hdid, It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mockPatientService;
         }
     }

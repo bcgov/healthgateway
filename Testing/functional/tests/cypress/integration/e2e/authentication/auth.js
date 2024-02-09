@@ -1,4 +1,5 @@
-const { AuthMethod, localDevUri } = require("../../../support/constants");
+import { skipOn } from "@cypress/skip-test";
+const { AuthMethod } = require("../../../support/constants");
 
 describe("Authentication", () => {
     beforeEach(() => {
@@ -10,88 +11,31 @@ describe("Authentication", () => {
     });
 
     it("BCSC UI Login", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("bcsc.username"),
-                Cypress.env("bcsc.password"),
-                AuthMethod.BCSC
-            );
-            cy.checkTimelineHasLoaded();
-
-            cy.get("[data-testid=headerDropdownBtn]").click();
-            cy.get("[data-testid=logoutBtn]")
-                .should("be.visible")
-                .should("not.be.disabled");
-        } else {
-            cy.log("Skipped BCSC UI Login as running locally");
-        }
-    });
-
-    it("KeyCloak UI Login", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("keycloak.username"),
-                Cypress.env("keycloak.password"),
-                AuthMethod.KeyCloakUI
-            );
-            cy.checkTimelineHasLoaded();
-            cy.get("[data-testid=headerDropdownBtn]").click();
-            cy.get("[data-testid=logoutBtn]")
-                .should("be.visible")
-                .should("not.be.disabled");
-        } else {
-            cy.log("Skipped KeyCloak UI Login as running locally");
-        }
-    });
-
-    it("Logout", () => {
+        skipOn("localhost");
         cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
+            Cypress.env("bcsc.username"),
+            Cypress.env("bcsc.password"),
+            AuthMethod.BCSC,
             "/home"
         );
+        cy.url().should("include", "/home");
+
         cy.get("[data-testid=headerDropdownBtn]").click();
-        cy.get("[data-testid=logoutBtn]").click();
-        cy.get("[data-testid=ratingModalSkipBtn]").click();
-        cy.get("[data-testid=logout-complete-msg]").should("be.visible");
-        cy.get("[data-testid=loginBtn]")
+        cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
             .should("not.be.disabled");
     });
 
-    it("IDIR Blocked", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.logout();
-            cy.visit("/login");
-            cy.log(
-                `Authenticating as IDIR user ${Cypress.env("idir.username")}`
-            );
-            cy.get("[data-testid=IDIRBtn]")
-                .should("be.visible")
-                .should("not.be.disabled")
-                .click();
-            cy.get("#user")
-                .should("be.visible")
-                .type(Cypress.env("idir.username"));
-            cy.get("#password")
-                .should("be.visible")
-                .type(Cypress.env("idir.password"), { log: false });
-            cy.get('input[name="btnSubmit"]').should("be.visible").click();
-            cy.contains("h1", "403");
-            cy.contains("h2", "IDIR Login");
-        } else {
-            cy.log("Skipped IDIR Blocked Test as running locally");
-        }
-    });
-
-    it("KeyCloak Login", () => {
+    it("KeyCloak UI Login", () => {
+        skipOn("localhost");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
+            AuthMethod.KeyCloakUI,
             "/home"
         );
+        cy.url().should("include", "/home");
+
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
@@ -108,22 +52,41 @@ describe("Authentication", () => {
         cy.url().should("include", "/patientRetrievalError");
     });
 
-    // it('Idle Timeout', () => {
-    // // Work in Progress, clock not working correctly.
-    //     cy.server()
-    //     cy.fixture('AllDisabledConfig').then((config) => {
-    //         config.webClient.timeouts.idle = 1000
-    //     }).as('config')
-    //     cy.route('GET', '/configuration/', '@config')
-    //     cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
-    //     const now = Date.now()
-    //     cy.clock(now)
-    //       .tick(1000)
-    //     cy.get('[data-testid=idleModal]').contains('Are you still there?')
-    //     cy.get('[data-testid=idleModalText]').contains('You will be automatically logged out in 60 seconds.')
-    //     cy.tick(55000)
-    //     cy.get('[data-testid=idleModalText]').contains('You will be automatically logged out in 5 seconds.')
-    //     cy.get('[data-testid=idleModal]')
-    //       .find('footer').find('button').should('have.text', "I'm here!")
-    // })
+    it("Keycloak Login and Logout", () => {
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+        cy.url().should("include", "/home");
+        cy.get("[data-testid=headerDropdownBtn]").click();
+        cy.get("[data-testid=logoutBtn]").click();
+        cy.get("[data-testid=ratingModalSkipBtn]").click();
+        cy.get("[data-testid=logout-complete-msg]").should("be.visible");
+        cy.get("[data-testid=loginBtn]")
+            .should("be.visible")
+            .should("not.be.disabled");
+    });
+
+    it("IDIR Blocked", () => {
+        skipOn("localhost");
+        cy.logout();
+        cy.visit("/login");
+        cy.log(`Authenticating as IDIR user ${Cypress.env("idir.username")}`);
+        cy.url().should("include", "/login");
+        cy.get("[data-testid=IDIRBtn]")
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+        cy.get("#idirLogo", { timeout: 10000 }).should("be.visible");
+        cy.get("#user").should("be.visible").type(Cypress.env("idir.username"));
+        cy.get("#password")
+            .should("be.visible")
+            .type(Cypress.env("idir.password"), { log: false });
+        cy.get('input[name="btnSubmit"]').should("be.visible").click();
+        cy.url({ timeout: 10000 }).should("include", "idirLoggedIn");
+        cy.contains("h1", "403");
+        cy.contains("h2", "IDIR Login");
+    });
 });

@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -35,8 +37,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateNote - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateNote()
+        public async Task ShouldCreateNote()
         {
             RequestResult<UserNote> expectedResult = new()
             {
@@ -50,11 +53,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<INoteService> noteServiceMock = new();
-            noteServiceMock.Setup(s => s.CreateNote(It.IsAny<UserNote>())).Returns(expectedResult);
+            noteServiceMock.Setup(s => s.CreateNoteAsync(It.IsAny<UserNote>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             NoteController controller = new(noteServiceMock.Object);
 
-            RequestResult<UserNote> actualResult = controller.CreateNote(Hdid, expectedResult.ResourcePayload);
+            RequestResult<UserNote> actualResult = await controller.CreateNote(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -62,8 +65,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// UpdateNote - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateNote()
+        public async Task ShouldUpdateNote()
         {
             RequestResult<UserNote> expectedResult = new()
             {
@@ -76,11 +80,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<INoteService> noteServiceMock = new();
-            noteServiceMock.Setup(s => s.UpdateNote(It.IsAny<UserNote>())).Returns(expectedResult);
+            noteServiceMock.Setup(s => s.UpdateNoteAsync(It.IsAny<UserNote>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             NoteController controller = new(noteServiceMock.Object);
 
-            RequestResult<UserNote> actualResult = controller.UpdateNote(Hdid, expectedResult.ResourcePayload);
+            RequestResult<UserNote> actualResult = await controller.UpdateNote(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -88,8 +92,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// DeleteNote - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteNote()
+        public async Task ShouldDeleteNote()
         {
             RequestResult<UserNote> expectedResult = new()
             {
@@ -102,11 +107,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<INoteService> noteServiceMock = new();
-            noteServiceMock.Setup(s => s.DeleteNote(It.IsAny<UserNote>())).Returns(expectedResult);
+            noteServiceMock.Setup(s => s.DeleteNoteAsync(It.IsAny<UserNote>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             NoteController controller = new(noteServiceMock.Object);
 
-            RequestResult<UserNote> actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
+            RequestResult<UserNote> actualResult = await controller.DeleteNote(expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -114,8 +119,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// GetAll Notes - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetAll()
+        public async Task ShouldGetAll()
         {
             List<UserNote> mockedNotes = new();
             for (int i = 0; i < 10; i++)
@@ -135,11 +141,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<INoteService> noteServiceMock = new();
-            noteServiceMock.Setup(s => s.GetNotes(It.IsAny<string>(), 0, 500)).Returns(expectedResult);
+            noteServiceMock.Setup(s => s.GetNotesAsync(It.IsAny<string>(), 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             NoteController service = new(noteServiceMock.Object);
 
-            RequestResult<IEnumerable<UserNote>> actualResult = service.GetAll(Hdid);
+            RequestResult<IEnumerable<UserNote>> actualResult = await service.GetAll(Hdid, It.IsAny<CancellationToken>());
 
             Assert.NotNull(actualResult);
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);

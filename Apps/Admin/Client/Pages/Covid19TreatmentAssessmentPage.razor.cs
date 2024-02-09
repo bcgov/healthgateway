@@ -151,15 +151,15 @@ namespace HealthGateway.Admin.Client.Pages
             }
         }
 
-        private async Task HandleClickConfirm()
+        private async Task HandleClickConfirmAsync()
         {
-            await this.Form.Validate().ConfigureAwait(true);
+            await this.Form.Validate();
             if (!this.Form.IsValid)
             {
                 return;
             }
 
-            await this.OpenAddressConfirmationDialog();
+            await this.OpenAddressConfirmationDialogAsync();
         }
 
         private void SubmitAssessment(Address address)
@@ -178,7 +178,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction { Request = this.Request, Phn = this.Phn });
         }
 
-        private async Task OpenAddressConfirmationDialog()
+        private async Task OpenAddressConfirmationDialogAsync()
         {
             Address? address = this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
@@ -200,10 +200,9 @@ namespace HealthGateway.Admin.Client.Pages
                 .ShowAsync<AssessmentAddressConfirmationDialog>(
                     title,
                     parameters,
-                    options)
-                .ConfigureAwait(true);
+                    options);
 
-            DialogResult result = await dialog.Result.ConfigureAwait(true);
+            DialogResult result = await dialog.Result;
             if (!result.Canceled)
             {
                 this.NavigationManager.NavigateTo(this.PatientDetailsUrl);

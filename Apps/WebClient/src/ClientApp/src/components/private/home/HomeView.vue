@@ -40,7 +40,7 @@ import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
 import EventDataUtility from "@/utility/eventDataUtility";
-import { getGridCols } from "@/utility/gridUtilty";
+import { useGrid } from "@/utility/useGrid";
 
 interface QuickLinkCard {
     index: number;
@@ -61,6 +61,7 @@ const authenticatedVaccinationStatusStore =
     useVaccinationStatusAuthenticatedStore();
 const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
+const { columns } = useGrid();
 
 const sensitiveDocumentDownloadModal =
     ref<InstanceType<typeof MessageModalComponent>>();
@@ -423,7 +424,7 @@ watch(vaccineRecordState, () => {
         </template>
     </PageTitleComponent>
     <v-row>
-        <v-col :cols="getGridCols" class="d-flex">
+        <v-col :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Health Records"
                 data-testid="health-records-card"
@@ -439,12 +440,12 @@ watch(vaccineRecordState, () => {
                 </template>
                 <p class="text-body-1">
                     View and manage all your available health records, including
-                    dispensed medications, health visits, COVID‑19 test results,
-                    immunizations and more.
+                    dispensed medications, health visits, lab results,
+                    immunizations, BC Cancer cervix screenings and more.
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showFederalCardButton" :cols="getGridCols" class="d-flex">
+        <v-col v-if="showFederalCardButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Proof of Vaccination"
                 data-testid="proof-vaccination-card-btn"
@@ -464,11 +465,7 @@ watch(vaccineRecordState, () => {
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col
-            v-if="showHealthConnectButton"
-            :cols="getGridCols"
-            class="d-flex"
-        >
+        <v-col v-if="showHealthConnectButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 data-testid="health-connect-registry-card"
                 class="flex-grow-1"
@@ -494,7 +491,7 @@ watch(vaccineRecordState, () => {
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showOrganDonorButton" :cols="getGridCols" class="d-flex">
+        <v-col v-if="showOrganDonorButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Organ Donor Registration"
                 data-testid="organ-donor-registration-card"
@@ -524,7 +521,7 @@ watch(vaccineRecordState, () => {
         </v-col>
         <v-col
             v-if="showRecommendationsCardButton"
-            :cols="getGridCols"
+            :cols="columns"
             class="d-flex"
         >
             <HgCardComponent
@@ -551,7 +548,7 @@ watch(vaccineRecordState, () => {
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showVaccineCardButton" :cols="getGridCols" class="d-flex">
+        <v-col v-if="showVaccineCardButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="BC Vaccine Card"
                 data-testid="bc-vaccine-card-card"
@@ -578,7 +575,7 @@ watch(vaccineRecordState, () => {
         <v-col
             v-for="card in quickLinkCards"
             :key="card.title"
-            :cols="getGridCols"
+            :cols="columns"
             class="d-flex"
         >
             <HgCardComponent

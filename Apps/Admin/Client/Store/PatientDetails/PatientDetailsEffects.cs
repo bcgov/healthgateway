@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
 
             try
             {
-                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails).ConfigureAwait(true);
+                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails);
                 logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }
@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             try
             {
                 BlockAccessRequest request = new(action.DataSources, action.Reason);
-                await supportApi.BlockAccessAsync(action.Hdid, request).ConfigureAwait(true);
+                await supportApi.BlockAccessAsync(action.Hdid, request);
                 dispatcher.Dispatch(new PatientDetailsActions.BlockAccessSuccessAction { Hdid = action.Hdid });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -87,7 +87,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             logger.LogInformation("Submitting COVID-19 treatment assessment");
             try
             {
-                await supportApi.SubmitCovidAssessment(action.Request).ConfigureAwait(true);
+                await supportApi.SubmitCovidAssessmentAsync(action.Request);
                 dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction { Phn = action.Phn });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)

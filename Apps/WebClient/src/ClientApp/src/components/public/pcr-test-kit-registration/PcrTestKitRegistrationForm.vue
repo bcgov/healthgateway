@@ -255,8 +255,8 @@ const validations = computed(() => ({
 
 const v$ = useVuelidate(validations, pcrTest);
 
-function setHasNoPhn(value: boolean): void {
-    noPhn.value = value;
+function setHasNoPhn(value: boolean | null): void {
+    noPhn.value = value ?? false;
     const phnField = v$.value.phn;
     if (phnField) {
         pcrTest.value.phn = "";
@@ -351,7 +351,7 @@ function handleError(err: ResultError, domain: string): void {
     if (err.statusCode === 429) {
         errorStore.setTooManyRequestsError("page");
     } else if (err.actionCode == ActionType.Processed) {
-        errorMessage.value = err.resultMessage;
+        errorMessage.value = err.message;
     } else {
         errorStore.addCustomError(
             "Unable to register test kit",

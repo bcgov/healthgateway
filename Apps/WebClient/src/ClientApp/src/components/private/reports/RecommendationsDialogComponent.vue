@@ -22,8 +22,8 @@ import {
 import RequestResult from "@/models/requestResult";
 import { Action, Actor, Destination, Origin, Text } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
-import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
+import { useLayoutStore } from "@/stores/layout";
 import { useReportStore } from "@/stores/report";
 import EventDataUtility from "@/utility/eventDataUtility";
 
@@ -46,7 +46,7 @@ const trackingService = container.get<ITrackingService>(
 
 const reportStore = useReportStore();
 const errorStore = useErrorStore();
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 
 const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 const recommendationsReportComponent =
@@ -101,7 +101,7 @@ function downloadReport() {
             );
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("recommendationsDialog");
             } else {
@@ -137,12 +137,12 @@ function showDialog() {
         <v-dialog
             v-model="isVisible"
             max-width="1000px"
-            :fullscreen="appStore.isMobile"
+            :fullscreen="layoutStore.isMobile"
             persistent
         >
             <v-card
                 data-testid="recommendations-dialog"
-                :class="{ 'mobile-padding': appStore.isMobile }"
+                :class="{ 'mobile-padding': layoutStore.isMobile }"
             >
                 <v-card-title class="px-0">
                     <v-toolbar
@@ -220,7 +220,7 @@ function showDialog() {
                 </v-card-text>
                 <v-card-actions
                     class="pa-4 justify-end"
-                    :class="{ 'fixed-bottom-actions': appStore.isMobile }"
+                    :class="{ 'fixed-bottom-actions': layoutStore.isMobile }"
                 >
                     <HgButtonComponent
                         variant="secondary"

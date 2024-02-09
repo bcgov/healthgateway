@@ -31,7 +31,7 @@ namespace HealthGateway.Immunization.MapUtils
     public static class ImmunizationRecommendationMapUtils
     {
         /// <summary>
-        /// Creates a list of ImmunizationRecommendation objects from a PHSA models.
+        /// Creates a list of ImmunizationRecommendation objects from PHSA models.
         /// </summary>
         /// <param name="models">The list of PHSA models to convert.</param>
         /// <param name="autoMapper">The automapper to use.</param>
@@ -56,7 +56,7 @@ namespace HealthGateway.Immunization.MapUtils
         }
 
         /// <summary>
-        /// Creates a ImmunizationEvent object from a PHSA model.
+        /// Creates an ImmunizationRecommendation object from a PHSA model.
         /// </summary>
         /// <param name="recommendationSetId">The recommendation set id of the source system.</param>
         /// <param name="model">The recommendation object to convert.</param>
@@ -75,10 +75,10 @@ namespace HealthGateway.Immunization.MapUtils
             {
                 RecommendedVaccinations = model.TargetDisease == null ? recommendedVaccinations : string.Empty,
                 RecommendationSetId = recommendationSetId,
-                DiseaseEligibleDate = diseaseEligible?.Value != null ? DateTime.Parse(diseaseEligible.Value, CultureInfo.CurrentCulture) : null,
-                DiseaseDueDate = diseaseDue?.Value != null ? DateTime.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
-                AgentEligibleDate = agentEligible?.Value != null ? DateTime.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
-                AgentDueDate = agentDue?.Value != null ? DateTime.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
+                DiseaseEligibleDate = diseaseEligible?.Value != null ? DateOnly.Parse(diseaseEligible.Value, CultureInfo.CurrentCulture) : null,
+                DiseaseDueDate = diseaseDue?.Value != null ? DateOnly.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
+                AgentEligibleDate = agentEligible?.Value != null ? DateOnly.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
+                AgentDueDate = agentDue?.Value != null ? DateOnly.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
                 Status = model.ForecastStatus.ForecastStatusText,
                 Immunization = autoMapper.Map<ImmunizationDefinition>(model.VaccineCode),
             };

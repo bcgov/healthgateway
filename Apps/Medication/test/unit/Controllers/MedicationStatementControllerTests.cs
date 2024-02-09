@@ -18,6 +18,7 @@ namespace HealthGateway.MedicationTests.Controllers
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -42,17 +43,15 @@ namespace HealthGateway.MedicationTests.Controllers
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            RequestResult<IList<MedicationStatementHistory>> expectedResult = new()
+            RequestResult<IList<MedicationStatement>> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<MedicationStatementHistory>
+                ResourcePayload = new List<MedicationStatement>
                 {
                     new()
                     {
                         PrescriptionIdentifier = "identifier",
-                        PrescriptionStatus = 'M',
-                        DispensedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
-                        DateEntered = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
+                        DispensedDate = DateOnly.Parse("09/28/2020", CultureInfo.CurrentCulture),
                         Directions = "Directions",
                         DispensingPharmacy = new Pharmacy
                         {
@@ -71,17 +70,14 @@ namespace HealthGateway.MedicationTests.Controllers
                         {
                             Din = "02242163",
                             BrandName = "KADIAN 10MG CAPSULE",
-                            DrugDiscontinuedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
                             Form = "Form",
                             GenericName = "Generic Name",
                             IsPin = false,
                             Manufacturer = "Nomos",
-                            MaxDailyDosage = 100,
                             Quantity = 1,
                             Strength = "Strong",
                             StrengthUnit = "ml",
                         },
-                        PharmacyId = "Id",
                         PractitionerSurname = "Surname",
                     },
                 },
@@ -89,12 +85,12 @@ namespace HealthGateway.MedicationTests.Controllers
 
             Mock<IMedicationStatementService> svcMock = new();
             svcMock
-                .Setup(s => s.GetMedicationStatementsHistory(hdid, null))
+                .Setup(s => s.GetMedicationStatementsAsync(hdid, null, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResult);
             MedicationStatementController controller = new(svcMock.Object);
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = await controller.GetMedicationStatements(hdid);
+            RequestResult<IList<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
             Assert.NotNull(actual);

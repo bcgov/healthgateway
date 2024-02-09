@@ -7,8 +7,8 @@ import {
 } from "../../utilities/supportUtilities";
 
 const email = "fakeemail@healthgateway.gov.bc.ca";
-const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
-const emailPhn = "9735353759";
+const emailHdid = "R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ";
+const emailPhn = "9746209092";
 const phn = "9735353315";
 const phnDuplicate = "9873967163";
 const phnInvalid = "9999999999";

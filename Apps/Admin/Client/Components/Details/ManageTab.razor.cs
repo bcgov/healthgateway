@@ -62,22 +62,13 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
-        private bool CanViewDatasetAccess => (this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)) && !string.IsNullOrWhiteSpace(this.Hdid);
-
-        private bool CanEditDatasetAccess => this.UserHasRole(Roles.Admin);
-
-        private bool CanViewDependents => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+        private bool CanEditDatasetAccess => this.AuthenticationState?.User.IsInRole(Roles.Admin) == true;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
             this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-        }
-
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
     }
 }

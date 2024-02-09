@@ -15,6 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authorization.Admin;
@@ -57,21 +60,22 @@ namespace HealthGateway.Admin.Controllers
         /// This API will likely be replaced by client side authentication in the near future and is not meant to be consumed
         /// outside of the WebClient.
         /// </remarks>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
         [HttpGet]
         [ProducesResponseType(200)]
-        public AuthenticationData GetAuthenticationData()
+        public async Task<AuthenticationData> GetAuthenticationData(CancellationToken ct)
         {
-            AuthenticationData authData = this.authenticationService.GetAuthenticationData();
-            return authData;
+            return await this.authenticationService.GetAuthenticationDataAsync(ct);
         }
 
         /// <summary>
         /// Performs an OpenIdConnect Challenge.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An IActionResult which results in a redirect.</returns>
         [HttpGet(AuthorizationConstants.LoginPath)]
-        public IActionResult Login()
+        public async Task<IActionResult> Login(CancellationToken ct)
         {
             if (this.HttpContext.User.Identity != null && !this.HttpContext.User.Identity.IsAuthenticated)
             {
@@ -79,7 +83,7 @@ namespace HealthGateway.Admin.Controllers
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
-            this.authenticationService.SetLastLoginDateTime();
+            await this.authenticationService.SetLastLoginDateTimeAsync(ct);
 
             this.logger.LogDebug("Redirecting to application");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;

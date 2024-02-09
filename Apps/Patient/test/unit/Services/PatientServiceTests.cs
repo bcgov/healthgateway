@@ -16,13 +16,13 @@
 namespace HealthGateway.PatientTests.Services
 {
     using System.Collections.Generic;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientTests.Utils;
@@ -76,11 +76,11 @@ namespace HealthGateway.PatientTests.Services
         }
 
         /// <summary>
-        /// Client registry get demographics throws problem details exception given client registry records not found.
+        /// Client registry get demographics throws exception given client registry records not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientThrowsProblemDetailsExceptionGivenClientRegistryRecordsNotFound()
+        public async Task GetPatientThrowsExceptionGivenClientRegistryRecordsNotFound()
         {
             // Setup
             IPatientService patientService = GetPatientService();
@@ -92,16 +92,16 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Client registry get demographics throws problem details exception given patient is deceased.
+        /// Client registry get demographics throws exception given patient is deceased.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientThrowsProblemDetailsExceptionGivenPatientIsDeceased()
+        public async Task GetPatientThrowsExceptionGivenPatientIsDeceased()
         {
             // Setup
             PatientModel patient = GetPatient();
@@ -115,16 +115,16 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.ProblemDetails!.Detail);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.Message);
         }
 
         /// <summary>
-        /// Client registry get demographics throws problem details exception given client registry could not find any ids.
+        /// Client registry get demographics throws exception given client registry could not find any ids.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientThrowsProblemDetailsExceptionGivenNoIds()
+        public async Task GetPatientThrowsExceptionGivenNoIds()
         {
             // Setup
             PatientModel patient = GetPatient();
@@ -139,16 +139,16 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
         }
 
         /// <summary>
-        /// Client registry get demographics throws problem details exception given client registry could not find legal name.
+        /// Client registry get demographics throws exception given client registry could not find legal name.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientThrowsProblemDetailsExceptionGivenNoLegalName()
+        public async Task GetPatientThrowsExceptionGivenNoLegalName()
         {
             // Setup
             PatientModel patient = GetPatient();
@@ -162,16 +162,16 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
         }
 
         /// <summary>
-        /// Client registry get demographics throws problem details exception given client registry records not found.
+        /// Client registry get demographics throws exception given client registry records not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientThrowsProblemDetailsExceptionGivenClientRegistryPhnNotValid()
+        public async Task GetPatientThrowsExceptionGivenClientRegistryPhnNotValid()
         {
             // Setup
             string invalidPhn = "987654321x";
@@ -190,8 +190,8 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
+            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
+            Assert.Equal(ErrorMessages.PhnInvalid, exception.Message);
         }
 
         private static IPatientService GetPatientService(PatientModel? patient = null, PatientDetailsQuery? patientDetailsQuery = null)
@@ -201,14 +201,14 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             if (patientDetailsQuery != null)
             {
-                patientRepository.Setup(p => p.Query(patientDetailsQuery, It.IsAny<CancellationToken>()))
-                    .Throws(new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientRepository))));
+                patientRepository.Setup(p => p.QueryAsync(patientDetailsQuery, It.IsAny<CancellationToken>()))
+                    .Throws(new ValidationException(ErrorMessages.PhnInvalid));
             }
             else
             {
-                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(patientQueryResult);
-                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(patientQueryResult);
             }
 

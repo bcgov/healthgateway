@@ -16,6 +16,8 @@
 namespace HealthGateway.DBMaintainer.Apps
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.DBMaintainer.FileDownload;
@@ -46,26 +48,26 @@ namespace HealthGateway.DBMaintainer.Apps
         }
 
         /// <inheritdoc/>
-        protected override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
+        protected override async Task ProcessDownloadAsync(string sourceFolder, FileDownload downloadedFile, CancellationToken ct = default)
         {
             this.Logger.LogInformation("Parsing Drug File and adding to DB Context");
             IList<DrugProduct> drugProducts = this.Parser.ParseDrugFile(sourceFolder, downloadedFile);
-            this.DrugDbContext.DrugProduct.AddRange(drugProducts);
+            await this.DrugDbContext.DrugProduct.AddRangeAsync(drugProducts, ct);
             this.Logger.LogInformation("Parsing Other files and adding to DB Context");
-            this.DrugDbContext.ActiveIngredient.AddRange(this.Parser.ParseActiveIngredientFile(sourceFolder, drugProducts));
-            this.DrugDbContext.Company.AddRange(this.Parser.ParseCompanyFile(sourceFolder, drugProducts));
-            this.DrugDbContext.Status.AddRange(this.Parser.ParseStatusFile(sourceFolder, drugProducts));
-            this.DrugDbContext.Form.AddRange(this.Parser.ParseFormFile(sourceFolder, drugProducts));
-            this.DrugDbContext.Packaging.AddRange(this.Parser.ParsePackagingFile(sourceFolder, drugProducts));
-            this.DrugDbContext.PharmaceuticalStd.AddRange(this.Parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts));
-            this.DrugDbContext.Route.AddRange(this.Parser.ParseRouteFile(sourceFolder, drugProducts));
-            this.DrugDbContext.Schedule.AddRange(this.Parser.ParseScheduleFile(sourceFolder, drugProducts));
-            this.DrugDbContext.VeterinarySpecies.AddRange(this.Parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
-            this.AddFileToDb(downloadedFile);
+            await this.DrugDbContext.ActiveIngredient.AddRangeAsync(this.Parser.ParseActiveIngredientFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.Company.AddRangeAsync(this.Parser.ParseCompanyFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.Status.AddRangeAsync(this.Parser.ParseStatusFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.Form.AddRangeAsync(this.Parser.ParseFormFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.Packaging.AddRangeAsync(this.Parser.ParsePackagingFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.PharmaceuticalStd.AddRangeAsync(this.Parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.Route.AddRangeAsync(this.Parser.ParseRouteFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.Schedule.AddRangeAsync(this.Parser.ParseScheduleFile(sourceFolder, drugProducts), ct);
+            await this.DrugDbContext.VeterinarySpecies.AddRangeAsync(this.Parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts), ct);
+            await this.AddFileToDbAsync(downloadedFile, ct);
             this.Logger.LogInformation("Removing old Drug File from DB");
             this.RemoveOldFiles(downloadedFile);
             this.Logger.LogInformation("Saving Entities to the database");
-            this.DrugDbContext.SaveChanges();
+            await this.DrugDbContext.SaveChangesAsync(ct);
         }
     }
 }

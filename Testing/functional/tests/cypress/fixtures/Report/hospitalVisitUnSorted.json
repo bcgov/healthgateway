@@ -10,8 +10,8 @@
                 "healthService": "Gynecology",
                 "visitType": "Series",
                 "healthAuthority": "VCHA",
-                "admitDateTime": "2019-02-01T08:00:00",
-                "endDateTime": "2020-01-31T08:00:00",
+                "admitDateTime": "2019-02-01T15:00:00Z",
+                "endDateTime": "2020-01-31T15:00:00Z",
                 "provider": null
             },
             {
@@ -20,8 +20,8 @@
                 "healthService": "Hematology",
                 "visitType": "Preadmit",
                 "healthAuthority": "VCHA",
-                "admitDateTime": "2018-12-19T18:18:00",
-                "endDateTime": "2018-12-19T18:18:00",
+                "admitDateTime": "2018-12-20T01:18:00Z",
+                "endDateTime": "2018-12-20T01:18:00Z",
                 "provider": null
             },
             {
@@ -30,8 +30,8 @@
                 "healthService": "Hematology",
                 "visitType": "Preadmit",
                 "healthAuthority": "VCHA",
-                "admitDateTime": "2020-12-18T18:18:00",
-                "endDateTime": "2020-12-18T18:18:00",
+                "admitDateTime": "2020-12-19T01:18:00Z",
+                "endDateTime": "2020-12-19T01:18:00Z",
                 "provider": null
             }
         ]

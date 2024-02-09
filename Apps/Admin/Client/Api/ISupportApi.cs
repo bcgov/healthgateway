@@ -66,7 +66,7 @@ public interface ISupportApi
     /// <param name="request">The mail document request.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Post("/Patient/Document")]
-    Task MailVaccineCard(MailDocumentRequest request);
+    Task MailVaccineCardAsync(MailDocumentRequest request);
 
     /// <summary>
     /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
@@ -74,7 +74,7 @@ public interface ISupportApi
     /// <param name="phn">The personal health number that matches the document to retrieve.</param>
     /// <returns>The encoded immunization document.</returns>
     [Get("/Patient/Document?phn={phn}")]
-    Task<ReportModel> RetrieveVaccineRecord(string phn);
+    Task<ReportModel> RetrieveVaccineRecordAsync(string phn);
 
     /// <summary>
     /// Submitting a completed anti viral screening form.
@@ -82,5 +82,5 @@ public interface ISupportApi
     /// <param name="request">The covid therapy assessment request to use for submission.</param>
     /// <returns>A CovidAssessmentResponse.</returns>
     [Post("/CovidAssessment")]
-    Task<CovidAssessmentResponse> SubmitCovidAssessment(CovidAssessmentRequest request);
+    Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync(CovidAssessmentRequest request);
 }

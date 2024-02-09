@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -29,15 +30,17 @@ namespace HealthGateway.Common.Services
         /// Gets the patient PHN.
         /// </summary>
         /// <param name="hdid">The patient HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient PHN.</returns>
-        Task<RequestResult<string>> GetPatientPhn(string hdid);
+        Task<RequestResult<string>> GetPatientPhnAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the patient HDID by PHN.
         /// </summary>
         /// <param name="phn">The patient PHN.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient HDID.</returns>
-        Task<string> GetPatientHdid(string phn);
+        Task<string> GetPatientHdidAsync(string phn, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the patient record.
@@ -45,7 +48,12 @@ namespace HealthGateway.Common.Services
         /// <param name="identifier">The patient identifier.</param>
         /// <param name="identifierType">The type of identifier being passed in.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model.</returns>
-        Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false);
+        Task<RequestResult<PatientModel>> GetPatientAsync(
+            string identifier,
+            PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
+            bool disableIdValidation = false,
+            CancellationToken ct = default);
     }
 }

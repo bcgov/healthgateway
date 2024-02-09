@@ -49,7 +49,7 @@ namespace HealthGateway.Common.Utils.Phsa
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            RequestResult<TokenSwapResponse> phsaTokenResponse = await this.tokenService.GetPhsaAccessToken().ConfigureAwait(true);
+            RequestResult<TokenSwapResponse> phsaTokenResponse = await this.tokenService.GetPhsaAccessTokenAsync(cancellationToken);
             if (phsaTokenResponse.ResultStatus == ResultType.Success)
             {
                 this.logger.LogTrace("Fetched Token for hdid");

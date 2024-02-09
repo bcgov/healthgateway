@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Delegates
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
@@ -66,18 +67,18 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId)
+        public async Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting immunization {ImmunizationId}", immunizationId);
 
             RequestResult<PhsaResult<ImmunizationViewResponse>> requestResult = InitializeResult<ImmunizationViewResponse>();
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             try
             {
                 PhsaResult<ImmunizationViewResponse> response =
-                    await this.immunizationApi.GetImmunizationAsync(immunizationId, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetImmunizationAsync(immunizationId, accessToken, ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload!.Result = response.Result;
                 requestResult.TotalResultCount = 1;
@@ -96,18 +97,18 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid)
+        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting immunizations for hdid: {Hdid}", hdid);
 
             RequestResult<PhsaResult<ImmunizationResponse>> requestResult = InitializeResult<ImmunizationResponse>();
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             try
             {
                 PhsaResult<ImmunizationResponse> response =
-                    await this.immunizationApi.GetImmunizationsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetImmunizationsAsync(hdid, this.phsaConfig.FetchSize, accessToken, ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = response;
                 requestResult.TotalResultCount = 1;

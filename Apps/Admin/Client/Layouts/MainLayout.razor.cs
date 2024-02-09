@@ -104,18 +104,18 @@ namespace HealthGateway.Admin.Client.Layouts
                 return;
             }
 
-            bool isAuthenticated = await this.IsAuthenticatedAsync().ConfigureAwait(true);
+            bool isAuthenticated = await this.IsAuthenticatedAsync();
             if (!isAuthenticated)
             {
                 return;
             }
 
-            IDialogReference dialog = await this.Dialog.ShowAsync<InactivityDialog>().ConfigureAwait(true);
+            IDialogReference dialog = await this.Dialog.ShowAsync<InactivityDialog>();
             this.IsInactivityModalShown = true;
 
-            DialogResult result = await dialog.Result.ConfigureAwait(true);
+            DialogResult result = await dialog.Result;
             bool activityDetected = result.Data as bool? == true;
-            await this.HandleInactivityAsync(activityDetected).ConfigureAwait(true);
+            await this.HandleInactivityAsync(activityDetected);
             this.IsInactivityModalShown = false;
         }
 
@@ -144,17 +144,17 @@ namespace HealthGateway.Admin.Client.Layouts
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync().ConfigureAwait(true);
+            await base.OnInitializedAsync();
 
-            if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
+            if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey))
             {
-                this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey).ConfigureAwait(true);
+                this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey);
                 this.StateHasChanged();
             }
 
             this.TokenRefreshInterval = this.Configuration.GetValue("TokenRefreshInterval", 0);
             this.objectReference = DotNetObjectReference.Create(this);
-            await this.JsRuntime.InitializeInactivityTimer(this.objectReference).ConfigureAwait(true);
+            await this.JsRuntime.InitializeInactivityTimer(this.objectReference);
             this.tokenRefreshTimer.Elapsed += this.HandleTokenRefreshAsync;
             this.tokenRefreshTimer.Interval = this.TokenRefreshInterval;
             this.tokenRefreshTimer.AutoReset = true;
@@ -163,7 +163,7 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private async Task<bool> IsAuthenticatedAsync()
         {
-            AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+            AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
             return authState.User.Identity?.IsAuthenticated == true;
         }
 
@@ -177,7 +177,7 @@ namespace HealthGateway.Admin.Client.Layouts
             }
 
             // try to refresh token
-            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken().ConfigureAwait(true);
+            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken();
             if (tokenResult.TryGetToken(out _))
             {
                 return;
@@ -190,7 +190,7 @@ namespace HealthGateway.Admin.Client.Layouts
         private async void HandleTokenRefreshAsync(object? sender, ElapsedEventArgs e)
         {
             // try to refresh token
-            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken().ConfigureAwait(true);
+            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken();
             if (tokenResult.TryGetToken(out _))
             {
                 return;
@@ -200,10 +200,10 @@ namespace HealthGateway.Admin.Client.Layouts
             this.NavigationManager.NavigateTo("authentication/login");
         }
 
-        private async Task ToggleTheme()
+        private async Task ToggleThemeAsync()
         {
             this.DarkMode = !this.DarkMode;
-            await this.LocalStorage.SetItemAsync(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
+            await this.LocalStorage.SetItemAsync(DarkThemeKey, this.DarkMode);
         }
 
         private void DrawerToggle()

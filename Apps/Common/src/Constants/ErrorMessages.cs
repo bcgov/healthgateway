@@ -103,7 +103,7 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Error message to return when phn and date of birth are invalid.
         /// </summary>
-        public const string PhnOrDateAndBirthInvalid = "Personal Health Number and Date of Birth are invalid.";
+        public const string PhnOrDateOfBirthInvalid = "Personal Health Number and Date of Birth are invalid.";
 
         /// <summary>
         /// Error message to return when vaccine status not found.
@@ -114,6 +114,11 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when vaccination status is unknown.
         /// </summary>
         public const string VaccinationStatusUnknown = "Vaccination status is unknown.";
+
+        /// <summary>
+        /// Error message to return when delegate user profile not found.
+        /// </summary>
+        public const string DelegateUserProfileNotFound = "Delegate user profile not found.";
 
         /// <summary>
         /// Error message to return when unable to get vaccine proof.
@@ -129,5 +134,20 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when unable to get vaccine status.
         /// </summary>
         public const string CannotGetVaccineStatus = "Error retrieving vaccine status information.";
+
+        /// <summary>
+        /// Error message to return when email template not found in database.
+        /// </summary>
+        public const string EmailTemplateNotFound = "Email Template not found in database.";
+
+        /// <summary>
+        /// Error message to return when user profile not found in database.
+        /// </summary>
+        public const string UserProfileNotFound = "User Profile not found in database.";
+
+        /// <summary>
+        /// Error message to return when legal agreement not found in database.
+        /// </summary>
+        public const string LegalAgreementNotFound = "Legal Agreement not found in database.";
     }
 }

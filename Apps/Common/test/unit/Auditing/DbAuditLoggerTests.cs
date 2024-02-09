@@ -17,6 +17,8 @@ namespace HealthGateway.CommonTests.Auditing
 {
     using System;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Constants;
@@ -123,8 +125,9 @@ namespace HealthGateway.CommonTests.Auditing
         /// <summary>
         /// WriteAuditEvent - Happy path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldWriteAuditEvent()
+        public async Task ShouldWriteAuditEvent()
         {
             DefaultHttpContext ctx = new();
             ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
@@ -142,14 +145,14 @@ namespace HealthGateway.CommonTests.Auditing
             Mock<IWriteAuditEventDelegate> dbContext = new();
             DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
-            dbAuditLogger.WriteAuditEvent(expected);
+            await dbAuditLogger.WriteAuditEventAsync(expected);
 
-            Assert.True(expected.TransactionResultCode == AuditTransactionResult.Success);
+            Assert.Equal(AuditTransactionResult.Success, expected.TransactionResultCode);
             logger.Verify(
                 m => m.Log(
                     LogLevel.Debug,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals(@"Saved AuditEvent", o.ToString(), StringComparison.OrdinalIgnoreCase)),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("Saved AuditEvent", o.ToString(), StringComparison.OrdinalIgnoreCase)),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
@@ -158,8 +161,9 @@ namespace HealthGateway.CommonTests.Auditing
         /// <summary>
         /// WriteAuditEvent - handle exception.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldWriteAuditEventHandleException()
+        public async Task ShouldWriteAuditEventHandleException()
         {
             DefaultHttpContext ctx = new();
             ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
@@ -175,18 +179,18 @@ namespace HealthGateway.CommonTests.Auditing
 
             Mock<ILogger<DbAuditLogger>> logger = new();
             Mock<IWriteAuditEventDelegate> dbContext = new();
-            dbContext.Setup(e => e.WriteAuditEvent(It.IsAny<AuditEvent>())).Throws(new IOException());
+            dbContext.Setup(e => e.WriteAuditEventAsync(It.IsAny<AuditEvent>(), It.IsAny<CancellationToken>())).ThrowsAsync(new IOException());
             DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
-            dbAuditLogger.WriteAuditEvent(expected);
+            await dbAuditLogger.WriteAuditEventAsync(expected);
 
             logger.Verify(
                 m => m.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => string.Equals(@"In WriteAuditEvent", o.ToString(), StringComparison.OrdinalIgnoreCase)),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("In WriteAuditEvent", o.ToString(), StringComparison.OrdinalIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
         }
     }

@@ -19,6 +19,7 @@ namespace HealthGateway.Encounter.Delegates
     using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -53,11 +54,11 @@ namespace HealthGateway.Encounter.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<MspVisitHistoryResponse>> GetMspVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress)
+        public async Task<RequestResult<MspVisitHistoryResponse>> GetMspVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
-                this.logger.LogTrace("Getting MSP visits... {Phn}", query.Phn.Substring(0, 3));
+                this.logger.LogTrace("Getting MSP visits... {Phn}", query.Phn[..3]);
 
                 RequestResult<MspVisitHistoryResponse> retVal = new()
                 {
@@ -74,7 +75,7 @@ namespace HealthGateway.Encounter.Delegates
 
                 try
                 {
-                    MspVisitHistory visitHistory = await this.mspVisitApi.GetMspVisitsAsync(request).ConfigureAwait(true);
+                    MspVisitHistory visitHistory = await this.mspVisitApi.GetMspVisitsAsync(request, ct);
                     retVal.ResultStatus = ResultType.Success;
                     retVal.ResourcePayload = visitHistory.Response;
                     retVal.TotalResultCount = visitHistory.Response?.TotalRecords;

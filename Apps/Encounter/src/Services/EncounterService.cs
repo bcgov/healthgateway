@@ -20,17 +20,20 @@ namespace HealthGateway.Encounter.Services
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Delegates;
+    using HealthGateway.Encounter.MapUtils;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
     using HealthGateway.Encounter.Models.PHSA;
@@ -48,6 +51,7 @@ namespace HealthGateway.Encounter.Services
         private readonly ILogger logger;
         private readonly IMspVisitDelegate mspVisitDelegate;
         private readonly IPatientService patientService;
+        private readonly IConfiguration configuration;
         private readonly PhsaConfig phsaConfig;
         private readonly IPatientRepository patientRepository;
         private readonly List<string> excludedFeeDescriptions;
@@ -81,6 +85,7 @@ namespace HealthGateway.Encounter.Services
             this.hospitalVisitDelegate = hospitalVisitDelegate;
             this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
+            this.configuration = configuration;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
             this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions")
@@ -94,7 +99,7 @@ namespace HealthGateway.Encounter.Services
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
+        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncountersAsync(string hdid, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
 
@@ -103,7 +108,7 @@ namespace HealthGateway.Encounter.Services
 
             RequestResult<IEnumerable<EncounterModel>> result = new();
 
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit, ct))
             {
                 result.ResultStatus = ResultType.Success;
                 result.ResourcePayload = Enumerable.Empty<EncounterModel>();
@@ -112,7 +117,7 @@ namespace HealthGateway.Encounter.Services
             }
 
             // Retrieve the phn
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
             if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
             {
                 PatientModel patient = patientResult.ResourcePayload;
@@ -125,7 +130,7 @@ namespace HealthGateway.Encounter.Services
                 };
                 IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                 string ipv4Address = address.MapToIPv4().ToString();
-                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address, ct);
                 result.ResultStatus = response.ResultStatus;
                 result.ResultError = response.ResultError;
                 if (response.ResultStatus == ResultType.Success)
@@ -159,7 +164,7 @@ namespace HealthGateway.Encounter.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid)
+        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -170,7 +175,7 @@ namespace HealthGateway.Encounter.Services
                     TotalResultCount = 0,
                 };
 
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit).ConfigureAwait(true))
+                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit, ct))
                 {
                     result.ResultStatus = ResultType.Success;
                     result.ResourcePayload.HospitalVisits = Enumerable.Empty<HospitalVisitModel>();
@@ -179,13 +184,14 @@ namespace HealthGateway.Encounter.Services
                     return result;
                 }
 
-                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid).ConfigureAwait(true);
+                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid, ct);
 
                 if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
                 {
                     result.ResultStatus = ResultType.Success;
                     result.TotalResultCount = hospitalVisitResult.TotalResultCount;
-                    result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
+                    result.ResourcePayload.HospitalVisits =
+                        HospitalVisitMapUtils.ToUiModels(hospitalVisitResult.ResourcePayload.Result, this.autoMapper, DateFormatter.GetLocalTimeZone(this.configuration));
                     result.PageIndex = hospitalVisitResult.PageIndex;
                     result.PageSize = hospitalVisitResult.PageSize;
                 }

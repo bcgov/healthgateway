@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
+    using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
@@ -61,6 +63,7 @@ namespace HealthGateway.Immunization.Controllers
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
         /// <param name="immunizationId">The immunization id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The immunization record with the given id.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -73,10 +76,10 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         [Route("{immunizationId}")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<RequestResult<ImmunizationEvent>> GetImmunization([FromQuery] string hdid, string immunizationId)
+        public async Task<RequestResult<ImmunizationEvent>> GetImmunization([FromQuery] string hdid, string immunizationId, CancellationToken ct)
         {
             this.logger.LogDebug("Getting immunization {ImmunizationId} for user {Hdid}", immunizationId, hdid);
-            RequestResult<ImmunizationEvent> result = await this.service.GetImmunization(immunizationId).ConfigureAwait(true);
+            RequestResult<ImmunizationEvent> result = await this.service.GetImmunizationAsync(immunizationId, ct);
 
             this.logger.LogDebug("Finished getting immunization {ImmunizationId} for user {Hdid}", immunizationId, hdid);
             return result;
@@ -86,6 +89,7 @@ namespace HealthGateway.Immunization.Controllers
         /// Gets a json list of immunization records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of immunization records for the given patient identifier.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -97,10 +101,10 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<RequestResult<ImmunizationResult>> GetImmunizations([FromQuery] string hdid)
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizations([FromQuery] string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting immunizations for user {Hdid}", hdid);
-            RequestResult<ImmunizationResult> result = await this.service.GetImmunizations(hdid).ConfigureAwait(true);
+            RequestResult<ImmunizationResult> result = await this.service.GetImmunizationsAsync(hdid, ct);
 
             this.logger.LogDebug("Finished getting immunizations for user {Hdid}", hdid);
             return result;

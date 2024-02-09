@@ -59,7 +59,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true)
+        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
             if (dependent.Version == 0)
             {
@@ -79,12 +79,12 @@ namespace HealthGateway.Database.Delegates
 
             if (commit)
             {
-                await this.dbContext.SaveChangesAsync();
+                await this.dbContext.SaveChangesAsync(ct);
             }
         }
 
         /// <inheritdoc/>
-        public async Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
+        public async Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct = default)
         {
             int safePageSize = pageSize > 0 ? pageSize : 25;
             int recordsToSkip = int.Max(page, 0) * safePageSize;

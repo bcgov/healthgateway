@@ -189,7 +189,7 @@ namespace HealthGateway.Admin
                         return;
                     }
 
-                    await next.Invoke().ConfigureAwait(true);
+                    await next.Invoke();
                 });
         }
 

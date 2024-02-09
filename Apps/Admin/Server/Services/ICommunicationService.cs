@@ -16,6 +16,8 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -28,27 +30,31 @@ namespace HealthGateway.Admin.Server.Services
         /// Adds a Communication to the database.
         /// </summary>
         /// <param name="communication">The communication to add to the backend.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the added communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication> Add(Communication communication);
+        Task<RequestResult<Communication>> AddAsync(Communication communication, CancellationToken ct = default);
 
         /// <summary>
         /// Updates a Communication to the database.
         /// </summary>
         /// <param name="communication">The communication to update to the backend.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the updated communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication> Update(Communication communication);
+        Task<RequestResult<Communication>> UpdateAsync(Communication communication, CancellationToken ct = default);
 
         /// <summary>
         /// Gets all communication entries from the database.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<Communication>> GetAll();
+        Task<RequestResult<IEnumerable<Communication>>> GetAllAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Deletes the given communication from the backend.
         /// </summary>
         /// <param name="communication">The communication to delete.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication> Delete(Communication communication);
+        Task<RequestResult<Communication>> DeleteAsync(Communication communication, CancellationToken ct = default);
     }
 }

@@ -1,5 +1,5 @@
-﻿@using HealthGateway.Common.Data.Utils
-@using HealthGateway.Admin.Client.Components.Support
+﻿@using HealthGateway.Admin.Client.Components.Support
+@using HealthGateway.Common.Data.Utils
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @if (Patient != null)
@@ -25,8 +25,7 @@
         </MudItem>
     </MudGrid>
 
-    if (CanViewCovidDetails)
-    {
+    <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Support}")">
         <MudExpansionPanels Class="mt-6">
             <MudProgressLinear Class="rounding-t overlow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
             <MudExpansionPanel IsInitiallyExpanded>
@@ -51,5 +50,5 @@
                 </ChildContent>
             </MudExpansionPanel>
         </MudExpansionPanels>
-    }
+    </AuthorizeView>
 }

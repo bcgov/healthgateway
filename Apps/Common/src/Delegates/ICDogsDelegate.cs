@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -29,7 +30,8 @@ namespace HealthGateway.Common.Delegates
         /// Generates a report based on the request model provided.
         /// </summary>
         /// <param name="request">The CDOGS request model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The report data.</returns>
-        Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request);
+        Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request, CancellationToken ct = default);
     }
 }

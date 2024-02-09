@@ -61,13 +61,13 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResourcePayload = expectedDependents,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             DependentController dependentController = new(
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -79,8 +79,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldAddDependent()
         {
-            DateTime dateOfBirth = DateTime.Parse("1980-01-01", CultureInfo.InvariantCulture);
-            DateOnly expiryDate = DateOnly.FromDateTime(dateOfBirth.AddYears(12));
+            DateOnly dateOfBirth = DateOnly.Parse("1980-01-01", CultureInfo.InvariantCulture);
+            DateOnly expiryDate = dateOfBirth.AddYears(12);
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IDependentService> dependentServiceMock = new();
             DependentModel expectedDependent = new()
@@ -181,8 +181,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             for (int i = 0; i < 10; i++)
             {
-                DateTime dateOfBirth = new(1980 + i, 1, 1, 0, 0, 0, DateTimeKind.Local);
-                DateOnly expiryDate = DateOnly.FromDateTime(dateOfBirth);
+                DateOnly dateOfBirth = DateOnly.FromDateTime(new DateTime(1980 + i, 1, 1, 0, 0, 0, DateTimeKind.Local));
+                DateOnly expiryDate = dateOfBirth;
 
                 dependentModels.Add(
                     new DependentModel

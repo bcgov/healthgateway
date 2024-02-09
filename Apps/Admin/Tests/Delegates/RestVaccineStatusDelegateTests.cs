@@ -19,12 +19,13 @@ namespace HealthGateway.Admin.Tests.Delegates
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models.PHSA;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -43,7 +44,7 @@ namespace HealthGateway.Admin.Tests.Delegates
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
-        /// GGetVaccineStatusWithRetries throws problem details exception given maximum retry attempts reached.
+        /// GGetVaccineStatusWithRetries throws exception given maximum retry attempts reached.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -69,12 +70,12 @@ namespace HealthGateway.Admin.Tests.Delegates
             // Act
             async Task Actual()
             {
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(Phn, Birthdate, AccessToken);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(Phn, Birthdate, AccessToken);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             IVaccineStatusDelegate vaccineStatusDelegate = CreateVaccineStatusDelegate(immunizationAdminApiMock);
 
             // Act
-            PhsaResult<VaccineStatusResult> actual = await vaccineStatusDelegate.GetVaccineStatusWithRetries(Phn, Birthdate, AccessToken);
+            PhsaResult<VaccineStatusResult> actual = await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(Phn, Birthdate, AccessToken);
 
             // Assert
             Assert.NotNull(actual.Result);
@@ -125,7 +126,7 @@ namespace HealthGateway.Admin.Tests.Delegates
         private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(PhsaResult<VaccineStatusResult> response)
         {
             Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>())).ReturnsAsync(response);
+            mock.Setup(d => d.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 

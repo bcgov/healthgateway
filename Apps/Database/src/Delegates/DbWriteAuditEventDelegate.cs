@@ -16,6 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
@@ -32,20 +34,18 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DbWriteAuditEventDelegate(
-            ILogger<DbWriteAuditEventDelegate> logger,
-            GatewayDbContext dbContext)
+        public DbWriteAuditEventDelegate(ILogger<DbWriteAuditEventDelegate> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
-        public void WriteAuditEvent(AuditEvent auditEvent)
+        public async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
             this.logger.LogTrace("Writing audit event to DB... {Id}", auditEvent.Id);
             this.dbContext.Add(auditEvent);
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(ct);
             this.logger.LogDebug("Finished writing audit event to DB... {Id}", auditEvent.Id);
         }
     }

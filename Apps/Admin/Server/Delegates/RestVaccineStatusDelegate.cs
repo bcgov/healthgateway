@@ -17,12 +17,13 @@ namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
     using System.Diagnostics;
-    using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models.PHSA;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -41,7 +42,7 @@ namespace HealthGateway.Admin.Server.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
-        public async Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusWithRetries(string phn, DateTime dateOfBirth, string accessToken)
+        public async Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusWithRetriesAsync(string phn, DateTime dateOfBirth, string accessToken, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             VaccineStatusQuery query = new()
@@ -56,7 +57,7 @@ namespace HealthGateway.Admin.Server.Delegates
             bool refreshInProgress;
             do
             {
-                response = await immunizationAdminApi.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+                response = await immunizationAdminApi.GetVaccineStatusAsync(query, accessToken, ct);
 
                 refreshInProgress = response.LoadState.RefreshInProgress;
 
@@ -64,14 +65,14 @@ namespace HealthGateway.Admin.Server.Delegates
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
                     logger.LogDebug("Refresh in progress, trying again....");
-                    await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
+                    await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds), ct);
                 }
             }
             while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
 
             if (refreshInProgress)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate)));
+                throw new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ErrorCodes.MaxRetriesReached);
             }
 
             return response;

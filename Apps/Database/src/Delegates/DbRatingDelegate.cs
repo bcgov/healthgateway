@@ -50,14 +50,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Rating> InsertRating(Rating rating)
+        public async Task<DbResult<Rating>> InsertRatingAsync(Rating rating, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting rating to DB");
             DbResult<Rating> result = new();
             this.dbContext.Add(rating);
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
@@ -71,14 +71,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Rating>> GetAll(int page, int pageSize)
+        public async Task<IList<Rating>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving all the ratings for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.Rating
-                    .OrderBy(rating => rating.CreatedDateTime),
-                page,
-                pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Rating.OrderBy(rating => rating.CreatedDateTime), page, pageSize, ct);
         }
 
         /// <inheritdoc/>

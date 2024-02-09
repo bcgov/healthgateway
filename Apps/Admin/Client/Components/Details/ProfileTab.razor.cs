@@ -17,10 +17,8 @@ namespace HealthGateway.Admin.Client.Components.Details
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Models;
@@ -28,7 +26,6 @@ namespace HealthGateway.Admin.Client.Components.Details
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Authorization;
 
     /// <summary>
     /// Backing logic for the ProfileTab component.
@@ -47,11 +44,6 @@ namespace HealthGateway.Admin.Client.Components.Details
         [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
-        [Inject]
-        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-        private AuthenticationState? AuthenticationState { get; set; }
-
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
@@ -68,22 +60,8 @@ namespace HealthGateway.Admin.Client.Components.Details
         private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
             (this.AssessmentInfo?.PreviousAssessmentDetailsList ?? []).OrderByDescending(a => a.DateTimeOfAssessment);
 
-        private bool CanViewCovidDetails => this.UserHasRole(Roles.Support) || this.UserHasRole(Roles.Admin);
-
         private bool ImmunizationsAreBlocked => this.VaccineDetails?.Blocked ?? false;
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
-
-        /// <inheritdoc/>
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-        }
-
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
     }
 }

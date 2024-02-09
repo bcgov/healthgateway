@@ -19,6 +19,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -43,36 +45,27 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbCommunicationDelegate(
-            ILogger<DbCommunicationDelegate> logger,
-            GatewayDbContext dbContext)
+        public DbCommunicationDelegate(ILogger<DbCommunicationDelegate> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
-        public DbResult<Communication?> GetNext(CommunicationType communicationType)
+        public async Task<Communication?> GetNextAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting next non-expired Communication from DB...");
-            Communication? communication = this.dbContext.Communication
+            return await this.dbContext.Communication
                 .Where(
                     c => c.CommunicationTypeCode == communicationType &&
                          c.CommunicationStatusCode == CommunicationStatus.New &&
                          DateTime.UtcNow < c.ExpiryDateTime)
                 .OrderBy(c => c.EffectiveDateTime)
-                .FirstOrDefault();
-            DbResult<Communication?> result = new()
-            {
-                Status = communication != null ? DbStatusCode.Read : DbStatusCode.NotFound,
-                Payload = communication,
-            };
-
-            return result;
+                .FirstOrDefaultAsync(ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<Communication> Add(Communication communication, bool commit = true)
+        public async Task<DbResult<Communication>> AddAsync(Communication communication, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Adding Communication to DB...");
             DbResult<Communication> result = new()
@@ -86,7 +79,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
@@ -102,19 +95,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Communication>> GetAll()
+        public async Task<IList<Communication>> GetAllAsync(CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting all communication entries...");
-            DbResult<IEnumerable<Communication>> result = new();
-            result.Payload = this.dbContext.Communication
+            return await this.dbContext.Communication
                 .OrderBy(o => o.CreatedDateTime)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<Communication> Update(Communication communication, bool commit = true)
+        public async Task<DbResult<Communication>> UpdateAsync(Communication communication, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating Communication in DB...");
             DbResult<Communication> result = new()
@@ -127,7 +117,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -149,7 +139,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Communication> Delete(Communication communication, bool commit = true)
+        public async Task<DbResult<Communication>> DeleteAsync(Communication communication, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Deleting Communication from DB...");
             DbResult<Communication> result = new()
@@ -162,7 +152,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateException e)

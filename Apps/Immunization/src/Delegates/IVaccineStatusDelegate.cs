@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
@@ -34,8 +35,9 @@ namespace HealthGateway.Immunization.Delegates
         /// response.
         /// </param>
         /// <param name="accessToken">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string hdid, bool includeFederalPvc, string accessToken);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusAsync(string hdid, bool includeFederalPvc, string accessToken, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the vaccine status for the patient identified by the query.
@@ -43,7 +45,8 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="query">The vaccine status query.</param>
         /// <param name="accessToken">The bearer token to authorize the call.</param>
         /// <param name="clientIp">The IP of the client calling the service.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken, string clientIp);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublicAsync(VaccineStatusQuery query, string accessToken, string clientIp, CancellationToken ct = default);
     }
 }

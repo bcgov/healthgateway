@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Extensions;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
     using Microsoft.AspNetCore.Components;
@@ -66,7 +67,7 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IJSRuntime JsRuntime { get; set; } = default!;
 
-        private List<PatientQueryType> QueryTypes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)
+        private List<PatientQueryType> QueryTypes => (this.AuthenticationState?.User).IsInAnyRole(Roles.Admin, Roles.Reviewer)
             ? [PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent]
             : [PatientQueryType.Phn];
 
@@ -135,7 +136,7 @@ namespace HealthGateway.Admin.Client.Pages
         {
             await base.OnInitializedAsync();
             this.ResetPatientSupportState();
-            await this.RepopulateQueryAndResults();
+            await this.RepopulateQueryAndResultsAsync();
             this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
@@ -166,11 +167,6 @@ namespace HealthGateway.Admin.Client.Pages
             base.Dispose(disposing);
         }
 
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
-
         private void Clear()
         {
             this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
@@ -188,7 +184,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
         }
 
-        private async Task RepopulateQueryAndResults()
+        private async Task RepopulateQueryAndResultsAsync()
         {
             if (this.IsPreviousPagePatientDetails())
             {
@@ -207,7 +203,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private async Task SearchAsync()
         {
-            await this.Form.Validate().ConfigureAwait(true);
+            await this.Form.Validate();
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();

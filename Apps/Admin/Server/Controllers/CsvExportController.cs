@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Authorization;
@@ -39,6 +40,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves user profiles.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of user profiles.</returns>
         /// <response code="200">Returns a CSV of user profiles.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -49,15 +51,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetUserProfiles")]
         [Produces("text/csv")]
-        public IActionResult GetUserProfiles()
+        public async Task<IActionResult> GetUserProfiles(CancellationToken ct)
         {
-            return SendContentResponse("UserProfiles", dataExportService.GetUserProfiles());
+            return SendContentResponse("UserProfiles", await dataExportService.GetUserProfilesAsync(ct));
         }
 
         /// <summary>
         /// Retrieves inactive users.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of inactive users.</returns>
         /// <response code="200">Returns a CSV of inactive users.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -68,14 +71,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetInactiveUsers")]
         [Produces("text/csv")]
-        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays)
+        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays, CancellationToken ct)
         {
-            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsers(inactiveDays).ConfigureAwait(true));
+            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsersAsync(inactiveDays, ct));
         }
 
         /// <summary>
         /// Retrieves user comment metadata.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of user comment metadata.</returns>
         /// <response code="200">Returns a CSV of user comment metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -86,14 +90,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetComments")]
         [Produces("text/csv")]
-        public IActionResult GetComments()
+        public async Task<IActionResult> GetComments(CancellationToken ct)
         {
-            return SendContentResponse("Comments", dataExportService.GetComments());
+            return SendContentResponse("Comments", await dataExportService.GetCommentsAsync(ct));
         }
 
         /// <summary>
         /// Retrieves user note metadata.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of user note metadata.</returns>
         /// <response code="200">Returns a CSV of user note metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -104,14 +109,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetNotes")]
         [Produces("text/csv")]
-        public IActionResult GetNotes()
+        public async Task<IActionResult> GetNotes(CancellationToken ct)
         {
-            return SendContentResponse("Notes", dataExportService.GetNotes());
+            return SendContentResponse("Notes", await dataExportService.GetNotesAsync(ct));
         }
 
         /// <summary>
         /// Retrieves ratings.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of ratings.</returns>
         /// <response code="200">Returns a CSV of ratings.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -122,14 +128,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetRatings")]
         [Produces("text/csv")]
-        public IActionResult GetRatings()
+        public async Task<IActionResult> GetRatings(CancellationToken ct)
         {
-            return SendContentResponse("Ratings", dataExportService.GetRatings());
+            return SendContentResponse("Ratings", await dataExportService.GetRatingsAsync(ct));
         }
 
         /// <summary>
         /// Retrieves user feedback.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of user feedback.</returns>
         /// <response code="200">Returns a CSV of user feedback.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -140,9 +147,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetUserFeedback")]
         [Produces("text/csv")]
-        public IActionResult GetUserFeedback()
+        public async Task<IActionResult> GetUserFeedback(CancellationToken ct)
         {
-            return SendContentResponse("UserFeedback", dataExportService.GetUserFeedback());
+            return SendContentResponse("UserFeedback", await dataExportService.GetUserFeedbackAsync(ct));
         }
 
         /// <summary>

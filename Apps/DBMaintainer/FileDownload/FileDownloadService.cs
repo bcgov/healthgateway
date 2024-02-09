@@ -20,6 +20,7 @@ namespace HealthGateway.DBMaintainer.FileDownload
     using System.IO;
     using System.Net.Http;
     using System.Security.Cryptography;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
@@ -46,8 +47,7 @@ namespace HealthGateway.DBMaintainer.FileDownload
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Generalize exception block")]
-        [SuppressMessage("ReSharper", "UseAwaitUsing", Justification = "awaiting using causes ConfigureAwait warning")]
-        public async Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
+        public async Task<FileDownload> GetFileFromUrlAsync(Uri fileUrl, string targetFolder, bool isRelativePath, CancellationToken ct = default)
         {
             FileDownload fd = new();
 
@@ -68,14 +68,14 @@ namespace HealthGateway.DBMaintainer.FileDownload
             {
                 using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    using Stream inStream = await client.GetStreamAsync(fileUrl).ConfigureAwait(true);
-                    using Stream outStream = File.Open(filePath, FileMode.OpenOrCreate);
-                    await inStream.CopyToAsync(outStream).ConfigureAwait(true);
+                    await using Stream inStream = await client.GetStreamAsync(fileUrl, ct);
+                    await using Stream outStream = File.Open(filePath, FileMode.OpenOrCreate);
+                    await inStream.CopyToAsync(outStream, ct);
                 }
 
-                using Stream hashStream = File.OpenRead(filePath);
+                await using Stream hashStream = File.OpenRead(filePath);
                 using SHA256 mySha256 = SHA256.Create();
-                byte[] hashValue = await mySha256.ComputeHashAsync(hashStream).ConfigureAwait(true);
+                byte[] hashValue = await mySha256.ComputeHashAsync(hashStream, ct);
                 fd.Hash = Convert.ToBase64String(hashValue);
             }
             catch (Exception exception)

@@ -15,8 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
-    using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
 
@@ -34,7 +35,9 @@ namespace HealthGateway.Common.Services
         /// <param name="toEmail">The To email address.</param>
         /// <param name="templateName">The template to search the database for.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        void QueueNewEmail(string toEmail, string templateName, bool shouldCommit = true);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task QueueNewEmailAsync(string toEmail, string templateName, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Queues a new email based on a template name.
@@ -45,7 +48,9 @@ namespace HealthGateway.Common.Services
         /// <param name="templateName">The template to search the database for.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task QueueNewEmailAsync(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Queues an email using a resolved template.
@@ -55,7 +60,9 @@ namespace HealthGateway.Common.Services
         /// <param name="emailTemplate">The resolved Email Template.</param>
         /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task QueueNewEmailAsync(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Queues an email using a populated Email object.
@@ -63,30 +70,17 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="email">The populated email to save.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        void QueueNewEmail(Email email, bool shouldCommit = true);
-
-        /// <summary>
-        /// Clones an existing email and queues it for send.
-        /// </summary>
-        /// <param name="emailId">The Email ID to clone and send.</param>
-        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        void CloneAndQueue(Guid emailId, bool shouldCommit = true);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task QueueNewEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Looks up an Email Template in the database.
         /// </summary>
         /// <param name="templateName">The name of the template.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The populated Email template or null if not found.</returns>
-        EmailTemplate GetEmailTemplate(string templateName);
-
-        /// <summary>
-        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
-        /// </summary>
-        /// <param name="toEmail">The To email address.</param>
-        /// <param name="templateName">The name of the email template.</param>
-        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
-        /// <returns>The populated email object.</returns>
-        Email ProcessTemplate(string toEmail, string templateName, Dictionary<string, string> keyValues);
+        Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default);
 
         /// <summary>
         /// Given an Email template it will swap the dictionary key/values in the Subject and Body.

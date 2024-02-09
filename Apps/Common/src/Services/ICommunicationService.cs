@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
@@ -30,8 +32,9 @@ namespace HealthGateway.Common.Services
         /// Only Banner, In-App, and Mobile values are supported.
         /// </summary>
         /// <param name="communicationType">The type of communication to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The active communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication?> GetActiveCommunication(CommunicationType communicationType);
+        Task<RequestResult<Communication?>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default);
 
         /// <summary>
         /// Processes a change event from the DB for communications.

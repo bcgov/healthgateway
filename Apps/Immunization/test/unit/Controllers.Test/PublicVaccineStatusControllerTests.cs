@@ -17,6 +17,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
 {
     using System;
     using System.Globalization;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -53,18 +54,18 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
                     PersonalHealthNumber = this.phn,
                     FirstName = "Bob",
                     LastName = "Test",
-                    Birthdate = DateTime.ParseExact(this.dob, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    VaccineDate = DateTime.ParseExact(this.dov, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    Birthdate = DateOnly.ParseExact(this.dob, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    VaccineDate = DateOnly.ParseExact(this.dov, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                 },
             };
 
             Mock<IVaccineStatusService> svcMock = new();
-            svcMock.Setup(s => s.GetPublicVaccineStatus(this.phn, this.dob, this.dov)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetPublicVaccineStatusAsync(this.phn, this.dob, this.dov, It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
 
             PublicVaccineStatusController controller = new(new Mock<ILogger<PublicVaccineStatusController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov);
+            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov, default);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);

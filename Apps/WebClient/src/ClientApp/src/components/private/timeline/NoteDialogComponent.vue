@@ -17,6 +17,7 @@ import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
 import { EventName, useEventStore } from "@/stores/event";
+import { useLayoutStore } from "@/stores/layout";
 import { useLoadingStore } from "@/stores/loading";
 import { useNoteStore } from "@/stores/note";
 import { useTimelineStore } from "@/stores/timeline";
@@ -27,6 +28,7 @@ const defaultDateString = DateWrapper.today().toISODate();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 const errorStore = useErrorStore();
 const eventStore = useEventStore();
 const loadingStore = useLoadingStore();
@@ -113,7 +115,7 @@ function updateNote(): void {
                 if (error.statusCode === 429) {
                     errorStore.setTooManyRequestsError("noteDialog");
                 } else {
-                    errorMessage.value = error.resultMessage;
+                    errorMessage.value = error.message;
                 }
             })
     );
@@ -141,7 +143,7 @@ function createNote(): void {
                 if (err.statusCode === 429) {
                     errorStore.setTooManyRequestsError("noteDialog");
                 } else {
-                    errorMessage.value = err.resultMessage;
+                    errorMessage.value = err.message;
                 }
             })
     );
@@ -167,8 +169,8 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
             persistent
             no-click-animation
             scrollable
-            :fullscreen="appStore.isMobile"
-            :width="appStore.isMobile ? 960 : 700"
+            :fullscreen="layoutStore.isMobile"
+            :width="layoutStore.isMobile ? 960 : 700"
         >
             <v-card :loading="isLoading">
                 <template #loader="{ isActive }">

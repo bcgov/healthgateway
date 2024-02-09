@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -26,6 +28,8 @@ namespace HealthGateway.Database.Delegates
         /// Writes a audit event to the database.
         /// </summary>
         /// <param name="auditEvent">The audit event to write to the backend.</param>
-        void WriteAuditEvent(AuditEvent auditEvent);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default);
     }
 }

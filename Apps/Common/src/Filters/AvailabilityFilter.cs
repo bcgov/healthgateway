@@ -56,7 +56,7 @@ namespace HealthGateway.Common.Filters
             else
             {
                 // Executes the action (Controller method)
-                await next().ConfigureAwait(true);
+                await next();
             }
         }
     }

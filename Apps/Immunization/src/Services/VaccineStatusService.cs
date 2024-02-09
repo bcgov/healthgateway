@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
@@ -51,9 +52,7 @@ namespace HealthGateway.Immunization.Services
         private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly PhsaConfig phsaConfig;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
-
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace HealthGateway.Immunization.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.autoMapper = autoMapper;
 
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
 
             this.phsaConfig = new();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
@@ -87,24 +86,24 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
+        public async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatusAsync(string phn, string dateOfBirth, string dateOfVaccine, CancellationToken ct = default)
         {
             bool includeVaccineProof = false;
-            return await this.GetPublicVaccineStatusWithOptionalProof(phn, dateOfBirth, dateOfVaccine, includeVaccineProof).ConfigureAwait(true);
+            return await this.GetPublicVaccineStatusWithOptionalProofAsync(phn, dateOfBirth, dateOfVaccine, includeVaccineProof, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatus(string hdid)
+        public async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusAsync(string hdid, CancellationToken ct = default)
         {
             bool includeVaccineProof = false;
-            return await this.GetAuthenticatedVaccineStatusWithOptionalProof(hdid, includeVaccineProof).ConfigureAwait(true);
+            return await this.GetAuthenticatedVaccineStatusWithOptionalProofAsync(hdid, includeVaccineProof, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineProofDocument>> GetPublicVaccineProof(string phn, string dateOfBirth, string dateOfVaccine)
+        public async Task<RequestResult<VaccineProofDocument>> GetPublicVaccineProofAsync(string phn, string dateOfBirth, string dateOfVaccine, CancellationToken ct = default)
         {
             bool includeVaccineProof = true;
-            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetPublicVaccineStatusWithOptionalProof(phn, dateOfBirth, dateOfVaccine, includeVaccineProof).ConfigureAwait(true);
+            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetPublicVaccineStatusWithOptionalProofAsync(phn, dateOfBirth, dateOfVaccine, includeVaccineProof, ct);
             VaccineStatus payload = vaccineStatusResult.ResourcePayload!;
 
             RequestResult<VaccineProofDocument> retVal = new()
@@ -146,10 +145,10 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineProofDocument>> GetAuthenticatedVaccineProof(string hdid)
+        public async Task<RequestResult<VaccineProofDocument>> GetAuthenticatedVaccineProofAsync(string hdid, CancellationToken ct = default)
         {
             bool includeVaccineProof = true;
-            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetAuthenticatedVaccineStatusWithOptionalProof(hdid, includeVaccineProof).ConfigureAwait(true);
+            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetAuthenticatedVaccineStatusWithOptionalProofAsync(hdid, includeVaccineProof, ct);
             VaccineStatus payload = vaccineStatusResult.ResourcePayload!;
 
             RequestResult<VaccineProofDocument> retVal = new()
@@ -190,7 +189,12 @@ namespace HealthGateway.Immunization.Services
             return retVal;
         }
 
-        private async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatusWithOptionalProof(string phn, string dateOfBirth, string dateOfVaccine, bool includeVaccineProof)
+        private async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatusWithOptionalProofAsync(
+            string phn,
+            string dateOfBirth,
+            string dateOfVaccine,
+            bool includeVaccineProof,
+            CancellationToken ct)
         {
             if (!DateFormatter.TryParse(dateOfBirth, "yyyy-MM-dd", out DateTime dob))
             {
@@ -210,22 +214,22 @@ namespace HealthGateway.Immunization.Services
                 IncludeFederalVaccineProof = includeVaccineProof,
             };
 
-            ValidationResult validationResults = await new VaccineStatusQueryValidator().ValidateAsync(query).ConfigureAwait(true);
+            ValidationResult validationResults = await new VaccineStatusQueryValidator().ValidateAsync(query, ct);
             if (!validationResults.IsValid)
             {
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, jwtModel.AccessToken, phn, ct);
 
             return retVal;
         }
 
-        private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProof(string hdid, bool includeVaccineProof)
+        private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProofAsync(string hdid, bool includeVaccineProof, CancellationToken ct)
         {
             // Gets the current user access token and pass it along to PHSA
-            string? bearerToken = this.authDelegate.FetchAuthenticatedUserToken();
+            string? bearerToken = await this.authDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             VaccineStatusQuery query = new()
             {
@@ -233,12 +237,12 @@ namespace HealthGateway.Immunization.Services
                 IncludeFederalVaccineProof = includeVaccineProof,
             };
 
-            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegate(query, bearerToken).ConfigureAwait(true);
+            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, bearerToken, ct: ct);
 
             return retVal;
         }
 
-        private async Task<RequestResult<VaccineStatus>> GetVaccineStatusFromDelegate(VaccineStatusQuery query, string accessToken, string? phn = null)
+        private async Task<RequestResult<VaccineStatus>> GetVaccineStatusFromDelegateAsync(VaccineStatusQuery query, string accessToken, string? phn = null, CancellationToken ct = default)
         {
             RequestResult<VaccineStatus> retVal = new()
             {
@@ -248,8 +252,8 @@ namespace HealthGateway.Immunization.Services
 
             string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
             RequestResult<PhsaResult<VaccineStatusResult>> result = string.IsNullOrEmpty(query.HdId)
-                ? await this.vaccineStatusDelegate.GetVaccineStatusPublic(query, accessToken, ipAddress).ConfigureAwait(true)
-                : await this.vaccineStatusDelegate.GetVaccineStatus(query.HdId, query.IncludeFederalVaccineProof, accessToken).ConfigureAwait(true);
+                ? await this.vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, accessToken, ipAddress, ct)
+                : await this.vaccineStatusDelegate.GetVaccineStatusAsync(query.HdId, query.IncludeFederalVaccineProof, accessToken, ct);
 
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
             PhsaLoadState? loadState = result.ResourcePayload?.LoadState;

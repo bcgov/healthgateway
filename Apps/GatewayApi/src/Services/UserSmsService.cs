@@ -17,16 +17,15 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Globalization;
-    using System.Net;
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
@@ -84,9 +83,9 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 
             RequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
-            MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
+            MessagingVerification? smsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
             if (userProfile != null &&
                 smsVerification is { Validated: false, Deleted: false, VerificationAttempts: < MaxVerificationAttempts } &&
                 smsVerification.UserProfileId == hdid &&
@@ -96,7 +95,7 @@ namespace HealthGateway.GatewayApi.Services
                 smsVerification.Validated = true;
                 await this.messageVerificationDelegate.UpdateAsync(smsVerification, !this.notificationsChangeFeedEnabled, ct);
                 userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
-                this.profileDelegate.Update(userProfile, !this.notificationsChangeFeedEnabled);
+                await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
                 if (this.notificationsChangeFeedEnabled)
                 {
                     MessageEnvelope[] events =
@@ -109,11 +108,11 @@ namespace HealthGateway.GatewayApi.Services
                 retVal.ResourcePayload = true;
 
                 // Update the notification settings
-                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
+                await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
             }
             else
             {
-                smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
+                smsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
                 if (smsVerification is { Validated: false })
                 {
                     smsVerification.VerificationAttempts++;
@@ -140,31 +139,16 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = SanitizeSms(sms);
-            if (!UserProfileValidator.ValidateUserProfileSmsNumber(sanitizedSms))
-            {
-                this.logger.LogWarning("Proposed sms number is not valid {SmsNumber}", sanitizedSms);
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        $"Proposed sms number is not valid {sanitizedSms}",
-                        HttpStatusCode.BadRequest,
-                        nameof(UserSmsService)));
-            }
+            await UserProfileValidator.ValidateSmsNumberAndThrowAsync(sanitizedSms, ct);
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
-            if (userProfile == null)
-            {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        $"User profile not found for hdid {hdid}",
-                        HttpStatusCode.BadRequest,
-                        nameof(UserSmsService)));
-            }
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct) ??
+                                      throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             userProfile.SmsNumber = null;
-            this.profileDelegate.Update(userProfile);
+            await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
 
             bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
-            MessagingVerification? lastSmsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
+            MessagingVerification? lastSmsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
             if (lastSmsVerification != null)
             {
                 this.logger.LogInformation("Expiring old sms validation for user {Hdid}", hdid);
@@ -180,7 +164,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // Update the notification settings
-            this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
 
             this.logger.LogDebug("Finished updating user sms");
             return true;

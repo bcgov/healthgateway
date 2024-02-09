@@ -21,10 +21,13 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -59,7 +62,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
+        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
             using Activity? activity = Source.StartActivity();
@@ -68,7 +71,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             HCIM_IN_GetDemographicsRequest request = CreateRequest(type, identifier);
 
             // Perform the request
-            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
             return this.ParseResponse(reply, disableIdValidation);
         }
 
@@ -225,7 +228,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
+                throw new ValidationException(ErrorMessages.PhnInvalid, [new("PHN", ErrorMessages.PhnInvalid)]);
             }
 
             if (WarningResponseCodes.Exists(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
@@ -237,7 +240,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
                 this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
+                throw new NotFoundException(ErrorMessages.ClientRegistryDoesNotReturnPerson, ErrorCodes.InvalidData);
             }
         }
 
@@ -259,7 +262,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 if (!DateTime.TryParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dob))
                 {
                     this.logger.LogWarning("Client Registry is unable to determine date of birth due to bad data format. Action Type: {ActionType}", ActionType.DataMismatch.Value);
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
+                    throw new NotFoundException(ErrorMessages.InvalidServicesCard, ErrorCodes.InvalidData);
                 }
 
                 // Initialize model

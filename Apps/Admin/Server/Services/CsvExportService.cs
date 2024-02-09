@@ -31,7 +31,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
@@ -55,55 +54,50 @@ namespace HealthGateway.Admin.Server.Services
         private const int Page = 0;
 
         /// <inheritdoc/>
-        public Stream GetComments()
+        public async Task<Stream> GetCommentsAsync(CancellationToken ct = default)
         {
-            DbResult<IEnumerable<Comment>> comments = commentDelegate.GetAll(Page, PageSize);
-            return GetStream<Comment, CommentCsvMap>(comments.Payload);
+            IList<Comment> comments = await commentDelegate.GetAllAsync(Page, PageSize, ct);
+            return await GetStreamAsync<Comment, CommentCsvMap>(comments, ct);
         }
 
         /// <inheritdoc/>
-        public Stream GetNotes()
+        public async Task<Stream> GetNotesAsync(CancellationToken ct = default)
         {
-            DbResult<IEnumerable<Note>> notes = noteDelegate.GetAll(Page, PageSize);
-            return GetStream<Note, NoteCsvMap>(notes.Payload);
+            IList<Note> notes = await noteDelegate.GetAllAsync(Page, PageSize, ct);
+            return await GetStreamAsync<Note, NoteCsvMap>(notes, ct);
         }
 
         /// <inheritdoc/>
-        public Stream GetUserProfiles()
+        public async Task<Stream> GetUserProfilesAsync(CancellationToken ct = default)
         {
-            DbResult<IEnumerable<UserProfile>> profiles = userProfileDelegate.GetAll(Page, PageSize);
-            return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
+            IList<UserProfile> profiles = await userProfileDelegate.GetAllAsync(Page, PageSize, ct);
+            return await GetStreamAsync<UserProfile, UserProfileCsvMap>(profiles, ct);
         }
 
         /// <inheritdoc/>
-        public Stream GetRatings()
+        public async Task<Stream> GetRatingsAsync(CancellationToken ct = default)
         {
-            DbResult<IEnumerable<Rating>> profiles = ratingDelegate.GetAll(Page, PageSize);
-            return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
+            IList<Rating> ratings = await ratingDelegate.GetAllAsync(Page, PageSize, ct);
+            return await GetStreamAsync<Rating, UserProfileCsvMap>(ratings, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<Stream> GetInactiveUsers(int inactiveDays)
+        public async Task<Stream> GetInactiveUsersAsync(int inactiveDays, CancellationToken ct = default)
         {
-            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await inactiveUserService.GetInactiveUsers(inactiveDays).ConfigureAwait(true);
-
-            if (inactiveUsersResult.ResultStatus == ResultType.Success)
-            {
-                return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(inactiveUsersResult.ResourcePayload);
-            }
-
-            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>([]);
+            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await inactiveUserService.GetInactiveUsersAsync(inactiveDays, ct);
+            List<AdminUserProfileView>? inactiveUsers = inactiveUsersResult.ResultStatus == ResultType.Success ? inactiveUsersResult.ResourcePayload : [];
+            return await GetStreamAsync<AdminUserProfileView, AdminUserProfileViewCsvMap>(inactiveUsers, ct);
         }
 
         /// <inheritdoc/>
-        public Stream GetUserFeedback()
+        public async Task<Stream> GetUserFeedbackAsync(CancellationToken ct = default)
         {
-            DbResult<IList<UserFeedback>> feedback = feedbackDelegate.GetAllUserFeedbackEntries(true);
-            return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
+            IList<UserFeedback> feedback = await feedbackDelegate.GetAllUserFeedbackEntriesAsync(true, ct);
+            return await GetStreamAsync<UserFeedback, UserFeedbackCsvMap>(feedback, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct)
+        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default)
         {
             TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(configuration, DateTime.UtcNow);
             DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), localTimeOffset);
@@ -119,14 +113,14 @@ namespace HealthGateway.Admin.Server.Services
             return stream;
         }
 
-        private static MemoryStream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
+        private static async Task<MemoryStream> GetStreamAsync<TModel, TMap>(IEnumerable<TModel> obj, CancellationToken ct)
             where TMap : ClassMap
         {
             MemoryStream stream = new();
-            using StreamWriter writeFile = new(stream, leaveOpen: true);
-            using CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, true);
+            await using StreamWriter writeFile = new(stream, leaveOpen: true);
+            await using CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, true);
             csv.Context.RegisterClassMap<TMap>();
-            csv.WriteRecords(obj);
+            await csv.WriteRecordsAsync(obj, ct);
 
             return stream;
         }

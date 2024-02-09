@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1730,8 +1730,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<Guid>("FileDownloadId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("LastUpdate")
+                        .HasColumnType("Date");
 
                     b.Property<string>("NumberOfAis")
                         .HasMaxLength(10)
@@ -1760,6 +1760,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DrugIdentificationNumber");
 
                     b.HasIndex("FileDownloadId");
 
@@ -2500,16 +2502,16 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<DateTime>("EffectiveDate")
+                    b.Property<DateOnly>("EffectiveDate")
                         .HasColumnType("Date");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateOnly>("EndDate")
                         .HasColumnType("Date");
 
                     b.Property<Guid>("FileDownloadId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("FormularyListDate")
+                    b.Property<DateOnly>("FormularyListDate")
                         .HasColumnType("Date");
 
                     b.Property<string>("GenericName")
@@ -2602,6 +2604,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DinPin");
 
                     b.HasIndex("FileDownloadId");
 

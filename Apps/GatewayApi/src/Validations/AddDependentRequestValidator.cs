@@ -33,7 +33,7 @@ namespace HealthGateway.GatewayApi.Validations
         {
             this.RuleFor(v => v.Phn).SetValidator(new PhnValidator());
             this.RuleFor(v => v.DateOfBirth).SetValidator(new DateOfBirthValidator());
-            this.RuleFor(v => v.DateOfBirth).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge));
+            this.RuleFor(v => v.DateOfBirth).SetValidator(new DateOnlyAgeRangeValidator(youngerThan: maxDependentAge));
         }
     }
 }

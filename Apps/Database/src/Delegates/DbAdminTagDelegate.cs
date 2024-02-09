@@ -19,6 +19,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -47,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<AdminTag> Add(AdminTag tag, bool commit = true)
+        public async Task<DbResult<AdminTag>> AddAsync(AdminTag tag, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Adding AdminTag to DB...");
             DbResult<AdminTag> result = new()
@@ -60,7 +62,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
@@ -76,7 +78,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<AdminTag> Delete(AdminTag tag, bool commit = true)
+        public async Task<DbResult<AdminTag>> DeleteAsync(AdminTag tag, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Deleting AdminTag from DB...");
             DbResult<AdminTag> result = new()
@@ -89,7 +91,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -104,23 +106,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<AdminTag>> GetAll()
+        public async Task<IEnumerable<AdminTag>> GetAllAsync(CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting all AdminTag from DB...");
-            DbResult<IEnumerable<AdminTag>> result = new();
-            result.Payload = this.dbContext.AdminTag
+            return await this.dbContext.AdminTag
                 .OrderBy(o => o.Name)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds)
+        public async Task<DbResult<IEnumerable<AdminTag>>> GetAdminTagsAsync(ICollection<Guid> adminTagIds, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting admin tags from DB for Admin Tag Ids: {AdminTagId}", adminTagIds.ToString());
             DbResult<IEnumerable<AdminTag>> result = new();
-            result.Payload = this.dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToList();
+            result.Payload = await this.dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToListAsync(ct);
             result.Status = DbStatusCode.Read;
             return result;
         }

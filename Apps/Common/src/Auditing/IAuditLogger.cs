@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Auditing
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
 
@@ -27,10 +29,12 @@ namespace HealthGateway.Common.Auditing
         /// Writes an Audit entry to the audit log.
         /// </summary>
         /// <param name="auditEvent">The audit event to record.</param>
-        void WriteAuditEvent(AuditEvent auditEvent);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default);
 
         /// <summary>
-        /// Parsers the httpcontext and populates the audit event with it values.
+        /// Parses the HttpContext and populates the audit event with its values.
         /// </summary>
         /// <param name="context">The http context.</param>
         /// <param name="auditEvent">The audit event object to be populated.</param>

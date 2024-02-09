@@ -16,9 +16,6 @@
 namespace HealthGateway.CommonTests.AccessManagement.Authentication
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Security.Claims;
@@ -31,11 +28,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Distributed;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Moq;
     using Moq.Protected;
     using Xunit;
@@ -45,175 +39,139 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegateTests
     {
-        private readonly DistributedCacheProvider cacheProvider;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthenticationDelegateTests"/> class.
-        /// </summary>
-        public AuthenticationDelegateTests()
-        {
-            MemoryDistributedCache cache = new(Options.Create(new MemoryDistributedCacheOptions()));
-            this.cacheProvider = new DistributedCacheProvider(cache);
-        }
-
-        /// <summary>
-        /// AuthenticateAsUser - Happy Path.
-        /// </summary>
-        [Fact]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public void ShouldAuthenticateAsUser()
-        {
-            Uri tokenUri = new("http://testsite");
-            Dictionary<string, string?> configurationParams = new()
+        private const string UserJson =
+            """
             {
-                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
-                { "AuthCache:TokenCacheExpireMinutes", "20" },
-            };
-            IConfiguration configuration = CreateConfiguration(configurationParams);
+                "access_token": "token",
+                "expires_in": 500,
+                "refresh_expires_in": 0,
+                "refresh_token": "refresh_token",
+                "token_type": "bearer",
+                "not-before-policy": 25,
+                "session_state": "session_state",
+                "scope": "scope"
+            }
+            """;
 
-            ClientCredentialsTokenRequest tokenRequest = new()
+        private static readonly ClientCredentialsRequest UserClientCredentialsRequest = new()
+        {
+            TokenUri = new("http://testsite"),
+            Parameters = new()
             {
                 ClientId = "CLIENT_ID",
                 ClientSecret = "SOME_SECRET",
                 Username = "A_USERNAME",
                 Password = "SOME_PASSWORD",
-            };
+            },
+        };
 
-            string json = """
-                          {
-                              "access_token": "token",
-                              "expires_in": 500,
-                              "refresh_expires_in": 0,
-                              "refresh_token": "refresh_token",
-                              "token_type": "bearer",
-                              "not-before-policy": 25,
-                              "session_state": "session_state",
-                              "scope": "scope"
-                          }
-                          """;
-            JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
-            Mock<HttpMessageHandler> handlerMock = new();
+        private static readonly ClientCredentialsRequest SystemClientCredentialsRequest = new()
+        {
+            TokenUri = new("http://testsite"),
+            Parameters = new()
+            {
+                ClientId = "CLIENT_ID",
+                ClientSecret = "SOME_SECRET",
+            },
+        };
+
+        /// <summary>
+        /// AuthenticateAsUser - Happy Path (disabled cache).
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldAuthenticateAsUserDisabledCache()
+        {
+            JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(UserJson);
+            Mock<ICacheProvider> mockCacheProvider = CreateCacheProvider();
             using HttpResponseMessage httpResponseMessage = new();
-            httpResponseMessage.StatusCode = HttpStatusCode.OK;
-            httpResponseMessage.Content = new StringContent(json);
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpResponseMessage)
-                .Verifiable();
-            Mock<IHttpClientFactory> mockHttpClientFactory = new();
-            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, this.cacheProvider, null);
-            JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
+
+            JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest);
+
             expected.ShouldDeepEqual(actualModel);
-
-            httpResponseMessage.Content = new StringContent(json);
-            (_, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
-            Assert.True(!cached);
-
-            httpResponseMessage.Content = new StringContent(json);
-            (_, cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
-            Assert.True(cached);
+            mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Never());
+            mockCacheProvider.Verify(v => v.AddItem(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>()), Times.Never());
         }
 
         /// <summary>
-        /// AuthenticateAsUser - Happy Path.
+        /// AuthenticateAsUser - Happy Path (empty cache).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public void ShouldNotAuthenticatedAsUser()
+        public async Task ShouldAuthenticateAsUserEmptyCache()
         {
-            Uri tokenUri = new("http://testsite");
-            Dictionary<string, string?> configurationParams = new()
-            {
-                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
-                { "AuthCache:TokenCacheExpireMinutes", "20" },
-            };
-            IConfiguration configuration = CreateConfiguration(configurationParams);
-
-            ClientCredentialsTokenRequest tokenRequest = new()
-            {
-                ClientId = "CLIENT_ID",
-                ClientSecret = "SOME_SECRET",
-                Username = "A_USERNAME",
-                Password = "SOME_PASSWORD",
-            };
-
-            string json = "Bad JSON";
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
-            Mock<HttpMessageHandler> handlerMock = new();
+            JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(UserJson);
+            Mock<ICacheProvider> mockCacheProvider = CreateCacheProvider();
             using HttpResponseMessage httpResponseMessage = new();
-            httpResponseMessage.StatusCode = HttpStatusCode.OK;
-            httpResponseMessage.Content = new StringContent(json);
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpResponseMessage)
-                .Verifiable();
-            Mock<IHttpClientFactory> mockHttpClientFactory = new();
-            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, this.cacheProvider, null);
-            Assert.Throws<InvalidOperationException>(() => authDelegate.AuthenticateAsUser(tokenUri, tokenRequest));
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
+
+            JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest, true);
+
+            expected.ShouldDeepEqual(actualModel);
+            mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+        }
+
+        /// <summary>
+        /// AuthenticateAsUser - Happy Path (populated cache).
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldAuthenticateAsUserPopulatedCache()
+        {
+            JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(UserJson);
+            Mock<ICacheProvider> mockCacheProvider = CreateCacheProvider(expected);
+            using HttpResponseMessage httpResponseMessage = new();
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
+
+            JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest, true);
+
+            expected.ShouldDeepEqual(actualModel);
+            mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        /// <summary>
+        /// AuthenticateAsUser - Unhappy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldNotAuthenticateAsUser()
+        {
+            const string json = "Bad JSON";
+            using HttpResponseMessage httpResponseMessage = new();
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider());
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest));
         }
 
         /// <summary>
         /// AuthenticateAsSystem - Happy Path.
         /// </summary>
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Deferred Refactor")]
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAuthenticateAsSystem()
+        public async Task ShouldAuthenticateAsSystem()
         {
-            Uri tokenUri = new("http://testsite");
-            ClientCredentialsTokenRequest tokenRequest = new()
-            {
-                ClientId = "CLIENT_ID",
-                ClientSecret = "SOME_SECRET",
-            };
-            string json = """
-                          {
-                              "access_token": "token",
-                              "expires_in": 500,
-                              "refresh_expires_in": 0,
-                              "refresh_token": "refresh_token",
-                              "token_type": "bearer",
-                              "not-before-policy": 25,
-                              "session_state": "session_state",
-                              "scope": "scope"
-                          }
-                          """;
+            const string json =
+                """
+                {
+                    "access_token": "token",
+                    "expires_in": 500,
+                    "refresh_expires_in": 0,
+                    "refresh_token": "refresh_token",
+                    "token_type": "bearer",
+                    "not-before-policy": 25,
+                    "session_state": "session_state",
+                    "scope": "scope"
+                }
+                """;
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
-            Mock<HttpMessageHandler> handlerMock = new();
             using HttpResponseMessage httpResponseMessage = new();
-            httpResponseMessage.StatusCode = HttpStatusCode.OK;
-            httpResponseMessage.Content = new StringContent(json);
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider(expected));
 
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpResponseMessage)
-                .Verifiable();
-            Mock<IHttpClientFactory> mockHttpClientFactory = new();
-            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
-            Dictionary<string, string?> extraConfig = new()
-            {
-                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
-            };
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, CreateConfiguration(extraConfig), new Mock<ICacheProvider>().Object, null);
-            JwtModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
+            JwtModel actualModel = await authDelegate.AuthenticateAsSystemAsync(SystemClientCredentialsRequest);
+
             expected.ShouldDeepEqual(actualModel);
         }
 
@@ -243,20 +201,55 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             AuthenticationDelegate authDelegate = new(
                 logger,
                 mockHttpClientFactory.Object,
-                CreateConfiguration(new Dictionary<string, string?>()),
+                CreateConfiguration(),
                 mockCacheProvider.Object,
                 mockHttpContextAccessor.Object);
             UserLoginClientType? result = authDelegate.FetchAuthenticatedUserClientType();
             Assert.Equal(clientType, result);
         }
 
-        private static IConfiguration CreateConfiguration(Dictionary<string, string?> configParams)
+        private static IAuthenticationDelegate CreateAuthenticationDelegate(IMock<IHttpClientFactory> mockHttpClientFactory, IMock<ICacheProvider> mockCacheProvider)
+        {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
+
+            IConfiguration configuration = CreateConfiguration();
+
+            return new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, mockCacheProvider.Object, null);
+        }
+
+        private static Mock<IHttpClientFactory> CreateHttpClientFactory(string jsonResponse, HttpResponseMessage httpResponseMessage)
+        {
+            Mock<HttpMessageHandler> handlerMock = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(jsonResponse);
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
+            return mockHttpClientFactory;
+        }
+
+        private static Mock<ICacheProvider> CreateCacheProvider(JwtModel? cachedValue = null)
+        {
+            Mock<ICacheProvider> mockCacheProvider = new();
+            mockCacheProvider.Setup(s => s.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(cachedValue);
+            return mockCacheProvider;
+        }
+
+        private static IConfiguration CreateConfiguration()
         {
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(configParams.ToList())
+                .AddInMemoryCollection([new("AuthCache:TokenCacheExpireMinutes", "20")])
                 .Build();
         }
     }

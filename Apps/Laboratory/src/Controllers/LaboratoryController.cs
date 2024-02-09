@@ -16,7 +16,9 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
@@ -62,6 +64,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// Gets a result containing a collection of COVID-19 laboratory orders.
         /// </summary>
         /// <param name="hdid">The hdid resource to request the COVID-19 laboratory orders for.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>
         /// Returns collection of COVID-19 laboratory orders if available and information about whether the orders could
         /// be retrieved.
@@ -77,10 +80,10 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("Covid19Orders")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders([FromQuery] string hdid)
+        public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders([FromQuery] string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting COVID-19 laboratory orders...");
-            RequestResult<Covid19OrderResult> result = await this.labService.GetCovid19Orders(hdid).ConfigureAwait(true);
+            RequestResult<Covid19OrderResult> result = await this.labService.GetCovid19OrdersAsync(hdid, ct: ct);
             this.logger.LogDebug("Finished getting COVID-19 laboratory orders from controller for HDID: {Hdid}", hdid);
             return result;
         }
@@ -89,6 +92,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// Gets a result containing a collection of laboratory orders.
         /// </summary>
         /// <param name="hdid">The hdid resource to request the laboratory orders for.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>
         /// Returns collection of laboratory orders if available and information about whether the orders could be
         /// retrieved.
@@ -104,10 +108,10 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("LaboratoryOrders")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders([FromQuery] string hdid)
+        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders([FromQuery] string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting laboratory orders...");
-            RequestResult<LaboratoryOrderResult> result = await this.labService.GetLaboratoryOrders(hdid).ConfigureAwait(true);
+            RequestResult<LaboratoryOrderResult> result = await this.labService.GetLaboratoryOrdersAsync(hdid, ct);
             this.logger.LogDebug("Finished getting laboratory orders from controller for HDID: {Hdid}", hdid);
             return result;
         }
@@ -118,6 +122,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <param name="reportId">The ID of the report belonging to the authenticated user to fetch.</param>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A laboratory PDF report wrapped in a request result.</returns>
         /// <response code="200">Returns the specified PDF lab report.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -130,10 +135,10 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{reportId}/Report")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(string reportId, [FromQuery] string hdid, bool isCovid19 = true)
+        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(string reportId, [FromQuery] string hdid, bool isCovid19 = true, CancellationToken ct = default)
         {
             this.logger.LogDebug("Getting PDF version of Laboratory Report for Hdid: {Hdid} and isCovid19: {IsCovid10}...", hdid, isCovid19.ToString());
-            RequestResult<LaboratoryReport> result = await this.labService.GetLabReport(reportId, hdid, isCovid19).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> result = await this.labService.GetLabReportAsync(reportId, hdid, isCovid19, ct);
             this.logger.LogDebug("Finished getting pdf report from controller for Hdid: {Hdid} and isCovid19: {IsCovid19}...", hdid, isCovid19.ToString());
             return result;
         }
@@ -143,6 +148,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// </summary>
         /// <param name="hdid">The hdid to apply the LabTestKit against.</param>
         /// <param name="labTestKit">The labTestKit to register.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
         /// <response code="200">The LabTestKit was processed.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -155,10 +161,10 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{hdid}/LabTestKit")]
         [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody] LabTestKit labTestKit)
+        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody] LabTestKit labTestKit, CancellationToken ct)
         {
             this.logger.LogDebug("Post AddLabTestKit {Hdid}", hdid);
-            RequestResult<LabTestKit> result = await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit).ConfigureAwait(true);
+            RequestResult<LabTestKit> result = await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit, ct);
             this.logger.LogDebug("Finishing submitting lab test kit from controller ... {Hdid}", hdid);
             return result;
         }

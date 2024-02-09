@@ -18,18 +18,21 @@ namespace HealthGateway.Laboratory.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
+    using HealthGateway.Laboratory.MapUtils;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.Extensions.Configuration;
@@ -47,6 +50,7 @@ namespace HealthGateway.Laboratory.Services
 
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryDelegate laboratoryDelegate;
+        private readonly IConfiguration configuration;
         private readonly ILogger<LaboratoryService> logger;
         private readonly IMapper autoMapper;
         private readonly LaboratoryConfig labConfig;
@@ -69,6 +73,7 @@ namespace HealthGateway.Laboratory.Services
             IPatientRepository patientRepository,
             IMapper autoMapper)
         {
+            this.configuration = configuration;
             this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
@@ -80,9 +85,9 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders(string hdid, int pageIndex = 0)
+        public async Task<RequestResult<Covid19OrderResult>> GetCovid19OrdersAsync(string hdid, int pageIndex = 0, CancellationToken ct = default)
         {
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Covid19TestResult).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Covid19TestResult, ct))
             {
                 return new RequestResult<Covid19OrderResult>
                 {
@@ -92,14 +97,14 @@ namespace HealthGateway.Laboratory.Services
                 };
             }
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (accessToken == null)
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<Covid19OrderResult>(UnauthorizedResultError());
             }
 
-            RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19OrdersAsync(accessToken, hdid, pageIndex, ct);
 
             PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
             if (loadState != null && loadState.RefreshInProgress)
@@ -131,9 +136,9 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid)
+        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrdersAsync(string hdid, CancellationToken ct = default)
         {
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.LabResult).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.LabResult, ct))
             {
                 return new RequestResult<LaboratoryOrderResult>
                 {
@@ -147,14 +152,14 @@ namespace HealthGateway.Laboratory.Services
                 };
             }
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<LaboratoryOrderResult>(UnauthorizedResultError());
             }
 
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummaryAsync(hdid, accessToken, ct);
 
             PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
             if (loadState != null && loadState.RefreshInProgress)
@@ -175,10 +180,11 @@ namespace HealthGateway.Laboratory.Services
                 return RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError);
             }
 
+            TimeZoneInfo timeZone = DateFormatter.GetLocalTimeZone(this.configuration);
             return RequestResultFactory.Success(
                 new LaboratoryOrderResult
                 {
-                    LaboratoryOrders = this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(delegateResult.ResourcePayload?.Result?.LabOrders),
+                    LaboratoryOrders = LaboratoryMapUtils.ToUiModels(delegateResult.ResourcePayload?.Result?.LabOrders ?? [], this.autoMapper, timeZone),
                     Loaded = !(loadState?.RefreshInProgress ?? false),
                     Queued = loadState?.Queued ?? false,
                 },
@@ -188,16 +194,16 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, bool isCovid19)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReportAsync(string id, string hdid, bool isCovid19, CancellationToken ct = default)
         {
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<LaboratoryReport>(UnauthorizedResultError());
             }
 
-            return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
+            return await this.laboratoryDelegate.GetLabReportAsync(id, hdid, accessToken, isCovid19, ct);
         }
 
         private static RequestResultError UnauthorizedResultError()

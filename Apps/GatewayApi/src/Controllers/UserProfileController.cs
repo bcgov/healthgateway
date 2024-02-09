@@ -21,13 +21,13 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -75,7 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The resource hdid.</param>
         /// <param name="createUserRequest">The user profile request model.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The user profile record was saved.</response>
         /// <response code="400">The user profile was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -100,7 +100,7 @@ namespace HealthGateway.GatewayApi.Controllers
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
                 string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
-                return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress, ct);
+                return await this.userProfileService.CreateUserProfileAsync(createUserRequest, jwtAuthTime, jwtEmailAddress, ct);
             }
 
             return this.Unauthorized();
@@ -111,6 +111,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -120,13 +121,13 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid)
+        public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, CancellationToken ct)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
-            RequestResult<UserProfileModel> result = await this.userProfileService.GetUserProfile(hdid, jwtAuthTime).ConfigureAwait(true);
-            this.AddUserPreferences(result.ResourcePayload);
+            RequestResult<UserProfileModel> result = await this.userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
+            await this.AddUserPreferences(result.ResourcePayload, ct);
 
             return result;
         }
@@ -136,6 +137,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>A boolean wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The request result is returned.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -145,9 +147,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/Validate")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public async Task<RequestResult<bool>> Validate(string hdid)
+        public async Task<RequestResult<bool>> Validate(string hdid, CancellationToken ct)
         {
-            return await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            return await this.userProfileService.ValidateMinimumAgeAsync(hdid, ct);
         }
 
         /// <summary>
@@ -155,22 +157,24 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="500">Email template may not be present to send the closure email.</response>
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [ExcludeFromCodeCoverage]
-        public RequestResult<UserProfileModel> CloseUserProfile(string hdid)
+        public async Task<RequestResult<UserProfileModel>> CloseUserProfile(string hdid, CancellationToken ct)
         {
             // Retrieve the user identity id from the claims
             Guid userId = new(this.authenticationDelegate.FetchAuthenticatedUserId());
 
-            return this.userProfileService.CloseUserProfile(hdid, userId);
+            return await this.userProfileService.CloseUserProfileAsync(hdid, userId, ct);
         }
 
         /// <summary>
@@ -178,24 +182,27 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="500">Email template may not be present to send the recover email.</response>
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [ExcludeFromCodeCoverage]
-        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
+        public async Task<RequestResult<UserProfileModel>> RecoverUserProfile(string hdid, CancellationToken ct)
         {
-            return this.userProfileService.RecoverUserProfile(hdid);
+            return await this.userProfileService.RecoverUserProfileAsync(hdid, ct);
         }
 
         /// <summary>
         /// Gets the terms of service json.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The terms of service model wrapped in a request result.</returns>
         /// <response code="200">Returns the terms of service json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -207,9 +214,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [Route("termsofservice")]
         [AllowAnonymous]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
-        public RequestResult<TermsOfServiceModel> GetLastTermsOfService()
+        public async Task<RequestResult<TermsOfServiceModel>> GetLastTermsOfService(CancellationToken ct)
         {
-            return this.userProfileService.GetActiveTermsOfService();
+            return await this.userProfileService.GetActiveTermsOfServiceAsync(ct);
         }
 
         /// <summary>
@@ -218,7 +225,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The an empty response.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="verificationKey">The email verification key.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The email was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The verification key was not found.</response>
@@ -230,7 +237,7 @@ namespace HealthGateway.GatewayApi.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
                 if (accessToken != null)
                 {
@@ -247,7 +254,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>An empty response.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="validationCode">The sms validation code.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The sms was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The validation code was not found.</response>
@@ -262,7 +269,7 @@ namespace HealthGateway.GatewayApi.Controllers
                 RequestResult<bool> result = await this.userSmsService.ValidateSmsAsync(hdid, validationCode, ct);
                 if (!result.ResourcePayload)
                 {
-                    await Task.Delay(5000, ct).ConfigureAwait(true);
+                    await Task.Delay(5000, ct);
                 }
 
                 return result;
@@ -276,7 +283,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">The new email.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -284,10 +291,11 @@ namespace HealthGateway.GatewayApi.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="404">User profile was not found.</response>
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<bool> UpdateUserEmail(string hdid, [FromBody] string emailAddress, CancellationToken ct = default)
+        public async Task<bool> UpdateUserEmail(string hdid, [FromBody] string emailAddress, CancellationToken ct)
         {
             return await this.userEmailService.UpdateUserEmailAsync(hdid, emailAddress, ct);
         }
@@ -297,7 +305,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="smsNumber">The new sms number.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="400">the client must ensure sms number is valid.</response>
@@ -309,7 +317,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<bool> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct = default)
+        public async Task<bool> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct)
         {
             return await this.userSmsService.UpdateUserSmsAsync(hdid, smsNumber, ct);
         }
@@ -320,6 +328,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="userPreferenceModel">The user preference request model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The user preference record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -329,7 +338,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel)
+        public async Task<ActionResult<RequestResult<UserPreferenceModel>>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel, CancellationToken ct)
         {
             if (userPreferenceModel == null || string.IsNullOrEmpty(userPreferenceModel.Preference))
             {
@@ -342,7 +351,7 @@ namespace HealthGateway.GatewayApi.Controllers
             }
 
             userPreferenceModel.UpdatedBy = hdid;
-            return this.userProfileService.UpdateUserPreference(userPreferenceModel);
+            return await this.userProfileService.UpdateUserPreferenceAsync(userPreferenceModel, ct);
         }
 
         /// <summary>
@@ -351,6 +360,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="userPreferenceModel">The user preference request model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -360,7 +370,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserPreferenceModel>> CreateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel)
+        public async Task<ActionResult<RequestResult<UserPreferenceModel>>> CreateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel, CancellationToken ct)
         {
             if (userPreferenceModel == null)
             {
@@ -370,7 +380,7 @@ namespace HealthGateway.GatewayApi.Controllers
             userPreferenceModel.HdId = hdid;
             userPreferenceModel.CreatedBy = hdid;
             userPreferenceModel.UpdatedBy = hdid;
-            return this.userProfileService.CreateUserPreference(userPreferenceModel);
+            return await this.userProfileService.CreateUserPreferenceAsync(userPreferenceModel, ct);
         }
 
         /// <summary>
@@ -379,6 +389,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The user profile model wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="termsOfServiceId">The id of the terms of service to update for this user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -388,10 +399,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/acceptedterms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, [FromBody] Guid termsOfServiceId)
+        public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTerms(string hdid, [FromBody] Guid termsOfServiceId, CancellationToken ct)
         {
-            RequestResult<UserProfileModel> result = this.userProfileService.UpdateAcceptedTerms(hdid, termsOfServiceId);
-            this.AddUserPreferences(result.ResourcePayload);
+            RequestResult<UserProfileModel> result = await this.userProfileService.UpdateAcceptedTermsAsync(hdid, termsOfServiceId, ct);
+            await this.AddUserPreferences(result.ResourcePayload, ct);
 
             return result;
         }
@@ -400,21 +411,22 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Test phone number validation required by the GatewayAPI and PHSA.
         /// </summary>
         /// <param name="phoneNumber">Phone number stripped of any masked characters.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if the submitted phone number conforms to the appropriate standards.</returns>
         /// <response code="200">Returns the result of the validation attempt.</response>
         [HttpGet]
         [Route("IsValidPhoneNumber/{phoneNumber}")]
         [Authorize]
-        public ActionResult<bool> IsValidPhoneNumber(string phoneNumber)
+        public async Task<ActionResult<bool>> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
-            return this.userProfileService.IsPhoneNumberValid(phoneNumber);
+            return await this.userProfileService.IsPhoneNumberValidAsync(phoneNumber, ct);
         }
 
-        private void AddUserPreferences(UserProfileModel? profile)
+        private async Task AddUserPreferences(UserProfileModel? profile, CancellationToken ct)
         {
             if (profile != null)
             {
-                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(profile.HdId);
+                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = await this.userProfileService.GetUserPreferencesAsync(profile.HdId, ct);
                 if (userPreferences.ResourcePayload != null)
                 {
                     foreach (KeyValuePair<string, UserPreferenceModel> preference in userPreferences.ResourcePayload)

@@ -19,10 +19,10 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
@@ -36,9 +36,9 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -87,10 +87,10 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             Task<VaccineDetails>? getVaccineDetails =
-                query.IncludeCovidDetails ? this.GetVaccineDetails(patient, query.RefreshVaccineDetails) : null;
+                query.IncludeCovidDetails ? this.GetVaccineDetailsAsync(patient, query.RefreshVaccineDetails, ct) : null;
 
             Task<CovidAssessmentDetailsResponse>? getCovidAssessmentDetails =
-                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()) : null;
+                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetailsAsync(new() { Phn = patient.Phn }, await this.GetAccessTokenAsync(ct), ct) : null;
 
             IEnumerable<MessagingVerificationModel>? messagingVerifications =
                 query.IncludeMessagingVerifications ? await this.GetMessagingVerificationsAsync(patient.Hdid, ct) : null;
@@ -130,11 +130,11 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Dependent =>
                     await this.GetDelegateProfilesAsync(queryString, ct),
                 PatientQueryType.Email =>
-                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString),
+                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString, ct),
                 PatientQueryType.Sms =>
-                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString),
+                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString, ct),
                 _ =>
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
+                    throw new ValidationException($"Unknown {nameof(queryType)}"),
             };
 
             IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportResultAsync(profile, ct));
@@ -150,8 +150,8 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
-            PatientModel? patient = (await patientRepository.Query(query, ct)).Items.SingleOrDefault();
-            return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
+            PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
+            return patient ?? throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
         }
 
         private async Task<PatientModel?> TryGetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
@@ -164,7 +164,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return await this.GetPatientAsync(query, ct);
             }
-            catch (ProblemDetailsException e) when (e.ProblemDetails?.StatusCode == HttpStatusCode.NotFound)
+            catch (NotFoundException)
             {
                 return null;
             }
@@ -182,21 +182,21 @@ namespace HealthGateway.Admin.Server.Services
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
             string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
             logger.LogDebug("{Message}", message);
-            await cacheProvider.RemoveItemAsync(blockedAccessCacheKey);
+            await cacheProvider.RemoveItemAsync(blockedAccessCacheKey, ct);
 
-            return await patientRepository.GetDataSources(hdid, ct);
+            return await patientRepository.GetDataSourcesAsync(hdid, ct);
         }
 
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
         {
-            IEnumerable<AgentAudit> audits = await auditRepository.Handle(new(hdid), ct);
-            return audits.Select(audit => autoMapper.Map<AgentAudit, AgentAction>(audit));
+            IEnumerable<AgentAudit> audits = await auditRepository.HandleAsync(new(hdid), ct);
+            return audits.Select(autoMapper.Map<AgentAudit, AgentAction>);
         }
 
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)
         {
             ResourceDelegateQuery query = new() { ByDelegateHdid = delegateHdid, IncludeDependent = true };
-            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query, ct);
             IEnumerable<Task<PatientSupportDependentInfo?>> tasks = result.Items.Select(r => this.GetDependentInfoAsync(r, ct));
             return (await Task.WhenAll(tasks)).OfType<PatientSupportDependentInfo>();
         }
@@ -215,21 +215,21 @@ namespace HealthGateway.Admin.Server.Services
             return dependentInfo;
         }
 
-        private Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)
+        private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
-            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
             {
-                return immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken(), refresh);
+                logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+                throw new InvalidDataException(ErrorMessages.PhnOrDateOfBirthInvalid);
             }
 
-            logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
+            return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
         }
 
-        private string GetAccessToken()
+        private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
-            string? accessToken = authenticationDelegate.FetchAuthenticatedUserToken();
-            return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
+            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
+            return accessToken ?? throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
         }
 
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
@@ -241,7 +241,7 @@ namespace HealthGateway.Admin.Server.Services
                 : patient?.Hdid;
             UserProfile? profile = hdid == null
                 ? null
-                : await userProfileDelegate.GetUserProfileAsync(hdid);
+                : await userProfileDelegate.GetUserProfileAsync(hdid, ct);
 
             if (patient == null && profile == null)
             {
@@ -271,7 +271,7 @@ namespace HealthGateway.Admin.Server.Services
                 IncludeProfile = true,
                 TakeAmount = 25,
             };
-            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query, ct);
             return result.Items.Select(c => c.ResourceDelegate.UserProfile);
         }
     }

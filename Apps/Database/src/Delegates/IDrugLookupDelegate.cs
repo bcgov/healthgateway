@@ -16,32 +16,29 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Delegate that retrieves DrugProducts based on the drug identifier.
+    /// Delegate that retrieves drug information.
     /// </summary>
     public interface IDrugLookupDelegate
     {
         /// <summary>
-        /// Retrieves DrugProduct(s) that match a the drug identifier numbers (DINs).
+        /// Retrieves DrugProducts that match drug identifier numbers (DINs).
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>
-        /// <returns>A request results with the outcome of the lookup.</returns>
-        IList<DrugProduct> GetDrugProductsByDin(IList<string> drugIdentifiers);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of DrugProducts.</returns>
+        Task<IList<DrugProduct>> GetDrugProductsByDinAsync(IList<string> drugIdentifiers, CancellationToken ct = default);
 
         /// <summary>
-        /// Retrieves PharmaCareDrug(s) that match a the drug identifier numbers (DINs) or provincial identifier numbers (PINs).
+        /// Retrieves PharmaCareDrugs that match drug identifier numbers (DINs) or provincial identifier numbers (PINs).
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>
-        /// <returns>A request results with the outcome of the lookup.</returns>
-        IList<PharmaCareDrug> GetPharmaCareDrugsByDin(IList<string> drugIdentifiers);
-
-        /// <summary>
-        /// Retrieves the brand names that match the drug identifier numbers (DINs) or provincial identifier numbers (PINs).
-        /// </summary>
-        /// <param name="drugIdentifiers">List of drug identifiers.</param>
-        /// <returns>A dictionary with the drug identifier as key and the result brand name as value.</returns>
-        Dictionary<string, string> GetDrugsBrandNameByDin(IList<string> drugIdentifiers);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of PharmaCareDrugs.</returns>
+        Task<IList<PharmaCareDrug>> GetPharmaCareDrugsByDinAsync(IList<string> drugIdentifiers, CancellationToken ct = default);
     }
 }

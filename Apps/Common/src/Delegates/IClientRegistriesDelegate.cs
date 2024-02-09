@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
@@ -29,15 +30,17 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="hdid">The hdid to retrieve the patient demographics in.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient information.</returns>
-        Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false);
+        Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the patient record.
         /// </summary>
         /// <param name="phn">The phn to retrieve the patient demographics information.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient information.</returns>
-        Task<RequestResult<PatientModel>> GetDemographicsByPhnAsync(string phn, bool disableIdValidation = false);
+        Task<RequestResult<PatientModel>> GetDemographicsByPhnAsync(string phn, bool disableIdValidation = false, CancellationToken ct = default);
     }
 }

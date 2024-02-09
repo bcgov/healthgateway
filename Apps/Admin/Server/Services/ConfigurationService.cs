@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Services
 {
+    using System.Threading;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.Extensions.Configuration;
 
@@ -29,8 +30,9 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Reads the external configuration and returns it to the caller.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The external configuration data.</returns>
-        public ExternalConfiguration GetConfiguration()
+        public ExternalConfiguration GetConfiguration(CancellationToken ct = default)
         {
             return this.config;
         }

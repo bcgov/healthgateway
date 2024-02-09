@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Mappings
 {
+    using System;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Patient.Models;
@@ -29,7 +30,10 @@ namespace HealthGateway.Patient.Mappings
         /// </summary>
         public AccountDataAccessMappings()
         {
-            this.CreateMap<PatientModel, PatientDetails>();
+            this.CreateMap<PatientModel, PatientDetails>()
+                .ForMember(
+                    d => d.Birthdate,
+                    opts => opts.MapFrom(s => DateOnly.FromDateTime(s.Birthdate)));
             this.CreateMap<Address, Common.Data.Models.Address>();
         }
     }

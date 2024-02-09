@@ -15,10 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -49,39 +50,22 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Note> GetNote(Guid noteId, string hdid)
-        {
-            DbResult<Note> result = new()
-            {
-                Status = DbStatusCode.NotFound,
-            };
-            Note? note = this.dbContext.Note.Find(noteId, hdid);
-            if (note != null)
-            {
-                result.Payload = note;
-                result.Status = DbStatusCode.Read;
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<IList<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500)
+        public async Task<DbResult<IList<Note>>> GetNotesAsync(string hdId, int offset = 0, int pageSize = 500, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting Notes for {HdId}...", hdId);
             DbResult<IList<Note>> result = new();
-            result.Payload = this.dbContext.Note
+            result.Payload = await this.dbContext.Note
                 .Where(p => p.HdId == hdId)
                 .OrderBy(o => o.JournalDate)
                 .Skip(offset)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync(ct);
             result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DbResult<Note> AddNote(Note note, bool commit = true)
+        public async Task<DbResult<Note>> AddNoteAsync(Note note, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Adding Note to DB...");
             DbResult<Note> result = new()
@@ -94,7 +78,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
@@ -110,7 +94,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Note> UpdateNote(Note note, bool commit = true)
+        public async Task<DbResult<Note>> UpdateNoteAsync(Note note, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating Note request in DB...");
             DbResult<Note> result = new()
@@ -124,7 +108,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -139,7 +123,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true)
+        public async Task<DbResult<IEnumerable<Note>>> BatchUpdateAsync(IEnumerable<Note> notes, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating Note request in DB...");
             DbResult<IEnumerable<Note>> result = new()
@@ -152,7 +136,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -167,7 +151,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Note> DeleteNote(Note note, bool commit = true)
+        public async Task<DbResult<Note>> DeleteNoteAsync(Note note, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Deleting Note from DB...");
             DbResult<Note> result = new()
@@ -181,7 +165,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -196,14 +180,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Note>> GetAll(int page, int pageSize)
+        public async Task<IList<Note>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving all the notes for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.Note
-                    .OrderBy(note => note.CreatedDateTime),
-                page,
-                pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Note.OrderBy(note => note.CreatedDateTime), page, pageSize, ct);
         }
     }
 }

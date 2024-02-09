@@ -24,15 +24,15 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         getComments: (entryId: string) => UserComment[] | null
     ) {
         const isResult = model.eventType === BcCancerScreeningType.Result;
-        const date = isResult ? model.resultDateTime : model.eventDateTime;
+        const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
         super(
-            model.id ?? `cancerScreening-${date}`,
+            model.id ?? `cancerScreening-${dateTime}`,
             EntryType.BcCancerScreening,
-            DateWrapper.fromIso(date)
+            DateWrapper.fromIso(dateTime)
         );
         this.isResult = isResult;
-        this.subtitle = `Programe: ${model.programName}`;
         this.fileId = model.fileId;
+        this.subtitle = `Program: Cervix Screening`;
         this.screeningType = model.eventType;
         this.setEntryProperties();
         this.getComments = getComments;
@@ -40,13 +40,13 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
 
     private setEntryProperties(): void {
         if (this.screeningType === BcCancerScreeningType.Result) {
-            this.title = "BC Cancer Result";
-            this.callToActionText = "View PDF";
+            this.title = "BC Cancer Screening Result Letter";
+            this.callToActionText = "View Letter";
             this.documentType = "Screening results";
             this.fileName = "bc_cancer_result";
             this.eventText = "BC Cancer Result PDF";
         } else {
-            this.title = "BC Cancer Screening";
+            this.title = "BC Cancer Screening Reminder Letter";
             this.callToActionText = "View Letter";
             this.documentType = "Screening letter";
             this.fileName = "bc_cancer_screening";

@@ -39,8 +39,9 @@ namespace HealthGateway.Database.Delegates
         /// Gets the last Email Message Verification by the Invite key.
         /// </summary>
         /// <param name="inviteKey">The users inviteKey as emailed.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The message verification that was fetched.</returns>
-        MessagingVerification? GetLastByInviteKey(Guid inviteKey);
+        Task<MessagingVerification?> GetLastByInviteKeyAsync(Guid inviteKey, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the last Messaging Verification for the user base on type and users HDID.
@@ -48,8 +49,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="hdid">The users hdid.</param>
         /// <param name="messagingVerificationType">The type to query.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The  message verification that was fetched.</returns>
-        MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType);
+        Task<MessagingVerification?> GetLastForUserAsync(string hdid, string messagingVerificationType, CancellationToken ct = default);
 
         /// <summary>
         /// Updates a MessagingVerification using a populated model object.
@@ -59,12 +61,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default);
-
-        /// <summary>
-        /// Gets all email message verifications from the database.
-        /// </summary>
-        /// <returns>A list of message verifications.</returns>
-        IEnumerable<MessagingVerification> GetAllEmail();
 
         /// <summary>
         /// Expire a MessagingVerification.

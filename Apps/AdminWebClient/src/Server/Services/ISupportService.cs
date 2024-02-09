@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Data.Constants;
@@ -30,15 +31,17 @@ namespace HealthGateway.Admin.Services
         /// Retrieves a list of message verifications matching the query.
         /// </summary>
         /// <param name="hdid">The hdid associated with the messaging verification.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid);
+        Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the collection of patients that match the query.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of patient support details that match the query.</returns>
-        Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString);
+        Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default);
     }
 }

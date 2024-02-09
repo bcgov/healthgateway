@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Delegates
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
@@ -51,7 +52,7 @@ namespace HealthGateway.Common.Delegates
         private static ActivitySource Source { get; } = new(nameof(CDogsDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request)
+        public async Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -62,8 +63,8 @@ namespace HealthGateway.Common.Delegates
 
                 try
                 {
-                    HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request).ConfigureAwait(true);
-                    byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
+                    HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request, ct);
+                    byte[] payload = await response.Content.ReadAsByteArrayAsync(ct);
                     this.logger.LogTrace("CDogs Response status code: {ResponseStatusCode}", response.StatusCode);
 
                     if (response.IsSuccessStatusCode)

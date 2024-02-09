@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;
@@ -29,7 +30,8 @@ namespace HealthGateway.Medication.Delegates
         /// Returns a set of MedicationRequests for the given phn.
         /// </summary>
         /// <param name="phn">The PHN of the user querying.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The MedicationRequest result.</returns>
-        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn);
+        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn, CancellationToken ct = default);
     }
 }

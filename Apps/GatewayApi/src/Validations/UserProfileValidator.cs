@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Validations
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using FluentValidation;
     using HealthGateway.Common.Data.Models;
 
@@ -36,14 +38,31 @@ namespace HealthGateway.GatewayApi.Validations
         /// Convenience method to test sms phone number in the userprofile context.
         /// </summary>
         /// <param name="phoneNumber">Phone number for sms notifications.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if UserProfileValidator rules for SmsNumber member pass.</returns>
-        public static bool ValidateUserProfileSmsNumber(string? phoneNumber)
+        public static async Task<bool> ValidateUserProfileSmsNumberAsync(string? phoneNumber, CancellationToken ct = default)
         {
             UserProfile tempProfile = new()
             {
                 SmsNumber = phoneNumber,
             };
-            return new UserProfileValidator().Validate(tempProfile).IsValid;
+            bool isValid = (await new UserProfileValidator().ValidateAsync(tempProfile, ct)).IsValid;
+            return isValid;
+        }
+
+        /// <summary>
+        /// Convenience method to test sms phone number in the userprofile context, which will result in exception on failure.
+        /// </summary>
+        /// <param name="phoneNumber">Phone number for sms notifications.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task ValidateSmsNumberAndThrowAsync(string? phoneNumber, CancellationToken ct = default)
+        {
+            UserProfile tempProfile = new()
+            {
+                SmsNumber = phoneNumber,
+            };
+            await new UserProfileValidator().ValidateAndThrowAsync(tempProfile, ct);
         }
     }
 }

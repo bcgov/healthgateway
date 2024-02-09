@@ -85,7 +85,7 @@ namespace HealthGateway.PatientTests.Services
             DiagnosticImagingExam diagnosticImagingExam = new()
             {
                 BodyPart = "Some BodyPart",
-                ExamDate = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+                ExamDate = DateOnly.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 FileId = "Some FileId",
                 HealthAuthority = "Some HealthAuthority",
                 Modality = "Some Modality",
@@ -142,7 +142,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
                 ;
 
             if (canAccessDataSource)
@@ -184,7 +184,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
                 ;
 
             if (canAccessDataSource)
@@ -230,14 +230,14 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
                 ;
 
             if (canAccessDataSource)
             {
                 DiagnosticImagingExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
                 actual.BodyPart.ShouldBe(expected.BodyPart);
-                actual.ExamDate.ShouldBe(expected.ExamDate);
+                actual.ExamDate.ShouldBe(expected.ExamDate == null ? null : DateOnly.FromDateTime(expected.ExamDate.Value));
                 actual.FileId.ShouldBe(expected.FileId);
                 actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
                 actual.Modality.ShouldBe(expected.Modality);
@@ -268,7 +268,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None);
+            PatientFileResponse? result = await sut.QueryAsync(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None);
 
             PatientFileResponse actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
@@ -290,7 +290,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None);
+            PatientFileResponse? result = await sut.QueryAsync(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None);
 
             result.ShouldBeNull();
         }
@@ -298,7 +298,7 @@ namespace HealthGateway.PatientTests.Services
         private Mock<IPersonalAccountsService> GetMockPersonalAccountService()
         {
             Mock<IPersonalAccountsService> personalAccountService = new();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid))
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new PersonalAccount
                     {

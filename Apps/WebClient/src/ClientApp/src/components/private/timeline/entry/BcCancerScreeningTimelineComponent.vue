@@ -10,7 +10,7 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
-import { Action, Actor, Format, Text } from "@/plugins/extensions";
+import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import EventDataUtility from "@/utility/eventDataUtility";
@@ -55,6 +55,7 @@ function downloadFile(): void {
         trackingService.trackEvent({
             action: Action.Download,
             text: Text.Document,
+            dataset: Dataset.BcCancer,
             type: EventDataUtility.getType(props.entry.screeningType),
             format: Format.Pdf,
             actor: Actor.User,
@@ -95,33 +96,26 @@ function downloadFile(): void {
                 v-if="props.entry.isResult"
                 data-testid="bc-cancer-result-body"
             >
-                For information about your results, you can contact
+                Download your cervix screening result letter. It may include
+                important information about next steps. If you have questions,
                 <a
-                    href="http://www.bccancer.bc.ca/contact"
+                    href="http://www.bccancer.bc.ca/screening/cervix"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
-                    >BC Cancer</a
-                >.
+                    >check the BC Cancer website</a
+                >
+                or talk to your care provider.
             </span>
             <span v-else data-testid="bc-cancer-screening-body">
+                Find out about your cervix screening next steps. You will also
+                get this letter in the mail.
                 <a
-                    href="http://www.bccancer.bc.ca/screening/cervix/get-screened/what-is-cervical-screening"
+                    href="http://www.bccancer.bc.ca/screening/cervix"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
-                    >Cervix screening</a
-                >
-                (Pap test) can stop at age 69 if your results have always been
-                normal. Ask your health care provider if you should still be
-                tested. To book your next Pap test, contact your health care
-                provider or a
-                <a
-                    href="http://www.bccancer.bc.ca/screening/cervix/clinic-locator"
-                    target="_blank"
-                    rel="noopener"
-                    class="text-link"
-                    >medical clinic</a
+                    >Learn more about cervix screening</a
                 >.
             </span>
         </p>

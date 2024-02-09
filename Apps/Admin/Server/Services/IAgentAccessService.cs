@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
 
@@ -29,29 +30,33 @@ namespace HealthGateway.Admin.Server.Services
         /// Provisions agent access to the admin website.
         /// </summary>
         /// <param name="agent">The agent model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The created agent.</returns>
-        Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent);
+        Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves agents with access to the admin website that match the query.
         /// </summary>
         /// <param name="searchString">The query string to match agents against.</param>
         /// <param name="resultLimit">The maximum number of results to return.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of matching agents.</returns>
-        Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25);
+        Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25, CancellationToken ct = default);
 
         /// <summary>
         /// Updates agent access to the admin website.
         /// </summary>
         /// <param name="agent">The agent model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The updated agent.</returns>
-        Task<AdminAgent> UpdateAgentAccessAsync(AdminAgent agent);
+        Task<AdminAgent> UpdateAgentAccessAsync(AdminAgent agent, CancellationToken ct = default);
 
         /// <summary>
         /// Removes an agent's access to the admin website.
         /// </summary>
         /// <param name="agentId">The unique identifier of the agent whose access should be terminated.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task RemoveAgentAccessAsync(Guid agentId);
+        Task RemoveAgentAccessAsync(Guid agentId, CancellationToken ct = default);
     }
 }

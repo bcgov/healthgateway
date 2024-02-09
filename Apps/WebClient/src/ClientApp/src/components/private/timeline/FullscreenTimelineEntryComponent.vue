@@ -5,9 +5,8 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import { entryTypeMap } from "@/constants/entryType";
 import TimelineEntry from "@/models/timeline/timelineEntry";
-import { useAppStore } from "@/stores/app";
 import { EventName, useEventStore } from "@/stores/event";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 
 interface Props {
     hdid: string;
@@ -17,9 +16,8 @@ withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,
 });
 
-const appStore = useAppStore();
+const layoutStore = useLayoutStore();
 const eventStore = useEventStore();
-const navigationStore = useNavigationStore();
 
 const entry = ref<TimelineEntry>();
 const entryDate = ref("");
@@ -37,7 +35,7 @@ function openDialog(incomingEntry: TimelineEntry): void {
     entryDate.value = incomingEntry.date.toISO();
 
     isVisible.value = true;
-    navigationStore.setHeaderState(false);
+    layoutStore.setHeaderState(false);
 }
 
 function closeDialog(): void {
@@ -53,7 +51,7 @@ function handleEntryUpdate(entryId: string): void {
 }
 
 watch(
-    () => appStore.isMobile,
+    () => layoutStore.isMobile,
     (value) => {
         if (!value) {
             closeDialog();

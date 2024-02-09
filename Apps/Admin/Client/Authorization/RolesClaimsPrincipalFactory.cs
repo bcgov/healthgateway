@@ -42,7 +42,7 @@ namespace HealthGateway.Admin.Client.Authorization
             RemoteUserAccount account,
             RemoteAuthenticationUserOptions options)
         {
-            ClaimsPrincipal? user = await base.CreateUserAsync(account, options).ConfigureAwait(true);
+            ClaimsPrincipal? user = await base.CreateUserAsync(account, options);
             if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 return user;

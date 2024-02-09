@@ -21,6 +21,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -63,7 +64,7 @@ namespace HealthGateway.Laboratory.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19OrdersAsync(string bearerToken, string hdid, int pageIndex = 0, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -79,7 +80,7 @@ namespace HealthGateway.Laboratory.Delegates
                 try
                 {
                     PhsaResult<List<PhsaCovid19Order>> response =
-                        await this.laboratoryApi.GetCovid19OrdersAsync(hdid, this.labConfig.FetchSize, bearerToken).ConfigureAwait(true);
+                        await this.laboratoryApi.GetCovid19OrdersAsync(hdid, this.labConfig.FetchSize, bearerToken, ct);
                     retVal.ResultStatus = ResultType.Success;
                     retVal.ResourcePayload = response;
                     retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
@@ -111,7 +112,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, string bearerToken, bool isCovid19)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReportAsync(string id, string hdid, string bearerToken, bool isCovid19, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -127,11 +128,11 @@ namespace HealthGateway.Laboratory.Delegates
                 {
                     if (isCovid19)
                     {
-                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, hdid, bearerToken).ConfigureAwait(true);
+                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, hdid, bearerToken, ct);
                     }
                     else
                     {
-                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, hdid, bearerToken).ConfigureAwait(true);
+                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, hdid, bearerToken, ct);
                     }
 
                     retVal.ResultStatus = ResultType.Success;
@@ -155,7 +156,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
+        public async Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummaryAsync(string hdid, string bearerToken, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
 
@@ -170,7 +171,7 @@ namespace HealthGateway.Laboratory.Delegates
             try
             {
                 PhsaResult<PhsaLaboratorySummary> response =
-                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(hdid, bearerToken).ConfigureAwait(true);
+                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(hdid, bearerToken, ct);
                 retVal.ResultStatus = ResultType.Success;
                 retVal.ResourcePayload = response;
                 retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;

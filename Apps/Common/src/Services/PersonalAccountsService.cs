@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
@@ -68,21 +69,21 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(PersonalAccountsService));
 
         /// <inheritdoc/>
-        public async Task<PersonalAccount> GetPatientAccountAsync(string hdid)
+        public async Task<PersonalAccount> GetPatientAccountAsync(string hdid, CancellationToken ct = default)
         {
-            PersonalAccount? account = this.GetFromCache(hdid);
+            PersonalAccount? account = await this.GetFromCacheAsync(hdid, ct);
             if (account is not null)
             {
                 return account;
             }
 
-            account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
-            this.PutCache(hdid, account);
+            account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid, ct);
+            await this.PutCacheAsync(hdid, account, ct);
             return account;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PersonalAccount>> GetPatientAccountResultAsync(string hdid)
+        public async Task<RequestResult<PersonalAccount>> GetPatientAccountResultAsync(string hdid, CancellationToken ct = default)
         {
             RequestResult<PersonalAccount> requestResult = new()
             {
@@ -92,7 +93,7 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                requestResult.ResourcePayload = await this.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+                requestResult.ResourcePayload = await this.GetPatientAccountAsync(hdid, ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.TotalResultCount = 1;
             }
@@ -114,14 +115,16 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="hdid">The hdid to use to retrieve the Personal Account.</param>
         /// <param name="personalAccount">The Personal Account to be cached.</param>
-        private void PutCache(string hdid, PersonalAccount personalAccount)
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        private async Task PutCacheAsync(string hdid, PersonalAccount personalAccount, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             string cacheKey = $"{CacheDomain}:HDID:{hdid}";
             if (this.phsaConfig.PersonalAccountsCacheTtl > 0)
             {
                 this.logger.LogDebug("Attempting to cache Personal Account for cache key: {Key}", cacheKey);
-                this.cacheProvider.AddItem(cacheKey, personalAccount, TimeSpan.FromMinutes(this.phsaConfig.PersonalAccountsCacheTtl));
+                await this.cacheProvider.AddItemAsync(cacheKey, personalAccount, TimeSpan.FromMinutes(this.phsaConfig.PersonalAccountsCacheTtl), ct);
             }
             else
             {
@@ -135,15 +138,16 @@ namespace HealthGateway.Common.Services
         /// Attempts to get the Personal Account from the cache.
         /// </summary>
         /// <param name="hdid">The hdid used to create the key to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Personal Account or null.</returns>
-        private PersonalAccount? GetFromCache(string hdid)
+        private async Task<PersonalAccount?> GetFromCacheAsync(string hdid, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             PersonalAccount? cacheItem = null;
             if (this.phsaConfig.PersonalAccountsCacheTtl > 0)
             {
                 string cacheKey = $"{CacheDomain}:HDID:{hdid}";
-                cacheItem = this.cacheProvider.GetItem<PersonalAccount>(cacheKey);
+                cacheItem = await this.cacheProvider.GetItemAsync<PersonalAccount>(cacheKey, ct);
                 this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache", cacheKey, cacheItem == null ? "not" : string.Empty);
             }
 

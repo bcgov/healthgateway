@@ -16,7 +16,9 @@
 namespace HealthGateway.Encounter.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
@@ -61,6 +63,7 @@ namespace HealthGateway.Encounter.Controllers
         /// Gets a json list of encounter records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of encounter records.</returns>
         /// <response code="200">Returns the list of encounter records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -73,10 +76,10 @@ namespace HealthGateway.Encounter.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
+        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting encounter records from controller... {Hdid}", hdid);
-            RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncountersAsync(hdid, ct);
 
             this.logger.LogDebug("Finished getting encounter records from controller... {Hdid}", hdid);
             return result;
@@ -86,6 +89,7 @@ namespace HealthGateway.Encounter.Controllers
         /// Gets a json list of hospital visit records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of hospital visit records.</returns>
         /// <response code="200">Returns the list of hospital visit records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -98,10 +102,10 @@ namespace HealthGateway.Encounter.Controllers
         [Produces("application/json")]
         [Route("HospitalVisit/{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
-        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid)
+        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting hospital visit records from controller... {Hdid}", hdid);
-            RequestResult<HospitalVisitResult> result = await this.service.GetHospitalVisits(hdid).ConfigureAwait(true);
+            RequestResult<HospitalVisitResult> result = await this.service.GetHospitalVisitsAsync(hdid, ct);
 
             this.logger.LogDebug("Finished getting hospital visit records from controller... {Hdid}", hdid);
             return result;

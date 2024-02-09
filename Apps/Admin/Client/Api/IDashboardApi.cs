@@ -32,7 +32,7 @@ public interface IDashboardApi
     /// </summary>
     /// <returns>A model containing the all-time counts.</returns>
     [Get("/AllTimeCounts")]
-    Task<AllTimeCounts> GetAllTimeCounts();
+    Task<AllTimeCounts> GetAllTimeCountsAsync();
 
     /// <summary>
     /// Retrieves daily usage counts over a date range.

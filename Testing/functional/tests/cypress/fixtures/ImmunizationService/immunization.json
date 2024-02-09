@@ -8,8 +8,8 @@
                 "recommendationSetId": "5588010_145363248",
                 "diseaseEligibleDate": null,
                 "diseaseDueDate": null,
-                "agentEligibleDate": "2021-07-22T00:00:00",
-                "agentDueDate": "2021-08-01T00:00:00",
+                "agentEligibleDate": "2021-07-22",
+                "agentDueDate": "2021-08-01",
                 "status": "Overdue",
                 "recommendedVaccinations": "COVID-19 mRNA ()",
                 "targetDiseases": [],
@@ -27,8 +27,8 @@
             },
             {
                 "recommendationSetId": "5588010_145363248",
-                "diseaseEligibleDate": "2021-07-22T00:00:00",
-                "diseaseDueDate": "2021-08-01T00:00:00",
+                "diseaseEligibleDate": "2021-07-22",
+                "diseaseDueDate": "2021-08-01",
                 "agentEligibleDate": null,
                 "agentDueDate": null,
                 "status": "Overdue",
@@ -56,7 +56,7 @@
             {
                 "id": "3209587_54397520",
                 "name": "COVID-19",
-                "dateOfImmunization": "2013-09-20T00:00:00",
+                "dateOfImmunization": "2013-09-20T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "targetedDisease": "Covid",
@@ -80,17 +80,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397521",
                 "name": "COVID",
-                "dateOfImmunization": "2010-03-28T00:00:00",
+                "dateOfImmunization": "2010-03-28T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -108,17 +108,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397522",
                 "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                "dateOfImmunization": "2008-12-20T00:00:00",
+                "dateOfImmunization": "2008-12-20T08:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -135,17 +135,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397523",
                 "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                "dateOfImmunization": "2009-02-23T00:00:00",
+                "dateOfImmunization": "2009-02-23T08:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -162,17 +162,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397524",
                 "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                "dateOfImmunization": "2009-06-06T00:00:00",
+                "dateOfImmunization": "2009-06-06T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -189,17 +189,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397525",
                 "name": "Meningococcal-C Conjugate",
-                "dateOfImmunization": "2008-12-20T00:00:00",
+                "dateOfImmunization": "2008-12-20T08:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -216,17 +216,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397526",
                 "name": "Measles, Mumps, Rubella",
-                "dateOfImmunization": "2009-10-22T00:00:00",
+                "dateOfImmunization": "2009-10-22T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -243,17 +243,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397527",
                 "name": "Measles, Mumps, Rubella",
-                "dateOfImmunization": "2010-03-28T00:00:00",
+                "dateOfImmunization": "2010-03-28T07:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -270,17 +270,17 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             },
             {
                 "id": "3209587_54397528",
                 "name": "Pneumococcal Conjugate - PCV7",
-                "dateOfImmunization": "2008-12-20T00:00:00",
+                "dateOfImmunization": "2008-12-20T08:00:00Z",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": "Provider A",
@@ -297,11 +297,11 @@
                 },
                 "forecast": {
                     "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
+                    "createDate": "0001-01-01",
                     "status": "Eligible",
                     "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
+                    "eligibleDate": "0001-01-01",
+                    "dueDate": "2021-01-31"
                 }
             }
         ]

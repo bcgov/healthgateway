@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models.Salesforce;
     using Refit;
@@ -29,8 +30,9 @@ namespace HealthGateway.Medication.Api
         /// </summary>
         /// <param name="phn">The PHN to query.</param>
         /// <param name="token">The access token to be used for the authorize header.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A wrapped response of SpecialAuthority requests.</returns>
         [Get("")]
-        Task<ResponseWrapper> GetSpecialAuthorityRequestsAsync([Header("phn")] string phn, [Authorize] string token);
+        Task<ResponseWrapper> GetSpecialAuthorityRequestsAsync([Header("phn")] string phn, [Authorize] string token, CancellationToken ct = default);
     }
 }

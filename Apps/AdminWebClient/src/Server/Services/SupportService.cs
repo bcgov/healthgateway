@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Admin.MapUtils;
@@ -32,8 +33,8 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
+    using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
 
     /// <inheritdoc/>
     public class SupportService : ISupportService
@@ -67,9 +68,9 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
+        public async Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default)
         {
-            IEnumerable<MessagingVerification> dbResult = this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).Result;
+            IEnumerable<MessagingVerification> dbResult = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid, ct);
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
                 ResultStatus = ResultType.Success,
@@ -79,7 +80,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString)
+        public async Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default)
         {
             RequestResult<IEnumerable<PatientSupportDetails>> result = new()
             {
@@ -90,19 +91,19 @@ namespace HealthGateway.Admin.Services
             switch (queryType)
             {
                 case PatientQueryType.Phn:
-                    this.PopulatePatientSupportDetails(result, PatientIdentifierType.Phn, queryString);
+                    await this.PopulatePatientSupportDetailsAsync(result, PatientIdentifierType.Phn, queryString, ct);
                     break;
                 case PatientQueryType.Email:
-                    await this.PopulatePatientSupportDetails(result, UserQueryType.Email, queryString).ConfigureAwait(true);
+                    await this.PopulatePatientSupportDetailsAsync(result, UserQueryType.Email, queryString, ct);
                     break;
                 case PatientQueryType.Sms:
-                    await this.PopulatePatientSupportDetails(result, UserQueryType.Sms, queryString).ConfigureAwait(true);
+                    await this.PopulatePatientSupportDetailsAsync(result, UserQueryType.Sms, queryString, ct);
                     break;
                 case PatientQueryType.Hdid:
-                    this.PopulatePatientSupportDetails(result, PatientIdentifierType.Hdid, queryString);
+                    await this.PopulatePatientSupportDetailsAsync(result, PatientIdentifierType.Hdid, queryString, ct);
                     break;
                 case PatientQueryType.Dependent:
-                    result = await this.SearchDelegates(queryString).ConfigureAwait(true);
+                    result = await this.SearchDelegatesAsync(queryString, ct);
                     break;
             }
 
@@ -128,16 +129,20 @@ namespace HealthGateway.Admin.Services
             return error;
         }
 
-        private void PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, PatientIdentifierType patientIdentifierType, string queryString)
+        private async Task PopulatePatientSupportDetailsAsync(
+            RequestResult<IEnumerable<PatientSupportDetails>> result,
+            PatientIdentifierType patientIdentifierType,
+            string queryString,
+            CancellationToken ct)
         {
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, patientIdentifierType).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(queryString, patientIdentifierType, ct: ct);
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
-                List<PatientSupportDetails> patients = new();
-                DbResult<Common.Data.Models.UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
-                if (dbResult.Status == DbStatusCode.Read)
+                List<PatientSupportDetails> patients = [];
+                UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(patientResult.ResourcePayload.HdId, ct);
+                if (userProfile != null)
                 {
-                    PatientSupportDetails patientSupportDetails = PatientSupportDetailsMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper);
+                    PatientSupportDetails patientSupportDetails = PatientSupportDetailsMapUtils.ToUiModel(userProfile, patientResult.ResourcePayload, this.autoMapper);
                     patients.Add(patientSupportDetails);
                     result.ResourcePayload = patients;
                     result.ResultStatus = ResultType.Success;
@@ -161,19 +166,19 @@ namespace HealthGateway.Admin.Services
             }
         }
 
-        private async Task PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, UserQueryType queryType, string queryString)
+        private async Task PopulatePatientSupportDetailsAsync(RequestResult<IEnumerable<PatientSupportDetails>> result, UserQueryType queryType, string queryString, CancellationToken ct)
         {
-            IEnumerable<Common.Data.Models.UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString).ConfigureAwait(true);
+            IEnumerable<UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString, ct);
             result.ResourcePayload = this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(profiles);
             result.ResultStatus = ResultType.Success;
         }
 
-        private async Task<RequestResult<IEnumerable<PatientSupportDetails>>> SearchDelegates(string forOwnerByPhn)
+        private async Task<RequestResult<IEnumerable<PatientSupportDetails>>> SearchDelegatesAsync(string forOwnerByPhn, CancellationToken ct)
         {
-            string ownerHdid = await this.patientService.GetPatientHdid(forOwnerByPhn).ConfigureAwait(true);
+            string ownerHdid = await this.patientService.GetPatientHdidAsync(forOwnerByPhn, ct);
 
             ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
-            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query, ct);
 
             return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(result.Items.Select(r => r.ResourceDelegate)));
         }

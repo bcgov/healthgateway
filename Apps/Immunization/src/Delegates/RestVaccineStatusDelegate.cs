@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Delegates
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.PHSA;
@@ -53,7 +54,7 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string hdid, bool includeFederalPvc, string accessToken)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusAsync(string hdid, bool includeFederalPvc, string accessToken, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting vaccine status for HDID {Hdid} with includeFederalPvc = {IncludeFederalPvc}", hdid, includeFederalPvc);
@@ -66,7 +67,7 @@ namespace HealthGateway.Immunization.Delegates
             try
             {
                 PhsaResult<VaccineStatusResult> phsaResult =
-                    await this.immunizationApi.GetVaccineStatusAsync(hdid, includeFederalPvc, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetVaccineStatusAsync(hdid, includeFederalPvc, accessToken, ct);
 
                 if (phsaResult.Result != null)
                 {
@@ -94,7 +95,7 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken, string clientIp)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublicAsync(VaccineStatusQuery query, string accessToken, string clientIp, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug(
@@ -111,7 +112,7 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatusAsync(query, accessToken, clientIp).ConfigureAwait(true);
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatusAsync(query, accessToken, clientIp, ct);
 
                 if (phsaResult.Result != null)
                 {

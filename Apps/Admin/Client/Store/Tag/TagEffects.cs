@@ -37,7 +37,7 @@ public class TagEffects(ILogger<TagEffects> logger, ITagApi api)
 
         try
         {
-            RequestResult<AdminTagView> response = await api.AddAsync(action.TagName).ConfigureAwait(true);
+            RequestResult<AdminTagView> response = await api.AddAsync(action.TagName);
             logger.LogInformation("AdminTagView added successfully!");
             dispatcher.Dispatch(new TagActions.AddSuccessAction { Data = response });
         }
@@ -56,7 +56,7 @@ public class TagEffects(ILogger<TagEffects> logger, ITagApi api)
 
         try
         {
-            RequestResult<IEnumerable<AdminTagView>> response = await api.GetAllAsync().ConfigureAwait(true);
+            RequestResult<IEnumerable<AdminTagView>> response = await api.GetAllAsync();
             logger.LogInformation("Tag loaded successfully!");
             dispatcher.Dispatch(new TagActions.LoadSuccessAction { Data = response });
         }
@@ -75,7 +75,7 @@ public class TagEffects(ILogger<TagEffects> logger, ITagApi api)
 
         try
         {
-            RequestResult<AdminTagView> response = await api.DeleteAsync(action.AdminTagView).ConfigureAwait(true);
+            RequestResult<AdminTagView> response = await api.DeleteAsync(action.AdminTagView);
             logger.LogInformation("Tag deleted successfully!");
             dispatcher.Dispatch(new TagActions.DeleteSuccessAction { Data = response });
         }

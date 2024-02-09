@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -38,8 +37,8 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -172,7 +171,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Get patient support details async throws problem details exception given client registry records not found.
+        /// Get patient support details async throws exception given client registry records not found.
         /// </summary>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -216,12 +215,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Get patient support details async throws problem details exception given null phn and invalid date of birth.
+        /// Get patient support details async throws exception given null phn and invalid date of birth.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -234,7 +233,7 @@ namespace HealthGateway.Admin.Tests.Services
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
             Address postalAddress = GenerateAddress(["PO BOX 1234"]);
 
-            // Invalid date causes problem details exception
+            // Invalid date causes exception
             PatientModel patient = GeneratePatientModel(string.Empty, Hdid, DateTime.MinValue, commonName, legalName, physicalAddress, postalAddress);
 
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
@@ -263,12 +262,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.PhnOrDateAndBirthInvalid, exception.ProblemDetails!.Detail);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
         }
 
         /// <summary>
-        /// Get patient support details async throws problem details exception given invalid phn.
+        /// Get patient support details async throws exception given invalid phn.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -308,8 +307,8 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.ProblemDetails!.Detail);
+            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(Actual);
+            Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
         }
 
         /// <summary>
@@ -538,17 +537,18 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientShouldThrowBadRequest()
+        public async Task GetPatientShouldValidationExceptionOnUnknownQueryType()
         {
             // Arrange
             ISupportService supportService = CreateSupportService();
 
             // Act
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
+            FluentValidation.ValidationException exception =
+                    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
                 ;
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, exception.ProblemDetails?.StatusCode);
+            Assert.Contains(exception.Message, "Unknown queryType", StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -879,7 +879,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             foreach ((AgentAuditQuery query, IEnumerable<AgentAudit> agentAudits) in pairs)
             {
-                mock.Setup(p => p.Handle(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
+                mock.Setup(p => p.HandleAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
             }
 
             return mock;
@@ -888,7 +888,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken)
         {
             Mock<IAuthenticationDelegate> mock = new();
-            mock.Setup(d => d.FetchAuthenticatedUserToken()).Returns(accessToken);
+            mock.Setup(d => d.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(accessToken);
             return mock;
         }
 
@@ -910,12 +910,12 @@ namespace HealthGateway.Admin.Tests.Services
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
                 PatientQueryResult result = new(patient == null ? [] : [patient]);
-                mock.Setup(p => p.Query(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
+                mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 
             if (dataSources != null)
             {
-                mock.Setup(s => s.GetDataSources(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
+                mock.Setup(s => s.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
             }
 
             return mock;
@@ -924,29 +924,29 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, ResourceDelegateQueryResult result)
         {
             Mock<IResourceDelegateDelegate> mock = new();
-            mock.Setup(d => d.SearchAsync(query)).ReturnsAsync(result);
+            mock.Setup(d => d.SearchAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             return mock;
         }
 
         private static Mock<IUserProfileDelegate> GetUserProfileDelegateMock(UserProfile? profile = null, IList<UserProfile>? profiles = null)
         {
             Mock<IUserProfileDelegate> mock = new();
-            mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(profile);
-            mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>())).ReturnsAsync(profiles ?? []);
+            mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
+            mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profiles ?? []);
             return mock;
         }
 
         private static Mock<IImmunizationAdminDelegate> GetImmunizationAdminDelegateMock(VaccineDetails details)
         {
             Mock<IImmunizationAdminDelegate> mock = new();
-            mock.Setup(d => d.GetVaccineDetailsWithRetries(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(details);
+            mock.Setup(d => d.GetVaccineDetailsWithRetriesAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(details);
             return mock;
         }
 
         private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(CovidAssessmentDetailsResponse response)
         {
             Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.GetCovidAssessmentDetails(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>())).ReturnsAsync(response);
+            mock.Setup(d => d.GetCovidAssessmentDetailsAsync(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 

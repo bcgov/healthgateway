@@ -12,6 +12,11 @@
         protocols:
           - http
           - https
+      - name: post-function
+        tags: [ ns.$KONG_NAMESPACE.$ENVIRONMENT ]
+        config:
+          rewrite:
+          - "--"
     routes:
       - name: $SERVICE-$KONG_NAMESPACE-get-post-put-delete
         methods:

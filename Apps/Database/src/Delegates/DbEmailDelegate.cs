@@ -19,12 +19,12 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
@@ -49,44 +49,31 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public Email? GetEmail(Guid emailId)
-        {
-            this.logger.LogTrace("Getting email from DB... {EmailId}", emailId);
-            Email? retVal = this.dbContext.Find<Email>(emailId);
-            this.logger.LogDebug("Finished getting email {EmailId} from DB", emailId);
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public Email? GetStandardEmail(Guid emailId)
+        public async Task<Email?> GetStandardEmailAsync(Guid emailId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting new email from DB... {EmailId}", emailId);
-            Email? retVal = this.dbContext.Email.SingleOrDefault(p => p.Id == emailId && p.Priority >= EmailPriority.Standard);
-            this.logger.LogDebug("Finished getting new email {EmailId} from DB", emailId);
-            return retVal;
+            return await this.dbContext.Email.SingleOrDefaultAsync(p => p.Id == emailId && p.Priority >= EmailPriority.Standard, ct);
         }
 
         /// <inheritdoc/>
-        public IList<Email> GetUnsentEmails(int maxRows)
+        public async Task<IList<Email>> GetUnsentEmailsAsync(int maxRows, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting list of low priority emails from DB... {MaxRows}", maxRows);
-            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority < EmailPriority.Standard)
+            return await this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority < EmailPriority.Standard)
                 .OrderByDescending(o => o.Priority)
                 .ThenBy(o => o.CreatedDateTime)
                 .Take(maxRows)
-                .ToList();
-            this.logger.LogDebug("Finished getting list of low priority emails from DB");
-            return retVal;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
-        public Guid InsertEmail(Email email, bool shouldCommit = true)
+        public async Task<Guid> InsertEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting email to DB..");
             this.dbContext.Add(email);
             if (shouldCommit)
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
             }
 
             this.logger.LogDebug("Finished inserting email to DB. {Email}", email.Id);
@@ -94,51 +81,34 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void UpdateEmail(Email email)
+        public async Task UpdateEmailAsync(Email email, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating email {Email} in DB... ", email.Id);
             this.dbContext.Update(email);
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(ct);
             this.logger.LogDebug("Finished updating email {Email} in DB", email.Id);
         }
 
         /// <inheritdoc/>
-        public EmailTemplate GetEmailTemplate(string templateName)
+        public async Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting email template {TemplateName} from DB... ", templateName);
-            EmailTemplate retVal = this.dbContext
+            return await this.dbContext
                 .EmailTemplate
-                .First(p => p.Name == templateName);
-            this.logger.LogDebug("Finished getting email {TemplateName} template from DB", templateName);
-
-            return retVal;
+                .FirstOrDefaultAsync(p => p.Name == templateName, ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<Email>> GetEmails(int offset = 0, int pageSize = 1000)
+        public async Task<int> DeleteAsync(uint daysAgo, int maxRows, bool shouldCommit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting Emails...");
-            DbResult<IList<Email>> result = new();
-            result.Payload = this.dbContext.Email
-                .OrderByDescending(o => o.CreatedBy)
-                .Skip(offset)
-                .Take(pageSize)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public int Delete(uint daysAgo, int maxRows, bool shouldCommit = true)
-        {
-            int deletedCount = this.dbContext.Email
+            int deletedCount = await this.dbContext.Email
                 .Where(
                     email => email.EmailStatusCode == EmailStatus.Processed &&
                              email.CreatedDateTime <= DateTime.UtcNow.AddDays(daysAgo * -1).Date)
                 .Where(email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == email.To))
                 .OrderBy(email => email.CreatedDateTime)
                 .Take(maxRows)
-                .ExecuteDelete();
+                .ExecuteDeleteAsync(ct);
             return deletedCount;
         }
     }

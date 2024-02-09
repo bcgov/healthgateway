@@ -130,10 +130,10 @@ namespace HealthGateway.EncounterTests.Services
             string hdid = "MOCKHDID";
 
             Mock<IMspVisitDelegate> mockMspDelegate = new();
-            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
+            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
 
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(this.patientResult);
+            mockPatientService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(this.patientResult);
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
@@ -151,7 +151,7 @@ namespace HealthGateway.EncounterTests.Services
                 GetIConfigurationRoot(),
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncounters(hdid);
+            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
             Assert.True(actualResult.ResultStatus == ResultType.Success);
 
@@ -188,10 +188,11 @@ namespace HealthGateway.EncounterTests.Services
             string hdid = "MOCKHDID";
 
             Mock<IMspVisitDelegate> mockMspDelegate = new();
-            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(delegateResult);
 
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(this.patientResult));
+            mockPatientService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(this.patientResult);
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
@@ -209,7 +210,7 @@ namespace HealthGateway.EncounterTests.Services
                 GetIConfigurationRoot(),
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncounters(hdid);
+            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.False(actualResult.ResourcePayload.Any());
@@ -230,7 +231,8 @@ namespace HealthGateway.EncounterTests.Services
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             Mock<IMspVisitDelegate> mockMspDelegate = new();
-            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> errorPatientResult = new()
             {
@@ -243,7 +245,7 @@ namespace HealthGateway.EncounterTests.Services
             };
 
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(errorPatientResult));
+            mockPatientService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(errorPatientResult);
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
@@ -261,7 +263,7 @@ namespace HealthGateway.EncounterTests.Services
                 GetIConfigurationRoot(),
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncounters(hdid);
+            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             errorPatientResult.ResultError.ShouldDeepEqual(actualResult.ResultError);
@@ -300,7 +302,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults, canAccessDataSource);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisitsAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -339,7 +341,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisitsAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -377,7 +379,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisitsAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -410,7 +412,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisitsAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -427,6 +429,8 @@ namespace HealthGateway.EncounterTests.Services
                 { "PHSA:FetchSize", ConfigFetchSize },
                 { "PHSA:BackOffMilliseconds", ConfigBackOffMilliseconds },
                 { "MspVisit:ExcludedFeeDescriptions", "PRIMARY CARE PANEL REPORT,LFP DIRECT PATIENT CARE TIME,LFP INDIRECT PATIENT CARE TIME" },
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
             };
 
             return new ConfigurationBuilder()
@@ -439,7 +443,7 @@ namespace HealthGateway.EncounterTests.Services
             bool canAccessDataSource = true)
         {
             Mock<IHospitalVisitDelegate> mockHospitalVisitDelegate = new();
-            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisitsAsync(It.IsAny<string>())).Returns(Task.FromResult(hospitalVisitResult));
+            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(hospitalVisitResult));
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);

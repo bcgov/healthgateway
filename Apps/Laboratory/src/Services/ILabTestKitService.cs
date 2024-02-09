@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Laboratory.Models.PHSA;
@@ -28,15 +29,17 @@ namespace HealthGateway.Laboratory.Services
         /// Adds a lab test kit to a non-authenticated user.
         /// </summary>
         /// <param name="testKit">The test kit to register.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the original testKit wrapped in a RequestResult.</returns>
-        Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit);
+        Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit, CancellationToken ct = default);
 
         /// <summary>
         /// Adds a lab test kit to an authenticated user.
         /// </summary>
         /// <param name="hdid">The hdid to associate the test kit against.</param>
         /// <param name="testKit">The test kit to register.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the original testKit wrapped in a RequestResult.</returns>
-        Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit);
+        Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit, CancellationToken ct = default);
     }
 }

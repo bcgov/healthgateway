@@ -16,6 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -44,7 +46,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true)
+        public async Task<DbResult<EventLog>> WriteEventLogAsync(EventLog eventLog, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting event log to DB...");
             DbResult<EventLog> result = new();
@@ -53,7 +55,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)

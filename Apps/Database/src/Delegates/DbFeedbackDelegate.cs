@@ -19,6 +19,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -47,14 +49,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
+        public async Task<DbResult<UserFeedback>> InsertUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting user feedback to DB...");
             DbResult<UserFeedback> result = new();
             this.dbContext.Add(feedback);
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
@@ -68,7 +70,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void UpdateUserFeedback(UserFeedback feedback)
+        public async Task UpdateUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating the user feedback in DB...");
             this.dbContext.Update(feedback);
@@ -76,16 +78,16 @@ namespace HealthGateway.Database.Delegates
             // Disallow updates to UserProfileId
             this.dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
 
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(ct);
 
             // Reload the entry after saving to retrieve the actual UserProfileId value
-            this.dbContext.Entry(feedback).Reload();
+            await this.dbContext.Entry(feedback).ReloadAsync(ct);
 
             this.logger.LogDebug("Finished updating feedback in DB...");
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
+        public async Task<DbResult<UserFeedback>> UpdateUserFeedbackWithTagAssociationsAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
             this.dbContext.Update(feedback);
@@ -93,7 +95,7 @@ namespace HealthGateway.Database.Delegates
 
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Updated;
                 result.Payload = feedback;
             }
@@ -107,35 +109,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> GetUserFeedback(Guid feedbackId)
+        public async Task<UserFeedback?> GetUserFeedbackAsync(Guid feedbackId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user feedback from DB... {FeedbackId}", feedbackId);
-            UserFeedback? feedback = this.dbContext.UserFeedback.Find(feedbackId);
-            DbResult<UserFeedback> result = new();
-            if (feedback != null)
-            {
-                result.Payload = feedback;
-                result.Status = DbStatusCode.Read;
-            }
-            else
-            {
-                this.logger.LogInformation("Unable to find feedback using ID: {FeedbackId}", feedbackId);
-                result.Status = DbStatusCode.NotFound;
-            }
-
-            this.logger.LogDebug("Finished getting user feedback from DB...");
-            return result;
+            return await this.dbContext.UserFeedback.FindAsync([feedbackId], ct);
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
+        public async Task<DbResult<UserFeedback>> GetUserFeedbackWithFeedbackTagsAsync(Guid feedbackId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
-            UserFeedback? feedback = this.dbContext.UserFeedback
+            UserFeedback? feedback = await this.dbContext.UserFeedback
                 .Where(f => f.Id == feedbackId)
                 .Include(f => f.Tags)
                 .ThenInclude(t => t.AdminTag)
-                .SingleOrDefault();
+                .SingleOrDefaultAsync(ct);
 
             DbResult<UserFeedback> result = new();
             if (feedback != null)
@@ -154,32 +142,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries(bool includeUserProfile = false)
+        public async Task<IList<UserFeedback>> GetAllUserFeedbackEntriesAsync(bool includeUserProfile = false, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting all user feedback entries - includeUserProfile: {IncludeUserProfile}", includeUserProfile);
+
+            IQueryable<UserFeedback> query = this.dbContext.UserFeedback;
             if (includeUserProfile)
             {
-                return new()
-                {
-                    Payload = this.dbContext.UserFeedback
-                        .Include(f => f.UserProfile)
-                        .Include(f => f.Tags)
-                        .ThenInclude(t => t.AdminTag)
-                        .OrderByDescending(f => f.CreatedDateTime)
-                        .ToList(),
-                    Status = DbStatusCode.Read,
-                };
+                query = query.Include(f => f.UserProfile);
             }
 
-            return new()
-            {
-                Payload = this.dbContext.UserFeedback
-                    .Include(f => f.Tags)
-                    .ThenInclude(t => t.AdminTag)
-                    .OrderByDescending(f => f.CreatedDateTime)
-                    .ToList(),
-                Status = DbStatusCode.Read,
-            };
+            return await query
+                .Include(f => f.Tags)
+                .ThenInclude(t => t.AdminTag)
+                .OrderByDescending(f => f.CreatedDateTime)
+                .ToListAsync(ct);
         }
     }
 }

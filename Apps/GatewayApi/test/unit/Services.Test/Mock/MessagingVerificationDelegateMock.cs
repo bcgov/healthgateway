@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System;
+    using System.Threading;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Delegates;
     using Moq;
@@ -30,7 +31,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         public MessagingVerificationDelegateMock()
         {
-            this.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            this.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MessagingVerification());
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="messagingVerification">messaging verification.</param>
         public MessagingVerificationDelegateMock(MessagingVerification messagingVerification)
         {
-            this.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(messagingVerification);
+            this.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(messagingVerification);
         }
     }
 }
