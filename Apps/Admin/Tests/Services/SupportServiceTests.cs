@@ -39,9 +39,11 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -64,10 +66,12 @@ namespace HealthGateway.Admin.Tests.Services
         private const string ClientRegistryWarning = "Client Registry Warning";
         private const string PatientResponseCode = $"500|{ClientRegistryWarning}";
 
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IAdminServerMappingService MappingService = new AdminServerMappingService(Mapper, Configuration);
+        private static readonly ICommonMappingService CommonMappingService = new CommonMappingService(Mapper);
         private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
         private static readonly DateTime Birthdate2 = DateTime.Parse("1999-12-31", CultureInfo.InvariantCulture);
-
-        private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetPatientSupportDetailsAsync - Happy Path.
@@ -712,8 +716,8 @@ namespace HealthGateway.Admin.Tests.Services
                 CommonName = Map(patient?.CommonName),
                 LegalName = Map(patient?.LegalName),
                 Birthdate = patient == null ? null : DateOnly.FromDateTime(patient.Birthdate),
-                PhysicalAddress = AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PhysicalAddress),
-                PostalAddress = AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PostalAddress),
+                PhysicalAddress = Mapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PhysicalAddress),
+                PostalAddress = Mapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PostalAddress),
                 ProfileCreatedDateTime = profile?.CreatedDateTime,
                 ProfileLastLoginDateTime = profile?.LastLoginDateTime,
             };
@@ -970,7 +974,8 @@ namespace HealthGateway.Admin.Tests.Services
             auditRepositoryMock ??= new Mock<IAuditRepository>();
 
             return new SupportService(
-                AutoMapper,
+                MappingService,
+                CommonMappingService,
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
                 resourceDelegateDelegateMock.Object,
@@ -981,6 +986,17 @@ namespace HealthGateway.Admin.Tests.Services
                 auditRepositoryMock.Object,
                 new Mock<ICacheProvider>().Object,
                 new Mock<ILogger<SupportService>>().Object);
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
+            };
+
+            return new ConfigurationBuilder().AddInMemoryCollection(myConfiguration).Build();
         }
     }
 }

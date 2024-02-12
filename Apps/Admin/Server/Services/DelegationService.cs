@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
@@ -49,7 +48,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
     /// <param name="messageSender">The change feed message sender</param>
     /// <param name="auditRepository">The injected agent audit repository.</param>
-    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
     public class DelegationService(
         IConfiguration configuration,
@@ -59,7 +58,7 @@ namespace HealthGateway.Admin.Server.Services
         IAuthenticationDelegate authenticationDelegate,
         IMessageSender messageSender,
         IAuditRepository auditRepository,
-        IMapper autoMapper) : IDelegationService
+        IAdminServerMappingService mappingService) : IDelegationService
     {
         private const string DelegationConfigSection = "Delegation";
         private const string MaxDependentAgeKey = "MaxDependentAge";
@@ -84,7 +83,7 @@ namespace HealthGateway.Admin.Server.Services
             if (dependentPatientResult.ResourcePayload != null)
             {
                 PatientModel dependentPatientInfo = dependentPatientResult.ResourcePayload;
-                DependentInfo dependentInfo = autoMapper.Map<DependentInfo>(dependentPatientInfo);
+                DependentInfo dependentInfo = mappingService.MapToDependentInfo(dependentPatientInfo);
                 delegationInfo.Dependent = dependentInfo;
 
                 // Get delegates from database
@@ -96,7 +95,7 @@ namespace HealthGateway.Admin.Server.Services
                     RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(resourceDelegate.ProfileHdid, ct: ct);
                     ValidatePatientResult(delegatePatientResult);
 
-                    DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
+                    DelegateInfo delegateInfo = mappingService.MapToDelegateInfo(delegatePatientResult.ResourcePayload);
                     delegateInfo.DelegationStatus = DelegationStatus.Added;
                     delegates.Add(delegateInfo);
                 }
@@ -112,7 +111,7 @@ namespace HealthGateway.Admin.Server.Services
                     {
                         RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(allowedDelegation.DelegateHdId, ct: ct);
 
-                        DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
+                        DelegateInfo delegateInfo = mappingService.MapToDelegateInfo(delegatePatientResult.ResourcePayload);
                         delegateInfo.DelegationStatus = DelegationStatus.Allowed;
                         delegates.Add(delegateInfo);
                     }
@@ -123,7 +122,7 @@ namespace HealthGateway.Admin.Server.Services
                 // Get agent audits
                 AgentAuditQuery agentAuditQuery = new(dependentPatientInfo.HdId, AuditGroup.Dependent);
                 IEnumerable<AgentAudit> agentAudits = await auditRepository.HandleAsync(agentAuditQuery, ct);
-                delegationInfo.AgentActions = agentAudits.Select(a => autoMapper.Map<AgentAction>(a));
+                delegationInfo.AgentActions = agentAudits.Select(mappingService.MapToAgentAction).ToList();
             }
 
             return delegationInfo;
@@ -138,7 +137,7 @@ namespace HealthGateway.Admin.Server.Services
             await new DelegatePatientValidator(this.minDelegateAge, $"Delegate age is below {this.minDelegateAge}")
                 .ValidateAndThrowAsync(delegatePatientResult.ResourcePayload!, ct);
 
-            DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
+            DelegateInfo delegateInfo = mappingService.MapToDelegateInfo(delegatePatientResult.ResourcePayload);
             return delegateInfo;
         }
 
@@ -212,7 +211,7 @@ namespace HealthGateway.Admin.Server.Services
                 await delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, ct: ct);
             }
 
-            return autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
+            return mappingService.MapToAgentAction(agentAudit);
         }
 
         /// <inheritdoc/>
@@ -258,7 +257,7 @@ namespace HealthGateway.Admin.Server.Services
                 await delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit, ct: ct);
             }
 
-            return autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
+            return mappingService.MapToAgentAction(agentAudit);
         }
 
         private static void ValidatePatientResult(RequestResult<PatientModel> patientResult)

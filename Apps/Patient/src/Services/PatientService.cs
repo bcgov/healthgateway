@@ -19,7 +19,6 @@ namespace HealthGateway.Patient.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -33,7 +32,7 @@ namespace HealthGateway.Patient.Services
     public class PatientService : IPatientService
     {
         private readonly ILogger<PatientService> logger;
-        private readonly IMapper mapper;
+        private readonly IPatientMappingService mappingService;
         private readonly IPatientRepository patientRepository;
 
         /// <summary>
@@ -41,12 +40,12 @@ namespace HealthGateway.Patient.Services
         /// </summary>
         /// <param name="logger">The service Logger.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        public PatientService(ILogger<PatientService> logger, IPatientRepository patientRepository, IMapper mapper)
+        /// <param name="mappingService">The injected mapping service.</param>
+        public PatientService(ILogger<PatientService> logger, IPatientRepository patientRepository, IPatientMappingService mappingService)
         {
             this.logger = logger;
             this.patientRepository = patientRepository;
-            this.mapper = mapper;
+            this.mappingService = mappingService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(PatientService));
@@ -99,7 +98,7 @@ namespace HealthGateway.Patient.Services
 
             activity?.Stop();
 
-            return this.mapper.Map<PatientDetails>(patientDetails);
+            return this.mappingService.MapToPatientDetails(patientDetails);
         }
     }
 }

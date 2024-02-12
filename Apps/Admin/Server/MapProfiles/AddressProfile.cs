@@ -27,6 +27,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
         /// </summary>
         public AddressProfile()
         {
+            // used indirectly by PatientSupportDependentInfoProfile and PatientSupportDetailsProfile
             this.CreateMap<AccountDataAccess.Patient.Address?, HealthGateway.Common.Data.Models.Address?>()
                 .ReverseMap();
         }

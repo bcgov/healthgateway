@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -42,7 +41,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -58,7 +56,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
         private readonly ICacheProvider cacheProvider;
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IEmailQueueService emailQueueService;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
@@ -93,7 +91,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="messageVerificationDelegate">The message verification delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="mappingService">The inject automapper provider.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         /// <param name="applicationSettingsDelegate">The injected Application Settings delegate.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
@@ -113,7 +111,7 @@ namespace HealthGateway.GatewayApi.Services
             IMessagingVerificationDelegate messageVerificationDelegate,
             ICryptoDelegate cryptoDelegate,
             IConfiguration configuration,
-            IMapper autoMapper,
+            IGatewayApiMappingService mappingService,
             IAuthenticationDelegate authenticationDelegate,
             IApplicationSettingsDelegate applicationSettingsDelegate,
             ICacheProvider cacheProvider,
@@ -134,7 +132,7 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
             this.authenticationDelegate = authenticationDelegate;
             this.applicationSettingsDelegate = applicationSettingsDelegate;
             this.cacheProvider = cacheProvider;
@@ -362,7 +360,7 @@ namespace HealthGateway.GatewayApi.Services
             LegalAgreement? legalAgreement = await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct);
             return legalAgreement == null
                 ? RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.LegalAgreementNotFound)
-                : RequestResultFactory.Success(this.autoMapper.Map<TermsOfServiceModel>(legalAgreement));
+                : RequestResultFactory.Success(this.mappingService.MapToTermsOfServiceModel(legalAgreement));
         }
 
         /// <inheritdoc/>
@@ -370,7 +368,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
-            UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
+            UserPreference userPreference = this.mappingService.MapToUserPreference(userPreferenceModel);
 
             DbResult<UserPreference> dbResult = await this.userPreferenceDelegate.UpdateUserPreferenceAsync(userPreference, ct: ct);
 
@@ -379,14 +377,14 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserPreferenceModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload));
+            return RequestResultFactory.Success(this.mappingService.MapToUserPreferenceModel(dbResult.Payload));
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
-            UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
+            UserPreference userPreference = this.mappingService.MapToUserPreference(userPreferenceModel);
             DbResult<UserPreference> dbResult = await this.userPreferenceDelegate.CreateUserPreferenceAsync(userPreference, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Created)
@@ -394,7 +392,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserPreferenceModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload));
+            return RequestResultFactory.Success(this.mappingService.MapToUserPreferenceModel(dbResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -402,7 +400,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
             IEnumerable<UserPreference> userPreferences = await this.userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
-            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(userPreferences).ToDictionary(x => x.Preference, x => x));
+            return RequestResultFactory.Success(userPreferences.Select(this.mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x));
         }
 
         /// <inheritdoc/>
@@ -489,7 +487,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             Guid? termsOfServiceId = (await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct))?.Id;
             DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
-            UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(userProfile, termsOfServiceId, this.autoMapper);
+            UserProfileModel userProfileModel = this.mappingService.MapToUserProfileModel(userProfile, termsOfServiceId);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
                                               profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&

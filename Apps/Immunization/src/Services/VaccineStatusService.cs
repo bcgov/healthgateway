@@ -18,7 +18,6 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -34,7 +33,6 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Validations;
     using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -48,7 +46,7 @@ namespace HealthGateway.Immunization.Services
         private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "PublicAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly IMapper autoMapper;
+        private readonly IImmunizationMappingService mappingService;
         private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly PhsaConfig phsaConfig;
@@ -63,18 +61,18 @@ namespace HealthGateway.Immunization.Services
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor.</param>
-        /// <param name="autoMapper">The injected automapper.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
             IHttpContextAccessor? httpContextAccessor,
-            IMapper autoMapper)
+            IImmunizationMappingService mappingService)
         {
             this.authDelegate = authDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
 
             this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
 
@@ -263,7 +261,7 @@ namespace HealthGateway.Immunization.Services
 
             if (payload != null)
             {
-                retVal.ResourcePayload = VaccineStatusMapUtils.ToUiModel(this.autoMapper, payload, phn);
+                retVal.ResourcePayload = this.mappingService.MapToVaccineStatus(payload, phn);
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
                     VaccineState.Threshold or VaccineState.Blocked => VaccineState.NotFound,

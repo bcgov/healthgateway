@@ -19,18 +19,15 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Logging;
@@ -38,9 +35,8 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class CommentService : ICommentService
     {
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
         private readonly ICommentDelegate commentDelegate;
-        private readonly ICryptoDelegate cryptoDelegate;
         private readonly ILogger logger;
         private readonly IUserProfileDelegate profileDelegate;
 
@@ -50,15 +46,17 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="commentDelegate">Injected Comment delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
-        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
-        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate, IMapper autoMapper)
+        /// <param name="mappingService">The injected mapping service.</param>
+        public CommentService(
+            ILogger<CommentService> logger,
+            ICommentDelegate commentDelegate,
+            IUserProfileDelegate profileDelegate,
+            IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
             this.commentDelegate = commentDelegate;
             this.profileDelegate = profileDelegate;
-            this.cryptoDelegate = cryptoDelegate;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         /// <inheritdoc/>
@@ -79,7 +77,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
             }
 
-            Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
+            Comment comment = this.mappingService.MapToComment(userComment, key);
             DbResult<Comment> dbResult = await this.commentDelegate.AddAsync(comment, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Created)
@@ -87,7 +85,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -111,7 +109,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             return RequestResultFactory.Success(
-                dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
+                dbComments.Payload.Select(c => this.mappingService.MapToUserComment(c, key)),
                 dbComments.Payload.Count,
                 0,
                 dbComments.Payload.Count);
@@ -131,7 +129,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DbResult<IEnumerable<Comment>> dbComments = await this.commentDelegate.GetAllAsync(hdId, ct);
-            IEnumerable<UserComment> comments = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper));
+            IEnumerable<UserComment> comments = dbComments.Payload.Select(c => this.mappingService.MapToUserComment(c, key));
             IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
             if (dbComments.Status != DbStatusCode.Read)
@@ -164,7 +162,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
             }
 
-            Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
+            Comment comment = this.mappingService.MapToComment(userComment, key);
             DbResult<Comment> dbResult = await this.commentDelegate.UpdateAsync(comment, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Updated)
@@ -172,7 +170,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -193,7 +191,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
             }
 
-            Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
+            Comment comment = this.mappingService.MapToComment(userComment, key);
             DbResult<Comment> dbResult = await this.commentDelegate.DeleteAsync(comment, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Deleted)
@@ -201,7 +199,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
         }
     }
 }

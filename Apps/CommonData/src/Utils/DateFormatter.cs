@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Data.Utils;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
@@ -122,7 +121,8 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Modifies a DateTime if the Kind is unspecified, treating it as a time in the local time zone, and returning the UTC equivalent to that time.
+    /// Modifies a DateTime if the Kind is unspecified, treating it as a time in the local time zone, and returning the UTC
+    /// equivalent to that time.
     /// </summary>
     /// <param name="dateTime">The DateTime to modify.</param>
     /// <param name="configuration">Configuration containing TimeZone keys for the local time zone.</param>
@@ -133,7 +133,8 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Modifies a DateTime if the Kind is unspecified, treating it as a time in the specified time zone, and returning the UTC equivalent to that time.
+    /// Modifies a DateTime if the Kind is unspecified, treating it as a time in the specified time zone, and returning the UTC
+    /// equivalent to that time.
     /// </summary>
     /// <param name="dateTime">The DateTime to modify.</param>
     /// <param name="timeZone">TimeZoneInfo object that represents the time zone the datetime is in.</param>

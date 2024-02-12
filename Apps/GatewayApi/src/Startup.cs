@@ -81,6 +81,7 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigureMessaging(services);
 
             // Add services
+            services.AddTransient<IGatewayApiMappingService, GatewayApiMappingService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();

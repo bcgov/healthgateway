@@ -64,6 +64,7 @@ namespace HealthGateway.Patient
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
+            services.AddTransient<IPatientMappingService, PatientMappingService>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IPatientDataService, PatientDataService>();
             services.AddAutoMapper(typeof(Program));

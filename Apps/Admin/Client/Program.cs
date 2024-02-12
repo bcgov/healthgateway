@@ -100,6 +100,7 @@ namespace HealthGateway.Admin.Client
 
             builder.Services.AddBlazoredLocalStorage();
 
+            builder.Services.AddTransient<IAdminClientMappingService, AdminClientMappingService>();
             builder.Services.AddSingleton<IDateConversionService, DateConversionService>();
             builder.Services.AddTransient<IKeyInterceptorService, KeyInterceptorService>();
 

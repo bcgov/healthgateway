@@ -17,12 +17,12 @@ namespace HealthGateway.Admin.Client.Store.UserFeedback;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AutoMapper;
 using Fluxor;
 using HealthGateway.Admin.Client.Api;
-using HealthGateway.Admin.Client.Models;
+using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
@@ -30,7 +30,7 @@ using HealthGateway.Common.Data.ViewModels;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api, IMapper autoMapper)
+public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api, IAdminClientMappingService mappingService)
 {
     [EffectMethod(typeof(UserFeedbackActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
@@ -46,7 +46,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
                 dispatcher.Dispatch(
                     new UserFeedbackActions.LoadSuccessAction
                     {
-                        Data = autoMapper.Map<IEnumerable<UserFeedbackView>, IEnumerable<ExtendedUserFeedbackView>>(response.ResourcePayload),
+                        Data = response.ResourcePayload.Select(mappingService.MapToExtendedUserFeedbackView).ToList(),
                     });
                 return;
             }
@@ -77,7 +77,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
                 dispatcher.Dispatch(
                     new UserFeedbackActions.UpdateSuccessAction
                     {
-                        Data = autoMapper.Map<UserFeedbackView, ExtendedUserFeedbackView>(response.ResourcePayload),
+                        Data = mappingService.MapToExtendedUserFeedbackView(response.ResourcePayload),
                     });
                 return;
             }
@@ -109,7 +109,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
                 dispatcher.Dispatch(
                     new UserFeedbackActions.SaveAssociatedTagsSuccessAction
                     {
-                        Data = autoMapper.Map<UserFeedbackView, ExtendedUserFeedbackView>(response.ResourcePayload),
+                        Data = mappingService.MapToExtendedUserFeedbackView(response.ResourcePayload),
                     });
                 return;
             }

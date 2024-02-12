@@ -19,7 +19,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -43,13 +42,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     /// </summary>
     public class VaccineStatusServiceTests
     {
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
+
         private readonly string phn = "9735353315";
         private readonly DateOnly dob = DateOnly.Parse("1967-06-02", CultureInfo.InvariantCulture);
         private readonly DateOnly dov = DateOnly.Parse("2021-07-04", CultureInfo.InvariantCulture);
         private readonly string accessToken = "XXDDXX";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-        private readonly IConfiguration configuration = GetIConfigurationRoot();
 
         /// <summary>
         /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - Happy Path.
@@ -117,12 +117,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             if (isPublicEndpoint)
             {
@@ -202,12 +202,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             if (isPublicEndpoint)
             {
@@ -294,12 +294,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             if (isPublicEndpoint)
             {
@@ -387,12 +387,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             if (isPublicEndpoint)
             {
@@ -484,12 +484,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             if (isPublicEndpoint)
             {
@@ -522,12 +522,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         public async Task ShouldErrorOnPHN()
         {
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -547,12 +547,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         public async Task ShouldErrorOnDOB()
         {
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
@@ -569,12 +569,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         public async Task ShouldErrorOnDOV()
         {
             IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 null,
-                this.autoMapper);
+                MappingService);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 

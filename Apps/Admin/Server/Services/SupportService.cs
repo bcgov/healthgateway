@@ -21,7 +21,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
@@ -30,7 +29,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.MapUtils;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
@@ -39,13 +37,15 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
+    /// <param name="commonMappingService">The injected common mapping service.</param>
     /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
     /// <param name="patientRepository">The injected patient repository.</param>
     /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
@@ -58,7 +58,8 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="logger">The injected logger provider.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
     public class SupportService(
-        IMapper autoMapper,
+        IAdminServerMappingService mappingService,
+        ICommonMappingService commonMappingService,
         IMessagingVerificationDelegate messagingVerificationDelegate,
         IPatientRepository patientRepository,
         IResourceDelegateDelegate resourceDelegateDelegate,
@@ -173,7 +174,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<IEnumerable<MessagingVerificationModel>> GetMessagingVerificationsAsync(string hdid, CancellationToken ct)
         {
             IEnumerable<MessagingVerification> verifications = await messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid, ct);
-            return verifications.Select(m => autoMapper.Map<MessagingVerification, MessagingVerificationModel>(m));
+            return verifications.Select(commonMappingService.MapToMessagingVerificationModel);
         }
 
         private async Task<IEnumerable<DataSource>> GetBlockedDataSourcesAsync(string hdid, CancellationToken ct)
@@ -190,7 +191,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
         {
             IEnumerable<AgentAudit> audits = await auditRepository.HandleAsync(new(hdid), ct);
-            return audits.Select(autoMapper.Map<AgentAudit, AgentAction>);
+            return audits.Select(mappingService.MapToAgentAction);
         }
 
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)
@@ -209,7 +210,7 @@ namespace HealthGateway.Admin.Server.Services
                 return null;
             }
 
-            PatientSupportDependentInfo dependentInfo = autoMapper.Map<PatientModel, PatientSupportDependentInfo>(patient);
+            PatientSupportDependentInfo dependentInfo = mappingService.MapToPatientSupportDependentInfo(patient);
             dependentInfo.ExpiryDate = item.ResourceDelegate.ExpiryDate;
             dependentInfo.Protected = item.Dependent?.Protected == true;
             return dependentInfo;
@@ -248,13 +249,13 @@ namespace HealthGateway.Admin.Server.Services
                 return null;
             }
 
-            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, autoMapper);
+            return mappingService.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<PatientSupportResult> GetPatientSupportResultAsync(UserProfile profile, CancellationToken ct)
         {
             PatientModel? patient = await this.TryGetPatientAsync(PatientIdentifierType.Hdid, profile.HdId, ct);
-            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, autoMapper);
+            return mappingService.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)

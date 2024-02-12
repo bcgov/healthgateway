@@ -20,11 +20,11 @@ namespace HealthGateway.Admin.Tests.Delegates
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models.Immunization;
+    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Models.PHSA;
@@ -46,8 +46,8 @@ namespace HealthGateway.Admin.Tests.Delegates
         private const string Lot = "300042698";
         private const string Location = "BC Canada";
 
-        private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IAdminServerMappingService MappingService = new AdminServerMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
 
         /// <summary>
         /// GetVaccineDetailsWithRetries throws exception given maximum retry attempts reached.
@@ -176,7 +176,7 @@ namespace HealthGateway.Admin.Tests.Delegates
                 new Mock<ILogger<RestImmunizationAdminDelegate>>().Object,
                 immunizationAdminApiMock.Object,
                 Configuration,
-                AutoMapper);
+                MappingService);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

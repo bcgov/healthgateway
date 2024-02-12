@@ -48,6 +48,8 @@ namespace HealthGateway.MedicationTests.Services
     /// </summary>
     public class MedicationStatementServiceTests
     {
+        private static readonly IMedicationMappingService MappingService = new MedicationMappingService(MapperUtil.InitializeAutoMapper());
+
         private readonly string din = "00000000";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly string ipAddress = "10.0.0.1";
@@ -94,7 +96,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Run and Verify protective word too long
             await this.VerifyProtectiveWordError("TOOLONG4U", ErrorMessages.ProtectiveWordTooLong, service);
@@ -174,7 +176,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -227,7 +229,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 new Mock<IPatientRepository>().Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Run and Verify
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, this.protectiveWord);
@@ -326,7 +328,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Act
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);
@@ -408,7 +410,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Act
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);
@@ -489,7 +491,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Act
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);
@@ -548,7 +550,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 new Mock<IPatientRepository>().Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Act
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);
@@ -600,7 +602,7 @@ namespace HealthGateway.MedicationTests.Services
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Act
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);

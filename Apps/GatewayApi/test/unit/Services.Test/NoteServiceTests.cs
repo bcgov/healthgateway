@@ -33,7 +33,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
@@ -48,7 +47,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     {
         private const string EncryptionKey = "abc";
         private const string Hdid = "1234567890123456789012345678901234567890123456789012";
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object);
 
         /// <summary>
         /// GetNotes - Happy Path.
@@ -95,8 +96,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             ];
 
-            IList<Note> notes = expected.Select(n => this.autoMapper.Map<UserNote, Note>(n)).ToList();
-
+            IList<Note> notes = expected.Select(n => Mapper.Map<UserNote, Note>(n)).ToList();
             if (encryptionKey != null)
             {
                 foreach (Note note in notes)
@@ -153,7 +153,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
 
                 // Assert
-                switch ((canAccessDataSource, notesDbStatusCode))
+                switch (canAccessDataSource, notesDbStatusCode)
                 {
                     case (true, DbStatusCode.Read):
                         Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -194,7 +194,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
-            Note note = NoteMapUtils.ToDbModel(expected, GetCryptoDelegateMock().Object, encryptionKey, this.autoMapper);
+            Note note = MappingService.MapToNote(expected, encryptionKey);
 
             DbResult<Note>? noteDbResult = dbStatusCode != null
                 ? new()
@@ -247,7 +247,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
-            Note note = NoteMapUtils.ToDbModel(expected, GetCryptoDelegateMock().Object, encryptionKey, this.autoMapper);
+            Note note = MappingService.MapToNote(expected, encryptionKey);
 
             DbResult<Note>? noteDbResult = dbStatusCode != null
                 ? new()
@@ -300,7 +300,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
-            Note note = NoteMapUtils.ToDbModel(expected, GetCryptoDelegateMock().Object, encryptionKey, this.autoMapper);
+            Note note = MappingService.MapToNote(expected, encryptionKey);
 
             DbResult<Note>? noteDbResult = dbStatusCode != null
                 ? new()
@@ -388,7 +388,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 profileDelegateMock.Object,
                 GetCryptoDelegateMock().Object,
                 patientRepository.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
         }
     }
 }

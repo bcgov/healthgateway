@@ -20,19 +20,16 @@ namespace HealthGateway.Laboratory.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
-    using HealthGateway.Laboratory.MapUtils;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.Extensions.Configuration;
@@ -50,9 +47,8 @@ namespace HealthGateway.Laboratory.Services
 
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryDelegate laboratoryDelegate;
-        private readonly IConfiguration configuration;
         private readonly ILogger<LaboratoryService> logger;
-        private readonly IMapper autoMapper;
+        private readonly ILaboratoryMappingService mappingService;
         private readonly LaboratoryConfig labConfig;
         private readonly IPatientRepository patientRepository;
 
@@ -64,21 +60,20 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         /// <param name="patientRepository">The injected patient repository provider.</param>
-        /// <param name="autoMapper">The injected automapper.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
             IAuthenticationDelegate authenticationDelegate,
             IPatientRepository patientRepository,
-            IMapper autoMapper)
+            ILaboratoryMappingService mappingService)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
             this.patientRepository = patientRepository;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
@@ -127,7 +122,7 @@ namespace HealthGateway.Laboratory.Services
             return RequestResultFactory.Success(
                 new Covid19OrderResult
                 {
-                    Covid19Orders = this.autoMapper.Map<IEnumerable<PhsaCovid19Order>, IEnumerable<Covid19Order>>(delegateResult.ResourcePayload?.Result),
+                    Covid19Orders = delegateResult.ResourcePayload?.Result?.Select(this.mappingService.MapToCovid19Order).ToList() ?? [],
                     Loaded = true,
                 },
                 delegateResult.TotalResultCount,
@@ -180,11 +175,10 @@ namespace HealthGateway.Laboratory.Services
                 return RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError);
             }
 
-            TimeZoneInfo timeZone = DateFormatter.GetLocalTimeZone(this.configuration);
             return RequestResultFactory.Success(
                 new LaboratoryOrderResult
                 {
-                    LaboratoryOrders = LaboratoryMapUtils.ToUiModels(delegateResult.ResourcePayload?.Result?.LabOrders ?? [], this.autoMapper, timeZone),
+                    LaboratoryOrders = delegateResult.ResourcePayload?.Result?.LabOrders?.Select(this.mappingService.MapToLaboratoryOrder).ToList() ?? [],
                     Loaded = !(loadState?.RefreshInProgress ?? false),
                     Queued = loadState?.Queued ?? false,
                 },
