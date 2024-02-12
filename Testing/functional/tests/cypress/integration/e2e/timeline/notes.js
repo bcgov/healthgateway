@@ -43,25 +43,29 @@ describe("Notes", () => {
         // Edit Note
         cy.intercept("PUT", "**/Note/*").as("updateNote");
         cy.log("Editing Note.");
-        cy.get("[data-testid=noteMenuBtn]").first().click();
-        cy.get("[data-testid=editNoteMenuBtn]").first().click();
+        cy.get("[data-testid=noteMenuBtn]").last().click();
+        cy.get("[data-testid=editNoteMenuBtn]").last().click();
         cy.get("[data-testid=noteTitleInput] input").clear().type("Test Edit");
         cy.get("[data-testid=saveNoteBtn]").click();
 
         // Confirm edited note
         cy.wait("@updateNote");
+        cy.get("[data-testid=entryCardDate]")
+            .last()
+            .should("have.text", "1950-Jan-01");        
         cy.get("[data-testid=noteTitle]")
-            .first()
+            .last()
             .should("have.text", "Test Edit");
 
         // Delete Note
         cy.intercept("DELETE", "**/Note/*").as("deleteNote");
         cy.log("Deleting Note.");
         cy.get("[data-testid=noteMenuBtn]").last().click();
+        cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
         cy.on("window:confirm", (str) => {
             expect(str).to.eq("Are you sure you want to delete this note?");
+            return true; // Stubbing the confirmation to return true (OK clicked)
         });
-        cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
 
         // Confirm deleted note
         cy.wait("@deleteNote");

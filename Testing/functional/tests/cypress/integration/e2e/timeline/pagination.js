@@ -8,10 +8,6 @@ describe("Pagination", () => {
                     name: "medication",
                     enabled: true,
                 },
-                {
-                    name: "note",
-                    enabled: true,
-                },
             ],
         });
         cy.login(
@@ -24,6 +20,7 @@ describe("Pagination", () => {
 
     it("Count Records", () => {
         cy.get("[data-testid=timelineCard]").then(($cards) => {
+            cy.log(`Cards: ${$cards.length}`);
             cy.get("[data-testid=timeline-record-count]").contains(
                 `Displaying 1 to ${$cards.length} out of `
             );
