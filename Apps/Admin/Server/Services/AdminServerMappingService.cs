@@ -52,10 +52,9 @@ namespace HealthGateway.Admin.Server.Services
         {
             AdminUserProfileView dest = mapper.Map<AdminUserProfile, AdminUserProfileView>(source);
 
-            if (dest.LastLoginDateTime != null)
-            {
-                dest.LastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(dest.LastLoginDateTime.Value, this.LocalTimeZone);
-            }
+            // change from UTC to local time, potentially resulting in Kind = DateTimeKind.Unspecified
+            // note that this model is not returned in any API calls; it is used to populate a CSV with values in local time
+            dest.LastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(source.LastLoginDateTime, this.LocalTimeZone);
 
             return dest;
         }

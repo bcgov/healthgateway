@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
@@ -110,7 +111,9 @@ namespace HealthGateway.Admin.Tests.Services
 
             Assert.Equal(expected.AdminUserProfileId, actual.AdminUserProfileId);
             Assert.Equal(expected.UserId, actual.UserId);
-            Assert.Equal(expected.LastLoginDateTime.Value.ToUniversalTime(), actual.LastLoginDateTime?.ToUniversalTime());
+            Assert.NotNull(actual.LastLoginDateTime);
+            Assert.Equal(DateTimeKind.Unspecified, actual.LastLoginDateTime.Value.Kind);
+            Assert.Equal(expected.LastLoginDateTime, DateFormatter.SpecifyLocal(actual.LastLoginDateTime.Value, Configuration));
             Assert.Equal(expected.Username, actual.Username);
             Assert.Equal(expected.Email, actual.Email);
             Assert.Equal(expected.FirstName, actual.FirstName);
