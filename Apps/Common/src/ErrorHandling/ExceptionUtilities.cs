@@ -118,6 +118,7 @@ namespace HealthGateway.Common.ErrorHandling
                 Status = exception switch
                 {
                     CommunicationException => StatusCodes.Status502BadGateway,
+                    UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
                     _ => StatusCodes.Status500InternalServerError,
                 },
             };
