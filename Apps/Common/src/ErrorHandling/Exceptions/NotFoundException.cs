@@ -15,19 +15,19 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling.Exceptions
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
-    /// <inheritdoc/>
     /// <summary>
-    /// NotFoundException is used when a desired record is not found.
-    /// The default error code is RecordNotFound.
-    /// The default status code is 404.
+    /// <see cref="NotFoundException"/> is used when a desired record is not found.
+    /// The default error code is <see cref="ErrorCodes.RecordNotFound"/>.
+    /// The default status code is <see cref="HttpStatusCode.NotFound"/> (404).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class NotFoundException : HealthGatewayException
     {
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.NotFound;
+        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.NotFound;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"/> class.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         public NotFoundException(string message, string errorCode = ErrorCodes.RecordNotFound)
             : base(message)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public NotFoundException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RecordNotFound)
+        public NotFoundException(string message, Exception innerException, string? errorCode = ErrorCodes.RecordNotFound)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         public NotFoundException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RecordNotFound);
+            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.RecordNotFound);
         }
     }
 }

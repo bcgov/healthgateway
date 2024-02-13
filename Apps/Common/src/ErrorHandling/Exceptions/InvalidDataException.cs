@@ -15,19 +15,19 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling.Exceptions
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
-    /// <inheritdoc/>
     /// <summary>
-    /// DataMismatchException is used when an expected input or data record does not match the desired requirements.
-    /// The default error code is UndesiredResults.
-    /// The default status code is 400.
+    /// <see cref="InvalidDataException"/> is used when an expected input or data record does not match the desired requirements.
+    /// The default error code is <see cref="ErrorCodes.InvalidData"/>.
+    /// The default status code is <see cref="HttpStatusCode.InternalServerError"/> (500).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class InvalidDataException : HealthGatewayException
     {
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
+        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.InternalServerError;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvalidDataException"/> class.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         public InvalidDataException(string message, string? errorCode = ErrorCodes.InvalidData)
             : base(message)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public InvalidDataException(string message, System.Exception innerException, string? errorCode = ErrorCodes.InvalidData)
+        public InvalidDataException(string message, Exception innerException, string? errorCode = ErrorCodes.InvalidData)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         public InvalidDataException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.InvalidData);
+            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.InvalidData);
         }
     }
 }

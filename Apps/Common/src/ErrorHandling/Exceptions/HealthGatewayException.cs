@@ -20,12 +20,12 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
     using System.Net;
 
     /// <summary>
-    /// Exception class for Health Gateway.
+    /// Abstract exception class for Health Gateway.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public abstract class HealthGatewayException : Exception
     {
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
+        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.InternalServerError;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
@@ -35,7 +35,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         protected HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
             : base(message)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         protected HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -55,16 +55,16 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         protected HealthGatewayException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.ServerError);
+            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.ServerError);
         }
 
         /// <summary>
-        /// Gets or sets the error codes.
+        /// Gets or sets the error code.
         /// </summary>
         public string? ErrorCode { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the http status code.
+        /// Gets or sets the HTTP status code.
         /// </summary>
         public HttpStatusCode StatusCode { get; set; }
 
