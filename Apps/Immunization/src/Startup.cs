@@ -67,6 +67,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add Services
+            services.AddTransient<IImmunizationMappingService, ImmunizationMappingService>();
             services.AddTransient<IImmunizationService, ImmunizationService>();
             services.AddTransient<IVaccineStatusService, VaccineStatusService>();
 

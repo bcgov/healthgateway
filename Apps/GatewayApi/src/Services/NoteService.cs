@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -32,14 +31,13 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class NoteService : INoteService
     {
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
@@ -54,21 +52,21 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="patientRepository">Injected patient repository provider.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         public NoteService(
             ILogger<NoteService> logger,
             INoteDelegate noteDelegate,
             IUserProfileDelegate profileDelegate,
             ICryptoDelegate cryptoDelegate,
             IPatientRepository patientRepository,
-            IMapper autoMapper)
+            IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
             this.profileDelegate = profileDelegate;
             this.cryptoDelegate = cryptoDelegate;
             this.patientRepository = patientRepository;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         /// <inheritdoc/>
@@ -82,7 +80,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
             }
 
-            Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
+            Note note = this.mappingService.MapToNote(userNote, key);
 
             DbResult<Note> dbNote = await this.noteDelegate.AddNoteAsync(note, ct: ct);
 
@@ -91,7 +89,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbNote.Message);
             }
 
-            return RequestResultFactory.Success(NoteMapUtils.CreateFromDbModel(dbNote.Payload, this.cryptoDelegate, key, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToUserNote(dbNote.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -127,7 +125,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             return RequestResultFactory.Success(
-                dbNotes.Payload.Select(c => NoteMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
+                dbNotes.Payload.Select(c => this.mappingService.MapToUserNote(c, key)),
                 dbNotes.Payload.Count,
                 page,
                 pageSize);
@@ -144,7 +142,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
             }
 
-            Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
+            Note note = this.mappingService.MapToNote(userNote, key);
             DbResult<Note> dbResult = await this.noteDelegate.UpdateNoteAsync(note, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Updated)
@@ -152,7 +150,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToUserNote(dbResult.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -166,7 +164,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
             }
 
-            Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
+            Note note = this.mappingService.MapToNote(userNote, key);
             DbResult<Note> dbResult = await this.noteDelegate.DeleteNoteAsync(note, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Deleted)
@@ -174,7 +172,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
             }
 
-            return RequestResultFactory.Success(NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToUserNote(dbResult.Payload, key));
         }
 
         private async Task<string> EncryptFirstTimeAsync(UserProfile profile, IList<Note> dbNotes, CancellationToken ct)

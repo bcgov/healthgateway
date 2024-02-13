@@ -22,7 +22,6 @@ namespace HealthGateway.PatientTests.Services
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Models.PHSA;
@@ -44,9 +43,10 @@ namespace HealthGateway.PatientTests.Services
 
     public class PatientDataServiceTests
     {
+        private static readonly IPatientMappingService MappingService = new PatientMappingService(MapperUtil.InitializeAutoMapper());
+
         private readonly Guid pid = Guid.NewGuid();
         private readonly string hdid = Guid.NewGuid().ToString("N");
-        private readonly IMapper mapper = MapperUtil.InitializeAutoMapper();
 
         [Fact]
         public void CanSerializeOrganDonorData()
@@ -140,7 +140,7 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
             PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
                 ;
@@ -182,7 +182,7 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
             PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
                 ;
@@ -228,7 +228,7 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
             PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
                 ;
@@ -266,7 +266,7 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
             PatientFileResponse? result = await sut.QueryAsync(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None);
 
@@ -288,7 +288,7 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
             PatientFileResponse? result = await sut.QueryAsync(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None);
 

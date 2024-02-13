@@ -18,7 +18,6 @@ namespace HealthGateway.GatewayApi.MapProfiles
     using System;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
@@ -32,9 +31,7 @@ namespace HealthGateway.GatewayApi.MapProfiles
         public PatientDetailsProfile()
         {
             this.CreateMap<PatientModel, PatientDetails>()
-                .ForMember(
-                    d => d.Birthdate,
-                    opts => opts.MapFrom(s => DateOnly.FromDateTime(s.Birthdate)));
+                .ForMember(d => d.Birthdate, opts => opts.MapFrom(s => DateOnly.FromDateTime(s.Birthdate)));
         }
     }
 }

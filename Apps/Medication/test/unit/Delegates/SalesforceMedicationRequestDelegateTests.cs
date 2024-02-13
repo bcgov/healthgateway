@@ -29,6 +29,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.Salesforce;
+    using HealthGateway.Medication.Services;
     using HealthGateway.MedicationTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -40,6 +41,8 @@ namespace HealthGateway.MedicationTests.Delegates
     /// </summary>
     public class SalesforceMedicationRequestDelegateTests
     {
+        private static readonly IMedicationMappingService MappingService = new MedicationMappingService(MapperUtil.InitializeAutoMapper());
+
         /// <summary>
         /// GetMedicationRequests - Happy Path.
         /// </summary>
@@ -101,7 +104,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockSpecialAuthorityApi.Object,
                 configuration,
                 mockAuthenticationDelegate.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Test
             RequestResult<IList<MedicationRequest>> response = await medDelegate.GetMedicationRequestsAsync(phn);
@@ -163,7 +166,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 new Mock<ISpecialAuthorityApi>().Object,
                 configuration,
                 mockAuthenticationDelegate.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Test
             RequestResult<IList<MedicationRequest>> response = await medDelegate.GetMedicationRequestsAsync(phn);
@@ -235,7 +238,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockSpecialAuthorityApi.Object,
                 configuration,
                 mockAuthenticationDelegate.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             // Test
             RequestResult<IList<MedicationRequest>> response = await medDelegate.GetMedicationRequestsAsync(phn);

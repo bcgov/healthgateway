@@ -18,7 +18,6 @@ namespace HealthGateway.PatientTests.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
@@ -37,7 +36,8 @@ namespace HealthGateway.PatientTests.Services
     {
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
-        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
+
+        private static readonly IPatientMappingService MappingService = new PatientMappingService(MapperUtil.InitializeAutoMapper());
 
         /// <summary>
         /// GetPatient - Happy Path.
@@ -215,7 +215,7 @@ namespace HealthGateway.PatientTests.Services
             return new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
                 patientRepository.Object,
-                Mapper);
+                MappingService);
         }
 
         private static PatientModel GetPatient()

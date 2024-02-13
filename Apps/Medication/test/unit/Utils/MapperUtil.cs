@@ -34,7 +34,6 @@ namespace HealthGateway.MedicationTests.Utils
                 cfg =>
                 {
                     cfg.AddProfile(new MedicationStatementProfile());
-                    cfg.AddProfile(new PharmacyProfile());
                     cfg.AddProfile(new SpecialAuthorityRequestProfile());
                 });
 

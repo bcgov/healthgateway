@@ -22,7 +22,6 @@ namespace HealthGateway.Medication.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
@@ -46,7 +45,7 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class RestMedicationStatementService : IMedicationStatementService
     {
-        private readonly IMapper autoMapper;
+        private readonly IMedicationMappingService mappingService;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
@@ -63,7 +62,7 @@ namespace HealthGateway.Medication.Services
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         /// <param name="patientRepository">Injected patient repository provider.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
@@ -71,7 +70,7 @@ namespace HealthGateway.Medication.Services
             IDrugLookupDelegate drugLookupDelegate,
             IMedicationStatementDelegate medicationStatementDelegate,
             IPatientRepository patientRepository,
-            IMapper autoMapper)
+            IMedicationMappingService mappingService)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
@@ -79,7 +78,7 @@ namespace HealthGateway.Medication.Services
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
             this.patientRepository = patientRepository;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
@@ -140,7 +139,7 @@ namespace HealthGateway.Medication.Services
                     return RequestResultFactory.Error<IList<MedicationStatement>>(response.ResultError);
                 }
 
-                IList<MedicationStatement>? payload = this.autoMapper.Map<IList<MedicationStatement>>(response.ResourcePayload.Results);
+                IList<MedicationStatement>? payload = response.ResourcePayload.Results?.Select(this.mappingService.MapToMedicationStatement).ToList();
                 await this.PopulateMedicationSummaryAsync(payload.Select(r => r.MedicationSummary).ToList(), ct);
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);

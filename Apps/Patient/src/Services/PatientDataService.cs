@@ -21,7 +21,6 @@ namespace HealthGateway.Patient.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Services;
@@ -33,14 +32,18 @@ namespace HealthGateway.Patient.Services
         private readonly IPatientDataRepository patientDataRepository;
         private readonly IPatientRepository patientRepository;
         private readonly IPersonalAccountsService personalAccountsService;
-        private readonly IMapper mapper;
+        private readonly IPatientMappingService mappingService;
 
-        public PatientDataService(IPatientDataRepository patientDataRepository, IPatientRepository patientRepository, IPersonalAccountsService personalAccountsService, IMapper mapper)
+        public PatientDataService(
+            IPatientDataRepository patientDataRepository,
+            IPatientRepository patientRepository,
+            IPersonalAccountsService personalAccountsService,
+            IPatientMappingService mappingService)
         {
             this.patientDataRepository = patientDataRepository;
             this.patientRepository = patientRepository;
             this.personalAccountsService = personalAccountsService;
-            this.mapper = mapper;
+            this.mappingService = mappingService;
         }
 
         public async Task<PatientDataResponse> QueryAsync(PatientDataQuery query, CancellationToken ct = default)
@@ -52,9 +55,9 @@ namespace HealthGateway.Patient.Services
             }
 
             Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
-            HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
+            HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(this.mappingService.MapToHealthCategory));
             PatientDataQueryResult result = await this.patientDataRepository.QueryAsync(healthQuery, ct);
-            return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
+            return new PatientDataResponse(result.Items.Select(this.mappingService.MapToPatientData));
         }
 
         public async Task<PatientFileResponse?> QueryAsync(PatientFileQuery query, CancellationToken ct = default)
@@ -73,7 +76,7 @@ namespace HealthGateway.Patient.Services
             List<PatientDataType> unblockedPatientDataTypes = new();
             foreach (PatientDataType patientDataType in patientDataTypes)
             {
-                DataSource dataSource = this.mapper.Map<DataSource>(patientDataType);
+                DataSource dataSource = this.mappingService.MapToDataSource(patientDataType);
                 if (await this.patientRepository.CanAccessDataSourceAsync(hdid, dataSource, ct))
                 {
                     unblockedPatientDataTypes.Add(patientDataType);

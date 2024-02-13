@@ -19,18 +19,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Constants;
@@ -45,6 +44,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class UserProfileServiceTests
     {
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+
         private readonly string hdid = Guid.NewGuid().ToString();
         private readonly Guid termsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
@@ -129,7 +130,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 DataSource.Medication,
             ];
 
-            UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, Guid.Empty, MapperUtil.InitializeAutoMapper());
+            UserProfileModel expected = MappingService.MapToUserProfileModel(userProfile, Guid.Empty);
             UserProfileServiceMock mockService = new(GetIConfigurationRoot(null));
             mockService.SetupGetOrSetCache<DateTime?>(lastTourChangeDateTime, $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}")
                 .SetupPatientRepository(this.hdid, dataSources)
@@ -362,7 +363,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Created,
             };
 
-            UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper());
+            UserProfileModel expected = MappingService.MapToUserProfileModel(userProfile, userProfile.TermsOfServiceId);
 
             Dictionary<string, string?> localConfig = new()
             {
@@ -462,8 +463,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             List<UserPreferenceModel> userPreferences = numberOfPreferences == 1 ? [userPreferenceModel] : [];
 
             List<UserPreference> dbUserPreferences = [];
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
+            UserPreference userPreference = MappingService.MapToUserPreference(userPreferenceModel);
 
             if (numberOfPreferences > 0)
             {
@@ -508,8 +508,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Preference = "TutorialPopover",
                 Value = "mocked value",
             };
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
+            UserPreference userPreference = MappingService.MapToUserPreference(userPreferenceModel);
             DbResult<UserPreference> readResult = new()
             {
                 Payload = userPreference,
@@ -553,8 +552,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Preference = "TutorialPopover",
                 Value = "mocked value",
             };
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
+            UserPreference userPreference = MappingService.MapToUserPreference(userPreferenceModel);
             DbResult<UserPreference> readResult = new()
             {
                 Payload = userPreference,

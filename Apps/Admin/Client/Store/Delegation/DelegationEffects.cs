@@ -22,17 +22,16 @@ namespace HealthGateway.Admin.Client.Store.Delegation
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using AutoMapper;
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
-    using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    public class DelegationEffects(ILogger<DelegationEffects> logger, IDelegationApi api, IMapper autoMapper, IState<DelegationState> delegationState)
+    public class DelegationEffects(ILogger<DelegationEffects> logger, IDelegationApi api, IAdminClientMappingService mappingService, IState<DelegationState> delegationState)
     {
         [EffectMethod]
         public async Task HandleSearchAction(DelegationActions.SearchAction action, IDispatcher dispatcher)
@@ -47,7 +46,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     {
                         Dependent = response.Dependent,
                         AgentActions = response.AgentActions,
-                        Delegates = autoMapper.Map<IEnumerable<DelegateInfo>, IEnumerable<ExtendedDelegateInfo>>(response.Delegates),
+                        Delegates = response.Delegates.Select(mappingService.MapToExtendedDelegateInfo).ToList(),
                     });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -71,7 +70,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 DelegateInfo response = await api.GetDelegateInformationAsync(action.Phn);
                 logger.LogInformation("Delegate info retrieved successfully");
-                dispatcher.Dispatch(new DelegationActions.DelegateSearchSuccessAction { Data = autoMapper.Map<DelegateInfo, ExtendedDelegateInfo>(response) });
+                dispatcher.Dispatch(new DelegationActions.DelegateSearchSuccessAction { Data = mappingService.MapToExtendedDelegateInfo(response) });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {

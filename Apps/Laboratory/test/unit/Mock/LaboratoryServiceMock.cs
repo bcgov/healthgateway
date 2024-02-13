@@ -18,7 +18,6 @@ namespace HealthGateway.LaboratoryTests.Mock
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -39,9 +38,10 @@ namespace HealthGateway.LaboratoryTests.Mock
     /// </summary>
     public class LaboratoryServiceMock : Mock<ILaboratoryService>
     {
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly ILaboratoryMappingService MappingService = new LaboratoryMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
+
         private readonly LaboratoryService laboratoryService;
-        private readonly IConfiguration configuration = GetIConfigurationRoot();
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryServiceMock"/> class.
@@ -49,12 +49,12 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryServiceMock()
         {
             this.laboratoryService = new LaboratoryService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IPatientRepository>().Object,
-                this.autoMapper);
+                MappingService);
         }
 
         /// <summary>
@@ -69,12 +69,12 @@ namespace HealthGateway.LaboratoryTests.Mock
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
             this.laboratoryService = new LaboratoryService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
                 GetMockAuthDelegate(token),
                 patientRepository.Object,
-                this.autoMapper);
+                MappingService);
         }
 
         /// <summary>
@@ -85,12 +85,12 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryServiceMock(RequestResult<LaboratoryReport> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
                 GetMockAuthDelegate(token),
                 new Mock<IPatientRepository>().Object,
-                this.autoMapper);
+                MappingService);
         }
 
         /// <summary>
@@ -105,12 +105,12 @@ namespace HealthGateway.LaboratoryTests.Mock
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
             this.laboratoryService = new LaboratoryService(
-                this.configuration,
+                Configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
                 GetMockAuthDelegate(token),
                 patientRepository.Object,
-                this.autoMapper);
+                MappingService);
         }
 
         /// <summary>

@@ -69,6 +69,7 @@ namespace HealthGateway.Laboratory
             GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
 
             // Add services
+            services.AddTransient<ILaboratoryMappingService, LaboratoryMappingService>();
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
             services.AddTransient<ILabTestKitService, LabTestKitService>();

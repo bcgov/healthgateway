@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -40,7 +39,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -53,7 +51,7 @@ namespace HealthGateway.GatewayApi.Services
         private const string MaxDependentAgeKey = "MaxDependentAge";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
         private readonly bool dependentsChangeFeedEnabled;
@@ -75,7 +73,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="messageSender">The message sender.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="mappingService">The inject automapper provider.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
         public DependentService(
             IConfiguration configuration,
@@ -86,7 +84,7 @@ namespace HealthGateway.GatewayApi.Services
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessageSender messageSender,
-            IMapper autoMapper)
+            IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -98,7 +96,7 @@ namespace HealthGateway.GatewayApi.Services
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.dependentsChangeFeedEnabled = changeFeedConfiguration?.Dependents.Enabled ?? false;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         /// <inheritdoc/>
@@ -146,7 +144,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid }, ct);
             int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
 
-            return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToDependentModel(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount));
         }
 
         /// <inheritdoc/>
@@ -173,7 +171,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (patientResult.ResourcePayload != null)
                 {
                     int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(resourceDelegate.ResourceOwnerHdid);
-                    dependentModels.Add(DependentMapUtils.CreateFromDbModels(resourceDelegate, patientResult.ResourcePayload, totalDelegateCount, this.autoMapper));
+                    dependentModels.Add(this.mappingService.MapToDependentModel(resourceDelegate, patientResult.ResourcePayload, totalDelegateCount));
                 }
                 else
                 {
