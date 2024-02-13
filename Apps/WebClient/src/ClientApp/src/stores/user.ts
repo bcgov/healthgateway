@@ -395,13 +395,12 @@ export const useUserStore = defineStore("user", () => {
 
     function retrieveEssentialData(): Promise<void> {
         status.value = LoadStatus.REQUESTED;
-        appStore.setAppError(AppErrorType.TooManyRequests);
         return patientService
             .getPatient(user.value.hdid)
             .then((result: Patient) => {
                 if (!result) {
-                    logger.debug("Patient retrieval failed");
                     patientRetrievalFailed.value = true;
+                    logger.debug("Patient retrieval failed");
                     return;
                 }
                 setPatient(result);
@@ -431,6 +430,7 @@ export const useUserStore = defineStore("user", () => {
                     });
             })
             .catch((resultError: ResultError) => {
+                patientRetrievalFailed.value = true;
                 if (resultError.statusCode === 429) {
                     logger.debug(
                         "Patient retrieval failed because of too many requests"
@@ -438,7 +438,6 @@ export const useUserStore = defineStore("user", () => {
                     appStore.setAppError(AppErrorType.TooManyRequests);
                 } else {
                     logger.debug("Patient retrieval failed");
-                    patientRetrievalFailed.value = true;
                 }
             });
     }
