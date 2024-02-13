@@ -37,6 +37,7 @@ namespace HealthGateway.JobScheduler.Listeners
     public class AuditQueueListener : BackgroundService
     {
         private const int SleepDuration = 1000;
+        private const int RedisRetryDelay = 10000;
         private readonly ILogger<AuditQueueListener> logger;
         private readonly IServiceProvider services;
         private readonly IConnectionMultiplexer connectionMultiplexer;
@@ -65,22 +66,34 @@ namespace HealthGateway.JobScheduler.Listeners
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Audit Queue Listener is starting");
-            stoppingToken.Register(() => this.logger.LogInformation("AuditQueue Listener Shutdown as cancellation requested    "));
+            stoppingToken.Register(() => this.logger.LogInformation("AuditQueue Listener Shutdown as cancellation requested..."));
             while (!stoppingToken.IsCancellationRequested)
             {
-                IDatabase redisDb = this.connectionMultiplexer.GetDatabase();
-                RedisValue auditValue = await redisDb.ListMoveAsync(
-                    $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ActiveQueueName}",
-                    $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}",
-                    ListSide.Left,
-                    ListSide.Right);
-                if (auditValue.HasValue)
+                try
                 {
-                    await this.ProcessAuditEventAsync(redisDb, auditValue, stoppingToken);
+                    IDatabase redisDb = this.connectionMultiplexer.GetDatabase();
+                    RedisValue auditValue = await redisDb.ListMoveAsync(
+                        $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ActiveQueueName}",
+                        $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}",
+                        ListSide.Left,
+                        ListSide.Right);
+                    if (auditValue.HasValue)
+                    {
+                        await this.ProcessAuditEventAsync(redisDb, auditValue, stoppingToken);
+                    }
+                    else
+                    {
+                        await Task.Delay(SleepDuration, stoppingToken);
+                    }
                 }
-                else
+                catch (RedisConnectionException ex)
                 {
-                    await Task.Delay(SleepDuration, stoppingToken);
+                    this.logger.LogError(ex, "Redis connection error occurred. Retrying after delay...");
+
+                    if (!stoppingToken.IsCancellationRequested)
+                    {
+                        await Task.Delay(RedisRetryDelay, stoppingToken);
+                    }
                 }
             }
 
