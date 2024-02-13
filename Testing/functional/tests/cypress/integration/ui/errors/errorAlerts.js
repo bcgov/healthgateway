@@ -33,10 +33,11 @@ function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
     });
     cy.reload();
 
+    cy.get("[data-testid=patient-retrieval-error]").should("be.visible");
     if (statusCode === tooManyRequestsStatusCode) {
-        cy.get("[data-testid=app-warning]").should("be.visible");
+        cy.get("[data-testid=too-busy]").should("be.visible");
     } else {
-        cy.get("[data-testid=patient-retrieval-error]").should("be.visible");
+        cy.get("[data-testid=too-busy]").should("not.exist");
     }
 }
 
