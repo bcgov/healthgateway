@@ -57,10 +57,10 @@ namespace HealthGateway.Common.ErrorHandling
         {
             ValidationProblemDetails problemDetails = new()
             {
+                Type = ErrorCodes.InvalidInput,
                 Title = "A validation error occurred.",
                 Status = StatusCodes.Status400BadRequest,
                 Instance = httpContext.Request.Path,
-                Type = validationException.GetType().ToString(),
                 Extensions =
                 {
                     ["traceId"] = httpContext.TraceIdentifier,
@@ -91,11 +91,13 @@ namespace HealthGateway.Common.ErrorHandling
         private static ProblemDetails HealthGatewayExceptionToProblemDetails(HealthGatewayException healthGatewayException, HttpContext httpContext, bool includeException = false)
         {
             ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext, includeException);
+            problemDetails.Type = healthGatewayException.ErrorCode;
             problemDetails.Title = healthGatewayException switch
             {
+                AlreadyExistsException => "Record already exists.",
+                DatabaseException => "A database error occurred.",
                 InvalidDataException => "Data does not match.",
                 NotFoundException => "Record was not found",
-                AlreadyExistsException => "Record already exists.",
                 UpstreamServiceException => "An error occurred with an upstream service.",
                 _ => "An error occurred.",
             };
@@ -107,10 +109,9 @@ namespace HealthGateway.Common.ErrorHandling
         {
             ProblemDetails problemDetails = new()
             {
+                Type = ErrorCodes.ServerError,
                 Title = "An error occurred.",
-                Detail = exception.Message,
                 Instance = httpContext.Request.Path,
-                Type = exception.GetType().ToString(),
                 Extensions =
                 {
                     ["traceId"] = httpContext.TraceIdentifier,
