@@ -15,19 +15,19 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling.Exceptions
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
-    /// <inheritdoc/>
     /// <summary>
-    /// AlreadyExistsException is used when a desired action conflicts with a record that already exists.
-    /// The default error code is RecordAlreadyExists.
-    /// The default status code is 409.
+    /// <see cref="AlreadyExistsException"/> is used when a desired action conflicts with a record that already exists.
+    /// The default error code is <see cref="ErrorCodes.RecordAlreadyExists"/>.
+    /// The default status code is <see cref="HttpStatusCode.Conflict"/> (409).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class AlreadyExistsException : HealthGatewayException
     {
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.Conflict;
+        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.Conflict;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AlreadyExistsException"/> class.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         public AlreadyExistsException(string message, string? errorCode = ErrorCodes.RecordAlreadyExists)
             : base(message)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public AlreadyExistsException(string message, System.Exception innerException, string errorCode = ErrorCodes.RecordAlreadyExists)
+        public AlreadyExistsException(string message, Exception innerException, string errorCode = ErrorCodes.RecordAlreadyExists)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         public AlreadyExistsException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RecordAlreadyExists);
+            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.RecordAlreadyExists);
         }
     }
 }

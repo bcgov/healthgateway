@@ -20,30 +20,32 @@ namespace HealthGateway.Common.ErrorHandling
     using System.Threading.Tasks;
     using FluentValidation;
     using Microsoft.AspNetCore.Diagnostics;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
     /// <summary>
     /// Transform validation exceptions into a problem details response.
     /// </summary>
-    internal sealed class ValidationExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
+    internal sealed class ValidationExceptionHandler(IConfiguration configuration) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is ValidationException validationException)
+            if (exception is not ValidationException validationException)
             {
-                ValidationProblemDetails problemDetails = (ValidationProblemDetails)ExceptionUtilities.ToProblemDetails(validationException, httpContext, environment.IsDevelopment());
-
-                httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
-                await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
-                return true;
+                return false;
             }
 
-            return false;
+            bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
+
+            ValidationProblemDetails problemDetails = (ValidationProblemDetails)ExceptionUtilities.ToProblemDetails(validationException, httpContext, includeException);
+
+            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
+            return true;
         }
     }
 }

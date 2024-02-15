@@ -19,21 +19,20 @@ namespace HealthGateway.Common.ErrorHandling
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Configuration;
     using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
     /// Transforms any exception into the appropriate problem details response.
     /// </summary>
-    internal sealed class DefaultExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
+    internal sealed class DefaultExceptionHandler(IConfiguration configuration) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            bool includeException = environment.IsDevelopment();
+            bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
 
             ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, includeException);
 

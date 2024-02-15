@@ -187,7 +187,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 if (result.ResultError != null)
                 {
-                    throw new UpstreamServiceException(result.ResultError.ResultMessage, ErrorCodes.UpstreamError);
+                    throw new UpstreamServiceException(result.ResultError.ResultMessage);
                 }
 
                 throw new NotFoundException(ErrorMessages.CannotGetVaccineProofPdf);
@@ -214,9 +214,7 @@ namespace HealthGateway.Admin.Server.Services
                     response.ResultError?.ErrorCode,
                     response.ResultError?.ResultMessage);
 
-                throw new UpstreamServiceException(
-                    response.ResultError?.ResultMessage,
-                    ErrorCodes.ServerError);
+                throw new UpstreamServiceException(response.ResultError?.ResultMessage);
             }
         }
     }

@@ -15,31 +15,29 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling.Exceptions
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
-    /// <inheritdoc/>
     /// <summary>
-    /// RefreshInProgressException is used when a upstream service reports that data is being refreshed and should be retried
-    /// later.
-    /// The default error code is RefreshInProgress.
-    /// The default status code is 503.
+    /// <see cref="UpstreamServiceException"/> is used when a remote service fails to respond appropriately.
+    /// The default error code is <see cref="ErrorCodes.UpstreamError"/>.
+    /// The default status code is <see cref="HttpStatusCode.BadGateway"/> (502).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class UpstreamServiceException : HealthGatewayException
     {
-        // Default private values
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.BadGateway;
+        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.BadGateway;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, string? errorCode = ErrorCodes.RefreshInProgress)
+        public UpstreamServiceException(string message, string? errorCode = ErrorCodes.UpstreamError)
             : base(message)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -48,10 +46,10 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RefreshInProgress)
+        public UpstreamServiceException(string message, Exception innerException, string? errorCode = ErrorCodes.UpstreamError)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         public UpstreamServiceException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RefreshInProgress);
+            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.UpstreamError);
         }
     }
 }

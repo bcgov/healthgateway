@@ -36,14 +36,21 @@ namespace HealthGateway.Common.ErrorHandling
         /// <param name="httpContext">The HTTP context of the request.</param>
         /// <param name="includeException">Used to determine if the exception details are passed to the client.</param>
         /// <returns>A <see cref="ProblemDetails"/> model to return the consumer.</returns>
-        public static ProblemDetails ToProblemDetails(Exception exception, HttpContext httpContext, bool includeException = false)
+        public static ProblemDetails ToProblemDetails(Exception exception, HttpContext httpContext, bool includeException)
         {
-            return exception switch
+            ProblemDetails problemDetails = exception switch
             {
-                HealthGatewayException healthGatewayException => HealthGatewayExceptionToProblemDetails(healthGatewayException, httpContext, includeException),
-                ValidationException validationException => ValidationExceptionToProblemDetails(validationException, httpContext, includeException),
-                _ => TransformException(exception, httpContext, includeException),
+                HealthGatewayException healthGatewayException => TransformHealthGatewayException(healthGatewayException, httpContext),
+                ValidationException validationException => TransformValidationException(validationException, httpContext),
+                _ => TransformException(exception, httpContext),
             };
+
+            if (includeException)
+            {
+                problemDetails.Extensions["exception"] = FormatExceptionDetails(exception);
+            }
+
+            return problemDetails;
         }
 
         /// <summary>
@@ -51,21 +58,21 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         /// <param name="validationException">A Fluent Validation <see cref="ValidationException"/>.</param>
         /// <param name="httpContext">The HTTP context of the request.</param>
-        /// <param name="includeException">Used to determine if the exception details are passed to the client.</param>
         /// <returns>A <see cref="ProblemDetails"/> model to return the consumer.</returns>
-        private static ValidationProblemDetails ValidationExceptionToProblemDetails(ValidationException validationException, HttpContext httpContext, bool includeException = false)
+        private static ValidationProblemDetails TransformValidationException(ValidationException validationException, HttpContext httpContext)
         {
             ValidationProblemDetails problemDetails = new()
             {
+                Type = ErrorCodes.InvalidInput,
                 Title = "A validation error occurred.",
                 Status = StatusCodes.Status400BadRequest,
                 Instance = httpContext.Request.Path,
-                Type = validationException.GetType().ToString(),
                 Extensions =
                 {
                     ["traceId"] = httpContext.TraceIdentifier,
                 },
             };
+
             foreach (ValidationFailure error in validationException.Errors)
             {
                 if (problemDetails.Errors.TryGetValue(error.PropertyName, out string[]? value))
@@ -78,7 +85,7 @@ namespace HealthGateway.Common.ErrorHandling
                 }
             }
 
-            return (AddExceptionDetailsExtension(problemDetails, validationException, includeException) as ValidationProblemDetails)!;
+            return problemDetails;
         }
 
         /// <summary>
@@ -86,31 +93,33 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         /// <param name="healthGatewayException">A <see cref="HealthGatewayException"/> describing an error within Health Gateway.</param>
         /// <param name="httpContext">The HTTP context of the request.</param>
-        /// <param name="includeException">Used to determine if the exception details are passed to the client.</param>
         /// <returns>A <see cref="ProblemDetails"/> model to return the consumer.</returns>
-        private static ProblemDetails HealthGatewayExceptionToProblemDetails(HealthGatewayException healthGatewayException, HttpContext httpContext, bool includeException = false)
+        private static ProblemDetails TransformHealthGatewayException(HealthGatewayException healthGatewayException, HttpContext httpContext)
         {
-            ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext, includeException);
+            ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext);
+
+            problemDetails.Type = healthGatewayException.ErrorCode;
             problemDetails.Title = healthGatewayException switch
             {
+                AlreadyExistsException => "Record already exists.",
+                DatabaseException => "A database error occurred.",
                 InvalidDataException => "Data does not match.",
                 NotFoundException => "Record was not found",
-                AlreadyExistsException => "Record already exists.",
                 UpstreamServiceException => "An error occurred with an upstream service.",
                 _ => "An error occurred.",
             };
             problemDetails.Status = (int?)healthGatewayException.StatusCode;
+
             return problemDetails;
         }
 
-        private static ProblemDetails TransformException(Exception exception, HttpContext httpContext, bool includeException = false)
+        private static ProblemDetails TransformException(Exception exception, HttpContext httpContext)
         {
-            ProblemDetails problemDetails = new()
+            return new()
             {
+                Type = ErrorCodes.ServerError,
                 Title = "An error occurred.",
-                Detail = exception.Message,
                 Instance = httpContext.Request.Path,
-                Type = exception.GetType().ToString(),
                 Extensions =
                 {
                     ["traceId"] = httpContext.TraceIdentifier,
@@ -118,32 +127,25 @@ namespace HealthGateway.Common.ErrorHandling
                 Status = exception switch
                 {
                     CommunicationException => StatusCodes.Status502BadGateway,
+                    UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
                     _ => StatusCodes.Status500InternalServerError,
                 },
             };
-
-            return AddExceptionDetailsExtension(problemDetails, exception, includeException);
         }
 
-        private static ProblemDetails AddExceptionDetailsExtension(ProblemDetails problemDetails, Exception exception, bool includeException = false)
+        private static object? FormatExceptionDetails(Exception? e, int maxDepth = 9)
         {
-            if (includeException)
+            if (e == null)
             {
-                problemDetails.Extensions["exception"] = new
-                {
-                    exception.Message,
-                    exception.StackTrace,
-                    InnerException = exception.InnerException != null
-                        ? new
-                        {
-                            exception.InnerException.Message,
-                            exception.InnerException.StackTrace,
-                        }
-                        : null,
-                };
+                return null;
             }
 
-            return problemDetails;
+            if (maxDepth == 0)
+            {
+                return new { e.Message, e.StackTrace };
+            }
+
+            return new { e.Message, e.StackTrace, InnerException = FormatExceptionDetails(e.InnerException, maxDepth - 1) };
         }
     }
 }
