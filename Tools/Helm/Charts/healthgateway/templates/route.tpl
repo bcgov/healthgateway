@@ -23,7 +23,7 @@ spec:
   host: {{ $host.host }}
   path: {{ $host.path | default "" }}
   port:
-    targetPort: {{ printf "%d-%s" $port $protocol }}
+    targetPort: {{ printf "%s-%s" ($port | toString) $protocol }}
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
