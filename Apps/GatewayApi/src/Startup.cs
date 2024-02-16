@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.CDogs;
@@ -121,14 +120,6 @@ namespace HealthGateway.GatewayApi
             CDogsConfig cdogsConfig = new();
             this.startupConfig.Configuration.Bind(CDogsConfig.CDogsConfigSectionKey, cdogsConfig);
             string cdogsEndpoint = cdogsConfig.BaseEndpoint;
-            if (cdogsConfig.DynamicServiceLookup)
-            {
-                cdogsEndpoint = ConfigurationUtility.ConstructServiceEndpoint(
-                    cdogsConfig.BaseEndpoint,
-                    $"{cdogsConfig.ServiceName}{cdogsConfig.ServiceHostSuffix}",
-                    $"{cdogsConfig.ServiceName}{cdogsConfig.ServicePortSuffix}");
-            }
-
             services.AddRefitClient<ICDogsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(cdogsEndpoint));
 
             PhsaConfigV2 phsaConfig = new();
