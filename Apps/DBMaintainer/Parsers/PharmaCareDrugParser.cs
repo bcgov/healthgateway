@@ -29,7 +29,7 @@ namespace HealthGateway.DBMaintainer.Parsers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Concrete implemention of the <see cref="IPharmaCareDrugParser"/>.
+    /// Concrete implementation of the <see cref="IPharmaCareDrugParser"/>.
     /// </summary>
     public class PharmaCareDrugParser : IPharmaCareDrugParser
     {
@@ -53,10 +53,9 @@ namespace HealthGateway.DBMaintainer.Parsers
             using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "yyyyMMdd" },
-                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                Formats = ["yyyyMMdd"],
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateOnly>(options);
             PharmaCareDrugMapper mapper = new(fileDownload);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaCareDrug> records = new();
