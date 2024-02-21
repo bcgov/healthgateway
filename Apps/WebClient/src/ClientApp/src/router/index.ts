@@ -121,8 +121,6 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
                 UserState.registered,
                 UserState.offline,
             ],
