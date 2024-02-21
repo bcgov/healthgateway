@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Server.Controllers
 {
     using System;
+    using System.Globalization;
     using System.Net.Mime;
     using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Http;
@@ -35,7 +36,8 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <param name="configuration">The injected configuration.</param>
         public RobotsController(IConfiguration configuration)
         {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+            string? environmentVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.ToLower(CultureInfo.CurrentCulture);
+            string environment = environmentVariable != null ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(environmentVariable) : "Development";
             string? defaultRobotsAssetContent = AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
             string? envRobotsAssetContent = AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
             this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);

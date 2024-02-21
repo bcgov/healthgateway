@@ -20,6 +20,8 @@
     <None Include="featuretoggleconfig.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Remove="Server\Assets\Robots.Production.txt" />
+    <EmbeddedResource Include="Server\Assets\Robots.Production.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
