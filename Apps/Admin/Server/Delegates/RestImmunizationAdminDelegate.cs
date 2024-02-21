@@ -84,7 +84,7 @@ namespace HealthGateway.Admin.Server.Delegates
             {
                 Blocked = response.Result?.Blocked ?? false,
                 ContainsInvalidDoses = response.Result?.ContainsInvalidDoses ?? false,
-                Doses = response.Result?.Doses.Select(mappingService.MapToVaccineDose).ToArray() ?? [],
+                Doses = response.Result?.Doses?.Select(mappingService.MapToVaccineDose).ToArray() ?? [],
                 VaccineStatusResult = response.Result?.VaccineStatusResult,
             };
         }
