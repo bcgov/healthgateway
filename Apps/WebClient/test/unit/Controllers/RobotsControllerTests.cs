@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClientTests.Controllers
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net.Mime;
     using DeepEqual.Syntax;
@@ -33,58 +34,54 @@ namespace HealthGateway.WebClientTests.Controllers
         /// <summary>
         /// GetRobots - Custom Content.
         /// </summary>
-        [Fact]
-        public void ShouldGetRobotsCustom()
+        /// <param name="robotsFilePathExists">bool value indicating whether robots file path exists or not.</param>
+        /// <param name="robotsFileContentExists">bool value indicating whether robots file contents exist or not.</param>
+        /// <param name="invalidConfigRobotsFilePath">bool value indicating whether configuration robots file path is valid or not.</param>
+        [Theory]
+        [InlineData(true, true, null)]
+        [InlineData(true, false, null)]
+        [InlineData(false, null, null)]
+        [InlineData(true, true, true)]
+        public void ShouldGetRobots(bool robotsFilePathExists, bool? robotsFileContentExists, bool? invalidConfigRobotsFilePath)
         {
+            // Arrange
+            const string invalidRobotsFilePath = "/invalid/robots/file/path/robot.txt";
+            const string robotsContent = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
+            string robotsFilePath = robotsFilePathExists ? Path.GetTempFileName() : string.Empty;
+            string robotsConfigFilePath = invalidConfigRobotsFilePath is true ? invalidRobotsFilePath : robotsFilePath;
+            string expectedRobotsFileContent = robotsFileContentExists is true ? robotsContent : string.Empty;
+            string expectedRobotsFileContentForResult = robotsFilePathExists is true ? expectedRobotsFileContent : robotsContent;
+
+            if (robotsFilePathExists)
+            {
+                File.WriteAllText(robotsFilePath, expectedRobotsFileContent);
+            }
+
             ContentResult expectedResult = new()
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,
-                Content = "Custom Content",
+                Content = expectedRobotsFileContentForResult,
             };
 
-            string key = "robots.txt";
-            string robotsContent = expectedResult.Content;
+            const string key = "WebClient:RobotsFilePath";
             Dictionary<string, string?> myConfiguration = new()
             {
-                { key, robotsContent },
+                { key, robotsConfigFilePath },
             };
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
 
             using RobotsController controller = new(configuration);
 
+            // Act
             IActionResult actualResult = controller.Robots();
 
+            // Assert
             Assert.IsType<ContentResult>(actualResult);
             expectedResult.ShouldDeepEqual(actualResult);
-        }
-
-        /// <summary>
-        /// GetRobots - Default Config.
-        /// </summary>
-        [Fact]
-        public void ShouldGetRobotsTxtDefaultConfig()
-        {
-            ContentResult expectedResult = new()
-            {
-                StatusCode = StatusCodes.Status200OK,
-                ContentType = MediaTypeNames.Text.Plain,
-                Content = string.Empty,
-            };
-
-            IEnumerable<KeyValuePair<string, string?>> myConfiguration = new List<KeyValuePair<string, string?>>();
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
-                .Build();
-
-            using RobotsController controller = new(configuration);
-
-            ContentResult actualResult = (ContentResult)controller.Robots();
-
-            Assert.Equal(actualResult.StatusCode, expectedResult.StatusCode);
-            Assert.NotEmpty(actualResult.Content);
         }
     }
 }

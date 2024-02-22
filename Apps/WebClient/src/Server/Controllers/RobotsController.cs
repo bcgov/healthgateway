@@ -16,8 +16,10 @@
 namespace HealthGateway.WebClient.Server.Controllers
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.Mime;
     using HealthGateway.Common.Utils;
+    using HealthGateway.WebClient.Server.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
@@ -35,10 +37,10 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <param name="configuration">The injected configuration.</param>
         public RobotsController(IConfiguration configuration)
         {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            string? defaultRobotsAssetContent = AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
-            string? envRobotsAssetContent = AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
-            this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
+            RobotsConfiguration robotsConfiguration = new();
+            configuration.Bind(RobotsConfiguration.ConfigurationSectionKey, robotsConfiguration);
+            string robotsFilePath = robotsConfiguration.RobotsFilePath;
+            this.robotsContent = ReadRobotsFile(robotsFilePath);
         }
 
         /// <summary>
@@ -57,6 +59,21 @@ namespace HealthGateway.WebClient.Server.Controllers
                 Content = this.robotsContent,
             };
             return result;
+        }
+
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
+        private static string? ReadRobotsFile(string robotsFilePath)
+        {
+            string? defaultRobotsAssetContent = AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
+
+            try
+            {
+                return !string.IsNullOrEmpty(robotsFilePath) ? System.IO.File.ReadAllText(robotsFilePath) : defaultRobotsAssetContent;
+            }
+            catch (Exception)
+            {
+                return defaultRobotsAssetContent;
+            }
         }
     }
 }
