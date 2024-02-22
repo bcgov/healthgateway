@@ -786,5 +786,7 @@ setPageFromDate(linearDate.value);
 .timeline-filter-banner {
     z-index: 2;
     width: calc(100% + 32px);
+    top: var(--v-layout-top);
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
