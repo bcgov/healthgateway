@@ -121,8 +121,6 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
                 UserState.registered,
                 UserState.offline,
             ],
@@ -221,13 +219,7 @@ const routes = [
         path: Path.VaccineCard,
         component: PublicVaccineCardView,
         meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
+            validStates: [UserState.unauthenticated, UserState.registered],
         },
     },
     {
@@ -270,12 +262,7 @@ const routes = [
         component: PcrTestKitRegistrationView,
         props: false,
         meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.registered,
-                UserState.notRegistered,
-                UserState.pendingDeletion,
-            ],
+            validStates: [UserState.unauthenticated, UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.covid19.pcrTestEnabled,
         },
@@ -285,12 +272,7 @@ const routes = [
         component: PcrTestKitRegistrationView,
         props: true,
         meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.registered,
-                UserState.notRegistered,
-                UserState.pendingDeletion,
-            ],
+            validStates: [UserState.unauthenticated, UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.covid19.pcrTestEnabled,
         },
