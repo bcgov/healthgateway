@@ -15,10 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Controllers
 {
-    using System;
-    using System.Globalization;
     using System.Net.Mime;
     using HealthGateway.Common.Utils;
+    using HealthGateway.WebClient.Server.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
@@ -36,11 +35,12 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <param name="configuration">The injected configuration.</param>
         public RobotsController(IConfiguration configuration)
         {
-            string? environmentVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.ToLower(CultureInfo.CurrentCulture);
-            string environment = environmentVariable != null ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(environmentVariable) : "Development";
+            RobotsConfiguration robotsConfiguration = new();
+            configuration.Bind(RobotsConfiguration.ConfigurationSectionKey, robotsConfiguration);
+            string robotsFilePath = robotsConfiguration.RobotsFilePath;
             string? defaultRobotsAssetContent = AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
-            string? envRobotsAssetContent = AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
-            this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
+
+            this.robotsContent = !string.IsNullOrEmpty(robotsFilePath) ? System.IO.File.ReadAllText(robotsFilePath) ?? defaultRobotsAssetContent : defaultRobotsAssetContent;
         }
 
         /// <summary>

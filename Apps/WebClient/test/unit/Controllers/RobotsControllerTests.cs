@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClientTests.Controllers
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net.Mime;
     using DeepEqual.Syntax;
@@ -36,18 +37,21 @@ namespace HealthGateway.WebClientTests.Controllers
         [Fact]
         public void ShouldGetRobotsCustom()
         {
+            const string content = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /";
+            string robotsFilePath = Path.GetTempFileName();
+            File.WriteAllText(robotsFilePath, content);
+
             ContentResult expectedResult = new()
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,
-                Content = "Custom Content",
+                Content = content,
             };
 
-            string key = "robots.txt";
-            string robotsContent = expectedResult.Content;
+            const string key = "WebClient:RobotsFilePath";
             Dictionary<string, string?> myConfiguration = new()
             {
-                { key, robotsContent },
+                { key, robotsFilePath },
             };
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration.ToList())
