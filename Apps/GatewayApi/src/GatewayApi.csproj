@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Assets\Robots.txt" />
         <EmbeddedResource Include="Assets\Templates\CovidReport.docx" />
         <EmbeddedResource Include="Assets\Templates\CovidReport.xlsx" />
         <EmbeddedResource Include="Assets\Templates\EncounterReport.xlsx" />
