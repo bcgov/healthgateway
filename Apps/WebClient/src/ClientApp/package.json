@@ -27,8 +27,8 @@
         "throttle-debounce": "^5.0.0",
         "vue": "^3.4.19",
         "vue-clipboard3": "^2.0.0",
-        "vue-router": "^4.2.5",
-        "vuetify": "^3.5.4"
+        "vue-router": "^4.3.0",
+        "vuetify": "^3.5.5"
     },
     "devDependencies": {
         "@babel/types": "^7.23.9",
@@ -38,7 +38,7 @@
         "@fortawesome/vue-fontawesome": "^3.0.6",
         "@types/file-saver": "^2.0.7",
         "@types/luxon": "^3.4.2",
-        "@types/node": "^18.19.17",
+        "@types/node": "^18.19.18",
         "@types/throttle-debounce": "^5.0.2",
         "@types/webfontloader": "^1.6.38",
         "@vitejs/plugin-vue": "^4.6.2",
@@ -47,9 +47,9 @@
         "eslint": "^8.56.0",
         "eslint-plugin-simple-import-sort": "^10.0.0",
         "eslint-plugin-unused-imports": "^2.0.0",
-        "eslint-plugin-vue": "^9.21.1",
+        "eslint-plugin-vue": "^9.22.0",
         "prettier": "^2.8.8",
-        "sass": "^1.71.0",
+        "sass": "^1.71.1",
         "typescript": "^5.3.3",
         "vite": "^4.5.1",
         "vite-plugin-vuetify": "^1.0.0",
