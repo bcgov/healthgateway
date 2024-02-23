@@ -19,6 +19,7 @@ namespace HealthGateway.WebClientTests.Controllers
     using System.IO;
     using System.Linq;
     using System.Net.Mime;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Server.Controllers;
     using Microsoft.AspNetCore.Http;
@@ -37,12 +38,13 @@ namespace HealthGateway.WebClientTests.Controllers
         /// <param name="robotsFilePathExists">bool value indicating whether robots file path exists or not.</param>
         /// <param name="robotsFileContentExists">bool value indicating whether robots file contents exist or not.</param>
         /// <param name="invalidConfigRobotsFilePath">bool value indicating whether configuration robots file path is valid or not.</param>
+        /// <returns>representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, true, null)]
-        [InlineData(true, false, null)]
-        [InlineData(false, null, null)]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, false)]
+        [InlineData(false, false, false)]
         [InlineData(true, true, true)]
-        public void ShouldGetRobots(bool robotsFilePathExists, bool? robotsFileContentExists, bool? invalidConfigRobotsFilePath)
+        public async Task ShouldGetRobots(bool robotsFilePathExists, bool robotsFileContentExists, bool invalidConfigRobotsFilePath)
         {
             // Arrange
             const string invalidRobotsFilePath = "/invalid/robots/file/path/robot.txt";
@@ -54,7 +56,7 @@ namespace HealthGateway.WebClientTests.Controllers
 
             if (robotsFilePathExists)
             {
-                File.WriteAllText(robotsFilePath, expectedRobotsFileContent);
+                await File.WriteAllTextAsync(robotsFilePath, expectedRobotsFileContent);
             }
 
             ContentResult expectedResult = new()
@@ -77,7 +79,7 @@ namespace HealthGateway.WebClientTests.Controllers
             using RobotsController controller = new(configuration);
 
             // Act
-            IActionResult actualResult = controller.Robots();
+            IActionResult actualResult = await controller.Robots();
 
             // Assert
             Assert.IsType<ContentResult>(actualResult);
