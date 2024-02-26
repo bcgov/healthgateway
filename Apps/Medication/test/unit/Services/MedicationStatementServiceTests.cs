@@ -18,6 +18,7 @@ namespace HealthGateway.MedicationTests.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Security.Principal;
@@ -504,28 +505,41 @@ namespace HealthGateway.MedicationTests.Services
         /// <summary>
         /// GetMedicationStatementsHistory - Empty.
         /// </summary>
+        /// <param name="medicationHistoryErrorExists">
+        /// bool value indicating whether GetDrugProductsByDinAsync returned an error or
+        /// not.
+        /// </param>
+        /// <param name="medicationHistoryPayloadExists">
+        /// bool value indicating whether GetDrugProductsByDinAsync returned a resource payload or not.
+        /// </param>
+        /// <param name="medicationStatementReturnsError">
+        /// bool value indicating whether GetMedicationStatementsAsync returns a result status error or
+        /// not.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetEmptyMedications()
+        [Theory]
+        [InlineData(true, false, true)] // GetDrugProductsByDinAsync returns status error
+        [InlineData(false, false, true)] // GetDrugProductsByDinAsync returns null
+        [InlineData(false, true, false)] // GetDrugProductsByDinAsync returns empty list
+        public async Task ShouldGetEmptyMedications(bool medicationHistoryErrorExists, bool medicationHistoryPayloadExists, bool medicationStatementReturnsError)
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
-                .Returns(
-                    Task.FromResult(
-                        new RequestResult<PatientModel>
+                .ReturnsAsync(
+                    new RequestResult<PatientModel>
+                    {
+                        ResourcePayload = new PatientModel
                         {
-                            ResourcePayload = new PatientModel
-                            {
-                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
-                                HdId = this.hdid,
-                                PersonalHealthNumber = this.phn,
-                            },
-                            ResultStatus = ResultType.Success,
-                        }));
+                            Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                            FirstName = "Patient",
+                            LastName = "Zero",
+                            HdId = this.hdid,
+                            PersonalHealthNumber = this.phn,
+                        },
+                        ResultStatus = ResultType.Success,
+                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<DrugProduct>());
@@ -533,15 +547,21 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IMedicationStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new MedicationHistoryResponse
-                {
-                    TotalRecords = 0,
-                },
+                ResultStatus = medicationHistoryErrorExists ? ResultType.Error : ResultType.Success,
+                ResourcePayload = medicationHistoryPayloadExists
+                    ? new MedicationHistoryResponse
+                    {
+                        Results = Enumerable.Empty<MedicationResult>(),
+                        TotalRecords = 0,
+                    }
+                    : null,
             };
-            requestResult.ResourcePayload = new MedicationHistoryResponse();
+
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requestResult);
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -549,32 +569,46 @@ namespace HealthGateway.MedicationTests.Services
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
-                new Mock<IPatientRepository>().Object,
+                patientRepository.Object,
                 MappingService);
 
             // Act
             RequestResult<IList<MedicationStatement>> actual = await service.GetMedicationStatementsAsync(this.hdid, null);
 
             // Verify
-            Assert.Equal(0, actual.ResourcePayload?.Count);
+            if (medicationStatementReturnsError)
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+            }
+            else
+            {
+                Assert.Equal(0, actual.ResourcePayload?.Count);
+            }
         }
 
         /// <summary>
         /// GetMedicationStatementsHistory - Get Patient Error.
         /// </summary>
+        /// <param name="patientErrorExists">bool value indicating whether GetPatientAsync returned an error or not.</param>
+        /// <param name="patientResourcePayloadExists">
+        /// bool value indicating whether GetPatientAsync returned a resource payload or
+        /// not.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatientError()
+        [Theory]
+        [InlineData(true, true)] // GetPatientAsync returns status error and a resource payload
+        [InlineData(false, false)] // GetPatientAsync returns status success and resource payload null
+        public async Task ShouldGetPatientError(bool patientErrorExists, bool patientResourcePayloadExists)
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
-                .Returns(
-                    Task.FromResult(
-                        new RequestResult<PatientModel>
-                        {
-                            ResultStatus = ResultType.Error,
-                        }));
+                .ReturnsAsync(
+                    new RequestResult<PatientModel>
+                    {
+                        ResultStatus = patientErrorExists ? ResultType.Error : ResultType.Success,
+                        ResourcePayload = patientResourcePayloadExists ? new PatientModel() : null,
+                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<DrugProduct>());

@@ -37,12 +37,21 @@ namespace HealthGateway.MedicationTests.Controllers
         /// <summary>
         /// GetMedications - Happy Path.
         /// </summary>
+        /// <param name="pharmacyAssessmentTitle">Pharmacy assessment title..</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetMedications()
+        [Theory]
+        [InlineData("Pharmacist Assessment")]
+        [InlineData("")]
+        public async Task GetMedications(string pharmacyAssessmentTitle)
         {
             // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string brandName = "KADIAN 10MG CAPSULE";
+            const string genericName = "Generic Name";
+            bool expectedPharmacistAssessment = !string.IsNullOrEmpty(pharmacyAssessmentTitle);
+            string expectedTitle = expectedPharmacistAssessment ? "Pharmacist Assessment" : brandName;
+            string expectedSubtitle = expectedPharmacistAssessment ? expectedTitle : genericName;
+
             RequestResult<IList<MedicationStatement>> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
@@ -66,17 +75,20 @@ namespace HealthGateway.MedicationTests.Controllers
                             PharmacyId = "ID",
                             PhoneNumber = "2222222222",
                         },
-                        MedicationSummary = new MedicationSummary
+                        MedicationSummary = new()
                         {
                             Din = "02242163",
-                            BrandName = "KADIAN 10MG CAPSULE",
+                            BrandName = brandName,
                             Form = "Form",
-                            GenericName = "Generic Name",
+                            GenericName = genericName,
                             IsPin = false,
                             Manufacturer = "Nomos",
                             Quantity = 1,
                             Strength = "Strong",
                             StrengthUnit = "ml",
+                            PharmacyAssessmentTitle = pharmacyAssessmentTitle,
+                            PrescriptionProvided = true,
+                            RedirectedToHealthCareProvider = true,
                         },
                         PractitionerSurname = "Surname",
                     },
@@ -95,6 +107,40 @@ namespace HealthGateway.MedicationTests.Controllers
             // Verify
             Assert.NotNull(actual);
             expectedResult.ShouldDeepEqual(actual);
+
+            // Medication Statement
+            Assert.Equal(expectedResult.ResourcePayload[0].PrescriptionIdentifier, actual.ResourcePayload![0].PrescriptionIdentifier);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensedDate, actual.ResourcePayload![0].DispensedDate);
+            Assert.Equal(expectedResult.ResourcePayload[0].Directions, actual.ResourcePayload![0].Directions);
+            Assert.Equal(expectedResult.ResourcePayload[0].PractitionerSurname, actual.ResourcePayload![0].PractitionerSurname);
+
+            // Dispensing Pharmacy
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.AddressLine1, actual.ResourcePayload![0].DispensingPharmacy.AddressLine1);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.AddressLine2, actual.ResourcePayload![0].DispensingPharmacy.AddressLine2);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.City, actual.ResourcePayload![0].DispensingPharmacy.City);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.CountryCode, actual.ResourcePayload![0].DispensingPharmacy.CountryCode);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.FaxNumber, actual.ResourcePayload![0].DispensingPharmacy.FaxNumber);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.Name, actual.ResourcePayload![0].DispensingPharmacy.Name);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.PharmacyId, actual.ResourcePayload![0].DispensingPharmacy.PharmacyId);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.PhoneNumber, actual.ResourcePayload![0].DispensingPharmacy.PhoneNumber);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.PostalCode, actual.ResourcePayload![0].DispensingPharmacy.PostalCode);
+            Assert.Equal(expectedResult.ResourcePayload[0].DispensingPharmacy.Province, actual.ResourcePayload![0].DispensingPharmacy.Province);
+
+            // Medication Summary
+            Assert.False(actual.ResourcePayload![0].MedicationSummary.IsPin);
+            Assert.True(actual.ResourcePayload![0].MedicationSummary.PrescriptionProvided);
+            Assert.True(actual.ResourcePayload![0].MedicationSummary.RedirectedToHealthCareProvider);
+
+            Assert.Equal(pharmacyAssessmentTitle, actual.ResourcePayload![0].MedicationSummary.PharmacyAssessmentTitle);
+            Assert.Equal(expectedPharmacistAssessment, actual.ResourcePayload![0].MedicationSummary.IsPharmacistAssessment);
+            Assert.Equal(expectedTitle, actual.ResourcePayload![0].MedicationSummary.Title);
+            Assert.Equal(expectedSubtitle, actual.ResourcePayload![0].MedicationSummary.Subtitle);
+
+            Assert.Equal(expectedResult.ResourcePayload[0].MedicationSummary.Form, actual.ResourcePayload![0].MedicationSummary.Form);
+            Assert.Equal(expectedResult.ResourcePayload[0].MedicationSummary.Manufacturer, actual.ResourcePayload![0].MedicationSummary.Manufacturer);
+            Assert.Equal(expectedResult.ResourcePayload![0].MedicationSummary.Quantity, actual.ResourcePayload![0].MedicationSummary.Quantity);
+            Assert.Equal(expectedResult.ResourcePayload![0].MedicationSummary.Strength, actual.ResourcePayload![0].MedicationSummary.Strength);
+            Assert.Equal(expectedResult.ResourcePayload![0].MedicationSummary.StrengthUnit, actual.ResourcePayload![0].MedicationSummary.StrengthUnit);
         }
     }
 }

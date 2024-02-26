@@ -18,6 +18,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,12 +29,14 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models.ODR;
+    using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -150,6 +153,30 @@ namespace HealthGateway.MedicationTests.Delegates
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
             medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
+
+            // Medication Result
+            Assert.Equal(medicationHistory.Response.Results.First().Id, response.ResourcePayload!.Results.First().Id);
+            Assert.Equal(medicationHistory.Response.Results.First().PrescriptionStatus, response.ResourcePayload!.Results.First().PrescriptionStatus);
+            Assert.Equal(medicationHistory.Response.Results.First().Refills, response.ResourcePayload!.Results.First().Refills);
+
+            // Pharmacy
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.FaxNumber, response.ResourcePayload!.Results.First().DispensingPharmacy!.FaxNumber);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Name, response.ResourcePayload!.Results.First().DispensingPharmacy!.Name);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.PharmacyId, response.ResourcePayload!.Results.First().DispensingPharmacy!.PharmacyId);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.PhoneNumber, response.ResourcePayload!.Results.First().DispensingPharmacy!.PhoneNumber);
+
+            // Address
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Address.City, response.ResourcePayload!.Results.First().DispensingPharmacy!.Address.City);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Address.Country, response.ResourcePayload!.Results.First().DispensingPharmacy!.Address.Country);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Address.Line1, response.ResourcePayload!.Results.First().DispensingPharmacy!.Address.Line1);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Address.Line2, response.ResourcePayload!.Results.First().DispensingPharmacy!.Address.Line2);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Address.PostalCode, response.ResourcePayload!.Results.First().DispensingPharmacy!.Address.PostalCode);
+            Assert.Equal(medicationHistory.Response.Results.First().DispensingPharmacy!.Address.Province, response.ResourcePayload!.Results.First().DispensingPharmacy!.Address.Province);
+
+            // Practitioner
+            Assert.Equal(medicationHistory.Response.Results.First().Practitioner!.GivenName, response.ResourcePayload!.Results.First().Practitioner!.GivenName);
+            Assert.Equal(medicationHistory.Response.Results.First().Practitioner!.MiddleInitial, response.ResourcePayload!.Results.First().Practitioner!.MiddleInitial);
+            Assert.Equal(medicationHistory.Response.Results.First().Practitioner!.Surname, response.ResourcePayload!.Results.First().Practitioner!.Surname);
         }
 
         /// <summary>
@@ -188,9 +215,17 @@ namespace HealthGateway.MedicationTests.Delegates
             mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GetProtectiveWord());
 
+            byte[] salt = HmacHashDelegate.GenerateSalt();
+            HmacHash hmacHash = new()
+            {
+                PseudoRandomFunction = HashFunction.HmacSha512,
+                Iterations = 21013,
+                Salt = Convert.ToBase64String(salt),
+                Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(this.GetProtectiveWord().QueryResponse.Value, salt, HmacHashDelegateConfig.DefaultPseudoRandomFunction, 21013, 64)),
+            };
             IHashDelegate mockHashDelegate = GetHashDelegate();
             Mock<ICacheProvider> mockCacheProvider = new();
-            mockCacheProvider.Setup(s => s.GetItem<IHash>(It.IsAny<string>())).Returns(mockHashDelegate.Hash(string.Empty));
+            mockCacheProvider.Setup(s => s.GetItemAsync<HmacHash>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(hmacHash);
             IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
