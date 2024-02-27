@@ -139,7 +139,7 @@ namespace HealthGateway.Medication.Services
                     return RequestResultFactory.Error<IList<MedicationStatement>>(response.ResultError);
                 }
 
-                IList<MedicationStatement>? payload = response.ResourcePayload.Results?.Select(this.mappingService.MapToMedicationStatement).ToList();
+                IList<MedicationStatement> payload = response.ResourcePayload.Results?.Select(this.mappingService.MapToMedicationStatement).ToList() ?? [];
                 await this.PopulateMedicationSummaryAsync(payload.Select(r => r.MedicationSummary).ToList(), ct);
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
