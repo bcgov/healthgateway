@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.Common.Services;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.Models;
@@ -36,7 +35,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ILogger<WebAlertService> logger;
         private readonly IPersonalAccountsService personalAccountsService;
         private readonly IWebAlertApi webAlertApi;
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebAlertService"/> class.
@@ -44,13 +43,13 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="personalAccountsService">The injected personal accounts service.</param>
         /// <param name="webAlertApi">The injected Refit API.</param>
-        /// <param name="autoMapper">The injected automapper.</param>
-        public WebAlertService(ILogger<WebAlertService> logger, IPersonalAccountsService personalAccountsService, IWebAlertApi webAlertApi, IMapper autoMapper)
+        /// <param name="mappingService">The injected mapping service.</param>
+        public WebAlertService(ILogger<WebAlertService> logger, IPersonalAccountsService personalAccountsService, IWebAlertApi webAlertApi, IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
             this.personalAccountsService = personalAccountsService;
             this.webAlertApi = webAlertApi;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(WebAlertService));
@@ -63,9 +62,12 @@ namespace HealthGateway.GatewayApi.Services
             Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid, ct);
-            IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
-                phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
-                    .OrderByDescending(a => a.ScheduledDateTimeUtc));
+            IList<WebAlert> webAlerts = phsaWebAlerts
+                .Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
+                .OrderByDescending(a => a.ScheduledDateTimeUtc)
+                .Select(this.mappingService.MapToWebAlert)
+                .ToList();
+
             this.logger.LogDebug("Finished retrieving web alerts from PHSA");
             return webAlerts;
         }

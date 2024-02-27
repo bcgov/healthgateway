@@ -26,6 +26,11 @@ namespace HealthGateway.WebClient.Server.Models
     public class WebClientConfiguration
     {
         /// <summary>
+        /// Gets or sets the value for web client configuration section key.
+        /// </summary>
+        public const string ConfigurationSectionKey = "WebClient";
+
+        /// <summary>
         /// Gets or sets the logging level used by the Webclient.
         /// </summary>
         public string LogLevel { get; set; } = string.Empty;
@@ -83,5 +88,10 @@ namespace HealthGateway.WebClient.Server.Models
         /// </summary>
         [JsonPropertyName("clientIP")]
         public string? ClientIp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the robots file path.
+        /// </summary>
+        public string RobotsFilePath { get; set; } = string.Empty;
     }
 }

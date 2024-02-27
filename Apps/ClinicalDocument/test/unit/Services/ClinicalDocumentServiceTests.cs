@@ -45,6 +45,8 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         private const string ClinicalDocumentRecordErrorMessage = "Error while retrieving Clinical Documents";
         private const string ClinicalDocumentFileErrorMessage = "Error while retrieving Clinical Document file";
 
+        private static readonly IClinicalDocumentMappingService MappingService = new ClinicalDocumentMappingService(InitializeAutoMapper());
+
         /// <summary>
         ///  Get clinical document records - happy path.
         /// </summary>
@@ -262,7 +264,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
                 personalAccountServiceMock.Object,
                 clinicalDocumentApiMock.Object,
                 patientRepositoryMock.Object,
-                InitializeAutoMapper());
+                MappingService);
         }
 
         private static IMapper InitializeAutoMapper()

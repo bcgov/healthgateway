@@ -22,7 +22,6 @@ namespace HealthGateway.ClinicalDocument.Services
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.Models;
@@ -39,7 +38,7 @@ namespace HealthGateway.ClinicalDocument.Services
     /// <inheritdoc/>
     public class ClinicalDocumentService : IClinicalDocumentService
     {
-        private readonly IMapper autoMapper;
+        private readonly IClinicalDocumentMappingService mappingService;
         private readonly IClinicalDocumentsApi clinicalDocumentsApi;
         private readonly ILogger<ClinicalDocumentService> logger;
         private readonly IPersonalAccountsService personalAccountsService;
@@ -52,19 +51,19 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <param name="personalAccountsService">The injected personal accounts service.</param>
         /// <param name="clinicalDocumentsApi">The injected clinical documents api.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         public ClinicalDocumentService(
             ILogger<ClinicalDocumentService> logger,
             IPersonalAccountsService personalAccountsService,
             IClinicalDocumentsApi clinicalDocumentsApi,
             IPatientRepository patientRepository,
-            IMapper autoMapper)
+            IClinicalDocumentMappingService mappingService)
         {
             this.logger = logger;
             this.personalAccountsService = personalAccountsService;
             this.clinicalDocumentsApi = clinicalDocumentsApi;
             this.patientRepository = patientRepository;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
@@ -99,7 +98,7 @@ namespace HealthGateway.ClinicalDocument.Services
                     PhsaHealthDataResponse apiResponse =
                         await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid, ct);
 
-                    IList<ClinicalDocumentRecord> clinicalDocuments = this.autoMapper.Map<IList<ClinicalDocumentRecord>>(apiResponse.Data);
+                    IList<ClinicalDocumentRecord> clinicalDocuments = apiResponse.Data.Select(this.mappingService.MapToClinicalDocumentRecord).ToList();
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = clinicalDocuments;
                     requestResult.TotalResultCount = clinicalDocuments.Count;

@@ -20,9 +20,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Server.MapUtils;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -37,13 +35,13 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
     /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
     public class UserFeedbackService(
         ILogger<UserFeedbackService> logger,
         IFeedbackDelegate feedbackDelegate,
         IAdminTagDelegate adminTagDelegate,
         IUserProfileDelegate userProfileDelegate,
-        IMapper autoMapper) : IUserFeedbackService
+        IAdminServerMappingService mappingService) : IUserFeedbackService
     {
         /// <inheritdoc/>
         public async Task<RequestResult<IList<UserFeedbackView>>> GetUserFeedbackAsync(CancellationToken ct = default)
@@ -72,7 +70,7 @@ namespace HealthGateway.Admin.Server.Services
                                 email = value ?? string.Empty;
                             }
 
-                            return UserFeedbackMapUtils.ToUiModel(p, email, autoMapper);
+                            return mappingService.MapToUserFeedbackView(p, email);
                         })
                     .ToList(),
                 ResultStatus = ResultType.Success,
@@ -92,13 +90,13 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            await feedbackDelegate.UpdateUserFeedbackAsync(autoMapper.Map<UserFeedback>(feedback), ct);
+            await feedbackDelegate.UpdateUserFeedbackAsync(mappingService.MapToUserFeedback(feedback), ct);
 
             DbResult<UserFeedback> userFeedbackResult = await feedbackDelegate.GetUserFeedbackWithFeedbackTagsAsync(feedback.Id, ct);
             if (userFeedbackResult.Status == DbStatusCode.Read)
             {
                 string email = await this.GetUserEmailAsync(userFeedbackResult.Payload.UserProfileId, ct);
-                result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, autoMapper);
+                result.ResourcePayload = mappingService.MapToUserFeedbackView(userFeedbackResult.Payload, email);
                 result.ResultStatus = ResultType.Success;
             }
 
@@ -112,7 +110,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<AdminTag> adminTags = await adminTagDelegate.GetAllAsync(ct);
 
             logger.LogDebug("Finished retrieving admin tags");
-            IList<AdminTagView> adminTagViews = autoMapper.Map<IList<AdminTagView>>(adminTags);
+            IList<AdminTagView> adminTagViews = adminTags.Select(mappingService.MapToAdminTagView).ToList();
             return new RequestResult<IList<AdminTagView>>
             {
                 ResourcePayload = adminTagViews,
@@ -134,7 +132,7 @@ namespace HealthGateway.Admin.Server.Services
             if (tagResult.Status == DbStatusCode.Created)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = autoMapper.Map<AdminTagView>(tagResult.Payload);
+                retVal.ResourcePayload = mappingService.MapToAdminTagView(tagResult.Payload);
             }
             else
             {
@@ -153,11 +151,11 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
-            DbResult<AdminTag> tagResult = await adminTagDelegate.DeleteAsync(autoMapper.Map<AdminTag>(tag), true, ct);
+            DbResult<AdminTag> tagResult = await adminTagDelegate.DeleteAsync(mappingService.MapToAdminTag(tag), true, ct);
             if (tagResult.Status == DbStatusCode.Deleted)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = autoMapper.Map<AdminTagView>(tagResult.Payload);
+                retVal.ResourcePayload = mappingService.MapToAdminTagView(tagResult.Payload);
             }
             else
             {
@@ -201,7 +199,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
                     string email = await this.GetUserEmailAsync(userFeedback.UserProfileId, ct);
-                    result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, autoMapper);
+                    result.ResourcePayload = mappingService.MapToUserFeedbackView(userFeedback, email);
                     result.ResultStatus = ResultType.Success;
                 }
                 else

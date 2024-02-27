@@ -17,13 +17,13 @@ namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
     using System.Diagnostics;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models.PHSA;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Server.Delegates
 
             if (refreshInProgress)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate)));
+                throw new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ErrorCodes.MaxRetriesReached);
             }
 
             return response;

@@ -22,6 +22,7 @@ namespace AccountDataAccessTest
     using AccountDataAccessTest.Utils;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
@@ -29,7 +30,6 @@ namespace AccountDataAccessTest
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models.Events;
@@ -227,8 +227,8 @@ namespace AccountDataAccessTest
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
+            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
+            Assert.Contains(ErrorMessages.PhnInvalid, exception.Message, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

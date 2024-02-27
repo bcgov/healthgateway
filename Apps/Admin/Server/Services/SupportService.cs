@@ -19,10 +19,9 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
@@ -30,22 +29,23 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.MapUtils;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
+    /// <param name="commonMappingService">The injected common mapping service.</param>
     /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
     /// <param name="patientRepository">The injected patient repository.</param>
     /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
@@ -58,7 +58,8 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="logger">The injected logger provider.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
     public class SupportService(
-        IMapper autoMapper,
+        IAdminServerMappingService mappingService,
+        ICommonMappingService commonMappingService,
         IMessagingVerificationDelegate messagingVerificationDelegate,
         IPatientRepository patientRepository,
         IResourceDelegateDelegate resourceDelegateDelegate,
@@ -134,7 +135,7 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Sms =>
                     await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString, ct),
                 _ =>
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
+                    throw new ValidationException($"Unknown {nameof(queryType)}"),
             };
 
             IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportResultAsync(profile, ct));
@@ -151,7 +152,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
             PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-            return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
+            return patient ?? throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
         }
 
         private async Task<PatientModel?> TryGetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
@@ -164,7 +165,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return await this.GetPatientAsync(query, ct);
             }
-            catch (ProblemDetailsException e) when (e.ProblemDetails?.Status == HttpStatusCode.NotFound)
+            catch (NotFoundException)
             {
                 return null;
             }
@@ -173,7 +174,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<IEnumerable<MessagingVerificationModel>> GetMessagingVerificationsAsync(string hdid, CancellationToken ct)
         {
             IEnumerable<MessagingVerification> verifications = await messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid, ct);
-            return verifications.Select(m => autoMapper.Map<MessagingVerification, MessagingVerificationModel>(m));
+            return verifications.Select(commonMappingService.MapToMessagingVerificationModel);
         }
 
         private async Task<IEnumerable<DataSource>> GetBlockedDataSourcesAsync(string hdid, CancellationToken ct)
@@ -190,7 +191,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
         {
             IEnumerable<AgentAudit> audits = await auditRepository.HandleAsync(new(hdid), ct);
-            return audits.Select(autoMapper.Map<AgentAudit, AgentAction>);
+            return audits.Select(mappingService.MapToAgentAction);
         }
 
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)
@@ -209,7 +210,7 @@ namespace HealthGateway.Admin.Server.Services
                 return null;
             }
 
-            PatientSupportDependentInfo dependentInfo = autoMapper.Map<PatientModel, PatientSupportDependentInfo>(patient);
+            PatientSupportDependentInfo dependentInfo = mappingService.MapToPatientSupportDependentInfo(patient);
             dependentInfo.ExpiryDate = item.ResourceDelegate.ExpiryDate;
             dependentInfo.Protected = item.Dependent?.Protected == true;
             return dependentInfo;
@@ -217,19 +218,19 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
-            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
             {
-                return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
+                logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+                throw new InvalidDataException(ErrorMessages.PhnOrDateOfBirthInvalid);
             }
 
-            logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
+            return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
         }
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
             string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
-            return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
+            return accessToken ?? throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
         }
 
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
@@ -248,13 +249,13 @@ namespace HealthGateway.Admin.Server.Services
                 return null;
             }
 
-            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, autoMapper);
+            return mappingService.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<PatientSupportResult> GetPatientSupportResultAsync(UserProfile profile, CancellationToken ct)
         {
             PatientModel? patient = await this.TryGetPatientAsync(PatientIdentifierType.Hdid, profile.HdId, ct);
-            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, autoMapper);
+            return mappingService.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)

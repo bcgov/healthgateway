@@ -50,16 +50,16 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the requested date.
         /// </summary>
-        public DateTime RequestedDate { get; set; }
+        public DateOnly RequestedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the effective date.
         /// </summary>
-        public DateTime? EffectiveDate { get; set; }
+        public DateOnly? EffectiveDate { get; set; }
 
         /// <summary>
         /// Gets or sets the expiry date.
         /// </summary>
-        public DateTime? ExpiryDate { get; set; }
+        public DateOnly? ExpiryDate { get; set; }
     }
 }

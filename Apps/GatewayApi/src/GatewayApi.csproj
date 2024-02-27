@@ -8,7 +8,7 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'GatewayApi' " />
     <ItemGroup>
-        <PackageReference Include="libphonenumber-csharp" Version="8.13.27" />
+        <PackageReference Include="libphonenumber-csharp" Version="8.13.30" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     </ItemGroup>
@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Assets\Robots.txt" />
         <EmbeddedResource Include="Assets\Templates\CovidReport.docx" />
         <EmbeddedResource Include="Assets\Templates\CovidReport.xlsx" />
         <EmbeddedResource Include="Assets\Templates\EncounterReport.xlsx" />

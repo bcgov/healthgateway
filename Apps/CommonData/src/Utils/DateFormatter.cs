@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Data.Utils;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
@@ -112,14 +111,37 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Sets the kind of a supplied DateTime to UTC if it is currently unspecified.
+    /// Modifies a DateTime if the Kind is unspecified, treating it as a UTC value.
     /// </summary>
     /// <param name="dateTime">The DateTime to modify.</param>
-    /// <returns>The supplied DateTime, no longer with an unspecified kind.</returns>
-    [return: NotNullIfNotNull(nameof(dateTime))]
-    public static DateTime? SpecifyUtc(DateTime? dateTime)
+    /// <returns>The modified DateTime in UTC format.</returns>
+    public static DateTime SpecifyUtc(DateTime dateTime)
     {
-        return dateTime?.Kind != DateTimeKind.Unspecified ? dateTime : DateTime.SpecifyKind(dateTime.Value, DateTimeKind.Utc);
+        return SpecifyTimeZone(dateTime, TimeZoneInfo.Utc);
+    }
+
+    /// <summary>
+    /// Modifies a DateTime if the Kind is unspecified, treating it as a time in the local time zone, and returning the UTC
+    /// equivalent to that time.
+    /// </summary>
+    /// <param name="dateTime">The DateTime to modify.</param>
+    /// <param name="configuration">Configuration containing TimeZone keys for the local time zone.</param>
+    /// <returns>The modified DateTime in UTC format.</returns>
+    public static DateTime SpecifyLocal(DateTime dateTime, IConfiguration configuration)
+    {
+        return SpecifyTimeZone(dateTime, GetLocalTimeZone(configuration));
+    }
+
+    /// <summary>
+    /// Modifies a DateTime if the Kind is unspecified, treating it as a time in the specified time zone, and returning the UTC
+    /// equivalent to that time.
+    /// </summary>
+    /// <param name="dateTime">The DateTime to modify.</param>
+    /// <param name="timeZone">TimeZoneInfo object that represents the time zone the datetime is in.</param>
+    /// <returns>The modified DateTime in UTC format.</returns>
+    public static DateTime SpecifyTimeZone(DateTime dateTime, TimeZoneInfo timeZone)
+    {
+        return dateTime.Kind != DateTimeKind.Unspecified ? dateTime : new DateTimeOffset(dateTime, timeZone.GetUtcOffset(dateTime)).ToUniversalTime().UtcDateTime;
     }
 
     /// <summary>

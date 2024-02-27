@@ -1730,8 +1730,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<Guid>("FileDownloadId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("LastUpdate")
+                        .HasColumnType("Date");
 
                     b.Property<string>("NumberOfAis")
                         .HasMaxLength(10)
@@ -2502,16 +2502,16 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<DateTime>("EffectiveDate")
+                    b.Property<DateOnly>("EffectiveDate")
                         .HasColumnType("Date");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateOnly>("EndDate")
                         .HasColumnType("Date");
 
                     b.Property<Guid>("FileDownloadId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("FormularyListDate")
+                    b.Property<DateOnly>("FormularyListDate")
                         .HasColumnType("Date");
 
                     b.Property<string>("GenericName")

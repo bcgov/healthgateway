@@ -68,13 +68,13 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the patient's date of birth.
         /// </summary>
         [JsonPropertyName("birthdate")]
-        public DateTime? Birthdate { get; set; }
+        public DateOnly? Birthdate { get; set; }
 
         /// <summary>
         /// Gets or sets one of the patient's vaccine dates.
         /// </summary>
         [JsonPropertyName("vaccinedate")]
-        public DateTime? VaccineDate { get; set; }
+        public DateOnly? VaccineDate { get; set; }
 
         /// <summary>
         /// Gets or sets the number of doses of the vaccine that have been administered to the identified PHN.

@@ -18,7 +18,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Api
 #pragma warning disable SA1600 // Disables documentation for internal class.
 #pragma warning disable SA1602 // Disables documentation for internal class.
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     internal record PatientIdentity
     {
         public Guid Pid { get; set; }

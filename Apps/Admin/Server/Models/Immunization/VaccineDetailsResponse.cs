@@ -47,13 +47,13 @@ namespace HealthGateway.Admin.Server.Models.Immunization
         /// Gets or sets the patient's dose dates from the Provincial Immunization Registry (Panorama).
         /// </summary>
         [JsonPropertyName("pirLookupDoseDates")]
-        public IEnumerable<DateTime> PirLookupDoseDates { get; set; } = [];
+        public IEnumerable<DateTime>? PirLookupDoseDates { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the patient's dose dates from Immunize BC.
         /// </summary>
         [JsonPropertyName("immBcLookupDoseDates")]
-        public IEnumerable<DateTime> ImmBcLookupDoseDates { get; set; } = [];
+        public IEnumerable<DateTime>? ImmBcLookupDoseDates { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the data from the enterprise-wide master patient index.
@@ -71,6 +71,6 @@ namespace HealthGateway.Admin.Server.Models.Immunization
         /// Gets or sets the patient's doses.
         /// </summary>
         [JsonPropertyName("doses")]
-        public IEnumerable<VaccineDoseResponse> Doses { get; set; } = [];
+        public IEnumerable<VaccineDoseResponse>? Doses { get; set; } = [];
     }
 }

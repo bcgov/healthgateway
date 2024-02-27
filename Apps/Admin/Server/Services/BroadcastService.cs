@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
@@ -31,13 +30,14 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
     using Refit;
 
     /// <inheritdoc/>
     public class BroadcastService : IBroadcastService
     {
-        private readonly IMapper autoMapper;
+        private readonly ICommonMappingService commonMappingService;
         private readonly ILogger logger;
         private readonly ISystemBroadcastApi systemBroadcastApi;
 
@@ -46,12 +46,12 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="systemBroadcastApi">The injected API for interacting with system broadcasts.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
-        public BroadcastService(ILogger<BroadcastService> logger, ISystemBroadcastApi systemBroadcastApi, IMapper autoMapper)
+        /// <param name="commonMappingService">The injected common mapping service.</param>
+        public BroadcastService(ILogger<BroadcastService> logger, ISystemBroadcastApi systemBroadcastApi, ICommonMappingService commonMappingService)
         {
             this.logger = logger;
             this.systemBroadcastApi = systemBroadcastApi;
-            this.autoMapper = autoMapper;
+            this.commonMappingService = commonMappingService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(BroadcastService));
@@ -80,10 +80,10 @@ namespace HealthGateway.Admin.Server.Services
                 }
                 else
                 {
-                    BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
+                    BroadcastRequest broadcastRequest = this.commonMappingService.MapToBroadcastRequest(broadcast);
                     BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest, ct);
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
+                    requestResult.ResourcePayload = this.commonMappingService.MapToBroadcast(response);
                     requestResult.TotalResultCount = 1;
                 }
             }
@@ -116,7 +116,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 IEnumerable<BroadcastResponse> response = await this.systemBroadcastApi.GetBroadcastsAsync(ct);
                 requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload = this.autoMapper.Map<List<Broadcast>>(response);
+                requestResult.ResourcePayload = response.Select(this.commonMappingService.MapToBroadcast).ToList();
                 requestResult.TotalResultCount = requestResult.ResourcePayload.Count();
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -157,10 +157,10 @@ namespace HealthGateway.Admin.Server.Services
                 }
                 else
                 {
-                    BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
+                    BroadcastRequest broadcastRequest = this.commonMappingService.MapToBroadcastRequest(broadcast);
                     BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest, ct);
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
+                    requestResult.ResourcePayload = this.commonMappingService.MapToBroadcast(response);
                     requestResult.TotalResultCount = 1;
                 }
             }

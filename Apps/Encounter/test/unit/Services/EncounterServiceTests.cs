@@ -53,6 +53,9 @@ namespace HealthGateway.EncounterTests.Services
         private const string ConfigBackOffMilliseconds = "2000";
         private const string ConfigBaseUrl = "http:localhost";
         private const string ConfigFetchSize = "25";
+
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IEncounterMappingService MappingService = new EncounterMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
         private readonly string ipAddress = "127.0.0.1";
 
         private readonly Claim excludeClaim = new()
@@ -148,8 +151,8 @@ namespace HealthGateway.EncounterTests.Services
                 mockMspDelegate.Object,
                 new Mock<IHospitalVisitDelegate>().Object,
                 patientRepository.Object,
-                GetIConfigurationRoot(),
-                MapperUtil.InitializeAutoMapper());
+                Configuration,
+                MappingService);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
@@ -207,8 +210,8 @@ namespace HealthGateway.EncounterTests.Services
                 mockMspDelegate.Object,
                 new Mock<IHospitalVisitDelegate>().Object,
                 patientRepository.Object,
-                GetIConfigurationRoot(),
-                MapperUtil.InitializeAutoMapper());
+                Configuration,
+                MappingService);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
@@ -260,8 +263,8 @@ namespace HealthGateway.EncounterTests.Services
                 mockMspDelegate.Object,
                 new Mock<IHospitalVisitDelegate>().Object,
                 patientRepository.Object,
-                GetIConfigurationRoot(),
-                MapperUtil.InitializeAutoMapper());
+                Configuration,
+                MappingService);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
@@ -429,6 +432,8 @@ namespace HealthGateway.EncounterTests.Services
                 { "PHSA:FetchSize", ConfigFetchSize },
                 { "PHSA:BackOffMilliseconds", ConfigBackOffMilliseconds },
                 { "MspVisit:ExcludedFeeDescriptions", "PRIMARY CARE PANEL REPORT,LFP DIRECT PATIENT CARE TIME,LFP INDIRECT PATIENT CARE TIME" },
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
             };
 
             return new ConfigurationBuilder()
@@ -453,8 +458,8 @@ namespace HealthGateway.EncounterTests.Services
                 new Mock<IMspVisitDelegate>().Object,
                 mockHospitalVisitDelegate.Object,
                 patientRepository.Object,
-                GetIConfigurationRoot(),
-                MapperUtil.InitializeAutoMapper());
+                Configuration,
+                MappingService);
         }
 
         private HttpContext GetHttpContext()

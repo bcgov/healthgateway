@@ -6,8 +6,8 @@
         "personalhealthnumber": null,
         "firstname": "BONNET ThisIsaSecondNa ThisIsaThird",
         "lastname": "PROTERVITY",
-        "birthdate": "1967-06-02T00:00:00",
-        "vaccinedate": "0001-01-01T00:00:00",
+        "birthdate": "1967-06-02",
+        "vaccinedate": "0001-01-01",
         "doses": 1,
         "state": 1,
         "qrCode": {

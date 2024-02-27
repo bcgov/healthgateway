@@ -27,6 +27,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -39,6 +40,7 @@ namespace HealthGateway.Admin.Tests.Services
         private const string CategoryName = "Test Category Name";
         private const string ThrownExceptionMessage = "Error with HTTP Request";
 
+        private static readonly ICommonMappingService CommonMappingService = new CommonMappingService(MapperUtil.InitializeAutoMapper());
         private static readonly DateTime Today = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
@@ -362,7 +364,7 @@ namespace HealthGateway.Admin.Tests.Services
             return new BroadcastService(
                 new Mock<ILogger<BroadcastService>>().Object,
                 mockSystemBroadcastApi.Object,
-                MapperUtil.InitializeAutoMapper());
+                CommonMappingService);
         }
     }
 }

@@ -70,6 +70,7 @@ namespace HealthGateway.ClinicalDocument
             this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add services
+            services.AddTransient<IClinicalDocumentMappingService, ClinicalDocumentMappingService>();
             services.AddTransient<IClinicalDocumentService, ClinicalDocumentService>();
             services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
             services.AddAutoMapper(typeof(Startup));

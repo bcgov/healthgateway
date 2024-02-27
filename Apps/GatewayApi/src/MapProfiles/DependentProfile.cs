@@ -31,8 +31,7 @@ namespace HealthGateway.GatewayApi.MapProfiles
         {
             this.CreateMap<ResourceDelegate, DependentModel>()
                 .ForMember(dest => dest.OwnerId, opt => opt.MapFrom(src => src.ResourceOwnerHdid))
-                .ForMember(dest => dest.DelegateId, opt => opt.MapFrom(src => src.ProfileHdid))
-                .ReverseMap();
+                .ForMember(dest => dest.DelegateId, opt => opt.MapFrom(src => src.ProfileHdid));
         }
     }
 }

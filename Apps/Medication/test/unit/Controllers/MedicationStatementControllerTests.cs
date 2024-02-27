@@ -51,9 +51,7 @@ namespace HealthGateway.MedicationTests.Controllers
                     new()
                     {
                         PrescriptionIdentifier = "identifier",
-                        PrescriptionStatus = 'M',
-                        DispensedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
-                        DateEntered = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
+                        DispensedDate = DateOnly.Parse("09/28/2020", CultureInfo.CurrentCulture),
                         Directions = "Directions",
                         DispensingPharmacy = new Pharmacy
                         {
@@ -72,17 +70,14 @@ namespace HealthGateway.MedicationTests.Controllers
                         {
                             Din = "02242163",
                             BrandName = "KADIAN 10MG CAPSULE",
-                            DrugDiscontinuedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
                             Form = "Form",
                             GenericName = "Generic Name",
                             IsPin = false,
                             Manufacturer = "Nomos",
-                            MaxDailyDosage = 100,
                             Quantity = 1,
                             Strength = "Strong",
                             StrengthUnit = "ml",
                         },
-                        PharmacyId = "Id",
                         PractitionerSurname = "Surname",
                     },
                 },

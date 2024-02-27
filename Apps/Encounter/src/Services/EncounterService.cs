@@ -22,7 +22,6 @@ namespace HealthGateway.Encounter.Services
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -43,7 +42,7 @@ namespace HealthGateway.Encounter.Services
     /// <inheritdoc/>
     public class EncounterService : IEncounterService
     {
-        private readonly IMapper autoMapper;
+        private readonly IEncounterMappingService mappingService;
         private readonly IHospitalVisitDelegate hospitalVisitDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
@@ -63,7 +62,7 @@ namespace HealthGateway.Encounter.Services
         /// <param name="hospitalVisitDelegate">The injected hospital visit provider.</param>
         /// <param name="patientRepository">The injected patient repository provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
         public EncounterService(
             ILogger<EncounterService> logger,
@@ -73,7 +72,7 @@ namespace HealthGateway.Encounter.Services
             IHospitalVisitDelegate hospitalVisitDelegate,
             IPatientRepository patientRepository,
             IConfiguration configuration,
-            IMapper autoMapper)
+            IEncounterMappingService mappingService)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
@@ -81,7 +80,7 @@ namespace HealthGateway.Encounter.Services
             this.mspVisitDelegate = mspVisitDelegate;
             this.hospitalVisitDelegate = hospitalVisitDelegate;
             this.patientRepository = patientRepository;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
             this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions")
@@ -139,8 +138,7 @@ namespace HealthGateway.Encounter.Services
                         IEnumerable<Claim> filteredClaims = response.ResourcePayload.Claims.Where(
                             c => !this.excludedFeeDescriptions
                                 .Exists(d => c.FeeDesc.StartsWith(d, StringComparison.OrdinalIgnoreCase)));
-                        result.ResourcePayload = this.autoMapper
-                            .Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(filteredClaims)
+                        result.ResourcePayload = filteredClaims.Select(this.mappingService.MapToEncounterModel)
                             .GroupBy(e => e.Id)
                             .Select(g => g.First());
                     }
@@ -186,7 +184,7 @@ namespace HealthGateway.Encounter.Services
                 {
                     result.ResultStatus = ResultType.Success;
                     result.TotalResultCount = hospitalVisitResult.TotalResultCount;
-                    result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
+                    result.ResourcePayload.HospitalVisits = hospitalVisitResult.ResourcePayload.Result?.Select(this.mappingService.MapToHospitalVisitModel).ToList() ?? [];
                     result.PageIndex = hospitalVisitResult.PageIndex;
                     result.PageSize = hospitalVisitResult.PageSize;
                 }

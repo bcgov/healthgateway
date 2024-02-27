@@ -45,25 +45,25 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the Disease Eligible Date.
         /// </summary>
         [JsonPropertyName("diseaseEligibleDate")]
-        public DateTime? DiseaseEligibleDate { get; set; }
+        public DateOnly? DiseaseEligibleDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Disease Due Date.
         /// </summary>
         [JsonPropertyName("diseaseDueDate")]
-        public DateTime? DiseaseDueDate { get; set; }
+        public DateOnly? DiseaseDueDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Agent Eligible Date.
         /// </summary>
         [JsonPropertyName("agentEligibleDate")]
-        public DateTime? AgentEligibleDate { get; set; }
+        public DateOnly? AgentEligibleDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Agent Due Date.
         /// </summary>
         [JsonPropertyName("agentDueDate")]
-        public DateTime? AgentDueDate { get; set; }
+        public DateOnly? AgentDueDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Status.

@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
@@ -30,6 +29,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
@@ -42,16 +42,8 @@ namespace HealthGateway.Admin.Tests.Services
     /// </summary>
     public class CsvExportServiceTests
     {
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CsvExportServiceTests"/> class.
-        /// </summary>
-        public CsvExportServiceTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IAdminServerMappingService MappingService = new AdminServerMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
 
         /// <summary>
         /// Happy path year of birth counts download.
@@ -70,11 +62,11 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IAdminUserProfileDelegate>().Object,
                 new Mock<IKeycloakAdminApi>().Object,
                 new Mock<ILogger<InactiveUserService>>().Object,
-                this.configuration,
-                MapperUtil.InitializeAutoMapper());
+                Configuration,
+                MappingService);
 
             ICsvExportService service = new CsvExportService(
-                this.configuration,
+                Configuration,
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICommentDelegate>().Object,
@@ -99,9 +91,10 @@ namespace HealthGateway.Admin.Tests.Services
             AdminUserProfile adminUserProfile = new()
             {
                 AdminUserProfileId = Guid.NewGuid(),
-                LastLoginDateTime = DateTime.Now,
+                LastLoginDateTime = DateTime.UtcNow,
                 Username = "username",
             };
+
             AdminUserProfileView expected = new()
             {
                 AdminUserProfileId = adminUserProfile.AdminUserProfileId,
@@ -113,8 +106,19 @@ namespace HealthGateway.Admin.Tests.Services
                 LastName = null,
                 RealmRoles = null,
             };
-            AdminUserProfileView actual = this.autoMapper.Map<AdminUserProfile, AdminUserProfileView>(adminUserProfile);
-            expected.ShouldDeepEqual(actual);
+
+            AdminUserProfileView actual = MappingService.MapToAdminUserProfileView(adminUserProfile);
+
+            Assert.Equal(expected.AdminUserProfileId, actual.AdminUserProfileId);
+            Assert.Equal(expected.UserId, actual.UserId);
+            Assert.NotNull(actual.LastLoginDateTime);
+            Assert.Equal(DateTimeKind.Unspecified, actual.LastLoginDateTime.Value.Kind);
+            Assert.Equal(expected.LastLoginDateTime, DateFormatter.SpecifyLocal(actual.LastLoginDateTime.Value, Configuration));
+            Assert.Equal(expected.Username, actual.Username);
+            Assert.Equal(expected.Email, actual.Email);
+            Assert.Equal(expected.FirstName, actual.FirstName);
+            Assert.Equal(expected.LastName, actual.LastName);
+            Assert.Equal(expected.RealmRoles, actual.RealmRoles);
         }
 
         /// <summary>
@@ -131,6 +135,7 @@ namespace HealthGateway.Admin.Tests.Services
                 FirstName = "firstname",
                 LastName = "lastname",
             };
+
             AdminUserProfileView expected = new()
             {
                 AdminUserProfileId = null,
@@ -142,7 +147,9 @@ namespace HealthGateway.Admin.Tests.Services
                 LastName = userRepresentation.LastName,
                 RealmRoles = null,
             };
-            AdminUserProfileView actual = this.autoMapper.Map<UserRepresentation, AdminUserProfileView>(userRepresentation);
+
+            AdminUserProfileView actual = MappingService.MapToAdminUserProfileView(userRepresentation);
+
             expected.ShouldDeepEqual(actual);
         }
 

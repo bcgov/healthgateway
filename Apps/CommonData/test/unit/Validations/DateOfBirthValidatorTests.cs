@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
     /// </summary>
     public class DateOfBirthValidatorTests
     {
-        private static readonly DateTime ReferenceDate = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateOnly ReferenceDate = new(2022, 12, 21);
 
         /// <summary>
         /// Tests for DateOfBirthValidatorTests.
@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         {
             DateOfBirthValidator validator = new(referenceDate: ReferenceDate);
 
-            ValidationResult? validationResult = validator.Validate(dob);
+            ValidationResult? validationResult = validator.Validate(DateOnly.FromDateTime(dob));
             Assert.Equal(shouldBeValid, validationResult.IsValid);
         }
     }

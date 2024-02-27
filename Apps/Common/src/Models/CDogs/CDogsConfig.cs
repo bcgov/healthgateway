@@ -26,30 +26,8 @@ namespace HealthGateway.Common.Models.CDogs
         public const string CDogsConfigSectionKey = "CDOGS";
 
         /// <summary>
-        /// Gets or sets the OpenShift service name.
-        /// </summary>
-        public string ServiceName { get; set; } = "HGCDOGS_SERVICE";
-
-        /// <summary>
-        /// Gets or sets the host suffix used to lookup the service host.
-        /// </summary>
-        public string ServiceHostSuffix { get; set; } = "_HOST";
-
-        /// <summary>
-        /// Gets or sets the port suffix used to lookup the service port.
-        /// </summary>
-        public string ServicePortSuffix { get; set; } = "_PORT";
-
-        /// <summary>
         /// Gets or sets the base Url used to connect to the ODR Proxy.
         /// </summary>
         public string BaseEndpoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether dynamic service lookup should occur.
-        /// if enabled, the Url will be created using environment variables.
-        /// If not enabled, the configured Url will be used.
-        /// </summary>
-        public bool DynamicServiceLookup { get; set; }
     }
 }

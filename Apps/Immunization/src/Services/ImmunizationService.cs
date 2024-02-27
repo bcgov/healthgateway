@@ -15,17 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
@@ -35,19 +33,19 @@ namespace HealthGateway.Immunization.Services
     {
         private readonly IImmunizationDelegate immunizationDelegate;
         private readonly IPatientRepository patientRepository;
-        private readonly IMapper autoMapper;
+        private readonly IImmunizationMappingService mappingService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
-        /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
-        /// <param name="patientRepository">The injected patient repository provider.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
-        public ImmunizationService(IImmunizationDelegate immunizationDelegate, IPatientRepository patientRepository, IMapper autoMapper)
+        /// <param name="immunizationDelegate">The injected immunization delegate.</param>
+        /// <param name="patientRepository">The injected patient repository.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
+        public ImmunizationService(IImmunizationDelegate immunizationDelegate, IPatientRepository patientRepository, IImmunizationMappingService mappingService)
         {
             this.immunizationDelegate = immunizationDelegate;
             this.patientRepository = patientRepository;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         /// <inheritdoc/>
@@ -59,7 +57,7 @@ namespace HealthGateway.Immunization.Services
                 return new RequestResult<ImmunizationEvent>
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = this.autoMapper.Map<ImmunizationEvent>(delegateResult.ResourcePayload!.Result),
+                    ResourcePayload = this.mappingService.MapToImmunizationEvent(delegateResult.ResourcePayload!.Result),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,
@@ -93,9 +91,9 @@ namespace HealthGateway.Immunization.Services
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResourcePayload = new ImmunizationResult(
-                        this.autoMapper.Map<LoadStateModel>(delegateResult.ResourcePayload!.LoadState),
-                        this.autoMapper.Map<IList<ImmunizationEvent>>(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
-                        ImmunizationRecommendationMapUtils.FromPhsaModelList(delegateResult.ResourcePayload.Result.Recommendations, this.autoMapper)),
+                        this.mappingService.MapToLoadStateModel(delegateResult.ResourcePayload!.LoadState),
+                        delegateResult.ResourcePayload!.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent).ToList(),
+                        this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations)),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,

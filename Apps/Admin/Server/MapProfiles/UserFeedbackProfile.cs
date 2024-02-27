@@ -31,6 +31,12 @@ namespace HealthGateway.Admin.Server.MapProfiles
         {
             this.CreateMap<UserFeedback, UserFeedbackView>()
                 .ReverseMap();
+
+            this.CreateMap<UserFeedbackTag, UserFeedbackTagView>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserFeedbackTagId))
+                .ForMember(dest => dest.TagId, opt => opt.MapFrom(src => src.AdminTagId))
+                .ForMember(dest => dest.FeedbackId, opt => opt.MapFrom(src => src.UserFeedbackId))
+                .ReverseMap();
         }
     }
 }

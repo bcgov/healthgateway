@@ -25,8 +25,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.GatewayApi.Controllers;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
@@ -42,6 +42,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     /// </summary>
     public class UserProfileControllerTests
     {
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
         private readonly string token = "Fake Access Token";
         private readonly string userId = "1001";
@@ -95,7 +97,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             RequestResult<UserProfileModel> expected = new()
             {
-                ResourcePayload = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper()),
+                ResourcePayload = MappingService.MapToUserProfileModel(userProfile, userProfile.TermsOfServiceId),
                 ResultStatus = ResultType.Success,
             };
 
@@ -137,7 +139,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             RequestResult<UserProfileModel> expected = new()
             {
-                ResourcePayload = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper()),
+                ResourcePayload = MappingService.MapToUserProfileModel(userProfile, userProfile.TermsOfServiceId),
                 ResultStatus = ResultType.Success,
             };
 
@@ -305,7 +307,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             {
                 Id = Guid.NewGuid(),
                 Content = "abc",
-                EffectiveDate = DateTime.Today,
+                EffectiveDateTime = DateTime.Today,
             };
             RequestResult<TermsOfServiceModel> expectedResult = new()
             {
@@ -584,7 +586,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             return new RequestResult<UserProfileModel>
             {
-                ResourcePayload = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper()),
+                ResourcePayload = MappingService.MapToUserProfileModel(userProfile, userProfile.TermsOfServiceId),
                 ResultStatus = resultType,
             };
         }

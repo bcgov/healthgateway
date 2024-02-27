@@ -24,11 +24,11 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         getComments: (entryId: string) => UserComment[] | null
     ) {
         const isResult = model.eventType === BcCancerScreeningType.Result;
-        const date = isResult ? model.resultDateTime : model.eventDateTime;
+        const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
         super(
-            model.id ?? `cancerScreening-${date}`,
+            model.id ?? `cancerScreening-${dateTime}`,
             EntryType.BcCancerScreening,
-            DateWrapper.fromIso(date)
+            DateWrapper.fromIso(dateTime)
         );
         this.isResult = isResult;
         this.fileId = model.fileId;

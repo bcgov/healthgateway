@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -30,6 +29,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
@@ -39,7 +39,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -52,7 +51,7 @@ namespace HealthGateway.GatewayApi.Services
         private const string MaxDependentAgeKey = "MaxDependentAge";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
         private readonly bool dependentsChangeFeedEnabled;
@@ -74,7 +73,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="messageSender">The message sender.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="mappingService">The inject automapper provider.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
         public DependentService(
             IConfiguration configuration,
@@ -85,7 +84,7 @@ namespace HealthGateway.GatewayApi.Services
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessageSender messageSender,
-            IMapper autoMapper)
+            IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -97,7 +96,7 @@ namespace HealthGateway.GatewayApi.Services
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.dependentsChangeFeedEnabled = changeFeedConfiguration?.Dependents.Enabled ?? false;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
         }
 
         /// <inheritdoc/>
@@ -133,7 +132,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.InsertAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+                throw new DatabaseException(dbDependent.Message);
             }
 
             await this.UpdateNotificationSettingsAsync(dependentHdid, delegateHdid, false, ct);
@@ -145,7 +144,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid }, ct);
             int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
 
-            return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount, this.autoMapper));
+            return RequestResultFactory.Success(this.mappingService.MapToDependentModel(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount));
         }
 
         /// <inheritdoc/>
@@ -172,7 +171,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (patientResult.ResourcePayload != null)
                 {
                     int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(resourceDelegate.ResourceOwnerHdid);
-                    dependentModels.Add(DependentMapUtils.CreateFromDbModels(resourceDelegate, patientResult.ResourcePayload, totalDelegateCount, this.autoMapper));
+                    dependentModels.Add(this.mappingService.MapToDependentModel(resourceDelegate, patientResult.ResourcePayload, totalDelegateCount));
                 }
                 else
                 {
@@ -236,7 +235,7 @@ namespace HealthGateway.GatewayApi.Services
             ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(dependent.DelegateId, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
             if (resourceDelegate == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
+                throw new NotFoundException($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}");
             }
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
@@ -244,7 +243,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.DeleteAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+                throw new DatabaseException(dbDependent.Message);
             }
 
             await this.UpdateNotificationSettingsAsync(dependent.OwnerId, dependent.DelegateId, true, ct);
@@ -337,8 +336,8 @@ namespace HealthGateway.GatewayApi.Services
 
         private async Task UpdateNotificationSettingsAsync(string dependentHdid, string delegateHdid, bool isDelete = false, CancellationToken ct = default)
         {
-            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct) ?? throw new ProblemDetailsException(
-                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.DelegateUserProfileNotFound));
+            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct) ??
+                                              throw new NotFoundException(ErrorMessages.DelegateUserProfileNotFound);
 
             // Update the notification settings
             NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SmsNumber)

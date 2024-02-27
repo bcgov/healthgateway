@@ -17,35 +17,35 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Diagnostics;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class PatientDetailsService : IPatientDetailsService
     {
-        private readonly IMapper autoMapper;
+        private readonly IGatewayApiMappingService mappingService;
         private readonly ILogger logger;
         private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientDetailsService"/> class.
         /// </summary>
-        /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="patientRepository">The injected patient repository provider.</param>
         public PatientDetailsService(
-            IMapper autoMapper,
+            IGatewayApiMappingService mappingService,
             ILogger<PatientDetailsService> logger,
             IPatientRepository patientRepository)
         {
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
             this.logger = logger;
             this.patientRepository = patientRepository;
         }
@@ -67,30 +67,30 @@ namespace HealthGateway.GatewayApi.Services
 
             this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
 
-            PatientModel? patientDetails = (await this.patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
+            PatientModel? patientModel = (await this.patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
 
-            if (patientDetails == null)
+            if (patientModel == null)
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", "Not found");
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(PatientDetailsService)));
+                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound, ErrorCodes.UpstreamError);
             }
 
-            if (patientDetails.LegalName == null && patientDetails.CommonName == null)
+            if (patientModel.LegalName == null && patientModel.CommonName == null)
             {
                 this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientDetailsService)));
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
-            if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
+            if (string.IsNullOrEmpty(patientModel.Hdid) && string.IsNullOrEmpty(patientModel.Phn) && !disableIdValidation)
             {
                 this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientDetailsService)));
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
             activity?.Stop();
 
-            return this.autoMapper.Map<PatientDetails>(patientDetails);
+            return this.mappingService.MapToPatientDetails(patientModel);
         }
     }
 }

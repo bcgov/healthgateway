@@ -13,22 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.MapProfiles
+namespace HealthGateway.Medication.Services
 {
-    using AutoMapper;
-    using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+    using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Models.ODR;
+    using HealthGateway.Medication.Models.Salesforce;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between ProblemDetailsException and .Net MVC's ProblemDetails class.
+    /// Service to map between models at different layers.
     /// </summary>
-    public class ProblemDetailsProfile : Profile
+    public interface IMedicationMappingService
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProblemDetailsProfile"/> class.
-        /// </summary>
-        public ProblemDetailsProfile()
-        {
-            this.CreateMap<HealthGateway.Common.Data.ErrorHandling.ProblemDetails, ProblemDetails>();
-        }
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        MedicationRequest MapToMedicationRequest(SpecialAuthorityRequest source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        MedicationStatement MapToMedicationStatement(MedicationResult source);
     }
 }

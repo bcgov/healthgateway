@@ -82,6 +82,7 @@ namespace HealthGateway.Encounter
             services.AddAutoMapper(typeof(Startup));
 
             // Add services
+            services.AddTransient<IEncounterMappingService, EncounterMappingService>();
             services.AddTransient<IEncounterService, EncounterService>();
 
             // Add Delegates

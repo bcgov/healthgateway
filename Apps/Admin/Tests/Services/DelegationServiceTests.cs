@@ -22,8 +22,8 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using DeepEqual.Syntax;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -35,6 +35,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -63,19 +64,10 @@ namespace HealthGateway.Admin.Tests.Services
         private const string AuthenticatedUser = "91ca9e2c-03b4-43f7-a806-8f6e15972c0f";
         private const string AuthenticatedPreferredUsername = "agent@idir";
 
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IAdminServerMappingService MappingService = new AdminServerMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
         private static readonly DateTime BirthDate = DateTime.Parse("1990-01-01", CultureInfo.InvariantCulture);
         private static readonly DateTime TransactionDateTime = DateTime.Parse("2023-01-01", CultureInfo.InvariantCulture);
-
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationServiceTests"/> class.
-        /// </summary>
-        public DelegationServiceTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
 
         /// <summary>
         /// Tests get delegation information - happy path status.
@@ -99,7 +91,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, agentAudits);
+            IDelegationService delegationService = GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, agentAudits);
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn);
 
             Assert.NotNull(actualResult);
@@ -128,7 +120,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2, agentAudits);
+            IDelegationService delegationService = GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2, agentAudits);
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn);
 
             Assert.NotNull(actualResult);
@@ -145,7 +137,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Arrange
             PatientModel patientModel = GetPatientModel(DelegateHdid, DelegatePhn);
             RequestResult<PatientModel> patientResult = GetPatientResult(patientModel);
-            IDelegationService delegationService = this.GetDelegationService(patientResult);
+            IDelegationService delegationService = GetDelegationService(patientResult);
 
             // Act
             DelegateInfo actualResult = await delegationService.GetDelegateInformationAsync(DelegatePhn);
@@ -157,7 +149,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Tests get delegate information throws problem details exception when bad request is encountered.
+        /// Tests get delegate information throws exception when bad request is encountered.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -167,10 +159,10 @@ namespace HealthGateway.Admin.Tests.Services
             DateTime invalidBirthDate = DateTime.UtcNow;
             PatientModel patientModel = GetPatientModel(DelegateHdid, DelegatePhn, invalidBirthDate);
             RequestResult<PatientModel> patientResult = GetPatientResult(patientModel);
-            IDelegationService delegationService = this.GetDelegationService(patientResult);
+            IDelegationService delegationService = GetDelegationService(patientResult);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
+            await Assert.ThrowsAsync<ValidationException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
         }
 
         /// <summary>
@@ -212,7 +204,7 @@ namespace HealthGateway.Admin.Tests.Services
             IEnumerable<string> delegateHdids = [ProtectedDelegateHdid1, NewDelegateHdid];
             Mock<IDelegationDelegate> delegationDelegate = new();
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(NewDependentHdid);
-            DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid, AuthenticatedUser, AuthenticatedPreferredUsername);
+            DelegationService delegationService = GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid, AuthenticatedUser, AuthenticatedPreferredUsername);
 
             // Act
             await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids, It.IsAny<string>());
@@ -250,7 +242,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(
+            DelegationService delegationService = GetDelegationService(
                 protectedDependent,
                 delegationDelegate,
                 resourceDelegateQueryResult,
@@ -310,7 +302,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(
+            DelegationService delegationService = GetDelegationService(
                 protectedDependent,
                 delegationDelegate,
                 resourceDelegateQueryResult,
@@ -332,7 +324,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Tests unprotect dependent throws problem details exception when dependent not found.
+        /// Tests unprotect dependent throws exception when dependent not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -343,7 +335,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent dependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(
+            DelegationService delegationService = GetDelegationService(
                 dependent,
                 delegationDelegate,
                 resourceDelegateQueryResult,
@@ -352,7 +344,7 @@ namespace HealthGateway.Admin.Tests.Services
                 AuthenticatedPreferredUsername);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>()));
+            await Assert.ThrowsAsync<NotFoundException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>()));
         }
 
         /// <summary>
@@ -371,8 +363,8 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, []);
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
+            IDelegationService delegationService = GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, []);
+            await Assert.ThrowsAsync<ValidationException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>
@@ -393,16 +385,16 @@ namespace HealthGateway.Admin.Tests.Services
             patientService.Setup(p => p.GetPatientAsync(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(patientResult);
 
             IDelegationService delegationService = new DelegationService(
-                this.configuration,
+                Configuration,
                 patientService.Object,
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IMessageSender>().Object,
                 new Mock<IAuditRepository>().Object,
-                this.autoMapper);
+                MappingService);
 
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
+            await Assert.ThrowsAsync<NotFoundException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>
@@ -435,7 +427,7 @@ namespace HealthGateway.Admin.Tests.Services
                 PhysicalAddress = patientModel.PhysicalAddress,
                 Protected = false,
             };
-            DependentInfo actual = this.autoMapper.Map<PatientModel, DependentInfo>(patientModel);
+            DependentInfo actual = MappingService.MapToDependentInfo(patientModel);
             expected.ShouldDeepEqual(actual);
         }
 
@@ -468,7 +460,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Birthdate = patientModel.Birthdate,
                 PhysicalAddress = patientModel.PhysicalAddress,
             };
-            DelegateInfo actual = this.autoMapper.Map<PatientModel, DelegateInfo>(patientModel);
+            DelegateInfo actual = MappingService.MapToDelegateInfo(patientModel);
             expected.ShouldDeepEqual(actual);
         }
 
@@ -711,7 +703,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private DelegationService GetDelegationService(
+        private static DelegationService GetDelegationService(
             RequestResult<PatientModel> dependentResult,
             RequestResult<PatientModel> delegateResult,
             Dependent protectedDependent,
@@ -752,17 +744,17 @@ namespace HealthGateway.Admin.Tests.Services
                 .ReturnsAsync(agentAudits);
 
             return new DelegationService(
-                this.configuration,
+                Configuration,
                 patientService.Object,
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IMessageSender>().Object,
                 agentAuditRepository.Object,
-                this.autoMapper);
+                MappingService);
         }
 
-        private DelegationService GetDelegationService(
+        private static DelegationService GetDelegationService(
             Dependent? dependent,
             Mock<IDelegationDelegate> delegationDelegate,
             ResourceDelegateQueryResult resourceDelegateQueryResult,
@@ -782,29 +774,29 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IMessageSender> messageSender = new();
 
             return new(
-                this.configuration,
+                Configuration,
                 new Mock<IPatientService>().Object,
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 authenticationDelegate.Object,
                 messageSender.Object,
                 new Mock<IAuditRepository>().Object,
-                this.autoMapper);
+                MappingService);
         }
 
-        private DelegationService GetDelegationService(RequestResult<PatientModel> patient)
+        private static DelegationService GetDelegationService(RequestResult<PatientModel> patient)
         {
             Mock<IPatientService> patientService = new();
             patientService.Setup(p => p.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
             return new(
-                this.configuration,
+                Configuration,
                 patientService.Object,
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IMessageSender>().Object,
                 new Mock<IAuditRepository>().Object,
-                this.autoMapper);
+                MappingService);
         }
     }
 }

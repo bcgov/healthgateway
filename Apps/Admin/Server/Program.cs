@@ -35,6 +35,7 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
@@ -142,6 +143,8 @@ namespace HealthGateway.Admin.Server
 
         private static void AddServices(IServiceCollection services, ConfigurationManager configuration)
         {
+            services.AddTransient<IAdminServerMappingService, AdminServerMappingService>();
+            services.AddTransient<ICommonMappingService, CommonMappingService>();
             services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();

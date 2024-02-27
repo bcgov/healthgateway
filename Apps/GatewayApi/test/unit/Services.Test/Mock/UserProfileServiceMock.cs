@@ -20,7 +20,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
@@ -56,7 +55,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         private readonly Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
         private readonly Mock<IApplicationSettingsDelegate> applicationSettingsDelegateMock = new();
         private readonly Mock<ICacheProvider> cacheProviderMock = new();
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly Mock<INotificationSettingsService> notificationSettingsServiceMock = new NotificationSettingsServiceMock();
         private readonly Mock<IMessageSender> messageSenderMock = new();
 
@@ -108,7 +106,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 this.messageVerificationDelegateMock.Object,
                 this.cryptoDelegateMock.Object,
                 this.configuration,
-                this.autoMapper,
+                new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), this.cryptoDelegateMock.Object),
                 this.authenticationDelegateMock.Object,
                 this.applicationSettingsDelegateMock.Object,
                 this.cacheProviderMock.Object,

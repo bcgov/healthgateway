@@ -26,7 +26,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -48,6 +50,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class DependentServiceTests
     {
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
         private readonly DateTime mockDateOfBirth = DateTime.UtcNow.Date.AddYears(-12).AddDays(1);
         private readonly string mockFirstName = "Tory D'Bill"; // First name with regular apostrophe
@@ -198,11 +202,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            ProblemDetailsException exception =
-                (await Should.ThrowAsync<ProblemDetailsException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
+            DatabaseException exception =
+                (await Should.ThrowAsync<DatabaseException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
-            exception.ProblemDetails!.Status.ShouldBe(System.Net.HttpStatusCode.InternalServerError);
+            exception.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
         }
 
         /// <summary>
@@ -251,7 +255,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ValidateAddDependentWithWrongDateOfBirth()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            addDependentRequest.DateOfBirth = DateTime.Now;
+            addDependentRequest.DateOfBirth = DateOnly.FromDateTime(DateTime.Now);
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
@@ -375,7 +379,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
 
             RequestResult<DependentModel> actualResult = await service.RemoveAsync(delegateModel);
 
@@ -493,7 +497,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
         }
 
         private IDependentService SetupMockDependentService(
@@ -578,7 +582,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
         }
 
         private AddDependentRequest SetupMockInput()
@@ -588,7 +592,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Phn = this.mockPhn,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
-                DateOfBirth = this.mockDateOfBirth,
+                DateOfBirth = DateOnly.FromDateTime(this.mockDateOfBirth),
             };
         }
     }

@@ -152,7 +152,7 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// Gets or sets the exam's date.
         /// </summary>
-        public DateTime? ExamDate { get; set; }
+        public DateOnly? ExamDate { get; set; }
 
         /// <summary>
         /// Gets or sets if an exam has been updated.

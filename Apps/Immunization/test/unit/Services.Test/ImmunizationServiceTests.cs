@@ -22,7 +22,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
@@ -31,10 +30,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using HealthGateway.ImmunizationTests.Utils;
+    using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
 
@@ -44,8 +43,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class ImmunizationServiceTests
     {
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
+        private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
+
         private readonly string antigenName = "HPV-9";
-        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly string diseaseEligibleDateString = "2021-02-02";
         private readonly string diseaseName = "Human papillomavirus infection";
         private readonly string recomendationSetId = "set-recomendation-id";
@@ -78,7 +79,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                             {
                                 Id = Guid.NewGuid(),
                                 Name = "MockImmunization",
-                                OccurrenceDateTime = DateTime.Now,
+                                OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
                                 SourceSystemId = "MockSourceID",
                             },
                         },
@@ -92,8 +93,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
-                    this.autoMapper.Map<LoadStateModel>(delegateResult.ResourcePayload.LoadState),
-                    this.autoMapper.Map<IList<ImmunizationEvent>>(delegateResult.ResourcePayload.Result.ImmunizationViews),
+                    MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
+                    delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
                     new List<ImmunizationRecommendation>()),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
@@ -105,7 +106,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
 
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
@@ -141,7 +142,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         Id = Guid.NewGuid(),
                         Name = "MockImmunization",
-                        OccurrenceDateTime = DateTime.Now,
+                        OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
                         SourceSystemId = "MockSourceID",
                     },
                 },
@@ -153,7 +154,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<ImmunizationEvent> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = this.autoMapper.Map<ImmunizationEvent>(delegateResult.ResourcePayload.Result),
+                ResourcePayload = MappingService.MapToImmunizationEvent(delegateResult.ResourcePayload.Result),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -164,7 +165,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
 
             RequestResult<ImmunizationEvent> actualResult = await service.GetImmunizationAsync("immz_id");
 
@@ -185,9 +186,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
-                    this.autoMapper.Map<LoadStateModel>(delegateResult.ResourcePayload?.LoadState),
+                    MappingService.MapToLoadStateModel(delegateResult.ResourcePayload?.LoadState),
                     new List<ImmunizationEvent>(),
-                    ImmunizationRecommendationMapUtils.FromPhsaModelList(delegateResult.ResourcePayload?.Result?.Recommendations, this.autoMapper)),
+                    MappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload?.Result?.Recommendations)),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -198,7 +199,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
 
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
@@ -215,7 +216,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 recommendationResult.TargetDiseases,
                 item => Assert.Equal(immzRecommendationResponse.Recommendations[0].TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
             Assert.Equal(this.diseaseName, recommendationResult.TargetDiseases[0].Name);
-            Assert.Equal(DateTime.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
+            Assert.Equal(DateOnly.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
             Assert.Null(recommendationResult.DiseaseDueDate);
             Assert.Null(recommendationResult.AgentDueDate);
             Assert.Null(recommendationResult.AgentEligibleDate);
@@ -249,7 +250,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
 
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
@@ -689,11 +690,24 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
         */
 
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> configuration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(configuration)
+                .Build();
+        }
+
         private ImmunizationRecommendationResponse GetImmzRecommendationResponse()
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = new()
             {
-                ForecastCreationDate = DateTime.Now,
+                ForecastCreationDate = DateOnly.FromDateTime(DateTime.Now),
                 RecommendationId = this.recomendationSetId,
                 RecommendationSourceSystem = "MockSourceSystem",
                 RecommendationSourceSystemId = "MockSourceID",

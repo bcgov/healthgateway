@@ -21,9 +21,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using HealthGateway.Admin.Common.Constants;
-using HealthGateway.Admin.Server.MapUtils;
 using HealthGateway.Admin.Server.Models;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication;
@@ -45,11 +43,11 @@ public class InactiveUserService : IInactiveUserService
     private const string AuthConfigSectionName = "KeycloakAdmin";
     private readonly IAdminUserProfileDelegate adminUserProfileDelegate;
     private readonly IAuthenticationDelegate authDelegate;
-    private readonly IMapper autoMapper;
     private readonly IKeycloakAdminApi keycloakAdminApi;
     private readonly ILogger logger;
     private readonly ClientCredentialsRequest clientCredentialsRequest;
     private readonly IConfiguration configuration;
+    private readonly IAdminServerMappingService mappingService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InactiveUserService"/> class.
@@ -59,21 +57,21 @@ public class InactiveUserService : IInactiveUserService
     /// <param name="keycloakAdminApi">The keycloak api to access identity access.</param>
     /// <param name="configuration">The configuration to use.</param>
     /// <param name="logger">Injected Logger Provider.</param>
-    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
     public InactiveUserService(
         IAuthenticationDelegate authDelegate,
         IAdminUserProfileDelegate adminUserProfileDelegate,
         IKeycloakAdminApi keycloakAdminApi,
         ILogger<InactiveUserService> logger,
         IConfiguration configuration,
-        IMapper autoMapper)
+        IAdminServerMappingService mappingService)
     {
         this.authDelegate = authDelegate;
         this.adminUserProfileDelegate = adminUserProfileDelegate;
         this.keycloakAdminApi = keycloakAdminApi;
         this.logger = logger;
         this.configuration = configuration;
-        this.autoMapper = autoMapper;
+        this.mappingService = mappingService;
         this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
     }
 
@@ -91,7 +89,6 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Getting inactive users past {InactiveDays} day(s) from last login....", inactiveDays);
 
         // Inactive admin user profiles from DB
-        TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
         TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(this.configuration, DateTime.UtcNow);
         IList<AdminUserProfile> inactiveUserProfiles = await this.adminUserProfileDelegate.GetInactiveAdminUserProfilesAsync(inactiveDays, localTimeOffset, ct);
 
@@ -99,10 +96,8 @@ public class InactiveUserService : IInactiveUserService
         IList<AdminUserProfile> activeUserProfiles = await this.adminUserProfileDelegate.GetActiveAdminUserProfilesAsync(inactiveDays, localTimeOffset, ct);
 
         // Compare inactive users in DB to users in Keycloak
-        inactiveUsers.AddRange(
-            inactiveUserProfiles.Select(x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, this.autoMapper, localTimezone))
-                .ToList());
-        this.logger.LogDebug("Timezone: {Timezone} - Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", localTimezone, inactiveUsers.Count, inactiveDays);
+        inactiveUsers.AddRange(inactiveUserProfiles.Select(this.mappingService.MapToAdminUserProfileView));
+        this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
 
         // Get admin and support users from keycloak
         JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
@@ -172,7 +167,7 @@ public class InactiveUserService : IInactiveUserService
 
         IEnumerable<AdminUserProfileView> adminUserProfiles = identityAccessUsers
             .Where(x1 => inactiveUsers.All(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
-            .Select(user => this.autoMapper.Map<UserRepresentation, AdminUserProfileView>(user));
+            .Select(user => this.mappingService.MapToAdminUserProfileView(user));
 
         foreach (AdminUserProfileView adminUserProfile in adminUserProfiles)
         {

@@ -54,14 +54,14 @@ namespace HealthGateway.Database.Models
         /// The date that the information on the record becomes in effect.
         /// </summary>
         [Column(TypeName = "Date")]
-        public DateTime EffectiveDate { get; set; }
+        public DateOnly EffectiveDate { get; set; }
 
         /// <summary>
         /// Gets or sets the End Date.
         /// The last date that the information on the record is effective.
         /// </summary>
         [Column(TypeName = "Date")]
-        public DateTime EndDate { get; set; }
+        public DateOnly EndDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Benefit group list.
@@ -227,7 +227,7 @@ namespace HealthGateway.Database.Models
         /// The first date that PharmaCare treated the DIN as an eligible benefit for the Plan indicated.
         /// </summary>
         [Column(TypeName = "Date")]
-        public DateTime FormularyListDate { get; set; }
+        public DateOnly FormularyListDate { get; set; }
 
         /// <summary>
         /// Gets or sets the limited use flag.

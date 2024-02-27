@@ -18,10 +18,10 @@ namespace HealthGateway.Medication.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
@@ -31,6 +31,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.Salesforce;
+    using HealthGateway.Medication.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -41,7 +42,7 @@ namespace HealthGateway.Medication.Delegates
     public class SalesforceMedicationRequestDelegate : IMedicationRequestDelegate
     {
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly IMapper autoMapper;
+        private readonly IMedicationMappingService mappingService;
         private readonly ISpecialAuthorityApi specialAuthorityApi;
 
         private readonly ILogger logger;
@@ -54,18 +55,18 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="specialAuthorityApi">The injected special authority api.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authDelegate">The delegate responsible authentication.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
         public SalesforceMedicationRequestDelegate(
             ILogger<SalesforceMedicationRequestDelegate> logger,
             ISpecialAuthorityApi specialAuthorityApi,
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
-            IMapper autoMapper)
+            IMedicationMappingService mappingService)
         {
             this.logger = logger;
             this.specialAuthorityApi = specialAuthorityApi;
             this.authDelegate = authDelegate;
-            this.autoMapper = autoMapper;
+            this.mappingService = mappingService;
 
             Config config = configuration.GetSection(Config.SalesforceConfigSectionKey).Get<Config>() ?? new();
             this.clientCredentialsRequest = new() { TokenUri = config.TokenUri, Parameters = config.ClientAuthentication };
@@ -98,7 +99,7 @@ namespace HealthGateway.Medication.Delegates
                 try
                 {
                     ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequestsAsync(phn, accessToken, ct);
-                    retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items);
+                    retVal.ResourcePayload = replyWrapper.Items.Select(this.mappingService.MapToMedicationRequest).ToList();
                     retVal.TotalResultCount = retVal.ResourcePayload?.Count;
                     retVal.PageSize = retVal.ResourcePayload?.Count;
                     retVal.PageIndex = 0;

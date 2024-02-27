@@ -16,8 +16,12 @@
 namespace HealthGateway.WebClient.Server.Controllers
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.Mime;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Utils;
+    using HealthGateway.WebClient.Server.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
@@ -27,7 +31,7 @@ namespace HealthGateway.WebClient.Server.Controllers
     /// </summary>
     public class RobotsController : Controller
     {
-        private readonly string? robotsContent;
+        private readonly string robotsFilePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RobotsController"/> class.
@@ -35,28 +39,48 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <param name="configuration">The injected configuration.</param>
         public RobotsController(IConfiguration configuration)
         {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            string? defaultRobotsAssetContent = AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
-            string? envRobotsAssetContent = AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
-            this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
+            WebClientConfiguration webClientConfiguration = new();
+            configuration.Bind(WebClientConfiguration.ConfigurationSectionKey, webClientConfiguration);
+            this.robotsFilePath = webClientConfiguration.RobotsFilePath;
         }
 
         /// <summary>
         /// Serves up an environment specific robots.txt.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The robots text file.</returns>
         [Route("robots.txt")]
         [Produces(MediaTypeNames.Text.Plain)]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public ActionResult Robots()
+        public async Task<ActionResult> Robots(CancellationToken ct = default)
         {
+            string? robotsContent = await ReadRobotsFileAsync(this.robotsFilePath, ct);
+
             ContentResult result = new()
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,
-                Content = this.robotsContent,
+                Content = robotsContent,
             };
             return result;
+        }
+
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
+        private static async Task<string?> ReadRobotsFileAsync(string robotsFilePath, CancellationToken ct)
+        {
+            try
+            {
+                return !string.IsNullOrEmpty(robotsFilePath) ? await System.IO.File.ReadAllTextAsync(robotsFilePath, ct) : GetDefaultContent();
+            }
+            catch (Exception)
+            {
+                return GetDefaultContent();
+            }
+        }
+
+        private static string? GetDefaultContent()
+        {
+            return AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
         }
     }
 }

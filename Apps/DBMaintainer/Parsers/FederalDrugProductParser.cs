@@ -28,7 +28,7 @@ namespace HealthGateway.DBMaintainer.Parsers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Concrete implemention of the <see cref="IDrugProductParser"/>.
+    /// Concrete implementation of the <see cref="IDrugProductParser"/>.
     /// </summary>
     public class FederalDrugProductParser : IDrugProductParser
     {
@@ -55,10 +55,9 @@ namespace HealthGateway.DBMaintainer.Parsers
             using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "dd-MMM-yyyy" },
-                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                Formats = ["dd-MMM-yyyy"],
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateOnly>(options);
             DrugProductMapper mapper = new(fileDownload);
             csv.Context.RegisterClassMap(mapper);
             List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
@@ -110,7 +109,7 @@ namespace HealthGateway.DBMaintainer.Parsers
             using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "dd-MMM-yyyy" },
+                Formats = ["dd-MMM-yyyy"],
                 DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
@@ -234,7 +233,7 @@ namespace HealthGateway.DBMaintainer.Parsers
         }
 
         /// <summary>
-        /// Searchs teh SourceFolder and returns a single file matching the pattern.
+        /// Searches the source folder and returns a single file matching the pattern.
         /// </summary>
         /// <param name="sourceFolder">The source folder to search.</param>
         /// <param name="fileMatch">The file pattern to match.</param>

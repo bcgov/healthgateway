@@ -16,17 +16,17 @@
 namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Net;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using AutoMapper;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Models.Immunization;
+    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -35,12 +35,12 @@ namespace HealthGateway.Admin.Server.Delegates
     /// <param name="logger">Injected Logger Provider.</param>
     /// <param name="immunizationAdminApi">The injected client for immunization admin api calls.</param>
     /// <param name="configuration">The injected configuration provider.</param>
-    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
     public class RestImmunizationAdminDelegate(
         ILogger<RestImmunizationAdminDelegate> logger,
         IImmunizationAdminApi immunizationAdminApi,
         IConfiguration configuration,
-        IMapper autoMapper) : IImmunizationAdminDelegate
+        IAdminServerMappingService mappingService) : IImmunizationAdminDelegate
     {
         private readonly PhsaConfig phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
 
@@ -77,14 +77,14 @@ namespace HealthGateway.Admin.Server.Delegates
 
             if (refreshInProgress)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestImmunizationAdminDelegate)));
+                throw new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ErrorCodes.MaxRetriesReached);
             }
 
             return new()
             {
                 Blocked = response.Result?.Blocked ?? false,
                 ContainsInvalidDoses = response.Result?.ContainsInvalidDoses ?? false,
-                Doses = autoMapper.Map<IEnumerable<VaccineDoseResponse>, IReadOnlyList<VaccineDose>>(response.Result?.Doses),
+                Doses = response.Result?.Doses?.Select(mappingService.MapToVaccineDose).ToArray() ?? [],
                 VaccineStatusResult = response.Result?.VaccineStatusResult,
             };
         }

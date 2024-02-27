@@ -45,7 +45,7 @@ describe("Clinical Document", () => {
         cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
-        cy.verifyDownload("Clinical_Document_2021_11_15-01_52.pdf");
+        cy.verifyDownload("Clinical_Document_2021_11_15-00_00.pdf");
         cy.get("[data-testid=backBtn]").click({ force: true });
     });
 });

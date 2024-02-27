@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.GatewayApi.Api;
@@ -40,6 +41,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string Hdid = "mock hdid";
         private const string CategoryName = "mock category name";
         private const string DisplayText = "mock display text";
+
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
         private static readonly Guid AccountId = Guid.NewGuid();
         private static readonly Guid Pid = Guid.NewGuid();
@@ -202,7 +205,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ILogger<WebAlertService>>().Object,
                 GetPersonalAccountsService(),
                 mockWebAlertApi.Object,
-                MapperUtil.InitializeAutoMapper());
+                MappingService);
         }
     }
 }
