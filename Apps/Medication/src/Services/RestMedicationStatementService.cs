@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Services
                     return new RequestResult<IList<MedicationStatement>>
                     {
                         ResultStatus = ResultType.Success,
-                        ResourcePayload = new List<MedicationStatement>(),
+                        ResourcePayload = [],
                         TotalResultCount = 0,
                     };
                 }
@@ -163,7 +163,7 @@ namespace HealthGateway.Medication.Services
                 // Retrieve the brand names using the Federal data
                 IList<DrugProduct> drugProducts = await this.drugLookupDelegate.GetDrugProductsByDinAsync(uniqueDrugIdentifiers, ct);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
-                Dictionary<string, PharmaCareDrug> provincialDict = new();
+                Dictionary<string, PharmaCareDrug> provincialDict = [];
                 if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
                 {
                     // Get the DINs not found on the previous query

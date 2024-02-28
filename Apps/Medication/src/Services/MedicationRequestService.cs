@@ -59,7 +59,7 @@ namespace HealthGateway.Medication.Services
                 return new RequestResult<IList<MedicationRequest>>
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = new List<MedicationRequest>(),
+                    ResourcePayload = [],
                     TotalResultCount = 0,
                 };
             }
