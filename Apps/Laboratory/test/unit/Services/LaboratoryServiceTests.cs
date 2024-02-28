@@ -209,8 +209,8 @@ namespace HealthGateway.LaboratoryTests.Services
                 PageIndex = 1,
                 ResourcePayload = new()
                 {
-                    Result = laboratorySummary, LoadState = new PhsaLoadState
-                        { RefreshInProgress = refreshInProgress },
+                    Result = laboratorySummary,
+                    LoadState = new PhsaLoadState { RefreshInProgress = refreshInProgress },
                 },
                 TotalResultCount = 2,
             };
