@@ -65,7 +65,9 @@ namespace HealthGateway.Medication.Controllers
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
-            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(new List<string> { paddedDin }, ct);
+            IList<string> paddedDins = new List<string>
+                { paddedDin };
+            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(paddedDins, ct);
 
             medications.TryGetValue(paddedDin, out MedicationInformation? medication);
             RequestResult<MedicationInformation> result = new()
