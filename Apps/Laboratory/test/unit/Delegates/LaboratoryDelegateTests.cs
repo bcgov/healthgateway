@@ -62,14 +62,14 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             PhsaResult<List<PhsaCovid19Order>> response = new()
             {
-                Result = new()
-                {
+                Result =
+                [
                     new()
                     {
                         Id = Guid.NewGuid(),
                         Phn = expectedPhn,
                     },
-                },
+                ],
             };
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
@@ -543,7 +543,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 OutOfRange = true,
                 CollectedDateTime = DateTime.Now,
                 TestStatus = testStatus,
-                ResultDescription = { "Description" },
+                ResultDescription = ["Description"],
                 Loinc = "loinc",
                 LoincName = "loincname",
                 ReceivedDateTime = DateTime.Now,

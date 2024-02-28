@@ -25,24 +25,6 @@ namespace HealthGateway.Laboratory.Models.PHSA
     public class PhsaCovid19Test
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PhsaCovid19Test"/> class.
-        /// </summary>
-        public PhsaCovid19Test()
-        {
-            this.ResultDescription = new List<string>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PhsaCovid19Test"/> class.
-        /// </summary>
-        /// <param name="resultDescription">The list of result descriptions.</param>
-        [JsonConstructor]
-        public PhsaCovid19Test(IList<string> resultDescription)
-        {
-            this.ResultDescription = resultDescription;
-        }
-
-        /// <summary>
         /// Gets or sets the id for the COVID-19 result.
         /// </summary>
         [JsonPropertyName("id")]
@@ -79,10 +61,10 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public string LabResultOutcome { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the result description.
+        /// Gets or sets the result description.
         /// </summary>
         [JsonPropertyName("resultDescription")]
-        public IList<string> ResultDescription { get; }
+        public IEnumerable<string> ResultDescription { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the result link.

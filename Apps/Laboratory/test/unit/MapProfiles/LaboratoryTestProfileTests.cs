@@ -65,7 +65,6 @@ namespace HealthGateway.LaboratoryTests.MapProfiles
 
             // Verify
             Assert.Equal(expected.TestStatus, actual.TestStatus);
-            // Assert.Equal(expected.OutOfRange, actual.OutOfRange);
             Assert.Equal(expected.Result, actual.Result);
         }
     }

@@ -154,8 +154,8 @@ namespace HealthGateway.LaboratoryTests.Services
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new()
             {
-                LabOrders = new List<PhsaLaboratoryOrder>
-                {
+                LabOrders =
+                [
                     new()
                     {
                         ReportId = expectedReportId1,
@@ -165,8 +165,8 @@ namespace HealthGateway.LaboratoryTests.Services
                         PlisTestStatus = "Pending",
                         CollectionDateTime = DateTime.Now,
                         PdfReportAvailable = true,
-                        LabBatteries = new List<PhsaLaboratoryTest>
-                        {
+                        LabBatteries =
+                        [
                             new()
                             {
                                 BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
@@ -175,7 +175,7 @@ namespace HealthGateway.LaboratoryTests.Services
                                 OutOfRange = true,
                                 PlisTestStatus = "Pending",
                             },
-                        },
+                        ],
                     },
                     new()
                     {
@@ -186,8 +186,8 @@ namespace HealthGateway.LaboratoryTests.Services
                         PlisTestStatus = "Pending",
                         CollectionDateTime = DateTime.Now,
                         PdfReportAvailable = true,
-                        LabBatteries = new List<PhsaLaboratoryTest>
-                        {
+                        LabBatteries =
+                        [
                             new()
                             {
                                 BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
@@ -196,9 +196,9 @@ namespace HealthGateway.LaboratoryTests.Services
                                 OutOfRange = true,
                                 PlisTestStatus = "Corrected",
                             },
-                        },
+                        ],
                     },
-                },
+                ],
                 LabOrderCount = 2,
             };
 
@@ -306,7 +306,7 @@ namespace HealthGateway.LaboratoryTests.Services
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new()
             {
-                LabOrders = new List<PhsaLaboratoryOrder>(),
+                LabOrders = [],
                 LabOrderCount = 0,
             };
 
