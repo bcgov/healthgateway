@@ -37,10 +37,5 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         LaboratoryOrder MapToLaboratoryOrder(PhsaLaboratoryOrder source);
-
-        /// <summary>Maps model.</summary>
-        /// <param name="source">The source object to transform.</param>
-        /// <returns>The destination object.</returns>
-        LaboratoryTest MapToLaboratoryTest(PhsaLaboratoryTest source);
     }
 }

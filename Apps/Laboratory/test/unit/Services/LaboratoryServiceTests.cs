@@ -46,44 +46,54 @@ namespace HealthGateway.LaboratoryTests.Services
         /// The value indicates whether the covid19 test result data source can be accessed or
         /// not.
         /// </param>
+        /// <param name="accessTokenExists">bool value indicating whether access token exists or not.</param>
+        /// <param name="refreshInProgress">bool value indicating whether there is a refresh in progress or not.</param>
         /// <returns>awaitable task.</returns>
         [Theory]
-        [InlineData(ResultType.Success, true)]
-        [InlineData(ResultType.Success, false)]
-        [InlineData(ResultType.Error, true)]
-        public async Task ShouldGetCovid19Orders(ResultType expectedResultType, bool canAccessDataSource)
+        [InlineData(ResultType.Success, true, true, false)]
+        [InlineData(ResultType.Success, false, true, false)]
+        [InlineData(ResultType.Error, true, true, false)]
+        [InlineData(ResultType.Error, true, false, false)]
+        [InlineData(ResultType.ActionRequired, true, true, true)]
+        public async Task ShouldGetCovid19Orders(ResultType expectedResultType, bool canAccessDataSource, bool accessTokenExists, bool refreshInProgress)
         {
-            List<PhsaCovid19Order> covid19Orders = new()
-            {
+            List<PhsaCovid19Order> covid19Orders =
+            [
                 new PhsaCovid19Order
                 {
                     Id = Guid.NewGuid(),
                     Location = "Vancouver",
-                    Phn = "001",
+                    Phn = "0000000001",
                     MessageDateTime = DateTime.Now,
                     MessageId = MockedMessageId + "1",
                     ReportAvailable = true,
                 },
+
                 new PhsaCovid19Order
                 {
                     Id = Guid.NewGuid(),
                     Location = "Vancouver",
-                    Phn = "002",
+                    Phn = "0000000002",
                     MessageDateTime = DateTime.Now,
                     MessageId = MockedMessageId + "2",
                     ReportAvailable = false,
                 },
-            };
+            ];
 
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = new() { Result = covid19Orders },
+                ResourcePayload = new()
+                {
+                    Result = covid19Orders,
+                    LoadState = new PhsaLoadState { RefreshInProgress = refreshInProgress },
+                },
             };
 
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token, canAccessDataSource).LaboratoryServiceMockInstance();
+            string? accessToken = accessTokenExists ? Token : null;
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, accessToken, canAccessDataSource).LaboratoryServiceMockInstance();
 
             RequestResult<Covid19OrderResult> actualResult = await service.GetCovid19OrdersAsync(Hdid);
 
@@ -110,7 +120,11 @@ namespace HealthGateway.LaboratoryTests.Services
             }
             else
             {
-                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+                Assert.Equal(expectedResultType, actualResult.ResultStatus);
+                if (!accessTokenExists)
+                {
+                    Assert.Equal("Error authenticating with KeyCloak", actualResult.ResultError!.ResultMessage);
+                }
             }
         }
 
@@ -122,42 +136,46 @@ namespace HealthGateway.LaboratoryTests.Services
         /// The value indicates whether the lab result data source can be accessed or
         /// not.
         /// </param>
+        /// <param name="accessTokenExists">bool value indicating whether access token exists or not.</param>
+        /// <param name="refreshInProgress">bool value indicating whether there is a refresh in progress or not.</param>
         /// <returns>awaitable task.</returns>
         [Theory]
-        [InlineData(ResultType.Success, true)]
-        [InlineData(ResultType.Success, false)]
-        [InlineData(ResultType.Error, true)]
-        public async Task ShouldGetLaboratoryOrders(ResultType expectedResultType, bool canAccessDataSource)
+        [InlineData(ResultType.Success, true, true, false)]
+        [InlineData(ResultType.Success, false, true, false)]
+        [InlineData(ResultType.Error, true, true, false)]
+        [InlineData(ResultType.Error, true, false, false)]
+        [InlineData(ResultType.ActionRequired, true, true, true)]
+        public async Task ShouldGetLaboratoryOrders(ResultType expectedResultType, bool canAccessDataSource, bool accessTokenExists, bool refreshInProgress)
         {
-            string expectedReportId1 = "341L56330T278085";
-            string expectedReportId2 = "341L54565T276529";
-            int expectedOrderCount = 2;
-            int expectedLabTestCount = 1;
+            const string expectedReportId1 = "341L56330T278085";
+            const string expectedReportId2 = "341L54565T276529";
+            const int expectedOrderCount = 2;
 
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new()
             {
-                LabOrders = new List<PhsaLaboratoryOrder>
-                {
+                LabOrders =
+                [
                     new()
                     {
                         ReportId = expectedReportId1,
                         LabPdfId = expectedReportId1,
                         CommonName = "Lab Test",
                         OrderingProvider = "PLISBVCC, TREVOR",
+                        PlisTestStatus = "Pending",
                         CollectionDateTime = DateTime.Now,
                         PdfReportAvailable = true,
-                        LabBatteries = new List<PhsaLaboratoryTest>
-                        {
+                        LabBatteries =
+                        [
                             new()
                             {
                                 BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
                                 Loinc = "XXX-2133",
                                 ObxId = "341L52331T275607ABGO",
                                 OutOfRange = true,
-                                PlisTestStatus = "Final",
+                                PlisTestStatus = "Pending",
                             },
-                        },
+                        ],
                     },
                     new()
                     {
@@ -165,21 +183,22 @@ namespace HealthGateway.LaboratoryTests.Services
                         LabPdfId = expectedReportId2,
                         CommonName = "Lab Test",
                         OrderingProvider = "PLISBVCC, TREVOR",
+                        PlisTestStatus = "Pending",
                         CollectionDateTime = DateTime.Now,
                         PdfReportAvailable = true,
-                        LabBatteries = new List<PhsaLaboratoryTest>
-                        {
+                        LabBatteries =
+                        [
                             new()
                             {
                                 BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
                                 Loinc = "XXX-2133",
                                 ObxId = "341L52331T275607ABGO",
                                 OutOfRange = true,
-                                PlisTestStatus = "Final",
+                                PlisTestStatus = "Corrected",
                             },
-                        },
+                        ],
                     },
-                },
+                ],
                 LabOrderCount = 2,
             };
 
@@ -188,11 +207,16 @@ namespace HealthGateway.LaboratoryTests.Services
                 ResultStatus = expectedResultType,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = new() { Result = laboratorySummary },
+                ResourcePayload = new()
+                {
+                    Result = laboratorySummary,
+                    LoadState = new PhsaLoadState { RefreshInProgress = refreshInProgress },
+                },
                 TotalResultCount = 2,
             };
 
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token, canAccessDataSource).LaboratoryServiceMockInstance();
+            string? accessToken = accessTokenExists ? Token : null;
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, accessToken, canAccessDataSource).LaboratoryServiceMockInstance();
 
             // Act
             RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrdersAsync(Hdid);
@@ -212,11 +236,11 @@ namespace HealthGateway.LaboratoryTests.Services
 
                     LaboratoryOrder firstLaboratoryOrder = orders[0];
                     Assert.Equal(expectedReportId1, firstLaboratoryOrder.ReportId);
-                    Assert.Equal(expectedLabTestCount, firstLaboratoryOrder.LaboratoryTests.Count());
+                    Assert.Single(firstLaboratoryOrder.LaboratoryTests);
 
                     LaboratoryOrder secondLaboratoryOrder = orders[1];
                     Assert.Equal(expectedReportId2, secondLaboratoryOrder.ReportId);
-                    Assert.Equal(expectedLabTestCount, secondLaboratoryOrder.LaboratoryTests.Count());
+                    Assert.Single(secondLaboratoryOrder.LaboratoryTests);
                 }
                 else
                 {
@@ -225,7 +249,11 @@ namespace HealthGateway.LaboratoryTests.Services
             }
             else
             {
-                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+                Assert.Equal(expectedResultType, actualResult.ResultStatus);
+                if (!accessTokenExists)
+                {
+                    Assert.Equal("Error authenticating with KeyCloak", actualResult.ResultError!.ResultMessage);
+                }
             }
         }
 
@@ -278,7 +306,7 @@ namespace HealthGateway.LaboratoryTests.Services
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new()
             {
-                LabOrders = new List<PhsaLaboratoryOrder>(),
+                LabOrders = [],
                 LabOrderCount = 0,
             };
 
@@ -306,9 +334,12 @@ namespace HealthGateway.LaboratoryTests.Services
         /// <summary>
         /// GetLabReport test.
         /// </summary>
-        /// <returns>awaitable task.</returns>
-        [Fact]
-        public async Task ShouldGetLabReport()
+        /// <param name="accessTokenExists">bool value indicating whether access token exists or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetLabReport(bool accessTokenExists)
         {
             LaboratoryReport labReport = new()
             {
@@ -324,12 +355,20 @@ namespace HealthGateway.LaboratoryTests.Services
                 ResourcePayload = labReport,
             };
 
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, accessTokenExists ? Token : null).LaboratoryServiceMockInstance();
 
             RequestResult<LaboratoryReport> actualResult = await service.GetLabReportAsync("ReportId", string.Empty, true);
 
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Equal(MockedReportContent, actualResult.ResourcePayload!.Report);
+            if (accessTokenExists)
+            {
+                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+                Assert.Equal(MockedReportContent, actualResult.ResourcePayload!.Report);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+                Assert.Equal("Error authenticating with KeyCloak", actualResult.ResultError!.ResultMessage);
+            }
         }
     }
 }
