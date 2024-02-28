@@ -87,8 +87,8 @@ namespace HealthGateway.LaboratoryTests.Services
                 PageIndex = 1,
                 ResourcePayload = new()
                 {
-                    Result = covid19Orders, LoadState = new PhsaLoadState
-                        { RefreshInProgress = refreshInProgress },
+                    Result = covid19Orders,
+                    LoadState = new PhsaLoadState { RefreshInProgress = refreshInProgress },
                 },
             };
 
