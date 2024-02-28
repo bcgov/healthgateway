@@ -37,7 +37,7 @@ namespace HealthGateway.MedicationTests.Controllers
         /// <summary>
         /// GetMedications - Happy Path.
         /// </summary>
-        /// <param name="pharmacyAssessmentTitle">Pharmacy assessment title..</param>
+        /// <param name="pharmacyAssessmentTitle">Pharmacy assessment title.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData("Pharmacist Assessment")]
