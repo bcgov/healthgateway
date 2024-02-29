@@ -43,14 +43,15 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class ImmunizationServiceTests
     {
+        private const string AntigenName = "HPV-9";
+        private const string DiseaseEligibleDateString = "2021-02-02";
+        private const string DiseaseName = "Human papillomavirus infection";
+        private const string RecommendationSetId = "set-recomendation-id";
+        private const string TargetDiseaseCode = "240532009";
+        private const string VaccineName = "Human Papillomavirus-HPV9 Vaccine";
+
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
         private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
-
-        private readonly string antigenName = "HPV-9";
-        private readonly string diseaseEligibleDateString = "2021-02-02";
-        private readonly string diseaseName = "Human papillomavirus infection";
-        private readonly string recomendationSetId = "set-recomendation-id";
-        private readonly string vaccineName = "Human Papillomavirus-HPV9 Vaccine";
 
         /// <summary>
         /// GetImmunizations - Happy Path.
@@ -73,8 +74,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     LoadState = new PhsaLoadState
                         { RefreshInProgress = false },
                     Result = new ImmunizationResponse(
-                        new List<ImmunizationViewResponse>
-                        {
+                        [
                             new()
                             {
                                 Id = Guid.NewGuid(),
@@ -82,8 +82,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                                 OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
                                 SourceSystemId = "MockSourceID",
                             },
-                        },
-                        new List<ImmunizationRecommendationResponse>()),
+                        ],
+                        []),
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -95,7 +95,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new ImmunizationResult(
                     MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
                     delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
-                    new List<ImmunizationRecommendation>()),
+                    []),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -184,7 +184,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         [Fact]
         public async Task ShouldGetRecommendation()
         {
-            ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
+            ImmunizationRecommendationResponse immzRecommendationResponse = GetImmzRecommendationResponse();
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = GetPhsaResult(immzRecommendationResponse);
             RequestResult<ImmunizationResult> expectedResult = new()
@@ -192,7 +192,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
                     MappingService.MapToLoadStateModel(delegateResult.ResourcePayload?.LoadState),
-                    new List<ImmunizationEvent>(),
+                    [],
                     MappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload?.Result?.Recommendations)),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
@@ -211,17 +211,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             expectedResult.ShouldDeepEqual(actualResult);
             Assert.Single(expectedResult.ResourcePayload.Recommendations);
             ImmunizationRecommendation recommendationResult = expectedResult.ResourcePayload.Recommendations[0];
-            Assert.Equal(this.recomendationSetId, recommendationResult.RecommendationSetId);
-            Assert.Equal(this.vaccineName, recommendationResult.Immunization.Name);
-            Assert.Collection(
-                recommendationResult.Immunization.ImmunizationAgents,
-                item => Assert.Equal(this.antigenName, item.Name));
-            Assert.Equal(this.antigenName, recommendationResult.Immunization.ImmunizationAgents.First().Name);
-            Assert.Collection(
-                recommendationResult.TargetDiseases,
-                item => Assert.Equal(immzRecommendationResponse.Recommendations[0].TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
-            Assert.Equal(this.diseaseName, recommendationResult.TargetDiseases[0].Name);
-            Assert.Equal(DateOnly.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
+            Assert.Equal(RecommendationSetId, recommendationResult.RecommendationSetId);
+            Assert.Equal(VaccineName, recommendationResult.Immunization.Name);
+            Assert.Equal(AntigenName, recommendationResult.Immunization.ImmunizationAgents.First().Name);
+            Assert.Equal(TargetDiseaseCode, recommendationResult.TargetDiseases[0].Code);
+            Assert.Equal(DiseaseName, recommendationResult.TargetDiseases[0].Name);
+            Assert.Equal(DateOnly.Parse(DiseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
             Assert.Null(recommendationResult.DiseaseDueDate);
             Assert.Null(recommendationResult.AgentDueDate);
             Assert.Null(recommendationResult.AgentEligibleDate);
@@ -632,11 +627,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 {
                     LoadState = new() { RefreshInProgress = false },
                     Result = new(
-                        new List<ImmunizationViewResponse>(),
-                        new List<ImmunizationRecommendationResponse>
-                        {
-                            immzRecommendationResponse,
-                        }),
+                        [],
+                        [immzRecommendationResponse]),
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -708,38 +700,46 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .Build();
         }
 
-        private ImmunizationRecommendationResponse GetImmzRecommendationResponse()
+        private static ImmunizationRecommendationResponse GetImmzRecommendationResponse()
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = new()
             {
                 ForecastCreationDate = DateOnly.FromDateTime(DateTime.Now),
-                RecommendationId = this.recomendationSetId,
+                RecommendationId = RecommendationSetId,
                 RecommendationSourceSystem = "MockSourceSystem",
                 RecommendationSourceSystemId = "MockSourceID",
             };
 
-            RecommendationResponse recommendationResponse = new();
-            recommendationResponse.ForecastStatus.ForecastStatusText = "Eligible";
-            recommendationResponse.TargetDisease = new()
+            RecommendationResponse recommendationResponse = new()
             {
-                TargetDiseaseCodes =
+                ForecastStatus =
                 {
-                    new SystemCode
+                    ForecastStatusText = "Eligible",
+                },
+                TargetDisease = new()
+                {
+                    TargetDiseaseCodes =
                     {
-                        Code = "240532009",
-                        CommonType = "DiseaseCode",
-                        Display = this.diseaseName,
-                        System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
+                        new SystemCode
+                        {
+                            Code = TargetDiseaseCode,
+                            CommonType = "Target Disease Common Type",
+                            Display = DiseaseName,
+                            System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
+                        },
                     },
                 },
+                VaccineCode =
+                {
+                    VaccineCodeText = VaccineName,
+                },
             };
-            recommendationResponse.VaccineCode.VaccineCodeText = this.vaccineName;
             recommendationResponse.VaccineCode.VaccineCodes.Add(
                 new SystemCode
                 {
                     Code = "BCYSCT_AN032",
                     CommonType = "AntiGenCode",
-                    Display = this.antigenName,
+                    Display = AntigenName,
                     System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
                 });
 
@@ -750,7 +750,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         Text = "Forecast by Disease Eligible Date",
                     },
-                    Value = this.diseaseEligibleDateString,
+                    Value = DiseaseEligibleDateString,
                 });
 
             immzRecommendationResponse.Recommendations.Add(recommendationResponse);
