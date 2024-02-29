@@ -49,6 +49,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         private const string RecommendationSetId = "set-recomendation-id";
         private const string TargetDiseaseCode = "240532009";
         private const string VaccineName = "Human Papillomavirus-HPV9 Vaccine";
+        private const string RecommendedVaccinations = $"{AntigenName} ({VaccineName})";
 
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
         private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
@@ -180,46 +181,65 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <summary>
         /// GetImmunizations - Happy Path (With Recommendations).
         /// </summary>
+        /// <param name="targetDiseaseExists">
+        /// bool indicating whether target disease should exist or not in the recommendation
+        /// response.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetRecommendation()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetRecommendation(bool targetDiseaseExists)
         {
-            ImmunizationRecommendationResponse immzRecommendationResponse = GetImmzRecommendationResponse();
-            Mock<IImmunizationDelegate> mockDelegate = new();
-            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = GetPhsaResult(immzRecommendationResponse);
+            // Arrange
+            ImmunizationRecommendationResponse immzRecommendationResponse = GetImmzRecommendationResponse(targetDiseaseExists);
+            Mock<IImmunizationDelegate> immunizationDelegate = new();
+            RequestResult<PhsaResult<ImmunizationResponse>> immunizationResponse = GetPhsaResult(immzRecommendationResponse);
             RequestResult<ImmunizationResult> expectedResult = new()
             {
-                ResultStatus = delegateResult.ResultStatus,
+                ResultStatus = immunizationResponse.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
-                    MappingService.MapToLoadStateModel(delegateResult.ResourcePayload?.LoadState),
+                    MappingService.MapToLoadStateModel(immunizationResponse.ResourcePayload?.LoadState),
                     [],
-                    MappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload?.Result?.Recommendations)),
-                PageIndex = delegateResult.PageIndex,
-                PageSize = delegateResult.PageSize,
-                TotalResultCount = delegateResult.TotalResultCount,
+                    MappingService.MapToImmunizationRecommendations(immunizationResponse.ResourcePayload?.Result?.Recommendations)),
+                PageIndex = immunizationResponse.PageIndex,
+                PageSize = immunizationResponse.PageSize,
+                TotalResultCount = immunizationResponse.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
+            immunizationDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(immunizationResponse);
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
+            IImmunizationService service = new ImmunizationService(immunizationDelegate.Object, patientRepository.Object, MappingService);
 
+            // Act
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
+            // Assert
             expectedResult.ShouldDeepEqual(actualResult);
-            Assert.Single(expectedResult.ResourcePayload.Recommendations);
-            ImmunizationRecommendation recommendationResult = expectedResult.ResourcePayload.Recommendations[0];
-            Assert.Equal(RecommendationSetId, recommendationResult.RecommendationSetId);
-            Assert.Equal(VaccineName, recommendationResult.Immunization.Name);
-            Assert.Equal(AntigenName, recommendationResult.Immunization.ImmunizationAgents.First().Name);
-            Assert.Equal(TargetDiseaseCode, recommendationResult.TargetDiseases[0].Code);
-            Assert.Equal(DiseaseName, recommendationResult.TargetDiseases[0].Name);
-            Assert.Equal(DateOnly.Parse(DiseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
-            Assert.Null(recommendationResult.DiseaseDueDate);
-            Assert.Null(recommendationResult.AgentDueDate);
-            Assert.Null(recommendationResult.AgentEligibleDate);
+            ImmunizationRecommendation actualRecommendation = actualResult.ResourcePayload?.Recommendations[0]!;
+            Assert.Equal(RecommendationSetId, actualRecommendation.RecommendationSetId);
+            Assert.Equal(VaccineName, actualRecommendation.Immunization.Name);
+            Assert.Equal(AntigenName, actualRecommendation.Immunization.ImmunizationAgents.First().Name);
+
+            if (targetDiseaseExists)
+            {
+                Assert.Equal(TargetDiseaseCode, actualRecommendation.TargetDiseases[0].Code);
+                Assert.Equal(DiseaseName, actualRecommendation.TargetDiseases[0].Name);
+                Assert.Empty(actualRecommendation.RecommendedVaccinations);
+            }
+            else
+            {
+                Assert.Equal(RecommendedVaccinations, actualRecommendation.RecommendedVaccinations);
+                Assert.Empty(actualRecommendation.TargetDiseases);
+            }
+
+            Assert.Equal(DateOnly.Parse(DiseaseEligibleDateString, CultureInfo.CurrentCulture), actualRecommendation.DiseaseEligibleDate);
+            Assert.Null(actualRecommendation.DiseaseDueDate);
+            Assert.Null(actualRecommendation.AgentDueDate);
+            Assert.Null(actualRecommendation.AgentEligibleDate);
         }
 
         /// <summary>
@@ -700,7 +720,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .Build();
         }
 
-        private static ImmunizationRecommendationResponse GetImmzRecommendationResponse()
+        private static ImmunizationRecommendationResponse GetImmzRecommendationResponse(bool targetDiseaseExists)
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = new()
             {
@@ -710,25 +730,34 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 RecommendationSourceSystemId = "MockSourceID",
             };
 
+            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(targetDiseaseExists));
+            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(true));
+            return immzRecommendationResponse;
+        }
+
+        private static RecommendationResponse GetRecommendationResponse(bool targetDiseaseExists)
+        {
             RecommendationResponse recommendationResponse = new()
             {
                 ForecastStatus =
                 {
                     ForecastStatusText = "Eligible",
                 },
-                TargetDisease = new()
-                {
-                    TargetDiseaseCodes =
+                TargetDisease = targetDiseaseExists
+                    ? new()
                     {
-                        new SystemCode
+                        TargetDiseaseCodes =
                         {
-                            Code = TargetDiseaseCode,
-                            CommonType = "Target Disease Common Type",
-                            Display = DiseaseName,
-                            System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
+                            new SystemCode
+                            {
+                                Code = TargetDiseaseCode,
+                                CommonType = "DiseaseCode",
+                                Display = DiseaseName,
+                                System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
+                            },
                         },
-                    },
-                },
+                    }
+                    : null,
                 VaccineCode =
                 {
                     VaccineCodeText = VaccineName,
@@ -753,8 +782,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     Value = DiseaseEligibleDateString,
                 });
 
-            immzRecommendationResponse.Recommendations.Add(recommendationResponse);
-            return immzRecommendationResponse;
+            return recommendationResponse;
         }
     }
 }
