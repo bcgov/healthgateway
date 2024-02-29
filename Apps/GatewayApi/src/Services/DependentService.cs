@@ -161,7 +161,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(resourceDelegates.Select(d => d.ResourceOwnerHdid), ct);
 
             // Get Dependents Details from Patient service
-            List<DependentModel> dependentModels = new();
+            List<DependentModel> dependentModels = [];
             StringBuilder resultErrorMessage = new();
             foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {

@@ -34,7 +34,7 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the List of Identity providers.
         /// </summary>
         [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]
-        public IdentityProviderConfiguration[] IdentityProviders { get; set; } = Array.Empty<IdentityProviderConfiguration>();
+        public IdentityProviderConfiguration[] IdentityProviders { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the Health Gateway Webclient specific configuration.
@@ -45,6 +45,6 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the Service Endpoints.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, Uri> ServiceEndpoints { get; set; } = new();
+        public Dictionary<string, Uri> ServiceEndpoints { get; set; } = [];
     }
 }

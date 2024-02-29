@@ -226,7 +226,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldGetAllForEntry()
         {
-            List<UserComment> mockedComments = new();
+            List<UserComment> mockedComments = [];
             for (int i = 0; i < 10; i++)
             {
                 mockedComments.Add(

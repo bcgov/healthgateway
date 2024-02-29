@@ -156,7 +156,7 @@ namespace HealthGateway.CommonTests.Services
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Dictionary<string, string> d = new();
+            Dictionary<string, string> d = [];
             Mock<IWebHostEnvironment> mockWebHosting = new();
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(Environments.Production);
             IEmailQueueService emailService = new EmailQueueService(
@@ -187,7 +187,7 @@ namespace HealthGateway.CommonTests.Services
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Dictionary<string, string> d = new();
+            Dictionary<string, string> d = [];
             Mock<IWebHostEnvironment> mockWebHosting = new();
 
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(environment);

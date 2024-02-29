@@ -45,12 +45,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -100,12 +100,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -155,12 +155,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -210,11 +210,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 

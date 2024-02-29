@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public async Task QueueNewEmailAsync(string toEmail, string templateName, bool shouldCommit = true, CancellationToken ct = default)
         {
-            Dictionary<string, string> keyValues = new();
+            Dictionary<string, string> keyValues = [];
             await this.QueueNewEmailAsync(toEmail, templateName, keyValues, shouldCommit, ct);
         }
 

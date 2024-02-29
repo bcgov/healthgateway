@@ -123,7 +123,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldGetAll()
         {
-            List<UserNote> mockedNotes = new();
+            List<UserNote> mockedNotes = [];
             for (int i = 0; i < 10; i++)
             {
                 mockedNotes.Add(

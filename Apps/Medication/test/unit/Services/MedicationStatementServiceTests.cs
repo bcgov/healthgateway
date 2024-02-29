@@ -274,8 +274,8 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
-            List<DrugProduct> drugList = new()
-            {
+            List<DrugProduct> drugList =
+            [
                 new DrugProduct
                 {
                     DrugIdentificationNumber = this.din,
@@ -294,7 +294,7 @@ namespace HealthGateway.MedicationTests.Services
                         CompanyName = "Company",
                     },
                 },
-            };
+            ];
 
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(drugList);
 
@@ -370,14 +370,14 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
-            List<DrugProduct> drugList = new()
-            {
+            List<DrugProduct> drugList =
+            [
                 new DrugProduct
                 {
                     DrugIdentificationNumber = this.din,
                     BrandName = "Brand Name",
                 },
-            };
+            ];
 
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(drugList);
             Mock<IMedicationStatementDelegate> medStatementDelegateMock = new();

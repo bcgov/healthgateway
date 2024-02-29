@@ -56,7 +56,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         public async Task ShouldGetUserProfile()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>());
+            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, []);
 
             expected.ShouldDeepEqual(actualResult);
         }
@@ -543,14 +543,14 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim("hdid", hdid),
                 new Claim("auth_time", "123"),
                 new Claim("access_token", token),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 

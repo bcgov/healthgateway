@@ -788,7 +788,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <returns>IConfigurationRoot instance.</returns>
         private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string?> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? [];
 
             return new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json", true)

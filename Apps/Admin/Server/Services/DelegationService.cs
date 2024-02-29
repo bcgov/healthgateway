@@ -89,7 +89,7 @@ namespace HealthGateway.Admin.Server.Services
                 // Get delegates from database
                 IEnumerable<ResourceDelegate> dbResourceDelegates = await this.SearchDelegatesAsync(dependentPatientInfo.HdId, ct);
 
-                List<DelegateInfo> delegates = new();
+                List<DelegateInfo> delegates = [];
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
                     RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(resourceDelegate.ProfileHdid, ct: ct);

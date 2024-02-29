@@ -338,7 +338,7 @@ namespace HealthGateway.Admin.Tests.Services
         {
             BroadcastResponse response = GetApiResponse(id);
 
-            List<BroadcastResponse> apiGetResponse = new();
+            List<BroadcastResponse> apiGetResponse = [];
             if (id != null)
             {
                 apiGetResponse.Add(GetApiResponse(id));

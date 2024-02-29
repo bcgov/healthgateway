@@ -193,7 +193,7 @@ namespace HealthGateway.Admin.Client.Pages
         private async Task OpenAddDialogAsync()
         {
             const string title = "Add to Guardian List";
-            DialogParameters parameters = new();
+            DialogParameters parameters = [];
             DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.Small };
             IDialogReference dialog = await this.Dialog.ShowAsync<DelegateDialog>(title, parameters, options);
 

@@ -40,6 +40,6 @@ namespace HealthGateway.Database.Models
         [Required]
         [Column(TypeName = "jsonb")]
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public HashSet<DataSource> DataSources { get; set; } = new();
+        public HashSet<DataSource> DataSources { get; set; } = [];
     }
 }
