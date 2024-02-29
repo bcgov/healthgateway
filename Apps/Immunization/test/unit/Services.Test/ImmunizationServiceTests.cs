@@ -122,45 +122,50 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         /// <summary>
-        /// GetImmunization - Happy Path.
+        /// GetImmunization.
         /// </summary>
+        /// <param name="expectedResultType"> result type from service.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
-        [Fact]
-        public async Task ShouldGetImmunization()
+        [Theory]
+        [InlineData(ResultType.Success)]
+        [InlineData(ResultType.Error)]
+        public async Task ShouldGetImmunization(ResultType expectedResultType)
         {
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = new()
             {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<ImmunizationViewResponse>
-                {
-                    LoadState = new PhsaLoadState
-                        { RefreshInProgress = false },
-                    Result = new ImmunizationViewResponse
+                ResultStatus = expectedResultType,
+                ResourcePayload = expectedResultType == ResultType.Success
+                    ? new PhsaResult<ImmunizationViewResponse>
                     {
-                        Id = Guid.NewGuid(),
-                        Name = "MockImmunization",
-                        OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
-                        SourceSystemId = "MockSourceID",
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
+                        LoadState = new PhsaLoadState
+                            { RefreshInProgress = false },
+                        Result = new ImmunizationViewResponse
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = "MockImmunization",
+                            OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
+                            SourceSystemId = "MockSourceID",
+                        },
+                    }
+                    : null,
+                PageIndex = expectedResultType == ResultType.Success ? 0 : null,
+                PageSize = expectedResultType == ResultType.Success ? 5 : null,
+                TotalResultCount = expectedResultType == ResultType.Success ? 1 : null,
             };
 
             RequestResult<ImmunizationEvent> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = MappingService.MapToImmunizationEvent(delegateResult.ResourcePayload.Result),
+                ResourcePayload = delegateResult.ResultStatus == ResultType.Success ? MappingService.MapToImmunizationEvent(delegateResult.ResourcePayload!.Result) : null,
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
