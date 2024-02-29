@@ -1,3 +1,3 @@
 export default abstract class DateTimeFormat {
-    public static formatDateString = "yyyy-MM-dd";
+    public static readonly formatDateString = "yyyy-MM-dd";
 }
