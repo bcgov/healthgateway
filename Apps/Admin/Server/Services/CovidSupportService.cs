@@ -31,7 +31,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
