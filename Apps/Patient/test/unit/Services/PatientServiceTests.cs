@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.PatientTests.Services
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
@@ -35,181 +36,85 @@ namespace HealthGateway.PatientTests.Services
     {
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
+        private const string InvalidPhn = "987654321x";
+        private static readonly Name DefaultName = new()
+        {
+            GivenName = "John",
+            Surname = "Doe",
+        };
 
         private static readonly IPatientMappingService MappingService = new PatientMappingService(MapperUtil.InitializeAutoMapper());
 
         /// <summary>
         /// GetPatient - Happy Path.
         /// </summary>
+        /// <param name="type">The patient identifier type to query for patient.</param>
+        /// <param name="identifier">The patient identifier to query for patient.</param>
+        /// <param name="commonNameExists">bool indicating whether common name should be included when patient is created.</param>
+        /// <param name="legalNameExists">bool indicating whether legal name should be included when patient is created.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatient()
+        [Theory]
+        [InlineData(PatientIdentifierType.Hdid, Hdid, true, false)]
+        [InlineData(PatientIdentifierType.Phn, Phn, true, false)]
+        [InlineData(PatientIdentifierType.Hdid, Hdid, false, true)] // Note: false, false scenario is handled in GetPatientThrowsException
+        [InlineData(PatientIdentifierType.Phn, Phn, false, true)] // Note: false, false scenario is handled in GetPatientThrowsException
+        public async Task ShouldGetPatient(PatientIdentifierType type, string identifier, bool commonNameExists, bool legalNameExists)
         {
             // Arrange
-            PatientModel patient = GetPatient();
+            PatientModel? patient = GetPatient(commonNameExists, legalNameExists);
             IPatientService patientService = GetPatientService(patient);
 
             // Act
-            PatientDetails actual = await patientService.GetPatientAsync(patient.Hdid);
+            PatientDetails actual = await patientService.GetPatientAsync(identifier, type);
 
-            // Verify
-            Assert.Equal(patient.Hdid, actual.HdId);
-        }
-
-        /// <summary>
-        /// GetPatient - Valid Phn.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByValidPhn()
-        {
-            // Arrange
-            PatientModel patient = GetPatient();
-            IPatientService patientService = GetPatientService(patient);
-
-            // Act
-            PatientDetails actual = await patientService.GetPatientAsync(patient.Phn, PatientIdentifierType.Phn);
-
-            // Verify
+            // Assert
+            Assert.Equal(patient!.Hdid, actual.HdId);
             Assert.Equal(patient.Phn, actual.Phn);
         }
 
         /// <summary>
-        /// Client registry get demographics throws exception given client registry records not found.
+        /// Get patient throws exception.
         /// </summary>
+        /// <param name="phn">The phn to use to query for patient.</param>
+        /// <param name="expectedExceptionType">The exception type to be thrown.</param>
+        /// <param name="expectedErrorMessage">The associated error message for the exception.</param>
+        /// <param name="commonNameExists">
+        /// bool indicating whether common name should be included when patient is created. Default
+        /// is true and may not be applicable when patient is created in certain scenarios
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientThrowsExceptionGivenClientRegistryRecordsNotFound()
+        [Theory]
+        [InlineData(Phn, typeof(InvalidDataException), ErrorMessages.ClientRegistryReturnedDeceasedPerson, true)]
+        [InlineData(Phn, typeof(InvalidDataException), ErrorMessages.InvalidServicesCard, true)]
+        [InlineData(Phn, typeof(InvalidDataException), ErrorMessages.InvalidServicesCard, false)]
+        [InlineData(Phn, typeof(NotFoundException), ErrorMessages.ClientRegistryRecordsNotFound, true)]
+        [InlineData(InvalidPhn, typeof(ValidationException), ErrorMessages.PhnInvalid, true)]
+        public async Task GetPatientThrowsException(string phn, Type expectedExceptionType, string expectedErrorMessage, bool commonNameExists)
         {
-            // Setup
-            IPatientService patientService = GetPatientService();
-
-            // Act
-            async Task Actual()
-            {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
-            }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
-        }
-
-        /// <summary>
-        /// Client registry get demographics throws exception given patient is deceased.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientThrowsExceptionGivenPatientIsDeceased()
-        {
-            // Setup
-            PatientModel patient = GetPatient();
-            patient.IsDeceased = true;
+            // Arrange
+            PatientModel? patient = GetPatient(commonNameExists, errorMessage: expectedErrorMessage);
             IPatientService patientService = GetPatientService(patient);
 
-            // Act
-            async Task Actual()
-            {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
-            }
+            // Act & Verify
+            Exception exception = await Assert.ThrowsAsync(
+                expectedExceptionType,
+                async () => { await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn); });
 
-            // Verify
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.Message);
+            // Assert
+            Assert.Equal(expectedErrorMessage, exception.Message);
         }
 
-        /// <summary>
-        /// Client registry get demographics throws exception given client registry could not find any ids.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientThrowsExceptionGivenNoIds()
+        private static IPatientService GetPatientService(PatientModel? patient = null)
         {
-            // Setup
-            PatientModel patient = GetPatient();
-            patient.Phn = string.Empty;
-            patient.Hdid = string.Empty;
-            IPatientService patientService = GetPatientService(patient);
-
-            // Act
-            async Task Actual()
-            {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
-            }
-
-            // Verify
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
-        }
-
-        /// <summary>
-        /// Client registry get demographics throws exception given client registry could not find legal name.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientThrowsExceptionGivenNoLegalName()
-        {
-            // Setup
-            PatientModel patient = GetPatient();
-            patient.CommonName = null;
-            IPatientService patientService = GetPatientService(patient);
-
-            // Act
-            async Task Actual()
-            {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
-            }
-
-            // Verify
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
-        }
-
-        /// <summary>
-        /// Client registry get demographics throws exception given client registry records not found.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientThrowsExceptionGivenClientRegistryPhnNotValid()
-        {
-            // Setup
-            string invalidPhn = "987654321x";
-            PatientDetailsQuery patientDetailsQuery = new()
-            {
-                Phn = invalidPhn,
-                Source = PatientDetailSource.All,
-            };
-            PatientModel patient = GetPatient();
-            IPatientService patientService = GetPatientService(patient, patientDetailsQuery);
-
-            // Act
-            async Task Actual()
-            {
-                await patientService.GetPatientAsync(invalidPhn, PatientIdentifierType.Phn);
-            }
-
-            // Verify
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.Message);
-        }
-
-        private static IPatientService GetPatientService(PatientModel? patient = null, PatientDetailsQuery? patientDetailsQuery = null)
-        {
-            PatientQueryResult patientQueryResult = new([patient]);
+            PatientQueryResult patientQueryResult = new(patient != null ? [patient] : []);
 
             Mock<IPatientRepository> patientRepository = new();
-            if (patientDetailsQuery != null)
-            {
-                patientRepository.Setup(p => p.QueryAsync(patientDetailsQuery, It.IsAny<CancellationToken>()))
-                    .Throws(new ValidationException(ErrorMessages.PhnInvalid));
-            }
-            else
-            {
-                patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(patientQueryResult);
-                patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(patientQueryResult);
-            }
+            patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(InvalidPhn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                .Throws(new ValidationException(ErrorMessages.PhnInvalid));
+            patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patientQueryResult);
+            patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patientQueryResult);
 
             return new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -217,18 +122,47 @@ namespace HealthGateway.PatientTests.Services
                 MappingService);
         }
 
-        private static PatientModel GetPatient()
+        private static PatientModel? GetPatient(bool commonNameExists = true, bool legalNameExists = true, string? errorMessage = null)
         {
-            return new()
+            switch (errorMessage)
             {
-                CommonName = new Name
+                case ErrorMessages.ClientRegistryReturnedDeceasedPerson:
                 {
-                    GivenName = "John",
-                    Surname = "Doe",
-                },
-                Phn = Phn,
-                Hdid = Hdid,
-            };
+                    return CreatePatient(deceased: true);
+                }
+
+                case ErrorMessages.InvalidServicesCard:
+                {
+                    return commonNameExists == false ? CreatePatient(commonNameExists: false, legalNameExists: false) : CreatePatient(string.Empty, string.Empty);
+                }
+
+                case ErrorMessages.PhnInvalid:
+                {
+                    return CreatePatient();
+                }
+
+                case ErrorMessages.ClientRegistryRecordsNotFound:
+                {
+                    return null;
+                }
+
+                default:
+                {
+                    return CreatePatient(commonNameExists: commonNameExists, legalNameExists: legalNameExists);
+                }
+            }
+
+            static PatientModel CreatePatient(string hdid = Hdid, string phn = Phn, bool commonNameExists = true, bool legalNameExists = true, bool deceased = false)
+            {
+                return new()
+                {
+                    CommonName = commonNameExists ? DefaultName : null,
+                    LegalName = legalNameExists ? DefaultName : null,
+                    Phn = phn,
+                    Hdid = hdid,
+                    IsDeceased = deceased,
+                };
+            }
         }
     }
 }
