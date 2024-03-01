@@ -73,8 +73,7 @@ namespace HealthGateway.MedicationTests.Services
                     {
                         ResourcePayload = Phn,
                         ResultStatus = ResultType.Success,
-                    }
-                );
+                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
@@ -146,8 +145,7 @@ namespace HealthGateway.MedicationTests.Services
                             PersonalHealthNumber = Phn,
                         },
                         ResultStatus = ResultType.Success,
-                    }
-                );
+                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock
@@ -271,8 +269,7 @@ namespace HealthGateway.MedicationTests.Services
                             PersonalHealthNumber = Phn,
                         },
                         ResultStatus = ResultType.Success,
-                    }
-                );
+                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
@@ -367,8 +364,7 @@ namespace HealthGateway.MedicationTests.Services
                             PersonalHealthNumber = Phn,
                         },
                         ResultStatus = ResultType.Success,
-                    }
-                );
+                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
@@ -460,7 +456,7 @@ namespace HealthGateway.MedicationTests.Services
                 },
             ];
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
             drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(drugList);
 
             Mock<IMedicationStatementDelegate> medStatementDelegateMock = new();
