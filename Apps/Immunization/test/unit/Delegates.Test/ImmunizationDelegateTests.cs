@@ -27,7 +27,6 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Api;
     using HealthGateway.Immunization.Delegates;
     using Microsoft.Extensions.Configuration;
@@ -89,9 +88,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
-                    new List<ImmunizationViewResponse>
-                        { expectedViewResponse },
-                    new List<ImmunizationRecommendationResponse>()),
+                    [expectedViewResponse],
+                    []),
             };
 
             RequestResult<PhsaResult<ImmunizationResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationsAsync(It.IsAny<string>());
@@ -145,9 +143,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
-                    new List<ImmunizationViewResponse>
-                        { expectedViewResponse },
-                    new List<ImmunizationRecommendationResponse>()),
+                    [expectedViewResponse],
+                    []),
             };
 
             RequestResult<PhsaResult<ImmunizationResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationsAsync(It.IsAny<string>());
