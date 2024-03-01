@@ -309,10 +309,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 HdId = this.mockHdId,
                 Protected = true,
-                AllowedDelegations = new List<AllowedDelegation>
-                {
-                    new() { DependentHdId = this.mockHdId, DelegateHdId = this.mockParentHdid },
-                },
+                AllowedDelegations = [new() { DependentHdId = this.mockHdId, DelegateHdId = this.mockParentHdid }],
             };
             IDependentService service = this.SetupMockDependentService(addDependentRequest, dependent: dependent);
 

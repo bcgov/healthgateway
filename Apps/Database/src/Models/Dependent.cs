@@ -17,7 +17,6 @@ namespace HealthGateway.Database.Models
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -40,7 +39,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the allowed delegations for this dependent.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public IList<AllowedDelegation> AllowedDelegations { get; set; } = new List<AllowedDelegation>();
+        public IEnumerable<AllowedDelegation> AllowedDelegations { get; set; } = [];
     }
 }
