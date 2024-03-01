@@ -27,22 +27,6 @@ namespace HealthGateway.Database.Models
     public class UserFeedback : AuditableEntity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedback"/> class.
-        /// </summary>
-        public UserFeedback()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedback"/> class.
-        /// </summary>
-        /// <param name="tags">The tag collection.</param>
-        public UserFeedback(ICollection<UserFeedbackTag> tags)
-        {
-            this.Tags = tags;
-        }
-
-        /// <summary>
         /// Gets or sets the primary key.
         /// </summary>
         [Key]
@@ -77,8 +61,8 @@ namespace HealthGateway.Database.Models
         public virtual UserProfile? UserProfile { get; set; }
 
         /// <summary>
-        /// Gets the related list of tags.
+        /// Gets or sets the related list of tags.
         /// </summary>
-        public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
+        public IEnumerable<UserFeedbackTag> Tags { get; set; } = [];
     }
 }

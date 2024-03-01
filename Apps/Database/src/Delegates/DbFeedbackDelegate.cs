@@ -89,7 +89,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<DbResult<UserFeedback>> UpdateUserFeedbackWithTagAssociationsAsync(UserFeedback feedback, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
+            this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count());
             this.dbContext.Update(feedback);
             DbResult<UserFeedback> result = new();
 
