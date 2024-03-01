@@ -70,9 +70,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new PhsaResult<ImmunizationResponse>
                 {
-                    LoadState = new PhsaLoadState
-                        { RefreshInProgress = false },
-                    Result = new ImmunizationResponse(
+                    LoadState = new PhsaLoadState { RefreshInProgress = false },
+                    Result = new ImmunizationResponse
+                    {
+                        ImmunizationViews =
                         [
                             new()
                             {
@@ -82,7 +83,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                                 SourceSystemId = "MockSourceID",
                             },
                         ],
-                        []),
+                    },
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -139,8 +140,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = expectedResultType == ResultType.Success
                     ? new PhsaResult<ImmunizationViewResponse>
                     {
-                        LoadState = new PhsaLoadState
-                            { RefreshInProgress = false },
+                        LoadState = new PhsaLoadState { RefreshInProgress = false },
                         Result = new ImmunizationViewResponse
                         {
                             Id = Guid.NewGuid(),
@@ -224,8 +224,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             if (targetDiseaseExists)
             {
-                Assert.Equal(TargetDiseaseCode, actualRecommendation.TargetDiseases[0].Code);
-                Assert.Equal(DiseaseName, actualRecommendation.TargetDiseases[0].Name);
+                Assert.Equal(TargetDiseaseCode, actualRecommendation.TargetDiseases.First().Code);
+                Assert.Equal(DiseaseName, actualRecommendation.TargetDiseases.First().Name);
                 Assert.Empty(actualRecommendation.RecommendedVaccinations);
             }
             else
@@ -283,9 +283,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<ImmunizationResponse>
                 {
                     LoadState = new() { RefreshInProgress = false },
-                    Result = new(
-                        [],
-                        [immzRecommendationResponse]),
+                    Result = new()
+                    {
+                        Recommendations = [immzRecommendationResponse],
+                    },
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -308,32 +309,26 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
         private static ImmunizationRecommendationResponse GetImmzRecommendationResponse(bool targetDiseaseExists)
         {
-            ImmunizationRecommendationResponse immzRecommendationResponse = new()
+            return new()
             {
                 ForecastCreationDate = DateOnly.FromDateTime(DateTime.Now),
                 RecommendationId = RecommendationSetId,
                 RecommendationSourceSystem = "MockSourceSystem",
                 RecommendationSourceSystemId = "MockSourceID",
+                Recommendations = [GetRecommendationResponse(targetDiseaseExists), GetRecommendationResponse(true)],
             };
-
-            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(targetDiseaseExists));
-            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(true));
-            return immzRecommendationResponse;
         }
 
         private static RecommendationResponse GetRecommendationResponse(bool targetDiseaseExists)
         {
-            RecommendationResponse recommendationResponse = new()
+            return new()
             {
-                ForecastStatus =
-                {
-                    ForecastStatusText = "Eligible",
-                },
+                ForecastStatus = { ForecastStatusText = "Eligible" },
                 TargetDisease = targetDiseaseExists
                     ? new()
                     {
                         TargetDiseaseCodes =
-                        {
+                        [
                             new SystemCode
                             {
                                 Code = TargetDiseaseCode,
@@ -341,34 +336,32 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                                 Display = DiseaseName,
                                 System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
                             },
-                        },
+                        ],
                     }
                     : null,
                 VaccineCode =
                 {
                     VaccineCodeText = VaccineName,
+                    VaccineCodes =
+                    [
+                        new SystemCode
+                        {
+                            Code = "BCYSCT_AN032",
+                            CommonType = "AntiGenCode",
+                            Display = AntigenName,
+                            System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
+                        },
+                    ],
                 },
-            };
-            recommendationResponse.VaccineCode.VaccineCodes.Add(
-                new SystemCode
-                {
-                    Code = "BCYSCT_AN032",
-                    CommonType = "AntiGenCode",
-                    Display = AntigenName,
-                    System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
-                });
-
-            recommendationResponse.DateCriterions.Add(
-                new DateCriterion
-                {
-                    DateCriterionCode = new DateCriterionCode
+                DateCriterions =
+                [
+                    new DateCriterion
                     {
-                        Text = "Forecast by Disease Eligible Date",
+                        DateCriterionCode = new DateCriterionCode { Text = "Forecast by Disease Eligible Date" },
+                        Value = DiseaseEligibleDateString,
                     },
-                    Value = DiseaseEligibleDateString,
-                });
-
-            return recommendationResponse;
+                ],
+            };
         }
     }
 }

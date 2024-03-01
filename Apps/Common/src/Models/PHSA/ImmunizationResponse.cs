@@ -25,36 +25,15 @@ namespace HealthGateway.Common.Models.PHSA
     public class ImmunizationResponse
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationResponse"/> class.
-        /// </summary>
-        public ImmunizationResponse()
-        {
-            this.ImmunizationViews = new List<ImmunizationViewResponse>();
-            this.Recommendations = new List<ImmunizationRecommendationResponse>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationResponse"/> class.
-        /// </summary>
-        /// <param name="immunizationViews">The list of immunization view response.</param>
-        /// <param name="recommendations">The list of immunization recommendation response.</param>
-        [JsonConstructor]
-        public ImmunizationResponse(IList<ImmunizationViewResponse> immunizationViews, IList<ImmunizationRecommendationResponse> recommendations)
-        {
-            this.ImmunizationViews = immunizationViews;
-            this.Recommendations = recommendations;
-        }
-
-        /// <summary>
-        /// Gets the list of Immunization Views.
+        /// Gets or sets the collection of Immunization Views.
         /// </summary>
         [JsonPropertyName("immunizationViews")]
-        public IList<ImmunizationViewResponse> ImmunizationViews { get; }
+        public IEnumerable<ImmunizationViewResponse> ImmunizationViews { get; set; } = [];
 
         /// <summary>
-        /// Gets the list of Immunization Recommendations.
+        /// Gets or sets the collection of Immunization Recommendations.
         /// </summary>
         [JsonPropertyName("immunizationRecommendations")]
-        public IList<ImmunizationRecommendationResponse> Recommendations { get; }
+        public IEnumerable<ImmunizationRecommendationResponse> Recommendations { get; set; } = [];
     }
 }
