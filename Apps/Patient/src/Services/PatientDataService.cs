@@ -73,7 +73,7 @@ namespace HealthGateway.Patient.Services
 
         private async Task<IList<PatientDataType>> GetUnblockedPatientDataTypesAsync(string hdid, IEnumerable<PatientDataType> patientDataTypes, CancellationToken ct)
         {
-            List<PatientDataType> unblockedPatientDataTypes = new();
+            List<PatientDataType> unblockedPatientDataTypes = [];
             foreach (PatientDataType patientDataType in patientDataTypes)
             {
                 DataSource dataSource = this.mappingService.MapToDataSource(patientDataType);

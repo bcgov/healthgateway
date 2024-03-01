@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.PatientTests.Services
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
@@ -196,7 +195,7 @@ namespace HealthGateway.PatientTests.Services
 
         private static IPatientService GetPatientService(PatientModel? patient = null, PatientDetailsQuery? patientDetailsQuery = null)
         {
-            PatientQueryResult patientQueryResult = new(new List<PatientModel> { patient });
+            PatientQueryResult patientQueryResult = new([patient]);
 
             Mock<IPatientRepository> patientRepository = new();
             if (patientDetailsQuery != null)
