@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Data.Tests.Validations
 {
     using System;
-    using System.Collections.Generic;
     using FluentValidation.Results;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Validations;
@@ -30,28 +29,22 @@ namespace HealthGateway.Common.Data.Tests.Validations
         private static readonly DateTime Today = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
-        /// Gets list of Broadcast objects to validate.
+        /// Gets parameters for broadcast unit test(s).
         /// </summary>
-        public static IEnumerable<object[]> Broadcasts =>
-            new List<object[]>
+        public static TheoryData<Broadcast, bool> BroadcastTheoryData =>
+            new()
             {
-                new object[]
                 {
-                    new Broadcast
-                        { ScheduledDateUtc = Today, ExpirationDateUtc = Today },
-                    false,
+                    new Broadcast { ScheduledDateUtc = Today, ExpirationDateUtc = Today },
+                    false
                 },
-                new object[]
                 {
-                    new Broadcast
-                        { ScheduledDateUtc = Today, ExpirationDateUtc = Today.AddDays(-1) },
-                    false,
+                    new Broadcast { ScheduledDateUtc = Today, ExpirationDateUtc = Today.AddDays(-1) },
+                    false
                 },
-                new object[]
                 {
-                    new Broadcast
-                        { ScheduledDateUtc = Today, ExpirationDateUtc = Today.AddDays(1) },
-                    true,
+                    new Broadcast { ScheduledDateUtc = Today, ExpirationDateUtc = Today.AddDays(1) },
+                    true
                 },
             };
 
@@ -61,7 +54,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         /// <param name="broadcast">Broadcast object to test.</param>
         /// <param name="shouldBeValid">The validation result to verify.</param>
         [Theory]
-        [MemberData(nameof(Broadcasts))]
+        [MemberData(nameof(BroadcastTheoryData))]
         public void ValidateBroadcast(Broadcast broadcast, bool shouldBeValid)
         {
             BroadcastValidator validator = new();

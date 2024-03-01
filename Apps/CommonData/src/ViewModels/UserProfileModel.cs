@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// <summary>
         /// Gets the list of recent login times.
         /// </summary>
-        public IList<DateTime> LastLoginDateTimes { get; } = new List<DateTime>();
+        public IList<DateTime> LastLoginDateTimes { get; } = [];
 
         /// <summary>
         /// Gets or sets the Closed datetime of the account.

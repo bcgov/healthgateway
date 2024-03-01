@@ -76,7 +76,7 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the SMS scope.
         /// </summary>
         [JsonPropertyName("smsScope")]
-        public IEnumerable<NotificationTarget> SmsScope { get; set; } = new List<NotificationTarget> { NotificationTarget.Covid19 };
+        public IEnumerable<NotificationTarget> SmsScope { get; set; } = [NotificationTarget.Covid19];
 
         /// <summary>
         /// Gets or sets a value indicating whether Email notifications are enabled.
@@ -94,6 +94,6 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the Email scope.
         /// </summary>
         [JsonPropertyName("emailScope")]
-        public IEnumerable<NotificationTarget> EmailScope { get; set; } = new List<NotificationTarget> { NotificationTarget.Covid19 };
+        public IEnumerable<NotificationTarget> EmailScope { get; set; } = [NotificationTarget.Covid19];
     }
 }
