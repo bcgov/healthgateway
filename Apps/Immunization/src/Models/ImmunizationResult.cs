@@ -55,12 +55,12 @@ namespace HealthGateway.Immunization.Models
         /// Gets the list of Immunizations events.
         /// </summary>
         [JsonPropertyName("immunizations")]
-        public IList<ImmunizationEvent> Immunizations { get; } = new List<ImmunizationEvent>();
+        public IList<ImmunizationEvent> Immunizations { get; } = [];
 
         /// <summary>
         /// Gets the list of Immunizations recommendations.
         /// </summary>
         [JsonPropertyName("recommendations")]
-        public IList<ImmunizationRecommendation> Recommendations { get; } = new List<ImmunizationRecommendation>();
+        public IList<ImmunizationRecommendation> Recommendations { get; } = [];
     }
 }

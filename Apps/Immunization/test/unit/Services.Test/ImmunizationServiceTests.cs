@@ -17,7 +17,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -40,17 +39,18 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     /// <summary>
     /// ImmunizationService's Unit Tests.
     /// </summary>
-    [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class ImmunizationServiceTests
     {
+        private const string AntigenName = "HPV-9";
+        private const string DiseaseEligibleDateString = "2021-02-02";
+        private const string DiseaseName = "Human papillomavirus infection";
+        private const string RecommendationSetId = "set-recomendation-id";
+        private const string TargetDiseaseCode = "240532009";
+        private const string VaccineName = "Human Papillomavirus-HPV9 Vaccine";
+        private const string RecommendedVaccinations = $"{AntigenName} ({VaccineName})";
+
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
         private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
-
-        private readonly string antigenName = "HPV-9";
-        private readonly string diseaseEligibleDateString = "2021-02-02";
-        private readonly string diseaseName = "Human papillomavirus infection";
-        private readonly string recomendationSetId = "set-recomendation-id";
-        private readonly string vaccineName = "Human Papillomavirus-HPV9 Vaccine";
 
         /// <summary>
         /// GetImmunizations - Happy Path.
@@ -73,8 +73,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     LoadState = new PhsaLoadState
                         { RefreshInProgress = false },
                     Result = new ImmunizationResponse(
-                        new List<ImmunizationViewResponse>
-                        {
+                        [
                             new()
                             {
                                 Id = Guid.NewGuid(),
@@ -82,8 +81,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                                 OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
                                 SourceSystemId = "MockSourceID",
                             },
-                        },
-                        new List<ImmunizationRecommendationResponse>()),
+                        ],
+                        []),
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -95,7 +94,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new ImmunizationResult(
                     MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
                     delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
-                    new List<ImmunizationRecommendation>()),
+                    []),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -122,45 +121,50 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         /// <summary>
-        /// GetImmunization - Happy Path.
+        /// GetImmunization.
         /// </summary>
+        /// <param name="expectedResultType"> result type from service.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
-        [Fact]
-        public async Task ShouldGetImmunization()
+        [Theory]
+        [InlineData(ResultType.Success)]
+        [InlineData(ResultType.Error)]
+        public async Task ShouldGetImmunization(ResultType expectedResultType)
         {
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = new()
             {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<ImmunizationViewResponse>
-                {
-                    LoadState = new PhsaLoadState
-                        { RefreshInProgress = false },
-                    Result = new ImmunizationViewResponse
+                ResultStatus = expectedResultType,
+                ResourcePayload = expectedResultType == ResultType.Success
+                    ? new PhsaResult<ImmunizationViewResponse>
                     {
-                        Id = Guid.NewGuid(),
-                        Name = "MockImmunization",
-                        OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
-                        SourceSystemId = "MockSourceID",
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
+                        LoadState = new PhsaLoadState
+                            { RefreshInProgress = false },
+                        Result = new ImmunizationViewResponse
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = "MockImmunization",
+                            OccurrenceDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified),
+                            SourceSystemId = "MockSourceID",
+                        },
+                    }
+                    : null,
+                PageIndex = expectedResultType == ResultType.Success ? 0 : null,
+                PageSize = expectedResultType == ResultType.Success ? 5 : null,
+                TotalResultCount = expectedResultType == ResultType.Success ? 1 : null,
             };
 
             RequestResult<ImmunizationEvent> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = MappingService.MapToImmunizationEvent(delegateResult.ResourcePayload.Result),
+                ResourcePayload = delegateResult.ResultStatus == ResultType.Success ? MappingService.MapToImmunizationEvent(delegateResult.ResourcePayload!.Result) : null,
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
@@ -175,51 +179,65 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <summary>
         /// GetImmunizations - Happy Path (With Recommendations).
         /// </summary>
+        /// <param name="targetDiseaseExists">
+        /// bool indicating whether target disease should exist or not in the recommendation
+        /// response.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetRecommendation()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetRecommendation(bool targetDiseaseExists)
         {
-            ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
-            Mock<IImmunizationDelegate> mockDelegate = new();
-            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = GetPhsaResult(immzRecommendationResponse);
+            // Arrange
+            ImmunizationRecommendationResponse immzRecommendationResponse = GetImmzRecommendationResponse(targetDiseaseExists);
+            Mock<IImmunizationDelegate> immunizationDelegate = new();
+            RequestResult<PhsaResult<ImmunizationResponse>> immunizationResponse = GetPhsaResult(immzRecommendationResponse);
             RequestResult<ImmunizationResult> expectedResult = new()
             {
-                ResultStatus = delegateResult.ResultStatus,
+                ResultStatus = immunizationResponse.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
-                    MappingService.MapToLoadStateModel(delegateResult.ResourcePayload?.LoadState),
-                    new List<ImmunizationEvent>(),
-                    MappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload?.Result?.Recommendations)),
-                PageIndex = delegateResult.PageIndex,
-                PageSize = delegateResult.PageSize,
-                TotalResultCount = delegateResult.TotalResultCount,
+                    MappingService.MapToLoadStateModel(immunizationResponse.ResourcePayload?.LoadState),
+                    [],
+                    MappingService.MapToImmunizationRecommendations(immunizationResponse.ResourcePayload?.Result?.Recommendations)),
+                PageIndex = immunizationResponse.PageIndex,
+                PageSize = immunizationResponse.PageSize,
+                TotalResultCount = immunizationResponse.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
+            immunizationDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(immunizationResponse);
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
+            IImmunizationService service = new ImmunizationService(immunizationDelegate.Object, patientRepository.Object, MappingService);
 
+            // Act
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
+            // Assert
             expectedResult.ShouldDeepEqual(actualResult);
-            Assert.Single(expectedResult.ResourcePayload.Recommendations);
-            ImmunizationRecommendation recommendationResult = expectedResult.ResourcePayload.Recommendations[0];
-            Assert.Equal(this.recomendationSetId, recommendationResult.RecommendationSetId);
-            Assert.Equal(this.vaccineName, recommendationResult.Immunization.Name);
-            Assert.Collection(
-                recommendationResult.Immunization.ImmunizationAgents,
-                item => Assert.Equal(this.antigenName, item.Name));
-            Assert.Equal(this.antigenName, recommendationResult.Immunization.ImmunizationAgents.First().Name);
-            Assert.Collection(
-                recommendationResult.TargetDiseases,
-                item => Assert.Equal(immzRecommendationResponse.Recommendations[0].TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
-            Assert.Equal(this.diseaseName, recommendationResult.TargetDiseases[0].Name);
-            Assert.Equal(DateOnly.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
-            Assert.Null(recommendationResult.DiseaseDueDate);
-            Assert.Null(recommendationResult.AgentDueDate);
-            Assert.Null(recommendationResult.AgentEligibleDate);
+            ImmunizationRecommendation actualRecommendation = actualResult.ResourcePayload?.Recommendations[0]!;
+            Assert.Equal(RecommendationSetId, actualRecommendation.RecommendationSetId);
+            Assert.Equal(VaccineName, actualRecommendation.Immunization.Name);
+            Assert.Equal(AntigenName, actualRecommendation.Immunization.ImmunizationAgents.First().Name);
+
+            if (targetDiseaseExists)
+            {
+                Assert.Equal(TargetDiseaseCode, actualRecommendation.TargetDiseases[0].Code);
+                Assert.Equal(DiseaseName, actualRecommendation.TargetDiseases[0].Name);
+                Assert.Empty(actualRecommendation.RecommendedVaccinations);
+            }
+            else
+            {
+                Assert.Equal(RecommendedVaccinations, actualRecommendation.RecommendedVaccinations);
+                Assert.Empty(actualRecommendation.TargetDiseases);
+            }
+
+            Assert.Equal(DateOnly.Parse(DiseaseEligibleDateString, CultureInfo.CurrentCulture), actualRecommendation.DiseaseEligibleDate);
+            Assert.Null(actualRecommendation.DiseaseDueDate);
+            Assert.Null(actualRecommendation.AgentDueDate);
+            Assert.Null(actualRecommendation.AgentEligibleDate);
         }
 
         /// <summary>
@@ -257,367 +275,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             expectedResult.ShouldDeepEqual(actualResult);
         }
 
-        /*
-        /// <summary>
-        /// Get a Vaccine Record Proof - Happy Path.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordOk()
-        {
-            var myConfiguration = new Dictionary<string, string>
-            {
-                { "BCMailPlus:Endpoint", "https://${HOST}/${ENV}/auth=${TOKEN}/JSON/" },
-                { "BCMailPlus:Host", "Host" },
-                { "BCMailPlus:JobEnvironment", "JobEnvironment" },
-                { "BCMailPlus:JobClass", "JobClass" },
-                { "BCMailPlus:SchemaVersion", "SchemaVersion" },
-                { "BCMailPlus:BackOffMilliseconds", "10" },
-                { "BCMailPlus:MaxRetries", "2" },
-            };
-
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
-                {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new()
-                    {
-                        Birthdate = null,
-                        DoseCount = 2,
-                        FirstName = "FirstName",
-                        LastName = "LastName",
-                        QRCode = new EncodedMedia()
-                        {
-                            Data = "QR Code",
-                            Encoding = string.Empty,
-                            Type = string.Empty,
-                        },
-                        StatusIndicator = VaccineState.AllDosesReceived.ToString(),
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            RequestResult<ReportModel> assetResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new()
-                {
-                    Data = "BASE 64 Data",
-                    FileName = "filename",
-                },
-            };
-            var mockVaccineProofService = new Mock<IVaccineProofService>();
-            mockVaccineProofService.Setup(s => s.GetVaccineProof(It.IsAny<string>(), It.IsAny<VaccineProofRequest>(), It.IsAny<VaccineProofTemplate>())).Returns(Task.FromResult(assetResult));
-
-            IImmunizationService service = new ImmunizationService(
-                GetConfiguration(myConfiguration),
-                new Mock<ILogger<ImmunizationService>>().Object,
-                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-                mockVaccineProofService.Object,
-                mockVaccineDelegate.Object,
-                mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
-            Assert.True(actualResult.ResourcePayload != null && actualResult.ResourcePayload.Document.Data == assetResult.ResourcePayload.Data);
-        }
-
-        /// <summary>
-        /// A refresh in progress is occurring while we're getting the Vaccine Status.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordRIP()
-        {
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
-                {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = true, },
-                    Result = new()
-                    {
-                        Birthdate = null,
-                        DoseCount = 0,
-                        FirstName = string.Empty,
-                        LastName = string.Empty,
-                        QRCode = new EncodedMedia()
-                        {
-                            Data = string.Empty,
-                            Encoding = string.Empty,
-                            Type = string.Empty,
-                        },
-                        StatusIndicator = VaccineState.NotFound.ToString(),
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            IImmunizationService service = new ImmunizationService(
-                GetConfiguration(),
-                new Mock<ILogger<ImmunizationService>>().Object,
-                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-                new Mock<IVaccineProofService>().Object,
-                mockVaccineDelegate.Object,
-                mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
-        }
-
-        /// <summary>
-        /// We get an error while pulling the Vaccine Status.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordPHSAError()
-        {
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            IImmunizationService service = new ImmunizationService(
-                GetConfiguration(),
-                new Mock<ILogger<ImmunizationService>>().Object,
-                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-                new Mock<IVaccineProofService>().Object,
-                mockVaccineDelegate.Object,
-                mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            vaccineStatusResult.ShouldDeepEqual(actualResult);
-        }
-
-        /// <summary>
-        /// The Vaccine status is in a state where we will not generate a proof.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordInvalidState()
-        {
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
-                {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new()
-                    {
-                        StatusIndicator = VaccineState.DataMismatch.ToString(),
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            IImmunizationService service = new ImmunizationService(
-                GetConfiguration(),
-                new Mock<ILogger<ImmunizationService>>().Object,
-                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-                new Mock<IVaccineProofService>().Object,
-                mockVaccineDelegate.Object,
-                mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
-        }
-
-        /// <summary>
-        /// An unexpected state was returned for the vaccine status.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordUnknownState()
-        {
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
-                {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new()
-                    {
-                        StatusIndicator = "999",
-                    },
-                },
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            IImmunizationService service = new ImmunizationService(
-                GetConfiguration(),
-                new Mock<ILogger<ImmunizationService>>().Object,
-                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-                new Mock<IVaccineProofService>().Object,
-                mockVaccineDelegate.Object,
-                mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
-        }
-
-        /// <summary>
-        /// The request to the Vaccine Proof Service errored out.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordServiceProofFailed()
-        {
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
-                {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new()
-                    {
-                        Birthdate = null,
-                        DoseCount = 2,
-                        FirstName = "FirstName",
-                        LastName = "LastName",
-                        QRCode = new EncodedMedia()
-                        {
-                            Data = "QR Code",
-                            Encoding = string.Empty,
-                            Type = string.Empty,
-                        },
-                        StatusIndicator = VaccineState.AllDosesReceived.ToString(),
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            RequestResult<ReportModel> assetResult = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-            var mockVaccineProofService = new Mock<IVaccineProofService>();
-            mockVaccineProofService.Setup(s => s.GetVaccineProof(It.IsAny<string>(), It.IsAny<VaccineProofRequest>(), It.IsAny<VaccineProofTemplate>())).Returns(Task.FromResult(assetResult));
-
-            IImmunizationService service = new ImmunizationService(
-                GetConfiguration(),
-                new Mock<ILogger<ImmunizationService>>().Object,
-                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-                mockVaccineProofService.Object,
-                mockVaccineDelegate.Object,
-                mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
-        }
-
-        /// <summary>
-        /// The vaccine status is NotFound where there is no records found.
-        /// </summary>
-        [Fact]
-        public void GetVaccineRecordNoRecordFound()
-        {
-            var myConfiguration = new Dictionary<string, string>
-            {
-                { "BCMailPlus:Endpoint", "https://${HOST}/${ENV}/auth=${TOKEN}/JSON/" },
-                { "BCMailPlus:Host", "Host" },
-                { "BCMailPlus:JobEnvironment", "JobEnvironment" },
-                { "BCMailPlus:JobClass", "JobClass" },
-                { "BCMailPlus:SchemaVersion", "SchemaVersion" },
-                { "BCMailPlus:BackOffMilliseconds", "10" },
-                { "BCMailPlus:MaxRetries", "2" },
-            };
-
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
-                {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new()
-                    {
-                        Birthdate = null,
-                        DoseCount = 2,
-                        FirstName = "FirstName",
-                        LastName = "LastName",
-                        QRCode = new EncodedMedia()
-                        {
-                            Data = "QR Code",
-                            Encoding = string.Empty,
-                            Type = string.Empty,
-                        },
-                        StatusIndicator = VaccineState.NotFound.ToString(),
-                    },
-                },
-                PageIndex = 0,
-                PageSize = 5,
-                TotalResultCount = 1,
-            };
-
-            string hdid = "mock hdid";
-
-            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
-
-            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
-
-            IImmunizationService service = new ImmunizationService(
-              GetConfiguration(myConfiguration),
-              new Mock<ILogger<ImmunizationService>>().Object,
-              new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-              new Mock<IVaccineProofService>().Object,
-              mockVaccineDelegate.Object,
-              mockHttpContextAccessor.Object);
-
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
-        }
-        */
-
         private static RequestResult<PhsaResult<ImmunizationResponse>> GetPhsaResult(ImmunizationRecommendationResponse immzRecommendationResponse)
         {
             return new RequestResult<PhsaResult<ImmunizationResponse>>
@@ -627,68 +284,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 {
                     LoadState = new() { RefreshInProgress = false },
                     Result = new(
-                        new List<ImmunizationViewResponse>(),
-                        new List<ImmunizationRecommendationResponse>
-                        {
-                            immzRecommendationResponse,
-                        }),
+                        [],
+                        [immzRecommendationResponse]),
                 },
                 PageIndex = 0,
                 PageSize = 5,
                 TotalResultCount = 1,
             };
         }
-
-        /*
-        private static IConfiguration GetConfiguration(Dictionary<string, string>? keyValuePairs = null)
-        {
-            keyValuePairs ??= new();
-            IConfiguration configuration = new ConfigurationBuilder()
-                        .AddInMemoryCollection(keyValuePairs)
-                        .Build();
-            return configuration;
-        }
-
-        private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
-        {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            headerDictionary.Add("referer", "http://localhost/");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("hdid", hdid),
-                new Claim("auth_time", "123"),
-                new Claim("access_token", token),
-            };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
-
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = token },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
-
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            return httpContextAccessorMock;
-        }
-        */
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
@@ -703,38 +306,55 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .Build();
         }
 
-        private ImmunizationRecommendationResponse GetImmzRecommendationResponse()
+        private static ImmunizationRecommendationResponse GetImmzRecommendationResponse(bool targetDiseaseExists)
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = new()
             {
                 ForecastCreationDate = DateOnly.FromDateTime(DateTime.Now),
-                RecommendationId = this.recomendationSetId,
+                RecommendationId = RecommendationSetId,
                 RecommendationSourceSystem = "MockSourceSystem",
                 RecommendationSourceSystemId = "MockSourceID",
             };
 
-            RecommendationResponse recommendationResponse = new();
-            recommendationResponse.ForecastStatus.ForecastStatusText = "Eligible";
-            recommendationResponse.TargetDisease = new()
+            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(targetDiseaseExists));
+            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(true));
+            return immzRecommendationResponse;
+        }
+
+        private static RecommendationResponse GetRecommendationResponse(bool targetDiseaseExists)
+        {
+            RecommendationResponse recommendationResponse = new()
             {
-                TargetDiseaseCodes =
+                ForecastStatus =
                 {
-                    new SystemCode
+                    ForecastStatusText = "Eligible",
+                },
+                TargetDisease = targetDiseaseExists
+                    ? new()
                     {
-                        Code = "240532009",
-                        CommonType = "DiseaseCode",
-                        Display = this.diseaseName,
-                        System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
-                    },
+                        TargetDiseaseCodes =
+                        {
+                            new SystemCode
+                            {
+                                Code = TargetDiseaseCode,
+                                CommonType = "DiseaseCode",
+                                Display = DiseaseName,
+                                System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
+                            },
+                        },
+                    }
+                    : null,
+                VaccineCode =
+                {
+                    VaccineCodeText = VaccineName,
                 },
             };
-            recommendationResponse.VaccineCode.VaccineCodeText = this.vaccineName;
             recommendationResponse.VaccineCode.VaccineCodes.Add(
                 new SystemCode
                 {
                     Code = "BCYSCT_AN032",
                     CommonType = "AntiGenCode",
-                    Display = this.antigenName,
+                    Display = AntigenName,
                     System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
                 });
 
@@ -745,11 +365,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         Text = "Forecast by Disease Eligible Date",
                     },
-                    Value = this.diseaseEligibleDateString,
+                    Value = DiseaseEligibleDateString,
                 });
 
-            immzRecommendationResponse.Recommendations.Add(recommendationResponse);
-            return immzRecommendationResponse;
+            return recommendationResponse;
         }
     }
 }
