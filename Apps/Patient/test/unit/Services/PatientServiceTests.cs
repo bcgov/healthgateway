@@ -124,33 +124,14 @@ namespace HealthGateway.PatientTests.Services
 
         private static PatientModel? GetPatient(bool commonNameExists = true, bool legalNameExists = true, string? errorMessage = null)
         {
-            switch (errorMessage)
+            return errorMessage switch
             {
-                case ErrorMessages.ClientRegistryReturnedDeceasedPerson:
-                {
-                    return CreatePatient(deceased: true);
-                }
-
-                case ErrorMessages.InvalidServicesCard:
-                {
-                    return commonNameExists == false ? CreatePatient(commonNameExists: false, legalNameExists: false) : CreatePatient(string.Empty, string.Empty);
-                }
-
-                case ErrorMessages.PhnInvalid:
-                {
-                    return CreatePatient();
-                }
-
-                case ErrorMessages.ClientRegistryRecordsNotFound:
-                {
-                    return null;
-                }
-
-                default:
-                {
-                    return CreatePatient(commonNameExists: commonNameExists, legalNameExists: legalNameExists);
-                }
-            }
+                ErrorMessages.ClientRegistryReturnedDeceasedPerson => CreatePatient(deceased: true),
+                ErrorMessages.InvalidServicesCard => commonNameExists == false ? CreatePatient(commonNameExists: false, legalNameExists: false) : CreatePatient(string.Empty, string.Empty),
+                ErrorMessages.PhnInvalid => CreatePatient(),
+                ErrorMessages.ClientRegistryRecordsNotFound => null,
+                _ => CreatePatient(commonNameExists: commonNameExists, legalNameExists: legalNameExists),
+            };
 
             static PatientModel CreatePatient(string hdid = Hdid, string phn = Phn, bool commonNameExists = true, bool legalNameExists = true, bool deceased = false)
             {
