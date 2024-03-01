@@ -18,7 +18,6 @@ namespace HealthGateway.MedicationTests.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Security.Principal;
@@ -540,7 +539,7 @@ namespace HealthGateway.MedicationTests.Services
                     });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
             Mock<IMedicationStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -549,7 +548,7 @@ namespace HealthGateway.MedicationTests.Services
                 ResourcePayload = medicationHistoryPayloadExists
                     ? new MedicationHistoryResponse
                     {
-                        Results = Enumerable.Empty<MedicationResult>(),
+                        Results = [],
                         TotalRecords = 0,
                     }
                     : null,
@@ -609,7 +608,7 @@ namespace HealthGateway.MedicationTests.Services
                     });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
             Mock<IMedicationStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
