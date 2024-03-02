@@ -24,13 +24,6 @@ namespace HealthGateway.JobScheduler.Models
     public class RocketChatMessage
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RocketChatMessage"/> class.
-        /// </summary>
-        public RocketChatMessage()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the Emoji Icon for the message.
         /// </summary>
         [JsonPropertyName("icon_emoji")]
@@ -43,11 +36,9 @@ namespace HealthGateway.JobScheduler.Models
         public string? Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of attachments.
+        /// Gets or sets the collection of attachments.
         /// </summary>
         [JsonPropertyName("attachments")]
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IList<RocketChatAttachment>? Attachments { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IEnumerable<RocketChatAttachment> Attachments { get; set; } = [];
     }
 }
