@@ -148,7 +148,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(this.hdid, expected.HdId);
             Assert.True(actualResult.ResourcePayload?.HasTermsOfServiceUpdated);
-            Assert.True(actualResult.ResourcePayload?.LastLoginDateTimes.Count == 3);
+            Assert.Equal(3, actualResult.ResourcePayload?.LastLoginDateTimes.Count);
             Assert.Equal(userProfile.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[0]);
             Assert.Equal(userProfileHistoryMinus1.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[1]);
             Assert.Equal(userProfileHistoryMinus2.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[2]);
@@ -211,10 +211,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
             RequestResult<UserProfileModel> actualResult = await service.UpdateAcceptedTermsAsync(this.hdid, Guid.Empty);
 
-            Assert.True(actualResult.ResultStatus == resultStatus);
+            Assert.Equal(actualResult.ResultStatus, resultStatus);
             if (actualResult.ResultStatus == ResultType.Success)
             {
-                Assert.True(actualResult.ResourcePayload?.TermsOfServiceId == Guid.Empty);
+                Assert.Equal(Guid.Empty, actualResult.ResourcePayload?.TermsOfServiceId);
                 Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
             }
         }

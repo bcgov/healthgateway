@@ -139,7 +139,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
 
             // Assert
-            Assert.True(actual.ResultStatus == ResultType.ActionRequired);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
         }
 
         /// <summary>

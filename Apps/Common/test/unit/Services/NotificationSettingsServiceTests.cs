@@ -105,7 +105,7 @@ namespace HealthGateway.CommonTests.Services
                 mockJobClient.Object,
                 mockResourceDelegateDelegate.Object);
 
-            Assert.True(nsr.SmsVerificationCode == null);
+            Assert.Null(nsr.SmsVerificationCode);
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.QueueNotificationSettingsAsync(nsr));
         }

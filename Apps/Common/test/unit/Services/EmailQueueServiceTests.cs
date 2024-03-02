@@ -134,9 +134,9 @@ namespace HealthGateway.CommonTests.Services
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             expected.Id = actual.Id;
 
-            Assert.True(expected.To == actual.To);
-            Assert.True(expected.Subject == actual.Subject);
-            Assert.True(expected.Body == actual.Body);
+            Assert.Equal(expected.To, actual.To);
+            Assert.Equal(expected.Subject, actual.Subject);
+            Assert.Equal(expected.Body, actual.Body);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace HealthGateway.CommonTests.Services
 
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
 
-            Assert.True(actual.Body == expectedBody);
+            Assert.Equal(expectedBody, actual.Body);
         }
 
         /// <summary>

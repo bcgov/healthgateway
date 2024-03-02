@@ -125,7 +125,8 @@ namespace HealthGateway.EncounterTests.Controllers
             RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid, default);
 
             // Verify
-            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+            Assert.NotNull(actual);
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
 
             Assert.Equal(1, actual.ResourcePayload?.HospitalVisits.Count());
             Assert.Equal(1, actual.TotalResultCount);

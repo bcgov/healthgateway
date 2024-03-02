@@ -156,7 +156,7 @@ namespace HealthGateway.EncounterTests.Services
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
 
             if (canAccessDataSource)
             {
@@ -215,8 +215,8 @@ namespace HealthGateway.EncounterTests.Services
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
-            Assert.False(actualResult.ResourcePayload.Any());
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Empty(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace HealthGateway.EncounterTests.Services
             {
                 Assert.NotNull(actualResult.ResourcePayload);
                 Assert.Single(actualResult.ResourcePayload!.HospitalVisits);
-                Assert.True(actualResult.TotalResultCount == 1);
+                Assert.Equal(1, actualResult.TotalResultCount);
             }
             else
             {
@@ -350,7 +350,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Equal(0, actualResult.TotalResultCount);
             Assert.True(actualResult.ResourcePayload.Loaded);
             Assert.False(actualResult.ResourcePayload.Queued);
         }
@@ -390,8 +390,8 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
             Assert.True(actualResult.ResourcePayload!.Queued);
             Assert.False(actualResult.ResourcePayload!.Loaded);
-            Assert.True(actualResult.ResourcePayload!.RetryIn == PhsaBackOffMilliseconds);
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Equal(PhsaBackOffMilliseconds, actualResult.ResourcePayload!.RetryIn);
+            Assert.Equal(0, actualResult.TotalResultCount);
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Equal(0, actualResult.TotalResultCount);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

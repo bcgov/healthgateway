@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
                     ["PARAM3"] = "PARAM3",
                 });
 
-            Assert.True(result == expected);
+            Assert.Equal(expected, result);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldStripWhitespaceNull()
         {
-            Assert.True(StringManipulator.StripWhitespace(null) is null);
+            Assert.Null(StringManipulator.StripWhitespace(null));
         }
 
         /// <summary>

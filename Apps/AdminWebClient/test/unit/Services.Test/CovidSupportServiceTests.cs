@@ -56,7 +56,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         {
             CovidAssessmentDetailsResponse expectedResult = new();
             RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(expectedResult, false).GetCovidAssessmentDetailsAsync("BADPHN");
-            Assert.True(actualResult is { ResultStatus: ResultType.ActionRequired, ResultError: { } } && actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.True(actualResult is { ResultStatus: ResultType.ActionRequired, ResultError: not null });
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>

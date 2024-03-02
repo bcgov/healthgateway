@@ -36,7 +36,7 @@ namespace HealthGateway.CommonTests.Utils
 
             string actualDateStr = DateTimeFormatter.FormatDate(dt);
 
-            Assert.True(actualDateStr == expectedDateStr);
+            Assert.Equal(expectedDateStr, actualDateStr);
         }
 
         /// <summary>

@@ -110,7 +110,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             ActionResult<RequestResult<UserComment>> actualResult = await controller.Update(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             RequestResult<UserComment>? actualRequestResult = actualResult.Value;
-            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
+            Assert.NotNull(actualRequestResult);
+            Assert.Equal(ResultType.Success, actualRequestResult.ResultStatus);
             Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.UpdatedBy);
         }
 
