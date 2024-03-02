@@ -16,6 +16,7 @@
 namespace HealthGateway.ImmunizationTests.Controllers.Test
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
@@ -78,11 +79,11 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new(
-                    new LoadStateModel
-                        { RefreshInProgress = false },
-                    [event1, event2],
-                    []),
+                ResourcePayload = new()
+                {
+                    LoadState = new LoadStateModel { RefreshInProgress = false },
+                    Immunizations = [event1, event2],
+                },
             };
 
             Mock<IImmunizationService> svcMock = new();
@@ -95,7 +96,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            int count = actual.ResourcePayload?.Immunizations.Count ?? 0;
+            int count = actual.ResourcePayload?.Immunizations.Count() ?? 0;
             Assert.Equal(2, count);
         }
 

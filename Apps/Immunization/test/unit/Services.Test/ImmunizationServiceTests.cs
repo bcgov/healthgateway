@@ -92,10 +92,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new ImmunizationResult(
-                    MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
-                    delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
-                    []),
+                ResourcePayload = new ImmunizationResult
+                {
+                    LoadState = MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
+                    Immunizations = delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
+                },
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -116,8 +117,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             }
             else
             {
-                Assert.Equal(0, actualResult.ResourcePayload?.Immunizations.Count);
-                Assert.Equal(0, actualResult.ResourcePayload?.Recommendations.Count);
+                Assert.Empty(actualResult.ResourcePayload?.Immunizations);
+                Assert.Empty(actualResult.ResourcePayload?.Recommendations);
             }
         }
 
@@ -196,10 +197,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = immunizationResponse.ResultStatus,
-                ResourcePayload = new ImmunizationResult(
-                    MappingService.MapToLoadStateModel(immunizationResponse.ResourcePayload?.LoadState),
-                    [],
-                    MappingService.MapToImmunizationRecommendations(immunizationResponse.ResourcePayload?.Result?.Recommendations)),
+                ResourcePayload = new ImmunizationResult
+                {
+                    LoadState = MappingService.MapToLoadStateModel(immunizationResponse.ResourcePayload?.LoadState),
+                    Recommendations = MappingService.MapToImmunizationRecommendations(immunizationResponse.ResourcePayload?.Result?.Recommendations),
+                },
                 PageIndex = immunizationResponse.PageIndex,
                 PageSize = immunizationResponse.PageSize,
                 TotalResultCount = immunizationResponse.TotalResultCount,
@@ -217,7 +219,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             // Assert
             expectedResult.ShouldDeepEqual(actualResult);
-            ImmunizationRecommendation actualRecommendation = actualResult.ResourcePayload?.Recommendations[0]!;
+            ImmunizationRecommendation? actualRecommendation = actualResult.ResourcePayload?.Recommendations.First();
+            Assert.NotNull(actualRecommendation);
             Assert.Equal(RecommendationSetId, actualRecommendation.RecommendationSetId);
             Assert.Equal(VaccineName, actualRecommendation.Immunization.Name);
             Assert.Equal(AntigenName, actualRecommendation.Immunization.ImmunizationAgents.First().Name);
