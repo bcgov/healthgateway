@@ -57,8 +57,8 @@ namespace HealthGateway.EncounterTests.Delegates
             // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
             {
-                Result = new List<HospitalVisit>
-                {
+                Result =
+                [
                     new()
                     {
                         EncounterId = "123",
@@ -71,7 +71,7 @@ namespace HealthGateway.EncounterTests.Delegates
                         AdmitDateTime = null,
                         EndDateTime = null,
                     },
-                },
+                ],
             };
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();

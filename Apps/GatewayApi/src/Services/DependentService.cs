@@ -141,7 +141,7 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
             }
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid }, ct);
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync([dependentHdid], ct);
             int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
 
             return RequestResultFactory.Success(this.mappingService.MapToDependentModel(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount));

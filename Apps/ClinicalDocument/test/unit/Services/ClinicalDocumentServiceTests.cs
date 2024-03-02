@@ -210,8 +210,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             return new()
             {
-                Data = new List<PhsaClinicalDocumentRecord>
-                    { phsaClinicalDocumentRecord },
+                Data = [phsaClinicalDocumentRecord],
             };
         }
 

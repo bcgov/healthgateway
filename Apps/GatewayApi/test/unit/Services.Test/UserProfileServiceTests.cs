@@ -96,12 +96,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 LastLoginDateTime = newLoginDateTime.AddDays(-2),
             };
 
-            IList<UserProfileHistory> userProfileHistories = new List<UserProfileHistory>
-            {
+            IList<UserProfileHistory> userProfileHistories =
+            [
                 // Number of User Profile History records should match UserProfileHistoryRecordLimit value in UnitTest.json
                 userProfileHistoryMinus1,
                 userProfileHistoryMinus2,
-            };
+            ];
 
             LegalAgreement termsOfService = new()
             {

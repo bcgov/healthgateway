@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Delegates
 {
-    using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -141,16 +140,10 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 SmsEnabled = true,
                 SmsNumber = "5551231234",
-                SmsScope = new List<NotificationTarget>
-                {
-                    NotificationTarget.Covid19,
-                },
+                SmsScope = [NotificationTarget.Covid19],
                 EmailEnabled = true,
                 EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
-                EmailScope = new List<NotificationTarget>
-                {
-                    NotificationTarget.Covid19,
-                },
+                EmailScope = [NotificationTarget.Covid19],
                 SmsVerificationCode = "1234",
             };
         }

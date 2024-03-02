@@ -144,7 +144,7 @@ namespace HealthGateway.Encounter.Services
                     }
                     else
                     {
-                        result.ResourcePayload = new List<EncounterModel>();
+                        result.ResourcePayload = [];
                     }
                 }
             }

@@ -121,13 +121,13 @@ namespace HealthGateway.EncounterTests.Services
                 PageIndex = 1,
                 ResourcePayload = new MspVisitHistoryResponse
                 {
-                    Claims = new List<Claim>
-                    {
+                    Claims =
+                    [
                         this.sameClaim,
                         this.oddClaim,
                         this.sameClaim,
                         this.excludeClaim,
-                    },
+                    ],
                 },
             };
             string hdid = "MOCKHDID";
@@ -290,15 +290,15 @@ namespace HealthGateway.EncounterTests.Services
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
-                    Result = new List<HospitalVisit>
-                    {
+                    Result =
+                    [
                         new()
                         {
                             EncounterId = "Id",
                             AdmitDateTime = null,
                             EndDateTime = null,
                         },
-                    },
+                    ],
                 },
                 TotalResultCount = 1,
             };
