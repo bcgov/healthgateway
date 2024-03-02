@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(CategoryName, actualResult.ResourcePayload.CategoryName);
         }
 
@@ -140,8 +140,8 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.ResourcePayload.Count() == 1);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Single(actualResult.ResourcePayload);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(expectedId, actualResult.ResourcePayload.First().Id);
         }
 
@@ -163,8 +163,8 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(!actualResult.ResourcePayload.Any());
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Empty(actualResult.ResourcePayload);
+            Assert.Equal(0, actualResult.TotalResultCount);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(expectedId, actualResult.ResourcePayload.Id);
         }
 
@@ -292,7 +292,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(expectedId, actualResult.ResourcePayload.Id);
         }
 
