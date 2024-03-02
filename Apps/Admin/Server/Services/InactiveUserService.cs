@@ -158,7 +158,7 @@ public class InactiveUserService : IInactiveUserService
     }
 
     private void AddInactiveUser(
-        ICollection<AdminUserProfileView> inactiveUsers,
+        List<AdminUserProfileView> inactiveUsers,
         IEnumerable<AdminUserProfile> activeUserProfiles,
         ICollection<UserRepresentation> identityAccessUsers,
         IdentityAccessRole role)
