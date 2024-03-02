@@ -90,7 +90,7 @@ namespace HealthGateway.MedicationTests.Services
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IMedicationService service = new RestMedicationService(mockDelegate.Object);
-            IDictionary<string, MedicationInformation> actual = await service.GetMedicationsAsync(new List<string>());
+            IDictionary<string, MedicationInformation> actual = await service.GetMedicationsAsync([]);
             actual.ShouldDeepEqual(expected);
         }
 
@@ -139,7 +139,7 @@ namespace HealthGateway.MedicationTests.Services
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IMedicationService service = new RestMedicationService(mockDelegate.Object);
-            IDictionary<string, MedicationInformation> actual = await service.GetMedicationsAsync(new List<string>());
+            IDictionary<string, MedicationInformation> actual = await service.GetMedicationsAsync([]);
             actual.ShouldDeepEqual(expected);
         }
     }

@@ -63,11 +63,11 @@ namespace HealthGateway.MedicationTests.Services
             RequestResult<IList<MedicationRequest>> expectedDelegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<MedicationRequest>
-                {
+                ResourcePayload =
+                [
                     new() { ReferenceNumber = "abc" },
                     new() { ReferenceNumber = "xyz" },
-                },
+                ],
                 TotalResultCount = 2,
             };
 

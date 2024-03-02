@@ -55,8 +55,8 @@ namespace HealthGateway.MedicationTests.Controllers
             RequestResult<IList<MedicationStatement>> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<MedicationStatement>
-                {
+                ResourcePayload =
+                [
                     new()
                     {
                         PrescriptionIdentifier = "identifier",
@@ -92,7 +92,7 @@ namespace HealthGateway.MedicationTests.Controllers
                         },
                         PractitionerSurname = "Surname",
                     },
-                },
+                ],
             };
 
             Mock<IMedicationStatementService> svcMock = new();
