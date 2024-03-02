@@ -96,9 +96,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 LastLoginDateTime = newLoginDateTime.AddDays(-2),
             };
 
+            // Number of User Profile History records should match UserProfileHistoryRecordLimit value in UnitTest.json
             IList<UserProfileHistory> userProfileHistories =
             [
-                // Number of User Profile History records should match UserProfileHistoryRecordLimit value in UnitTest.json
                 userProfileHistoryMinus1,
                 userProfileHistoryMinus2,
             ];
