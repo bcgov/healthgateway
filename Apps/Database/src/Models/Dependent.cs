@@ -39,6 +39,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the allowed delegations for this dependent.
         /// </summary>
-        public IEnumerable<AllowedDelegation> AllowedDelegations { get; set; } = [];
+        public ICollection<AllowedDelegation> AllowedDelegations { get; set; } = [];
     }
 }

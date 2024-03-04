@@ -182,7 +182,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 UserFeedback userFeedback = userFeedbackResult.Payload;
 
-                userFeedback.Tags = adminTagResult.Payload.Select(t => new UserFeedbackTag { AdminTag = t, UserFeedback = userFeedback });
+                userFeedback.Tags = adminTagResult.Payload.Select(t => new UserFeedbackTag { AdminTag = t, UserFeedback = userFeedback }).ToList();
                 DbResult<UserFeedback> savedUserFeedbackResult = await feedbackDelegate.UpdateUserFeedbackWithTagAssociationsAsync(userFeedback, ct);
 
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)

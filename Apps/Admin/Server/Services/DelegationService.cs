@@ -180,7 +180,7 @@ namespace HealthGateway.Admin.Server.Services
                     })
                 .ToList();
 
-            dependent.AllowedDelegations = dependent.AllowedDelegations.Except(allowedDelegationsToDelete).Concat(allowedDelegationsToAdd);
+            dependent.AllowedDelegations = dependent.AllowedDelegations.Except(allowedDelegationsToDelete).Concat(allowedDelegationsToAdd).ToList();
 
             IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegatesAsync(dependent.HdId, ct);
 

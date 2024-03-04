@@ -467,13 +467,13 @@ namespace HealthGateway.Admin.Tests.Services
         private static bool AssertProtectedDependant(Dependent expected, Dependent actual)
         {
             Assert.Equal(expected.Protected, actual.Protected);
-            Assert.Equal(expected.AllowedDelegations.Count(), actual.AllowedDelegations.Count());
+            Assert.Equal(expected.AllowedDelegations.Count, actual.AllowedDelegations.Count);
             Assert.Equal(
-                !expected.AllowedDelegations.Any() ? null : expected.AllowedDelegations.First().DelegateHdId,
-                !actual.AllowedDelegations.Any() ? null : actual.AllowedDelegations.First().DelegateHdId);
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.First().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.First().DelegateHdId);
             Assert.Equal(
-                !expected.AllowedDelegations.Any() ? null : expected.AllowedDelegations.Last().DelegateHdId,
-                !actual.AllowedDelegations.Any() ? null : actual.AllowedDelegations.Last().DelegateHdId);
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.Last().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.Last().DelegateHdId);
             return true;
         }
 

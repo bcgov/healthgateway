@@ -63,6 +63,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the related list of tags.
         /// </summary>
-        public IEnumerable<UserFeedbackTag> Tags { get; set; } = [];
+        public ICollection<UserFeedbackTag> Tags { get; set; } = [];
     }
 }
