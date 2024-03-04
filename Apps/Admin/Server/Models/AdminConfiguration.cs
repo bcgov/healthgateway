@@ -27,7 +27,6 @@ namespace HealthGateway.Admin.Server.Models
         /// <summary>
         /// Gets or sets the enabled states of each toggleable feature.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, bool> Features { get; set; } = [];
 
         /// <summary>
@@ -43,7 +42,6 @@ namespace HealthGateway.Admin.Server.Models
         /// <summary>
         /// Gets or sets the ExternalUrls used by the Admin.
         /// </summary>
-#pragma warning disable CA2227 //disable read-only Dictionary
         public Dictionary<string, Uri> ExternalUrls { get; set; } = [];
 
         /// <summary>

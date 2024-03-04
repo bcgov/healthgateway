@@ -33,7 +33,6 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets features enabled for the application.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, bool> Features { get; set; } = [];
 
         /// <summary>

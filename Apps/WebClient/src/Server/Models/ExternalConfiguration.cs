@@ -44,7 +44,6 @@ namespace HealthGateway.WebClient.Server.Models
         /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, Uri> ServiceEndpoints { get; set; } = [];
     }
 }

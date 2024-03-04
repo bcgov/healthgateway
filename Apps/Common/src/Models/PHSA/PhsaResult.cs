@@ -33,7 +33,6 @@ namespace HealthGateway.Common.Models.PHSA
         /// <summary>
         /// Gets or sets the result section.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         [JsonPropertyName("result")]
         public T? Result { get; set; }
     }
