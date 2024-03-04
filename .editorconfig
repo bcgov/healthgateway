@@ -820,6 +820,14 @@ dotnet_diagnostic.SA1629.severity = none
 # IDE0058: Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = none
 
+[**/Store/**/*{Effects,Reducers}.cs]
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.cs1591.severity = none
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.sa1600.severity = none
+
 [**/{test,tests,Tests}/**.cs]
 
 # CA1506: Avoid excessive class coupling
@@ -830,14 +838,6 @@ dotnet_diagnostic.ca1859.severity = none
 
 # CA1869: Cache and reuse 'JsonSerializerOptions' instances
 dotnet_diagnostic.ca1869.severity = none
-
-# CS1591: Missing XML comment for publicly visible type or member
-dotnet_diagnostic.cs1591.severity = none
-
-# SA1600: Elements should be documented
-dotnet_diagnostic.sa1600.severity = none
-
-[**/Store/**/*{Effects,Reducers}.cs]
 
 # CS1591: Missing XML comment for publicly visible type or member
 dotnet_diagnostic.cs1591.severity = none
