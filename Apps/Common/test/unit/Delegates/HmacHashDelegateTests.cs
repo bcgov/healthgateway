@@ -113,7 +113,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedValue = "s+QcBH+1K1kIPk2GnGMPMJFzBVA=";
             IHash hash = HmacHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA1);
 
-            Assert.True(hash.Hash == expectedValue);
+            Assert.Equal(expectedValue, hash.Hash);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedValue = "eY+j2PXHewxRiVrz+ngCEfwHXqsmF151Y3M+xrL2HlM=";
             IHash hash = HmacHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA256);
 
-            Assert.True(hash.Hash == expectedValue);
+            Assert.Equal(expectedValue, hash.Hash);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedValue = "EYxkddpZRM2KTR+fjT8G9jA2bYtjUMSrr8CfOgWyI2VXUYU3LrPPC2F9kVx7mRoGR0YaDEZppXXvkgCymDKWJQ==";
             IHash hash = HmacHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt));
 
-            Assert.True(hash.Hash == expectedValue);
+            Assert.Equal(expectedValue, hash.Hash);
         }
 
         /// <summary>

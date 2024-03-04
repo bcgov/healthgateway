@@ -45,10 +45,7 @@ namespace AccountDataAccessTest
                 OperationCode = AuditOperation.ChangeDataSourceAccess,
                 GroupCode = AuditGroup.BlockedAccess,
             };
-            IEnumerable<AgentAudit> agentAudits = new List<AgentAudit>
-            {
-                audit,
-            };
+            IList<AgentAudit> agentAudits = [audit];
 
             AgentAuditQuery query = new(Hdid, AuditGroup.BlockedAccess);
             AuditRepository auditRepository = GetAuditRepository(agentAudits);

@@ -25,23 +25,6 @@ namespace HealthGateway.Common.Models.BCMailPlus
     public class BcmpVaccineProofQuery
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BcmpVaccineProofQuery"/> class.
-        /// </summary>
-        public BcmpVaccineProofQuery()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BcmpVaccineProofQuery"/> class.
-        /// </summary>
-        /// <param name="templates">The list of templates.</param>
-        [JsonConstructor]
-        public BcmpVaccineProofQuery(IList<VaccineProofTemplate> templates)
-        {
-            this.Templates = templates;
-        }
-
-        /// <summary>
         /// Gets or sets the schema version associated with the request.
         /// </summary>
         [JsonPropertyName("schemaVersion")]
@@ -66,10 +49,10 @@ namespace HealthGateway.Common.Models.BCMailPlus
         public BcmpSmartHealthCard SmartHealthCard { get; set; } = new();
 
         /// <summary>
-        /// Gets the templates that will be used to generate the document.
+        /// Gets or sets the templates that will be used to generate the document.
         /// </summary>
         [JsonPropertyName("templates")]
-        public IList<VaccineProofTemplate> Templates { get; } = new List<VaccineProofTemplate>();
+        public IEnumerable<VaccineProofTemplate> Templates { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the address where the document should be mailed.

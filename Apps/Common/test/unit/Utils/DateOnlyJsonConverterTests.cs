@@ -39,7 +39,7 @@ namespace HealthGateway.CommonTests.Utils
                 Converters = { new DateOnlyJsonConverter() },
             };
             string text = JsonSerializer.Serialize(date, options);
-            Assert.True(text == $@"""{dateStr}""");
+            Assert.Equal($@"""{dateStr}""", text);
         }
 
         /// <summary>

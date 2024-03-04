@@ -56,7 +56,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         {
             CovidAssessmentDetailsResponse expectedResult = new();
             RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(expectedResult, false).GetCovidAssessmentDetailsAsync("BADPHN");
-            Assert.True(actualResult is { ResultStatus: ResultType.ActionRequired, ResultError: { } } && actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.True(actualResult is { ResultStatus: ResultType.ActionRequired, ResultError: not null });
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         {
             CovidAssessmentDetailsResponse expectedResult = new();
             RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(expectedResult, true).GetCovidAssessmentDetailsAsync(Phn);
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 Phn = Phn,
             };
             RequestResult<CovidAssessmentResponse> actualResult = await GetCovidSupportService(expectedResult, false).SubmitCovidAssessmentAsync(request);
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
         /// <summary>
@@ -100,7 +101,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 Phn = Phn,
             };
             RequestResult<CovidAssessmentResponse> actualResult = await GetCovidSupportService(expectedResult, true).SubmitCovidAssessmentAsync(request);
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             httpClient.BaseAddress = new Uri(baseEndpoint);
 
             RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(httpClient).GetCovidAssessmentDetailsAsync(Phn);
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

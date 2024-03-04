@@ -96,12 +96,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 LastLoginDateTime = newLoginDateTime.AddDays(-2),
             };
 
-            IList<UserProfileHistory> userProfileHistories = new List<UserProfileHistory>
-            {
-                // Number of User Profile History records should match UserProfileHistoryRecordLimit value in UnitTest.json
+            // Number of User Profile History records should match UserProfileHistoryRecordLimit value in UnitTest.json
+            IList<UserProfileHistory> userProfileHistories =
+            [
                 userProfileHistoryMinus1,
                 userProfileHistoryMinus2,
-            };
+            ];
 
             LegalAgreement termsOfService = new()
             {
@@ -148,7 +148,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(this.hdid, expected.HdId);
             Assert.True(actualResult.ResourcePayload?.HasTermsOfServiceUpdated);
-            Assert.True(actualResult.ResourcePayload?.LastLoginDateTimes.Count == 3);
+            Assert.Equal(3, actualResult.ResourcePayload?.LastLoginDateTimes.Count);
             Assert.Equal(userProfile.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[0]);
             Assert.Equal(userProfileHistoryMinus1.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[1]);
             Assert.Equal(userProfileHistoryMinus2.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[2]);
@@ -211,10 +211,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
             RequestResult<UserProfileModel> actualResult = await service.UpdateAcceptedTermsAsync(this.hdid, Guid.Empty);
 
-            Assert.True(actualResult.ResultStatus == resultStatus);
+            Assert.Equal(actualResult.ResultStatus, resultStatus);
             if (actualResult.ResultStatus == ResultType.Success)
             {
-                Assert.True(actualResult.ResourcePayload?.TermsOfServiceId == Guid.Empty);
+                Assert.Equal(Guid.Empty, actualResult.ResourcePayload?.TermsOfServiceId);
                 Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
             }
         }
@@ -788,7 +788,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <returns>IConfigurationRoot instance.</returns>
         private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string?> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? [];
 
             return new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json", true)

@@ -25,22 +25,6 @@ namespace HealthGateway.WebClient.Server.Models
     public class OfflineModeConfiguration
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OfflineModeConfiguration"/> class.
-        /// </summary>
-        public OfflineModeConfiguration()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OfflineModeConfiguration"/> class.
-        /// </summary>
-        /// <param name="whitelist">The initialied list of whitelisted ip addresses.</param>
-        public OfflineModeConfiguration(IList<string> whitelist)
-        {
-            this.Whitelist = whitelist;
-        }
-
-        /// <summary>
         /// Gets or sets the beginning datetime for the offline mode.
         /// </summary>
         public DateTime StartDateTime { get; set; } = DateTime.MinValue;
@@ -58,8 +42,8 @@ namespace HealthGateway.WebClient.Server.Models
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the list of IPs that can use the webclient during an outage.
+        /// Gets or sets the collection of IPs that can use the webclient during an outage.
         /// </summary>
-        public IList<string> Whitelist { get; } = new List<string>();
+        public IEnumerable<string> Whitelist { get; set; } = [];
     }
 }

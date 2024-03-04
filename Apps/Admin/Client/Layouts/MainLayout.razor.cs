@@ -177,7 +177,7 @@ namespace HealthGateway.Admin.Client.Layouts
             }
 
             // try to refresh token
-            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken();
+            AccessTokenResult tokenResult = await this.AccessTokenProvider.RequestAccessToken();
             if (tokenResult.TryGetToken(out _))
             {
                 return;
@@ -190,7 +190,7 @@ namespace HealthGateway.Admin.Client.Layouts
         private async void HandleTokenRefreshAsync(object? sender, ElapsedEventArgs e)
         {
             // try to refresh token
-            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken();
+            AccessTokenResult tokenResult = await this.AccessTokenProvider.RequestAccessToken();
             if (tokenResult.TryGetToken(out _))
             {
                 return;

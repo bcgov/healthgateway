@@ -66,7 +66,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
     {
         IMessageSender sender = this.TestServices.GetRequiredService<IMessageSender>();
 
-        foreach (var messages in messageGroups)
+        foreach (IEnumerable<TestMessage> messages in messageGroups)
         {
             await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct);
         }
@@ -86,7 +86,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
 
     private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
     {
-        ConcurrentBag<MessageEnvelope> receivedMessages = new();
+        ConcurrentBag<MessageEnvelope> receivedMessages = [];
         await this.receiver.SubscribeAsync(
             async (_, messages) => await Task.Run(
                 () =>

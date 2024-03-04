@@ -118,12 +118,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static IList<WebAlert> GetExpectedWebAlerts()
         {
-            return new List<WebAlert>
-            {
+            return
+            [
                 GetActiveWebAlert("1"),
                 GetActiveWebAlert("2"),
                 GetActiveWebAlert("3"),
-            };
+            ];
         }
 
         private static PhsaWebAlert GetActivePhsaWebAlert(string label)
@@ -173,14 +173,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static IList<PhsaWebAlert> GetPhsaWebAlerts()
         {
-            return new List<PhsaWebAlert>
-            {
+            return
+            [
                 GetActivePhsaWebAlert("1"),
                 GetExpiredPhsaWebAlert(),
                 GetActivePhsaWebAlert("2"),
                 GetFuturePhsaWebAlert(),
                 GetActivePhsaWebAlert("3"),
-            };
+            ];
         }
 
         private static IPersonalAccountsService GetPersonalAccountsService()

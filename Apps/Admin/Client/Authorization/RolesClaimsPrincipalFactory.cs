@@ -42,7 +42,7 @@ namespace HealthGateway.Admin.Client.Authorization
             RemoteUserAccount account,
             RemoteAuthenticationUserOptions options)
         {
-            ClaimsPrincipal? user = await base.CreateUserAsync(account, options);
+            ClaimsPrincipal user = await base.CreateUserAsync(account, options);
             if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 return user;
@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Client.Authorization
                 identity.RemoveClaim(existingClaim);
             }
 
-            object? rolesElem = account.AdditionalProperties["roles"];
+            object rolesElem = account.AdditionalProperties["roles"];
             if (rolesElem is not JsonElement roles)
             {
                 return user;

@@ -49,8 +49,8 @@ namespace HealthGateway.EncounterTests.Controllers
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new List<EncounterModel>
-                {
+                ResourcePayload =
+                [
                     new()
                     {
                         Id = "1",
@@ -73,7 +73,7 @@ namespace HealthGateway.EncounterTests.Controllers
                             Name = "LOCATION NAME",
                         },
                     },
-                },
+                ],
             };
 
             Mock<IEncounterService> svcMock = new();
@@ -104,15 +104,15 @@ namespace HealthGateway.EncounterTests.Controllers
                 TotalResultCount = 1,
                 ResourcePayload = new HospitalVisitResult
                 {
-                    HospitalVisits = new List<HospitalVisitModel>
-                    {
+                    HospitalVisits =
+                    [
                         new()
                         {
                             EncounterId = "123",
                             AdmitDateTime = DateTime.Now,
                             EndDateTime = DateTime.Now.AddDays(10),
                         },
-                    },
+                    ],
                 },
             };
 
@@ -125,7 +125,8 @@ namespace HealthGateway.EncounterTests.Controllers
             RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid, default);
 
             // Verify
-            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+            Assert.NotNull(actual);
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
 
             Assert.Equal(1, actual.ResourcePayload?.HospitalVisits.Count());
             Assert.Equal(1, actual.TotalResultCount);

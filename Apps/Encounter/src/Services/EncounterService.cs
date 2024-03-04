@@ -88,7 +88,7 @@ namespace HealthGateway.Encounter.Services
                 ?
                 .Split(',')
                 .Select(s => s.Trim())
-                .ToList() ?? new List<string>();
+                .ToList() ?? [];
         }
 
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
@@ -144,7 +144,7 @@ namespace HealthGateway.Encounter.Services
                     }
                     else
                     {
-                        result.ResourcePayload = new List<EncounterModel>();
+                        result.ResourcePayload = [];
                     }
                 }
             }

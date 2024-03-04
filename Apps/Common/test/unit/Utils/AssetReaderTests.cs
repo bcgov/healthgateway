@@ -36,7 +36,7 @@ namespace HealthGateway.CommonTests.Utils
 
             string? actualResult = AssetReader.Read(noAsset);
 
-            Assert.True(actualResult == null);
+            Assert.Null(actualResult);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace HealthGateway.CommonTests.Utils
 
             string? actualResult = AssetReader.Read("HealthGateway.CommonTests.MockAsset.txt");
 
-            Assert.True(actualResult == mockAssetContent);
+            Assert.Equal(mockAssetContent, actualResult);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace HealthGateway.CommonTests.Utils
 
             string? actualResult = AssetReader.Read("HealthGateway.CommonTests.MockAsset.txt", true);
 
-            Assert.True(mockAssetContentEncoded == actualResult);
+            Assert.Equal(mockAssetContentEncoded, actualResult);
         }
     }
 }

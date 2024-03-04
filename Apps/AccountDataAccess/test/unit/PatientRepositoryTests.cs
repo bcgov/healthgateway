@@ -250,11 +250,7 @@ namespace AccountDataAccessTest
 
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
             Mock<IMessageSender> messageSender = new();
-            HashSet<DataSource> dataSources = new()
-            {
-                DataSource.Immunization,
-                DataSource.Medication,
-            };
+            HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
 
             BlockedAccess blockedAccess = new()
             {
@@ -310,11 +306,7 @@ namespace AccountDataAccessTest
             // Arrange
             string hdid = Hdid;
 
-            HashSet<DataSource> dataSources = new()
-            {
-                DataSource.Immunization,
-                DataSource.Medication,
-            };
+            HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
 
             BlockedAccess blockedAccess = new()
             {
@@ -344,10 +336,7 @@ namespace AccountDataAccessTest
             BlockedAccess blockedAccess = new()
             {
                 Hdid = hdid,
-                DataSources = new HashSet<DataSource>
-                {
-                    DataSource.Immunization, DataSource.Medication,
-                },
+                DataSources = [DataSource.Immunization, DataSource.Medication],
             };
 
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
@@ -369,11 +358,7 @@ namespace AccountDataAccessTest
             // Arrange
             string hdid = Hdid;
 
-            HashSet<DataSource> dataSources = new()
-            {
-                DataSource.Immunization,
-                DataSource.Medication,
-            };
+            HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
 
             BlockedAccess blockedAccess = new()
             {

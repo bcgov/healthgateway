@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Extensions
 {
-    using System.Linq;
+    using System;
     using System.Security.Claims;
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace HealthGateway.Common.Data.Extensions
         /// <returns>true if claims principal is in any of the specified roles; otherwise, false.</returns>
         public static bool IsInAnyRole(this ClaimsPrincipal? user, params string[] roles)
         {
-            return user != null && roles.Any(user.IsInRole);
+            return user != null && Array.Exists(roles, user.IsInRole);
         }
     }
 }

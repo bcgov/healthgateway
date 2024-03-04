@@ -16,7 +16,6 @@
 namespace HealthGateway.EncounterTests.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -67,8 +66,8 @@ namespace HealthGateway.EncounterTests.Delegates
                     Id = expectedMspHistoryResponseId,
                     Pages = 1,
                     TotalRecords = 1,
-                    Claims = new List<Claim>
-                    {
+                    Claims =
+                    [
                         new()
                         {
                             ClaimId = expectedClaimId,
@@ -94,7 +93,7 @@ namespace HealthGateway.EncounterTests.Delegates
                                 Province = "BC",
                             },
                         },
-                    },
+                    ],
                 },
             };
 

@@ -24,28 +24,10 @@ namespace HealthGateway.Common.Models.PHSA.Recommendation
     public class RecommendationResponse
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecommendationResponse"/> class.
-        /// </summary>
-        public RecommendationResponse()
-        {
-            this.DateCriterions = new List<DateCriterion>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RecommendationResponse"/> class.
-        /// </summary>
-        /// <param name="dateCriterions">The initialized list of dateCriterions.</param>
-        [JsonConstructor]
-        public RecommendationResponse(IList<DateCriterion> dateCriterions)
-        {
-            this.DateCriterions = dateCriterions;
-        }
-
-        /// <summary>
-        /// Gets the Date Criterion.
+        /// Gets or sets the collection of date criterions.
         /// </summary>
         [JsonPropertyName("dateCriterion")]
-        public IList<DateCriterion> DateCriterions { get; }
+        public IEnumerable<DateCriterion> DateCriterions { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the Forecast Status.

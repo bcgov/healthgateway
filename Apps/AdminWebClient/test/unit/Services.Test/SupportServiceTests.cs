@@ -257,14 +257,14 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                             PersonalHealthNumber = Phn,
                             PhysicalAddress = new()
                             {
-                                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
+                                StreetLines = ["1025 Sutlej Street", "Suite 310"],
                                 City = "Victoria",
                                 State = "BC",
                                 PostalCode = "V8V2V8",
                             },
                             PostalAddress = new()
                             {
-                                StreetLines = new List<string> { "1535 Belcher Avenue", "Suite 202" },
+                                StreetLines = ["1535 Belcher Avenue", "Suite 202"],
                                 City = "Victoria",
                                 State = "BC",
                                 PostalCode = "V8R4N2",
@@ -316,20 +316,20 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
         private static IList<UserProfile> GetUserProfiles()
         {
-            return new List<UserProfile>
-            {
+            return
+            [
                 new()
                 {
                     HdId = Hdid,
                     LastLoginDateTime = DateTime.UtcNow,
                 },
-            };
+            ];
         }
 
         private static IList<MessagingVerification> GetVerifications()
         {
-            return new List<MessagingVerification>
-            {
+            return
+            [
                 new()
                 {
                     Id = Guid.NewGuid(),
@@ -345,7 +345,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                         To = Email,
                     },
                 },
-            };
+            ];
         }
 
         private static ISupportService CreateSupportService(IList<MessagingVerification> verificationResult)
@@ -372,7 +372,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileResult);
             mockUserProfileDelegate.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfilesResult ?? new List<UserProfile>());
+                .ReturnsAsync(userProfilesResult ?? []);
 
             return CreateSupportService(
                 mockUserProfileDelegate,

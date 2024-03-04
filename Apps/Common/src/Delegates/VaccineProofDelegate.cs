@@ -91,6 +91,7 @@ namespace HealthGateway.Common.Delegates
                 Operation = "Mail",
                 VaccineStatus = request.Status,
                 SmartHealthCard = new BcmpSmartHealthCard { QrCode = request.SmartHealthCardQr },
+                Templates = [vaccineProofTemplate],
                 Address = new()
                 {
                     AddressLine1 = address.StreetLines.FirstOrDefault() ?? string.Empty,
@@ -101,7 +102,6 @@ namespace HealthGateway.Common.Delegates
                     Country = address.Country,
                 },
             };
-            vaccineProofQuery.Templates.Add(vaccineProofTemplate);
 
             using StringContent httpContent = new(JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -150,8 +150,8 @@ namespace HealthGateway.Common.Delegates
                 Operation = "Generate",
                 VaccineStatus = request.Status,
                 SmartHealthCard = new BcmpSmartHealthCard { QrCode = request.SmartHealthCardQr },
+                Templates = [vaccineProofTemplate],
             };
-            vaccineProofQuery.Templates.Add(vaccineProofTemplate);
 
             string payload = JsonSerializer.Serialize(vaccineProofQuery);
             using StringContent httpContent = new(payload, Encoding.UTF8, MediaTypeNames.Application.Json);

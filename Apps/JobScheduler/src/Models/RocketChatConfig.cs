@@ -23,13 +23,6 @@ namespace HealthGateway.JobScheduler.Models
     public class RocketChatConfig
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RocketChatConfig"/> class.
-        /// </summary>
-        public RocketChatConfig()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the Rocket Chat Message to be posted.
         /// </summary>
         public RocketChatMessage? Message { get; set; }

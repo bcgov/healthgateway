@@ -49,7 +49,7 @@ public partial class AuthenticationPage : ComponentBase
         if (this.Action == "logout-callback" && authState.User.Identity is { IsAuthenticated: true })
         {
             string loginPath = this.OptionsSnapshot.Get(Options.DefaultName).AuthenticationPaths.LogInPath;
-            this.NavigationManager.NavigateTo(loginPath ?? "/", replace: true);
+            this.NavigationManager.NavigateTo(loginPath, replace: true);
         }
     }
 

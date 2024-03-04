@@ -181,19 +181,8 @@ namespace HealthGateway.Admin.Server.Services
             if (userFeedbackResult.Status == DbStatusCode.Read && adminTagResult.Status == DbStatusCode.Read)
             {
                 UserFeedback userFeedback = userFeedbackResult.Payload;
-                IEnumerable<AdminTag> adminTags = adminTagResult.Payload;
-                IEnumerable<UserFeedbackTag> feedbackTags = adminTags.Select(t => new UserFeedbackTag { AdminTag = t, UserFeedback = userFeedback });
 
-                userFeedback.Tags.Clear();
-                foreach (UserFeedbackTag userFeedbackTag in feedbackTags)
-                {
-                    userFeedback.Tags.Add(userFeedbackTag);
-                    logger.LogDebug(
-                        "User feedback tag added for admin tag id: {AdminTagId} and user feedback id: {FeedbackTagExists}",
-                        userFeedbackTag.AdminTagId,
-                        userFeedbackTag.UserFeedbackId);
-                }
-
+                userFeedback.Tags = adminTagResult.Payload.Select(t => new UserFeedbackTag { AdminTag = t, UserFeedback = userFeedback }).ToList();
                 DbResult<UserFeedback> savedUserFeedbackResult = await feedbackDelegate.UpdateUserFeedbackWithTagAssociationsAsync(userFeedback, ct);
 
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)

@@ -190,7 +190,7 @@ export interface IDateWrapper {
  * Centralizes date operations and modifications while abstracting library specific implementations.
  */
 export class DateWrapper implements IDateWrapper {
-    static defaultFormat = "yyyy-MMM-dd";
+    static readonly defaultFormat = "yyyy-MMM-dd";
 
     /**
      * Internal object that holds date and time logic.
