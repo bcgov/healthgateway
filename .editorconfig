@@ -820,6 +820,11 @@ dotnet_diagnostic.SA1629.severity = none
 # IDE0058: Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = none
 
+[**/Models/**.cs]
+
+# CA2227: Collection properties should be read only
+dotnet_diagnostic.ca2227.severity = none
+
 [**/Store/**/*{Effects,Reducers}.cs]
 
 # CS1591: Missing XML comment for publicly visible type or member
