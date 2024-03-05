@@ -33,6 +33,6 @@ namespace HealthGateway.Common.Models.Immunization
         /// Gets or sets the Immunization Agents.
         /// </summary>
         [JsonPropertyName("immunizationAgents")]
-        public IEnumerable<ImmunizationAgent> ImmunizationAgents { get; set; } = new List<ImmunizationAgent>();
+        public IEnumerable<ImmunizationAgent> ImmunizationAgents { get; set; } = [];
     }
 }

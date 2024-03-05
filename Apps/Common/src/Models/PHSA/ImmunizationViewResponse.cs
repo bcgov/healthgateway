@@ -82,6 +82,6 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the Immunization Agents.
         /// </summary>
         [JsonPropertyName("immunizationAgents")]
-        public IEnumerable<ImmunizationAgentResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentResponse>();
+        public IEnumerable<ImmunizationAgentResponse> ImmunizationAgents { get; set; } = [];
     }
 }

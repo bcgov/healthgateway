@@ -40,10 +40,7 @@ public class PatientRepositoryBlockAccessTests : ScenarioContextBase<Program>
         await this.Host.Scenario(
             scenario =>
             {
-                scenario.Put.Json(
-                        new BlockAccessRequest(
-                            new List<DataSource> { DataSource.ClinicalDocument },
-                            "Block data source for integration test."))
+                scenario.Put.Json(new BlockAccessRequest([DataSource.ClinicalDocument], "Block data source for integration test."))
                     .ToUrl($"/v1/api/Support/{this.hdid}/BlockAccess");
                 scenario.StatusCodeShouldBeOk();
             });

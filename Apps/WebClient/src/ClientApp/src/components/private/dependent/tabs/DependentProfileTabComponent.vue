@@ -22,8 +22,9 @@ function formatDate(date: StringISODate): string {
 <template>
     <v-row class="text-body-1">
         <v-col xl="3" md="4" sm="6">
-            <label>PHN</label>
+            <label :for="`dependent-phn-${dependent.ownerId}`">PHN</label>
             <v-text-field
+                :id="`dependent-phn-${dependent.ownerId}`"
                 density="compact"
                 :value="dependent.dependentInformation.PHN"
                 data-testid="dependent-phn"
@@ -33,8 +34,11 @@ function formatDate(date: StringISODate): string {
             />
         </v-col>
         <v-col xl="3" md="4" sm="6">
-            <label>Date of Birth</label>
+            <label :for="`dependent-dob-${dependent.ownerId}`"
+                >Date of Birth</label
+            >
             <v-text-field
+                :id="`dependent-dob-${dependent.ownerId}`"
                 density="compact"
                 :value="formatDate(dependent.dependentInformation.dateOfBirth)"
                 data-testid="dependent-date-of-birth"
@@ -44,8 +48,11 @@ function formatDate(date: StringISODate): string {
             />
         </v-col>
         <v-col xl="3" md="4" sm="6">
-            <label>How Many Others Have Access</label>
+            <label :for="`dependent-other-delegate-count-${dependent.ownerId}`"
+                >How Many Others Have Access</label
+            >
             <v-text-field
+                :id="`dependent-other-delegate-count-${dependent.ownerId}`"
                 density="compact"
                 :value="otherDelegateCount"
                 data-testid="dependent-other-delegate-count"

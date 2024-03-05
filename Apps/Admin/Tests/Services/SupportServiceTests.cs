@@ -629,11 +629,11 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientsByEmail()
         {
             // Arrange
-            List<UserProfile> profiles = new()
-            {
+            List<UserProfile> profiles =
+            [
                 new() { HdId = Hdid, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3)), LastLoginDateTime = DateTime.Now },
                 new() { HdId = Hdid2, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(5)), LastLoginDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(1)) },
-            };
+            ];
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
             PatientDetailsQuery firstQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
@@ -671,11 +671,11 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientsBySms()
         {
             // Arrange
-            List<UserProfile> profiles = new()
-            {
+            List<UserProfile> profiles =
+            [
                 new() { HdId = Hdid, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3)), LastLoginDateTime = DateTime.Now },
                 new() { HdId = Hdid2, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(5)), LastLoginDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(1)) },
-            };
+            ];
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
             PatientDetailsQuery firstQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };

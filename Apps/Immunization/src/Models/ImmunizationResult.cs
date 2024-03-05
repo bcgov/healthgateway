@@ -25,42 +25,21 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationResult"/> class.
-        /// </summary>
-        public ImmunizationResult()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationResult"/> class.
-        /// </summary>
-        /// <param name="loadState">The load state model.</param>
-        /// <param name="immunizations">The list of immunizations.</param>
-        /// <param name="recommendations">The list of recommendations.</param>
-        [JsonConstructor]
-        public ImmunizationResult(LoadStateModel loadState, IList<ImmunizationEvent> immunizations, IList<ImmunizationRecommendation> recommendations)
-        {
-            this.LoadState = loadState;
-            this.Immunizations = immunizations;
-            this.Recommendations = recommendations;
-        }
-
-        /// <summary>
         /// Gets or sets the Load State.
         /// </summary>
         [JsonPropertyName("loadState")]
         public LoadStateModel LoadState { get; set; } = new();
 
         /// <summary>
-        /// Gets the list of Immunizations events.
+        /// Gets or sets the collection of immunization events.
         /// </summary>
         [JsonPropertyName("immunizations")]
-        public IList<ImmunizationEvent> Immunizations { get; } = [];
+        public IEnumerable<ImmunizationEvent> Immunizations { get; set; } = [];
 
         /// <summary>
-        /// Gets the list of Immunizations recommendations.
+        /// Gets or sets the collection of immunization recommendations.
         /// </summary>
         [JsonPropertyName("recommendations")]
-        public IList<ImmunizationRecommendation> Recommendations { get; } = [];
+        public IEnumerable<ImmunizationRecommendation> Recommendations { get; set; } = [];
     }
 }

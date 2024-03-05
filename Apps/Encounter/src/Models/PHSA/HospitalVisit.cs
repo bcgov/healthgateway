@@ -70,6 +70,6 @@ namespace HealthGateway.Encounter.Models.PHSA
         /// Gets or sets the list of clinicians.
         /// </summary>
         [JsonPropertyName("clinicians")]
-        public IEnumerable<Clinician> Clinicians { get; set; } = new List<Clinician>();
+        public IEnumerable<Clinician> Clinicians { get; set; } = [];
     }
 }

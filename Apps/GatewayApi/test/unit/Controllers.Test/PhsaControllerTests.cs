@@ -95,7 +95,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
         private static IEnumerable<GetDependentResponse> GetMockDependentResponses()
         {
-            List<GetDependentResponse> dependentResponses = new();
+            List<GetDependentResponse> dependentResponses = [];
 
             for (int i = 0; i < 10; i++)
             {
@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
         private static IEnumerable<DependentModel> GetMockDependentModels()
         {
-            List<DependentModel> dependentModels = new();
+            List<DependentModel> dependentModels = [];
 
             for (int i = 0; i < 10; i++)
             {

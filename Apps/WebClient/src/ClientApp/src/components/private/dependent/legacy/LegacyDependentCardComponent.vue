@@ -754,8 +754,12 @@ watch(vaccineRecordState, () => {
                         <div v-else>
                             <v-row class="text-body-1">
                                 <v-col xl="3" md="4" sm="6">
-                                    <label>PHN</label>
+                                    <label
+                                        :for="`dependent-phn-${dependent.ownerId}`"
+                                        >PHN</label
+                                    >
                                     <v-text-field
+                                        :id="`dependent-phn-${dependent.ownerId}`"
                                         density="compact"
                                         :value="
                                             dependent.dependentInformation.PHN
@@ -767,8 +771,12 @@ watch(vaccineRecordState, () => {
                                     />
                                 </v-col>
                                 <v-col xl="3" md="4" sm="6">
-                                    <label>Date of Birth</label>
+                                    <label
+                                        :for="`dependent-dob-${dependent.ownerId}`"
+                                        >Date of Birth</label
+                                    >
                                     <v-text-field
+                                        :id="`dependent-dob-${dependent.ownerId}`"
                                         density="compact"
                                         :value="
                                             formatDate(

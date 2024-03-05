@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             if (user.Identity != null && user.Identity.IsAuthenticated)
             {
-                AccessTokenResult? tokenResult = await this.TokenProvider.RequestAccessToken();
+                AccessTokenResult tokenResult = await this.TokenProvider.RequestAccessToken();
                 tokenResult.TryGetToken(out AccessToken? accessToken);
                 this.Token = accessToken?.Value;
 

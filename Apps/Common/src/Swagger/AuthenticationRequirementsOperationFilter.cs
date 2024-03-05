@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Swagger
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
@@ -36,7 +35,7 @@ namespace HealthGateway.Common.Swagger
         [ExcludeFromCodeCoverage]
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            operation.Security ??= new List<OpenApiSecurityRequirement>();
+            operation.Security ??= [];
 
             if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor cad)
             {
@@ -51,11 +50,7 @@ namespace HealthGateway.Common.Swagger
                         Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" },
                     };
 
-                    operation.Security.Add(
-                        new()
-                        {
-                            { securityScheme, Array.Empty<string>() },
-                        });
+                    operation.Security.Add(new() { { securityScheme, Array.Empty<string>() } });
                 }
             }
         }

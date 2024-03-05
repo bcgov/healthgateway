@@ -70,9 +70,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new PhsaResult<ImmunizationResponse>
                 {
-                    LoadState = new PhsaLoadState
-                        { RefreshInProgress = false },
-                    Result = new ImmunizationResponse(
+                    LoadState = new PhsaLoadState { RefreshInProgress = false },
+                    Result = new ImmunizationResponse
+                    {
+                        ImmunizationViews =
                         [
                             new()
                             {
@@ -82,7 +83,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                                 SourceSystemId = "MockSourceID",
                             },
                         ],
-                        []),
+                    },
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -91,10 +92,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new ImmunizationResult(
-                    MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
-                    delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
-                    []),
+                ResourcePayload = new ImmunizationResult
+                {
+                    LoadState = MappingService.MapToLoadStateModel(delegateResult.ResourcePayload.LoadState),
+                    Immunizations = delegateResult.ResourcePayload.Result.ImmunizationViews.Select(MappingService.MapToImmunizationEvent).ToList(),
+                },
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -115,8 +117,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             }
             else
             {
-                Assert.Equal(0, actualResult.ResourcePayload?.Immunizations.Count);
-                Assert.Equal(0, actualResult.ResourcePayload?.Recommendations.Count);
+                Assert.Empty(actualResult.ResourcePayload?.Immunizations);
+                Assert.Empty(actualResult.ResourcePayload?.Recommendations);
             }
         }
 
@@ -139,8 +141,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = expectedResultType == ResultType.Success
                     ? new PhsaResult<ImmunizationViewResponse>
                     {
-                        LoadState = new PhsaLoadState
-                            { RefreshInProgress = false },
+                        LoadState = new PhsaLoadState { RefreshInProgress = false },
                         Result = new ImmunizationViewResponse
                         {
                             Id = Guid.NewGuid(),
@@ -196,10 +197,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = immunizationResponse.ResultStatus,
-                ResourcePayload = new ImmunizationResult(
-                    MappingService.MapToLoadStateModel(immunizationResponse.ResourcePayload?.LoadState),
-                    [],
-                    MappingService.MapToImmunizationRecommendations(immunizationResponse.ResourcePayload?.Result?.Recommendations)),
+                ResourcePayload = new ImmunizationResult
+                {
+                    LoadState = MappingService.MapToLoadStateModel(immunizationResponse.ResourcePayload?.LoadState),
+                    Recommendations = MappingService.MapToImmunizationRecommendations(immunizationResponse.ResourcePayload?.Result?.Recommendations),
+                },
                 PageIndex = immunizationResponse.PageIndex,
                 PageSize = immunizationResponse.PageSize,
                 TotalResultCount = immunizationResponse.TotalResultCount,
@@ -217,15 +219,16 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             // Assert
             expectedResult.ShouldDeepEqual(actualResult);
-            ImmunizationRecommendation actualRecommendation = actualResult.ResourcePayload?.Recommendations[0]!;
+            ImmunizationRecommendation? actualRecommendation = actualResult.ResourcePayload?.Recommendations.First();
+            Assert.NotNull(actualRecommendation);
             Assert.Equal(RecommendationSetId, actualRecommendation.RecommendationSetId);
             Assert.Equal(VaccineName, actualRecommendation.Immunization.Name);
             Assert.Equal(AntigenName, actualRecommendation.Immunization.ImmunizationAgents.First().Name);
 
             if (targetDiseaseExists)
             {
-                Assert.Equal(TargetDiseaseCode, actualRecommendation.TargetDiseases[0].Code);
-                Assert.Equal(DiseaseName, actualRecommendation.TargetDiseases[0].Name);
+                Assert.Equal(TargetDiseaseCode, actualRecommendation.TargetDiseases.First().Code);
+                Assert.Equal(DiseaseName, actualRecommendation.TargetDiseases.First().Name);
                 Assert.Empty(actualRecommendation.RecommendedVaccinations);
             }
             else
@@ -283,9 +286,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<ImmunizationResponse>
                 {
                     LoadState = new() { RefreshInProgress = false },
-                    Result = new(
-                        [],
-                        [immzRecommendationResponse]),
+                    Result = new()
+                    {
+                        Recommendations = [immzRecommendationResponse],
+                    },
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -308,32 +312,26 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
         private static ImmunizationRecommendationResponse GetImmzRecommendationResponse(bool targetDiseaseExists)
         {
-            ImmunizationRecommendationResponse immzRecommendationResponse = new()
+            return new()
             {
                 ForecastCreationDate = DateOnly.FromDateTime(DateTime.Now),
                 RecommendationId = RecommendationSetId,
                 RecommendationSourceSystem = "MockSourceSystem",
                 RecommendationSourceSystemId = "MockSourceID",
+                Recommendations = [GetRecommendationResponse(targetDiseaseExists), GetRecommendationResponse(true)],
             };
-
-            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(targetDiseaseExists));
-            immzRecommendationResponse.Recommendations.Add(GetRecommendationResponse(true));
-            return immzRecommendationResponse;
         }
 
         private static RecommendationResponse GetRecommendationResponse(bool targetDiseaseExists)
         {
-            RecommendationResponse recommendationResponse = new()
+            return new()
             {
-                ForecastStatus =
-                {
-                    ForecastStatusText = "Eligible",
-                },
+                ForecastStatus = { ForecastStatusText = "Eligible" },
                 TargetDisease = targetDiseaseExists
                     ? new()
                     {
                         TargetDiseaseCodes =
-                        {
+                        [
                             new SystemCode
                             {
                                 Code = TargetDiseaseCode,
@@ -341,34 +339,32 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                                 Display = DiseaseName,
                                 System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
                             },
-                        },
+                        ],
                     }
                     : null,
                 VaccineCode =
                 {
                     VaccineCodeText = VaccineName,
+                    VaccineCodes =
+                    [
+                        new SystemCode
+                        {
+                            Code = "BCYSCT_AN032",
+                            CommonType = "AntiGenCode",
+                            Display = AntigenName,
+                            System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
+                        },
+                    ],
                 },
-            };
-            recommendationResponse.VaccineCode.VaccineCodes.Add(
-                new SystemCode
-                {
-                    Code = "BCYSCT_AN032",
-                    CommonType = "AntiGenCode",
-                    Display = AntigenName,
-                    System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
-                });
-
-            recommendationResponse.DateCriterions.Add(
-                new DateCriterion
-                {
-                    DateCriterionCode = new DateCriterionCode
+                DateCriterions =
+                [
+                    new DateCriterion
                     {
-                        Text = "Forecast by Disease Eligible Date",
+                        DateCriterionCode = new DateCriterionCode { Text = "Forecast by Disease Eligible Date" },
+                        Value = DiseaseEligibleDateString,
                     },
-                    Value = DiseaseEligibleDateString,
-                });
-
-            return recommendationResponse;
+                ],
+            };
         }
     }
 }

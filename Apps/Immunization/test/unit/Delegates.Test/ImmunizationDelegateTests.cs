@@ -87,16 +87,17 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
-                Result = new ImmunizationResponse(
-                    [expectedViewResponse],
-                    []),
+                Result = new ImmunizationResponse
+                {
+                    ImmunizationViews = [expectedViewResponse],
+                },
             };
 
             RequestResult<PhsaResult<ImmunizationResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationsAsync(It.IsAny<string>());
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(expectedViewResponse.Id, actualResult.ResourcePayload?.Result?.ImmunizationViews[0].Id);
+            Assert.Equal(expectedViewResponse.Id, actualResult.ResourcePayload?.Result?.ImmunizationViews.First().Id);
         }
 
         /// <summary>
@@ -142,9 +143,10 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
-                Result = new ImmunizationResponse(
-                    [expectedViewResponse],
-                    []),
+                Result = new ImmunizationResponse
+                {
+                    ImmunizationViews = [expectedViewResponse],
+                },
             };
 
             RequestResult<PhsaResult<ImmunizationResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationsAsync(It.IsAny<string>());

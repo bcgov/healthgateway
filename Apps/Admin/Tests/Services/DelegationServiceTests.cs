@@ -469,11 +469,11 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expected.Protected, actual.Protected);
             Assert.Equal(expected.AllowedDelegations.Count, actual.AllowedDelegations.Count);
             Assert.Equal(
-                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations[0].DelegateHdId,
-                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations[0].DelegateHdId);
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.First().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.First().DelegateHdId);
             Assert.Equal(
-                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations[expected.AllowedDelegations.Count - 1].DelegateHdId,
-                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations[expected.AllowedDelegations.Count - 1].DelegateHdId);
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.Last().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.Last().DelegateHdId);
             return true;
         }
 

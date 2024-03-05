@@ -50,9 +50,9 @@ namespace HealthGateway.WebClientTests.Controllers
             const string invalidRobotsFilePath = "/invalid/robots/file/path/robot.txt";
             const string robotsContent = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
             string robotsFilePath = robotsFilePathExists ? Path.GetTempFileName() : string.Empty;
-            string robotsConfigFilePath = invalidConfigRobotsFilePath is true ? invalidRobotsFilePath : robotsFilePath;
-            string expectedRobotsFileContent = robotsFileContentExists is true ? robotsContent : string.Empty;
-            string expectedRobotsFileContentForResult = robotsFilePathExists is true ? expectedRobotsFileContent : robotsContent;
+            string robotsConfigFilePath = invalidConfigRobotsFilePath ? invalidRobotsFilePath : robotsFilePath;
+            string expectedRobotsFileContent = robotsFileContentExists ? robotsContent : string.Empty;
+            string expectedRobotsFileContentForResult = robotsFilePathExists ? expectedRobotsFileContent : robotsContent;
 
             if (robotsFilePathExists)
             {

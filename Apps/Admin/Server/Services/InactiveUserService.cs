@@ -158,7 +158,7 @@ public class InactiveUserService : IInactiveUserService
     }
 
     private void AddInactiveUser(
-        ICollection<AdminUserProfileView> inactiveUsers,
+        List<AdminUserProfileView> inactiveUsers,
         IEnumerable<AdminUserProfile> activeUserProfiles,
         ICollection<UserRepresentation> identityAccessUsers,
         IdentityAccessRole role)
@@ -166,7 +166,7 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
 
         IEnumerable<AdminUserProfileView> adminUserProfiles = identityAccessUsers
-            .Where(x1 => inactiveUsers.All(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
+            .Where(x1 => inactiveUsers.TrueForAll(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
             .Select(user => this.mappingService.MapToAdminUserProfileView(user));
 
         foreach (AdminUserProfileView adminUserProfile in adminUserProfiles)

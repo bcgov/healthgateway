@@ -309,10 +309,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 HdId = this.mockHdId,
                 Protected = true,
-                AllowedDelegations = new List<AllowedDelegation>
-                {
-                    new() { DependentHdId = this.mockHdId, DelegateHdId = this.mockParentHdid },
-                },
+                AllowedDelegations = [new() { DependentHdId = this.mockHdId, DelegateHdId = this.mockParentHdid }],
             };
             IDependentService service = this.SetupMockDependentService(addDependentRequest, dependent: dependent);
 
@@ -389,7 +386,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string?> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? [];
 
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
@@ -401,7 +398,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private IList<ResourceDelegate> GenerateMockResourceDelegatesList()
         {
-            List<ResourceDelegate> resourceDelegates = new();
+            List<ResourceDelegate> resourceDelegates = [];
 
             for (int i = 0; i < 10; i++)
             {
@@ -428,7 +425,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private Dictionary<string, int> GenerateMockDelegateCounts(bool single = false)
         {
-            Dictionary<string, int> delegateCounts = new();
+            Dictionary<string, int> delegateCounts = [];
 
             if (single)
             {
