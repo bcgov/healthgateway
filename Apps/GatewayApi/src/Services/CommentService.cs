@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading.Tasks;
     using FluentValidation.Results;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Database.Constants;

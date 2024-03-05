@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Tag;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.Data.Models;
 
 /// <summary>
 /// Static class that implements all actions for the feature.

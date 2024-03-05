@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Delegates
     using HealthGateway.Admin.Models.Immunization;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;

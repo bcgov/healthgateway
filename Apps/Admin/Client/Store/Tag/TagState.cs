@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.Data.Models;
 
 /// <summary>
 /// The state for the feature.

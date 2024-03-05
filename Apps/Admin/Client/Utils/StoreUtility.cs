@@ -22,7 +22,7 @@ namespace HealthGateway.Admin.Client.Utils
     using HealthGateway.Admin.Client.Store;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.JSInterop;
 
     /// <summary>

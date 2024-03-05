@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using Asp.Versioning;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 

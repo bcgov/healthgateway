@@ -22,7 +22,7 @@ namespace HealthGateway.EncounterTests.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Encounter.Controllers;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.PHSA;

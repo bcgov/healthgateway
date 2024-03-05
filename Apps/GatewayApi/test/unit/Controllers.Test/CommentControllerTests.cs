@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;

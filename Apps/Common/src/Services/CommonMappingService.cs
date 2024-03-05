@@ -17,7 +17,6 @@ namespace HealthGateway.Common.Services
 {
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Database.Models;
 
