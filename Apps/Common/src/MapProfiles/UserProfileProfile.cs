@@ -17,8 +17,8 @@ namespace HealthGateway.Common.MapProfiles
 {
     using System;
     using AutoMapper;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB Model UserProfile and API Model UserProfileModel.

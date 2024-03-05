@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using FluentValidation;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
@@ -30,6 +29,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Configuration;

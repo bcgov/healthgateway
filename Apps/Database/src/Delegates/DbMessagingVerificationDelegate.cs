@@ -22,8 +22,8 @@ namespace HealthGateway.Database.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 

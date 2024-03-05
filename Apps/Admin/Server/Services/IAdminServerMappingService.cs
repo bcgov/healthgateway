@@ -21,9 +21,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Models.Immunization;
     using HealthGateway.Common.AccessManagement.Administration.Models;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
-    using Communication = HealthGateway.Database.Models.Communication;
 
     /// <summary>
     /// Service to map between models at different layers.
@@ -58,12 +56,12 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        Common.Models.Communication MapToCommonCommunication(Communication source);
+        Common.Models.Communication MapToCommonCommunication(HealthGateway.Database.Models.Communication source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        Communication MapToDatabaseCommunication(Common.Models.Communication source);
+        HealthGateway.Database.Models.Communication MapToDatabaseCommunication(Common.Models.Communication source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>

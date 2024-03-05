@@ -27,15 +27,14 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Moq;
     using Xunit;
-    using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
 
     /// <summary>
     /// SupportService's Unit Tests.
@@ -301,12 +300,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
         }
 
-        private static UserProfile? GetUserProfile(DbStatusCode statusCode)
+        private static Database.Models.UserProfile? GetUserProfile(DbStatusCode statusCode)
         {
             return statusCode switch
             {
                 DbStatusCode.NotFound => null,
-                _ => new UserProfile
+                _ => new Database.Models.UserProfile
                 {
                     HdId = Hdid,
                     LastLoginDateTime = DateTime.UtcNow,
@@ -314,7 +313,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
         }
 
-        private static IList<UserProfile> GetUserProfiles()
+        private static IList<Database.Models.UserProfile> GetUserProfiles()
         {
             return
             [
@@ -355,8 +354,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
         private static ISupportService CreateSupportService(
             RequestResult<PatientModel>? patientResult = null,
-            UserProfile? userProfileResult = null,
-            IList<UserProfile>? userProfilesResult = null,
+            Database.Models.UserProfile? userProfileResult = null,
+            IList<Database.Models.UserProfile>? userProfilesResult = null,
             IList<MessagingVerification>? verificationResult = null)
         {
             Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new();

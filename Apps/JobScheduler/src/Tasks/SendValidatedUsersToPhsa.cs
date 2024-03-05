@@ -19,10 +19,10 @@ namespace HealthGateway.JobScheduler.Tasks
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 

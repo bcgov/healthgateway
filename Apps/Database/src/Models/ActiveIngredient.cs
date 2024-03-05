@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The entity representing a row in the Federal Government

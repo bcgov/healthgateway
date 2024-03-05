@@ -22,9 +22,9 @@ namespace HealthGateway.JobScheduler.Jobs
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.JobScheduler.Api;
     using HealthGateway.JobScheduler.Models;
     using HealthGateway.JobScheduler.Models.Notify;

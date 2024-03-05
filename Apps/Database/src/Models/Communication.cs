@@ -20,7 +20,6 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// A system Communication.
