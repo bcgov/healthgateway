@@ -69,7 +69,7 @@ namespace HealthGateway.Common.Data.Models
         [JsonPropertyName("actionCode")]
         public string? ActionCodeValue => this.ActionCode?.Value;
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);
