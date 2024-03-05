@@ -21,7 +21,7 @@ namespace HealthGateway.Medication.Controllers
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Cors;

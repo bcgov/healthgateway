@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.ViewModels
+namespace HealthGateway.Common.Data.Models
 {
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
@@ -69,7 +69,7 @@ namespace HealthGateway.Common.Data.ViewModels
         [JsonPropertyName("actionCode")]
         public string? ActionCodeValue => this.ActionCode?.Value;
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);

@@ -13,7 +13,6 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
 namespace HealthGateway.Common.Data.Tests.Validations
 {
     using System;
@@ -29,7 +28,23 @@ namespace HealthGateway.Common.Data.Tests.Validations
         private static readonly DateTime ReferenceDate = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
-        /// Tests for AgeRangeValidatorTests.
+        /// Gets parameters for AgeRangeValidator unit test(s).
+        /// </summary>
+        public static TheoryData<DateTime, int, int, bool> AgeRangeValidatorTheoryData =>
+            new()
+            {
+                { new DateTime(2008, 5, 3), 12, 14, false },
+                { new DateTime(2008, 12, 20), 12, 14, false },
+                { new DateTime(2008, 12, 21), 12, 14, false },
+                { new DateTime(2008, 12, 22), 12, 14, true },
+                { new DateTime(2010, 3, 5), 12, 14, true },
+                { new DateTime(2010, 12, 20), 12, 14, true },
+                { new DateTime(2010, 12, 21), 12, 14, true },
+                { new DateTime(2010, 12, 22), 12, 14, false },
+            };
+
+        /// <summary>
+        /// Validate YoungerThan.
         /// </summary>
         /// <param name="dob">Date of birth to test.</param>
         /// <param name="youngerThan">Younger than age.</param>
@@ -47,7 +62,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         }
 
         /// <summary>
-        /// Tests for AgeRangeValidatorTests.
+        /// Validate OlderThan.
         /// </summary>
         /// <param name="dob">Date of birth to test.</param>
         /// <param name="olderThan">Older than age.</param>
@@ -65,24 +80,34 @@ namespace HealthGateway.Common.Data.Tests.Validations
         }
 
         /// <summary>
-        /// Tests for AgeRangeValidatorTests.
+        /// Validate OlderThan and YoungerThan.
         /// </summary>
         /// <param name="dob">Date of birth to test.</param>
         /// <param name="olderThan">Older than age.</param>
         /// <param name="youngerThan">Younger than age.</param>
         /// <param name="shouldBeValid">The validation result to verify.</param>
         [Theory]
-        [InlineData("2008-05-03", 12, 14, false)]
-        [InlineData("2008-12-20", 12, 14, false)]
-        [InlineData("2008-12-21", 12, 14, false)]
-        [InlineData("2008-12-22", 12, 14, true)]
-        [InlineData("2010-03-05", 12, 14, true)]
-        [InlineData("2010-12-20", 12, 14, true)]
-        [InlineData("2010-12-21", 12, 14, true)]
-        [InlineData("2010-12-22", 12, 14, false)]
+        [MemberData(nameof(AgeRangeValidatorTheoryData))]
         public void ValidateOlderThanAndYoungerThan(DateTime dob, int olderThan, int youngerThan, bool shouldBeValid)
         {
             AgeRangeValidator validator = new(olderThan, youngerThan, ReferenceDate);
+
+            ValidationResult? validationResult = validator.Validate(dob);
+            Assert.Equal(shouldBeValid, validationResult.IsValid);
+        }
+
+        /// <summary>
+        /// Validate OlderThan and YoungerThan with Unspecified DateTime.
+        /// </summary>
+        /// <param name="dob">Date of birth to test.</param>
+        /// <param name="olderThan">Older than age.</param>
+        /// <param name="youngerThan">Younger than age.</param>
+        /// <param name="shouldBeValid">The validation result to verify.</param>
+        [Theory]
+        [MemberData(nameof(AgeRangeValidatorTheoryData))]
+        public void ValidateOlderThanAndYoungerThanUnspecified(DateTime dob, int olderThan, int youngerThan, bool shouldBeValid)
+        {
+            AgeRangeValidator validator = new(olderThan, youngerThan, DateTime.SpecifyKind(ReferenceDate, DateTimeKind.Unspecified));
 
             ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);

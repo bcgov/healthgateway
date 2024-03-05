@@ -44,18 +44,6 @@ namespace HealthGateway.Common.Data.Validations
         }
 
         /// <summary>
-        /// Validate a date of birth.
-        /// </summary>
-        /// <param name="dateOfBirth">date of birth to validate.</param>
-        /// <param name="olderThan">optional older than age.</param>
-        /// <param name="youngerThan">optional younger than age.</param>
-        /// <returns>true if valid, false if not.</returns>
-        public static bool IsValid(DateOnly dateOfBirth, int? olderThan = null, int? youngerThan = null)
-        {
-            return new DateOnlyAgeRangeValidator(olderThan, youngerThan).Validate(dateOfBirth).IsValid;
-        }
-
-        /// <summary>
         /// Calculates a person's age (in years) at a given date.
         /// </summary>
         /// <param name="referenceDate">Date at which to calculate age.</param>

@@ -18,7 +18,7 @@ namespace HealthGateway.IntegrationTests.Dependents;
 
 using System.Globalization;
 using Alba;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.Data.Models;
 using HealthGateway.Common.Models.Events;
 using HealthGateway.Database.Models;
 using HealthGateway.GatewayApi.Models;

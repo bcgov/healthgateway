@@ -18,7 +18,7 @@ namespace HealthGateway.GatewayApi.Validations
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Validates <see cref="UserProfile"/> instances.

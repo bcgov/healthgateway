@@ -26,7 +26,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Services;

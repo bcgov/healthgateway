@@ -80,7 +80,7 @@ namespace HealthGateway.Admin.Services
             if (authData.IsAuthenticated && user != null)
             {
                 this.logger.LogDebug("Getting Authentication data");
-                authData.User = new UserProfile
+                authData.User = new Models.UserProfile
                 {
                     Id = user.FindFirstValue("preferred_username") ?? string.Empty,
                     Name = user.FindFirstValue("name"),

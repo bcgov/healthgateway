@@ -16,56 +16,54 @@
 namespace HealthGateway.Common.Data.Models
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.Serialization;
-    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// Base class for all DB entities to ensure audit data is saved.
+    /// Model that provides a user preference.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public abstract class AuditableEntity : IAuditable, IConcurrencyGuard
+    public class UserPreferenceModel
     {
         /// <summary>
-        /// Gets or sets the user/system that created the entity.
-        /// This is generally set by the baseDbContext.
+        /// Gets or sets the user hdid.
         /// </summary>
-        [Required]
-        [MaxLength(60)]
-        [IgnoreDataMember]
-        public string CreatedBy { get; set; } = UserId.DefaultUser;
+        public string HdId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the Preference.
+        /// </summary>
+        public string Preference { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        public string Value { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the comment db version.
+        /// </summary>
+        public uint Version { get; set; }
 
         /// <summary>
         /// Gets or sets the datetime the entity was created.
         /// This is generally set by the baseDbContext.
         /// </summary>
-        [Required]
-        [IgnoreDataMember]
         public DateTime CreatedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the user/system that created the entity.
         /// This is generally set by the baseDbContext.
         /// </summary>
-        [Required]
-        [MaxLength(60)]
-        [IgnoreDataMember]
-        public string UpdatedBy { get; set; } = UserId.DefaultUser;
+        public string CreatedBy { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the datetime the entity was updated.
         /// This is generally set by the baseDbContext.
         /// </summary>
-        [Required]
-        [IgnoreDataMember]
         public DateTime UpdatedDateTime { get; set; }
 
-        /// <inheritdoc/>
-        [ConcurrencyCheck]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        [Column("xmin", TypeName = "xid")]
-        public uint Version { get; set; }
+        /// <summary>
+        /// Gets or sets the user/system that created the entity.
+        /// This is generally set by the baseDbContext.
+        /// </summary>
+        public string UpdatedBy { get; set; } = null!;
     }
 }

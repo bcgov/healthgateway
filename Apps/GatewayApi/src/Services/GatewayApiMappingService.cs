@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Services
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;

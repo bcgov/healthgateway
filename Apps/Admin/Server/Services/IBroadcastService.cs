@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service to interact with broadcasts.

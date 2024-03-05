@@ -18,7 +18,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using System.Threading;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Moq;

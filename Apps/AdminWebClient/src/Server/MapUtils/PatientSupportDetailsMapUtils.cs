@@ -32,9 +32,9 @@ namespace HealthGateway.Admin.MapUtils
         /// <param name="patientModel">The patient model to convert.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
         /// <returns>The created UI model.</returns>
-        public static PatientSupportDetails ToUiModel(Common.Data.Models.UserProfile userProfile, PatientModel patientModel, IMapper mapper)
+        public static PatientSupportDetails ToUiModel(HealthGateway.Database.Models.UserProfile userProfile, PatientModel patientModel, IMapper mapper)
         {
-            PatientSupportDetails patientSupportDetails = mapper.Map<Common.Data.Models.UserProfile, PatientSupportDetails>(
+            PatientSupportDetails patientSupportDetails = mapper.Map<HealthGateway.Database.Models.UserProfile, PatientSupportDetails>(
                 userProfile,
                 opts => opts.AfterMap(
                     (_, dest) =>

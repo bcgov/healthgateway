@@ -13,21 +13,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.Database.Models
 {
+    using System;
+
     /// <summary>
-    /// Model object representing email template configuration.
+    /// Interface representing audit fields to be recorded in all DB entities.
     /// </summary>
-    public class EmailTemplateConfig
+    public interface IAuditable
     {
         /// <summary>
-        /// The section key to use when binding this object.
+        /// Gets or sets the The audit created by field.
         /// </summary>
-        public const string ConfigurationSectionKey = "EmailTemplate";
+        string CreatedBy { get; set; }
 
         /// <summary>
-        /// Gets the host.
+        /// Gets or sets the audit created date/time field.
         /// </summary>
-        public string Host { get; init; } = string.Empty;
+        DateTime CreatedDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the audit updated by field.
+        /// </summary>
+        string UpdatedBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the audit updated date/time.
+        /// </summary>
+        DateTime UpdatedDateTime { get; set; }
     }
 }
