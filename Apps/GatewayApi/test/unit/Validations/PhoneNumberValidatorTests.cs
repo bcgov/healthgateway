@@ -49,6 +49,7 @@ namespace HealthGateway.GatewayApiTests.Validations
         [InlineData("6345678901", "Not a valid Area code")]
         [InlineData("2031231234", "Not a valid Area code")]
         [InlineData("", "Empty string is not a phone number")]
+        [InlineData("abcd", "Alphabetical string is not a phone number")]
         [InlineData(null, "null is not a phone number")]
         public void ShouldNotBeValid(string? phoneNumber, string reason)
         {

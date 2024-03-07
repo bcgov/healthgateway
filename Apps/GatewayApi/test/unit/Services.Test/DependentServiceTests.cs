@@ -52,6 +52,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
+        private readonly string ineligibleError = "'Age' must be less than '12'.";
         private readonly DateTime mockDateOfBirth = DateTime.UtcNow.Date.AddYears(-12).AddDays(1);
         private readonly string mockFirstName = "Tory D'Bill"; // First name with regular apostrophe
         private readonly string mockGender = "Male";
@@ -63,6 +64,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly int mockTotalDelegateCount = 2;
         private readonly DateTime fromDate = DateTime.UtcNow.AddDays(-1);
         private readonly DateTime toDate = DateTime.UtcNow.AddDays(1);
+
+        public static TheoryData<RequestResult<PatientModel>, ResultType, string> InvalidPatientTheoryData => new()
+        {
+            { new(), ResultType.Error, "Communication Exception when trying to retrieve the Dependent" },
+            { new() { ResultStatus = ResultType.ActionRequired, ResultError = new() { ActionCode = ActionType.NoHdId } }, ResultType.ActionRequired, ErrorMessages.InvalidServicesCard },
+            { new() { ResultStatus = ResultType.ActionRequired }, ResultType.ActionRequired, ErrorMessages.DataMismatch },
+            { new() { ResultStatus = ResultType.Success }, ResultType.ActionRequired, ErrorMessages.DataMismatch },
+        };
 
         /// <summary>
         /// GetDependentsAsync by hdid - Happy Path.
@@ -166,22 +175,24 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// AddDependentAsync - Empty Patient Error.
+        /// AddDependentAsync - Invalid Patient Response.
         /// </summary>
+        /// <param name="patient">Response from retrieving patient.</param>
+        /// <param name="expectedResultType">Expected result type.</param>
+        /// <param name="expectedErrorMessage">Expected error message.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ValidateAddDependentWithEmptyPatientResPayloadError()
+        [Theory]
+        [MemberData(nameof(InvalidPatientTheoryData))]
+        public async Task ValidateAddDependentWithInvalidPatient(RequestResult<PatientModel> patient, ResultType expectedResultType, string expectedErrorMessage)
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            RequestResult<PatientModel> patientResult = new();
-
-            // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
-            IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);
+            IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patient);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
+            Assert.Equal(expectedResultType, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(expectedErrorMessage, actualResult.ResultError.ResultMessage);
         }
 
         /// <summary>
@@ -206,6 +217,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ShouldNotBeNull();
 
             exception.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+        }
+
+        /// <summary>
+        /// AddDependentAsync - Ineligible Due to Validation.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateAddDependentIneligible()
+        {
+            AddDependentRequest addDependentRequest = this.SetupMockInput();
+            addDependentRequest.DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-20));
+            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
+
+            RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
+            Assert.Equal(this.ineligibleError, actualResult.ResultError.ResultMessage);
         }
 
         /// <summary>
@@ -338,49 +368,53 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(ActionType.Protected, actualResult.ResultError!.ActionCode);
         }
 
-        /// <summary>
-        /// ValidateRemove - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ValidateRemove()
         {
             DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
-            Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(
-                    s => s.DeleteAsync(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdid), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(
-                    new DbResult<ResourceDelegate>
-                    {
-                        Status = DbStatusCode.Deleted,
-                    });
-            mockDependentDelegate.Setup(s => s.GetAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } });
-
-            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new UserProfile());
-            Mock<INotificationSettingsService> mockNotificationSettingsService = new();
-            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
-
-            Mock<IMessageSender> mockMessageSender = new();
-            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>())).Verifiable();
-
-            IDependentService service = new DependentService(
-                GetIConfigurationRoot(null),
-                new Mock<ILogger<DependentService>>().Object,
-                new Mock<IPatientService>().Object,
-                mockNotificationSettingsService.Object,
-                new Mock<IDelegationDelegate>().Object,
-                mockDependentDelegate.Object,
-                mockUserProfileDelegate.Object,
-                mockMessageSender.Object,
-                MappingService);
+            IList<ResourceDelegate> resourceDelegates = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } };
+            DbResult<ResourceDelegate> dbResult = new()
+            {
+                Status = DbStatusCode.Deleted,
+            };
+            IDependentService service = this.SetupMockForRemoveDependent(resourceDelegates, dbResult);
 
             RequestResult<DependentModel> actualResult = await service.RemoveAsync(delegateModel);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            mockMessageSender.Verify();
+        }
+
+        [Fact]
+        public async Task ValidateRemoveNotFound()
+        {
+            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
+            IDependentService service = this.SetupMockForRemoveDependent([], new());
+
+            async Task Actual()
+            {
+                await service.RemoveAsync(delegateModel);
+            }
+
+            await Assert.ThrowsAsync<NotFoundException>(Actual);
+        }
+
+        [Fact]
+        public async Task ValidateRemoveDatabaseException()
+        {
+            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
+            IList<ResourceDelegate> resourceDelegates = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } };
+            DbResult<ResourceDelegate> dbResult = new()
+            {
+                Status = DbStatusCode.Error,
+            };
+            IDependentService service = this.SetupMockForRemoveDependent(resourceDelegates, dbResult);
+
+            async Task Actual()
+            {
+                await service.RemoveAsync(delegateModel);
+            }
+
+            await Assert.ThrowsAsync<DatabaseException>(Actual);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
@@ -443,21 +477,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private IDependentService SetupMockForGetDependents(RequestResult<PatientModel>? patientResult = null)
         {
-            // (1) Setup ResourceDelegateDelegate's mock
+            // Setup Mock<IResourceDelegateDelegate>
             DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
             {
                 Status = DbStatusCode.Read,
                 Payload = this.GenerateMockDelegateCounts(),
             };
 
-            Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.GetAsync(this.mockParentHdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
+            mockResourceDelegateDelegate.Setup(s => s.GetAsync(this.mockParentHdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
-            mockDependentDelegate.Setup(s => s.GetAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            mockResourceDelegateDelegate.Setup(s => s.GetAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
-            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockDelegateCountsResult);
+            mockResourceDelegateDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.Is<IEnumerable<string>>(h => h.SequenceEqual(mockDelegateCountsResult.Payload.Keys)), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mockDelegateCountsResult)
+                .Verifiable();
 
-            // (2) Setup PatientDelegate's mock
+            // Setup Mock<IPatientService>
             Mock<IPatientService> mockPatientService = new();
 
             patientResult ??= new RequestResult<PatientModel>
@@ -479,7 +515,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
 
-            // (3) Setup other common Mocks
+            // Setup other common Mocks
             Mock<IDelegationDelegate> mockDelegationDelegate = new();
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
@@ -490,7 +526,36 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
                 mockDelegationDelegate.Object,
-                mockDependentDelegate.Object,
+                mockResourceDelegateDelegate.Object,
+                mockUserProfileDelegate.Object,
+                mockMessageSender.Object,
+                MappingService);
+        }
+
+        private IDependentService SetupMockForRemoveDependent(IList<ResourceDelegate> resourceDelegates, DbResult<ResourceDelegate> dbResult)
+        {
+            Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
+            mockResourceDelegateDelegate.Setup(s => s.GetAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resourceDelegates);
+            mockResourceDelegateDelegate.Setup(s => s.DeleteAsync(It.IsAny<ResourceDelegate>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dbResult);
+
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
+            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new UserProfile());
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new();
+            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
+
+            Mock<IMessageSender> mockMessageSender = new();
+            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+
+            return new DependentService(
+                GetIConfigurationRoot(null),
+                new Mock<ILogger<DependentService>>().Object,
+                new Mock<IPatientService>().Object,
+                mockNotificationSettingsService.Object,
+                new Mock<IDelegationDelegate>().Object,
+                mockResourceDelegateDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
                 MappingService);
