@@ -30,7 +30,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
