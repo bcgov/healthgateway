@@ -27,6 +27,7 @@ namespace HealthGateway.EncounterTests.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -285,6 +286,9 @@ namespace HealthGateway.EncounterTests.Services
         public async Task ShouldGetHospitalVisits(bool canAccessDataSource)
         {
             // Arrange
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            DateTime expectedAdmitDateTime = now.UtcDateTime;
+
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
             {
                 ResultStatus = ResultType.Success,
@@ -295,7 +299,7 @@ namespace HealthGateway.EncounterTests.Services
                         new()
                         {
                             EncounterId = "Id",
-                            AdmitDateTime = null,
+                            AdmitDateTime = DateTime.SpecifyKind(TimeZoneInfo.ConvertTime(now, DateFormatter.GetLocalTimeZone(Configuration)).DateTime, DateTimeKind.Unspecified),
                             EndDateTime = null,
                         },
                     ],
@@ -309,16 +313,20 @@ namespace HealthGateway.EncounterTests.Services
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.True(actualResult.ResourcePayload.Loaded);
+            Assert.False(actualResult.ResourcePayload.Queued);
 
             if (canAccessDataSource)
             {
-                Assert.NotNull(actualResult.ResourcePayload);
                 Assert.Single(actualResult.ResourcePayload!.HospitalVisits);
                 Assert.Equal(1, actualResult.TotalResultCount);
+                Assert.Equal(expectedAdmitDateTime, actualResult.ResourcePayload.HospitalVisits.First().AdmitDateTime);
             }
             else
             {
                 Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
+                Assert.Equal(0, actualResult.TotalResultCount);
             }
         }
 
