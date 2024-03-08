@@ -683,7 +683,7 @@ setPageFromDate(linearDate.value);
             >
                 Most reports are available 10-14 days after your procedure.
                 <a
-                    href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#medicalimaging"
+                    href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/healthrecords#medicalimaging"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
