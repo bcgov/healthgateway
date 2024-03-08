@@ -226,6 +226,16 @@ function getReport(): void {
                             For pathology tests (like a biopsy)
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href="https://smartsexresource.com/resources/"
+                            target="_blank"
+                            rel="noopener"
+                            class="text-link"
+                        >
+                            BC CDC - Smart Sex Resource
+                        </a>
+                    </li>
                 </ul>
             </v-alert>
         </v-slide-y-transition>
