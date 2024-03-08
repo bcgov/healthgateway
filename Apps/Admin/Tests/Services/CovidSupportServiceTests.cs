@@ -71,15 +71,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
@@ -120,15 +120,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected),
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.Message);
         }
 
         /// <summary>
@@ -173,15 +173,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected),
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
@@ -213,15 +213,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
                 GetVaccineProofDelegateMock(vaccineProofResponse));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.Message);
         }
 
         /// <summary>
@@ -252,15 +252,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
                 GetVaccineProofDelegateMock(expected));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
@@ -294,12 +294,10 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult));
 
-            // Act
+            // Act and Assert
             Exception exception = await Assert.ThrowsAsync(
                 expectedExceptionType,
                 async () => { await service.RetrieveVaccineRecordAsync(Phn); });
-
-            // Assert
             Assert.Equal(expectedErrorMessage, exception.Message);
         }
 
@@ -327,15 +325,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
         }
 
         /// <summary>
@@ -354,15 +352,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock()); // this will setup maximum retry attempts reached
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
@@ -391,15 +389,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
         }
 
         /// <summary>
@@ -419,15 +417,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
@@ -459,15 +457,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
@@ -500,15 +498,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
         }
 
         /// <summary>
@@ -529,15 +527,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
