@@ -153,7 +153,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (ArgumentException ex)
             {
-                logger.LogError("Failed to parse Vaccination Status Indicator: {Indicator}. Error: {ErrorMessage}", result.StatusIndicator, ex.Message);
+                logger.LogError(ex, "Failed to parse Vaccination Status Indicator: {Indicator}. Error: {ErrorMessage}", result.StatusIndicator, ex.Message);
                 throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown);
             }
         }
