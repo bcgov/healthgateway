@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
@@ -83,16 +84,18 @@ namespace HealthGateway.Admin.Tests.Services
         /// <param name="includeBlockedDataSources">Value indicating whether blocked data sources are included.</param>
         /// <param name="expectedBlockedDataSourceCount">Expected number of blocked data sources returned.</param>
         /// <param name="includeDependents">Value indicating whether dependents are included.</param>
+        /// <param name="dependentExists">Value indicating whether dependent exists.</param>
         /// <param name="expectedDependentCount">Expected number of dependents returned.</param>
         /// <param name="includeCovidDetails">Value indicating whether covid details are included.</param>
         /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, 2, true, 1, true, 1, true, 1, true, false, ClientRegistryType.Hdid)]
-        [InlineData(false, null, false, null, false, null, false, null, false, true, ClientRegistryType.Hdid)]
-        [InlineData(false, null, false, null, false, null, false, null, true, false, ClientRegistryType.Phn)]
-        [InlineData(false, null, false, null, false, null, false, null, false, true, ClientRegistryType.Phn)]
+        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid)]
+        [InlineData(true, 2, true, 1, true, 1, true, false, 0, true, false, ClientRegistryType.Hdid)]
+        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Hdid)]
+        [InlineData(false, null, false, null, false, null, false, false, null, true, false, ClientRegistryType.Phn)]
+        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Phn)]
         public async Task ShouldGetPatientSupportDetailsAsync(
             bool includeMessagingVerifications,
             int? expectedMessagingVerificationCount,
@@ -101,6 +104,7 @@ namespace HealthGateway.Admin.Tests.Services
             bool includeBlockedDataSources,
             int? expectedBlockedDataSourceCount,
             bool includeDependents,
+            bool dependentExists,
             int? expectedDependentCount,
             bool includeCovidDetails,
             bool expectedCovidDetails,
@@ -138,7 +142,7 @@ namespace HealthGateway.Admin.Tests.Services
                     Source = PatientDetailSource.All,
                     UseCache = false,
                 };
-            PatientModel dependentPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2, commonName, legalName, physicalAddress, postalAddress);
+            PatientModel? dependentPatient = dependentExists ? GeneratePatientModel(Phn2, Hdid2, Birthdate2, commonName, legalName, physicalAddress, postalAddress) : null;
 
             ISupportService supportService = CreateSupportService(
                 GetMessagingVerificationDelegateMock(messagingVerifications),
@@ -524,7 +528,7 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
-            Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null));
+            Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null)); // patient returned is null
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock();
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
@@ -547,8 +551,8 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService();
 
             // Act
-            FluentValidation.ValidationException exception =
-                    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
+            ValidationException exception =
+                    await Assert.ThrowsAsync<ValidationException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
                 ;
 
             // Assert
@@ -558,15 +562,18 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// GetPatientsAsync - Dependent - Happy Path.
         /// </summary>
+        /// <param name="dependentExists">Value indicating whether dependent exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatientsByDependentHdid()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetPatientsByDependentHdid(bool dependentExists)
         {
             // Arrange
             const string dependentPhn = "dependentPhn";
             const string dependentHdid = "dependentHdid";
             PatientDetailsQuery dependentQuery = new() { Phn = dependentPhn, Source = PatientDetailSource.Empi, UseCache = false };
-            PatientModel dependentPatient = GeneratePatientModel(dependentPhn, dependentHdid, Birthdate);
+            PatientModel? dependentPatient = dependentExists ? GeneratePatientModel(dependentPhn, dependentHdid, Birthdate) : null;
 
             PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
@@ -603,8 +610,15 @@ namespace HealthGateway.Admin.Tests.Services
             IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn);
 
             // Assert
-            Assert.Equal(resourceDelegateQueryResult.Items.Count, actualResult.Count());
-            actualResult.ShouldDeepEqual(expectedResult);
+            if (dependentExists)
+            {
+                Assert.Equal(resourceDelegateQueryResult.Items.Count, actualResult.Count());
+                actualResult.ShouldDeepEqual(expectedResult);
+            }
+            else
+            {
+                Assert.Empty(actualResult);
+            }
         }
 
         /// <summary>

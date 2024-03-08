@@ -167,9 +167,12 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// Tests dependent should be protected given new dependent.
         /// </summary>
+        /// <param name="isChangeFeedEnabled">Value indicating whether change feed is enabled or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldProtectDependentGivenNewDependent()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldProtectDependentGivenNewDependent(bool isChangeFeedEnabled)
         {
             // Arrange
             Dependent expectedDependent = new()
@@ -202,8 +205,17 @@ namespace HealthGateway.Admin.Tests.Services
 
             IEnumerable<string> delegateHdids = [ProtectedDelegateHdid1, NewDelegateHdid];
             Mock<IDelegationDelegate> delegationDelegate = new();
+            Mock<IMessageSender> messageSender = new();
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(NewDependentHdid);
-            DelegationService delegationService = GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid, AuthenticatedUser, AuthenticatedPreferredUsername);
+            DelegationService delegationService = GetDelegationService(
+                null,
+                delegationDelegate,
+                resourceDelegateQueryResult,
+                NewDependentHdid,
+                AuthenticatedUser,
+                AuthenticatedPreferredUsername,
+                messageSender,
+                isChangeFeedEnabled);
 
             // Act
             await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids, It.IsAny<string>());
@@ -214,16 +226,25 @@ namespace HealthGateway.Admin.Tests.Services
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
-                    It.Is<bool>(c => true),
+                    It.Is<bool>(c => c == !isChangeFeedEnabled),
                     It.IsAny<CancellationToken>()));
+
+            if (isChangeFeedEnabled)
+            {
+                messageSender.Verify(
+                    v => v.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+            }
         }
 
         /// <summary>
         /// Tests dependent should be protected given new dependent.
         /// </summary>
+        /// <param name="isChangeFeedEnabled">Value indicating whether change feed is enabled or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUnprotectDependent()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldUnprotectDependent(bool isChangeFeedEnabled)
         {
             // Arrange
             Dependent expectedDependent = new()
@@ -239,6 +260,7 @@ namespace HealthGateway.Admin.Tests.Services
             AgentAudit expectedAgentAudit = GetAgentAudit(DependentHdid, AuditOperation.UnprotectDependent, AuditGroup.Dependent);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
+            Mock<IMessageSender> messageSender = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
             DelegationService delegationService = GetDelegationService(
@@ -247,7 +269,9 @@ namespace HealthGateway.Admin.Tests.Services
                 resourceDelegateQueryResult,
                 DependentHdid,
                 AuthenticatedUser,
-                AuthenticatedPreferredUsername);
+                AuthenticatedPreferredUsername,
+                messageSender,
+                isChangeFeedEnabled);
 
             // Act
             await delegationService.UnprotectDependentAsync(DependentHdid, It.IsAny<string>());
@@ -258,16 +282,25 @@ namespace HealthGateway.Admin.Tests.Services
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
-                    It.Is<bool>(c => true),
+                    It.Is<bool>(c => c == !isChangeFeedEnabled),
                     It.IsAny<CancellationToken>()));
+
+            if (isChangeFeedEnabled)
+            {
+                messageSender.Verify(
+                    v => v.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+            }
         }
 
         /// <summary>
         /// Tests dependent should be protected given existing dependent.
         /// </summary>
+        /// <param name="isChangeFeedEnabled">Value indicating whether change feed is enabled or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldProtectDependentGivenExistingDependent()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldProtectDependentGivenExistingDependent(bool isChangeFeedEnabled)
         {
             // Arrange
             Dependent expectedDependent = new()
@@ -299,6 +332,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             IEnumerable<string> delegateHdids = [ProtectedDelegateHdid1, NewDelegateHdid];
             Mock<IDelegationDelegate> delegationDelegate = new();
+            Mock<IMessageSender> messageSender = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
             DelegationService delegationService = GetDelegationService(
@@ -307,7 +341,9 @@ namespace HealthGateway.Admin.Tests.Services
                 resourceDelegateQueryResult,
                 DependentHdid,
                 AuthenticatedUser,
-                AuthenticatedPreferredUsername);
+                AuthenticatedPreferredUsername,
+                messageSender,
+                isChangeFeedEnabled);
 
             // Act
             await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids, It.IsAny<string>());
@@ -318,8 +354,14 @@ namespace HealthGateway.Admin.Tests.Services
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
-                    It.Is<bool>(c => true),
+                    It.Is<bool>(c => c == !isChangeFeedEnabled),
                     It.IsAny<CancellationToken>()));
+
+            if (isChangeFeedEnabled)
+            {
+                messageSender.Verify(
+                    v => v.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+            }
         }
 
         /// <summary>
@@ -351,9 +393,9 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldThrowIfOverAgeDependentGetDelegationInformation()
+        public async Task GetDelegationInformationThrowsValidationException()
         {
-            RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-14));
+            RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-14)); // Invalid age
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
 
@@ -367,11 +409,11 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Tests get delegation information - throws if patient service returns error.
+        /// Tests get delegation information - throws not found exception when patient service returns error.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldThrowIfPatientServiceErrorGetDelegationInformation()
+        public async Task GetDelegationInformationThrowsNotFoundException()
         {
             RequestResultError error = new() { ActionCode = ActionType.Invalid, ResultMessage = "Bad request" };
             RequestResult<PatientModel> patientResult = new()
@@ -493,17 +535,15 @@ namespace HealthGateway.Admin.Tests.Services
             return true;
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot()
+        private static IConfigurationRoot GetIConfigurationRoot(bool isChangeFeedEnabled = true)
         {
             Dictionary<string, string?> myConfiguration = new()
             {
                 { "Delegation:MaxDependentAge", "12" },
+                { "ChangeFeed:Dependents:Enabled", isChangeFeedEnabled.ToString() },
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true)
-                .AddJsonFile("appsettings.Development.json", true)
-                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
@@ -759,7 +799,9 @@ namespace HealthGateway.Admin.Tests.Services
             ResourceDelegateQueryResult resourceDelegateQueryResult,
             string resourceOwnerHdid,
             string authenticatedUser,
-            string authenticatedPreferredUsername)
+            string authenticatedPreferredUsername,
+            Mock<IMessageSender>? messageSender = null,
+            bool isChangeFeedEnabled = true)
         {
             Mock<IAuthenticationDelegate> authenticationDelegate = new();
             authenticationDelegate.Setup(a => a.FetchAuthenticatedUserId()).Returns(authenticatedUser);
@@ -770,10 +812,10 @@ namespace HealthGateway.Admin.Tests.Services
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true, CancellationToken.None)).ReturnsAsync(dependent);
 
-            Mock<IMessageSender> messageSender = new();
+            messageSender = messageSender ?? new();
 
             return new(
-                Configuration,
+                GetIConfigurationRoot(isChangeFeedEnabled),
                 new Mock<IPatientService>().Object,
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,

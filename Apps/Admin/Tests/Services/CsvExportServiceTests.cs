@@ -27,13 +27,12 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.AccessManagement.Administration.Models;
-    using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.Api;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -46,39 +45,215 @@ namespace HealthGateway.Admin.Tests.Services
         private static readonly IAdminServerMappingService MappingService = new AdminServerMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
 
         /// <summary>
+        /// Get comments download.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetCommentsAsync()
+        {
+            // Arrange
+            Comment comment = new()
+            {
+                Id = Guid.NewGuid(),
+                UserProfileId = "12345",
+                EntryTypeCode = "Code",
+                ParentEntryId = "12345",
+                CreatedDateTime = DateTime.UtcNow,
+                UpdatedDateTime = DateTime.UtcNow,
+            };
+            IList<Comment> comments = [comment];
+            Mock<ICommentDelegate> commentDelegateMock = new();
+            commentDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(comments);
+            ICsvExportService service = GetCsvExportService(commentDelegateMock: commentDelegateMock);
+
+            // Act
+            Stream stream = await service.GetCommentsAsync();
+
+            // Assert
+            Assert.NotNull(stream);
+        }
+
+        /// <summary>
+        /// Get notes download.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetNotesAsync()
+        {
+            // Arrange
+            Note note = new()
+            {
+                Id = Guid.NewGuid(),
+                HdId = "12345",
+                CreatedDateTime = DateTime.UtcNow,
+                UpdatedDateTime = DateTime.UtcNow,
+            };
+            IList<Note> notes = [note];
+            Mock<INoteDelegate> noteDelegateMock = new();
+            noteDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(notes);
+            ICsvExportService service = GetCsvExportService(noteDelegateMock: noteDelegateMock);
+
+            // Act
+            Stream stream = await service.GetNotesAsync();
+
+            // Assert
+            Assert.NotNull(stream);
+        }
+
+        /// <summary>
+        /// Get user profiles download.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetUserProfilesAsync()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = "12345",
+                Email = "test@healthgateway.com",
+                SmsNumber = "2505550000",
+                EncryptionKey = "key",
+                CreatedDateTime = DateTime.UtcNow,
+                UpdatedDateTime = DateTime.UtcNow,
+            };
+            IList<UserProfile> userProfiles = [userProfile];
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
+            ICsvExportService service = GetCsvExportService(profileDelegateMock: profileDelegateMock);
+
+            // Act
+            Stream stream = await service.GetUserProfilesAsync();
+
+            // Assert
+            Assert.NotNull(stream);
+        }
+
+        /// <summary>
+        /// Get ratings download.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetRatingsAsync()
+        {
+            // Arrange
+            Rating rating = new()
+            {
+                Id = Guid.NewGuid(),
+                RatingValue = 5,
+            };
+            IList<Rating> ratings = [rating];
+            Mock<IRatingDelegate> ratingDelegateMock = new();
+            ratingDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(ratings);
+            ICsvExportService service = GetCsvExportService(ratingDelegateMock: ratingDelegateMock);
+
+            // Act
+            Stream stream = await service.GetRatingsAsync();
+
+            // Assert
+            Assert.NotNull(stream);
+        }
+
+        /// <summary>
+        /// Get inactive users download.
+        /// </summary>
+        /// <param name="inactiveUsersResultType">The result type to return for get inactive users service call.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(ResultType.Success)]
+        [InlineData(ResultType.Error)]
+        public async Task ShouldGetInactiveUsersAsync(ResultType inactiveUsersResultType)
+        {
+            // Arrange
+            RequestResult<List<AdminUserProfileView>> result = new()
+            {
+                ResultStatus = inactiveUsersResultType,
+                ResourcePayload =
+                [
+                    new()
+                    {
+                        AdminUserProfileId = Guid.NewGuid(),
+                        UserId = Guid.NewGuid(),
+                        FirstName = "John",
+                        LastName = "Doe",
+                        Username = "JohnDoe",
+                        Email = "email",
+                        RealmRoles = "Admin",
+                        LastLoginDateTime = DateTime.UtcNow,
+                    },
+                ],
+            };
+
+            Mock<IInactiveUserService> inactiveUserServiceMock = new();
+            inactiveUserServiceMock.Setup(s => s.GetInactiveUsersAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(result);
+            ICsvExportService service = GetCsvExportService(inactiveUserServiceMock: inactiveUserServiceMock);
+
+            // Act
+            Stream stream = await service.GetInactiveUsersAsync(30);
+
+            // Assert
+            Assert.NotNull(stream);
+        }
+
+        /// <summary>
+        /// Get user feedback download.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetUserFeedbackAsync()
+        {
+            // Arrange
+            Guid adminTagId = Guid.NewGuid();
+            UserFeedback userFeedback = new()
+            {
+                Id = Guid.NewGuid(),
+                Comment = "Comment",
+                CreatedDateTime = DateTime.UtcNow,
+                Tags =
+                [
+                    new()
+                    {
+                        AdminTagId = adminTagId,
+                        AdminTag = new()
+                        {
+                            AdminTagId = adminTagId,
+                            Name = "Name",
+                        },
+                    },
+                ],
+            };
+
+            IList<UserFeedback> userFeedbacks = [userFeedback];
+            Mock<IFeedbackDelegate> feedbackDelegateMock = new();
+            feedbackDelegateMock.Setup(s => s.GetAllUserFeedbackEntriesAsync(It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userFeedbacks);
+            ICsvExportService service = GetCsvExportService(feedbackDelegateMock: feedbackDelegateMock);
+
+            // Act
+            Stream stream = await service.GetUserFeedbackAsync();
+
+            // Assert
+            Assert.NotNull(stream);
+        }
+
+        /// <summary>
         /// Happy path year of birth counts download.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetYearOfBirthCounts()
+        public async Task ShouldGetYearOfBirthCountsAsync()
         {
+            // Arrange
             Dictionary<int, int> getResult = [];
-
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);
-
-            IInactiveUserService inactiveUserService = new InactiveUserService(
-                new Mock<IAuthenticationDelegate>().Object,
-                new Mock<IAdminUserProfileDelegate>().Object,
-                new Mock<IKeycloakAdminApi>().Object,
-                new Mock<ILogger<InactiveUserService>>().Object,
-                Configuration,
-                MappingService);
-
-            ICsvExportService service = new CsvExportService(
-                Configuration,
-                new Mock<INoteDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICommentDelegate>().Object,
-                new Mock<IRatingDelegate>().Object,
-                inactiveUserService,
-                new Mock<IFeedbackDelegate>().Object);
-
+            ICsvExportService service = GetCsvExportService(profileDelegateMock: profileDelegateMock);
             DateOnly startDateLocal = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
             DateOnly endDateLocal = DateOnly.FromDateTime(DateTime.Now);
 
+            // Act
             Stream yobCounts = await service.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, CancellationToken.None);
 
+            // Assert
             Assert.NotNull(yobCounts);
         }
 
@@ -165,6 +340,31 @@ namespace HealthGateway.Admin.Tests.Services
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
+        }
+
+        private static ICsvExportService GetCsvExportService(
+            Mock<IUserProfileDelegate>? profileDelegateMock = null,
+            Mock<ICommentDelegate>? commentDelegateMock = null,
+            Mock<INoteDelegate>? noteDelegateMock = null,
+            Mock<IRatingDelegate>? ratingDelegateMock = null,
+            Mock<IInactiveUserService>? inactiveUserServiceMock = null,
+            Mock<IFeedbackDelegate>? feedbackDelegateMock = null)
+        {
+            profileDelegateMock = profileDelegateMock ?? new();
+            commentDelegateMock = commentDelegateMock ?? new();
+            noteDelegateMock = noteDelegateMock ?? new();
+            ratingDelegateMock = ratingDelegateMock ?? new();
+            inactiveUserServiceMock = inactiveUserServiceMock ?? new();
+            feedbackDelegateMock = feedbackDelegateMock ?? new();
+
+            return new CsvExportService(
+                Configuration,
+                noteDelegateMock.Object,
+                profileDelegateMock.Object,
+                commentDelegateMock.Object,
+                ratingDelegateMock.Object,
+                inactiveUserServiceMock.Object,
+                feedbackDelegateMock.Object);
         }
     }
 }
