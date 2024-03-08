@@ -156,7 +156,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ResultError = expectedResultType == ResultType.Error
                     ? new RequestResultError
                     {
-                        ResultMessage = communicationStatus == CommunicationStatus.Processed ? "Processed communication can't be deleted.." : string.Empty,
+                        ResultMessage = communicationStatus == CommunicationStatus.Processed ? "Processed communication can't be deleted." : string.Empty,
                         ErrorCode = communicationStatus == CommunicationStatus.Processed
                             ? ErrorTranslator.InternalError(ErrorType.InvalidState)
                             : ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -172,14 +172,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<Communication> actual = await service.DeleteAsync(communication);
 
             // Assert
-            if (expectedResultType == ResultType.Success)
-            {
-                expected.ShouldDeepEqual(actual);
-            }
-            else
-            {
-                Assert.Equal(expectedResultType, actual.ResultStatus);
-            }
+            expected.ShouldDeepEqual(actual);
         }
 
         /// <summary>
