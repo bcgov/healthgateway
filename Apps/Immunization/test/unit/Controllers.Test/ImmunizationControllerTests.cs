@@ -20,7 +20,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;

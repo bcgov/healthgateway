@@ -17,8 +17,8 @@ namespace HealthGateway.Immunization.Delegates
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>

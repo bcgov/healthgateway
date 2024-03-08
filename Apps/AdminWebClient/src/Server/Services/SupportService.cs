@@ -27,14 +27,13 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.IdentityModel.Tokens;
-    using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
 
     /// <inheritdoc/>
     public class SupportService : ISupportService
@@ -139,7 +138,7 @@ namespace HealthGateway.Admin.Services
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 List<PatientSupportDetails> patients = [];
-                UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(patientResult.ResourcePayload.HdId, ct);
+                HealthGateway.Database.Models.UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(patientResult.ResourcePayload.HdId, ct);
                 if (userProfile != null)
                 {
                     PatientSupportDetails patientSupportDetails = PatientSupportDetailsMapUtils.ToUiModel(userProfile, patientResult.ResourcePayload, this.autoMapper);
@@ -168,7 +167,7 @@ namespace HealthGateway.Admin.Services
 
         private async Task PopulatePatientSupportDetailsAsync(RequestResult<IEnumerable<PatientSupportDetails>> result, UserQueryType queryType, string queryString, CancellationToken ct)
         {
-            IEnumerable<UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString, ct);
+            IEnumerable<HealthGateway.Database.Models.UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString, ct);
             result.ResourcePayload = this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(profiles);
             result.ResultStatus = ResultType.Success;
         }

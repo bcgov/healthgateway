@@ -18,7 +18,6 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Models.Phsa;

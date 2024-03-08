@@ -19,7 +19,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Service that interacts with the Communications database.

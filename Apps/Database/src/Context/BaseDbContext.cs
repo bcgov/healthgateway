@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Context
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 

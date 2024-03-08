@@ -18,7 +18,7 @@ namespace HealthGateway.GatewayApiTests.Validations
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation.Results;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Validations;
     using Moq;
     using Xunit;

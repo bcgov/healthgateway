@@ -19,7 +19,7 @@ namespace HealthGateway.MedicationTests.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;

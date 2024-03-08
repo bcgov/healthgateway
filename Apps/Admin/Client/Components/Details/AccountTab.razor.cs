@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Client.Components.Details
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Components;
 
     /// <summary>

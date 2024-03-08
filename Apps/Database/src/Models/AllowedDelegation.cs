@@ -16,7 +16,6 @@
 namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Common.Data.Models;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>

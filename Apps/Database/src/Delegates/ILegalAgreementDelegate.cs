@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Operations to be performed in the DB for the TermsOfService.

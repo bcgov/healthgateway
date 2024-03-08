@@ -27,7 +27,7 @@ namespace HealthGateway.MedicationTests.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;

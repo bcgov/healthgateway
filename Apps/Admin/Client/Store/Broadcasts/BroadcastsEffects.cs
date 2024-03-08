@@ -25,7 +25,6 @@ using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Models;
-using HealthGateway.Common.Data.ViewModels;
 using Microsoft.Extensions.Logging;
 using Refit;
 

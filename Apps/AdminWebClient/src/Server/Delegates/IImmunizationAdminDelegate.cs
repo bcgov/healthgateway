@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
 
     /// <summary>

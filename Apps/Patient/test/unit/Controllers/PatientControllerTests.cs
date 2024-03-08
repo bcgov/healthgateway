@@ -22,7 +22,7 @@ namespace HealthGateway.PatientTests.Controllers
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
     using HealthGateway.Patient.Models;

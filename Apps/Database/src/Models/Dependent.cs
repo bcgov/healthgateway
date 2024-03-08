@@ -17,7 +17,6 @@ namespace HealthGateway.Database.Models
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The dependent model.
