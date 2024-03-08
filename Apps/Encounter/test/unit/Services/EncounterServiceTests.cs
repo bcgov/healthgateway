@@ -27,6 +27,7 @@ namespace HealthGateway.EncounterTests.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -285,7 +286,9 @@ namespace HealthGateway.EncounterTests.Services
         public async Task ShouldGetHospitalVisits(bool canAccessDataSource)
         {
             // Arrange
-            DateTime expectedAdmitDateTime = DateTime.UtcNow;
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            DateTime expectedAdmitDateTime = now.UtcDateTime;
+
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
             {
                 ResultStatus = ResultType.Success,
@@ -296,7 +299,7 @@ namespace HealthGateway.EncounterTests.Services
                         new()
                         {
                             EncounterId = "Id",
-                            AdmitDateTime = DateTime.SpecifyKind(expectedAdmitDateTime.ToLocalTime(), DateTimeKind.Unspecified),
+                            AdmitDateTime = DateTime.SpecifyKind(TimeZoneInfo.ConvertTime(now, DateFormatter.GetLocalTimeZone(Configuration)).DateTime, DateTimeKind.Unspecified),
                             EndDateTime = null,
                         },
                     ],
