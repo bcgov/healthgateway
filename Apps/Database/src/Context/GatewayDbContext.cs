@@ -83,6 +83,7 @@ namespace HealthGateway.Database.Context
         public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
         public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
+        public DbSet<BetaFeatureAccess> BetaFeatureAccess { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -404,6 +405,34 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(ad => ad.DependentHdId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Create Foreign key for BetaFeatureAccess to UserProfile
+            modelBuilder.Entity<BetaFeatureAccess>()
+                .HasOne<UserProfile>()
+                .WithMany(up => up.BetaFeatureAccessList)
+                .HasPrincipalKey(up => up.HdId)
+                .HasForeignKey(bfa => bfa.Hdid)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Create Foreign key for BetaFeatureAccess to BetaFeatureCode
+            modelBuilder.Entity<BetaFeatureAccess>()
+                .HasOne<BetaFeatureCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.Code)
+                .HasForeignKey(k => k.BetaFeatureCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            ValueConverter<BetaFeature, string> betaFeatureCodeConverter = new(
+                v => EnumUtility.ToEnumString(v, false),
+                v => EnumUtility.ToEnum<BetaFeature>(v, false));
+
+            modelBuilder.Entity<BetaFeatureAccess>()
+                .Property(e => e.BetaFeatureCode)
+                .HasConversion(betaFeatureCodeConverter);
+
+            modelBuilder.Entity<BetaFeatureCode>()
+                .Property(e => e.Code)
+                .HasConversion(betaFeatureCodeConverter);
+
             // Create Foreign key for AgentAudit to AuditOperationCode
             modelBuilder.Entity<AgentAudit>()
                 .HasOne<AuditOperationCode>()
@@ -457,6 +486,7 @@ namespace HealthGateway.Database.Context
             this.SeedAuditOperationCodes(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
             this.SeedAuditGroupCodes(modelBuilder);
+            this.SeedBetaFeatureCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1253,6 +1283,25 @@ namespace HealthGateway.Database.Context
                         Component = TourApplicationSettings.Component,
                         Key = TourApplicationSettings.LatestChangeDateTime,
                         Value = new DateTime(2023, 5, 3, 15, 0, 0, DateTimeKind.Utc).ToString("o"),
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Beta Feature Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedBetaFeatureCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BetaFeatureCode>()
+                .HasData(
+                    new BetaFeatureCode
+                    {
+                        Code = BetaFeature.SalesForce,
+                        Description = "Salesforce Beta Feature Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
