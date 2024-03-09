@@ -3776,7 +3776,7 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
 
                     b.HasOne("HealthGateway.Database.Models.UserProfile", null)
-                        .WithMany("BetaFeatureAccessList")
+                        .WithMany()
                         .HasForeignKey("Hdid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4086,8 +4086,6 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
-                    b.Navigation("BetaFeatureAccessList");
-
                     b.Navigation("Verifications");
                 });
 #pragma warning restore 612, 618

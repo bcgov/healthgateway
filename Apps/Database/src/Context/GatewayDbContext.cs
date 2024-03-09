@@ -405,21 +405,13 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(ad => ad.DependentHdId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Create Foreign key for BetaFeatureAccess to UserProfile
-            modelBuilder.Entity<BetaFeatureAccess>()
-                .HasOne<UserProfile>()
-                .WithMany(up => up.BetaFeatureAccessList)
-                .HasPrincipalKey(up => up.HdId)
-                .HasForeignKey(bfa => bfa.Hdid)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Create Foreign key for BetaFeatureAccess to BetaFeatureCode
-            modelBuilder.Entity<BetaFeatureAccess>()
-                .HasOne<BetaFeatureCode>()
+            // Set up relationships for BetaFeatureAccess many-to-many table
+            modelBuilder.Entity<UserProfile>()
+                .HasMany<BetaFeatureCode>(p => p.BetaFeatureCodes)
                 .WithMany()
-                .HasPrincipalKey(k => k.Code)
-                .HasForeignKey(k => k.BetaFeatureCode)
-                .OnDelete(DeleteBehavior.Restrict);
+                .UsingEntity<BetaFeatureAccess>(
+                    x => x.HasOne<BetaFeatureCode>().WithMany().HasPrincipalKey(c => c.Code).HasForeignKey(a => a.BetaFeatureCode).OnDelete(DeleteBehavior.Restrict),
+                    x => x.HasOne<UserProfile>().WithMany().HasPrincipalKey(p => p.HdId).HasForeignKey(a => a.Hdid).OnDelete(DeleteBehavior.Cascade));
 
             ValueConverter<BetaFeature, string> betaFeatureCodeConverter = new(
                 v => EnumUtility.ToEnumString(v, false),
