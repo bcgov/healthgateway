@@ -16,13 +16,13 @@
 namespace HealthGateway.Database.Constants
 {
     /// <summary>
-    /// Represents the beta feature.
+    /// Represents a beta feature.
     /// </summary>
     public enum BetaFeature
     {
         /// <summary>
-        /// Represents the sales force feature.
+        /// Represents the feature for the Salesforce application.
         /// </summary>
-        SalesForce,
+        Salesforce,
     }
 }
