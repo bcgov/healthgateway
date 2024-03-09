@@ -75,14 +75,14 @@ namespace HealthGateway.Database.Migrations
                         principalSchema: "gateway",
                         principalTable: "UserProfile",
                         principalColumn: "UserProfileId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 schema: "gateway",
                 table: "BetaFeatureCode",
                 columns: new[] { "Code", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "SalesForce", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Salesforce Beta Feature Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) });
+                values: new object[] { "Salesforce", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Salesforce Beta Feature Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BetaFeatureAccess_BetaFeatureCode",

@@ -411,7 +411,7 @@ namespace HealthGateway.Database.Context
                 .WithMany(up => up.BetaFeatureAccessList)
                 .HasPrincipalKey(up => up.HdId)
                 .HasForeignKey(bfa => bfa.Hdid)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Create Foreign key for BetaFeatureAccess to BetaFeatureCode
             modelBuilder.Entity<BetaFeatureAccess>()
@@ -1300,7 +1300,7 @@ namespace HealthGateway.Database.Context
                 .HasData(
                     new BetaFeatureCode
                     {
-                        Code = BetaFeature.SalesForce,
+                        Code = BetaFeature.Salesforce,
                         Description = "Salesforce Beta Feature Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),

@@ -752,7 +752,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Code = "SalesForce",
+                            Code = "Salesforce",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Salesforce Beta Feature Code",
@@ -3778,7 +3778,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.UserProfile", null)
                         .WithMany("BetaFeatureAccessList")
                         .HasForeignKey("Hdid")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

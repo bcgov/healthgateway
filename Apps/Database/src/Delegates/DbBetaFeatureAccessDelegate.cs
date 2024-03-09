@@ -16,10 +16,12 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.EntityFrameworkCore;
 
     /// <inheritdoc/>
     /// <param name="dbContext">The context to be used when accessing the database.</param>
@@ -43,6 +45,12 @@ namespace HealthGateway.Database.Delegates
             {
                 await dbContext.SaveChangesAsync(ct);
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(CancellationToken ct = default)
+        {
+            return await dbContext.BetaFeatureAccess.OrderBy(dfa => dfa.Hdid).ToListAsync(ct);
         }
     }
 }
