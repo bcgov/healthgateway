@@ -186,6 +186,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             {
                 "hg" => UserLoginClientType.Web,
                 "hg-mobile" => UserLoginClientType.Mobile,
+                "icarus" => UserLoginClientType.Salesforce,
                 _ => null,
             };
 

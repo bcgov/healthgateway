@@ -90,7 +90,8 @@ namespace HealthGateway.Admin.Server.Services
             IDictionary<UserLoginClientType, int> lastLoginClientCounts = await userProfileDelegate.GetLoginClientCountsAsync(startDate, endDate, ct);
             return new(
                 lastLoginClientCounts.TryGetValue(UserLoginClientType.Web, out int webCount) ? webCount : 0,
-                lastLoginClientCounts.TryGetValue(UserLoginClientType.Mobile, out int mobileCount) ? mobileCount : 0);
+                lastLoginClientCounts.TryGetValue(UserLoginClientType.Mobile, out int mobileCount) ? mobileCount : 0,
+                lastLoginClientCounts.TryGetValue(UserLoginClientType.Salesforce, out int salesforceCount) ? salesforceCount : 0);
         }
 
         /// <inheritdoc/>

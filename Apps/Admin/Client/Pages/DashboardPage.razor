@@ -129,6 +129,24 @@
             }
         </MudPaper>
     </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AppLoginCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-salesforce-count" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    Salesforce Logins
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-salesforce-users">
+                    @FormatNumber(AppLoginCounts.Salesforce)
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
     <MudItem xs="12" lg="6">
         @if (AgeCountsLoading)
         {
