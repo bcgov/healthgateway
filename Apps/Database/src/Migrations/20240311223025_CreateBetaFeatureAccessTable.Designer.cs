@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20240309021504_CreateBetaFeatureAccessTable")]
+    [Migration("20240311223025_CreateBetaFeatureAccessTable")]
     partial class CreateBetaFeatureAccessTable
     {
         /// <inheritdoc />
@@ -3455,7 +3455,7 @@ namespace HealthGateway.Database.Migrations
                             UserLoginClientCode = "Web",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Code for a login from the hg web app",
+                            Description = "Code for a login from the HG web app",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -3465,9 +3465,19 @@ namespace HealthGateway.Database.Migrations
                             UserLoginClientCode = "Mobile",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Code for a login from the hg mobile app",
+                            Description = "Code for a login from the HG mobile app",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            UserLoginClientCode = "Salesforce",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Code for a login from the HG Salesforce app",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
                         });
                 });
