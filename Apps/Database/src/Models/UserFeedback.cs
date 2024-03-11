@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// The user feedback database model.
@@ -58,6 +59,12 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the UserProfile associated to this user feedback.
         /// </summary>
         public virtual UserProfile? UserProfile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client associated with the feedback.
+        /// </summary>
+        [MaxLength(10)]
+        public UserLoginClientType? ClientCode { get; set; }
 
         /// <summary>
         /// Gets or sets the related list of tags.
