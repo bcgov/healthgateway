@@ -98,5 +98,10 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the messaging verifications for this user.
         /// </summary>
         public virtual ICollection<MessagingVerification>? Verifications { get; set; }
+
+        /// <summary>
+        /// Gets or sets the available beta features for this user.
+        /// </summary>
+        public virtual ICollection<BetaFeatureCode>? BetaFeatureCodes { get; set; }
     }
 }
