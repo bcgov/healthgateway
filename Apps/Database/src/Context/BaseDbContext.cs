@@ -47,10 +47,17 @@ namespace HealthGateway.Database.Context
         protected virtual string ConcurrencyColumn => "xmin";
 
         /// <summary>
-        /// Gets the initial seed date for loading data.
+        /// Gets the initial seed date for loading data as an unspecified DateTime.
         /// The value returned is the first date of the Health Gateway Project.
+        /// New seed data should instead use <see cref="DefaultSeedDateUtc"/>.
         /// </summary>
         protected virtual DateTime DefaultSeedDate => Convert.ToDateTime("5/1/2019", CultureInfo.InvariantCulture);
+
+        /// <summary>
+        /// Gets the initial seed date for loading data as a UTC DateTime.
+        /// The value returned is the first date of the Health Gateway Project.
+        /// </summary>
+        protected virtual DateTime DefaultSeedDateUtc => DateTime.SpecifyKind(this.DefaultSeedDate, DateTimeKind.Utc);
 
         /// <summary>
         /// Executes a sql command.

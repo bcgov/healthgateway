@@ -1178,7 +1178,7 @@ namespace HealthGateway.Database.Context
                     new UserLoginClientTypeCode
                     {
                         UserLoginClientCode = UserLoginClientType.Web,
-                        Description = "Code for a login from the hg web app",
+                        Description = "Code for a login from the HG web app",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -1187,11 +1187,20 @@ namespace HealthGateway.Database.Context
                     new UserLoginClientTypeCode
                     {
                         UserLoginClientCode = UserLoginClientType.Mobile,
-                        Description = "Code for a login from the hg mobile app",
+                        Description = "Code for a login from the HG mobile app",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Salesforce,
+                        Description = "Code for a login from the HG Salesforce app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     });
         }
 

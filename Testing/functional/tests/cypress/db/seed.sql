@@ -49,7 +49,7 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	'1967',
-	'Mobile'
+	'Salesforce'
 );
 
 /* Protected User - Keycloak User (protected) */
