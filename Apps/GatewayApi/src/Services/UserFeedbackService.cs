@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
@@ -27,6 +28,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -34,6 +36,8 @@ namespace HealthGateway.GatewayApi.Services
     {
         private readonly IFeedbackDelegate feedbackDelegate;
         private readonly IBackgroundJobClient jobClient;
+        private readonly IGatewayApiMappingService mappingService;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILogger logger;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly IRatingDelegate ratingDelegate;
@@ -46,26 +50,36 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ratingDelegate">The rating delegate to perform the work.</param>
         /// <param name="profileDelegate">The user profile delegate to use.</param>
         /// <param name="jobClient">The JobScheduler queue client.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         public UserFeedbackService(
             ILogger<UserFeedbackService> logger,
             IFeedbackDelegate feedbackDelegate,
             IRatingDelegate ratingDelegate,
             IUserProfileDelegate profileDelegate,
-            IBackgroundJobClient jobClient)
+            IBackgroundJobClient jobClient,
+            IGatewayApiMappingService mappingService,
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
             this.ratingDelegate = ratingDelegate;
             this.profileDelegate = profileDelegate;
             this.jobClient = jobClient;
+            this.mappingService = mappingService;
+            this.authenticationDelegate = authenticationDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(UserFeedback userFeedback, CancellationToken ct = default)
+        public async Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(Feedback feedback, string hdid, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user feedback...");
+            UserFeedback userFeedback = this.mappingService.MapToUserFeedback(feedback, hdid);
+            userFeedback.ClientCode ??= this.authenticationDelegate.FetchAuthenticatedUserClientType();
+
             DbResult<UserFeedback> retVal = await this.feedbackDelegate.InsertUserFeedbackAsync(userFeedback, ct);
             UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(userFeedback.UserProfileId, ct);
+
             string? clientEmail = userProfile?.Email;
             if (!string.IsNullOrWhiteSpace(clientEmail))
             {

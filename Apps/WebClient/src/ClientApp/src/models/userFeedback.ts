@@ -1,4 +1,6 @@
+import { ClientType } from "@/constants/clientType";
+
 export default interface UserFeedback {
-    // Gets or sets the comment.
     comment: string;
+    clientType?: ClientType;
 }

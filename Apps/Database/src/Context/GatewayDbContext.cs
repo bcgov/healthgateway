@@ -353,13 +353,27 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => p.Username)
                 .IsUnique();
 
-            // Create Foreign key for UserFeedback
+            // Create Foreign keys for UserFeedback
             modelBuilder.Entity<UserFeedback>()
                 .HasOne<UserProfile>(f => f.UserProfile)
                 .WithMany()
                 .HasPrincipalKey(k => k.HdId)
                 .HasForeignKey(k => k.UserProfileId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<UserFeedback>()
+                .HasOne<UserLoginClientTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.UserLoginClientCode)
+                .HasForeignKey(k => k.ClientCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserFeedback>()
+                .Property(e => e.ClientCode)
+                .HasConversion(
+                    new ValueConverter<UserLoginClientType, string>(
+                        v => EnumUtility.ToEnumString(v, false),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
 
             modelBuilder.Entity<UserProfile>()
                 .HasIndex(p => p.LastLoginDateTime);
