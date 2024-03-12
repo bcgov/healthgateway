@@ -63,7 +63,8 @@ describe("Diagnostic Imaging", () => {
     });
 
     it("Validate file download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.contains("[data-testid=entryCardDate]", "2022-Oct-08")
+            .parents("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
@@ -74,7 +75,8 @@ describe("Diagnostic Imaging", () => {
     });
 
     it("Validate attachment download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.contains("[data-testid=entryCardDate]", "2022-Oct-08")
+            .parents("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
