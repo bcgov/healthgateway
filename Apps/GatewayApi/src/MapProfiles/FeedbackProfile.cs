@@ -13,31 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.GatewayApi.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between DB and UI Models.
+    /// An AutoMapper profile class which defines mappings between DB and front-end models.
     /// </summary>
-    public class UserFeedbackProfile : Profile
+    public class FeedbackProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackProfile"/> class.
+        /// Initializes a new instance of the <see cref="FeedbackProfile"/> class.
         /// </summary>
-        public UserFeedbackProfile()
+        public FeedbackProfile()
         {
-            this.CreateMap<UserFeedback, UserFeedbackView>()
-                .ForMember(dest => dest.ClientType, opt => opt.MapFrom(src => src.ClientCode))
-                .ReverseMap();
-
-            this.CreateMap<UserFeedbackTag, UserFeedbackTagView>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserFeedbackTagId))
-                .ForMember(dest => dest.TagId, opt => opt.MapFrom(src => src.AdminTagId))
-                .ForMember(dest => dest.FeedbackId, opt => opt.MapFrom(src => src.UserFeedbackId))
-                .ReverseMap();
+            this.CreateMap<Feedback, UserFeedback>()
+                .ForMember(f => f.ClientCode, opts => opts.MapFrom(f => f.ClientType));
         }
     }
 }

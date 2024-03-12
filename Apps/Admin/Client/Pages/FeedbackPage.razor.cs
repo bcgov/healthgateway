@@ -269,6 +269,7 @@ public partial class FeedbackPage : FluxorComponent
             this.DateTime = model.CreatedDateTime;
             this.Hdid = model.UserProfileId ?? string.Empty;
             this.Email = model.Email;
+            this.Platform = model.ClientType == null ? string.Empty : EnumUtility.ToEnumString(model.ClientType.Value);
             this.Comments = model.Comment ?? string.Empty;
             this.TagIds = model.Tags.Select(t => t.TagId);
             this.IsReviewed = model.IsReviewed;
@@ -282,6 +283,8 @@ public partial class FeedbackPage : FluxorComponent
         public string Hdid { get; }
 
         public string Email { get; }
+
+        public string Platform { get; }
 
         public string Comments { get; }
 

@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// The User Feedback service.
@@ -29,10 +30,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Saves the user feedback to the database.
         /// </summary>
-        /// <param name="userFeedback">The user feedback model to be saved.</param>
+        /// <param name="feedback">The feedback to be saved.</param>
+        /// <param name="hdid">The HDID of the person submitting the feedback.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user feedback.</returns>
-        Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(UserFeedback userFeedback, CancellationToken ct = default);
+        Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(Feedback feedback, string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Saves the rating to the database.

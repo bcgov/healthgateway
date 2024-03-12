@@ -82,6 +82,18 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
+        public UserFeedback MapToUserFeedback(Feedback source, string hdid)
+        {
+            UserFeedback dest = mapper.Map<Feedback, UserFeedback>(source);
+
+            dest.UserProfileId = hdid;
+            dest.CreatedBy = hdid;
+            dest.UpdatedBy = hdid;
+
+            return dest;
+        }
+
+        /// <inheritdoc/>
         public UserNote MapToUserNote(Note source, string decryptionKey)
         {
             UserNote dest = mapper.Map<Note, UserNote>(source);
