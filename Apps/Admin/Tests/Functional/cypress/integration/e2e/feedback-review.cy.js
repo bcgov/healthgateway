@@ -23,7 +23,7 @@ describe("Feedback Review", () => {
         cy.log("Validating data initialized by seed script.");
         cy.get("[data-testid=tag-collection]").should("exist");
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
-        validateTableRowCount("[data-testid=feedback-table]", 2);
+        validateTableRowCount("[data-testid=feedback-table]", 4);
 
         cy.log("Reviewing feedback.");
         cy.get(rowSelector)
