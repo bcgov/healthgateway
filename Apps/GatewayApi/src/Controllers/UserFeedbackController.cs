@@ -23,6 +23,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="userFeedback">The user feedback model.</param>
+        /// <param name="feedback">The user feedback model.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The user feedback record was saved.</response>
         /// <response code="400">The user feedback object is invalid.</response>
@@ -66,17 +67,14 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> CreateUserFeedback(string hdid, [FromBody] UserFeedback? userFeedback, CancellationToken ct)
+        public async Task<IActionResult> CreateUserFeedback(string hdid, [FromBody] Feedback? feedback, CancellationToken ct)
         {
-            if (userFeedback == null)
+            if (feedback == null)
             {
                 return new BadRequestResult();
             }
 
-            userFeedback.UserProfileId = hdid;
-            userFeedback.CreatedBy = hdid;
-            userFeedback.UpdatedBy = hdid;
-            DbResult<UserFeedback> result = await this.userFeedbackService.CreateUserFeedbackAsync(userFeedback, ct);
+            DbResult<UserFeedback> result = await this.userFeedbackService.CreateUserFeedbackAsync(feedback, hdid, ct);
             if (result.Status != DbStatusCode.Created)
             {
                 return new ConflictResult();

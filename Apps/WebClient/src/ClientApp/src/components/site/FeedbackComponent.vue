@@ -5,6 +5,7 @@ import { computed, ref, unref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import { ClientType } from "@/constants/clientType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
@@ -87,6 +88,7 @@ function onSubmit(): void {
     userFeedbackService
         .submitFeedback(user.value.hdid, {
             comment: comment.value,
+            clientType: ClientType.Web,
         })
         .then((result) => {
             isSuccess.value = result;

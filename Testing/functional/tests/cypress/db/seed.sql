@@ -1352,7 +1352,7 @@ VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
 	'2022-07-06 15:30:43.095652+00',
 	false,
-	'It would be helpful to have some feedback entries already in the database when the functional tests run.',
+	'The database seed script should populate some rows in the feedback table.',
 	false,
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
 );
@@ -1366,7 +1366,8 @@ INSERT INTO gateway."UserFeedback"(
 	"IsSatisfied",
 	"Comment",
 	"IsReviewed",
-	"UserProfileId")
+	"UserProfileId",
+    "ClientCode")
 VALUES (
 	'57abe4d7-2f83-43fd-9037-cc11ab9c9a12',
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
@@ -1374,9 +1375,58 @@ VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
 	'2022-07-06 15:31:18.492904+00',
 	false,
-	'The database seed script should populate some rows in the feedback table.',
+	'I''d like to receive an email when I have a new health record.',
 	false,
-	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    'Web'
+);
+
+INSERT INTO gateway."UserFeedback"(
+	"UserFeedbackId",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime",
+	"IsSatisfied",
+	"Comment",
+	"IsReviewed",
+	"UserProfileId",
+    "ClientCode")
+VALUES (
+	'487ce155-1cd7-43b7-abf3-4cffb6b94b48',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2024-03-11 15:32:18.492904+00',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2024-03-11 15:32:18.492904+00',
+	false,
+	'I''d like to be able to view and create notes and comments on my health records in the mobile app.',
+	false,
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    'Mobile'
+);
+
+INSERT INTO gateway."UserFeedback"(
+	"UserFeedbackId",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime",
+	"IsSatisfied",
+	"Comment",
+	"IsReviewed",
+	"UserProfileId",
+    "ClientCode")
+VALUES (
+	'4bb2e090-8657-4057-b10d-8df4b75b0268',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2024-03-12 15:33:18.492904+00',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2024-03-12 15:33:18.492904+00',
+	false,
+	'Did Health Gateway get an update?',
+	false,
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    'Salesforce'
 );
 
 /* PHN: 9872868103 (508820774378599978) will have no Allowed Delegation record(s) */

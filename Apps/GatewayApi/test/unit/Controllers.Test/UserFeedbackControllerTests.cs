@@ -24,6 +24,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Controllers;
+    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
@@ -43,6 +44,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateUserFeedback()
         {
+            Feedback feedback = new();
             UserFeedback userFeedback = new()
             {
                 UserProfileId = Hdid,
@@ -57,10 +59,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<Feedback>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback, default);
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, feedback, default);
 
             Assert.IsType<OkResult>(actualResult);
         }
@@ -72,6 +74,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateUserFeedbackWithConflictResultError()
         {
+            Feedback feedback = new();
             UserFeedback userFeedback = new()
             {
                 UserProfileId = Hdid,
@@ -86,10 +89,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<Feedback>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback, default);
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, feedback, default);
 
             Assert.IsType<ConflictResult>(actualResult);
         }
@@ -107,7 +110,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<Feedback>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             IActionResult actualResult = await controller.CreateUserFeedback(Hdid, null, default);
