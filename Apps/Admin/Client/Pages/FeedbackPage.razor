@@ -97,6 +97,11 @@ else
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
+                    <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.Platform)">
+                        Platform
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.Comments)">
                         Comments
                     </MudTableSortLabel>
@@ -129,6 +134,7 @@ else
                         @context.Email
                     }
                 </MudTd>
+                <MudTd DataLabel="Platform" data-testid="feedback-platform">@context.Platform</MudTd>
                 <MudTd DataLabel="Comments" data-testid="feedback-comments">@context.Comments</MudTd>
                 <MudTd DataLabel="Tags">
                     <div class="d-flex justify-end">
