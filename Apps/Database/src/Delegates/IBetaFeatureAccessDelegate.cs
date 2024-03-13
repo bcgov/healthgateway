@@ -50,12 +50,5 @@ namespace HealthGateway.Database.Delegates
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task<IList<BetaFeatureAccess>> GetAsync(IEnumerable<string> hdids, CancellationToken ct = default);
-
-        /// <summary>
-        /// Gets a list of all beta feature access objects from the DB.
-        /// </summary>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(CancellationToken ct = default);
     }
 }

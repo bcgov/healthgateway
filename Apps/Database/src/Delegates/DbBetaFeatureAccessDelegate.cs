@@ -55,11 +55,5 @@ namespace HealthGateway.Database.Delegates
                 .OrderBy(x => x.Hdid)
                 .ToListAsync(ct);
         }
-
-        /// <inheritdoc/>
-        public async Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(CancellationToken ct = default)
-        {
-            return await dbContext.BetaFeatureAccess.OrderBy(x => x.Hdid).ToListAsync(ct);
-        }
     }
 }
