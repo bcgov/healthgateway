@@ -17,8 +17,8 @@ namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
     using Microsoft.EntityFrameworkCore;
+    using BetaFeature = HealthGateway.Database.Constants.BetaFeature;
 
     /// <summary>
     /// The beta feature access model.

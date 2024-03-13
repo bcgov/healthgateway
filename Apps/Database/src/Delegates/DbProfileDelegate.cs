@@ -130,6 +130,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<IList<UserProfile>> GetUserProfileAsync(string email, bool includeBetaFeatureCodes, CancellationToken ct = default)
+        {
+            IQueryable<UserProfile> query = this.dbContext.UserProfile;
+            query = query.Where(p => p.Email == email);
+
+            if (includeBetaFeatureCodes)
+            {
+                query = query.Include(p => p.BetaFeatureCodes);
+            }
+
+            return await query.ToListAsync(ct);
+        }
+
+        /// <inheritdoc/>
         public async Task<IList<UserProfile>> GetUserProfilesAsync(IList<string> hdIds, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profiles from DB...");

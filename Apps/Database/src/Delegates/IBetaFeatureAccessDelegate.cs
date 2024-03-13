@@ -44,6 +44,14 @@ namespace HealthGateway.Database.Delegates
         Task DeleteRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessList, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
+        /// Gets a list of beta feature access objects from the DB.
+        /// </summary>
+        /// <param name="hdids">A list of hdids to query on.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task<IList<BetaFeatureAccess>> GetAsync(IEnumerable<string> hdids, CancellationToken ct = default);
+
+        /// <summary>
         /// Gets a list of all beta feature access objects from the DB.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>

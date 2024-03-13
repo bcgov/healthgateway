@@ -15,13 +15,15 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Services
 {
-    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Models.Immunization;
     using HealthGateway.Common.AccessManagement.Administration.Models;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
+    using Communication = HealthGateway.Admin.Common.Models.Communication;
 
     /// <summary>
     /// Service to map between models at different layers.
@@ -54,35 +56,51 @@ namespace HealthGateway.Admin.Server.Services
         AgentAction MapToAgentAction(AgentAudit source);
 
         /// <summary>Maps model.</summary>
-        /// <param name="source">The source object to transform.</param>
+        /// <param name="hdid">The hdid to associate the beta feature with.</param>
+        /// <param name="betaFeature">The beta feature available to the hdid.</param>
         /// <returns>The destination object.</returns>
-        Common.Models.Communication MapToCommonCommunication(HealthGateway.Database.Models.Communication source);
+        BetaFeatureAccess MapToBetaFeatureAccess(string hdid, BetaFeature betaFeature);
+
+        /// <summary>Maps enum.</summary>
+        /// <param name="source">The beta feature to convert.</param>
+        /// <returns>The destination object.</returns>
+        Database.Constants.BetaFeature MapToBetaFeature(BetaFeature source);
+
+        /// <summary>Maps enum.</summary>
+        /// <param name="source">The beta feature to convert.</param>
+        /// <returns>The destination object.</returns>
+        BetaFeature MapToBetaFeature(Database.Constants.BetaFeature source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        HealthGateway.Database.Models.Communication MapToDatabaseCommunication(Common.Models.Communication source);
+        Communication MapToCommonCommunication(Database.Models.Communication source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        DelegateInfo MapToDelegateInfo(HealthGateway.Common.Models.PatientModel source);
+        Database.Models.Communication MapToDatabaseCommunication(Communication source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        DependentInfo MapToDependentInfo(HealthGateway.Common.Models.PatientModel source);
+        DelegateInfo MapToDelegateInfo(PatientModel source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        PatientSupportDependentInfo MapToPatientSupportDependentInfo(PatientModel source);
+        DependentInfo MapToDependentInfo(PatientModel source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        PatientSupportDependentInfo MapToPatientSupportDependentInfo(AccountDataAccess.Patient.PatientModel source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <param name="userProfile">The user profile associated with the object.</param>
         /// <returns>The destination object.</returns>
-        PatientSupportResult MapToPatientSupportResult(PatientModel? source, UserProfile? userProfile);
+        PatientSupportResult MapToPatientSupportResult(AccountDataAccess.Patient.PatientModel? source, UserProfile? userProfile);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>

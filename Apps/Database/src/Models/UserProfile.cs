@@ -102,6 +102,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the available beta features for this user.
         /// </summary>
-        public virtual ICollection<BetaFeatureCode>? BetaFeatureCodes { get; set; }
+        public virtual ICollection<BetaFeatureCode> BetaFeatureCodes { get; set; } = [];
     }
 }

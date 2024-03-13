@@ -48,9 +48,18 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<IList<BetaFeatureAccess>> GetAsync(IEnumerable<string> hdids, CancellationToken ct = default)
+        {
+            return await dbContext.BetaFeatureAccess
+                .Where(x => hdids.Contains(x.Hdid))
+                .OrderBy(x => x.Hdid)
+                .ToListAsync(ct);
+        }
+
+        /// <inheritdoc/>
         public async Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(CancellationToken ct = default)
         {
-            return await dbContext.BetaFeatureAccess.OrderBy(dfa => dfa.Hdid).ToListAsync(ct);
+            return await dbContext.BetaFeatureAccess.OrderBy(x => x.Hdid).ToListAsync(ct);
         }
     }
 }

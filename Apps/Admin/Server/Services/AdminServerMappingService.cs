@@ -17,15 +17,14 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using AutoMapper;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Models.Immunization;
     using HealthGateway.Common.AccessManagement.Administration.Models;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Communication = HealthGateway.Admin.Common.Models.Communication;
@@ -72,6 +71,28 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
+        public BetaFeatureAccess MapToBetaFeatureAccess(string hdid, BetaFeature betaFeature)
+        {
+            return new()
+            {
+                Hdid = hdid,
+                BetaFeatureCode = this.MapToBetaFeature(betaFeature),
+            };
+        }
+
+        /// <inheritdoc/>
+        public Database.Constants.BetaFeature MapToBetaFeature(BetaFeature source)
+        {
+            return mapper.Map<BetaFeature, Database.Constants.BetaFeature>(source);
+        }
+
+        /// <inheritdoc/>
+        public BetaFeature MapToBetaFeature(Database.Constants.BetaFeature source)
+        {
+            return mapper.Map<Database.Constants.BetaFeature, BetaFeature>(source);
+        }
+
+        /// <inheritdoc/>
         public Communication MapToCommonCommunication(Database.Models.Communication source)
         {
             return mapper.Map<Database.Models.Communication, Communication>(source);
@@ -84,27 +105,27 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public DelegateInfo MapToDelegateInfo(HealthGateway.Common.Models.PatientModel source)
+        public DelegateInfo MapToDelegateInfo(PatientModel source)
         {
-            return mapper.Map<HealthGateway.Common.Models.PatientModel, DelegateInfo>(source);
+            return mapper.Map<PatientModel, DelegateInfo>(source);
         }
 
         /// <inheritdoc/>
-        public DependentInfo MapToDependentInfo(HealthGateway.Common.Models.PatientModel source)
+        public DependentInfo MapToDependentInfo(PatientModel source)
         {
-            return mapper.Map<HealthGateway.Common.Models.PatientModel, DependentInfo>(source);
+            return mapper.Map<PatientModel, DependentInfo>(source);
         }
 
         /// <inheritdoc/>
-        public PatientSupportDependentInfo MapToPatientSupportDependentInfo(PatientModel source)
+        public PatientSupportDependentInfo MapToPatientSupportDependentInfo(AccountDataAccess.Patient.PatientModel source)
         {
-            return mapper.Map<PatientModel, PatientSupportDependentInfo>(source);
+            return mapper.Map<AccountDataAccess.Patient.PatientModel, PatientSupportDependentInfo>(source);
         }
 
         /// <inheritdoc/>
-        public PatientSupportResult MapToPatientSupportResult(PatientModel? source, UserProfile? userProfile)
+        public PatientSupportResult MapToPatientSupportResult(AccountDataAccess.Patient.PatientModel? source, UserProfile? userProfile)
         {
-            PatientSupportResult dest = mapper.Map<PatientModel?, PatientSupportResult>(source) ?? new PatientSupportResult();
+            PatientSupportResult dest = mapper.Map<AccountDataAccess.Patient.PatientModel?, PatientSupportResult>(source) ?? new PatientSupportResult();
 
             dest.Status = PatientStatus.Default;
             if (source == null)

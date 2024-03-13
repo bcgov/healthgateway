@@ -28,6 +28,7 @@ namespace HealthGateway.Database.Context
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+    using BetaFeature = HealthGateway.Database.Constants.BetaFeature;
 
     /// <summary>
     /// The database context used by the web client application.
