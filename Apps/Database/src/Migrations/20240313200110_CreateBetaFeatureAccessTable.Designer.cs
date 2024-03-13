@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20240313001708_CreateBetaFeatureAccessTable")]
+    [Migration("20240313200110_CreateBetaFeatureAccessTable")]
     partial class CreateBetaFeatureAccessTable
     {
         /// <inheritdoc />
@@ -3810,11 +3810,13 @@ namespace HealthGateway.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("Hdid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>

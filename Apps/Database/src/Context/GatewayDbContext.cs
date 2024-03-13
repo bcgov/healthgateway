@@ -426,7 +426,7 @@ namespace HealthGateway.Database.Context
                 .WithMany()
                 .UsingEntity<BetaFeatureAccess>(
                     x => x.HasOne<BetaFeatureCode>().WithMany().HasPrincipalKey(c => c.Code).HasForeignKey(a => a.BetaFeatureCode).OnDelete(DeleteBehavior.Restrict),
-                    x => x.HasOne<UserProfile>().WithMany().HasPrincipalKey(p => p.HdId).HasForeignKey(a => a.Hdid).OnDelete(DeleteBehavior.Cascade));
+                    x => x.HasOne<UserProfile>(a => a.UserProfile).WithMany().HasPrincipalKey(p => p.HdId).HasForeignKey(a => a.Hdid).OnDelete(DeleteBehavior.Cascade));
 
             ValueConverter<BetaFeature, string> betaFeatureCodeConverter = new(
                 v => EnumUtility.ToEnumString(v, false),

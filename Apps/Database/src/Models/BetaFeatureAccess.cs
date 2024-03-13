@@ -38,5 +38,10 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(50)]
         public BetaFeature BetaFeatureCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserProfile associated with <see cref="Hdid"/>.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; set; } = null!;
     }
 }
