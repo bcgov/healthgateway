@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Common.Models;
 
     /// <summary>
     /// Service to manage beta feature access.
@@ -41,5 +42,12 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of available beta features.</returns>
         Task<IEnumerable<BetaFeature>> GetUserAccessAsync(string email, CancellationToken ct = default);
+
+        /// <summary>
+        /// Returns a list of all available associated beta features.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The list of available beta features.</returns>
+        Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccessAsync(CancellationToken ct = default);
     }
 }

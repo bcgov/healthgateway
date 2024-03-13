@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
+    using BetaFeatureAccess = HealthGateway.Database.Models.BetaFeatureAccess;
     using Communication = HealthGateway.Admin.Common.Models.Communication;
 
     /// <summary>
@@ -60,6 +61,12 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="betaFeature">The beta feature available to the hdid.</param>
         /// <returns>The destination object.</returns>
         BetaFeatureAccess MapToBetaFeatureAccess(string hdid, BetaFeature betaFeature);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="email">The email to associate the beta feature with.</param>
+        /// <param name="betaFeature">The beta feature available to the hdid.</param>
+        /// <returns>The destination object.</returns>
+        Common.Models.BetaFeatureAccess MapToBetaFeatureAccess(string email, Database.Constants.BetaFeature betaFeature);
 
         /// <summary>Maps enum.</summary>
         /// <param name="source">The beta feature to convert.</param>

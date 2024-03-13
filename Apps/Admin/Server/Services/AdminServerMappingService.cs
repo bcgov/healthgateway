@@ -27,6 +27,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
+    using BetaFeatureAccess = HealthGateway.Database.Models.BetaFeatureAccess;
     using Communication = HealthGateway.Admin.Common.Models.Communication;
 
     /// <inheritdoc/>
@@ -76,6 +77,16 @@ namespace HealthGateway.Admin.Server.Services
             return new()
             {
                 Hdid = hdid,
+                BetaFeatureCode = this.MapToBetaFeature(betaFeature),
+            };
+        }
+
+        /// <inheritdoc/>
+        public Common.Models.BetaFeatureAccess MapToBetaFeatureAccess(string email, Database.Constants.BetaFeature betaFeature)
+        {
+            return new()
+            {
+                Email = email,
                 BetaFeatureCode = this.MapToBetaFeature(betaFeature),
             };
         }

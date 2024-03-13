@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
+    using BetaFeatureAccess = HealthGateway.Admin.Common.Models.BetaFeatureAccess;
 
     /// <inheritdoc/>
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
@@ -50,17 +51,17 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             IEnumerable<string> hdids = userProfiles.Select(x => x.HdId);
-            IEnumerable<BetaFeatureAccess> existingBetaFeatures = await betaFeatureAccessDelegate.GetAsync(hdids, ct);
+            IEnumerable<Database.Models.BetaFeatureAccess> existingBetaFeatures = await betaFeatureAccessDelegate.GetAsync(hdids, ct);
 
-            IEnumerable<BetaFeatureAccess> betaFeaturesToDelete = existingBetaFeatures
+            IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToDelete = existingBetaFeatures
                 .Where(x => !betaFeatures.Contains(mappingService.MapToBetaFeature(x.BetaFeatureCode)));
 
-            IEnumerable<BetaFeatureAccess> betaFeaturesToAdd = betaFeatures
+            IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToAdd = betaFeatures
                 .Where(betaFeature => existingBetaFeatures.All(betaFeatureAccess => betaFeatureAccess.BetaFeatureCode != mappingService.MapToBetaFeature(betaFeature)))
                 .SelectMany(betaFeature => userProfiles.Select(profile => mappingService.MapToBetaFeatureAccess(profile.HdId, betaFeature)));
 
             await betaFeatureAccessDelegate.DeleteRangeAsync(betaFeaturesToDelete, false, ct);
-            await betaFeatureAccessDelegate.AddRangeAsync(betaFeaturesToAdd, ct: ct);
+            await betaFeatureAccessDelegate.AddRangeAsync(betaFeaturesToAdd, true, ct);
         }
 
         /// <inheritdoc/>
@@ -73,8 +74,19 @@ namespace HealthGateway.Admin.Server.Services
                 throw new NotFoundException(ErrorMessages.UserProfileNotFound);
             }
 
-            ICollection<BetaFeatureCode> betaFeatureCodes = userProfiles.First().BetaFeatureCodes;
+            ICollection<BetaFeatureCode> betaFeatureCodes = userProfiles
+                .SelectMany(profile => profile.BetaFeatureCodes)
+                .Distinct()
+                .ToList();
+
             return betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code));
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccessAsync(CancellationToken ct = default)
+        {
+            IEnumerable<Database.Models.BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
+            return betaFeatures.Select(x => mappingService.MapToBetaFeatureAccess(x.UserProfile?.Email, x.BetaFeatureCode));
         }
     }
 }

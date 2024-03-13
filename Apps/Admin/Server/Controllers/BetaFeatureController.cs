@@ -68,14 +68,31 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="404">User profile with provided email not found.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpGet]
-        [Route("/UserAccess")]
+        [Route("UserAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "AdminUser")]
-        public async Task<IEnumerable<BetaFeature>> GetUserAccess(string email, CancellationToken ct)
+        public async Task<IEnumerable<BetaFeature>> GetUserAccess([FromQuery] string email, CancellationToken ct)
         {
             return await betaFeatureAccessService.GetUserAccessAsync(email, ct);
+        }
+
+        /// <summary>
+        /// Gets a list of all available beta features associated with a profile.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <response code="200">Beta feature access has been updated.</response>
+        /// <response code="404">User profile with provided email not found.</response>
+        /// <response code="401">The client must authenticate itself to get the requested resource.</response>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [Authorize(Roles = "AdminUser")]
+        public async Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccess(CancellationToken ct)
+        {
+            return await betaFeatureAccessService.GetAllBetaFeatureAccessAsync(ct);
         }
     }
 }

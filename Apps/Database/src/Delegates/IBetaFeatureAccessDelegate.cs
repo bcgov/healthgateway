@@ -26,29 +26,37 @@ namespace HealthGateway.Database.Delegates
     public interface IBetaFeatureAccessDelegate
     {
         /// <summary>
-        /// Adds the list of beta feature access object(s) to the DB.
+        /// Adds the list of beta feature associations to the DB.
         /// </summary>
-        /// <param name="betaFeatureAccessList">The list of beta feature access objects to add.</param>
+        /// <param name="betaFeatureAccessAssociations">The list of beta feature access associations to add.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task AddRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessList, bool commit = true, CancellationToken ct = default);
+        Task AddRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessAssociations, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
-        /// Deletes the list of beta feature access object(s) from the DB.
+        /// Deletes the list of beta feature associations from the DB.
         /// </summary>
-        /// <param name="betaFeatureAccessList">The list of beta feature access objects to delete.</param>
+        /// <param name="betaFeatureAccessAssociations">The list of beta feature access associations to delete.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task DeleteRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessList, bool commit = true, CancellationToken ct = default);
+        Task DeleteRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessAssociations, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets a list of beta feature access objects from the DB.
+        /// Gets a list of beta feature associations for the provided hdids from the DB.
         /// </summary>
         /// <param name="hdids">A list of hdids to query on.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task<IList<BetaFeatureAccess>> GetAsync(IEnumerable<string> hdids, CancellationToken ct = default);
+
+        /// <summary>
+        /// Gets a list of all beta feature associations from the DB.
+        /// </summary>
+        /// <param name="includeUserProfile">Value to determine whether user profile is included or not.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default);
     }
 }
