@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Server.Services
     public interface IBetaFeatureAccessService
     {
         /// <summary>
-        /// Adds or deletes beta features associated with the supplied email to the database.
+        /// Updates the beta features accessible to users with the matching email address.
         /// </summary>
         /// <param name="email">The email associated with the user profile.</param>
         /// <param name="betaFeatures">The list of beta features associated with the supplied email.</param>
