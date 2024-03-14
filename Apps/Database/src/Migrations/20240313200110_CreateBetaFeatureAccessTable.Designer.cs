@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20240311223025_CreateBetaFeatureAccessTable")]
+    [Migration("20240313200110_CreateBetaFeatureAccessTable")]
     partial class CreateBetaFeatureAccessTable
     {
         /// <inheritdoc />
@@ -3325,6 +3325,10 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("UserFeedbackId");
 
+                    b.Property<string>("ClientCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<string>("Comment")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -3362,6 +3366,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientCode");
 
                     b.HasIndex("UserProfileId");
 
@@ -3804,11 +3810,13 @@ namespace HealthGateway.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("Hdid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>
@@ -4022,6 +4030,11 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
                 {
+                    b.HasOne("HealthGateway.Database.Models.UserLoginClientTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("ClientCode")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("UserProfileId")

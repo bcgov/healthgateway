@@ -3791,11 +3791,13 @@ namespace HealthGateway.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("Hdid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>

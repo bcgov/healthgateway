@@ -17,8 +17,8 @@ namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
     using Microsoft.EntityFrameworkCore;
+    using BetaFeature = HealthGateway.Database.Constants.BetaFeature;
 
     /// <summary>
     /// The beta feature access model.
@@ -38,5 +38,10 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(50)]
         public BetaFeature BetaFeatureCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserProfile associated with <see cref="Hdid"/>.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; set; } = null!;
     }
 }
