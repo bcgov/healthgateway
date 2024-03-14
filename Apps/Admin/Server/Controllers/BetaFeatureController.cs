@@ -40,21 +40,20 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Sets access to beta features for profile associated with the provided email.
         /// </summary>
-        /// <param name="email">The email associated with the user profile.</param>
-        /// <param name="betaFeatures">The list of beta features to set.</param>
+        /// <param name="request">The beta feature request data used to set the beta feature access.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         /// <response code="200">Beta feature access has been updated.</response>
         /// <response code="404">User profile with provided email not found.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
-        [Route("{email}/UserAccess")]
+        [Route("UserAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task SetUserAccess(string email, [FromBody] IList<BetaFeature> betaFeatures, CancellationToken ct)
+        public async Task SetUserAccess([FromBody] BetaFeatureRequest request, CancellationToken ct)
         {
-            await betaFeatureService.SetUserAccessAsync(email, betaFeatures, ct);
+            await betaFeatureService.SetUserAccessAsync(request.Email, request.BetaFeatures, ct);
         }
 
         /// <summary>

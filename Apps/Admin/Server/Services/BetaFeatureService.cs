@@ -87,12 +87,12 @@ namespace HealthGateway.Admin.Server.Services
             IList<Database.Models.BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
 
             return betaFeatures
-                .GroupBy(access => access.UserProfile.Email)
+                .GroupBy(x => x.UserProfile.Email)
                 .Select(
                     group =>
                     {
                         string email = group.Key!;
-                        IEnumerable<Database.Constants.BetaFeature> features = group.Select(access => access.BetaFeatureCode).Distinct().ToList();
+                        IEnumerable<Database.Constants.BetaFeature> features = group.Select(x => x.BetaFeatureCode).Distinct().ToList();
                         return mappingService.MapToBetaFeatureAccess(email, features);
                     })
                 .ToList();
