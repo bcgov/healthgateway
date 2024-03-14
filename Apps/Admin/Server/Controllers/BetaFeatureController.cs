@@ -29,19 +29,19 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to manage beta feature access to the admin website.
     /// </summary>
-    /// <param name="betaFeatureAccessService">The injected beta feature access service.</param>
+    /// <param name="betaFeatureService">The injected beta feature access service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class BetaFeatureController(IBetaFeatureAccessService betaFeatureAccessService) : ControllerBase
+    public class BetaFeatureController(IBetaFeatureService betaFeatureService) : ControllerBase
     {
         /// <summary>
         /// Sets access to beta features for profile associated with the provided email.
         /// </summary>
         /// <param name="email">The email associated with the user profile.</param>
-        /// <param name="request">The request object containing beta features to set.</param>
+        /// <param name="betaFeatures">The list of beta features to set.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         /// <response code="200">Beta feature access has been updated.</response>
@@ -52,10 +52,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "AdminUser")]
-        public async Task SetUserAccess(string email, BetaFeatureAccessRequest request, CancellationToken ct)
+        public async Task SetUserAccess(string email, [FromBody] IList<BetaFeature> betaFeatures, CancellationToken ct)
         {
-            await betaFeatureAccessService.SetUserAccessAsync(email, request.BetaFeatures, ct);
+            await betaFeatureService.SetUserAccessAsync(email, betaFeatures, ct);
         }
 
         /// <summary>
@@ -72,10 +71,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "AdminUser")]
         public async Task<IEnumerable<BetaFeature>> GetUserAccess([FromQuery] string email, CancellationToken ct)
         {
-            return await betaFeatureAccessService.GetUserAccessAsync(email, ct);
+            return await betaFeatureService.GetUserAccessAsync(email, ct);
         }
 
         /// <summary>
@@ -89,10 +87,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "AdminUser")]
         public async Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccess(CancellationToken ct)
         {
-            return await betaFeatureAccessService.GetAllBetaFeatureAccessAsync(ct);
+            return await betaFeatureService.GetBetaFeatureAccessAsync(ct);
         }
     }
 }

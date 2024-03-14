@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <summary>
     /// Service to manage beta feature access.
     /// </summary>
-    public interface IBetaFeatureAccessService
+    public interface IBetaFeatureService
     {
         /// <summary>
         /// Updates the beta features accessible to users with the matching email address.
@@ -48,6 +48,6 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of available beta features.</returns>
-        Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccessAsync(CancellationToken ct = default);
+        Task<IEnumerable<BetaFeatureAccess>> GetBetaFeatureAccessAsync(CancellationToken ct = default);
     }
 }

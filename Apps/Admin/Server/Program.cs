@@ -157,7 +157,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IDelegationService, DelegationService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
             services.AddTransient<IAdminReportService, AdminReportService>();
-            services.AddTransient<IBetaFeatureAccessService, BetaFeatureAccessService>();
+            services.AddTransient<IBetaFeatureService, BetaFeatureService>();
             services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
         }
 

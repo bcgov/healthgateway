@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default)
+        public async Task<IList<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default)
         {
             IQueryable<BetaFeatureAccess> query = dbContext.BetaFeatureAccess;
             query = query.OrderBy(x => x.Hdid);
@@ -65,6 +65,7 @@ namespace HealthGateway.Database.Delegates
             if (includeUserProfile)
             {
                 query = query.Include(p => p.UserProfile);
+                query = query.Where(p => p.UserProfile.Email != null);
             }
 
             return await query.ToListAsync(ct);

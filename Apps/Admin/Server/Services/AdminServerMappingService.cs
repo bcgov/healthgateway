@@ -16,6 +16,8 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using AutoMapper;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -82,12 +84,12 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public Common.Models.BetaFeatureAccess MapToBetaFeatureAccess(string email, Database.Constants.BetaFeature betaFeature)
+        public Common.Models.BetaFeatureAccess MapToBetaFeatureAccess(string email, IEnumerable<Database.Constants.BetaFeature> betaFeatures)
         {
             return new()
             {
                 Email = email,
-                BetaFeatureCode = this.MapToBetaFeature(betaFeature),
+                BetaFeatures = betaFeatures.Select(this.MapToBetaFeature),
             };
         }
 

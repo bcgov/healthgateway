@@ -32,18 +32,18 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="betaFeatureAccessDelegate">The beta feature access delegate to interact with the DB.</param>
     /// <param name="mappingService">The injected mapping service.</param>
     /// <param name="logger">The injected logger.</param>
-    public class BetaFeatureAccessService(
+    public class BetaFeatureService(
         IUserProfileDelegate userProfileDelegate,
         IBetaFeatureAccessDelegate betaFeatureAccessDelegate,
         IAdminServerMappingService mappingService,
-        ILogger<BetaFeatureAccessService> logger)
-        : IBetaFeatureAccessService
+        ILogger<BetaFeatureService> logger)
+        : IBetaFeatureService
     {
         /// <inheritdoc/>
         public async Task SetUserAccessAsync(string email, IList<BetaFeature> betaFeatures, CancellationToken ct = default)
         {
             logger.LogDebug("Email: {Email} - Beta Features: {Features}", email, betaFeatures);
-            IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfileAsync(email, true, ct);
+            IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfilesAsync(email, true, ct);
 
             if (userProfiles.Count == 0)
             {
@@ -67,26 +67,35 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<BetaFeature>> GetUserAccessAsync(string email, CancellationToken ct = default)
         {
-            IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfileAsync(email, true, ct);
+            IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfilesAsync(email, true, ct);
 
             if (userProfiles.Count == 0)
             {
                 throw new NotFoundException(ErrorMessages.UserProfileNotFound);
             }
 
-            ICollection<BetaFeatureCode> betaFeatureCodes = userProfiles
-                .SelectMany(profile => profile.BetaFeatureCodes)
-                .Distinct()
-                .ToList();
+            IEnumerable<BetaFeatureCode> betaFeatureCodes = userProfiles
+                .SelectMany(profile => profile.BetaFeatureCodes ?? Enumerable.Empty<BetaFeatureCode>())
+                .Distinct();
 
-            return betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code));
+            return betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code)).ToList();
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccessAsync(CancellationToken ct = default)
+        public async Task<IEnumerable<BetaFeatureAccess>> GetBetaFeatureAccessAsync(CancellationToken ct = default)
         {
-            IEnumerable<Database.Models.BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
-            return betaFeatures.Select(x => mappingService.MapToBetaFeatureAccess(x.UserProfile?.Email, x.BetaFeatureCode));
+            IList<Database.Models.BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
+
+            return betaFeatures
+                .GroupBy(access => access.UserProfile.Email)
+                .Select(
+                    group =>
+                    {
+                        string email = group.Key!;
+                        IEnumerable<Database.Constants.BetaFeature> features = group.Select(access => access.BetaFeatureCode).Distinct().ToList();
+                        return mappingService.MapToBetaFeatureAccess(email, features);
+                    })
+                .ToList();
         }
     }
 }

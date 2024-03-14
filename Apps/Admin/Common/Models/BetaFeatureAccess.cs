@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
+    using System.Collections.Generic;
     using HealthGateway.Admin.Common.Constants;
 
     /// <summary>
@@ -28,8 +29,8 @@ namespace HealthGateway.Admin.Common.Models
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the beta feature code.
+        /// Gets or sets the beta features.
         /// </summary>
-        public BetaFeature BetaFeatureCode { get; set; }
+        public IEnumerable<BetaFeature> BetaFeatures { get; set; } = [];
     }
 }

@@ -130,7 +130,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<UserProfile>> GetUserProfileAsync(string email, bool includeBetaFeatureCodes, CancellationToken ct = default)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(string email, bool includeBetaFeatureCodes, CancellationToken ct = default)
         {
             IQueryable<UserProfile> query = this.dbContext.UserProfile;
             query = query.Where(p => EF.Functions.ILike(p.Email, email));

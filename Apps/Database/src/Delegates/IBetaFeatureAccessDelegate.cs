@@ -57,6 +57,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="includeUserProfile">Value to determine whether user profile is included or not.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<IEnumerable<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default);
+        Task<IList<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default);
     }
 }
