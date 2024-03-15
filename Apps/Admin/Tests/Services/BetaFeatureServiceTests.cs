@@ -251,10 +251,7 @@ namespace HealthGateway.Admin.Tests.Services
             ];
 
             IList<UserProfile> userProfiles = profileExists
-                ?
-                [
-                    GenerateUserProfile(Hdid1Email1, Email1, betaFeatureCodes),
-                ]
+                ? [GenerateUserProfile(Hdid1Email1, Email1, betaFeatureCodes)]
                 : [];
 
             IEnumerable<string> hdids = [Hdid1Email1];
