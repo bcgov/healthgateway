@@ -164,17 +164,11 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             IList<Common.Constants.BetaFeature> betaFeatures = betaFeature != null
-                ?
-                [
-                    betaFeature.Value,
-                ]
+                ? [betaFeature.Value]
                 : [];
 
             ICollection<BetaFeatureCode> betaFeatureCodes = existingBetaFeature != null
-                ?
-                [
-                    GenerateBetaFeatureCode(existingBetaFeature.Value),
-                ]
+                ? [GenerateBetaFeatureCode(existingBetaFeature.Value)]
                 : [];
 
             IList<UserProfile> userProfiles =
