@@ -115,12 +115,6 @@ namespace HealthGateway.Admin.Tests.Services
                 GenerateBetaFeatureCode(BetaFeature.Salesforce),
             ];
 
-            IList<UserProfile> userProfiles =
-            [
-                GenerateUserProfile(Hdid1Email1, Email1, betaFeatureCodes),
-                GenerateUserProfile(Hdid2Email1, Email1, betaFeatureCodes),
-            ];
-
             IList<BetaFeatureAccess> betaFeatureAssociations =
             [
                 GenerateBetaFeatureAccess(Hdid1Email1, Email1),
@@ -128,14 +122,11 @@ namespace HealthGateway.Admin.Tests.Services
                 GenerateBetaFeatureAccess(Hdid3Email2, Email2),
             ];
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfilesAsync(Email1, true, It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
-
             Mock<IBetaFeatureAccessDelegate> betaFeatureAccessDelegateMock = new();
             betaFeatureAccessDelegateMock.Setup(s => s.GetAllAsync(true, It.IsAny<CancellationToken>())).ReturnsAsync(betaFeatureAssociations);
             IBetaFeatureService service = GetBetaFeatureService(betaFeatureAccessDelegateMock: betaFeatureAccessDelegateMock);
 
-            int expectedCount = userProfiles.Count;
+            const int expectedCount = 2;
 
             // Act
             IEnumerable<Common.Models.BetaFeatureAccess> enumerable = await service.GetBetaFeatureAccessAsync();
