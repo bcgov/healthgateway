@@ -45,6 +45,7 @@ namespace HealthGateway.Admin.Tests.Utils
                     cfg.AddProfile(new PatientSupportDetailsProfile());
                     cfg.AddProfile(new VaccineDoseProfile());
                     cfg.AddProfile(new CommunicationProfile());
+                    cfg.AddProfile(new BetaFeatureAccessProfile());
                 });
 
             return config.CreateMapper();
