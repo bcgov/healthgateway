@@ -22,12 +22,12 @@ namespace HealthGateway.Admin.Server.MapProfiles
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
-    public class BetaFeatureAccessProfile : Profile
+    public class BetaFeatureProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BetaFeatureAccessProfile"/> class.
+        /// Initializes a new instance of the <see cref="BetaFeatureProfile"/> class.
         /// </summary>
-        public BetaFeatureAccessProfile()
+        public BetaFeatureProfile()
         {
             this.CreateMap<BetaFeature, Common.Constants.BetaFeature>()
                 .ConvertUsing(

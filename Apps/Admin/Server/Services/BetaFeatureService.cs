@@ -51,14 +51,16 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             IEnumerable<string> hdids = userProfiles.Select(x => x.HdId);
-            IEnumerable<Database.Models.BetaFeatureAccess> existingBetaFeatures = await betaFeatureAccessDelegate.GetAsync(hdids, ct);
+            IEnumerable<Database.Models.BetaFeatureAccess> existingBetaFeatureAssociations = await betaFeatureAccessDelegate.GetAsync(hdids, ct);
 
-            IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToDelete = existingBetaFeatures
-                .Where(x => !betaFeatures.Contains(mappingService.MapToBetaFeature(x.BetaFeatureCode)));
+            IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToDelete = existingBetaFeatureAssociations
+                .Where(x => !betaFeatures.Contains(mappingService.MapToBetaFeature(x.BetaFeatureCode)))
+                .ToList();
 
             IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToAdd = betaFeatures
-                .Where(betaFeature => existingBetaFeatures.All(betaFeatureAccess => betaFeatureAccess.BetaFeatureCode != mappingService.MapToBetaFeature(betaFeature)))
-                .SelectMany(betaFeature => userProfiles.Select(profile => mappingService.MapToBetaFeatureAccess(profile.HdId, betaFeature)));
+                .Where(x => existingBetaFeatureAssociations.All(y => y.BetaFeatureCode != mappingService.MapToBetaFeature(x)))
+                .SelectMany(x => userProfiles.Select(y => mappingService.MapToBetaFeatureAccess(y.HdId, x)))
+                .ToList();
 
             await betaFeatureAccessDelegate.DeleteRangeAsync(betaFeaturesToDelete, false, ct);
             await betaFeatureAccessDelegate.AddRangeAsync(betaFeaturesToAdd, true, ct);
@@ -75,7 +77,7 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             IEnumerable<BetaFeatureCode> betaFeatureCodes = userProfiles
-                .SelectMany(profile => profile.BetaFeatureCodes ?? Enumerable.Empty<BetaFeatureCode>())
+                .SelectMany(x => x.BetaFeatureCodes ?? Enumerable.Empty<BetaFeatureCode>())
                 .Distinct();
 
             return betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code)).ToList();
