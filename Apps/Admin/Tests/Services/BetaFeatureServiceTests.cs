@@ -230,12 +230,12 @@ namespace HealthGateway.Admin.Tests.Services
         [Theory]
         public async Task SetUserAccessThrowsException(Type expectedExceptionType, string expectedErrorMessage, bool profileExists, Common.Constants.BetaFeature betaFeature)
         {
+            // Arrange
             IList<Common.Constants.BetaFeature> betaFeatures =
             [
                 betaFeature,
             ];
 
-            // Arrange
             ICollection<BetaFeatureCode> betaFeatureCodes =
             [
                 GenerateBetaFeatureCode(BetaFeature.Salesforce),
