@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Client.Store.VaccineCard;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -48,6 +49,9 @@ namespace HealthGateway.Admin.Client.Pages
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
         [Inject]
+        private IState<VaccineCardState> VaccineCardState { get; set; } = default!;
+
+        [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
@@ -58,6 +62,8 @@ namespace HealthGateway.Admin.Client.Pages
         private bool HasPatientSupportDetailsError => this.PatientDetailsState.Value.Error is { Message.Length: > 0 };
 
         private bool HasPatientsError => this.PatientSupportState.Value.Error is { Message.Length: > 0 };
+
+        private bool HasPrintVaccineCardError => this.VaccineCardState.Value.PrintVaccineCard.Error is { Message.Length: > 0 };
 
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
