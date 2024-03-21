@@ -1,0 +1,45 @@
+@using HealthGateway.Admin.Common.Constants
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@if (Data.Any())
+{
+    <MudTable
+        Class="mt-3 rounded-b-0"
+        Items="@Data"
+        Loading="@IsLoading"
+        AllowUnsorted="false"
+        Breakpoint="@Breakpoint.Md"
+        HorizontalScrollbar="true"
+        Striped="true"
+        Dense="true"
+        data-testid="beta-access-table">
+        <ColGroup>
+            <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+                <col />
+                <col style="width: 125px;" />
+            </MudHidden>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh>Email Address</MudTh>
+            <MudTh>Salesforce</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd data-testid="email" DataLabel="Email Address">
+                @context.Email
+            </MudTd>
+            <MudTd data-testid="salesforce-access" DataLabel="Salesforce">
+                <MudSwitch
+                    T="bool"
+                    Value="@context.BetaFeatures.Contains(BetaFeature.Salesforce)"
+                    ValueChanged="@(value => HandleToggleAccess(context, BetaFeature.Salesforce, value))"
+                    Color="@Color.Success"
+                    UnCheckedColor="@Color.Tertiary"
+                    Class="mr-n4"
+                    data-testid="salesforce-access-switch" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}

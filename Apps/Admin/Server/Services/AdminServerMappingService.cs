@@ -84,12 +84,12 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public Common.Models.BetaFeatureAccess MapToBetaFeatureAccess(string email, IEnumerable<Database.Constants.BetaFeature> betaFeatures)
+        public UserBetaAccess MapToUserBetaAccess(string email, IEnumerable<Database.Constants.BetaFeature> betaFeatures)
         {
             return new()
             {
                 Email = email,
-                BetaFeatures = betaFeatures.Select(this.MapToBetaFeature),
+                BetaFeatures = new HashSet<BetaFeature>(betaFeatures.Select(this.MapToBetaFeature)),
             };
         }
 

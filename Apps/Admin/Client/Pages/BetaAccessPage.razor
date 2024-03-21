@@ -1,0 +1,87 @@
+@page "/beta-access"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin}")]
+@using HealthGateway.Admin.Client.Components.BetaAccess
+@using HealthGateway.Admin.Client.Store.BetaAccess
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin Beta Access</PageTitle>
+<HgPageHeading>Beta Access</HgPageHeading>
+
+<HgTabs data-testid="beta-access-tabs">
+    <ChildContent>
+        <MudTabPanel Text="View" data-testid="view-tab">
+            <HgBannerFeedback
+                Class="mt-3"
+                Severity="Severity.Error"
+                IsEnabled="SetUserAccessState.HasError"
+                TResetAction="BetaAccessActions.SetUserAccessAction"
+                DataTestId="set-user-access-error-message">
+                @SetUserAccessState.ErrorMessage
+            </HgBannerFeedback>
+
+            <HgBannerFeedback
+                Class="mt-3"
+                Severity="Severity.Error"
+                IsEnabled="GetAllUserAccessState.HasError"
+                TResetAction="BetaAccessActions.GetAllUserAccessAction"
+                DataTestId="get-all-user-access-error-message">
+                @GetAllUserAccessState.ErrorMessage
+            </HgBannerFeedback>
+
+            <BetaAccessTable
+                Data="@AllUserBetaAccess"
+                IsLoading="@(GetAllUserAccessState.IsLoading || SetUserAccessState.IsLoading)" />
+        </MudTabPanel>
+        <MudTabPanel Text="Search" data-testid="search-tab">
+            <HgBannerFeedback
+                Class="mt-3"
+                Severity="Severity.Error"
+                IsEnabled="SetUserAccessState.HasError"
+                TResetAction="BetaAccessActions.SetUserAccessAction"
+                DataTestId="set-user-access-error-message">
+                @SetUserAccessState.ErrorMessage
+            </HgBannerFeedback>
+
+            <MudForm @ref="Form" id="query-controls" class="mt-3">
+                <div class="d-flex align-start">
+                    <HgTextField
+                        T="string"
+                        Label="Email"
+                        Required="@true"
+                        Immediate="@true"
+                        Validation="@ValidateQueryParameter"
+                        Mask="@RegexMask.Email()"
+                        TopMargin="Breakpoint.None"
+                        Class="flex-grow-1 query-input"
+                        @bind-Value="QueryParameter"
+                        data-testid="query-input" />
+                    <HgButton
+                        EndIcon="fas fa-magnifying-glass"
+                        Variant="@Variant.Filled"
+                        Color="@Color.Primary"
+                        Loading="@GetUserAccessState.IsLoading"
+                        TopMargin="Breakpoint.Always"
+                        LeftMargin="Breakpoint.Always"
+                        OnClick="@GetUserAccessAsync"
+                        data-testid="search-button">
+                        Search
+                    </HgButton>
+                </div>
+            </MudForm>
+
+            <HgBannerFeedback
+                Class="mt-3"
+                Severity="Severity.Error"
+                IsEnabled="GetUserAccessState.HasError"
+                TResetAction="BetaAccessActions.GetUserAccessAction"
+                DataTestId="get-user-access-error-message">
+                @GetUserAccessState.ErrorMessage
+            </HgBannerFeedback>
+
+            <BetaAccessTable
+                Data="@SearchResultBetaAccess"
+                IsLoading="@(GetUserAccessState.IsLoading || SetUserAccessState.IsLoading)" />
+        </MudTabPanel>
+    </ChildContent>
+</HgTabs>

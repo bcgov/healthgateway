@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -27,9 +26,9 @@ namespace HealthGateway.Admin.Server.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to manage beta feature access to the admin website.
+    /// Web API to manage beta features available to users.
     /// </summary>
-    /// <param name="betaFeatureService">The injected beta feature access service.</param>
+    /// <param name="betaFeatureService">The injected beta feature service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
@@ -38,57 +37,60 @@ namespace HealthGateway.Admin.Server.Controllers
     public class BetaFeatureController(IBetaFeatureService betaFeatureService) : ControllerBase
     {
         /// <summary>
-        /// Sets access to beta features for profile associated with the provided email.
+        /// Sets access to beta features for users with the provided email address.
         /// </summary>
-        /// <param name="request">The beta feature request data used to set the beta feature access.</param>
+        /// <param name="access">Request model consisting of an email address and collection of available beta features.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <response code="200">Beta feature access has been updated.</response>
-        /// <response code="404">User profile with provided email not found.</response>
+        /// <response code="200">Beta access has been updated.</response>
+        /// <response code="404">No user profiles could be found matching the provided email address.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
         [Route("UserAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task SetUserAccess([FromBody] BetaFeatureRequest request, CancellationToken ct)
+        public async Task SetUserAccess([FromBody] UserBetaAccess access, CancellationToken ct)
         {
-            await betaFeatureService.SetUserAccessAsync(request.Email, request.BetaFeatures, ct);
+            await betaFeatureService.SetUserAccessAsync(access, ct);
         }
 
         /// <summary>
-        /// Gets a list of beta features available for the profile associated with the provided email.
+        /// Retrieves the beta features available for users with the provided email address.
         /// </summary>
-        /// <param name="email">The email associated with the user profile.</param>
+        /// <param name="email">The email address to check.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <response code="200">Beta feature access has been updated.</response>
-        /// <response code="404">User profile with provided email not found.</response>
+        /// <returns>A model containing the beta features available for users with the provided email address.</returns>
+        /// <response code="200">Returns a model containing the beta features available for users with the provided email address.</response>
+        /// <response code="404">No user profiles could be found matching the provided email address.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpGet]
         [Route("UserAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IEnumerable<BetaFeature>> GetUserAccess([FromQuery] string email, CancellationToken ct)
+        public async Task<UserBetaAccess> GetUserAccess([FromQuery] string email, CancellationToken ct)
         {
             return await betaFeatureService.GetUserAccessAsync(email, ct);
         }
 
         /// <summary>
-        /// Gets a list of all available beta features associated with a profile.
+        /// Retrieves a collection containing the emails of all users with beta access and the beta features associated with them.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <response code="200">Beta feature access has been updated.</response>
-        /// <response code="404">User profile with provided email not found.</response>
+        /// <returns>A collection containing the emails of all users with beta access and the beta features associated with them.</returns>
+        /// <response code="200">
+        /// Returns a collection containing the emails of all users with beta access and the beta features
+        /// associated with them.
+        /// </response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpGet]
+        [Route("AllUserAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IEnumerable<BetaFeatureAccess>> GetAllBetaFeatureAccess(CancellationToken ct)
+        public async Task<IEnumerable<UserBetaAccess>> GetAllUserAccess(CancellationToken ct)
         {
-            return await betaFeatureService.GetBetaFeatureAccessAsync(ct);
+            return await betaFeatureService.GetAllUserAccessAsync(ct);
         }
     }
 }
