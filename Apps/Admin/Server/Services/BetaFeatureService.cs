@@ -20,12 +20,12 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
-    using BetaFeatureAccess = HealthGateway.Admin.Common.Models.BetaFeatureAccess;
 
     /// <inheritdoc/>
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
@@ -40,8 +40,11 @@ namespace HealthGateway.Admin.Server.Services
         : IBetaFeatureService
     {
         /// <inheritdoc/>
-        public async Task SetUserAccessAsync(string email, IList<BetaFeature> betaFeatures, CancellationToken ct = default)
+        public async Task SetUserAccessAsync(UserBetaAccess access, CancellationToken ct = default)
         {
+            string email = access.Email;
+            ISet<BetaFeature> betaFeatures = access.BetaFeatures;
+
             logger.LogDebug("Email: {Email} - Beta Features: {Features}", email, betaFeatures);
             IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfilesAsync(email, true, ct);
 
@@ -51,23 +54,23 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             IEnumerable<string> hdids = userProfiles.Select(x => x.HdId);
-            IEnumerable<Database.Models.BetaFeatureAccess> existingBetaFeatureAssociations = await betaFeatureAccessDelegate.GetAsync(hdids, ct);
+            IEnumerable<BetaFeatureAccess> existingAccess = await betaFeatureAccessDelegate.GetAsync(hdids, ct);
 
-            IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToDelete = existingBetaFeatureAssociations
+            IEnumerable<BetaFeatureAccess> accessToRemove = existingAccess
                 .Where(x => !betaFeatures.Contains(mappingService.MapToBetaFeature(x.BetaFeatureCode)))
                 .ToList();
 
-            IEnumerable<Database.Models.BetaFeatureAccess> betaFeaturesToAdd = betaFeatures
-                .Where(x => existingBetaFeatureAssociations.All(y => y.BetaFeatureCode != mappingService.MapToBetaFeature(x)))
-                .SelectMany(x => userProfiles.Select(y => mappingService.MapToBetaFeatureAccess(y.HdId, x)))
+            IEnumerable<BetaFeatureAccess> accessToAdd = betaFeatures
+                .Where(f => existingAccess.All(a => a.BetaFeatureCode != mappingService.MapToBetaFeature(f)))
+                .SelectMany(f => userProfiles.Select(p => mappingService.MapToBetaFeatureAccess(p.HdId, f)))
                 .ToList();
 
-            await betaFeatureAccessDelegate.DeleteRangeAsync(betaFeaturesToDelete, false, ct);
-            await betaFeatureAccessDelegate.AddRangeAsync(betaFeaturesToAdd, true, ct);
+            await betaFeatureAccessDelegate.DeleteRangeAsync(accessToRemove, false, ct);
+            await betaFeatureAccessDelegate.AddRangeAsync(accessToAdd, true, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BetaFeature>> GetUserAccessAsync(string email, CancellationToken ct = default)
+        public async Task<UserBetaAccess> GetUserAccessAsync(string email, CancellationToken ct = default)
         {
             IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfilesAsync(email, true, ct);
 
@@ -80,23 +83,17 @@ namespace HealthGateway.Admin.Server.Services
                 .SelectMany(x => x.BetaFeatureCodes ?? Enumerable.Empty<BetaFeatureCode>())
                 .Distinct();
 
-            return betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code)).ToList();
+            return new() { Email = userProfiles.First().Email!, BetaFeatures = new HashSet<BetaFeature>(betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code))) };
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BetaFeatureAccess>> GetBetaFeatureAccessAsync(CancellationToken ct = default)
+        public async Task<IEnumerable<UserBetaAccess>> GetAllUserAccessAsync(CancellationToken ct = default)
         {
-            IList<Database.Models.BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
+            IList<BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
 
             return betaFeatures
                 .GroupBy(x => x.UserProfile.Email)
-                .Select(
-                    group =>
-                    {
-                        string email = group.Key!;
-                        IEnumerable<Database.Constants.BetaFeature> features = group.Select(x => x.BetaFeatureCode).Distinct().ToList();
-                        return mappingService.MapToBetaFeatureAccess(email, features);
-                    })
+                .Select(g => mappingService.MapToUserBetaAccess(g.Key!, g.Select(x => x.BetaFeatureCode)))
                 .ToList();
         }
     }

@@ -16,21 +16,22 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using HealthGateway.Admin.Common.Constants;
 
     /// <summary>
-    /// Model representing available beta features associated with the email.
+    /// Model representing available beta features associated with a user.
     /// </summary>
-    public class BetaFeatureAccess
+    public class UserBetaAccess
     {
         /// <summary>
-        /// Gets or sets the email.
+        /// Gets or sets the user's email address.
         /// </summary>
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the beta features.
+        /// Gets or sets the beta features available to the user.
         /// </summary>
-        public IEnumerable<BetaFeature> BetaFeatures { get; set; } = [];
+        public ISet<BetaFeature> BetaFeatures { get; set; } = ImmutableHashSet<BetaFeature>.Empty;
     }
 }

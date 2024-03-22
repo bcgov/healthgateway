@@ -113,6 +113,7 @@ namespace HealthGateway.Admin.Client
             RegisterRefitClient<IAdminReportApi>(builder, "v1/api/AdminReport", true);
             RegisterRefitClient<IAgentAccessApi>(builder, "v1/api/AgentAccess", true);
             RegisterRefitClient<IAnalyticsApi>(builder, "v1/api/CsvExport", true);
+            RegisterRefitClient<IBetaFeatureApi>(builder, "v1/api/BetaFeature", true);
             RegisterRefitClient<IBroadcastsApi>(builder, "v1/api/Broadcast", true);
             RegisterRefitClient<ICommunicationsApi>(builder, "v1/api/Communication", true);
             RegisterRefitClient<IConfigurationApi>(builder, "v1/api/Configuration", false);

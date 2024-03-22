@@ -65,9 +65,9 @@ namespace HealthGateway.Admin.Server.Services
 
         /// <summary>Maps model.</summary>
         /// <param name="email">The email to associate the beta feature with.</param>
-        /// <param name="betaFeatures">The list of beta feature available to the email.</param>
+        /// <param name="betaFeatures">The collection of beta feature available to the email.</param>
         /// <returns>The destination object.</returns>
-        Common.Models.BetaFeatureAccess MapToBetaFeatureAccess(string email, IEnumerable<Database.Constants.BetaFeature> betaFeatures);
+        UserBetaAccess MapToUserBetaAccess(string email, IEnumerable<Database.Constants.BetaFeature> betaFeatures);
 
         /// <summary>Maps enum.</summary>
         /// <param name="source">The beta feature to convert.</param>

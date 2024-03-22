@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.Constants;
@@ -59,7 +60,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetUserAccess(bool profileExists)
         {
             // Arrange
-            IEnumerable<Common.Constants.BetaFeature> expected =
+            HashSet<Common.Constants.BetaFeature> expected =
             [
                 Common.Constants.BetaFeature.Salesforce,
             ];
@@ -84,12 +85,11 @@ namespace HealthGateway.Admin.Tests.Services
             if (profileExists)
             {
                 // Act
-                IEnumerable<Common.Constants.BetaFeature> enumerable = await service.GetUserAccessAsync(Email1);
-                IList<Common.Constants.BetaFeature> actual = enumerable.ToList();
+                UserBetaAccess actual = await service.GetUserAccessAsync(Email1);
 
                 // Assert
-                Assert.Single(actual);
-                Assert.Equal(expected, actual);
+                Assert.Single(actual.BetaFeatures);
+                Assert.Equal(expected, actual.BetaFeatures);
             }
             else
             {
@@ -129,8 +129,8 @@ namespace HealthGateway.Admin.Tests.Services
             const int expectedCount = 2;
 
             // Act
-            IEnumerable<Common.Models.BetaFeatureAccess> enumerable = await service.GetBetaFeatureAccessAsync();
-            IList<Common.Models.BetaFeatureAccess> actual = enumerable.ToList();
+            IEnumerable<UserBetaAccess> enumerable = await service.GetAllUserAccessAsync();
+            IList<UserBetaAccess> actual = enumerable.ToList();
 
             // Assert
             Assert.Equal(expectedCount, actual.Count);
@@ -154,7 +154,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldSetUserAccess(BetaFeature? existingBetaFeature, Common.Constants.BetaFeature? betaFeature)
         {
             // Arrange
-            IList<Common.Constants.BetaFeature> betaFeatures = betaFeature != null
+            HashSet<Common.Constants.BetaFeature> betaFeatures = betaFeature != null
                 ? [betaFeature.Value]
                 : [];
 
@@ -199,7 +199,7 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Act
-            await service.SetUserAccessAsync(Email1, betaFeatures);
+            await service.SetUserAccessAsync(new() { Email = Email1, BetaFeatures = betaFeatures });
 
             // Assert
             betaFeatureAccessDelegateMock.Verify(
@@ -231,7 +231,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task SetUserAccessThrowsException(Type expectedExceptionType, string expectedErrorMessage, bool profileExists, Common.Constants.BetaFeature betaFeature)
         {
             // Arrange
-            IList<Common.Constants.BetaFeature> betaFeatures =
+            HashSet<Common.Constants.BetaFeature> betaFeatures =
             [
                 betaFeature,
             ];
@@ -261,7 +261,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act and Assert
             Exception exception = await Assert.ThrowsAsync(
                 expectedExceptionType,
-                async () => { await service.SetUserAccessAsync(Email1, betaFeatures); });
+                async () => { await service.SetUserAccessAsync(new() { Email = Email1, BetaFeatures = betaFeatures }); });
             Assert.Equal(expectedErrorMessage, exception.Message);
         }
 

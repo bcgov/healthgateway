@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
@@ -27,27 +26,26 @@ namespace HealthGateway.Admin.Server.Services
     public interface IBetaFeatureService
     {
         /// <summary>
-        /// Updates the beta features accessible to users with the matching email address.
+        /// Sets access to beta features for users with the provided email address.
         /// </summary>
-        /// <param name="email">The email associated with the user profile.</param>
-        /// <param name="betaFeatures">The list of beta features associated with the supplied email.</param>
+        /// <param name="access">Model consisting of an email address and collection of available beta features.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task SetUserAccessAsync(string email, IList<BetaFeature> betaFeatures, CancellationToken ct = default);
+        Task SetUserAccessAsync(UserBetaAccess access, CancellationToken ct = default);
 
         /// <summary>
-        /// Returns a list of available beta features associated with the supplied email.
+        /// Retrieves the beta features available for users with the provided email address.
         /// </summary>
-        /// <param name="email">The email associated with the user profile to search on.</param>
+        /// <param name="email">The email address to check.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The list of available beta features.</returns>
-        Task<IEnumerable<BetaFeature>> GetUserAccessAsync(string email, CancellationToken ct = default);
+        /// <returns>A model containing the beta features available for users with the provided email address.</returns>
+        Task<UserBetaAccess> GetUserAccessAsync(string email, CancellationToken ct = default);
 
         /// <summary>
-        /// Returns a list of all available associated beta features.
+        /// Retrieves a collection containing the emails of all users with beta access and the beta features associated with them.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The list of available beta features.</returns>
-        Task<IEnumerable<BetaFeatureAccess>> GetBetaFeatureAccessAsync(CancellationToken ct = default);
+        /// <returns>A collection containing the emails of all users with beta access and the beta features associated with them.</returns>
+        Task<IEnumerable<UserBetaAccess>> GetAllUserAccessAsync(CancellationToken ct = default);
     }
 }
