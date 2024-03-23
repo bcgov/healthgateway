@@ -342,7 +342,7 @@ describe("Patient details page as admin user", () => {
         );
         getTableRows("[data-testid=messaging-verification-table]").should(
             "have.length",
-            2
+            3
         );
     });
 
