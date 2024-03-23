@@ -28,25 +28,6 @@ namespace HealthGateway.Common.Data.Models
     public class UserProfileModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
-        /// </summary>
-        public UserProfileModel()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
-        /// </summary>
-        /// <param name="preferences">The dictionary of preferences.</param>
-        /// <param name="lastLoginDateTimes">List of last login date times.</param>
-        [JsonConstructor]
-        public UserProfileModel(IDictionary<string, UserPreferenceModel> preferences, IList<DateTime> lastLoginDateTimes)
-        {
-            this.Preferences = preferences;
-            this.LastLoginDateTimes = lastLoginDateTimes;
-        }
-
-        /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
         public string HdId { get; set; } = null!;
@@ -96,9 +77,9 @@ namespace HealthGateway.Common.Data.Models
         public DateTime? LastLoginDateTime { get; set; }
 
         /// <summary>
-        /// Gets the list of recent login times.
+        /// Gets or sets the list of recent login times.
         /// </summary>
-        public IList<DateTime> LastLoginDateTimes { get; } = [];
+        public IList<DateTime> LastLoginDateTimes { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the Closed datetime of the account.
@@ -112,9 +93,9 @@ namespace HealthGateway.Common.Data.Models
         public bool? HasTourUpdated { get; set; }
 
         /// <summary>
-        /// Gets the user preference.
+        /// Gets or sets the user preferences.
         /// </summary>
-        public IDictionary<string, UserPreferenceModel> Preferences { get; } = new Dictionary<string, UserPreferenceModel>();
+        public IDictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
 
         /// <summary>
         ///  Gets or sets the user's blocked data sources.
