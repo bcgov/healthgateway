@@ -440,7 +440,9 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to update the terms of service: DB Error");
             }
 
-            return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(result.Payload, ct: ct));
+            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(result.Payload, ct: ct);
+
+            return RequestResultFactory.Success(userProfileModel);
         }
 
         /// <inheritdoc/>
@@ -485,13 +487,22 @@ namespace HealthGateway.GatewayApi.Services
         private async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null, CancellationToken ct = default)
         {
             Guid? termsOfServiceId = (await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct))?.Id;
-            DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
             UserProfileModel userProfileModel = this.mappingService.MapToUserProfileModel(userProfile, termsOfServiceId);
+
+            DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
                                               profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
+
             userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
+
+            RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = await this.GetUserPreferencesAsync(userProfileModel.HdId, ct);
+            if (userPreferences.ResourcePayload != null)
+            {
+                userProfileModel.Preferences = userPreferences.ResourcePayload;
+            }
+
             return userProfileModel;
         }
 
