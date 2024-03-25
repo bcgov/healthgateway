@@ -395,14 +395,6 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Dictionary<string, UserPreferenceModel>>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
-        {
-            this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
-            IEnumerable<UserPreference> userPreferences = await this.userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
-            return RequestResultFactory.Success(userPreferences.Select(this.mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x));
-        }
-
-        /// <inheritdoc/>
         public async Task<RequestResult<bool>> ValidateMinimumAgeAsync(string hdid, CancellationToken ct = default)
         {
             if (this.minPatientAge == 0)
@@ -496,12 +488,7 @@ namespace HealthGateway.GatewayApi.Services
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
 
             userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
-
-            RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = await this.GetUserPreferencesAsync(userProfileModel.HdId, ct);
-            if (userPreferences.ResourcePayload != null)
-            {
-                userProfileModel.Preferences = userPreferences.ResourcePayload;
-            }
+            userProfileModel.Preferences = await this.GetUserPreferencesAsync(userProfileModel.HdId, ct);
 
             return userProfileModel;
         }
@@ -524,6 +511,13 @@ namespace HealthGateway.GatewayApi.Services
                 },
                 TimeSpan.FromMinutes(30),
                 ct);
+        }
+
+        private async Task<Dictionary<string, UserPreferenceModel>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
+            IEnumerable<UserPreference> userPreferences = await this.userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
+            return userPreferences.Select(this.mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x);
         }
 
         private async Task<RequestResult<UserProfileModel>> HandleUpdateUserProfileResultAsync(DbResult<UserProfile> result, string emailTemplateName, CancellationToken ct)
