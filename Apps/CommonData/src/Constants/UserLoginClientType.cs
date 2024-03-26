@@ -32,5 +32,10 @@ namespace HealthGateway.Common.Data.Constants
         /// Login from Health Gateway mobile app.
         /// </summary>
         Mobile,
+
+        /// <summary>
+        /// Login from Health Gateway Salesforce app.
+        /// </summary>
+        Salesforce,
     }
 }

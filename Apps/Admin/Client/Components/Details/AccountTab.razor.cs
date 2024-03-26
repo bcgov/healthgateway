@@ -25,9 +25,8 @@ namespace HealthGateway.Admin.Client.Components.Details
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Authorization;
 
     /// <summary>
     /// Backing logic for the AccountTab component.
@@ -47,12 +46,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
 
         [Inject]
-        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-        [Inject]
         private IDateConversionService DateConversionService { get; set; } = default!;
-
-        private AuthenticationState? AuthenticationState { get; set; }
 
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);

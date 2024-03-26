@@ -37,16 +37,6 @@ namespace HealthGateway.Common.Data.Validations
             this.RuleFor(v => v).NotEmpty().Must(this.IsValidInternal).WithMessage("Invalid date");
         }
 
-        /// <summary>
-        /// Validates a date of birth is not a future date.
-        /// </summary>
-        /// <param name="dateOfBirth">Date of birth to validate.</param>
-        /// <returns>True if valid, false if not.</returns>
-        public static bool IsValid(DateOnly dateOfBirth)
-        {
-            return new DateOfBirthValidator().Validate(dateOfBirth).IsValid;
-        }
-
         private bool IsValidInternal(DateOnly dob)
         {
             return dob <= this.referenceDate;

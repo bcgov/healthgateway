@@ -43,9 +43,8 @@ namespace HealthGateway.WebClient.Server.Models
         /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         [JsonPropertyName("externalURLs")]
-        public Dictionary<string, Uri> ExternalUrLs { get; set; } = new();
+        public Dictionary<string, Uri> ExternalUrLs { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the FeatureToggleFilePath.

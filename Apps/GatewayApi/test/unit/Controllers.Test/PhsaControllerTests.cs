@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -95,7 +95,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
         private static IEnumerable<GetDependentResponse> GetMockDependentResponses()
         {
-            List<GetDependentResponse> dependentResponses = new();
+            List<GetDependentResponse> dependentResponses = [];
 
             for (int i = 0; i < 10; i++)
             {
@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
         private static IEnumerable<DependentModel> GetMockDependentModels()
         {
-            List<DependentModel> dependentModels = new();
+            List<DependentModel> dependentModels = [];
 
             for (int i = 0; i < 10; i++)
             {

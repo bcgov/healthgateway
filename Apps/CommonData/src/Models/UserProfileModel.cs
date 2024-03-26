@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.ViewModels
+namespace HealthGateway.Common.Data.Models
 {
     using System;
     using System.Collections.Generic;
@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// <summary>
         /// Gets the list of recent login times.
         /// </summary>
-        public IList<DateTime> LastLoginDateTimes { get; } = new List<DateTime>();
+        public IList<DateTime> LastLoginDateTimes { get; } = [];
 
         /// <summary>
         /// Gets or sets the Closed datetime of the account.

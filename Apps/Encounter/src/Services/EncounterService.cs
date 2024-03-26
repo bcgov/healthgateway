@@ -25,7 +25,7 @@ namespace HealthGateway.Encounter.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
@@ -88,7 +88,7 @@ namespace HealthGateway.Encounter.Services
                 ?
                 .Split(',')
                 .Select(s => s.Trim())
-                .ToList() ?? new List<string>();
+                .ToList() ?? [];
         }
 
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
@@ -144,7 +144,7 @@ namespace HealthGateway.Encounter.Services
                     }
                     else
                     {
-                        result.ResourcePayload = new List<EncounterModel>();
+                        result.ResourcePayload = [];
                     }
                 }
             }

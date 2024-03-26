@@ -13,29 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.ViewModels
+namespace HealthGateway.Common.Data.Tests.Utils
 {
-    using System.Text.Json.Serialization;
+    using System;
+    using HealthGateway.Common.Data.Utils;
+    using Xunit;
 
     /// <summary>
-    /// Represents an api result.
+    /// Unit Tests for ConfigurationUtility.
     /// </summary>
-    /// <typeparam name="T">The payload type.</typeparam>
-    public class ApiResult<T>
-        where T : class?
+    public class ConfigurationUtilityTests
     {
         /// <summary>
-        /// Gets or sets a warning.
+        /// Tests for ConstructServiceEndpoint.
         /// </summary>
-        [JsonPropertyName("warning")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public ApiWarning? Warning { get; set; }
+        [Fact]
+        public void ValidateToEnumString()
+        {
+            const string expected = "http://dev-hgcdogs-svc:3000/";
 
-        /// <summary>
-        /// Gets or sets the result payload.
-        /// </summary>
-        [JsonPropertyName("resourcePayload")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public T? ResourcePayload { get; set; }
+            const string baseEndpoint = "http://${serviceHost}:${servicePort}/";
+            Environment.SetEnvironmentVariable("serviceHost", "dev-hgcdogs-svc");
+            Environment.SetEnvironmentVariable("servicePort", "3000");
+
+            string actual = ConfigurationUtility.ConstructServiceEndpoint(baseEndpoint, "serviceHost", "servicePort");
+
+            Assert.Equal(expected, actual);
+        }
     }
 }

@@ -17,6 +17,12 @@ jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
     steps:
+      - task: JavaToolInstaller@0
+        inputs:
+          versionSpec: "17"
+          jdkArchitectureOption: "x64"
+          jdkSourceOption: "PreInstalled"
+
       - task: UseDotNet@2
         displayName: "Install .NET SDK"
         condition: eq(variables['EnableAzure'], True)
@@ -44,9 +50,8 @@ jobs:
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
-            /n:"HealthGateway" \
+            /n:HealthGateway \
             /d:sonar.token="$(SonarToken)" \
-            /d:sonar.dotnet.excludeTestProjects=true \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
         continueOnError: true

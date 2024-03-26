@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Client.Api
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using Refit;
 
     /// <summary>

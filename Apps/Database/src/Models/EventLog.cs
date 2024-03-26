@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// A generic mechanism to log events for later review.

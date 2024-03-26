@@ -62,6 +62,7 @@ describe("Dashboard", () => {
             body: {
                 Mobile: 1,
                 Web: 4,
+                Salesforce: 2,
             },
         });
 
@@ -86,6 +87,7 @@ describe("Dashboard", () => {
         cy.get("[data-testid=recurring-user-count]").contains(2);
         cy.get("[data-testid=total-mobile-users]").contains(1);
         cy.get("[data-testid=total-web-users]").contains(4);
+        cy.get("[data-testid=total-salesforce-users]").contains(2);
 
         cy.get("[data-testid=daily-data-table]")
             .find("tbody tr.mud-table-row")

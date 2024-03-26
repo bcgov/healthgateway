@@ -16,14 +16,13 @@
 namespace HealthGateway.EncounterTests.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Utils;
     using HealthGateway.Encounter.Api;
@@ -67,8 +66,8 @@ namespace HealthGateway.EncounterTests.Delegates
                     Id = expectedMspHistoryResponseId,
                     Pages = 1,
                     TotalRecords = 1,
-                    Claims = new List<Claim>
-                    {
+                    Claims =
+                    [
                         new()
                         {
                             ClaimId = expectedClaimId,
@@ -94,7 +93,7 @@ namespace HealthGateway.EncounterTests.Delegates
                                 Province = "BC",
                             },
                         },
-                    },
+                    ],
                 },
             };
 

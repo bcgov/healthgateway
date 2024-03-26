@@ -13,13 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.Database.Models
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -98,7 +97,6 @@ namespace HealthGateway.Common.Data.Models
         /// <summary>
         /// Gets or sets the messaging verifications for this user.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public virtual ICollection<MessagingVerification>? Verifications { get; set; }
     }
 }

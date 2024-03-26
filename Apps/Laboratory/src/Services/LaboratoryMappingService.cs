@@ -53,11 +53,5 @@ namespace HealthGateway.Laboratory.Services
 
             return dest;
         }
-
-        /// <inheritdoc/>
-        public LaboratoryTest MapToLaboratoryTest(PhsaLaboratoryTest source)
-        {
-            return mapper.Map<PhsaLaboratoryTest, LaboratoryTest>(source);
-        }
     }
 }

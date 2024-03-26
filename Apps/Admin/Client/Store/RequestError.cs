@@ -31,5 +31,5 @@ public record RequestError
     /// <summary>
     /// Gets a detailed collection of properties associated with the error.
     /// </summary>
-    public Dictionary<string, string> Details { get; init; } = new();
+    public Dictionary<string, string> Details { get; init; } = [];
 }

@@ -48,12 +48,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -102,12 +102,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -115,7 +115,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 { "Authorization", token },
             };
-            RouteValueDictionary routeValues = new();
+            RouteValueDictionary routeValues = [];
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
@@ -154,12 +154,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -209,12 +209,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -265,12 +265,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -320,13 +320,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
             string scopes = "user/Patient.read";
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
                 new Claim(GatewayClaims.Scope, scopes),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -376,12 +376,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -431,13 +431,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
             string scopes = "user/Patient.write";
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
                 new Claim(GatewayClaims.Scope, scopes),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 
@@ -487,12 +487,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.Hdid, hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
 

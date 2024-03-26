@@ -26,16 +26,6 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationRecommendation
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationRecommendation"/> class.
-        /// </summary>
-        /// <param name="targetDiseases">The list of target diseases.</param>
-        [JsonConstructor]
-        public ImmunizationRecommendation(IList<TargetDisease> targetDiseases)
-        {
-            this.TargetDiseases = targetDiseases;
-        }
-
-        /// <summary>
         /// Gets or sets the Recommendation Set Id.
         /// </summary>
         [JsonPropertyName("recommendationSetId")]
@@ -78,10 +68,10 @@ namespace HealthGateway.Immunization.Models
         public string RecommendedVaccinations { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the Target Diseases.
+        /// Gets or sets the Target Diseases.
         /// </summary>
         [JsonPropertyName("targetDiseases")]
-        public IList<TargetDisease> TargetDiseases { get; }
+        public IEnumerable<TargetDisease> TargetDiseases { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the Immunization definition.

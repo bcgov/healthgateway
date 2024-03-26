@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The state for the feature.

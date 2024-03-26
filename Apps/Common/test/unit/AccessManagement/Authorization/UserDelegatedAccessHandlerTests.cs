@@ -27,7 +27,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -96,7 +96,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 { "Authorization", this.token },
             };
-            RouteValueDictionary routeValues = new();
+            RouteValueDictionary routeValues = [];
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
@@ -287,12 +287,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
         private ClaimsPrincipal GetClaimsPrincipal()
         {
-            List<Claim> claims = new()
-            {
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.Name, this.username),
                 new Claim(ClaimTypes.NameIdentifier, this.userId),
                 new Claim(GatewayClaims.Hdid, this.hdid),
-            };
+            ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             return new ClaimsPrincipal(identity);
         }

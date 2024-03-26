@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.CDogs;
 
     /// <summary>

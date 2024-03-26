@@ -16,10 +16,8 @@
 namespace HealthGateway.JobScheduler
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using Hangfire;
-    using Hangfire.Dashboard;
     using Hangfire.PostgreSql;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
@@ -178,7 +176,7 @@ namespace HealthGateway.JobScheduler
                             {
                                 DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                                 AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
-                                Authorization = new List<IDashboardAuthorizationFilter>(), // Very important to set this, or Authorization won't work.
+                                Authorization = [], // Very important to set this, or Authorization won't work.
                             })
                         .RequireAuthorization("AdminUserPolicy");
                 });

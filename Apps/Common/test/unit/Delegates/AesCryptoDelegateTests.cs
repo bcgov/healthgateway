@@ -100,7 +100,7 @@ namespace HealthGateway.CommonTests.Delegates
             string key = aesDelegate.GenerateKey();
             byte[] keyBytes = Convert.FromBase64String(key);
 
-            Assert.True(keyBytes.Length == aesDelegate.AesConfig.KeySize / 8);
+            Assert.Equal(aesDelegate.AesConfig.KeySize / 8, keyBytes.Length);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedStr = "m8zvM4eT5e4Wn1cJvbo+WQ==";
             string encryptedStr = aesDelegate.Encrypt(key, plainText);
 
-            Assert.True(expectedStr == encryptedStr);
+            Assert.Equal(expectedStr, encryptedStr);
         }
 
         /// <summary>
@@ -146,7 +146,8 @@ namespace HealthGateway.CommonTests.Delegates
             double expectedEncodedSize = Math.Ceiling(expectedSize / 3D) * 4;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedStr);
 
-            Assert.True(expectedSize == encryptedBytes.Length && expectedEncodedSize >= encryptedStr.Length);
+            Assert.Equal(expectedSize, encryptedBytes.Length);
+            Assert.True(expectedEncodedSize >= encryptedStr.Length);
         }
 
         /// <summary>
@@ -181,7 +182,8 @@ namespace HealthGateway.CommonTests.Delegates
             double expectedEncodedSize = Math.Ceiling(expectedSize / 3D) * 4;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedStr);
 
-            Assert.True(expectedSize == encryptedBytes.Length && expectedEncodedSize >= encryptedStr.Length);
+            Assert.Equal(expectedSize, encryptedBytes.Length);
+            Assert.True(expectedEncodedSize >= encryptedStr.Length);
         }
 
         /// <summary>
@@ -202,7 +204,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedStr = "Hello World";
             string decryptedStr = aesDelegate.Decrypt(key, cipherText);
 
-            Assert.True(expectedStr == decryptedStr);
+            Assert.Equal(expectedStr, decryptedStr);
         }
 
         /// <summary>
@@ -224,14 +226,15 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedStr = "ct9piIgrLBasmnfNPLcHRA==";
             string encryptedStr = aesDelegate.Encrypt(key, iv, plainText);
 
-            Assert.True(expectedStr == encryptedStr);
+            Assert.Equal(expectedStr, encryptedStr);
 
             int blockSize = 16;
             int expectedSize = plainText.Length + (blockSize - (plainText.Length % blockSize));
             double expectedEncodedSize = Math.Ceiling(expectedSize / 3D) * 4;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedStr);
 
-            Assert.True(expectedSize == encryptedBytes.Length && expectedEncodedSize >= encryptedStr.Length);
+            Assert.Equal(expectedSize, encryptedBytes.Length);
+            Assert.True(expectedEncodedSize >= encryptedStr.Length);
         }
 
         /// <summary>
@@ -253,7 +256,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedStr = "Hello World";
             string decryptedStr = aesDelegate.Decrypt(key, iv, cipherText);
 
-            Assert.True(expectedStr == decryptedStr);
+            Assert.Equal(expectedStr, decryptedStr);
         }
     }
 }

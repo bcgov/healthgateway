@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.Data.Models;
 using Refit;
 
 /// <summary>

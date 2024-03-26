@@ -23,8 +23,8 @@ namespace HealthGateway.ClinicalDocument.Controllers
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.ClinicalDocument.Services;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

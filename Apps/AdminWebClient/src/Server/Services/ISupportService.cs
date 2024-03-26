@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Services
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Service that provides functionality to admin support.

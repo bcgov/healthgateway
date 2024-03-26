@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.Data.Models;
 
 /// <summary>
 /// The state for the feature.

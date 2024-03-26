@@ -50,9 +50,9 @@ namespace HealthGateway.Immunization.Services
 
             ImmunizationRecommendation MapToImmunizationRecommendation(ImmunizationRecommendationResponse s, RecommendationResponse r)
             {
-                return new ImmunizationRecommendation(r.TargetDisease == null ? [] : mapper.Map<IList<SystemCode>, IList<TargetDisease>>(r.TargetDisease.TargetDiseaseCodes))
+                return new ImmunizationRecommendation
                 {
-                    RecommendedVaccinations = r.TargetDisease == null ? GetRecommendedVaccinationsString(s.Recommendations) : string.Empty,
+                    RecommendedVaccinations = r.TargetDisease == null ? GetRecommendedVaccinationsString(s.Recommendations.ToList()) : string.Empty,
                     RecommendationSetId = s.RecommendationId,
                     DiseaseEligibleDate = GetDateFromCriterions(r.DateCriterions, "Forecast by Disease Eligible Date"),
                     DiseaseDueDate = GetDateFromCriterions(r.DateCriterions, "Forecast by Disease Due Date"),
@@ -60,6 +60,7 @@ namespace HealthGateway.Immunization.Services
                     AgentDueDate = GetDateFromCriterions(r.DateCriterions, "Forecast by Agent Due Date"),
                     Status = r.ForecastStatus.ForecastStatusText,
                     Immunization = mapper.Map<VaccineCode, ImmunizationDefinition>(r.VaccineCode),
+                    TargetDiseases = r.TargetDisease == null ? [] : mapper.Map<IEnumerable<SystemCode>, IEnumerable<TargetDisease>>(r.TargetDisease.TargetDiseaseCodes),
                 };
             }
 

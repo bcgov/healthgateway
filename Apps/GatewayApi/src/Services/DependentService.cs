@@ -27,7 +27,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
@@ -141,7 +140,7 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
             }
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid }, ct);
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync([dependentHdid], ct);
             int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
 
             return RequestResultFactory.Success(this.mappingService.MapToDependentModel(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount));
@@ -161,7 +160,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(resourceDelegates.Select(d => d.ResourceOwnerHdid), ct);
 
             // Get Dependents Details from Patient service
-            List<DependentModel> dependentModels = new();
+            List<DependentModel> dependentModels = [];
             StringBuilder resultErrorMessage = new();
             foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {

@@ -18,7 +18,6 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Models.Phsa;
@@ -62,6 +61,12 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="decryptionKey">The key to use when decrypting the text.</param>
         /// <returns>The destination object.</returns>
         UserComment MapToUserComment(Comment source, string decryptionKey);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <param name="hdid">The HDID of the user providing the feedback.</param>
+        /// <returns>The destination object.</returns>
+        UserFeedback MapToUserFeedback(Feedback source, string hdid);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>

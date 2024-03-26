@@ -24,7 +24,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Api;
@@ -90,7 +90,7 @@ namespace HealthGateway.Laboratory.Delegates
                     if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
                     {
                         retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new() { Result = new() };
+                        retVal.ResourcePayload = new() { Result = [] };
                         retVal.TotalResultCount = 0;
                     }
                     else

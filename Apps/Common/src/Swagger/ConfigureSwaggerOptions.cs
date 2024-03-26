@@ -15,10 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.Extensions.Options;
-    using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.Swagger;
 
     /// <inheritdoc/>
@@ -43,10 +41,7 @@ namespace HealthGateway.Common.Swagger
             if (!string.IsNullOrEmpty(this.settings.BasePath))
             {
                 options.PreSerializeFilters.Add(
-                    (swaggerDoc, httpReq) => swaggerDoc.Servers = new List<OpenApiServer>
-                    {
-                        new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" },
-                    });
+                    (swaggerDoc, httpReq) => swaggerDoc.Servers = [new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" }]);
             }
         }
     }

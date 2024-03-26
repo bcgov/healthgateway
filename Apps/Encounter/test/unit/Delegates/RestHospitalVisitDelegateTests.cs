@@ -24,7 +24,7 @@ namespace HealthGateway.EncounterTests.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Utils;
     using HealthGateway.Encounter.Api;
@@ -57,8 +57,8 @@ namespace HealthGateway.EncounterTests.Delegates
             // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
             {
-                Result = new List<HospitalVisit>
-                {
+                Result =
+                [
                     new()
                     {
                         EncounterId = "123",
@@ -71,7 +71,7 @@ namespace HealthGateway.EncounterTests.Delegates
                         AdmitDateTime = null,
                         EndDateTime = null,
                     },
-                },
+                ],
             };
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();

@@ -22,7 +22,7 @@ namespace HealthGateway.MedicationTests.Controllers
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
@@ -37,17 +37,26 @@ namespace HealthGateway.MedicationTests.Controllers
         /// <summary>
         /// GetMedications - Happy Path.
         /// </summary>
+        /// <param name="pharmacyAssessmentTitle">Pharmacy assessment title.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetMedications()
+        [Theory]
+        [InlineData("Pharmacist Assessment")]
+        [InlineData("")]
+        public async Task GetMedications(string pharmacyAssessmentTitle)
         {
             // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string brandName = "KADIAN 10MG CAPSULE";
+            const string genericName = "Generic Name";
+            bool expectedPharmacistAssessment = !string.IsNullOrEmpty(pharmacyAssessmentTitle);
+            string expectedTitle = expectedPharmacistAssessment ? "Pharmacist Assessment" : brandName;
+            string expectedSubtitle = expectedPharmacistAssessment ? expectedTitle : genericName;
+
             RequestResult<IList<MedicationStatement>> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<MedicationStatement>
-                {
+                ResourcePayload =
+                [
                     new()
                     {
                         PrescriptionIdentifier = "identifier",
@@ -66,21 +75,24 @@ namespace HealthGateway.MedicationTests.Controllers
                             PharmacyId = "ID",
                             PhoneNumber = "2222222222",
                         },
-                        MedicationSummary = new MedicationSummary
+                        MedicationSummary = new()
                         {
                             Din = "02242163",
-                            BrandName = "KADIAN 10MG CAPSULE",
+                            BrandName = brandName,
                             Form = "Form",
-                            GenericName = "Generic Name",
+                            GenericName = genericName,
                             IsPin = false,
                             Manufacturer = "Nomos",
                             Quantity = 1,
                             Strength = "Strong",
                             StrengthUnit = "ml",
+                            PharmacyAssessmentTitle = pharmacyAssessmentTitle,
+                            PrescriptionProvided = true,
+                            RedirectedToHealthCareProvider = true,
                         },
                         PractitionerSurname = "Surname",
                     },
-                },
+                ],
             };
 
             Mock<IMedicationStatementService> svcMock = new();
@@ -95,6 +107,11 @@ namespace HealthGateway.MedicationTests.Controllers
             // Verify
             Assert.NotNull(actual);
             expectedResult.ShouldDeepEqual(actual);
+
+            // Medication Summary
+            Assert.Equal(expectedPharmacistAssessment, actual.ResourcePayload![0].MedicationSummary.IsPharmacistAssessment);
+            Assert.Equal(expectedTitle, actual.ResourcePayload![0].MedicationSummary.Title);
+            Assert.Equal(expectedSubtitle, actual.ResourcePayload![0].MedicationSummary.Subtitle);
         }
     }
 }

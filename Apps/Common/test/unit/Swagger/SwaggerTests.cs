@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Swagger
 {
-    using System.Collections.Generic;
     using System.Reflection;
     using HealthGateway.Common.Swagger;
     using HealthGateway.CommonTests.Utils;
@@ -37,8 +36,10 @@ namespace HealthGateway.CommonTests.Swagger
         public void ShouldApply()
         {
             AuthenticationRequirementsOperationFilter filter = new();
-            OpenApiOperation openApiOperation = new();
-            openApiOperation.Security = new List<OpenApiSecurityRequirement>();
+            OpenApiOperation openApiOperation = new()
+            {
+                Security = [],
+            };
 
             ControllerActionDescriptor actionDescriptor = new()
             {

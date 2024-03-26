@@ -19,29 +19,13 @@ namespace HealthGateway.Database.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// The user feedback database model.
     /// </summary>
     public class UserFeedback : AuditableEntity
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedback"/> class.
-        /// </summary>
-        public UserFeedback()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedback"/> class.
-        /// </summary>
-        /// <param name="tags">The tag collection.</param>
-        public UserFeedback(ICollection<UserFeedbackTag> tags)
-        {
-            this.Tags = tags;
-        }
-
         /// <summary>
         /// Gets or sets the primary key.
         /// </summary>
@@ -77,8 +61,14 @@ namespace HealthGateway.Database.Models
         public virtual UserProfile? UserProfile { get; set; }
 
         /// <summary>
-        /// Gets the related list of tags.
+        /// Gets or sets the client associated with the feedback.
         /// </summary>
-        public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
+        [MaxLength(10)]
+        public UserLoginClientType? ClientCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related list of tags.
+        /// </summary>
+        public ICollection<UserFeedbackTag> Tags { get; set; } = [];
     }
 }

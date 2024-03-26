@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Common.Models
     using System.Collections.Generic;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Represents details associated with a patient retrieved by a support query.

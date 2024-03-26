@@ -21,7 +21,7 @@ namespace HealthGateway.Medication.Controllers
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Cors;
@@ -65,7 +65,7 @@ namespace HealthGateway.Medication.Controllers
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
-            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(new List<string> { paddedDin }, ct);
+            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync([paddedDin], ct);
 
             medications.TryGetValue(paddedDin, out MedicationInformation? medication);
             RequestResult<MedicationInformation> result = new()

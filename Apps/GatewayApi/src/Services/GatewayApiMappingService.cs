@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Services
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
@@ -78,6 +77,18 @@ namespace HealthGateway.GatewayApi.Services
             UserComment dest = mapper.Map<Comment, UserComment>(source);
 
             dest.Text = dest.Text = !string.IsNullOrEmpty(source.Text) ? cryptoDelegate.Decrypt(decryptionKey, source.Text) : string.Empty;
+
+            return dest;
+        }
+
+        /// <inheritdoc/>
+        public UserFeedback MapToUserFeedback(Feedback source, string hdid)
+        {
+            UserFeedback dest = mapper.Map<Feedback, UserFeedback>(source);
+
+            dest.UserProfileId = hdid;
+            dest.CreatedBy = hdid;
+            dest.UpdatedBy = hdid;
 
             return dest;
         }

@@ -19,31 +19,14 @@ namespace HealthGateway.Medication.Models.Salesforce
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Special Authority Request.
+    /// Represents a Special Authority Request Response.
     /// </summary>
     public class ResponseWrapper
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResponseWrapper"/> class.
-        /// </summary>
-        public ResponseWrapper()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ResponseWrapper"/> class.
-        /// </summary>
-        /// <param name="items">The list of items to initialize.</param>
-        [JsonConstructor]
-        public ResponseWrapper(IList<SpecialAuthorityRequest> items)
-        {
-            this.Items = items;
-        }
-
-        /// <summary>
-        /// Gets the patientIdentifier.
+        /// Gets or sets the special authority requests.
         /// </summary>
         [JsonPropertyName("items")]
-        public IList<SpecialAuthorityRequest> Items { get; } = new List<SpecialAuthorityRequest>();
+        public IEnumerable<SpecialAuthorityRequest> Items { get; set; } = [];
     }
 }

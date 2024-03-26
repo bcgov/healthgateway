@@ -16,143 +16,201 @@
 namespace HealthGateway.Common.Data.Tests.Utils
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using Xunit;
 
     /// <summary>
-    /// AddressUtility's Unit Tests.
+    /// Unit Tests for AddressUtility.
     /// </summary>
     public class AddressUtilityTests
     {
-        /// <summary>
-        /// Should get address as a single line given 1 street line.
-        /// </summary>
-        [Fact]
-        public void ShouldGetAddressAsSingleLineGiven1StreetLine()
-        {
-            string expected = "1025 Sutlej Street, Victoria, BC, V8V2V8";
+        private const string StreetAddress = "1025 Sutlej Street";
+        private const string Apartment = "Suite 310";
+        private const string City = "Victoria";
+        private const string State = "BC";
+        private const string PostalCode = "V8V2V8";
+        private const string Country = "Canada";
 
-            // Arrange
-            Address address = new()
+        /// <summary>
+        /// Gets parameters for broadcast unit test(s).
+        /// </summary>
+        public static TheoryData<Address?, bool, string> SingleLineAddressTheoryData =>
+            new()
             {
-                StreetLines = new List<string> { "1025 Sutlej Street" },
-                City = "Victoria",
-                State = "BC",
-                PostalCode = "V8V2V8",
+                {
+                    new()
+                    {
+                        StreetLines = [StreetAddress],
+                        City = City,
+                        State = State,
+                        PostalCode = PostalCode,
+                    },
+                    false,
+                    "1025 Sutlej Street, Victoria, BC, V8V2V8"
+                },
+                {
+                    new()
+                    {
+                        StreetLines = [StreetAddress],
+                        City = City,
+                        State = State,
+                        PostalCode = PostalCode,
+                        Country = Country,
+                    },
+                    false,
+                    "1025 Sutlej Street, Victoria, BC, V8V2V8"
+                },
+                {
+                    new()
+                    {
+                        StreetLines = [StreetAddress],
+                        City = City,
+                        State = State,
+                        PostalCode = PostalCode,
+                        Country = Country,
+                    },
+                    true,
+                    "1025 Sutlej Street, Victoria, BC, V8V2V8, Canada"
+                },
+                {
+                    new()
+                    {
+                        StreetLines = [StreetAddress, Apartment],
+                        City = City,
+                        State = State,
+                        PostalCode = PostalCode,
+                    },
+                    false,
+                    "1025 Sutlej Street, Suite 310, Victoria, BC, V8V2V8"
+                },
+                {
+                    new()
+                    {
+                        StreetLines = [StreetAddress, Apartment],
+                        City = City,
+                        PostalCode = PostalCode,
+                    },
+                    false,
+                    "1025 Sutlej Street, Suite 310, Victoria, V8V2V8"
+                },
+                {
+                    new()
+                    {
+                        StreetLines = [StreetAddress, Apartment],
+                        City = City,
+                        State = State,
+                    },
+                    false,
+                    "1025 Sutlej Street, Suite 310, Victoria, BC"
+                },
+                {
+                    new(),
+                    false,
+                    string.Empty
+                },
+                {
+                    null,
+                    false,
+                    string.Empty
+                },
             };
 
+        /// <summary>
+        /// Tests for GetAddressAsSingleLine.
+        /// </summary>
+        /// <param name="address">The address to format.</param>
+        /// <param name="includeCountry">Whether the country should be included.</param>
+        /// <param name="expected">Expected result.</param>
+        [Theory]
+        [MemberData(nameof(SingleLineAddressTheoryData))]
+        public void ShouldGetAddressAsSingleLine(Address? address, bool includeCountry, string expected)
+        {
             // Act
-            string actual = AddressUtility.GetAddressAsSingleLine(address);
+            string actual = AddressUtility.GetAddressAsSingleLine(address, includeCountry);
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         /// <summary>
-        /// Should get address as a single line given 2 street lines.
+        /// Tests for GetCountryCode.
         /// </summary>
-        [Fact]
-        public void ShouldGetAddressAsSingleLineGiven2StreetLines()
+        /// <param name="countryName">The name of the country in question, or one of its aliases.</param>
+        /// <param name="expected">Expected result.</param>
+        [Theory]
+        [InlineData("Canada", CountryCode.CA)]
+        [InlineData("Cranada", CountryCode.Unknown)]
+        [InlineData("Sicily (included in Italy)", CountryCode.IT)]
+        public void ShouldGetCountryCode(string countryName, CountryCode expected)
         {
-            string expected = "1025 Sutlej Street, Suite 310, Victoria, BC, V8V2V8";
-
-            // Arrange
-            Address address = new()
-            {
-                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
-                City = "Victoria",
-                State = "BC",
-                PostalCode = "V8V2V8",
-            };
-
             // Act
-            string actual = AddressUtility.GetAddressAsSingleLine(address);
+            CountryCode actual = AddressUtility.GetCountryCode(countryName);
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         /// <summary>
-        /// Should get address as a single line given no state.
+        /// CountriesWithAliases.
         /// </summary>
         [Fact]
-        public void ShouldGetAddressAsSingleLineGivenNoState()
+        public void ShouldGetCountriesWithAliases()
         {
-            string expected = "1025 Sutlej Street, Suite 310, Victoria, V8V2V8";
-
-            // Arrange
-            Address address = new()
-            {
-                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
-                City = "Victoria",
-                PostalCode = "V8V2V8",
-            };
-
             // Act
-            string actual = AddressUtility.GetAddressAsSingleLine(address);
+            List<string> actual = AddressUtility.CountriesWithAliases.ToList();
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.NotEmpty(actual);
+            Assert.Equal("Canada", actual.First());
+            Assert.Contains("Sicily (included in Italy)", actual);
         }
 
         /// <summary>
-        /// Should get address as a single line given no postal code.
+        /// Countries.
         /// </summary>
         [Fact]
-        public void ShouldGetAddressAsSingleLineGivenNoPostalCode()
+        public void ShouldGetCountries()
         {
-            string expected = "1025 Sutlej Street, Suite 310, Victoria, BC";
-
-            // Arrange
-            Address address = new()
-            {
-                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
-                City = "Victoria",
-                State = "BC",
-            };
-
             // Act
-            string actual = AddressUtility.GetAddressAsSingleLine(address);
+            List<string> actual = AddressUtility.Countries.ToList();
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.NotEmpty(actual);
+            Assert.Equal("Canada", actual.First());
+            Assert.DoesNotContain("Sicily (included in Italy)", actual);
         }
 
         /// <summary>
-        /// Should not get address as a single line given null address.
+        /// Provinces.
         /// </summary>
         [Fact]
-        public void ShouldNotGetAddressAsSingleLineGivenNullAddress()
+        public void ShouldGetProvinces()
         {
-            string expected = string.Empty;
-
-            // Arrange
-            Address? address = null;
-
             // Act
-            string actual = AddressUtility.GetAddressAsSingleLine(address);
+            List<string> actual = AddressUtility.Provinces.ToList();
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.NotEmpty(actual);
+            Assert.Equal(13, actual.Count);
+            Assert.Equal("Alberta", actual.First());
         }
 
         /// <summary>
-        /// Should not get address as a single line given empty address.
+        /// States.
         /// </summary>
         [Fact]
-        public void ShouldNotGetAddressAsSingleLineGivenEmptyAddress()
+        public void ShouldGetStates()
         {
-            string expected = string.Empty;
-
-            // Arrange
-            Address address = new();
-
             // Act
-            string actual = AddressUtility.GetAddressAsSingleLine(address);
+            List<string> actual = AddressUtility.States.ToList();
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.NotEmpty(actual);
+            Assert.Equal(51, actual.Count);
+            Assert.Equal("Alabama", actual.First());
         }
     }
 }

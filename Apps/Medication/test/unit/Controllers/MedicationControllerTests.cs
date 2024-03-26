@@ -19,7 +19,7 @@ namespace HealthGateway.MedicationTests.Controllers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
@@ -107,7 +107,7 @@ namespace HealthGateway.MedicationTests.Controllers
             Mock<IMedicationService> serviceMock = new();
             serviceMock.Setup(s => s.GetMedicationsAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dictionary<string, MedicationInformation>());
 
-            List<string> drugIdentifiers = new() { "000001", "000003", "000003" };
+            List<string> drugIdentifiers = ["000001", "000003", "000003"];
             List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
             MedicationController controller = new(serviceMock.Object);
 

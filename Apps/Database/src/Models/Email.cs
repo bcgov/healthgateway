@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.Database.Models
 {
     using System;
     using System.Collections.Generic;
@@ -76,7 +76,6 @@ namespace HealthGateway.Common.Data.Models
         /// Gets or sets the Body personalization for the email.
         /// </summary>
         [Column(TypeName = "jsonb")]
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, string>? Personalization { get; set; }
 
         /// <summary>

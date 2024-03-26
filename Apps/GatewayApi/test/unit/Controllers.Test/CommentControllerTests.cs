@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -110,7 +110,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             ActionResult<RequestResult<UserComment>> actualResult = await controller.Update(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
             RequestResult<UserComment>? actualRequestResult = actualResult.Value;
-            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
+            Assert.NotNull(actualRequestResult);
+            Assert.Equal(ResultType.Success, actualRequestResult.ResultStatus);
             Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.UpdatedBy);
         }
 
@@ -226,7 +227,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldGetAllForEntry()
         {
-            List<UserComment> mockedComments = new();
+            List<UserComment> mockedComments = [];
             for (int i = 0; i < 10; i++)
             {
                 mockedComments.Add(

@@ -54,7 +54,7 @@ namespace AccountDataAccessTest
             string expectedGender = "Female";
             Address expectedPhysicalAddr = new()
             {
-                StreetLines = new List<string> { "Line 1", "Line 2", "Physical" },
+                StreetLines = ["Line 1", "Line 2", "Physical"],
                 City = "city",
                 Country = "CA",
                 PostalCode = "N0N0N0",
@@ -62,7 +62,7 @@ namespace AccountDataAccessTest
             };
             Address expectedPostalAddr = new()
             {
-                StreetLines = new List<string> { "Line 1", "Line 2", "Postal" },
+                StreetLines = ["Line 1", "Line 2", "Postal"],
                 City = "city",
                 Country = "CA",
                 PostalCode = "N0N0N0",
@@ -72,130 +72,130 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
-                addr = new AD[]
-                {
+                ],
+                addr =
+                [
                     new()
                     {
-                        use = new[]
-                        {
+                        use =
+                        [
                             cs_PostalAddressUse.PHYS,
-                        },
-                        Items = new ADXP[]
-                        {
+                        ],
+                        Items =
+                        [
                             new ADStreetAddressLine
                             {
                                 Text = expectedPhysicalAddr.StreetLines.ToArray(),
                             },
                             new ADCity
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPhysicalAddr.City,
-                                },
+                                ],
                             },
                             new ADState
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPhysicalAddr.State,
-                                },
+                                ],
                             },
                             new ADPostalCode
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPhysicalAddr.PostalCode,
-                                },
+                                ],
                             },
                             new ADCountry
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPhysicalAddr.Country,
-                                },
+                                ],
                             },
-                        },
+                        ],
                     },
                     new()
                     {
-                        use = new[]
-                        {
+                        use =
+                        [
                             cs_PostalAddressUse.PST,
-                        },
-                        Items = new ADXP[]
-                        {
+                        ],
+                        Items =
+                        [
                             new ADStreetAddressLine
                             {
                                 Text = expectedPostalAddr.StreetLines.ToArray(),
                             },
                             new ADCity
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPostalAddr.City,
-                                },
+                                ],
                             },
                             new ADState
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPostalAddr.State,
-                                },
+                                ],
                             },
                             new ADPostalCode
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPostalAddr.PostalCode,
-                                },
+                                ],
                             },
                             new ADCountry
                             {
-                                Text = new[]
-                                {
+                                Text =
+                                [
                                     expectedPostalAddr.Country,
-                                },
+                                ],
                             },
-                        },
+                        ],
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
+                                    Text = [expectedFirstName],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
+                                    Text = [expectedLastName],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -223,13 +223,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -270,58 +270,58 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { "Wrong Given Name" },
+                                    Text = ["Wrong Given Name"],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { "Wrong Family Name" },
+                                    Text = ["Wrong Family Name"],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.L },
+                            ],
+                            use = [cs_EntityNameUse.L],
                         },
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
+                                    Text = [expectedFirstName],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
+                                    Text = [expectedLastName],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -349,13 +349,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -394,82 +394,82 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { "Wrong Given Name" },
+                                    Text = ["Wrong Given Name"],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { "Wrong Family Name" },
+                                    Text = ["Wrong Family Name"],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.L },
+                            ],
+                            use = [cs_EntityNameUse.L],
                         },
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
-                                    qualifier = new[]
-                                    {
+                                    Text = [expectedFirstName],
+                                    qualifier =
+                                    [
                                         cs_EntityNamePartQualifier.AC,
-                                    },
+                                    ],
                                 },
                                 new engiven
                                 {
-                                    qualifier = new[]
-                                    {
+                                    qualifier =
+                                    [
                                         cs_EntityNamePartQualifier.CL,
-                                    },
-                                    Text = new[] { "Bad First Name" },
+                                    ],
+                                    Text = ["Bad First Name"],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
-                                    qualifier = new[]
-                                    {
+                                    Text = [expectedLastName],
+                                    qualifier =
+                                    [
                                         cs_EntityNamePartQualifier.IN,
-                                    },
+                                    ],
                                 },
                                 new enfamily
                                 {
-                                    qualifier = new[]
-                                    {
+                                    qualifier =
+                                    [
                                         cs_EntityNamePartQualifier.CL,
-                                    },
-                                    Text = new[] { "Bad Last Name" },
+                                    ],
+                                    Text = ["Bad Last Name"],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -497,13 +497,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -540,43 +540,43 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
+                                    Text = [expectedFirstName],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
+                                    Text = [expectedLastName],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -604,13 +604,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -642,43 +642,43 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
+                                    Text = [expectedFirstName],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
+                                    Text = [expectedLastName],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -706,13 +706,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -744,43 +744,43 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
+                                    Text = [expectedFirstName],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
+                                    Text = [expectedLastName],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -808,13 +808,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -846,43 +846,43 @@ namespace AccountDataAccessTest
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = expectedHdId,
                         displayable = true,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
-                    id = new[]
-                    {
+                    id =
+                    [
                         new II
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6.1",
                             extension = expectedPhn,
                         },
-                    },
-                    name = new[]
-                    {
+                    ],
+                    name =
+                    [
                         new PN
                         {
-                            Items = new ENXP[]
-                            {
+                            Items =
+                            [
                                 new engiven
                                 {
-                                    Text = new[] { expectedFirstName },
+                                    Text = [expectedFirstName],
                                 },
                                 new enfamily
                                 {
-                                    Text = new[] { expectedLastName },
+                                    Text = [expectedLastName],
                                 },
-                            },
-                            use = new[] { cs_EntityNameUse.C },
+                            ],
+                            use = [cs_EntityNameUse.C],
                         },
-                    },
+                    ],
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -910,13 +910,13 @@ namespace AccountDataAccessTest
                                         code = expectedResponseCode,
                                     },
                                 },
-                                subject = new[]
-                                {
+                                subject =
+                                [
                                     new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                                     {
                                         target = subjectTarget,
                                     },
-                                },
+                                ],
                             },
                         },
                     });
@@ -1039,14 +1039,14 @@ namespace AccountDataAccessTest
         {
             return new HCIM_IN_GetDemographicsResponseIdentifiedPerson
             {
-                id = new[]
-                {
+                id =
+                [
                     new II
                     {
                         root = "2.16.840.1.113883.3.51.1.1.6",
                         extension = Hdid,
                     },
-                },
+                ],
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
                     deceasedInd = new BL
@@ -1072,14 +1072,14 @@ namespace AccountDataAccessTest
                 return Array.Empty<II>();
             }
 
-            return new[]
-            {
+            return
+            [
                 new II
                 {
                     root = "01010101010",
                     extension = Phn,
                 },
-            };
+            ];
         }
 
         private static PN[] GetNames(bool noNames = false)
@@ -1089,24 +1089,24 @@ namespace AccountDataAccessTest
                 return Array.Empty<PN>();
             }
 
-            return new[]
-            {
+            return
+            [
                 new PN
                 {
-                    Items = new ENXP[]
-                    {
+                    Items =
+                    [
                         new engiven
                         {
-                            Text = new[] { FirstName },
+                            Text = [FirstName],
                         },
                         new enfamily
                         {
-                            Text = new[] { LastName },
+                            Text = [LastName],
                         },
-                    },
-                    use = new[] { cs_EntityNameUse.C },
+                    ],
+                    use = [cs_EntityNameUse.C],
                 },
-            };
+            ];
         }
 
         private static HCIM_IN_GetDemographicsResponse1 GetDemographics(
@@ -1126,13 +1126,13 @@ namespace AccountDataAccessTest
                                 code = expectedResponseCode,
                             },
                         },
-                        subject = new[]
-                        {
+                        subject =
+                        [
                             new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
                             {
                                 target = subjectTarget,
                             },
-                        },
+                        ],
                     },
                 },
             };

@@ -31,7 +31,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
@@ -65,21 +64,21 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel? patient = null;
+            PatientModel? patient = null; // Client registry not found
 
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
@@ -120,15 +119,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected),
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.Message);
         }
 
         /// <summary>
@@ -173,15 +172,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected),
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
@@ -213,15 +212,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
                 GetVaccineProofDelegateMock(vaccineProofResponse));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.Message);
         }
 
         /// <summary>
@@ -252,28 +251,31 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
                 GetVaccineProofDelegateMock(expected));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given vaccine state not found.
+        /// Retrieve vaccine record async throws exception given vaccine state not found or invalid data .
         /// </summary>
+        /// <param name="expectedExceptionType">The exception type to be thrown.</param>
+        /// <param name="expectedErrorMessage">The associated error message for the exception.</param>
         /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData("NotFound")]
-        [InlineData("DataMismatch")]
-        [InlineData("Threshold")]
-        [InlineData("Blocked")]
-        public async Task RetrieveVaccineRecordAsyncThrowsVaccineStateNotFound(string status)
+        [InlineData(typeof(NotFoundException), ErrorMessages.VaccineStatusNotFound, "NotFound")]
+        [InlineData(typeof(NotFoundException), ErrorMessages.VaccineStatusNotFound, "DataMismatch")]
+        [InlineData(typeof(NotFoundException), ErrorMessages.VaccineStatusNotFound, "Threshold")]
+        [InlineData(typeof(NotFoundException), ErrorMessages.VaccineStatusNotFound, "Blocked")]
+        [InlineData(typeof(InvalidDataException), ErrorMessages.VaccinationStatusUnknown, "Unknown")]
+        public async Task RetrieveVaccineRecordAsyncThrowsVaccineStateException(Type expectedExceptionType, string expectedErrorMessage, string status)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -291,15 +293,11 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult));
 
-            // Act
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
+            // Act and Assert
+            Exception exception = await Assert.ThrowsAsync(
+                expectedExceptionType,
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
+            Assert.Equal(expectedErrorMessage, exception.Message);
         }
 
         /// <summary>
@@ -326,15 +324,15 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult));
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
         }
 
         /// <summary>
@@ -351,17 +349,17 @@ namespace HealthGateway.Admin.Tests.Services
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken),
-                GetVaccineStatusDelegateMock());
+                GetVaccineStatusDelegateMock()); // this will setup maximum retry attempts reached
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.RetrieveVaccineRecordAsync(Phn);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
@@ -390,15 +388,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
         }
 
         /// <summary>
@@ -418,15 +416,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
@@ -458,15 +456,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
@@ -499,15 +497,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
         }
 
         /// <summary>
@@ -528,27 +526,30 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
+            // Act and Assert
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
+            return;
+
             async Task Actual()
             {
                 await service.MailVaccineCardAsync(request);
             }
-
-            // Verify
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
         /// Should mail vaccine card async successfully.
         /// </summary>
+        /// <param name="patientExists">bool indicating whether patient exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldMailVaccineCardAsync()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldMailVaccineCardAsync(bool patientExists)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
+            PatientModel? patient = patientExists ? GeneratePatientModel(Phn, Hdid, Birthdate) : null;
 
             VaccineProofResponse vaccineProof = GenerateVaccineProofResponse();
             RequestResult<VaccineProofResponse> vaccineProofResult = new() { ResultStatus = ResultType.Success, ResourcePayload = vaccineProof };
@@ -572,33 +573,54 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            // Act
-            async Task Action()
+            if (patientExists)
             {
-                await service.MailVaccineCardAsync(request);
+                // Act
+                async Task Action()
+                {
+                    await service.MailVaccineCardAsync(request);
+                }
+
+                Exception? exception = await Record.ExceptionAsync(Action);
+
+                // Assert
+                Assert.Null(exception);
             }
+            else
+            {
+                // Act
+                async Task Actual()
+                {
+                    await service.MailVaccineCardAsync(request);
+                }
 
-            Exception? exception = await Record.ExceptionAsync(Action);
-
-            // Verify
-            Assert.Null(exception);
+                // Assert
+                NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+                Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+            }
         }
 
         /// <summary>
         /// Should mail vaccine card async successfully.
         /// </summary>
+        /// <param name="patientExists">bool indicating whether patient exists or not.</param>
+        /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldRetrieveVaccineRecordAsync()
+        [Theory]
+        [InlineData(true, "Exempt")]
+        [InlineData(true, "AllDosesReceived")]
+        [InlineData(true, "PartialDosesReceived")]
+        [InlineData(false, "AllDosesReceived")]
+        public async Task ShouldRetrieveVaccineRecordAsync(bool patientExists, string status)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
+            PatientModel? patient = patientExists ? GeneratePatientModel(Phn, Hdid, Birthdate) : null;
 
             VaccineProofResponse vaccineProof = GenerateVaccineProofResponse();
             RequestResult<VaccineProofResponse> vaccineProofResult = new() { ResultStatus = ResultType.Success, ResourcePayload = vaccineProof };
 
-            VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
+            VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult(status);
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
                 Result = vaccineStatus, LoadState = new PhsaLoadState
@@ -625,26 +647,45 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected),
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
-            // Act
-            ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn);
+            if (patientExists)
+            {
+                // Act
+                ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn);
 
-            // Verify
-            Assert.Equal(expected.ResourcePayload, actual);
+                // Assert
+                Assert.Equal(expected.ResourcePayload, actual);
+            }
+            else
+            {
+                // Act
+                async Task Actual()
+                {
+                    await service.RetrieveVaccineRecordAsync(Phn);
+                }
+
+                // Assert
+                NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+                Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+            }
         }
 
         /// <summary>
         /// Should submit covid assessment async successfully.
         /// </summary>
+        /// <param name="accessTokenExists">bool indicating whether access token exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldSubmitCovidAssessmentAsyncAsync()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldSubmitCovidAssessmentAsyncAsync(bool accessTokenExists)
         {
             // Arrange
             Guid covidAssessmentId = Guid.NewGuid();
             CovidAssessmentResponse expected = GenerateCovidAssessmentResponse(covidAssessmentId);
+            string? accessToken = accessTokenExists ? AccessToken : null;
 
             ICovidSupportService service = CreateCovidSupportService(
-                GetAuthenticationDelegateMock(AccessToken),
+                GetAuthenticationDelegateMock(accessToken),
                 GetImmunizationAdminApiMock(expected));
 
             CovidAssessmentRequest request = new()
@@ -652,11 +693,26 @@ namespace HealthGateway.Admin.Tests.Services
                 Phn = Phn,
             };
 
-            // Act
-            CovidAssessmentResponse actual = await service.SubmitCovidAssessmentAsync(request);
+            if (accessTokenExists)
+            {
+                // Act
+                CovidAssessmentResponse actual = await service.SubmitCovidAssessmentAsync(request);
 
-            // Verify
-            Assert.Equal(expected, actual);
+                // Assert
+                Assert.Equal(expected, actual);
+            }
+            else
+            {
+                // Act
+                async Task Actual()
+                {
+                    await service.SubmitCovidAssessmentAsync(request);
+                }
+
+                // Assert
+                UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(Actual);
+                Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
+            }
         }
 
         private static ICovidSupportService CreateCovidSupportService(
@@ -807,11 +863,6 @@ namespace HealthGateway.Admin.Tests.Services
                 mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .Throws(
                         new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ErrorCodes.MaxRetriesReached));
-            }
-            else if (response.Result == null)
-            {
-                mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .Throws(new NotFoundException(ErrorMessages.CannotGetVaccineStatus));
             }
             else
             {

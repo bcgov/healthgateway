@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
@@ -89,7 +89,7 @@ namespace HealthGateway.Admin.Server.Services
                 // Get delegates from database
                 IEnumerable<ResourceDelegate> dbResourceDelegates = await this.SearchDelegatesAsync(dependentPatientInfo.HdId, ct);
 
-                List<DelegateInfo> delegates = new();
+                List<DelegateInfo> delegates = [];
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
                     RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(resourceDelegate.ProfileHdid, ct: ct);
@@ -166,29 +166,21 @@ namespace HealthGateway.Admin.Server.Services
             IList<string> delegateHdidList = delegateHdids.ToList();
 
             // Compare dependent allowed delegations in database with passed in delegate hdids to determine which allowed delegations to remove.
-            IEnumerable<AllowedDelegation> allowedDelegationsToDelete =
-                dependent.AllowedDelegations.Where(x => delegateHdidList.All(y => y != x.DelegateHdId));
-
-            foreach (AllowedDelegation delegation in allowedDelegationsToDelete.ToList())
-            {
-                dependent.AllowedDelegations.Remove(delegation);
-            }
+            List<AllowedDelegation> allowedDelegationsToDelete = dependent.AllowedDelegations.Where(x => delegateHdidList.All(y => y != x.DelegateHdId)).ToList();
 
             // Compare passed in delegate hdids with dependent allowed delegations in database to determine what allowed delegations to add.
-            IEnumerable<string> delegateHdidsToAdd =
-                delegateHdidList.Where(x => dependent.AllowedDelegations.All(y => y.DelegateHdId != x));
-
-            foreach (string delegateHdid in delegateHdidsToAdd)
-            {
-                dependent.AllowedDelegations.Add(
-                    new()
+            List<AllowedDelegation> allowedDelegationsToAdd = delegateHdidList.Where(x => dependent.AllowedDelegations.All(y => y.DelegateHdId != x))
+                .Select(
+                    delegateHdid => new AllowedDelegation
                     {
                         DependentHdId = dependent.HdId,
                         DelegateHdId = delegateHdid,
                         CreatedBy = authenticatedUserId,
                         UpdatedBy = authenticatedUserId,
-                    });
-            }
+                    })
+                .ToList();
+
+            dependent.AllowedDelegations = dependent.AllowedDelegations.Except(allowedDelegationsToDelete).Concat(allowedDelegationsToAdd).ToList();
 
             IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegatesAsync(dependent.HdId, ct);
 
@@ -227,7 +219,7 @@ namespace HealthGateway.Admin.Server.Services
 
             dependent.Protected = false;
             dependent.UpdatedBy = authenticatedUserId;
-            dependent.AllowedDelegations.Clear();
+            dependent.AllowedDelegations = [];
 
             AgentAudit agentAudit = new()
             {

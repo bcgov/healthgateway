@@ -25,24 +25,6 @@ using System.Text.Json.Serialization;
 public class Covid19Test
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="Covid19Test"/> class.
-    /// </summary>
-    public Covid19Test()
-    {
-        this.ResultDescription = new List<string>();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Covid19Test"/> class.
-    /// </summary>
-    /// <param name="resultDescription">The paragraphs comprising the result description.</param>
-    [JsonConstructor]
-    public Covid19Test(IList<string> resultDescription)
-    {
-        this.ResultDescription = resultDescription;
-    }
-
-    /// <summary>
     /// Gets or sets the id for the COVID-19 result.
     /// </summary>
     [JsonPropertyName("id")]
@@ -91,10 +73,10 @@ public class Covid19Test
     public string FilteredLabResultOutcome { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the result description.
+    /// Gets or sets the result description.
     /// </summary>
     [JsonPropertyName("resultDescription")]
-    public IList<string> ResultDescription { get; init; }
+    public IEnumerable<string> ResultDescription { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the result link.

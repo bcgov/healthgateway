@@ -13,25 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.ViewModels
+namespace HealthGateway.GatewayApi.MapProfiles
 {
-    using System.Text.Json.Serialization;
+    using AutoMapper;
+    using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// Represents an api warning.
+    /// An AutoMapper profile class which defines mappings between DB and front-end models.
     /// </summary>
-    public class ApiWarning
+    public class FeedbackProfile : Profile
     {
         /// <summary>
-        /// Gets or sets a code.
+        /// Initializes a new instance of the <see cref="FeedbackProfile"/> class.
         /// </summary>
-        [JsonPropertyName("code")]
-        public string? Code { get; set; }
-
-        /// <summary>
-        /// Gets or sets a warning.
-        /// </summary>
-        [JsonPropertyName("message")]
-        public string? Message { get; set; }
+        public FeedbackProfile()
+        {
+            this.CreateMap<Feedback, UserFeedback>()
+                .ForMember(f => f.ClientCode, opts => opts.MapFrom(f => f.ClientType));
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace HealthGateway.CommonTests.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.CommonTests.Utils;
@@ -146,7 +146,7 @@ namespace HealthGateway.CommonTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             if (communicationExists)
             {
-                Assert.True(communication.IsDeepEqual(actualResult.ResourcePayload));
+                actualResult.ResourcePayload.ShouldDeepEqual(communication);
                 Assert.Equal(1, actualResult.TotalResultCount);
             }
             else

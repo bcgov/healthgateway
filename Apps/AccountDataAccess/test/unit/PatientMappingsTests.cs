@@ -88,15 +88,15 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
                 LegalName = new Name
-                { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
                 PhysicalAddress = new Address
                 {
-                    StreetLines = new List<string>
-                    {
+                    StreetLines =
+                    [
                         PhsaHomeAddressStreetOne,
-                    },
+                    ],
                     City = PhsaHomeAddressCity,
                     State = PhsaHomeAddressProvState,
                     PostalCode = PhsaHomeAddressPostal,
@@ -104,12 +104,12 @@ namespace AccountDataAccessTest
                 },
                 PostalAddress = new Address
                 {
-                    StreetLines = new List<string>
-                    {
+                    StreetLines =
+                    [
                         PhsaMailAddressStreetOne,
                         PhsaMailAddressStreetTwo,
                         PhsaMailAddressStreetThree,
-                    },
+                    ],
                     City = PhsaMailAddressCity,
                     State = PhsaMailAddressProvState,
                     PostalCode = PhsaMailAddressPostal,
@@ -175,9 +175,9 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
                 LegalName = new Name
-                { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
                 PhysicalAddress = null,
                 PostalAddress = null,
             };

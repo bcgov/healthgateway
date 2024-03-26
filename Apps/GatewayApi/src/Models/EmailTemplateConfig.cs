@@ -13,37 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.BCMailPlus
+namespace HealthGateway.GatewayApi.Models
 {
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// The BC Mail Plus status query model.
+    /// Model object representing email template configuration.
     /// </summary>
-    public class BcmpJobStatusesQuery
+    public class EmailTemplateConfig
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BcmpJobStatusesQuery"/> class.
+        /// The section key to use when binding this object.
         /// </summary>
-        public BcmpJobStatusesQuery()
-        {
-        }
+        public const string ConfigurationSectionKey = "EmailTemplate";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BcmpJobStatusesQuery"/> class.
+        /// Gets the host.
         /// </summary>
-        /// <param name="jobIds">The list of job IDs to check.</param>
-        [JsonConstructor]
-        public BcmpJobStatusesQuery(IList<string> jobIds)
-        {
-            this.JobIds = jobIds;
-        }
-
-        /// <summary>
-        /// Gets the job IDs for the job statuses to retrieve.
-        /// </summary>
-        [JsonPropertyName("jobs")]
-        public IList<string> JobIds { get; } = new List<string>();
+        public string Host { get; init; } = string.Empty;
     }
 }

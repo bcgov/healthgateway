@@ -23,7 +23,6 @@ namespace HealthGateway.Database.Context
     using System.Reflection;
     using System.Text;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -354,13 +353,27 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => p.Username)
                 .IsUnique();
 
-            // Create Foreign key for UserFeedback
+            // Create Foreign keys for UserFeedback
             modelBuilder.Entity<UserFeedback>()
                 .HasOne<UserProfile>(f => f.UserProfile)
                 .WithMany()
                 .HasPrincipalKey(k => k.HdId)
                 .HasForeignKey(k => k.UserProfileId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<UserFeedback>()
+                .HasOne<UserLoginClientTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.UserLoginClientCode)
+                .HasForeignKey(k => k.ClientCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserFeedback>()
+                .Property(e => e.ClientCode)
+                .HasConversion(
+                    new ValueConverter<UserLoginClientType, string>(
+                        v => EnumUtility.ToEnumString(v, false),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
 
             modelBuilder.Entity<UserProfile>()
                 .HasIndex(p => p.LastLoginDateTime);
@@ -1157,7 +1170,7 @@ namespace HealthGateway.Database.Context
                     new UserLoginClientTypeCode
                     {
                         UserLoginClientCode = UserLoginClientType.Web,
-                        Description = "Code for a login from the hg web app",
+                        Description = "Code for a login from the HG web app",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -1166,11 +1179,20 @@ namespace HealthGateway.Database.Context
                     new UserLoginClientTypeCode
                     {
                         UserLoginClientCode = UserLoginClientType.Mobile,
-                        Description = "Code for a login from the hg mobile app",
+                        Description = "Code for a login from the HG mobile app",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Salesforce,
+                        Description = "Code for a login from the HG Salesforce app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     });
         }
 

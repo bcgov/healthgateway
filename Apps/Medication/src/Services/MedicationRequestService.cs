@@ -20,7 +20,7 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
@@ -59,7 +59,7 @@ namespace HealthGateway.Medication.Services
                 return new RequestResult<IList<MedicationRequest>>
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = new List<MedicationRequest>(),
+                    ResourcePayload = [],
                     TotalResultCount = 0,
                 };
             }

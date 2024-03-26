@@ -20,7 +20,7 @@ namespace HealthGateway.Immunization.Services
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
@@ -90,10 +90,12 @@ namespace HealthGateway.Immunization.Services
                 return new RequestResult<ImmunizationResult>
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = new ImmunizationResult(
-                        this.mappingService.MapToLoadStateModel(delegateResult.ResourcePayload!.LoadState),
-                        delegateResult.ResourcePayload!.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent).ToList(),
-                        this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations)),
+                    ResourcePayload = new ImmunizationResult
+                    {
+                        LoadState = this.mappingService.MapToLoadStateModel(delegateResult.ResourcePayload!.LoadState),
+                        Immunizations = delegateResult.ResourcePayload!.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent).ToList(),
+                        Recommendations = this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations).ToList(),
+                    },
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,

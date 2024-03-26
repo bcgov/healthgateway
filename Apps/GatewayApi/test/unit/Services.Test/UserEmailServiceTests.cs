@@ -23,12 +23,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Configuration;
@@ -139,7 +139,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
 
             // Assert
-            Assert.True(actual.ResultStatus == ResultType.ActionRequired);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
         }
 
         /// <summary>

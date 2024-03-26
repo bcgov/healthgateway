@@ -58,7 +58,7 @@ namespace HealthGateway.DBMaintainer.Parsers
             csv.Context.TypeConverterOptionsCache.AddOptions<DateOnly>(options);
             PharmaCareDrugMapper mapper = new(fileDownload);
             csv.Context.RegisterClassMap(mapper);
-            List<PharmaCareDrug> records = new();
+            List<PharmaCareDrug> records = [];
             await foreach (PharmaCareDrug? record in csv.GetRecordsAsync<PharmaCareDrug>(ct))
             {
                 records.Add(record);

@@ -26,7 +26,8 @@ namespace HealthGateway.EncounterTests.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -121,13 +122,13 @@ namespace HealthGateway.EncounterTests.Services
                 PageIndex = 1,
                 ResourcePayload = new MspVisitHistoryResponse
                 {
-                    Claims = new List<Claim>
-                    {
+                    Claims =
+                    [
                         this.sameClaim,
                         this.oddClaim,
                         this.sameClaim,
                         this.excludeClaim,
-                    },
+                    ],
                 },
             };
             string hdid = "MOCKHDID";
@@ -156,7 +157,7 @@ namespace HealthGateway.EncounterTests.Services
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
 
             if (canAccessDataSource)
             {
@@ -215,8 +216,8 @@ namespace HealthGateway.EncounterTests.Services
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
-            Assert.False(actualResult.ResourcePayload.Any());
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Empty(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -285,20 +286,23 @@ namespace HealthGateway.EncounterTests.Services
         public async Task ShouldGetHospitalVisits(bool canAccessDataSource)
         {
             // Arrange
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            DateTime expectedAdmitDateTime = now.UtcDateTime;
+
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
-                    Result = new List<HospitalVisit>
-                    {
+                    Result =
+                    [
                         new()
                         {
                             EncounterId = "Id",
-                            AdmitDateTime = null,
+                            AdmitDateTime = DateTime.SpecifyKind(TimeZoneInfo.ConvertTime(now, DateFormatter.GetLocalTimeZone(Configuration)).DateTime, DateTimeKind.Unspecified),
                             EndDateTime = null,
                         },
-                    },
+                    ],
                 },
                 TotalResultCount = 1,
             };
@@ -309,16 +313,20 @@ namespace HealthGateway.EncounterTests.Services
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.True(actualResult.ResourcePayload.Loaded);
+            Assert.False(actualResult.ResourcePayload.Queued);
 
             if (canAccessDataSource)
             {
-                Assert.NotNull(actualResult.ResourcePayload);
                 Assert.Single(actualResult.ResourcePayload!.HospitalVisits);
-                Assert.True(actualResult.TotalResultCount == 1);
+                Assert.Equal(1, actualResult.TotalResultCount);
+                Assert.Equal(expectedAdmitDateTime, actualResult.ResourcePayload.HospitalVisits.First().AdmitDateTime);
             }
             else
             {
                 Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
+                Assert.Equal(0, actualResult.TotalResultCount);
             }
         }
 
@@ -350,7 +358,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Equal(0, actualResult.TotalResultCount);
             Assert.True(actualResult.ResourcePayload.Loaded);
             Assert.False(actualResult.ResourcePayload.Queued);
         }
@@ -390,8 +398,8 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
             Assert.True(actualResult.ResourcePayload!.Queued);
             Assert.False(actualResult.ResourcePayload!.Loaded);
-            Assert.True(actualResult.ResourcePayload!.RetryIn == PhsaBackOffMilliseconds);
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Equal(PhsaBackOffMilliseconds, actualResult.ResourcePayload!.RetryIn);
+            Assert.Equal(0, actualResult.TotalResultCount);
         }
 
         /// <summary>
@@ -421,7 +429,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Equal(0, actualResult.TotalResultCount);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

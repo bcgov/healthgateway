@@ -24,7 +24,8 @@ namespace HealthGateway.Common.Data.Utils
     public static class ConfigurationUtility
     {
         /// <summary>
-        /// Dynamically constructs a service endpoint, replacing placeholder values with a host and port retrieved from environmental variables.
+        /// Dynamically constructs a service endpoint, replacing placeholder values with a host and port retrieved from
+        /// environmental variables.
         /// </summary>
         /// <param name="baseEndpoint">The endpoint string containing ${{serviceHost}} and ${{servicePort}} placeholders.</param>
         /// <param name="hostEnvironmentVariable">The name of the environmental variable containing the host.</param>

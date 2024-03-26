@@ -27,6 +27,6 @@ namespace HealthGateway.ClinicalDocument.Models.PHSA
         /// Gets or sets the data.
         /// </summary>
         [JsonPropertyName("data")]
-        public IEnumerable<PhsaClinicalDocumentRecord> Data { get; set; } = new List<PhsaClinicalDocumentRecord>();
+        public IEnumerable<PhsaClinicalDocumentRecord> Data { get; set; } = [];
     }
 }

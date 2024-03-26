@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using HealthGateway.Common.Data.Models;
-using HealthGateway.Common.Data.ViewModels;
 
 /// <summary>
 /// Static class that implements all actions for the feature.

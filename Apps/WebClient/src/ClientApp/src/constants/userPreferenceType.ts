@@ -1,10 +1,17 @@
 export default abstract class UserPreferenceType {
-    public static QuickLinks = "quickLinks";
-    public static HideVaccineCardQuickLink = "hideVaccineCardQuickLink";
-    public static HideImmunizationRecordQuickLink =
+    public static readonly QuickLinks = "quickLinks";
+
+    public static readonly HideVaccineCardQuickLink =
+        "hideVaccineCardQuickLink";
+
+    public static readonly HideImmunizationRecordQuickLink =
         "hideImmunizationRecordQuickLink";
-    public static HideOrganDonorQuickLink = "hideOrganDonorQuickLink";
-    public static HideHealthConnectRegistryQuickLink =
+
+    public static readonly HideOrganDonorQuickLink = "hideOrganDonorQuickLink";
+
+    public static readonly HideHealthConnectRegistryQuickLink =
         "hideHealthConnectRegistryQuickLink";
-    public static HideRecommendationsQuickLink = "hideRecommendationsQuickLink";
+
+    public static readonly HideRecommendationsQuickLink =
+        "hideRecommendationsQuickLink";
 }

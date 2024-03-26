@@ -16,7 +16,6 @@
 namespace HealthGateway.MedicationTests.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
     using System.Threading;
@@ -26,14 +25,16 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models.ODR;
+    using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -44,13 +45,14 @@ namespace HealthGateway.MedicationTests.Delegates
     /// </summary>
     public class MedicationDelegateTests
     {
+        private const string Hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+        private const string Ip = "10.0.0.1";
+        private const string OdrConfigSectionKey = "ODR";
+        private const string Phn = "9735361219";
+
         private readonly IConfiguration configuration;
-        private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-        private readonly string ip = "10.0.0.1";
         private readonly ILoggerFactory loggerFactory;
         private readonly OdrConfig odrConfig = new();
-        private readonly string odrConfigSectionKey = "ODR";
-        private readonly string phn = "9735361219";
         private readonly OdrHistoryQuery query = new()
         {
             StartDate = DateTime.Parse("1990/01/01", CultureInfo.CurrentCulture),
@@ -64,7 +66,7 @@ namespace HealthGateway.MedicationTests.Delegates
         public MedicationDelegateTests()
         {
             this.configuration = GetIConfigurationRoot();
-            this.configuration.Bind(this.odrConfigSectionKey, this.odrConfig);
+            this.configuration.Bind(OdrConfigSectionKey, this.odrConfig);
             this.loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         }
 
@@ -80,16 +82,16 @@ namespace HealthGateway.MedicationTests.Delegates
             MedicationHistory medicationHistory = new()
             {
                 Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
-                RequestorHdid = this.hdid,
-                RequestorIp = this.ip,
+                RequestorHdid = Hdid,
+                RequestorIp = Ip,
                 Query = this.query,
                 Response = new MedicationHistoryResponse
                 {
                     Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
                     Pages = 1,
                     TotalRecords = 1,
-                    Results = new List<MedicationResult>
-                    {
+                    Results =
+                    [
                         new()
                         {
                             Din = "00000000",
@@ -124,7 +126,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             Quantity = 1,
                             Refills = 1,
                         },
-                    },
+                    ],
                 },
             };
 
@@ -132,7 +134,7 @@ namespace HealthGateway.MedicationTests.Delegates
             mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(medicationHistory);
             mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(this.GetProtectiveWord());
+                .ReturnsAsync(GetProtectiveWord());
 
             IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
@@ -164,21 +166,21 @@ namespace HealthGateway.MedicationTests.Delegates
             MedicationHistory medicationHistory = new()
             {
                 Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
-                RequestorHdid = this.hdid,
-                RequestorIp = this.ip,
+                RequestorHdid = Hdid,
+                RequestorIp = Ip,
                 Query = this.query,
                 Response = new MedicationHistoryResponse
                 {
                     Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
                     Pages = 1,
                     TotalRecords = 1,
-                    Results = new List<MedicationResult>
-                    {
+                    Results =
+                    [
                         new()
                         {
                             Din = "00000000",
                         },
-                    },
+                    ],
                 },
             };
 
@@ -186,11 +188,19 @@ namespace HealthGateway.MedicationTests.Delegates
             mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(medicationHistory);
             mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(this.GetProtectiveWord());
+                .ReturnsAsync(GetProtectiveWord());
 
+            byte[] salt = HmacHashDelegate.GenerateSalt();
+            HmacHash hmacHash = new()
+            {
+                PseudoRandomFunction = HashFunction.HmacSha512,
+                Iterations = 21013,
+                Salt = Convert.ToBase64String(salt),
+                Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(GetProtectiveWord().QueryResponse.Value, salt, HmacHashDelegateConfig.DefaultPseudoRandomFunction, 21013, 64)),
+            };
             IHashDelegate mockHashDelegate = GetHashDelegate();
             Mock<ICacheProvider> mockCacheProvider = new();
-            mockCacheProvider.Setup(s => s.GetItem<IHash>(It.IsAny<string>())).Returns(mockHashDelegate.Hash(string.Empty));
+            mockCacheProvider.Setup(s => s.GetItemAsync<HmacHash>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(hmacHash);
             IMedicationStatementDelegate medicationStatementDelegate = new RestMedicationStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedicationStatementDelegate>(),
                 mockOdrApi.Object,
@@ -218,7 +228,7 @@ namespace HealthGateway.MedicationTests.Delegates
         [Fact]
         public async Task InvalidProtectiveWord()
         {
-            ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
+            ProtectiveWord protectiveWord = GetProtectiveWord("ProtectiveWord");
 
             Mock<IOdrApi> mockOdrApi = new();
             mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>(), It.IsAny<CancellationToken>()))
@@ -307,7 +317,7 @@ namespace HealthGateway.MedicationTests.Delegates
             mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
             mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(true);
 
-            ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
+            ProtectiveWord protectiveWord = GetProtectiveWord("ProtectiveWord");
             Mock<IOdrApi> mockOdrApi = new();
             mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException("Fake Exception"));
@@ -350,16 +360,16 @@ namespace HealthGateway.MedicationTests.Delegates
             return mockHashDelegate.Object;
         }
 
-        private ProtectiveWord GetProtectiveWord(string value = "")
+        private static ProtectiveWord GetProtectiveWord(string value = "")
         {
             ProtectiveWord protectiveWord = new()
             {
                 Id = Guid.Parse("ed428f08-1c07-4439-b2a3-acbb16b8fb65"),
-                RequestorHdid = this.hdid,
-                RequestorIp = this.ip,
+                RequestorHdid = Hdid,
+                RequestorIp = Ip,
                 QueryResponse = new ProtectiveWordQueryResponse
                 {
-                    Phn = this.phn,
+                    Phn = Phn,
                     Operator = ProtectiveWordOperator.Get,
                     Value = value,
                 },

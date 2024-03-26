@@ -25,8 +25,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
@@ -418,17 +418,39 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// path).
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public (true) or authenticated (false) page.</param>
+        /// <param name="federalVaccineProofExists">
+        /// bool indicating whether federal vaccine proof from GetVaccineStatusAsync or GetVaccineStatusPublicAsync exists or not.
+        /// </param>
+        /// <param name="vaccineStatusResultType">
+        /// The vaccine status request result type from GetVaccineStatusAsync or
+        /// GetVaccineStatusPublicAsync.
+        /// </param>
+        /// <param name="vaccineStatusIndicator">
+        /// The vaccine status indicator from GetVaccineStatusAsync or
+        /// GetVaccineStatusPublicAsync.
+        /// </param>
+        /// <param name="expectedResultType">The expected request result type for get vaccine proof.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task ShouldGetVaccineProof(bool isPublicEndpoint)
+        [InlineData(true, false, ResultType.Success, "AllDosesReceived", ResultType.Error)]
+        [InlineData(false, false, ResultType.Success, "AllDosesReceived", ResultType.Error)]
+        [InlineData(true, true, ResultType.Success, "AllDosesReceived", ResultType.Success)]
+        [InlineData(false, true, ResultType.Success, "AllDosesReceived", ResultType.Success)]
+        [InlineData(true, true, ResultType.Success, "PartialDosesReceived", ResultType.Success)]
+        [InlineData(false, true, ResultType.Success, "PartialDosesReceived", ResultType.Success)]
+        [InlineData(true, true, ResultType.Success, "Threshold", ResultType.ActionRequired)]
+        [InlineData(false, true, ResultType.Success, "Threshold", ResultType.ActionRequired)]
+        [InlineData(true, true, ResultType.Success, "Blocked", ResultType.ActionRequired)]
+        [InlineData(false, true, ResultType.Success, "Blocked", ResultType.ActionRequired)]
+        [InlineData(true, true, ResultType.Success, "DataMismatch", ResultType.ActionRequired)]
+        [InlineData(false, true, ResultType.Success, "DataMismatch", ResultType.ActionRequired)]
+        public async Task ShouldGetVaccineProof(bool isPublicEndpoint, bool federalVaccineProofExists, ResultType vaccineStatusResultType, string vaccineStatusIndicator, ResultType expectedResultType)
         {
-            RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = ResultType.Success,
+                ResultStatus = vaccineStatusResultType,
                 ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
                     LoadState = new PhsaLoadState
@@ -438,16 +460,19 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                         FirstName = "Bob",
                         LastName = "Test",
                         Birthdate = this.dob.ToDateTime(TimeOnly.MinValue),
-                        StatusIndicator = "PartialDosesReceived",
-                        FederalVaccineProof = new()
-                        {
-                            Data = "this is pdf",
-                            Encoding = "base64",
-                            Type = "application/pdf",
-                        },
+                        StatusIndicator = vaccineStatusIndicator,
+                        FederalVaccineProof = federalVaccineProofExists
+                            ? new()
+                            {
+                                Data = "this is pdf",
+                                Encoding = "base64",
+                                Type = "application/pdf",
+                            }
+                            : null,
                     },
                 },
             };
+
             JwtModel jwtModel = new()
             {
                 AccessToken = this.accessToken,
@@ -455,7 +480,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             RequestResult<VaccineStatus> expectedResult = new()
             {
-                ResultStatus = delegateResult.ResultStatus,
+                ResultStatus = vaccineStatusResult.ResultStatus,
                 ResourcePayload = new VaccineStatus
                 {
                     Loaded = true,
@@ -465,19 +490,21 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     LastName = "Test",
                     Birthdate = this.dob,
                     State = VaccineState.PartialDosesReceived,
-                    FederalVaccineProof = new()
-                    {
-                        Data = "this is pdf",
-                        Encoding = "base64",
-                        Type = "application/pdf",
-                    },
+                    FederalVaccineProof = federalVaccineProofExists
+                        ? new()
+                        {
+                            Data = "this is pdf",
+                            Encoding = "base64",
+                            Type = "application/pdf",
+                        }
+                        : null,
                 },
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
+            mockDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(vaccineStatusResult);
             mockDelegate.Setup(s => s.GetVaccineStatusPublicAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(delegateResult);
+                .ReturnsAsync(vaccineStatusResult);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
@@ -497,18 +524,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
                 RequestResult<VaccineProofDocument> actualResultPublic = await service.GetPublicVaccineProofAsync(this.phn, dobString, dovString);
-
-                Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultPublic.ResourcePayload?.Document.Data);
-                Assert.NotNull(actualResultPublic.ResourcePayload?.Document.Data);
-                Assert.Equal(ResultType.Success, actualResultPublic.ResultStatus);
+                Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof?.Data, actualResultPublic.ResourcePayload?.Document.Data);
+                Assert.Equal(expectedResultType, actualResultPublic.ResultStatus);
             }
             else
             {
                 RequestResult<VaccineProofDocument> actualResultAuthenticated = await service.GetAuthenticatedVaccineProofAsync(this.hdid);
-
-                Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
-                Assert.NotNull(actualResultAuthenticated.ResourcePayload?.Document.Data);
-                Assert.Equal(ResultType.Success, actualResultAuthenticated.ResultStatus);
+                Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof?.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
+                Assert.Equal(expectedResultType, actualResultAuthenticated.ResultStatus);
             }
         }
 

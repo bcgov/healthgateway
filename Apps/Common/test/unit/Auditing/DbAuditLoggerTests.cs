@@ -88,8 +88,8 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent actual = new();
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
-            Assert.True(actual.TransactionResultCode == AuditTransactionResult.Unauthorized);
-            Assert.True(expected.IsDeepEqual(actual));
+            Assert.Equal(AuditTransactionResult.Unauthorized, actual.TransactionResultCode);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent actual = new();
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
-            Assert.True(actual.TransactionResultCode == AuditTransactionResult.Failure);
-            Assert.True(expected.IsDeepEqual(actual));
+            Assert.Equal(AuditTransactionResult.Failure, actual.TransactionResultCode);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>

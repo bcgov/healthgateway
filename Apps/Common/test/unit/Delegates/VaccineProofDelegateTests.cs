@@ -27,7 +27,6 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
@@ -50,7 +49,7 @@ namespace HealthGateway.CommonTests.Delegates
 
         private readonly Address address = new()
         {
-            StreetLines = new List<string> { "3815 HILLSPOINT STREET" },
+            StreetLines = ["3815 HILLSPOINT STREET"],
             City = "CHATHAM",
             Country = "CA",
             PostalCode = "V0G 8B8",

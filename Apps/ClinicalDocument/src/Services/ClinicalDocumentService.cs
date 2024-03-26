@@ -27,8 +27,8 @@ namespace HealthGateway.ClinicalDocument.Services
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.ClinicalDocument.Models.PHSA;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;

@@ -25,7 +25,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
@@ -66,7 +65,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(CategoryName, actualResult.ResourcePayload.CategoryName);
         }
 
@@ -140,8 +139,8 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.ResourcePayload.Count() == 1);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Single(actualResult.ResourcePayload);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(expectedId, actualResult.ResourcePayload.First().Id);
         }
 
@@ -163,8 +162,8 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(!actualResult.ResourcePayload.Any());
-            Assert.True(actualResult.TotalResultCount == 0);
+            Assert.Empty(actualResult.ResourcePayload);
+            Assert.Equal(0, actualResult.TotalResultCount);
         }
 
         /// <summary>
@@ -211,7 +210,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(expectedId, actualResult.ResourcePayload.Id);
         }
 
@@ -292,7 +291,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(1, actualResult.TotalResultCount);
             Assert.Equal(expectedId, actualResult.ResourcePayload.Id);
         }
 
@@ -338,7 +337,7 @@ namespace HealthGateway.Admin.Tests.Services
         {
             BroadcastResponse response = GetApiResponse(id);
 
-            List<BroadcastResponse> apiGetResponse = new();
+            List<BroadcastResponse> apiGetResponse = [];
             if (id != null)
             {
                 apiGetResponse.Add(GetApiResponse(id));

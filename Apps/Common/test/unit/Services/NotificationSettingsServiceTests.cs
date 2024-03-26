@@ -60,7 +60,7 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            List<ResourceDelegate> resourceDelegates = new();
+            List<ResourceDelegate> resourceDelegates = [];
             mockResourceDelegateDelegate.Setup(s => s.GetAsync(nsr.SubjectHdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(resourceDelegates);
             INotificationSettingsService service = new NotificationSettingsService(
                 mockLogger.Object,
@@ -105,7 +105,7 @@ namespace HealthGateway.CommonTests.Services
                 mockJobClient.Object,
                 mockResourceDelegateDelegate.Object);
 
-            Assert.True(nsr.SmsVerificationCode == null);
+            Assert.Null(nsr.SmsVerificationCode);
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.QueueNotificationSettingsAsync(nsr));
         }

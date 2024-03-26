@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.MapProfiles
         /// </summary>
         public PatientSupportDetailsProfile()
         {
-            this.CreateMap<Common.Data.Models.UserProfile, PatientSupportDetails>()
+            this.CreateMap<HealthGateway.Database.Models.UserProfile, PatientSupportDetails>()
                 .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.HdId))
                 .ReverseMap();
 

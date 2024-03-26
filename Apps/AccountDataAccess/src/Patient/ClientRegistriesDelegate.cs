@@ -36,11 +36,11 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
-        private static readonly List<string> WarningResponseCodes = new()
-        {
+        private static readonly List<string> WarningResponseCodes =
+        [
             "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
             "BCHCIM.GD.1.0022", "BCHCIM.GD.0.0023", "BCHCIM.GD.1.0023", "BCHCIM.GD.0.0578", "BCHCIM.GD.1.0578",
-        };
+        ];
 
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly ILogger<ClientRegistriesDelegate> logger;
@@ -200,8 +200,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static Name ExtractName(PN nameSection)
         {
             // Extract the subject names
-            List<string> givenNameList = new();
-            List<string> lastNameList = new();
+            List<string> givenNameList = [];
+            List<string> lastNameList = [];
             foreach (ENXP name in nameSection.Items)
             {
                 if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))

@@ -13,17 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.GatewayApi.Models
 {
+    using HealthGateway.Common.Data.Constants;
+
     /// <summary>
-    /// Interface representing standard optimistic locking for all DB entities.
+    /// View model for submitting application feedback.
     /// </summary>
-    public interface IConcurrencyGuard
+    public class Feedback
     {
         /// <summary>
-        /// Gets or sets the version number.
-        /// A unique value per row which changes on update.
+        /// Gets or sets the feedback comment.
         /// </summary>
-        uint Version { get; set; }
+        public string? Comment { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client associated with the feedback.
+        /// </summary>
+        public UserLoginClientType? ClientType { get; set; }
     }
 }

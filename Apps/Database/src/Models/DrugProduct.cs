@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The entity representing a Drug Product from the Federal Drug Database.
@@ -163,9 +162,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the related statuses.
         /// </summary>
-#pragma warning disable CA2227
         public virtual ICollection<Status>? Statuses { get; set; }
-#pragma warning restore CA2227
 
         /// <summary>
         /// Gets or sets the related TherapeuticClass.

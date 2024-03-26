@@ -41,7 +41,7 @@ namespace HealthGateway.CommonTests.Utils
 
             string text = JsonSerializer.Serialize(time, options);
 
-            Assert.True(text == $@"""{timeStr}""");
+            Assert.Equal($@"""{timeStr}""", text);
         }
 
         /// <summary>

@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Common.Models;
 
 using System;
 using System.Collections.Generic;
+using HealthGateway.Common.Data.Constants;
 
 /// <summary>
 /// Model that provides a user representation of a user feedback.
@@ -63,6 +64,11 @@ public class UserFeedbackView
     /// Gets or sets the email if known for this feedback.
     /// </summary>
     public string Email { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the client associated with the feedback.
+    /// </summary>
+    public UserLoginClientType? ClientType { get; set; }
 
     /// <summary>
     /// Gets or sets the feedback admin tags.

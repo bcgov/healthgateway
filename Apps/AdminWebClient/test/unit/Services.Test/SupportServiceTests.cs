@@ -28,14 +28,13 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Moq;
     using Xunit;
-    using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
 
     /// <summary>
     /// SupportService's Unit Tests.
@@ -257,14 +256,14 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                             PersonalHealthNumber = Phn,
                             PhysicalAddress = new()
                             {
-                                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
+                                StreetLines = ["1025 Sutlej Street", "Suite 310"],
                                 City = "Victoria",
                                 State = "BC",
                                 PostalCode = "V8V2V8",
                             },
                             PostalAddress = new()
                             {
-                                StreetLines = new List<string> { "1535 Belcher Avenue", "Suite 202" },
+                                StreetLines = ["1535 Belcher Avenue", "Suite 202"],
                                 City = "Victoria",
                                 State = "BC",
                                 PostalCode = "V8R4N2",
@@ -301,12 +300,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
         }
 
-        private static UserProfile? GetUserProfile(DbStatusCode statusCode)
+        private static Database.Models.UserProfile? GetUserProfile(DbStatusCode statusCode)
         {
             return statusCode switch
             {
                 DbStatusCode.NotFound => null,
-                _ => new UserProfile
+                _ => new Database.Models.UserProfile
                 {
                     HdId = Hdid,
                     LastLoginDateTime = DateTime.UtcNow,
@@ -314,22 +313,22 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
         }
 
-        private static IList<UserProfile> GetUserProfiles()
+        private static IList<Database.Models.UserProfile> GetUserProfiles()
         {
-            return new List<UserProfile>
-            {
+            return
+            [
                 new()
                 {
                     HdId = Hdid,
                     LastLoginDateTime = DateTime.UtcNow,
                 },
-            };
+            ];
         }
 
         private static IList<MessagingVerification> GetVerifications()
         {
-            return new List<MessagingVerification>
-            {
+            return
+            [
                 new()
                 {
                     Id = Guid.NewGuid(),
@@ -345,7 +344,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                         To = Email,
                     },
                 },
-            };
+            ];
         }
 
         private static ISupportService CreateSupportService(IList<MessagingVerification> verificationResult)
@@ -355,8 +354,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
         private static ISupportService CreateSupportService(
             RequestResult<PatientModel>? patientResult = null,
-            UserProfile? userProfileResult = null,
-            IList<UserProfile>? userProfilesResult = null,
+            Database.Models.UserProfile? userProfileResult = null,
+            IList<Database.Models.UserProfile>? userProfilesResult = null,
             IList<MessagingVerification>? verificationResult = null)
         {
             Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new();
@@ -372,7 +371,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileResult);
             mockUserProfileDelegate.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfilesResult ?? new List<UserProfile>());
+                .ReturnsAsync(userProfilesResult ?? []);
 
             return CreateSupportService(
                 mockUserProfileDelegate,

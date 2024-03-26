@@ -16,11 +16,11 @@
 namespace HealthGateway.ImmunizationTests.Controllers.Test
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
@@ -43,47 +43,47 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
         [Fact]
         public async Task ShouldGetImmunizations()
         {
+            ImmunizationEvent event1 =
+                new()
+                {
+                    DateOfImmunization = DateTime.Today,
+                    ProviderOrClinic = "Mocked Clinic",
+                    Immunization = new ImmunizationDefinition
+                    {
+                        Name = "Mocked Name",
+                        ImmunizationAgents =
+                        [
+                            new()
+                            {
+                                Name = "mocked agent",
+                                Code = "mocked code",
+                                LotNumber = "mocked lot number",
+                                ProductName = "mocked product",
+                            },
+                        ],
+                    },
+                };
+
+            // Blank agent
+            ImmunizationEvent event2 = new()
+            {
+                DateOfImmunization = DateTime.Today,
+                Immunization = new ImmunizationDefinition
+                {
+                    Name = "Mocked Name",
+                    ImmunizationAgents = [],
+                },
+            };
+
             RequestResult<ImmunizationResult> expectedRequestResult = new()
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new(
-                    new LoadStateModel
-                        { RefreshInProgress = false },
-                    new List<ImmunizationEvent>
-                    {
-                        new()
-                        {
-                            DateOfImmunization = DateTime.Today,
-                            ProviderOrClinic = "Mocked Clinic",
-                            Immunization = new ImmunizationDefinition
-                            {
-                                Name = "Mocked Name",
-                                ImmunizationAgents = new List<ImmunizationAgent>
-                                {
-                                    new()
-                                    {
-                                        Name = "mocked agent",
-                                        Code = "mocked code",
-                                        LotNumber = "mocekd lot number",
-                                        ProductName = "mocked product",
-                                    },
-                                },
-                            },
-                        },
-
-                        // Add a blank agent
-                        new()
-                        {
-                            DateOfImmunization = DateTime.Today,
-                            Immunization = new ImmunizationDefinition
-                            {
-                                Name = "Mocked Name",
-                                ImmunizationAgents = new List<ImmunizationAgent>(),
-                            },
-                        },
-                    },
-                    new List<ImmunizationRecommendation>()),
+                ResourcePayload = new()
+                {
+                    LoadState = new LoadStateModel { RefreshInProgress = false },
+                    Immunizations = [event1, event2],
+                },
             };
 
             Mock<IImmunizationService> svcMock = new();
@@ -95,8 +95,8 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid, default);
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success);
-            int count = actual.ResourcePayload?.Immunizations.Count ?? 0;
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
+            int count = actual.ResourcePayload?.Immunizations.Count() ?? 0;
             Assert.Equal(2, count);
         }
 
@@ -118,16 +118,16 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
                     Immunization = new ImmunizationDefinition
                     {
                         Name = "Mocked Name",
-                        ImmunizationAgents = new List<ImmunizationAgent>
-                        {
+                        ImmunizationAgents =
+                        [
                             new()
                             {
                                 Name = "mocked agent",
                                 Code = "mocked code",
-                                LotNumber = "mocekd lot number",
+                                LotNumber = "mocked lot number",
                                 ProductName = "mocked product",
                             },
-                        },
+                        ],
                     },
                 },
             };
@@ -142,7 +142,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId, default);
 
             // Verify
-            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+            Assert.True(actual is { ResultStatus: ResultType.Success });
         }
     }
 }

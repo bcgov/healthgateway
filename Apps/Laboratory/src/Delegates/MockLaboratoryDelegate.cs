@@ -21,7 +21,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
@@ -58,12 +58,7 @@ namespace HealthGateway.Laboratory.Delegates
                     ReportAvailable = true,
                     Covid19Tests = new PhsaCovid19Test[]
                     {
-                        new(
-                            new List<string>
-                            {
-                                "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID‑19 virus (2019-nCoV) detected by NAT.",
-                                "This test targets the RdRP and E gene regions of COVID‑19 virus (2019-nCoV) and has not been fully validated.",
-                            })
+                        new()
                         {
                             Id = Guid.Parse("dee12642-fb2c-481f-9ae4-c672b045b2b1"),
                             TestType = "COVID19",
@@ -75,6 +70,11 @@ namespace HealthGateway.Laboratory.Delegates
                             ResultDateTime = DateTime.Now.AddHours(-1),
                             Loinc = "XXX-3286",
                             LoincName = "COVID‑19 n-Coronavirus  NAT",
+                            ResultDescription =
+                            [
+                                "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID‑19 virus (2019-nCoV) detected by NAT.",
+                                "This test targets the RdRP and E gene regions of COVID‑19 virus (2019-nCoV) and has not been fully validated.",
+                            ],
                         },
                     },
                 },

@@ -28,8 +28,8 @@ using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Authentication.Models;
 using HealthGateway.Common.Api;
 using HealthGateway.Common.Data.Constants;
+using HealthGateway.Common.Data.Models;
 using HealthGateway.Common.Data.Utils;
-using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Common.ErrorHandling;
 using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
@@ -158,7 +158,7 @@ public class InactiveUserService : IInactiveUserService
     }
 
     private void AddInactiveUser(
-        ICollection<AdminUserProfileView> inactiveUsers,
+        List<AdminUserProfileView> inactiveUsers,
         IEnumerable<AdminUserProfile> activeUserProfiles,
         ICollection<UserRepresentation> identityAccessUsers,
         IdentityAccessRole role)
@@ -166,7 +166,7 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
 
         IEnumerable<AdminUserProfileView> adminUserProfiles = identityAccessUsers
-            .Where(x1 => inactiveUsers.All(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
+            .Where(x1 => inactiveUsers.TrueForAll(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
             .Select(user => this.mappingService.MapToAdminUserProfileView(user));
 
         foreach (AdminUserProfileView adminUserProfile in adminUserProfiles)

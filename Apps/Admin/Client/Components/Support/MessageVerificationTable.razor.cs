@@ -20,8 +20,8 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System.Linq;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Configuration;
 

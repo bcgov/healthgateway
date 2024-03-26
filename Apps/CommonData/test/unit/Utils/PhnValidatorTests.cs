@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
     /// </summary>
     public class PhnValidatorTests
     {
-        private readonly PhnValidator phnValidator = new PhnValidator();
+        private readonly PhnValidator phnValidator = new();
 
         /// <summary>
         /// Null value is invalid.
