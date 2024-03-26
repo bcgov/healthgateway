@@ -13,14 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -98,8 +98,8 @@ namespace HealthGateway.Common.Data.Models
         public IDictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
 
         /// <summary>
-        ///  Gets or sets the user's blocked data sources.
+        /// Gets or sets the user's blocked data sources.
         /// </summary>
-        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+        public IEnumerable<DataSource> BlockedDataSources { get; set; } = [];
     }
 }

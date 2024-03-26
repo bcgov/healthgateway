@@ -13,12 +13,13 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.MapProfiles
+namespace HealthGateway.GatewayApi.MapProfiles
 {
     using System;
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB Model UserProfile and API Model UserProfileModel.

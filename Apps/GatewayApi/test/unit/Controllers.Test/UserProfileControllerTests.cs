@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;

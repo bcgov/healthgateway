@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
