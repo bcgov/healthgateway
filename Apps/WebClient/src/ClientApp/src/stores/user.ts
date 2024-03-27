@@ -169,6 +169,7 @@ export const useUserStore = defineStore("user", () => {
             : undefined;
         user.value.preferences = userProfile ? userProfile.preferences : {};
         user.value.blockedDataSources = userProfile?.blockedDataSources ?? [];
+        user.value.betaFeatures = userProfile?.betaFeatures ?? [];
         user.value.email = userProfile?.email ?? "";
         user.value.hasEmail = Boolean(userProfile?.email);
         user.value.verifiedEmail = userProfile?.isEmailVerified === true;
