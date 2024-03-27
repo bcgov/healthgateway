@@ -157,7 +157,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(dbResult);
 
             Mock<IUserProfileDelegate> mockProfileDelegate = new();
-            mockProfileDelegate.Setup(s => s.GetUserProfileAsync(It.Is<string>(h => h == expectedUserFeedback.UserProfileId), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
+            mockProfileDelegate.Setup(s => s.GetUserProfileAsync(It.Is<string>(h => h == expectedUserFeedback.UserProfileId), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserClientType()).Returns(defaultClientType);

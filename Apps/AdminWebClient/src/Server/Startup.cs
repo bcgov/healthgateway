@@ -117,7 +117,7 @@ namespace HealthGateway.Admin
             services.AddRefitClient<IImmunizationAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
-            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
+            services.AddAutoMapper(typeof(Startup), typeof(MessagingVerificationProfile));
         }
 
         /// <summary>

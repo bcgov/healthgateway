@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Common.Constants
     public enum BetaFeature
     {
         /// <summary>
-        /// Indicates that status hasn't been set.
+        /// Indicates an unknown feature.
         /// </summary>
         Unknown,
 

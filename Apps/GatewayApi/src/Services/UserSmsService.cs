@@ -85,7 +85,7 @@ namespace HealthGateway.GatewayApi.Services
             RequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct);
             if (userProfile != null &&
                 smsVerification is { Validated: false, Deleted: false, VerificationAttempts: < MaxVerificationAttempts } &&
                 smsVerification.UserProfileId == hdid &&
@@ -141,7 +141,7 @@ namespace HealthGateway.GatewayApi.Services
             string sanitizedSms = SanitizeSms(sms);
             await UserProfileValidator.ValidateSmsNumberAndThrowAsync(sanitizedSms, ct);
 
-            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct) ??
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ??
                                       throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             userProfile.SmsNumber = null;

@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading;
@@ -126,10 +125,7 @@ namespace HealthGateway.GatewayApi.Controllers
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
-            RequestResult<UserProfileModel> result = await this.userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
-            await this.AddUserPreferences(result.ResourcePayload, ct);
-
-            return result;
+            return await this.userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
         }
 
         /// <summary>
@@ -401,10 +397,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTerms(string hdid, [FromBody] Guid termsOfServiceId, CancellationToken ct)
         {
-            RequestResult<UserProfileModel> result = await this.userProfileService.UpdateAcceptedTermsAsync(hdid, termsOfServiceId, ct);
-            await this.AddUserPreferences(result.ResourcePayload, ct);
-
-            return result;
+            return await this.userProfileService.UpdateAcceptedTermsAsync(hdid, termsOfServiceId, ct);
         }
 
         /// <summary>
@@ -420,21 +413,6 @@ namespace HealthGateway.GatewayApi.Controllers
         public async Task<ActionResult<bool>> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
             return await this.userProfileService.IsPhoneNumberValidAsync(phoneNumber, ct);
-        }
-
-        private async Task AddUserPreferences(UserProfileModel? profile, CancellationToken ct)
-        {
-            if (profile != null)
-            {
-                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = await this.userProfileService.GetUserPreferencesAsync(profile.HdId, ct);
-                if (userPreferences.ResourcePayload != null)
-                {
-                    foreach (KeyValuePair<string, UserPreferenceModel> preference in userPreferences.ResourcePayload)
-                    {
-                        profile.Preferences.Add(preference);
-                    }
-                }
-            }
         }
     }
 }

@@ -40,11 +40,5 @@ namespace HealthGateway.Common.Services
         {
             return mapper.Map<MessagingVerification, MessagingVerificationModel>(source);
         }
-
-        /// <inheritdoc/>
-        public UserProfileModel MapToUserProfileModel(UserProfile source)
-        {
-            return mapper.Map<UserProfile, UserProfileModel>(source);
-        }
     }
 }

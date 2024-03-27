@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -489,7 +489,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
             mockResourceDelegateDelegate.Setup(s => s.GetAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
-            mockResourceDelegateDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.Is<IEnumerable<string>>(h => h.SequenceEqual(mockDelegateCountsResult.Payload.Keys)), It.IsAny<CancellationToken>()))
+            mockResourceDelegateDelegate.Setup(
+                    s => s.GetTotalDelegateCountsAsync(It.Is<IEnumerable<string>>(h => h.SequenceEqual(mockDelegateCountsResult.Payload.Keys)), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockDelegateCountsResult)
                 .Verifiable();
 
@@ -541,7 +542,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(dbResult);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<CancellationToken>()))
+            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new UserProfile());
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
@@ -625,7 +626,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, CancellationToken.None)).ReturnsAsync(dependent);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<CancellationToken>()))
+            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new UserProfile());
 
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();

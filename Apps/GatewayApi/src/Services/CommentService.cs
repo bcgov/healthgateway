@@ -68,7 +68,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId, ct);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId, ct: ct);
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
@@ -90,7 +90,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<UserComment>>> GetEntryCommentsAsync(string hdId, string parentEntryId, CancellationToken ct = default)
         {
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct: ct);
             string? key = profile?.EncryptionKey;
 
             // Check that the key has been set
@@ -117,7 +117,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IDictionary<string, IEnumerable<UserComment>>>> GetProfileCommentsAsync(string hdId, CancellationToken ct = default)
         {
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct: ct);
             string? key = profile?.EncryptionKey;
 
             // Check that the key has been set
@@ -153,7 +153,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId, ct);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId, ct: ct);
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
@@ -182,7 +182,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId, ct);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId, ct: ct);
             string? key = profile?.EncryptionKey;
             if (key == null)
             {

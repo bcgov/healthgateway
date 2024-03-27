@@ -78,7 +78,7 @@ namespace HealthGateway.GatewayApi.Services
             userFeedback.ClientCode ??= this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
             DbResult<UserFeedback> retVal = await this.feedbackDelegate.InsertUserFeedbackAsync(userFeedback, ct);
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(userFeedback.UserProfileId, ct);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(userFeedback.UserProfileId, ct: ct);
 
             string? clientEmail = userProfile?.Email;
             if (!string.IsNullOrWhiteSpace(clientEmail))

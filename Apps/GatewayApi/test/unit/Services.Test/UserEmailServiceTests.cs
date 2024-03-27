@@ -253,7 +253,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(lastVerificationForUser);
 
             userProfileDelegateMock ??= new();
-            userProfileDelegateMock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            userProfileDelegateMock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
             userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DbResult<UserProfile>());
 

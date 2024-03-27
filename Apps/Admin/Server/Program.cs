@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Server
             services.AddRefitClient<IImmunizationAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV1.BaseUrl);
 
-            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
+            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
             RequestLoggingSettings requestLoggingSettings = new();

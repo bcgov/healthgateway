@@ -1,3 +1,4 @@
+import { BetaFeature } from "@/constants/betaFeature";
 import { DataSource } from "@/constants/dataSource";
 import { Dictionary } from "@/models/baseTypes";
 import { StringISODateTime } from "@/models/dateWrapper";
@@ -19,6 +20,7 @@ export default class User {
     public preferences: Dictionary<UserPreference> = {};
     public hasTourUpdated = false;
     public blockedDataSources: DataSource[] = [];
+    public betaFeatures: BetaFeature[] = [];
 }
 
 export interface OidcUserInfo {

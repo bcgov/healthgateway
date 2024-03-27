@@ -139,7 +139,7 @@ namespace HealthGateway.GatewayApi
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
-            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(PatientDetailsProfile));
+            services.AddAutoMapper(typeof(Startup), typeof(MessagingVerificationProfile));
         }
 
         /// <summary>
