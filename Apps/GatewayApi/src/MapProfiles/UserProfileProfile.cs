@@ -16,9 +16,11 @@
 namespace HealthGateway.GatewayApi.MapProfiles
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using AutoMapper;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
@@ -35,7 +37,21 @@ namespace HealthGateway.GatewayApi.MapProfiles
                 .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.Email)))
                 .ForMember(dest => dest.IsSmsNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SmsNumber)))
                 .ForMember(dest => dest.AcceptedTermsOfService, opt => opt.MapFrom(src => src.TermsOfServiceId != Guid.Empty))
+                .ForMember(dest => dest.BetaFeatures, opt => opt.MapFrom(src => GetBetaFeaturesFromCodes(src.BetaFeatureCodes)))
                 .ReverseMap();
+
+            this.CreateMap<Database.Constants.BetaFeature, BetaFeature>()
+                .ConvertUsing(
+                    (source, _, _) => source switch
+                    {
+                        Database.Constants.BetaFeature.Salesforce => BetaFeature.Salesforce,
+                        _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
+                    });
+        }
+
+        private static IEnumerable<Database.Constants.BetaFeature> GetBetaFeaturesFromCodes(ICollection<BetaFeatureCode>? betaFeatureCodes)
+        {
+            return betaFeatureCodes == null ? [] : betaFeatureCodes.Select(c => c.Code);
         }
     }
 }

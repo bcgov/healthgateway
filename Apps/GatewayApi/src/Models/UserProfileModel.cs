@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Models
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.GatewayApi.Constants;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -101,5 +102,10 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the user's blocked data sources.
         /// </summary>
         public IEnumerable<DataSource> BlockedDataSources { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the beta features available to the user.
+        /// </summary>
+        public IEnumerable<BetaFeature> BetaFeatures { get; set; } = [];
     }
 }
