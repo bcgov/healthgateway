@@ -435,7 +435,7 @@ watch(vaccineRecordState, () => {
             <router-link
                 id="profilePageLink"
                 data-testid="profile-page-link"
-                variant="primary"
+                class="text-link"
                 to="/profile"
                 >Profile Page</router-link
             >
