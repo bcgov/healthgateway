@@ -358,7 +358,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     .ReturnsAsync(updateProfileDbResult);
             }
 
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             noteDelegateMock ??= new();
             if (noteDbResult != null)

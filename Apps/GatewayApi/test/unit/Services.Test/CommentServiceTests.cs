@@ -346,7 +346,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICommentDelegate> commentDelegateMock = new();
 

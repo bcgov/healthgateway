@@ -147,7 +147,7 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
             if (userProfile == null)
@@ -308,7 +308,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
 
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (userProfile == null)
             {
@@ -332,7 +332,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (userProfile == null)
             {
@@ -418,7 +418,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default)
         {
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (userProfile == null)
             {
