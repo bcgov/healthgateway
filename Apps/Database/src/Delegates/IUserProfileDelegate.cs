@@ -59,6 +59,15 @@ namespace HealthGateway.Database.Delegates
         Task<UserProfile?> GetUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
+        /// Fetches a list of UserProfiles from the database by email.
+        /// </summary>
+        /// <param name="email">The email to find.</param>
+        /// <param name="includeBetaFeatureCodes">Value to determine whether beta feature codes are included or not.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of matching UserProfile(s).</returns>
+        Task<IList<UserProfile>> GetUserProfilesAsync(string email, bool includeBetaFeatureCodes = false, CancellationToken ct = default);
+
+        /// <summary>
         /// Fetches UserProfiles from the database.
         /// </summary>
         /// <param name="hdIds">The unique profile keys to find.</param>
