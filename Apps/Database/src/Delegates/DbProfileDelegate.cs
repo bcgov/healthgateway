@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user profile in DB");
-            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, ct: ct);
+            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, true, ct: ct);
             DbResult<UserProfile> result = new();
 
             if (userProfile != null)
@@ -89,6 +89,7 @@ namespace HealthGateway.Database.Delegates
                 userProfile.Version = profile.Version;
                 userProfile.YearOfBirth = profile.YearOfBirth;
                 userProfile.LastLoginClientCode = profile.LastLoginClientCode;
+                userProfile.BetaFeatureCodes = profile.BetaFeatureCodes;
                 result.Status = DbStatusCode.Deferred;
                 result.Payload = userProfile;
                 this.dbContext.UserProfile.Update(userProfile);

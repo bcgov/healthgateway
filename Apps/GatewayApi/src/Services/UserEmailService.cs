@@ -196,7 +196,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Updating user email...");
 
-            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ??
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct: ct) ??
                                       throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             bool result = string.IsNullOrWhiteSpace(emailAddress)
@@ -207,8 +207,9 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             this.logger.LogInformation("Removing email from user {Hdid}", hdid);
-            await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
             userProfile.Email = null;
+            userProfile.BetaFeatureCodes = [];
+            await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
 
             // Update the notification settings
             await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
