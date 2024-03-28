@@ -138,7 +138,7 @@ namespace HealthGateway.Admin.Services
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 List<PatientSupportDetails> patients = [];
-                HealthGateway.Database.Models.UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(patientResult.ResourcePayload.HdId, ct);
+                HealthGateway.Database.Models.UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(patientResult.ResourcePayload.HdId, ct: ct);
                 if (userProfile != null)
                 {
                     PatientSupportDetails patientSupportDetails = PatientSupportDetailsMapUtils.ToUiModel(userProfile, patientResult.ResourcePayload, this.autoMapper);

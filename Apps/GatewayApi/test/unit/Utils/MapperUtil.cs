@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.GatewayApiTests.Services.Test.Utils
+namespace HealthGateway.GatewayApiTests.Utils
 {
     using AutoMapper;
     using HealthGateway.Common.MapProfiles;

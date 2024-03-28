@@ -13,39 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.GatewayApi.Constants;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
     /// </summary>
     public class UserProfileModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
-        /// </summary>
-        public UserProfileModel()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
-        /// </summary>
-        /// <param name="preferences">The dictionary of preferences.</param>
-        /// <param name="lastLoginDateTimes">List of last login date times.</param>
-        [JsonConstructor]
-        public UserProfileModel(IDictionary<string, UserPreferenceModel> preferences, IList<DateTime> lastLoginDateTimes)
-        {
-            this.Preferences = preferences;
-            this.LastLoginDateTimes = lastLoginDateTimes;
-        }
-
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
@@ -96,9 +78,9 @@ namespace HealthGateway.Common.Data.Models
         public DateTime? LastLoginDateTime { get; set; }
 
         /// <summary>
-        /// Gets the list of recent login times.
+        /// Gets or sets the list of recent login times.
         /// </summary>
-        public IList<DateTime> LastLoginDateTimes { get; } = [];
+        public IList<DateTime> LastLoginDateTimes { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the Closed datetime of the account.
@@ -112,13 +94,18 @@ namespace HealthGateway.Common.Data.Models
         public bool? HasTourUpdated { get; set; }
 
         /// <summary>
-        /// Gets the user preference.
+        /// Gets or sets the user preferences.
         /// </summary>
-        public IDictionary<string, UserPreferenceModel> Preferences { get; } = new Dictionary<string, UserPreferenceModel>();
+        public IDictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
 
         /// <summary>
-        ///  Gets or sets the user's blocked data sources.
+        /// Gets or sets the user's blocked data sources.
         /// </summary>
-        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+        public IEnumerable<DataSource> BlockedDataSources { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the beta features available to the user.
+        /// </summary>
+        public IEnumerable<BetaFeature> BetaFeatures { get; set; } = [];
     }
 }
