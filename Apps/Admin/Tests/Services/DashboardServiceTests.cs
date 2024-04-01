@@ -156,9 +156,9 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<IRatingDelegate>? ratingDelegateMock = null)
         {
-            dependentDelegateMock = dependentDelegateMock ?? new();
-            userProfileDelegateMock = userProfileDelegateMock ?? new();
-            ratingDelegateMock = ratingDelegateMock ?? new();
+            dependentDelegateMock ??= new();
+            userProfileDelegateMock ??= new();
+            ratingDelegateMock ??= new();
 
             return new DashboardService(
                 Configuration,
