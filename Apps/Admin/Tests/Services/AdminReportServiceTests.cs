@@ -224,10 +224,10 @@ namespace HealthGateway.Admin.Tests.Services
             return new(service, expected);
         }
 
-        private record GetProtectedDependentReportMock(IAdminReportService Service, IList<string> ExpectedHdids, IList<string> ExpectedPhns);
+        private sealed record GetProtectedDependentReportMock(IAdminReportService Service, IList<string> ExpectedHdids, IList<string> ExpectedPhns);
 
-        private record GetProtectedDependentReportHandlesExceptionMock(IAdminReportService Service, IList<string> ExpectedHdids);
+        private sealed record GetProtectedDependentReportHandlesExceptionMock(IAdminReportService Service, IList<string> ExpectedHdids);
 
-        private record GetBlockedAccessReportMock(IAdminReportService Service, HashSet<DataSource> Expected);
+        private sealed record GetBlockedAccessReportMock(IAdminReportService Service, HashSet<DataSource> Expected);
     }
 }

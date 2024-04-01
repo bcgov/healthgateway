@@ -368,9 +368,9 @@ namespace HealthGateway.Admin.Tests.Services
             return new(service, expected, adminAgent);
         }
 
-        private record GetAgentsMock(IAgentAccessService Service, AdminAgent Expected, string SearchString);
+        private sealed record GetAgentsMock(IAgentAccessService Service, AdminAgent Expected, string SearchString);
 
-        private record ProvisionAgentAccessMock(
+        private sealed record ProvisionAgentAccessMock(
             IAgentAccessService Service,
             Mock<IKeycloakAdminApi> KeycloakAdminApiMock,
             AdminAgent Expected,
@@ -379,12 +379,12 @@ namespace HealthGateway.Admin.Tests.Services
             Guid AgentId,
             string Username);
 
-        private record ProvisionAgentAccessThrowsExceptionMock(
+        private sealed record ProvisionAgentAccessThrowsExceptionMock(
             IAgentAccessService Service,
             string ExpectedErrorMessage,
             AdminAgent AdminAgent);
 
-        private record UpdateAgentAccessMock(
+        private sealed record UpdateAgentAccessMock(
             IAgentAccessService Service,
             AdminAgent Expected,
             AdminAgent AdminAgent);

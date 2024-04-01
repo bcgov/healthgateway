@@ -75,7 +75,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetInactiveUsers(bool adminUserErrorExists, bool supportUserErrorExists)
         {
             // Arrange
-            GetInactiveUsersMock mock = await this.SetupGetInactiveUsersMock(adminUserErrorExists, supportUserErrorExists);
+            GetInactiveUsersMock mock = await SetupGetInactiveUsersMock(adminUserErrorExists, supportUserErrorExists);
 
             // Act
             RequestResult<List<AdminUserProfileView>> actual = await mock.Service.GetInactiveUsersAsync(mock.InactiveDays);
@@ -150,7 +150,7 @@ namespace HealthGateway.Admin.Tests.Services
                 .Build();
         }
 
-        private async Task<GetInactiveUsersMock> SetupGetInactiveUsersMock(bool adminUserErrorExists, bool supportUserErrorExists)
+        private static async Task<GetInactiveUsersMock> SetupGetInactiveUsersMock(bool adminUserErrorExists, bool supportUserErrorExists)
         {
             const int inactiveDays = 3;
 
@@ -268,6 +268,6 @@ namespace HealthGateway.Admin.Tests.Services
             return new(service, expected, inactiveDays);
         }
 
-        private record GetInactiveUsersMock(IInactiveUserService Service, RequestResult<List<AdminUserProfileView>> Expected, int InactiveDays);
+        private sealed record GetInactiveUsersMock(IInactiveUserService Service, RequestResult<List<AdminUserProfileView>> Expected, int InactiveDays);
     }
 }

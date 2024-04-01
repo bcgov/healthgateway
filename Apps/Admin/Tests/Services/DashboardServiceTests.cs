@@ -324,16 +324,16 @@ namespace HealthGateway.Admin.Tests.Services
             return new(service, expected, startDate, endDate);
         }
 
-        private record GetAllTimeCountsMock(IDashboardService Service, AllTimeCounts Expected);
+        private sealed record GetAllTimeCountsMock(IDashboardService Service, AllTimeCounts Expected);
 
-        private record GetDailyUsageCountsMock(IDashboardService Service, DailyUsageCounts Expected, DateOnly StartDate, DateOnly EndDate);
+        private sealed record GetDailyUsageCountsMock(IDashboardService Service, DailyUsageCounts Expected, DateOnly StartDate, DateOnly EndDate);
 
-        private record GetRecurringUserCountMock(IDashboardService Service, int Expected, DateOnly StartDate, DateOnly EndDate, int DayCount);
+        private sealed record GetRecurringUserCountMock(IDashboardService Service, int Expected, DateOnly StartDate, DateOnly EndDate, int DayCount);
 
-        private record GetAgeCountsMock(IDashboardService Service, IDictionary<int, int> Expected, DateOnly StartDate, DateOnly EndDate);
+        private sealed record GetAgeCountsMock(IDashboardService Service, IDictionary<int, int> Expected, DateOnly StartDate, DateOnly EndDate);
 
-        private record GetAppLoginCountsMock(IDashboardService Service, AppLoginCounts Expected, DateOnly StartDate, DateOnly EndDate);
+        private sealed record GetAppLoginCountsMock(IDashboardService Service, AppLoginCounts Expected, DateOnly StartDate, DateOnly EndDate);
 
-        private record GetRatingsSummaryMock(IDashboardService Service, IDictionary<string, int> Expected, DateOnly StartDate, DateOnly EndDate);
+        private sealed record GetRatingsSummaryMock(IDashboardService Service, IDictionary<string, int> Expected, DateOnly StartDate, DateOnly EndDate);
     }
 }

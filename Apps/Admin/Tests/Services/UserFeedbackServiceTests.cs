@@ -616,24 +616,24 @@ namespace HealthGateway.Admin.Tests.Services
             return new(service, expected);
         }
 
-        private record Tag(Guid AdminTagId, string TagName);
+        private sealed record Tag(Guid AdminTagId, string TagName);
 
-        private record Profile(string Hdid, string Email);
+        private sealed record Profile(string Hdid, string Email);
 
-        private record Feedback(Guid FeedbackId, string Hdid, string Comment);
+        private sealed record Feedback(Guid FeedbackId, string Hdid, string Comment);
 
-        private record FeedbackTag(Guid UserFeedbackId, Guid AdminTagId);
+        private sealed record FeedbackTag(Guid UserFeedbackId, Guid AdminTagId);
 
-        private record AssociateFeedbackTagMock(IUserFeedbackService Service, RequestResult<UserFeedbackView> Expected);
+        private sealed record AssociateFeedbackTagMock(IUserFeedbackService Service, RequestResult<UserFeedbackView> Expected);
 
-        private record CreateUserFeedbackMock(IUserFeedbackService Service, RequestResult<AdminTagView> Expected, string TagName);
+        private sealed record CreateUserFeedbackMock(IUserFeedbackService Service, RequestResult<AdminTagView> Expected, string TagName);
 
-        private record DeleteUserFeedbackMock(IUserFeedbackService Service, RequestResult<AdminTagView> Expected, Guid AdminTagId, string TagName);
+        private sealed record DeleteUserFeedbackMock(IUserFeedbackService Service, RequestResult<AdminTagView> Expected, Guid AdminTagId, string TagName);
 
-        private record GetAllFeedbackMock(IUserFeedbackService Service, RequestResult<IList<AdminTagView>> Expected);
+        private sealed record GetAllFeedbackMock(IUserFeedbackService Service, RequestResult<IList<AdminTagView>> Expected);
 
-        private record GetUserFeedbackMock(IUserFeedbackService Service, RequestResult<IList<UserFeedbackView>> Expected);
+        private sealed record GetUserFeedbackMock(IUserFeedbackService Service, RequestResult<IList<UserFeedbackView>> Expected);
 
-        private record UpdateFeedbackMock(IUserFeedbackService Service, RequestResult<UserFeedbackView> Expected, UserFeedbackView Update);
+        private sealed record UpdateFeedbackMock(IUserFeedbackService Service, RequestResult<UserFeedbackView> Expected, UserFeedbackView Update);
     }
 }
