@@ -65,8 +65,8 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// GetInactiveUsersAsync.
         /// </summary>
-        /// <param name="adminUserErrorExists">The exception type to be thrown.</param>
-        /// <param name="supportUserErrorExists">Value to determine whether there is .</param>
+        /// <param name="adminUserErrorExists">Value to determine whether admin user error exists.</param>
+        /// <param name="supportUserErrorExists">Value to determine whether support user error exists.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [InlineData(false, false)]
         [InlineData(true, false)]

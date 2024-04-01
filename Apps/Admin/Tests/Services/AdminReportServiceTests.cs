@@ -127,8 +127,6 @@ namespace HealthGateway.Admin.Tests.Services
                 Hdid2,
             ];
 
-            (IList<string> hdidList, int hdidCount) = (hdids, hdids.Count);
-
             Mock<IDelegationDelegate> delegationDelegateMock = new();
             delegationDelegateMock.Setup(
                     s => s.GetProtectedDependentHdidsAsync(
@@ -136,7 +134,7 @@ namespace HealthGateway.Admin.Tests.Services
                         It.IsAny<int>(),
                         It.IsAny<SortDirection>(),
                         It.IsAny<CancellationToken>()))
-                .ReturnsAsync((int _, int _, SortDirection _, CancellationToken _) => (hdidList, hdidCount));
+                .ReturnsAsync((int _, int _, SortDirection _, CancellationToken _) => (hdids, hdids.Count));
 
             PatientQuery query1 = new PatientDetailsQuery(Hdid: Hdid1, Source: PatientDetailSource.All);
             PatientQuery query2 = new PatientDetailsQuery(Hdid: Hdid2, Source: PatientDetailSource.All);
@@ -177,8 +175,6 @@ namespace HealthGateway.Admin.Tests.Services
                 Hdid2,
             ];
 
-            (IList<string> hdidList, int hdidCount) = (hdids, hdids.Count);
-
             Mock<IDelegationDelegate> delegationDelegateMock = new();
             delegationDelegateMock.Setup(
                     s => s.GetProtectedDependentHdidsAsync(
@@ -186,7 +182,7 @@ namespace HealthGateway.Admin.Tests.Services
                         It.IsAny<int>(),
                         It.IsAny<SortDirection>(),
                         It.IsAny<CancellationToken>()))
-                .ReturnsAsync((int _, int _, SortDirection _, CancellationToken _) => (hdidList, hdidCount));
+                .ReturnsAsync((int _, int _, SortDirection _, CancellationToken _) => (hdids, hdids.Count));
 
             PatientQuery query1 = new PatientDetailsQuery(Hdid: Hdid1, Source: PatientDetailSource.All);
             PatientQuery query2 = new PatientDetailsQuery(Hdid: Hdid2, Source: PatientDetailSource.All);
