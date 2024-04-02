@@ -403,6 +403,9 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
 
 function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
+    cy.intercept("GET", "**/UserProfile/*", {
+        fixture: "UserProfileService/userProfile.json",
+    });
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
     });
