@@ -43,7 +43,7 @@
         "@types/webfontloader": "^1.6.38",
         "@vitejs/plugin-vue": "^4.6.2",
         "@vue/eslint-config-prettier": "^7.1.0",
-        "@vue/eslint-config-typescript": "^11.0.0",
+        "@vue/eslint-config-typescript": "^13.0.0",
         "eslint": "^8.57.0",
         "eslint-plugin-simple-import-sort": "^10.0.0",
         "eslint-plugin-unused-imports": "^2.0.0",
