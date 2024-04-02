@@ -215,7 +215,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<List<AdminUserProfileView>> expected = new()
             {
                 ResultStatus = adminUserErrorExists || supportUserErrorExists ? ResultType.Error : ResultType.Success,
-                ResourcePayload = adminUserErrorExists || supportUserErrorExists ? new() : expectedInactiveUsers,
+                ResourcePayload = adminUserErrorExists || supportUserErrorExists ? [] : expectedInactiveUsers,
                 TotalResultCount = adminUserErrorExists || supportUserErrorExists ? 0 : expectedInactiveUsers.Count,
                 ResultError = adminUserErrorExists || supportUserErrorExists
                     ? new()
