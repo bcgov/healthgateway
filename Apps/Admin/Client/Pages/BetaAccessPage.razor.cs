@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.BetaAccessState.Value.SearchResult == null ? [] : [this.BetaAccessState.Value.SearchResult];
 
         private IEnumerable<UserBetaAccess> AllUserBetaAccess =>
-            this.BetaAccessState.Value.AllUserAccess?.Select(d => d.Value) ?? [];
+            this.BetaAccessState.Value.AllUserAccess?.OrderBy(d => d.Key).Select(d => d.Value) ?? [];
 
         /// <inheritdoc/>
         protected override void OnInitialized()
