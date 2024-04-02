@@ -82,11 +82,10 @@ namespace HealthGateway.Admin.Server.Services
             {
                 if (e.StatusCode == HttpStatusCode.Conflict)
                 {
-                    this.logger.LogWarning(ErrorMessages.KeycloakUserAlreadyExists);
+                    this.logger.LogWarning(e, ErrorMessages.KeycloakUserAlreadyExists);
                     throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists);
                 }
 
-                this.logger.LogError(e, "Keycloak API call failed");
                 throw;
             }
 

@@ -200,17 +200,23 @@ namespace HealthGateway.Admin.Tests.Services
             const int userLoginCount = 2;
             const int dependentRegistrationCount = 2;
 
-            IDictionary<DateOnly, int> userRegistrationCounts = new Dictionary<DateOnly, int>();
-            userRegistrationCounts.Add(endDate, userRegistrationCount);
-            userRegistrationCounts.Add(startDate, userRegistrationCount);
+            IDictionary<DateOnly, int> userRegistrationCounts = new Dictionary<DateOnly, int>
+            {
+                { endDate, userRegistrationCount },
+                { startDate, userRegistrationCount },
+            };
 
-            IDictionary<DateOnly, int> userLoginCounts = new Dictionary<DateOnly, int>();
-            userLoginCounts.Add(endDate, userLoginCount);
-            userLoginCounts.Add(startDate, userLoginCount);
+            IDictionary<DateOnly, int> userLoginCounts = new Dictionary<DateOnly, int>
+            {
+                { endDate, userLoginCount },
+                { startDate, userLoginCount },
+            };
 
-            IDictionary<DateOnly, int> dependentRegistrationCounts = new Dictionary<DateOnly, int>();
-            dependentRegistrationCounts.Add(endDate, dependentRegistrationCount);
-            dependentRegistrationCounts.Add(startDate, dependentRegistrationCount);
+            IDictionary<DateOnly, int> dependentRegistrationCounts = new Dictionary<DateOnly, int>
+            {
+                { endDate, dependentRegistrationCount },
+                { startDate, dependentRegistrationCount },
+            };
 
             DailyUsageCounts expected = new()
             {
@@ -258,10 +264,12 @@ namespace HealthGateway.Admin.Tests.Services
             const int mobileCount = 2;
             const int salesforceCount = 2;
 
-            IDictionary<UserLoginClientType, int> lastLoginClientCounts = new Dictionary<UserLoginClientType, int>();
-            lastLoginClientCounts.Add(UserLoginClientType.Web, webCount);
-            lastLoginClientCounts.Add(UserLoginClientType.Mobile, mobileCount);
-            lastLoginClientCounts.Add(UserLoginClientType.Salesforce, salesforceCount);
+            IDictionary<UserLoginClientType, int> lastLoginClientCounts = new Dictionary<UserLoginClientType, int>
+            {
+                { UserLoginClientType.Web, webCount },
+                { UserLoginClientType.Mobile, mobileCount },
+                { UserLoginClientType.Salesforce, salesforceCount },
+            };
 
             AppLoginCounts expected = new(webCount, mobileCount, salesforceCount);
 
@@ -281,13 +289,17 @@ namespace HealthGateway.Admin.Tests.Services
             const int fiveStarCount = 5;
             const int threeStarCount = 1;
 
-            IDictionary<string, int> summary = new Dictionary<string, int>();
-            summary.Add("3", threeStarCount);
-            summary.Add("5", fiveStarCount);
+            IDictionary<string, int> summary = new Dictionary<string, int>
+            {
+                { "3", threeStarCount },
+                { "5", fiveStarCount },
+            };
 
-            IDictionary<string, int> expected = new Dictionary<string, int>();
-            expected.Add("3", threeStarCount);
-            expected.Add("5", fiveStarCount);
+            IDictionary<string, int> expected = new Dictionary<string, int>
+            {
+                { "3", threeStarCount },
+                { "5", fiveStarCount },
+            };
 
             Mock<IRatingDelegate> ratingsDelegateMock = new();
             ratingsDelegateMock.Setup(s => s.GetRatingsSummaryAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
@@ -308,13 +320,17 @@ namespace HealthGateway.Admin.Tests.Services
             const int startDateAgeCount = 5;
             const int startDatePlus5YearsAgeCount = 1;
 
-            IDictionary<int, int> yearOfBirthCounts = new Dictionary<int, int>();
-            yearOfBirthCounts.Add(startDate.Year, startDateAgeCount);
-            yearOfBirthCounts.Add(startDatePlus5Years.Year, startDatePlus5YearsAgeCount);
+            IDictionary<int, int> yearOfBirthCounts = new Dictionary<int, int>
+            {
+                { startDate.Year, startDateAgeCount },
+                { startDatePlus5Years.Year, startDatePlus5YearsAgeCount },
+            };
 
-            IDictionary<int, int> expected = new Dictionary<int, int>();
-            expected.Add(startDateAge, startDateAgeCount);
-            expected.Add(startDatePlus5YearsAge, startDatePlus5YearsAgeCount);
+            IDictionary<int, int> expected = new Dictionary<int, int>
+            {
+                { startDateAge, startDateAgeCount },
+                { startDatePlus5YearsAge, startDatePlus5YearsAgeCount },
+            };
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))

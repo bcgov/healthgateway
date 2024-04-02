@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Server.Services
                 .SelectMany(x => x.BetaFeatureCodes ?? Enumerable.Empty<BetaFeatureCode>())
                 .Distinct();
 
-            return new() { Email = userProfiles.First().Email!, BetaFeatures = new HashSet<BetaFeature>(betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code))) };
+            return new() { Email = userProfiles[0].Email!, BetaFeatures = new HashSet<BetaFeature>(betaFeatureCodes.Select(x => mappingService.MapToBetaFeature(x.Code))) };
         }
 
         /// <inheritdoc/>
