@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Server.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -39,6 +38,11 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the Webclient timeout values.
         /// </summary>
         public TimeOutsConfiguration Timeouts { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the URL for the beta application.
+        /// </summary>
+        public Uri? BetaUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.

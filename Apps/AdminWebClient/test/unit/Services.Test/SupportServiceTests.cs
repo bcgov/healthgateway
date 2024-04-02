@@ -369,7 +369,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             }
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileResult);
+            mockUserProfileDelegate.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileResult);
             mockUserProfileDelegate.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfilesResult ?? []);
 

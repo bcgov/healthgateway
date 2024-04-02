@@ -33,7 +33,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Constants;
     using HealthGateway.GatewayApiTests.Services.Test.Mock;
-    using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
@@ -52,11 +52,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// GetUserProfile call - test for status Read, Error and NotFound.
         /// </summary>
         /// <param name="expectedHasTourChanged">Used to test if the app tour has changes.</param>
+        /// <param name="numberOfPreferences">The number of preferences to return.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldGetUserProfile(bool expectedHasTourChanged = false)
+        [InlineData(true, 0)]
+        [InlineData(false, 0)]
+        [InlineData(true, 1)]
+        [InlineData(false, 1)]
+        public async Task ShouldGetUserProfile(bool expectedHasTourChanged, int numberOfPreferences)
         {
             DateTime newLoginDateTime = DateTime.Today;
             DateTime lastTourChangeDateTime = newLoginDateTime.AddDays(-1).AddMinutes(expectedHasTourChanged ? 10 : -10);
@@ -121,7 +124,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Value = true.ToString(),
             };
 
-            List<UserPreference> userPreferences = [dbUserPreference];
+            List<UserPreference> userPreferences = numberOfPreferences == 1 ? [dbUserPreference] : [];
 
             IList<DataSource> dataSources =
             [
@@ -153,6 +156,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(userProfileHistoryMinus2.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[2]);
             Assert.Equal(expectedHasTourChanged, actualResult.ResourcePayload?.HasTourUpdated);
             Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
+            Assert.Equal(userPreferences.Count, actualResult.ResourcePayload?.Preferences.Count);
+
+            if (numberOfPreferences > 0)
+            {
+                Assert.Equal(actualResult.ResourcePayload?.Preferences["TutorialPopover"].Value, userPreferences[0].Value);
+            }
         }
 
         /// <summary>
@@ -420,74 +429,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(expected.ResourcePayload, actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// GetUserPreferences call.
-        /// </summary>
-        /// <param name="numberOfPreferences">The number of preferences to return.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        public async Task ShouldGetUserPreference(int numberOfPreferences)
-        {
-            // Arrange
-            UserProfile userProfile = new()
-            {
-                HdId = this.hdid,
-                TermsOfServiceId = this.termsOfServiceGuid,
-            };
-
-            DbResult<UserProfile> userProfileDbResult = new()
-            {
-                Payload = userProfile,
-                Status = DbStatusCode.Read,
-            };
-
-            LegalAgreement termsOfService = new()
-            {
-                Id = Guid.NewGuid(),
-                LegalText = string.Empty,
-                EffectiveDate = DateTime.Now,
-            };
-
-            UserPreferenceModel userPreferenceModel = new()
-            {
-                HdId = this.hdid,
-                Preference = "TutorialPopover",
-                Value = true.ToString(),
-            };
-
-            List<UserPreferenceModel> userPreferences = numberOfPreferences == 1 ? [userPreferenceModel] : [];
-
-            List<UserPreference> dbUserPreferences = [];
-            UserPreference userPreference = MappingService.MapToUserPreference(userPreferenceModel);
-
-            if (numberOfPreferences > 0)
-            {
-                dbUserPreferences.Add(userPreference);
-            }
-
-            UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
-                .SetupLegalAgreementDelegateMock(termsOfService)
-                .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
-                .SetupUserPreferenceDelegateMockReturnPreferences(this.hdid, dbUserPreferences)
-                .SetupMessagingVerificationDelegateMockCustomMessage(new MessagingVerification());
-
-            IUserProfileService service = mockService.UserProfileServiceMockInstance();
-
-            // Act
-            RequestResult<Dictionary<string, UserPreferenceModel>> actualResult = await service.GetUserPreferencesAsync(this.hdid);
-
-            // Assert
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Equal(userPreferences.Count, actualResult.ResourcePayload?.Count);
-
-            if (numberOfPreferences > 0)
-            {
-                Assert.Equal(actualResult.ResourcePayload?["TutorialPopover"].Value, userPreferences[0].Value);
-            }
         }
 
         /// <summary>

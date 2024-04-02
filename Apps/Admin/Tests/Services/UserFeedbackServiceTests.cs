@@ -401,7 +401,7 @@ namespace HealthGateway.Admin.Tests.Services
             adminTagDelegateMock.Setup(s => s.GetAdminTagsAsync(adminTagIds, It.IsAny<CancellationToken>())).ReturnsAsync(adminTagDbResult);
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid1, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid1, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             IUserFeedbackService service = GetUserFeedbackService(
                 adminTagDelegateMock: adminTagDelegateMock,
@@ -569,7 +569,7 @@ namespace HealthGateway.Admin.Tests.Services
             feedbackDelegateMock.Setup(s => s.GetUserFeedbackWithFeedbackTagsAsync(feedbackId, It.IsAny<CancellationToken>())).ReturnsAsync(dbResult);
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid1, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid1, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             IUserFeedbackService service = GetUserFeedbackService(feedbackDelegateMock, userProfileDelegateMock: userProfileDelegateMock);
 

@@ -214,7 +214,7 @@ namespace HealthGateway.Admin.Server.Services
             string email = string.Empty;
             if (hdid != null)
             {
-                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct);
+                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
                 if (userProfile != null)
                 {
                     email = userProfile.Email ?? string.Empty;

@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System.Collections.Generic;
     using System.Threading;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -45,7 +44,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
             int limit,
             DbResult<UserProfile> updatedUserProfileResult)
         {
-            this.Setup(s => s.GetUserProfileAsync(hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfileData.Payload);
+            this.Setup(s => s.GetUserProfileAsync(hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileData.Payload);
             this.Setup(s => s.UpdateAsync(userProfile, true, It.IsAny<CancellationToken>())).ReturnsAsync(updatedUserProfileResult);
             this.Setup(s => s.GetUserProfileHistoryListAsync(hdid, limit, It.IsAny<CancellationToken>())).ReturnsAsync(userProfileHistoryList);
         }
@@ -71,7 +70,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfileUpdateDbResult">Optional update result.</param>
         public UserProfileDelegateMock(string hdid, UserProfile userProfile, DbResult<UserProfile> userProfileDbResult, bool commit = true, DbResult<UserProfile>? userProfileUpdateDbResult = null)
         {
-            this.Setup(s => s.GetUserProfileAsync(hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfileDbResult.Payload);
+            this.Setup(s => s.GetUserProfileAsync(hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileDbResult.Payload);
             this.Setup(s => s.UpdateAsync(userProfile, commit, It.IsAny<CancellationToken>())).ReturnsAsync(userProfileUpdateDbResult ?? userProfileDbResult);
         }
     }

@@ -169,6 +169,7 @@ export const useUserStore = defineStore("user", () => {
             : undefined;
         user.value.preferences = userProfile ? userProfile.preferences : {};
         user.value.blockedDataSources = userProfile?.blockedDataSources ?? [];
+        user.value.betaFeatures = userProfile?.betaFeatures ?? [];
         user.value.email = userProfile?.email ?? "";
         user.value.hasEmail = Boolean(userProfile?.email);
         user.value.verifiedEmail = userProfile?.isEmailVerified === true;
@@ -260,10 +261,7 @@ export const useUserStore = defineStore("user", () => {
     function updateAcceptedTerms(termsOfServiceId: string): Promise<void> {
         return userProfileService
             .updateAcceptedTerms(user.value.hdid, termsOfServiceId)
-            .then((userProfile) => {
-                logger.verbose(`User Profile: ${JSON.stringify(userProfile)}`);
-                setProfileUserData(userProfile);
-            })
+            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
                 setUserError(resultError.message);
                 throw resultError;

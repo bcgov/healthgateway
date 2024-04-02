@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
 {
     using System;
     using AutoMapper;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Admin.Common.Constants;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB and UI Models.
@@ -29,26 +29,20 @@ namespace HealthGateway.Admin.Server.MapProfiles
         /// </summary>
         public BetaFeatureProfile()
         {
-            this.CreateMap<BetaFeature, Common.Constants.BetaFeature>()
+            this.CreateMap<Database.Constants.BetaFeature, BetaFeature>()
                 .ConvertUsing(
-                    (source, _, _) =>
+                    (source, _, _) => source switch
                     {
-                        return source switch
-                        {
-                            BetaFeature.Salesforce => Common.Constants.BetaFeature.Salesforce,
-                            _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
-                        };
+                        Database.Constants.BetaFeature.Salesforce => BetaFeature.Salesforce,
+                        _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
                     });
 
-            this.CreateMap<Common.Constants.BetaFeature, BetaFeature>()
+            this.CreateMap<BetaFeature, Database.Constants.BetaFeature>()
                 .ConvertUsing(
-                    (source, _, _) =>
+                    (source, _, _) => source switch
                     {
-                        return source switch
-                        {
-                            Common.Constants.BetaFeature.Salesforce => BetaFeature.Salesforce,
-                            _ => throw new NotImplementedException($"Reverse mapping for {source} is not implemented"),
-                        };
+                        BetaFeature.Salesforce => Database.Constants.BetaFeature.Salesforce,
+                        _ => throw new NotImplementedException($"Reverse mapping for {source} is not implemented"),
                     });
         }
     }

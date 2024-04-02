@@ -38,10 +38,5 @@ namespace HealthGateway.Common.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         MessagingVerificationModel MapToMessagingVerificationModel(MessagingVerification source);
-
-        /// <summary>Maps model.</summary>
-        /// <param name="source">The source object to transform.</param>
-        /// <returns>The destination object.</returns>
-        UserProfileModel MapToUserProfileModel(UserProfile source);
     }
 }
