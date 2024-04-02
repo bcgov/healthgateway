@@ -187,7 +187,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
                     string email = await this.GetUserEmailAsync(userFeedback.UserProfileId, ct);
-                    result.ResourcePayload = mappingService.MapToUserFeedbackView(userFeedback, email);
+                    result.ResourcePayload = mappingService.MapToUserFeedbackView(savedUserFeedbackResult.Payload, email);
                     result.ResultStatus = ResultType.Success;
                 }
                 else
