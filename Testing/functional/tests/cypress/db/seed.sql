@@ -76,7 +76,7 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 
-	null,
+	'somebody@healthgateway.gov.bc.ca',
 	null,
 	null,
 	current_timestamp, 
@@ -611,6 +611,21 @@ VALUES (
     '1994',
     'Web'
 );
+
+INSERT INTO gateway."BetaFeatureAccess" (
+    "UserProfileId",
+    "BetaFeatureCode",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime")
+VALUES (
+    'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',
+    'Salesforce',
+    'System',
+    current_timestamp - INTERVAL '1 day',
+    'System',
+    current_timestamp - INTERVAL '1 day');
 
 INSERT INTO gateway."Rating"(
 	"RatingId", 
