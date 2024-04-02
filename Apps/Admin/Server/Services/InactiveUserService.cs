@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Constants;
@@ -30,7 +29,6 @@ using HealthGateway.Common.Api;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Models;
 using HealthGateway.Common.Data.Utils;
-using HealthGateway.Common.ErrorHandling;
 using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
 using Microsoft.Extensions.Configuration;
@@ -99,8 +97,9 @@ public class InactiveUserService : IInactiveUserService
         inactiveUsers.AddRange(inactiveUserProfiles.Select(this.mappingService.MapToAdminUserProfileView));
         this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
 
-        // Get admin and support users from keycloak
         JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+
+        // Get admin and support users from keycloak
         try
         {
             const int firstRecord = 0;
@@ -121,14 +120,13 @@ public class InactiveUserService : IInactiveUserService
             requestResult.ResourcePayload = inactiveUsers;
             requestResult.TotalResultCount = inactiveUsers.Count;
         }
-        catch (Exception e) when (e is ApiException or HttpRequestException)
+        catch (ApiException e)
         {
-            this.logger.LogError("Error communicating with Keycloak, exception: {Exception}", e.ToString());
+            this.logger.LogError(e, "Error communicating with Keycloak, exception: {Exception}", e.Message);
             requestResult.ResultStatus = ResultType.Error;
             requestResult.ResultError = new RequestResultError
             {
                 ResultMessage = "Error communicating with Keycloak",
-                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
             };
         }
 
@@ -165,6 +163,8 @@ public class InactiveUserService : IInactiveUserService
     {
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
 
+        // Filter identities from keycloak where inactive (database) user's username does not match keycloak user's username
+        // and active (database) user's username does not match keycloak users username
         IEnumerable<AdminUserProfileView> adminUserProfiles = identityAccessUsers
             .Where(x1 => inactiveUsers.TrueForAll(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
             .Select(user => this.mappingService.MapToAdminUserProfileView(user));
