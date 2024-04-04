@@ -13,36 +13,30 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.ErrorHandling
+namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using FluentValidation;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
+    using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
-    /// Transform validation exceptions into a problem details response.
+    /// Transforms any exception into the appropriate problem details response.
     /// </summary>
-    internal sealed class ValidationExceptionHandler(IConfiguration configuration) : IExceptionHandler
+    internal sealed class DefaultExceptionHandler(IConfiguration configuration) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is not ValidationException validationException)
-            {
-                return false;
-            }
-
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
 
-            ValidationProblemDetails problemDetails = (ValidationProblemDetails)ExceptionUtilities.ToProblemDetails(validationException, httpContext, includeException);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, includeException);
 
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
+            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
