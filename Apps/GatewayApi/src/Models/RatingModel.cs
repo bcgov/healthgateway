@@ -18,22 +18,23 @@ namespace HealthGateway.GatewayApi.Models
     using System;
 
     /// <summary>
-    /// Object that defines the request for creating a User.
+    /// Model that provides a user representation of a rating database model.
     /// </summary>
-    public class CreateUserRequest
+    public class RatingModel
     {
         /// <summary>
-        /// Gets the create user profile.
+        /// Gets the id.
         /// </summary>
-        public CreateUserProfile Profile { get; init; } = new(string.Empty, Guid.Empty);
-    }
+        public Guid? Id { get; init; }
 
-    /// <summary>
-    /// The user profile to create.
-    /// </summary>
-    /// <param name="HdId">The hdid associated with the user profile to create.</param>
-    /// <param name="TermsOfServiceId">The terms of service id associated with the user profile to create.</param>
-    /// <param name="SmsNumber">The sms number associated with the user profile to create.</param>
-    /// <param name="Email">The email associated with the user profile to create.</param>
-    public record CreateUserProfile(string HdId, Guid TermsOfServiceId, string? SmsNumber = null, string? Email = null);
+        /// <summary>
+        /// Gets the rating value.
+        /// </summary>
+        public int RatingValue { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether rating submission was skipped.
+        /// </summary>
+        public bool Skip { get; init; }
+    }
 }

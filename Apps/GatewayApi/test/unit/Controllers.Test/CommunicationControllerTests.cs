@@ -20,11 +20,12 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Controllers;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
     using Moq;
     using Xunit;
+    using CommunicationType = HealthGateway.GatewayApi.Constants.CommunicationType;
 
     /// <summary>
     /// CommunicationController's Unit Tests.
@@ -38,9 +39,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldGetCommunication()
         {
-            RequestResult<Communication?> expectedResult = new()
+            RequestResult<CommunicationModel?> expectedResult = new()
             {
-                ResourcePayload = new Communication
+                ResourcePayload = new()
                 {
                     Subject = "Mocked Subject",
                     Text = "Mocked Text",
@@ -48,11 +49,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> communicationServiceMock = new();
+            Mock<IGatewayCommunicationService> communicationServiceMock = new();
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(CommunicationType.Banner, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommunicationController controller = new(communicationServiceMock.Object);
-            RequestResult<Communication?> actualResult = await controller.Get();
+            RequestResult<CommunicationModel?> actualResult = await controller.Get();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

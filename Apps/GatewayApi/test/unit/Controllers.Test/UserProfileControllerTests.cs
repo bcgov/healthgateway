@@ -68,6 +68,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateUserProfile()
         {
+            CreateUserProfile createUserProfile = new(this.hdid, Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"));
+
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
@@ -76,7 +78,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             CreateUserRequest createUserRequest = new()
             {
-                Profile = userProfile,
+                Profile = createUserProfile,
             };
 
             RequestResult<UserProfileModel> expected = new()
@@ -110,6 +112,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateUserProfileBadRequest()
         {
+            CreateUserProfile createUserProfile = new("badhdid", Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"));
+
             UserProfile userProfile = new()
             {
                 HdId = "badhdid",
@@ -118,7 +122,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             CreateUserRequest createUserRequest = new()
             {
-                Profile = userProfile,
+                Profile = createUserProfile,
             };
 
             RequestResult<UserProfileModel> expected = new()

@@ -59,6 +59,7 @@ namespace HealthGateway.Database.Delegates
             {
                 await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
+                result.Payload = rating;
             }
             catch (DbUpdateException e)
             {

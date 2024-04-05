@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using FluentValidation.Results;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
@@ -234,7 +233,7 @@ namespace HealthGateway.GatewayApi.Services
             UserProfile newProfile = new()
             {
                 HdId = hdid,
-                IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
+                IdentityManagementId = null,
                 TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
                 Email = string.Empty,
                 SmsNumber = null,
@@ -466,8 +465,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // Validate UserProfile inputs
-            ValidationResult profileValidationResult = await new UserProfileValidator().ValidateAsync(createProfileRequest.Profile, ct);
-            if (!profileValidationResult.IsValid)
+            if (!await UserProfileValidator.ValidateUserProfileSmsNumberAsync(createProfileRequest.Profile.SmsNumber, ct))
             {
                 this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
                 return RequestResultFactory.Error<UserProfileModel>(ErrorType.SmsInvalid, "Profile values entered are invalid");

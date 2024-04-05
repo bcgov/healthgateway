@@ -17,7 +17,6 @@
 namespace HealthGateway.GatewayApiTests.Utils
 {
     using AutoMapper;
-    using HealthGateway.Common.MapProfiles;
     using HealthGateway.GatewayApi.MapProfiles;
 
     /// <summary>
@@ -35,8 +34,11 @@ namespace HealthGateway.GatewayApiTests.Utils
             MapperConfiguration config = new(
                 cfg =>
                 {
+                    cfg.AddProfile<CommunicationProfile>();
                     cfg.AddProfile<DependentInformationProfile>();
                     cfg.AddProfile<DependentProfile>();
+                    cfg.AddProfile<FeedbackProfile>();
+                    cfg.AddProfile<RatingProfile>();
                     cfg.AddProfile<TermsOfServiceProfile>();
                     cfg.AddProfile<UserCommentProfile>();
                     cfg.AddProfile<UserNoteProfile>();

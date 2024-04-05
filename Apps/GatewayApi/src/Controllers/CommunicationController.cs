@@ -18,10 +18,10 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Constants;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -32,13 +32,13 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiController]
     public class CommunicationController
     {
-        private readonly ICommunicationService communicationService;
+        private readonly IGatewayCommunicationService communicationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationController"/> class.
         /// </summary>
         /// <param name="communicationService">The injected communication service.</param>
-        public CommunicationController(ICommunicationService communicationService)
+        public CommunicationController(IGatewayCommunicationService communicationService)
         {
             this.communicationService = communicationService;
         }
@@ -52,7 +52,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
         [Route("{communicationType}")]
-        public async Task<RequestResult<Communication?>> Get(CommunicationType communicationType = CommunicationType.Banner, CancellationToken ct = default)
+        public async Task<RequestResult<CommunicationModel?>> Get(CommunicationType communicationType = CommunicationType.Banner, CancellationToken ct = default)
         {
             return await this.communicationService.GetActiveCommunicationAsync(communicationType, ct);
         }

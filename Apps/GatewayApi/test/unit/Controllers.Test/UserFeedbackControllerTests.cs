@@ -125,25 +125,37 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateRating()
         {
-            Rating rating = new()
+            // Arrange
+            CreateRatingMock mock = SetupCreateRatingMock();
+
+            // Act
+            RequestResult<RatingModel> actual = await mock.Controller.CreateRating(mock.Rating, default);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
+        private static CreateRatingMock SetupCreateRatingMock()
+        {
+            SubmitRating rating = new()
             {
-                CreatedBy = Hdid,
-                UpdatedBy = Hdid,
+                RatingValue = 5,
+                Skip = false,
             };
 
-            RequestResult<Rating> expectedResult = new()
+            RequestResult<RatingModel> result = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = rating,
+                ResourcePayload = new() { RatingValue = rating.RatingValue, Skip = rating.Skip },
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateRatingAsync(It.IsAny<Rating>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
+            userFeedbackServiceMock.Setup(s => s.CreateRatingAsync(It.IsAny<SubmitRating>(), It.IsAny<CancellationToken>())).ReturnsAsync(result);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            RequestResult<Rating> actualResult = await controller.CreateRating(rating, It.IsAny<CancellationToken>());
-
-            expectedResult.ShouldDeepEqual(actualResult);
+            return new(controller, result, rating);
         }
+
+        private sealed record CreateRatingMock(UserFeedbackController Controller, RequestResult<RatingModel> Expected, SubmitRating Rating);
     }
 }

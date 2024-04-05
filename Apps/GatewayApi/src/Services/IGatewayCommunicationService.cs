@@ -18,30 +18,21 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
+    using CommunicationType = HealthGateway.GatewayApi.Constants.CommunicationType;
 
     /// <summary>
-    /// The User Feedback service.
+    /// The gateway communication service.
     /// </summary>
-    public interface IUserFeedbackService
+    public interface IGatewayCommunicationService
     {
         /// <summary>
-        /// Saves the user feedback to the database.
+        /// Gets the active communication based on type from the backend.
+        /// Only Banner, In-App, and Mobile values are supported.
         /// </summary>
-        /// <param name="feedback">The feedback to be saved.</param>
-        /// <param name="hdid">The HDID of the person submitting the feedback.</param>
+        /// <param name="communicationType">The type of communication to retrieve.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The wrapped user feedback.</returns>
-        Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(Feedback feedback, string hdid, CancellationToken ct = default);
-
-        /// <summary>
-        /// Saves the rating to the database.
-        /// </summary>
-        /// <param name="rating">The rating to be saved.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The wrapped rating.</returns>
-        Task<RequestResult<RatingModel>> CreateRatingAsync(SubmitRating rating, CancellationToken ct = default);
+        /// <returns>The active communication wrapped in a RequestResult.</returns>
+        Task<RequestResult<CommunicationModel?>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default);
     }
 }
