@@ -49,13 +49,12 @@ namespace HealthGateway.Common.Auditing
             Claim? idirClaim = claimsIdentity?.Claims.FirstOrDefault(c => c.Type == "preferred_username");
             string? idir = idirClaim?.Value;
 
-            // Query PHN header for Admin WebClient CovidCard actions
-            context.Request.Headers.TryGetValue("phn", out StringValues phnHeader);
-            string? subjectPhn = phnHeader.FirstOrDefault();
-
-            // Query Request Parameters for queryString for AdminWebClient Support actions
-            context.Request.Query.TryGetValue("queryString", out StringValues queryString);
-            string? subjectQuery = queryString.FirstOrDefault();
+            // Query parameters for Admin.Server actions
+            context.Request.Query.TryGetValue("phn", out StringValues phnParameter);
+            string? subjectPhn = phnParameter.FirstOrDefault();
+            
+            context.Request.Query.TryGetValue("queryString", out StringValues queryStringParameter);
+            string? subjectQuery = queryStringParameter.FirstOrDefault();
 
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
@@ -124,8 +123,6 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Patient;
                 case "Medication":
                     return ApplicationType.Medication;
-                case "AdminWebClient":
-                    return ApplicationType.AdminWebClient;
                 case "Admin.Server":
                     return ApplicationType.AdminWebClient;
                 case "Laboratory":
