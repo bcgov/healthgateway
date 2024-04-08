@@ -659,7 +659,7 @@ namespace HealthGateway.Database.Context
                     },
                     new ProgramTypeCode
                     {
-                        ProgramCode = ApplicationType.AdminWebClient,
+                        ProgramCode = ApplicationType.Admin,
                         Description = "Admin Client",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,

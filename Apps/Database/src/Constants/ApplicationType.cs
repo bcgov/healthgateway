@@ -51,9 +51,9 @@ namespace HealthGateway.Database.Constants
         public const string Laboratory = "LAB";
 
         /// <summary>
-        /// Represents the Admin Client application.
+        /// Represents the Admin application.
         /// </summary>
-        public const string AdminWebClient = "ADMIN";
+        public const string Admin = "ADMIN";
 
         /// <summary>
         /// Represents the Job Scheduler application.
