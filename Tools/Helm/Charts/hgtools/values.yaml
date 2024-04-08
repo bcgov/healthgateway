@@ -20,8 +20,6 @@ images:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/patient
   admin:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/admin
-  adminwebclient:
-    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/adminwebclient
   clinicaldocument:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/clinicaldocument
   encounter:

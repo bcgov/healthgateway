@@ -4,7 +4,6 @@ parameters:
     default: NotSpecified
     values:
       - Admin
-      - AdminWebClient
       - Common
       - Database
       - Encounter

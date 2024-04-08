@@ -18,7 +18,6 @@ fi
 oc project $project
 ./route.sh $routeId webclient webclient
 ./route.sh $routeId jobscheduler hangfire "/admin/jobscheduler" Redirect
-./route.sh $routeId adminwebclient adminwebclient "/admin" Redirect
 ./route.sh $routeId medication medication "/api/medicationservice"
 ./route.sh $routeId patient patient "/api/patientservice"
 ./route.sh $routeId immunization immunization "/api/immunizationservice"
