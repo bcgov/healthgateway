@@ -144,21 +144,15 @@ TODO: ODR in tools
 
 ### Application Specific Configuration
 
-Hangfire and Admin WebClient require additional configuration in order to operate.
+Hangfire requires additional configuration in order to operate.
 
 To update Hangfire
 
-````console
+```console
 oc process -f ./hangfireSecrets.yaml --parameters
 oc process -f ./hangfireSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] -p ADMIN_SECRET=[Admin OIDC Secret] -p ADMIN_USER=[Admin Username] -p ADMIN_PASSWORD=[Admin Password]
 oc set env --from=secret/hangfire-secrets dc/hangfire
-
-and Admin WebClient
-```console
-oc process -f ./adminWebClientSecrets.yaml --parameters
-oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
-oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
-````
+```
 
 WebClient route timeout
 

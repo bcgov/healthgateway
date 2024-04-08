@@ -18,7 +18,7 @@ echo "OpenShift Imagestream data will be temporarily saved to $file"
 echo
 
 #The set of imagestreams to clean old builds from
-imageStreams=("adminwebclient" "admin" "clinicaldocument" "encounter" "gatewayapi" "hangfire" "hgcdogs" "immunization" "laboratory" "medication" "odrproxy" "offline" "patient" "webclient" "gatewayapi")
+imageStreams=("admin" "clinicaldocument" "encounter" "gatewayapi" "hangfire" "hgcdogs" "immunization" "laboratory" "medication" "odrproxy" "offline" "patient" "webclient" "gatewayapi")
 for isName in "${imageStreams[@]}"; do
   echo "Extracting ImageStream information for $isName"
   oc get imagestream $isName -o json > $file
