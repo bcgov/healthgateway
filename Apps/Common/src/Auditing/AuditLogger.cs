@@ -52,7 +52,7 @@ namespace HealthGateway.Common.Auditing
             // Query parameters for Admin.Server actions
             context.Request.Query.TryGetValue("phn", out StringValues phnParameter);
             string? subjectPhn = phnParameter.FirstOrDefault();
-            
+
             context.Request.Query.TryGetValue("queryString", out StringValues queryStringParameter);
             string? subjectQuery = queryStringParameter.FirstOrDefault();
 
