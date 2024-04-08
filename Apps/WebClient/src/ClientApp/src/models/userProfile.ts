@@ -1,3 +1,4 @@
+import { BetaFeature } from "@/constants/betaFeature";
 import { DataSource } from "@/constants/dataSource";
 import { Dictionary } from "@/models/baseTypes";
 import { StringISODateTime } from "@/models/dateWrapper";
@@ -45,6 +46,9 @@ export default interface UserProfile {
 
     // User's blocked access to data source(s)
     blockedDataSources?: DataSource[];
+
+    // Beta features available to the user
+    betaFeatures?: BetaFeature[];
 }
 
 export interface CreateUserRequest {

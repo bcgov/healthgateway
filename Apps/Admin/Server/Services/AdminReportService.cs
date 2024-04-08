@@ -51,7 +51,7 @@ namespace HealthGateway.Admin.Server.Services
                         }
                         catch (NotFoundException e)
                         {
-                            logger.Error("Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
+                            logger.Error(e, "Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
                         }
 
                         return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);

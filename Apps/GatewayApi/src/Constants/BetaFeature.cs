@@ -13,27 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Utils
+namespace HealthGateway.GatewayApi.Constants
 {
-    using AutoMapper;
-    using HealthGateway.Common.MapProfiles;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Static utility class to provide a fully initialized AutoMapper.
-    /// NOTE: Any newly added profiles will have to be registered.
+    /// Represents a beta feature.
     /// </summary>
-    public static class MapperUtil
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    public enum BetaFeature
     {
         /// <summary>
-        /// Creates an AutoMapper.
+        /// Indicates an unknown feature.
         /// </summary>
-        /// <returns>A configured AutoMapper.</returns>
-        public static IMapper InitializeAutoMapper()
-        {
-            MapperConfiguration config = new(
-                cfg => { cfg.AddProfile(new UserProfileProfile()); });
+        Unknown,
 
-            return config.CreateMapper();
-        }
+        /// <summary>
+        /// Represents the feature for the Salesforce application.
+        /// </summary>
+        Salesforce,
     }
 }

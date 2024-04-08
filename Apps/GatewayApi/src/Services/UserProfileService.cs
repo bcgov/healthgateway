@@ -147,7 +147,7 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
             if (userProfile == null)
@@ -308,7 +308,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
 
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (userProfile == null)
             {
@@ -332,7 +332,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (userProfile == null)
             {
@@ -395,14 +395,6 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Dictionary<string, UserPreferenceModel>>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
-        {
-            this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
-            IEnumerable<UserPreference> userPreferences = await this.userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
-            return RequestResultFactory.Success(userPreferences.Select(this.mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x));
-        }
-
-        /// <inheritdoc/>
         public async Task<RequestResult<bool>> ValidateMinimumAgeAsync(string hdid, CancellationToken ct = default)
         {
             if (this.minPatientAge == 0)
@@ -426,7 +418,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default)
         {
-            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (userProfile == null)
             {
@@ -440,7 +432,9 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to update the terms of service: DB Error");
             }
 
-            return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(result.Payload, ct: ct));
+            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(result.Payload, ct: ct);
+
+            return RequestResultFactory.Success(userProfileModel);
         }
 
         /// <inheritdoc/>
@@ -485,13 +479,17 @@ namespace HealthGateway.GatewayApi.Services
         private async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null, CancellationToken ct = default)
         {
             Guid? termsOfServiceId = (await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct))?.Id;
-            DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
             UserProfileModel userProfileModel = this.mappingService.MapToUserProfileModel(userProfile, termsOfServiceId);
+
+            DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
                                               profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
+
             userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
+            userProfileModel.Preferences = await this.GetUserPreferencesAsync(userProfileModel.HdId, ct);
+
             return userProfileModel;
         }
 
@@ -513,6 +511,13 @@ namespace HealthGateway.GatewayApi.Services
                 },
                 TimeSpan.FromMinutes(30),
                 ct);
+        }
+
+        private async Task<Dictionary<string, UserPreferenceModel>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
+            IEnumerable<UserPreference> userPreferences = await this.userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
+            return userPreferences.Select(this.mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x);
         }
 
         private async Task<RequestResult<UserProfileModel>> HandleUpdateUserProfileResultAsync(DbResult<UserProfile> result, string emailTemplateName, CancellationToken ct)

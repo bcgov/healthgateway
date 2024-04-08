@@ -335,7 +335,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private async Task UpdateNotificationSettingsAsync(string dependentHdid, string delegateHdid, bool isDelete = false, CancellationToken ct = default)
         {
-            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct) ??
+            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct: ct) ??
                                               throw new NotFoundException(ErrorMessages.DelegateUserProfileNotFound);
 
             // Update the notification settings
