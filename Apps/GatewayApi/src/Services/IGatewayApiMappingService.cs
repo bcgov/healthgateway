@@ -16,11 +16,12 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Models.Phsa;
+    using CommunicationType = HealthGateway.GatewayApi.Constants.CommunicationType;
 
     /// <summary>
     /// Service to map between models at different layers.
@@ -33,12 +34,17 @@ namespace HealthGateway.GatewayApi.Services
         /// <returns>The destination object.</returns>
         Comment MapToComment(UserComment source, string encryptionKey);
 
+        /// <summary>Maps enum.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        Common.Data.Constants.CommunicationType MapToCommunicationType(CommunicationType source);
+
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <param name="patientModel">The associated patient model.</param>
         /// <param name="totalDelegateCount">The total number of delegates with access to the dependent.</param>
         /// <returns>The destination object.</returns>
-        DependentModel MapToDependentModel(ResourceDelegate source, Common.Models.PatientModel patientModel, int totalDelegateCount);
+        DependentModel MapToDependentModel(ResourceDelegate source, PatientModel patientModel, int totalDelegateCount);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
@@ -49,7 +55,22 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        PatientDetails MapToPatientDetails(PatientModel source);
+        PatientDetails MapToPatientDetails(AccountDataAccess.Patient.PatientModel source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        Rating MapToRating(SubmitRating source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        RatingModel MapToRatingModel(Rating source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        RequestResult<CommunicationModel> MapToRequestResult(RequestResult<Communication?> source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>

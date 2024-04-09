@@ -18,17 +18,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -38,6 +42,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class UserFeedbackServiceTests
     {
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object);
+
         /// <summary>
         /// CreateRating - Happy Path.
         /// </summary>
@@ -45,35 +52,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ShouldCreateRating()
         {
-            Rating expectedRating = new()
-            {
-                RatingValue = 5,
-                Skip = false,
-            };
+            // Arrange
+            CreateRatingMock mock = SetupCreateRatingMock();
 
-            DbResult<Rating> insertResult = new()
-            {
-                Payload = expectedRating,
-                Status = DbStatusCode.Created,
-            };
+            // Act
+            RequestResult<RatingModel> actual = await mock.Service.CreateRatingAsync(mock.Rating);
 
-            Mock<IRatingDelegate> ratingDelegateMock = new();
-            ratingDelegateMock.Setup(s => s.InsertRatingAsync(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(insertResult);
-
-            IUserFeedbackService service = new UserFeedbackService(
-                new Mock<ILogger<UserFeedbackService>>().Object,
-                new Mock<IFeedbackDelegate>().Object,
-                ratingDelegateMock.Object,
-                new Mock<IUserProfileDelegate>().Object,
-                new Mock<IBackgroundJobClient>().Object,
-                new Mock<IGatewayApiMappingService>().Object,
-                new Mock<IAuthenticationDelegate>().Object);
-
-            RequestResult<Rating> actualResult = await service.CreateRatingAsync(expectedRating);
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            expectedRating.ShouldDeepEqual(actualResult.ResourcePayload);
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
         }
 
         /// <summary>
@@ -83,34 +69,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ShouldCreateRatingWithError()
         {
-            Rating expectedRating = new()
-            {
-                RatingValue = 5,
-                Skip = false,
-            };
+            // Arrange
+            CreateRatingMock mock = SetupCreateRatingMock(true);
 
-            DbResult<Rating> insertResult = new()
-            {
-                Payload = expectedRating,
-                Status = DbStatusCode.Error,
-            };
+            // Act
+            RequestResult<RatingModel> actual = await mock.Service.CreateRatingAsync(mock.Rating);
 
-            Mock<IRatingDelegate> ratingDelegateMock = new();
-            ratingDelegateMock.Setup(s => s.InsertRatingAsync(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(insertResult);
-
-            IUserFeedbackService service = new UserFeedbackService(
-                new Mock<ILogger<UserFeedbackService>>().Object,
-                new Mock<IFeedbackDelegate>().Object,
-                ratingDelegateMock.Object,
-                new Mock<IUserProfileDelegate>().Object,
-                new Mock<IBackgroundJobClient>().Object,
-                new Mock<IGatewayApiMappingService>().Object,
-                new Mock<IAuthenticationDelegate>().Object);
-
-            RequestResult<Rating> actualResult = await service.CreateRatingAsync(expectedRating);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
         }
 
         /// <summary>
@@ -120,10 +86,85 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ShouldCreateUserFeedback()
         {
+            // Arrange
+            CreateUserFeedbackMock mock = SetupCreateUserFeedbackMock();
+
+            // Act
+            DbResult<UserFeedback> actual = await mock.Service.CreateUserFeedbackAsync(mock.Feedback, mock.Hdid);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
+        private static Mock<ICryptoDelegate> GetCryptoDelegateMock()
+        {
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
+            cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns(() => "Y1FmVGpXblpxNHQ3dyF6JUMqRi1KYU5kUmdVa1hwMnM=");
+            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
+            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
+            return cryptoDelegateMock;
+        }
+
+        private static CreateRatingMock SetupCreateRatingMock(bool dbErrorExists = false)
+        {
+            const string dbErrorMessage = "DB Error!";
+            Guid ratingId = Guid.NewGuid();
+
+            SubmitRating createRating = new()
+            {
+                RatingValue = 5,
+                Skip = false,
+            };
+
+            Rating rating = new()
+            {
+                Id = ratingId,
+                RatingValue = createRating.RatingValue,
+                Skip = createRating.Skip,
+            };
+
+            DbResult<Rating> dbResult = new()
+            {
+                Payload = rating,
+                Status = dbErrorExists ? DbStatusCode.Error : DbStatusCode.Created,
+                Message = dbErrorExists ? dbErrorMessage : string.Empty,
+            };
+
+            RequestResult<RatingModel> expected = new()
+            {
+                ResultStatus = dbErrorExists ? ResultType.Error : ResultType.Success,
+                ResultError = dbErrorExists
+                    ? new()
+                    {
+                        ResultMessage = dbErrorMessage,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
+                ResourcePayload = dbErrorExists ? null : new() { Id = ratingId, RatingValue = rating.RatingValue, Skip = rating.Skip },
+            };
+
+            Mock<IRatingDelegate> ratingDelegateMock = new();
+            ratingDelegateMock.Setup(s => s.InsertRatingAsync(It.Is<Rating>(r => r.RatingValue == rating.RatingValue && r.Skip == rating.Skip), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dbResult);
+
+            IUserFeedbackService service = new UserFeedbackService(
+                new Mock<ILogger<UserFeedbackService>>().Object,
+                new Mock<IFeedbackDelegate>().Object,
+                ratingDelegateMock.Object,
+                new Mock<IUserProfileDelegate>().Object,
+                new Mock<IBackgroundJobClient>().Object,
+                MappingService,
+                new Mock<IAuthenticationDelegate>().Object);
+
+            return new(service, expected, createRating);
+        }
+
+        private static CreateUserFeedbackMock SetupCreateUserFeedbackMock()
+        {
             const string hdid = "Mocked UserProfileId";
             const UserLoginClientType defaultClientType = UserLoginClientType.Mobile;
 
-            UserFeedback expectedUserFeedback = new()
+            UserFeedback userFeedback = new()
             {
                 Id = Guid.NewGuid(),
                 Comment = "Mocked Comment",
@@ -133,12 +174,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Feedback feedback = new()
             {
-                Comment = expectedUserFeedback.Comment,
+                Comment = userFeedback.Comment,
             };
 
             DbResult<UserFeedback> dbResult = new()
             {
-                Payload = expectedUserFeedback,
+                Payload = userFeedback,
                 Status = DbStatusCode.Created,
             };
 
@@ -151,19 +192,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userFeedbackDelegateMock.Setup(
                     s => s.InsertUserFeedbackAsync(
                         It.Is<UserFeedback>(
-                            r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId &&
-                                 r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed),
+                            r => r.Comment == userFeedback.Comment && r.Id == userFeedback.Id && r.UserProfileId == userFeedback.UserProfileId &&
+                                 r.IsSatisfied == userFeedback.IsSatisfied && r.IsReviewed == userFeedback.IsReviewed),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
             Mock<IUserProfileDelegate> mockProfileDelegate = new();
-            mockProfileDelegate.Setup(s => s.GetUserProfileAsync(It.Is<string>(h => h == expectedUserFeedback.UserProfileId), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
+            mockProfileDelegate.Setup(s => s.GetUserProfileAsync(It.Is<string>(h => h == userFeedback.UserProfileId), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserClientType()).Returns(defaultClientType);
 
             Mock<IGatewayApiMappingService> mockMappingService = new();
-            mockMappingService.Setup(s => s.MapToUserFeedback(It.IsAny<Feedback>(), It.IsAny<string>())).Returns(expectedUserFeedback);
+            mockMappingService.Setup(s => s.MapToUserFeedback(It.IsAny<Feedback>(), It.IsAny<string>())).Returns(userFeedback);
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
@@ -174,10 +215,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockMappingService.Object,
                 mockAuthenticationDelegate.Object);
 
-            DbResult<UserFeedback> actualResult = await service.CreateUserFeedbackAsync(feedback, hdid);
-
-            Assert.Equal(DbStatusCode.Created, actualResult.Status);
-            expectedUserFeedback.ShouldDeepEqual(actualResult.Payload);
+            return new(service, dbResult, feedback, hdid);
         }
+
+        private sealed record CreateRatingMock(IUserFeedbackService Service, RequestResult<RatingModel> Expected, SubmitRating Rating);
+
+        private sealed record CreateUserFeedbackMock(IUserFeedbackService Service, DbResult<UserFeedback> Expected, Feedback Feedback, string Hdid);
     }
 }

@@ -273,10 +273,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .SetupPatientRepository(this.hdid, dataSources);
 
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
+            CreateUserProfile createUserProfile = new(this.hdid, this.termsOfServiceGuid);
 
             // Act
             RequestResult<UserProfileModel> actualResult = await service.CreateUserProfileAsync(
-                    new CreateUserRequest { Profile = userProfile },
+                    new CreateUserRequest { Profile = createUserProfile },
                     DateTime.Today,
                     It.IsAny<string>())
                 ;
@@ -332,10 +333,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .SetupPatientRepository(this.hdid, dataSources);
 
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
+            CreateUserProfile createUserProfile = new(this.hdid, this.termsOfServiceGuid);
 
             // Act
             RequestResult<UserProfileModel> actualResult = await service.CreateUserProfileAsync(
-                new CreateUserRequest { Profile = userProfile },
+                new CreateUserRequest { Profile = createUserProfile },
                 DateTime.Today,
                 It.IsAny<string>());
 
@@ -386,10 +388,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .SetupCryptoDelegateMockGenerateKey("abc")
                 .SetupPatientServiceMockCustomPatient(this.hdid, patientModel);
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
+            CreateUserProfile createUserProfile = new(this.hdid, this.termsOfServiceGuid);
 
             // Act
             RequestResult<UserProfileModel> actualResult = await service.CreateUserProfileAsync(
-                    new CreateUserRequest { Profile = userProfile },
+                    new CreateUserRequest { Profile = createUserProfile },
                     DateTime.Today,
                     It.IsAny<string>())
                 ;

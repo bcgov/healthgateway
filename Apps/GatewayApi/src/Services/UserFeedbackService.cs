@@ -97,21 +97,23 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Rating>> CreateRatingAsync(Rating rating, CancellationToken ct = default)
+        public async Task<RequestResult<RatingModel>> CreateRatingAsync(SubmitRating rating, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating rating...");
-            DbResult<Rating> dbRating = await this.ratingDelegate.InsertRatingAsync(rating, ct);
+            DbResult<Rating> dbRating = await this.ratingDelegate.InsertRatingAsync(this.mappingService.MapToRating(rating), ct);
             this.logger.LogDebug("Finished creating user feedback");
 
-            RequestResult<Rating> result = new()
+            RequestResult<RatingModel> result = new()
             {
-                ResourcePayload = dbRating.Payload,
+                ResourcePayload = dbRating.Status == DbStatusCode.Created ? this.mappingService.MapToRatingModel(dbRating.Payload) : null,
                 ResultStatus = dbRating.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = dbRating.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
+                ResultError = dbRating.Status == DbStatusCode.Error
+                    ? new RequestResultError
+                    {
+                        ResultMessage = dbRating.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
             };
             return result;
         }

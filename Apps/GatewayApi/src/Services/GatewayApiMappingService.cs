@@ -17,12 +17,13 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using AutoMapper;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Models.Phsa;
+    using CommunicationType = HealthGateway.GatewayApi.Constants.CommunicationType;
 
     /// <inheritdoc/>
     public class GatewayApiMappingService(IMapper mapper, ICryptoDelegate cryptoDelegate) : IGatewayApiMappingService
@@ -38,11 +39,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public DependentModel MapToDependentModel(ResourceDelegate source, Common.Models.PatientModel patientModel, int totalDelegateCount)
+        public Common.Data.Constants.CommunicationType MapToCommunicationType(CommunicationType source)
+        {
+            return mapper.Map<CommunicationType, Common.Data.Constants.CommunicationType>(source);
+        }
+
+        /// <inheritdoc/>
+        public DependentModel MapToDependentModel(ResourceDelegate source, PatientModel patientModel, int totalDelegateCount)
         {
             DependentModel dest = mapper.Map<ResourceDelegate, DependentModel>(source);
 
-            dest.DependentInformation = mapper.Map<Common.Models.PatientModel, DependentInformation>(patientModel);
+            dest.DependentInformation = mapper.Map<PatientModel, DependentInformation>(patientModel);
             dest.TotalDelegateCount = totalDelegateCount;
 
             return dest;
@@ -60,9 +67,27 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public PatientDetails MapToPatientDetails(PatientModel source)
+        public PatientDetails MapToPatientDetails(AccountDataAccess.Patient.PatientModel source)
         {
-            return mapper.Map<PatientModel, PatientDetails>(source);
+            return mapper.Map<AccountDataAccess.Patient.PatientModel, PatientDetails>(source);
+        }
+
+        /// <inheritdoc/>
+        public Rating MapToRating(SubmitRating source)
+        {
+            return mapper.Map<SubmitRating, Rating>(source);
+        }
+
+        /// <inheritdoc/>
+        public RatingModel MapToRatingModel(Rating source)
+        {
+            return mapper.Map<Rating, RatingModel>(source);
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<CommunicationModel> MapToRequestResult(RequestResult<Communication?> source)
+        {
+            return mapper.Map<RequestResult<Communication?>, RequestResult<CommunicationModel>>(source);
         }
 
         /// <inheritdoc/>
