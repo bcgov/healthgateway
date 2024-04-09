@@ -413,7 +413,7 @@ watch(vaccineRecordState, () => {
         <span class="text-body-1">
             You are invited to try the new beta version of Health Gateway and
             provide your feedback.
-            <a :href="betaUrl" target="_blank" rel="noopener" class="text-link">
+            <a :href="betaUrl" target="_self" class="text-link">
                 Try the beta version now.
             </a>
         </span>
