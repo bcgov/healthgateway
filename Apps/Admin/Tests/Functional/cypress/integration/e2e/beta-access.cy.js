@@ -31,7 +31,11 @@ describe("Beta feature access", () => {
     it("Verify error when search with invalid email", () => {
         cy.log("Verify search fails with invalid email.");
         selectTab("[data-testid=beta-access-tabs]", "Search");
-        cy.get("[data-testid=query-input]").clear().type(invalidEmail);
+        cy.get("[data-testid=query-input]")
+            .should("be.visible")
+            .should("be.enabled")
+            .clear()
+            .type(invalidEmail);
         cy.get(".d-flex").contains("Invalid email format").should("be.visible");
         cy.get("[data-testid=beta-access-table]").should("not.exist");
     });
@@ -39,7 +43,11 @@ describe("Beta feature access", () => {
     it("Verify error when search with not found email", () => {
         cy.log("Verify search fails with not found email.");
         selectTab("[data-testid=beta-access-tabs]", "Search");
-        cy.get("[data-testid=query-input]").clear().type(notFoundEmail);
+        cy.get("[data-testid=query-input]")
+            .should("be.visible")
+            .should("be.enabled")
+            .clear()
+            .type(notFoundEmail);
         cy.get(".d-flex").contains("Invalid email format").should("not.exist");
         cy.get("[data-testid=search-button]").click();
 
@@ -54,7 +62,11 @@ describe("Beta feature access", () => {
         // Tab to Search and search with a valid email
         cy.log("Verify search with valid email.");
         selectTab("[data-testid=beta-access-tabs]", "Search");
-        cy.get("[data-testid=query-input]").clear().type(validEmail);
+        cy.get("[data-testid=query-input]")
+            .should("be.visible")
+            .should("be.enabled")
+            .clear()
+            .type(validEmail);
         cy.get(".d-flex").contains("Invalid email format").should("not.exist");
         cy.get("[data-testid=search-button]").click();
 
@@ -75,7 +87,11 @@ describe("Beta feature access", () => {
         cy.log(
             "After assigning salesforce access, search and verify assigning of salesforce feature again."
         );
-        cy.get("[data-testid=query-input]").clear().type(validEmail);
+        cy.get("[data-testid=query-input]")
+            .should("be.visible")
+            .should("be.enabled")
+            .clear()
+            .type(validEmail);
         cy.get("[data-testid=search-button]").click();
         cy.get("[data-testid=salesforce-access-switch]").should("be.checked");
 
