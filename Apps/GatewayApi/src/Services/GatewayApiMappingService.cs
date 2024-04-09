@@ -85,9 +85,9 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<CommunicationModel?> MapToRequestResult(RequestResult<Communication?> source)
+        public RequestResult<CommunicationModel> MapToRequestResult(RequestResult<Communication?> source)
         {
-            return mapper.Map<RequestResult<Communication?>, RequestResult<CommunicationModel?>>(source);
+            return mapper.Map<RequestResult<Communication?>, RequestResult<CommunicationModel>>(source);
         }
 
         /// <inheritdoc/>

@@ -18,21 +18,24 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using CommunicationType = HealthGateway.GatewayApi.Constants.CommunicationType;
 
-    /// <summary>
-    /// The gateway communication service.
-    /// </summary>
-    public interface IGatewayCommunicationService
+    /// <inheritdoc/>
+    /// <param name="communicationService">
+    /// The communication service to interact with the communication delegate to access the
+    /// DB.
+    /// </param>
+    /// <param name="mappingService">The injected mapping service.</param>
+    public class GatewayApiCommunicationService(ICommunicationService communicationService, IGatewayApiMappingService mappingService) : IGatewayApiCommunicationService
     {
-        /// <summary>
-        /// Gets the active communication based on type from the backend.
-        /// Only Banner, In-App, and Mobile values are supported.
-        /// </summary>
-        /// <param name="communicationType">The type of communication to retrieve.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The active communication wrapped in a RequestResult.</returns>
-        Task<RequestResult<CommunicationModel?>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default);
+        /// <inheritdoc/>
+        public async Task<RequestResult<CommunicationModel>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default)
+        {
+            RequestResult<Communication?> communication = await communicationService.GetActiveCommunicationAsync(mappingService.MapToCommunicationType(communicationType), ct);
+            return mappingService.MapToRequestResult(communication);
+        }
     }
 }

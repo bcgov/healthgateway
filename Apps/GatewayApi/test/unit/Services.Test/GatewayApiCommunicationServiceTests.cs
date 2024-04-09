@@ -35,7 +35,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// <summary>
     /// GatewayCommunicationService's Unit Tests.
     /// </summary>
-    public class GatewayCommunicationServiceTests
+    public class GatewayApiCommunicationServiceTests
     {
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
@@ -81,15 +81,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             GetActiveCommunicationReturnsErrorMock mock = SetupGetActiveCommunicationReturnsErrorMock();
 
             // Act
-            RequestResult<CommunicationModel?> actual = await mock.Service.GetActiveCommunicationAsync(mock.CommunicationType);
+            RequestResult<CommunicationModel> actual = await mock.Service.GetActiveCommunicationAsync(mock.CommunicationType);
 
             // Assert
             mock.Expected.ShouldDeepEqual(actual);
         }
 
-        private static IGatewayCommunicationService GetGatewayCommunicationService(IMock<ICommunicationService> communicationServiceMock)
+        private static IGatewayApiCommunicationService GetGatewayCommunicationService(IMock<ICommunicationService> communicationServiceMock)
         {
-            return new GatewayCommunicationService(communicationServiceMock.Object, MappingService);
+            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
         }
 
         private static GetActiveCommunicationMock SetupGetActiveCommunicationMock(
@@ -130,7 +130,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.Is<Common.Data.Constants.CommunicationType>(x => x == sourceCommunicationType), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requestResult);
 
-            IGatewayCommunicationService service = GetGatewayCommunicationService(communicationServiceMock);
+            IGatewayApiCommunicationService service = GetGatewayCommunicationService(communicationServiceMock);
 
             return new(service, expected, communicationType);
         }
@@ -162,13 +162,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.IsAny<Common.Data.Constants.CommunicationType>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requestResult);
 
-            IGatewayCommunicationService service = GetGatewayCommunicationService(communicationServiceMock);
+            IGatewayApiCommunicationService service = GetGatewayCommunicationService(communicationServiceMock);
 
             return new(service, expected, CommunicationType.Banner);
         }
 
-        private sealed record GetActiveCommunicationMock(IGatewayCommunicationService Service, RequestResult<CommunicationModel?> Expected, CommunicationType CommunicationType);
+        private sealed record GetActiveCommunicationMock(IGatewayApiCommunicationService Service, RequestResult<CommunicationModel?> Expected, CommunicationType CommunicationType);
 
-        private sealed record GetActiveCommunicationReturnsErrorMock(IGatewayCommunicationService Service, RequestResult<CommunicationModel?> Expected, CommunicationType CommunicationType);
+        private sealed record GetActiveCommunicationReturnsErrorMock(IGatewayApiCommunicationService Service, RequestResult<CommunicationModel?> Expected, CommunicationType CommunicationType);
     }
 }

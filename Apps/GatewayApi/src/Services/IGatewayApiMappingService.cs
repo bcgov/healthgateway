@@ -70,7 +70,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
-        RequestResult<CommunicationModel?> MapToRequestResult(RequestResult<Communication?> source);
+        RequestResult<CommunicationModel> MapToRequestResult(RequestResult<Communication?> source);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>

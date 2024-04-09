@@ -80,7 +80,7 @@ namespace HealthGateway.GatewayApi
 
             // Add services
             services.AddTransient<IGatewayApiMappingService, GatewayApiMappingService>();
-            services.AddTransient<IGatewayCommunicationService, GatewayCommunicationService>();
+            services.AddTransient<IGatewayApiCommunicationService, GatewayApiCommunicationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();

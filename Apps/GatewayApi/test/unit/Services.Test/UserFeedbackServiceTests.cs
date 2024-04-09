@@ -25,6 +25,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -75,7 +76,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<RatingModel> actual = await mock.Service.CreateRatingAsync(mock.Rating);
 
             // Assert
-            Assert.Equal(mock.Expected.ResultStatus, actual.ResultStatus);
+            mock.Expected.ShouldDeepEqual(actual);
         }
 
         /// <summary>
@@ -106,6 +107,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static CreateRatingMock SetupCreateRatingMock(bool dbErrorExists = false)
         {
+            const string dbErrorMessage = "DB Error!";
             Guid ratingId = Guid.NewGuid();
 
             SubmitRating createRating = new()
@@ -125,12 +127,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Payload = rating,
                 Status = dbErrorExists ? DbStatusCode.Error : DbStatusCode.Created,
+                Message = dbErrorExists ? dbErrorMessage : string.Empty,
             };
 
             RequestResult<RatingModel> expected = new()
             {
                 ResultStatus = dbErrorExists ? ResultType.Error : ResultType.Success,
-                ResourcePayload = new() { Id = ratingId, RatingValue = rating.RatingValue, Skip = rating.Skip },
+                ResultError = dbErrorExists
+                    ? new()
+                    {
+                        ResultMessage = dbErrorMessage,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
+                ResourcePayload = dbErrorExists ? null : new() { Id = ratingId, RatingValue = rating.RatingValue, Skip = rating.Skip },
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new();

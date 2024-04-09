@@ -49,7 +49,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResultStatus = ResultType.Success,
             };
 
-            Mock<IGatewayCommunicationService> communicationServiceMock = new();
+            Mock<IGatewayApiCommunicationService> communicationServiceMock = new();
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(CommunicationType.Banner, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommunicationController controller = new(communicationServiceMock.Object);

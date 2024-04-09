@@ -32,15 +32,15 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiController]
     public class CommunicationController
     {
-        private readonly IGatewayCommunicationService communicationService;
+        private readonly IGatewayApiCommunicationService apiCommunicationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationController"/> class.
         /// </summary>
-        /// <param name="communicationService">The injected communication service.</param>
-        public CommunicationController(IGatewayCommunicationService communicationService)
+        /// <param name="apiCommunicationService">The injected api communication service.</param>
+        public CommunicationController(IGatewayApiCommunicationService apiCommunicationService)
         {
-            this.communicationService = communicationService;
+            this.apiCommunicationService = apiCommunicationService;
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
         [Route("{communicationType}")]
-        public async Task<RequestResult<CommunicationModel?>> Get(CommunicationType communicationType = CommunicationType.Banner, CancellationToken ct = default)
+        public async Task<RequestResult<CommunicationModel>> Get(CommunicationType communicationType = CommunicationType.Banner, CancellationToken ct = default)
         {
-            return await this.communicationService.GetActiveCommunicationAsync(communicationType, ct);
+            return await this.apiCommunicationService.GetActiveCommunicationAsync(communicationType, ct);
         }
     }
 }
