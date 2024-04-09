@@ -39,7 +39,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldGetCommunication()
         {
-            RequestResult<CommunicationModel?> expectedResult = new()
+            RequestResult<CommunicationModel> expectedResult = new()
             {
                 ResourcePayload = new()
                 {
@@ -53,7 +53,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(CommunicationType.Banner, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommunicationController controller = new(communicationServiceMock.Object);
-            RequestResult<CommunicationModel?> actualResult = await controller.Get();
+            RequestResult<CommunicationModel> actualResult = await controller.Get();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
