@@ -41,33 +41,46 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Client registry get demographics by hdid - Happy Path.
         /// </summary>
+        /// <param name="addressExists">Value to determine whether address exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographics()
+        [InlineData(true)]
+        [InlineData(false)]
+        [Theory]
+        public async Task ShouldGetDemographics(bool addressExists)
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0013";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
-            string expectedGender = "Female";
-            Address expectedPhysicalAddr = new()
-            {
-                StreetLines = ["Line 1", "Line 2", "Physical"],
-                City = "city",
-                Country = "CA",
-                PostalCode = "N0N0N0",
-                State = "BC",
-            };
-            Address expectedPostalAddr = new()
-            {
-                StreetLines = ["Line 1", "Line 2", "Postal"],
-                City = "city",
-                Country = "CA",
-                PostalCode = "N0N0N0",
-                State = "BC",
-            };
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.0.0013";
+            const string expectedFirstName = "Jane";
+            const string expectedLastName = "Doe";
+            const string expectedGender = "Female";
+            Address? expectedPhysicalAddr = addressExists
+                ? new()
+                {
+                    StreetLines = ["Line 1", "Line 2", "Physical"],
+                    City = "city",
+                    Country = "CA",
+                    PostalCode = "N0N0N0",
+                    State = "BC",
+                }
+                : null;
+            Address? expectedPostalAddr = addressExists
+                ? new()
+                {
+                    StreetLines = ["Line 1", "Line 2", "Postal"],
+                    City = "city",
+                    Country = "CA",
+                    PostalCode = "N0N0N0",
+                    State = "BC",
+                }
+                : null;
+
+            IEnumerable<ClientRegistryAddress> clientRegistryAddresses = addressExists
+                ? [new ClientRegistryAddress(expectedPhysicalAddr, cs_PostalAddressUse.PHYS), new ClientRegistryAddress(expectedPostalAddr, cs_PostalAddressUse.PST)]
+                : [];
+            IEnumerable<AD> addresses = GenerateAddresses(clientRegistryAddresses);
+
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
@@ -81,93 +94,7 @@ namespace AccountDataAccessTest
                         displayable = true,
                     },
                 ],
-                addr =
-                [
-                    new()
-                    {
-                        use =
-                        [
-                            cs_PostalAddressUse.PHYS,
-                        ],
-                        Items =
-                        [
-                            new ADStreetAddressLine
-                            {
-                                Text = expectedPhysicalAddr.StreetLines.ToArray(),
-                            },
-                            new ADCity
-                            {
-                                Text =
-                                [
-                                    expectedPhysicalAddr.City,
-                                ],
-                            },
-                            new ADState
-                            {
-                                Text =
-                                [
-                                    expectedPhysicalAddr.State,
-                                ],
-                            },
-                            new ADPostalCode
-                            {
-                                Text =
-                                [
-                                    expectedPhysicalAddr.PostalCode,
-                                ],
-                            },
-                            new ADCountry
-                            {
-                                Text =
-                                [
-                                    expectedPhysicalAddr.Country,
-                                ],
-                            },
-                        ],
-                    },
-                    new()
-                    {
-                        use =
-                        [
-                            cs_PostalAddressUse.PST,
-                        ],
-                        Items =
-                        [
-                            new ADStreetAddressLine
-                            {
-                                Text = expectedPostalAddr.StreetLines.ToArray(),
-                            },
-                            new ADCity
-                            {
-                                Text =
-                                [
-                                    expectedPostalAddr.City,
-                                ],
-                            },
-                            new ADState
-                            {
-                                Text =
-                                [
-                                    expectedPostalAddr.State,
-                                ],
-                            },
-                            new ADPostalCode
-                            {
-                                Text =
-                                [
-                                    expectedPostalAddr.PostalCode,
-                                ],
-                            },
-                            new ADCountry
-                            {
-                                Text =
-                                [
-                                    expectedPostalAddr.Country,
-                                ],
-                            },
-                        ],
-                    },
-                ],
+                addr = addresses.ToArray(),
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
                 {
                     id =
@@ -255,17 +182,29 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Client registry get demographics - Happy Path (Validate Multiple Names).
         /// </summary>
+        /// <param name="nameExists">Value to determine whether name exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographicsGivenCorrectNameSection()
+        [InlineData(true)]
+        [InlineData(false)]
+        [Theory]
+        public async Task ShouldGetDemographicsGivenCorrectNameSection(bool nameExists)
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0013";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
-            string expectedGender = "Female";
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.0.0013";
+            const string? firstName1 = "Jane";
+            const string? firstName2 = "Ann";
+            const string? lastName1 = "Lee";
+            const string? lastName2 = "Curtis";
+            const string expectedGender = "Female";
+            string? expectedFirstName = nameExists ? $"{firstName1} {firstName2}" : null;
+            string? expectedLastName = nameExists ? $"{lastName1} {lastName2}" : null;
+            IEnumerable<string> givenNames = [firstName1, firstName2];
+            IEnumerable<string> familyNames = [lastName1, lastName2];
+            IEnumerable<ClientRegistryName> clientRegistryNames =
+                nameExists ? [new ClientRegistryName(["Wrong given name"], ["Wrong family name"]), new ClientRegistryName(givenNames, familyNames, cs_EntityNameUse.C)] : [];
+            IEnumerable<PN> names = GenerateNames(clientRegistryNames);
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
@@ -289,39 +228,7 @@ namespace AccountDataAccessTest
                             extension = expectedPhn,
                         },
                     ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = ["Wrong Given Name"],
-                                },
-                                new enfamily
-                                {
-                                    Text = ["Wrong Family Name"],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.L],
-                        },
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
+                    name = names.ToArray(),
                     birthTime = new TS
                     {
                         value = "20001231",
@@ -370,8 +277,8 @@ namespace AccountDataAccessTest
             // Verify
             Assert.Equal(expectedHdId, actual?.Hdid);
             Assert.Equal(expectedPhn, actual?.Phn);
-            Assert.Equal(expectedFirstName, actual?.PreferredName.GivenName);
-            Assert.Equal(expectedLastName, actual?.PreferredName.Surname);
+            Assert.Equal(expectedFirstName, actual?.PreferredName?.GivenName);
+            Assert.Equal(expectedLastName, actual?.PreferredName?.Surname);
             Assert.Equal(expectedBirthDate, actual?.Birthdate);
             Assert.Equal(expectedGender, actual?.Gender);
         }
@@ -384,12 +291,12 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsGivenCorrectNameQualifier()
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0013";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
-            string expectedGender = "Female";
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.0.0013";
+            const string expectedFirstName = "Jane";
+            const string expectedLastName = "Doe";
+            const string expectedGender = "Female";
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
@@ -532,11 +439,11 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsGivenSubjectOfOverlay()
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.1.0019";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.1.0019";
+            const string expectedFirstName = "Jane";
+            const string expectedLastName = "Doe";
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
@@ -634,11 +541,11 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsGivenSubjectOfPotentialDuplicate()
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.1.0021";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.1.0021";
+            const string expectedFirstName = "Jane";
+            const string expectedLastName = "Doe";
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
@@ -736,11 +643,11 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsGivenSubjectOfPotentialLinkage()
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.1.0022";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.1.0022";
+            const string expectedFirstName = "Jane";
+            const string expectedLastName = "Doe";
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
@@ -838,11 +745,11 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsGivenSubjectOfReviewIdentifier()
         {
             // Setup
-            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.1.0023";
-            string expectedFirstName = "Jane";
-            string expectedLastName = "Doe";
+            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            const string expectedPhn = "0009735353315";
+            const string expectedResponseCode = "BCHCIM.GD.1.0023";
+            const string expectedFirstName = "Jane";
+            const string expectedLastName = "Doe";
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
@@ -951,6 +858,22 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
+        /// Client registry get demographics throws not found exception given invalid birthdate.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetDemographicsThrowsNotFoundExceptionGivenInvalidBirthDate()
+        {
+            // Setup
+            const string expectedResponseCode = "BCHCIM.GD.0.0013";
+            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode, invalidBirthdate: true);
+
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
+        }
+
+        /// <summary>
         /// Client registry get demographics throws api patient exception given client registry not returning person.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -958,17 +881,11 @@ namespace AccountDataAccessTest
         public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryDoesNotReturnPerson()
         {
             // Setup
-            string expectedResponseCode = "BCHCIM.GD.0.0099";
+            const string expectedResponseCode = "BCHCIM.GD.0.0099";
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode);
 
-            // Act
-            async Task Actual()
-            {
-                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn);
-            }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
             Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.Message);
         }
 
@@ -980,17 +897,11 @@ namespace AccountDataAccessTest
         public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryPhnInvalid()
         {
             // Setup
-            string expectedResponseCode = "BCHCIM.GD.2.0006";
+            const string expectedResponseCode = "BCHCIM.GD.2.0006";
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
 
-            // Act
-            async Task Actual()
-            {
-                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn);
-            }
-
-            // Verify
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
+            // Act and Assert
+            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
             Assert.Equal(ErrorMessages.PhnInvalid, exception.Message);
         }
 
@@ -1013,9 +924,10 @@ namespace AccountDataAccessTest
             bool deceasedInd = false,
             bool noNames = false,
             bool noIds = false,
-            bool throwsException = false)
+            bool throwsException = false,
+            bool invalidBirthdate = false)
         {
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(deceasedInd, noNames, noIds);
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(deceasedInd, noNames, noIds, invalidBirthdate);
 
             Mock<QUPA_AR101102_PortType> clientMock = new();
 
@@ -1035,7 +947,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
         }
 
-        private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noNames = false, bool noIds = false)
+        private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noNames = false, bool noIds = false, bool invalidBirthdate = false)
         {
             return new HCIM_IN_GetDemographicsResponseIdentifiedPerson
             {
@@ -1052,10 +964,10 @@ namespace AccountDataAccessTest
                     deceasedInd = new BL
                         { value = deceasedInd },
                     id = GetIds(noIds),
-                    name = GetNames(noNames),
+                    name = GenerateNames([new ClientRegistryName([FirstName], [LastName], cs_EntityNameUse.C)]).ToArray(),
                     birthTime = new TS
                     {
-                        value = "20001231",
+                        value = invalidBirthdate ? "yyyyMMdd" : "20001231",
                     },
                     administrativeGenderCode = new CE
                     {
@@ -1078,33 +990,6 @@ namespace AccountDataAccessTest
                 {
                     root = "01010101010",
                     extension = Phn,
-                },
-            ];
-        }
-
-        private static PN[] GetNames(bool noNames = false)
-        {
-            if (noNames)
-            {
-                return Array.Empty<PN>();
-            }
-
-            return
-            [
-                new PN
-                {
-                    Items =
-                    [
-                        new engiven
-                        {
-                            Text = [FirstName],
-                        },
-                        new enfamily
-                        {
-                            Text = [LastName],
-                        },
-                    ],
-                    use = [cs_EntityNameUse.C],
                 },
             ];
         }
@@ -1137,5 +1022,80 @@ namespace AccountDataAccessTest
                 },
             };
         }
+
+        private static IEnumerable<AD> GenerateAddresses(IEnumerable<ClientRegistryAddress> addresses)
+        {
+            return addresses.Select(GenerateAddress);
+        }
+
+        private static AD GenerateAddress(ClientRegistryAddress address)
+        {
+            return new()
+            {
+                use =
+                [
+                    address.AddressUse,
+                ],
+                Items =
+                [
+                    new ADStreetAddressLine
+                    {
+                        Text = address.Address.StreetLines.ToArray(),
+                    },
+                    new ADCity
+                    {
+                        Text =
+                        [
+                            address.Address.City,
+                        ],
+                    },
+                    new ADState
+                    {
+                        Text =
+                        [
+                            address.Address.State,
+                        ],
+                    },
+                    new ADPostalCode
+                    {
+                        Text =
+                        [
+                            address.Address.PostalCode,
+                        ],
+                    },
+                    new ADCountry
+                    {
+                        Text =
+                        [
+                            address.Address.Country,
+                        ],
+                    },
+                ],
+            };
+        }
+
+        private static IEnumerable<PN> GenerateNames(IEnumerable<ClientRegistryName>? names = null)
+        {
+            return names.Select(GenerateName) ?? Enumerable.Empty<PN>();
+        }
+
+        private static PN GenerateName(ClientRegistryName name)
+        {
+            return new()
+            {
+                Items = GenerateItemNames(name.GivenNames, name.FamilyNames).ToArray(),
+                use = [name.NameUse],
+            };
+        }
+
+        private static IEnumerable<ENXP> GenerateItemNames(IEnumerable<string> givenNames, IEnumerable<string> familyNames)
+        {
+            return givenNames.Select(x => new engiven { Text = [x] })
+                .Concat<ENXP>(familyNames.Select(x => new enfamily { Text = [x] }));
+        }
+
+        private sealed record ClientRegistryAddress(Address Address, cs_PostalAddressUse AddressUse);
+
+        private sealed record ClientRegistryName(IEnumerable<string> GivenNames, IEnumerable<string> FamilyNames, cs_EntityNameUse NameUse = cs_EntityNameUse.L);
     }
 }

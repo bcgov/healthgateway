@@ -299,12 +299,6 @@ namespace HealthGateway.AccountDataAccess.Patient
                     patientModel.ResponseCode = responseCode;
                 }
 
-                if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
-                {
-                    this.logger.LogDebug("Return null for patient as response code is BCHCIM.GD.2.0018");
-                    patientModel = null;
-                }
-
                 return patientModel;
             }
         }

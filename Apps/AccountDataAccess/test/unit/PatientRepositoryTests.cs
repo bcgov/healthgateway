@@ -74,6 +74,34 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
+        /// QueryAsync throws InvalidOperationException.
+        /// </summary>
+        /// <param name="hdid">The hdid to query on.</param>
+        /// <param name="phn">The phn to query on.</param>
+        /// <param name="cancellationRequested">The value indicating whether cancellation has been requested.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(null, null, false)]
+        [InlineData(Hdid, Phn, true)]
+        public async Task QueryAsyncThrowsInvalidOperationException(string? hdid, string? phn, bool cancellationRequested)
+        {
+            // Arrange
+            using CancellationTokenSource cancellationTokenSource = new();
+
+            if (cancellationRequested)
+            {
+                await cancellationTokenSource.CancelAsync();
+            }
+
+            CancellationToken ct = cancellationTokenSource.Token;
+            QueryThrowsInvalidOperationExceptionMock mock = SetupQueryThrowsInvalidOperationExceptionMock(hdid, phn, ct);
+
+            // Act and Assert
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => mock.PatientRepository.QueryAsync(mock.PatientDetailsQuery, ct));
+            Assert.Equal(mock.Expected, exception.Message);
+        }
+
+        /// <summary>
         /// Block access.
         /// </summary>
         /// <param name="changeFeedEnabled">
@@ -406,6 +434,38 @@ namespace AccountDataAccessTest
             return new(patientRepository, patient, patientDetailsQuery);
         }
 
+        private static QueryThrowsInvalidOperationExceptionMock SetupQueryThrowsInvalidOperationExceptionMock(string? hdid, string? phn, CancellationToken ct)
+        {
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: hdid, Phn: phn, Source: PatientDetailSource.Empi, UseCache: true);
+            string? expected = string.Empty;
+
+            if (string.IsNullOrEmpty(hdid))
+            {
+                expected = "Must specify either Hdid or Phn to query patient details";
+            }
+
+            if (string.IsNullOrEmpty(phn))
+            {
+                expected = "Must specify either Hdid or Phn to query patient details";
+            }
+
+            if (ct.IsCancellationRequested)
+            {
+                expected = "cancellation was requested";
+            }
+
+            PatientRepository patientRepository = new(
+                new Mock<ILogger<PatientRepository>>().Object,
+                new Mock<IBlockedAccessDelegate>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<ICacheProvider>().Object,
+                GetIConfigurationRoot(),
+                new PatientQueryFactory(new Mock<IServiceProvider>().Object),
+                new Mock<IMessageSender>().Object);
+
+            return new(patientRepository, expected, patientDetailsQuery);
+        }
+
         private sealed record BlockAccessMock(
             PatientRepository PatientRepository,
             Mock<IBlockedAccessDelegate> BlockedAccessDelegate,
@@ -424,6 +484,11 @@ namespace AccountDataAccessTest
         private sealed record QueryMock(
             PatientRepository PatientRepository,
             PatientModel Expected,
+            PatientDetailsQuery PatientDetailsQuery);
+
+        private sealed record QueryThrowsInvalidOperationExceptionMock(
+            PatientRepository PatientRepository,
+            string Expected,
             PatientDetailsQuery PatientDetailsQuery);
     }
 }
