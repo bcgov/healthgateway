@@ -91,6 +91,7 @@ describe("Beta feature access", () => {
             .should("be.visible")
             .should("be.enabled")
             .clear()
+            .should("be.empty")
             .type(validEmail);
         cy.get("[data-testid=search-button]").click();
         cy.get("[data-testid=salesforce-access-switch]").should("be.checked");
