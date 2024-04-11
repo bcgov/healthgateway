@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest.Strategy
 {
+    using DeepEqual.Syntax;
     using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
@@ -46,24 +47,13 @@ namespace AccountDataAccessTest.Strategy
         public async Task ShouldGetPatientByPhn(bool useCache)
         {
             // Arrange
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            PatientModel cachedPatient = patient;
-
-            PhnEmpiStrategy phnEmpiStrategy = useCache ? GetPhnEmpiStrategy(patient, cachedPatient) : GetPhnEmpiStrategy(patient);
-
-            PatientRequest request = new(Phn, useCache);
+            GetPatientMock mock = SetupGetPatientMock(useCache);
 
             // Act
-            PatientModel? result = await phnEmpiStrategy.GetPatientAsync(request);
+            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Verify
-            Assert.Equal(Hdid, result?.Hdid);
-            Assert.Equal(Phn, result?.Phn);
+            mock.Expected.ShouldDeepEqual(actual);
         }
 
         /// <summary>
@@ -71,42 +61,18 @@ namespace AccountDataAccessTest.Strategy
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPatientThrowsBadRequestException()
+        public async Task ShouldGetPatientThrowsException()
         {
             // Arrange
-            PatientModel patient = new();
+            GetPatientThrowsExceptionMock mock = SetupGetPatientThrowsExceptionMock();
 
-            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(patient);
+            // Act and Verify
+            Exception exception = await Assert.ThrowsAsync(
+                mock.Expected,
+                async () => { await mock.Strategy.GetPatientAsync(mock.PatientRequest); });
 
-            PatientRequest request = new(InvalidPhn, true);
-
-            // Act
-            async Task Actual()
-            {
-                await phnEmpiStrategy.GetPatientAsync(request);
-            }
-
-            // Verify
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
+            // Assert
             Assert.Contains(ErrorMessages.PhnInvalid, exception.Message, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static PhnEmpiStrategy GetPhnEmpiStrategy(
-            PatientModel patient,
-            PatientModel? cachedPatient = null)
-        {
-            Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{Phn}")).Returns(cachedPatient);
-
-            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
-
-            PhnEmpiStrategy phnEmpiStrategy = new(
-                GetConfiguration(),
-                cacheProvider.Object,
-                clientRegistriesDelegate.Object,
-                new Mock<ILogger<PhnEmpiStrategy>>().Object);
-            return phnEmpiStrategy;
         }
 
         private static IConfigurationRoot GetConfiguration()
@@ -120,5 +86,54 @@ namespace AccountDataAccessTest.Strategy
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
+
+        private static PhnEmpiStrategy GetPhnEmpiStrategy(IMock<ICacheProvider> cacheProvider, IMock<IClientRegistriesDelegate> clientRegistriesDelegate)
+        {
+            return new PhnEmpiStrategy(
+                GetConfiguration(),
+                cacheProvider.Object,
+                clientRegistriesDelegate.Object,
+                new Mock<ILogger<PhnEmpiStrategy>>().Object);
+        }
+
+        private static GetPatientMock SetupGetPatientMock(bool useCache)
+        {
+            PatientRequest patientRequest = new(Phn, useCache);
+            PatientModel patient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+            PatientModel? cachedPatient = useCache ? patient : null;
+
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{Phn}")).Returns(cachedPatient);
+
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+
+            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(cacheProvider, clientRegistriesDelegate);
+            return new(phnEmpiStrategy, patient, patientRequest);
+        }
+
+        private static GetPatientThrowsExceptionMock SetupGetPatientThrowsExceptionMock()
+        {
+            PatientRequest patientRequest = new(InvalidPhn, true);
+            PatientModel? cachedPatient = null;
+            PatientModel patient = new();
+
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{Phn}")).Returns(cachedPatient);
+
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+
+            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(cacheProvider, clientRegistriesDelegate);
+            return new(phnEmpiStrategy, typeof(ValidationException), patientRequest);
+        }
+
+        private sealed record GetPatientMock(PhnEmpiStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
+
+        private sealed record GetPatientThrowsExceptionMock(PhnEmpiStrategy Strategy, Type Expected, PatientRequest PatientRequest);
     }
 }

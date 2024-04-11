@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest.Strategy
 {
+    using System.Net;
     using AccountDataAccessTest.Utils;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -51,13 +52,74 @@ namespace AccountDataAccessTest.Strategy
         public async Task ShouldGetPatientByHdid(bool useCache)
         {
             // Arrange
-            PatientModel cachedPatient = new()
+            GetPatientMock mock = SetupGetPatientMock(useCache);
+
+            // Act
+            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// Get patient identity by hdid handles PHSA null result.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task GetPatientIdentityHandlesPhsaNullResult()
+        {
+            // Arrange
+            GetPatientHandlesPhsaNullResultMock mock = SetupGetPatientHandlesPhsaNullResultMock();
+
+            // Act
+            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// Get patient identity by hdid handles PHSA ApiException.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task GetPatientIdentityHandlesPhsaApiException()
+        {
+            // Arrange
+            GetPatientHandlesPhsaApiExceptionMock mock = SetupGetPatientHandlesPhsaApiExceptionMock();
+
+            // Act
+            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
+        private static IConfigurationRoot GetConfiguration()
+        {
+            Dictionary<string, string?> myConfiguration = new()
             {
-                Phn = Phn,
-                Hdid = Hdid,
+                { "PatientService:CacheTTL", "90" },
             };
 
-            PatientModel expectedPatient = new()
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration.ToList())
+                .Build();
+        }
+
+        private static HdidPhsaStrategy GetHdidPhsaStrategy(IMock<ICacheProvider> cacheProvider, IMock<IPatientIdentityApi> patientIdentityApi)
+        {
+            return new(
+                GetConfiguration(),
+                cacheProvider.Object,
+                patientIdentityApi.Object,
+                new Mock<ILogger<HdidPhsaStrategy>>().Object,
+                Mapper);
+        }
+
+        private static GetPatientMock SetupGetPatientMock(bool useCache)
+        {
+            PatientModel patient = new()
             {
                 Phn = Phn,
                 Hdid = Hdid,
@@ -78,67 +140,58 @@ namespace AccountDataAccessTest.Strategy
                 HasDeathIndicator = false,
             };
 
-            HdidPhsaStrategy hdidPhsaStrategy = useCache ? GetHdidPhsaStrategy(patientIdentity, cachedPatient) : GetHdidPhsaStrategy(patientIdentity);
+            PatientModel? cachedPatient = useCache ? patient : null;
+            PatientRequest patientRequest = new(Hdid, useCache);
 
-            PatientRequest request = new(Hdid, useCache);
-
-            // Act
-            PatientModel? actual = await hdidPhsaStrategy.GetPatientAsync(request);
-
-            // Verify
-            expectedPatient.ShouldDeepEqual(actual);
-        }
-
-        /// <summary>
-        /// Get patient identity by hdid throws not found api exception.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientIdentityByHdidThrowsNotFoundApiException()
-        {
-            // Arrange
-            PatientIdentity? patientIdentity = null;
-
-            PatientRequest request = new(PhsaHdidNotFound, false);
-
-            HdidPhsaStrategy hdidAllStrategy = GetHdidPhsaStrategy(patientIdentity);
-
-            // Act
-            PatientModel? actual = await hdidAllStrategy.GetPatientAsync(request);
-
-            // Verify
-            Assert.Null(actual);
-        }
-
-        private static HdidPhsaStrategy GetHdidPhsaStrategy(
-            PatientIdentity patientIdentity,
-            PatientModel? cachedPatient = null)
-        {
             Mock<ICacheProvider> cacheProvider = new();
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
             patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
 
-            HdidPhsaStrategy hdidPhsaStrategy = new(
-                GetConfiguration(),
-                cacheProvider.Object,
-                patientIdentityApi.Object,
-                new Mock<ILogger<HdidPhsaStrategy>>().Object,
-                Mapper);
-            return hdidPhsaStrategy;
+            HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
+
+            return new(hdidPhsaStrategy, patient, patientRequest);
         }
 
-        private static IConfigurationRoot GetConfiguration()
+        private static GetPatientHandlesPhsaNullResultMock SetupGetPatientHandlesPhsaNullResultMock()
         {
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { "PatientService:CacheTTL", "90" },
-            };
+            PatientModel? cachedPatient = null;
+            PatientIdentity? patientIdentity = null;
+            PatientRequest patientRequest = new(PhsaHdidNotFound, false);
 
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
+
+            Mock<IPatientIdentityApi> patientIdentityApi = new();
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
+
+            HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
+
+            return new(hdidPhsaStrategy, null, patientRequest);
         }
+
+        private static GetPatientHandlesPhsaApiExceptionMock SetupGetPatientHandlesPhsaApiExceptionMock()
+        {
+            PatientModel? cachedPatient = null;
+            PatientRequest patientRequest = new(PhsaHdidNotFound, false);
+
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
+
+            Mock<IPatientIdentityApi> patientIdentityApi = new();
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound, It.IsAny<CancellationToken>()))!.Throws(
+                RefitExceptionUtil.CreateApiException(HttpStatusCode.NotFound).Result);
+
+            HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
+
+            return new(hdidPhsaStrategy, null, patientRequest);
+        }
+
+        private sealed record GetPatientMock(HdidPhsaStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
+
+        private sealed record GetPatientHandlesPhsaNullResultMock(HdidPhsaStrategy Strategy, PatientModel? Expected, PatientRequest PatientRequest);
+
+        private sealed record GetPatientHandlesPhsaApiExceptionMock(HdidPhsaStrategy Strategy, PatientModel? Expected, PatientRequest PatientRequest);
     }
 }

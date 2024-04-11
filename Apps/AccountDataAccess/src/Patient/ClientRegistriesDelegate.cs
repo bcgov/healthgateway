@@ -36,6 +36,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private const string Instance = "INSTANCE";
         private static readonly List<string> WarningResponseCodes =
         [
             "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
@@ -93,12 +94,12 @@ namespace HealthGateway.AccountDataAccess.Patient
                         typeCode = "RCV",
                         device = new MCCI_MT000100Device
                         {
-                            determinerCode = "INSTANCE", classCode = "DEV",
+                            determinerCode = Instance, classCode = "DEV",
                             id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" },
                             asAgent = new MCCI_MT000100Agent
                             {
                                 classCode = "AGNT",
-                                representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
+                                representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" },
                             },
                         },
                     },
@@ -106,7 +107,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
                 request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization
                 {
-                    determinerCode = "INSTANCE", classCode = "ORG",
+                    determinerCode = Instance, classCode = "ORG",
                     id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" },
                 };
 
@@ -115,18 +116,18 @@ namespace HealthGateway.AccountDataAccess.Patient
                     typeCode = "SND",
                     device = new MCCI_MT000100Device
                     {
-                        determinerCode = "INSTANCE", classCode = "DEV",
+                        determinerCode = Instance, classCode = "DEV",
                         id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" },
                         asAgent = new MCCI_MT000100Agent
                         {
                             classCode = "AGNT",
-                            representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
+                            representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" },
                         },
                     },
                 };
                 request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization
                 {
-                    determinerCode = "INSTANCE", classCode = "ORG",
+                    determinerCode = Instance, classCode = "ORG",
                     id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" },
                 };
 
