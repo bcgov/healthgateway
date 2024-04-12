@@ -15,9 +15,9 @@
         </MudTooltip>
         <AuthorizeView>
             <Authorized>
-                <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                <MudMenu AnchorOrigin="@Origin.BottomRight" TransformOrigin="@Origin.TopRight" Dense="true" Class="mt-1 ml-4">
                     <ActivatorContent>
-                        <MudIcon Icon="fas fa-user" Color="Color.Inherit" Edge="Edge.End" data-testid="user-account-icon" />
+                        <MudIconButton Icon="fas fa-user" Color="Color.Inherit" Edge="@Edge.End" data-testid="user-account-icon" />
                     </ActivatorContent>
                     <ChildContent>
                         <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled" data-testid="user-info-link">
