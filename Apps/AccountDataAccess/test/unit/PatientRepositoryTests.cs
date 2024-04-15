@@ -16,6 +16,7 @@
 namespace AccountDataAccessTest
 {
     // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
+    using System.Globalization;
     using AccountDataAccessTest.Utils;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -352,11 +353,12 @@ namespace AccountDataAccessTest
 
         private static GetDataSourcesMock SetupGetDataSourcesMock()
         {
+            string cacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, Hdid);
             HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
             Mock<ICacheProvider> cacheProviderMock = new();
             cacheProviderMock.Setup(
-                    p =>
-                        p.GetOrSetAsync(It.IsAny<string>(), It.IsAny<Func<Task<IEnumerable<DataSource>>>>(), It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
+                    s =>
+                        s.GetOrSetAsync(It.Is<string>(x => x.Contains(cacheKey)), It.IsAny<Func<Task<IEnumerable<DataSource>>>>(), It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dataSources);
 
             PatientRepository patientRepository = new(
@@ -437,7 +439,7 @@ namespace AccountDataAccessTest
         private static QueryThrowsInvalidOperationExceptionMock SetupQueryThrowsInvalidOperationExceptionMock(string? hdid, string? phn, CancellationToken ct)
         {
             PatientDetailsQuery patientDetailsQuery = new(Hdid: hdid, Phn: phn, Source: PatientDetailSource.Empi, UseCache: true);
-            string? expected = string.Empty;
+            string expected = string.Empty;
 
             if (string.IsNullOrEmpty(hdid))
             {

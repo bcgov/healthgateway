@@ -277,8 +277,8 @@ namespace AccountDataAccessTest
             // Verify
             Assert.Equal(expectedHdId, actual?.Hdid);
             Assert.Equal(expectedPhn, actual?.Phn);
-            Assert.Equal(expectedFirstName, actual?.PreferredName?.GivenName);
-            Assert.Equal(expectedLastName, actual?.PreferredName?.Surname);
+            Assert.Equal(expectedFirstName, actual?.CommonName?.GivenName);
+            Assert.Equal(expectedLastName, actual?.CommonName?.Surname);
             Assert.Equal(expectedBirthDate, actual?.Birthdate);
             Assert.Equal(expectedGender, actual?.Gender);
         }
@@ -848,7 +848,7 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsGivenDisabledIdValidationIsTrue()
         {
             // Setup
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, false, true);
+            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, true);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn, true);
@@ -907,14 +907,12 @@ namespace AccountDataAccessTest
 
         private static IClientRegistriesDelegate GetClientRegistriesDelegate(
             bool deceasedInd = false,
-            bool noNames = false,
             bool noIds = false,
             bool throwsException = false)
         {
             return GetClientRegistriesDelegate(
                 ResponseCode,
                 deceasedInd,
-                noNames,
                 noIds,
                 throwsException);
         }
@@ -922,12 +920,11 @@ namespace AccountDataAccessTest
         private static IClientRegistriesDelegate GetClientRegistriesDelegate(
             string expectedResponseCode = ResponseCode,
             bool deceasedInd = false,
-            bool noNames = false,
             bool noIds = false,
             bool throwsException = false,
             bool invalidBirthdate = false)
         {
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(deceasedInd, noNames, noIds, invalidBirthdate);
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(deceasedInd, noIds, invalidBirthdate);
 
             Mock<QUPA_AR101102_PortType> clientMock = new();
 
@@ -947,7 +944,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
         }
 
-        private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noNames = false, bool noIds = false, bool invalidBirthdate = false)
+        private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noIds = false, bool invalidBirthdate = false)
         {
             return new HCIM_IN_GetDemographicsResponseIdentifiedPerson
             {
@@ -1076,7 +1073,7 @@ namespace AccountDataAccessTest
 
         private static IEnumerable<PN> GenerateNames(IEnumerable<ClientRegistryName>? names = null)
         {
-            return names.Select(GenerateName) ?? Enumerable.Empty<PN>();
+            return names.Select(GenerateName);
         }
 
         private static PN GenerateName(ClientRegistryName name)
