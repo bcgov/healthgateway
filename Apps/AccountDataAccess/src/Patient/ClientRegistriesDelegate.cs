@@ -225,6 +225,12 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private void CheckResponseCode(string responseCode)
         {
+            if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
+            {
+                this.logger.LogDebug("Return patient not found as response code is BCHCIM.GD.2.0018");
+                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
+            }
+
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
