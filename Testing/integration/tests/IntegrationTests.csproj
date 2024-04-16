@@ -30,9 +30,9 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
         <PackageReference Include="Testcontainers.PostgreSql" Version="3.8.0" />
         <PackageReference Include="Testcontainers.Redis" Version="3.8.0" />
-        <PackageReference Include="xunit" Version="2.7.0" />
+        <PackageReference Include="xunit" Version="2.7.1" />
         <PackageReference Include="xunit.categories" Version="2.0.8" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
