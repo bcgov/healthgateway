@@ -65,14 +65,7 @@ namespace HealthGateway.Patient.Services
 
             this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
 
-            PatientModel? patientDetails = (await this.patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-
-            if (patientDetails == null)
-            {
-                // BCHCIM.GD.2.0018 Not found
-                this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", "Not found");
-                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
-            }
+            PatientModel patientDetails = (await this.patientRepository.QueryAsync(query, ct)).Item;
 
             if (patientDetails.IsDeceased == true)
             {

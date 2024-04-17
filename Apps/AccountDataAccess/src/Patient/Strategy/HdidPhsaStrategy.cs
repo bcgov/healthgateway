@@ -22,6 +22,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -55,7 +56,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
+        public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
             PatientModel? patient = request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null;
 
@@ -69,6 +70,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     this.GetLogger().LogInformation(e, "PHSA could not find patient identity for {Hdid}", request.Identifier);
+                    throw new NotFoundException(ErrorMessages.PatientIdentityNotFound);
                 }
             }
 

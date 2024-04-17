@@ -102,13 +102,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel> GetPatientAsync(string phn, CancellationToken ct)
         {
             PatientDetailsQuery query = new(phn, Source: PatientDetailSource.Empi, UseCache: true);
-            PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-            if (patient == null)
-            {
-                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
-            }
-
-            return patient;
+            return (await patientRepository.QueryAsync(query, ct)).Item;
         }
 
         private async Task<VaccineStatusResult> GetVaccineStatusResultAsync(string phn, DateTime birthdate, string accessToken, CancellationToken ct)

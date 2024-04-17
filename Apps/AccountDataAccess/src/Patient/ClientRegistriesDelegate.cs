@@ -63,7 +63,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default)
+        public async Task<PatientModel> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
             using Activity? activity = Source.StartActivity();
@@ -253,7 +253,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         [SuppressMessage("Minor Code Smell", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension", Justification = "Team decision")]
         [SuppressMessage("Minor Code Smell", "S6605:Collection-specific \"Exists\" method should be used instead of the \"Any\" extension", Justification = "Team decision")]
-        private PatientModel? ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
+        private PatientModel ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity())
             {
@@ -273,7 +273,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 }
 
                 // Initialize model
-                PatientModel? patientModel = new()
+                PatientModel patientModel = new()
                 {
                     Birthdate = dob,
                     Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
