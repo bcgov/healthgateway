@@ -56,32 +56,6 @@ namespace HealthGateway.Admin.Tests.Services
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given client registry records not found.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsClientRegistryRecordsNotFound()
-        {
-            // Arrange
-            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel? patient = null; // Client registry not found
-
-            ICovidSupportService service = CreateCovidSupportService(
-                GetPatientRepositoryMock((query, patient)),
-                GetAuthenticationDelegateMock(AccessToken));
-
-            // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
-        }
-
-        /// <summary>
         /// Retrieve vaccine record async throws exception given BC Mail Plus returns empty payload for report.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -98,8 +72,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             // BC Mail Plus returns status success but empty payload - CannotGetVaccineProofPdf
@@ -148,8 +121,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             // Report has result error
@@ -202,8 +174,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             ICovidSupportService service = CreateCovidSupportService(
@@ -238,8 +209,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             // Vaccine proof response has an error
@@ -284,8 +254,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult(status);
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             ICovidSupportService service = CreateCovidSupportService(
@@ -315,8 +284,7 @@ namespace HealthGateway.Admin.Tests.Services
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
                 Result = null,
-                LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             ICovidSupportService service = CreateCovidSupportService(
@@ -377,8 +345,7 @@ namespace HealthGateway.Admin.Tests.Services
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
                 Result = null,
-                LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             ICovidSupportService service = CreateCovidSupportService(
@@ -391,34 +358,6 @@ namespace HealthGateway.Admin.Tests.Services
             // Act and Assert
             NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
             Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.MailVaccineCardAsync(request);
-            }
-        }
-
-        /// <summary>
-        /// Mail vaccine card async throws exception given client registry records not found.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task MailVaccineCardAsyncThrowsClientRegistryRecordsNotFound()
-        {
-            // Arrange
-            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel? patient = null;
-
-            ICovidSupportService service = CreateCovidSupportService(
-                GetPatientRepositoryMock((query, patient)),
-                GetAuthenticationDelegateMock(AccessToken));
-
-            MailDocumentRequest request = GenerateMailDocumentRequest();
-
-            // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
             return;
 
             async Task Actual()
@@ -441,8 +380,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             // BC Mail Plus vaccine proof response has error.
@@ -486,8 +424,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult(status);
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             ICovidSupportService service = CreateCovidSupportService(
@@ -540,16 +477,13 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// Should mail vaccine card async successfully.
         /// </summary>
-        /// <param name="patientExists">bool indicating whether patient exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldMailVaccineCardAsync(bool patientExists)
+        [Fact]
+        public async Task ShouldMailVaccineCardAsync()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel? patient = patientExists ? GeneratePatientModel(Phn, Hdid, Birthdate) : null;
+            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
 
             VaccineProofResponse vaccineProof = GenerateVaccineProofResponse();
             RequestResult<VaccineProofResponse> vaccineProofResult = new() { ResultStatus = ResultType.Success, ResourcePayload = vaccineProof };
@@ -557,8 +491,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             Guid covidAssessmentId = Guid.NewGuid();
@@ -573,49 +506,32 @@ namespace HealthGateway.Admin.Tests.Services
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
-            if (patientExists)
+            // Act
+            async Task Action()
             {
-                // Act
-                async Task Action()
-                {
-                    await service.MailVaccineCardAsync(request);
-                }
-
-                Exception? exception = await Record.ExceptionAsync(Action);
-
-                // Assert
-                Assert.Null(exception);
+                await service.MailVaccineCardAsync(request);
             }
-            else
-            {
-                // Act
-                async Task Actual()
-                {
-                    await service.MailVaccineCardAsync(request);
-                }
 
-                // Assert
-                NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-                Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
-            }
+            Exception? exception = await Record.ExceptionAsync(Action);
+
+            // Assert
+            Assert.Null(exception);
         }
 
         /// <summary>
         /// Should mail vaccine card async successfully.
         /// </summary>
-        /// <param name="patientExists">bool indicating whether patient exists or not.</param>
         /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, "Exempt")]
-        [InlineData(true, "AllDosesReceived")]
-        [InlineData(true, "PartialDosesReceived")]
-        [InlineData(false, "AllDosesReceived")]
-        public async Task ShouldRetrieveVaccineRecordAsync(bool patientExists, string status)
+        [InlineData("Exempt")]
+        [InlineData("AllDosesReceived")]
+        [InlineData("PartialDosesReceived")]
+        public async Task ShouldRetrieveVaccineRecordAsync(string status)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
-            PatientModel? patient = patientExists ? GeneratePatientModel(Phn, Hdid, Birthdate) : null;
+            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
 
             VaccineProofResponse vaccineProof = GenerateVaccineProofResponse();
             RequestResult<VaccineProofResponse> vaccineProofResult = new() { ResultStatus = ResultType.Success, ResourcePayload = vaccineProof };
@@ -623,8 +539,7 @@ namespace HealthGateway.Admin.Tests.Services
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult(status);
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
-                Result = vaccineStatus, LoadState = new PhsaLoadState
-                    { Queued = false, RefreshInProgress = false },
+                Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
             RequestResult<ReportModel> expected = new()
@@ -647,26 +562,11 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected),
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
-            if (patientExists)
-            {
-                // Act
-                ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn);
+            // Act
+            ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn);
 
-                // Assert
-                Assert.Equal(expected.ResourcePayload, actual);
-            }
-            else
-            {
-                // Act
-                async Task Actual()
-                {
-                    await service.RetrieveVaccineRecordAsync(Phn);
-                }
-
-                // Assert
-                NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-                Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
-            }
+            // Assert
+            Assert.Equal(expected.ResourcePayload, actual);
         }
 
         /// <summary>
@@ -832,7 +732,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IPatientRepository> mock = new();
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
-                PatientQueryResult result = new(patient == null ? [] : [patient]);
+                PatientQueryResult result = new(patient);
                 mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 

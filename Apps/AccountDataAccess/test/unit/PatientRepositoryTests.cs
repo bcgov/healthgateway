@@ -71,7 +71,7 @@ namespace AccountDataAccessTest
             PatientQueryResult actual = await mock.PatientRepository.QueryAsync(mock.PatientDetailsQuery, CancellationToken.None);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual.Items.SingleOrDefault());
+            mock.Expected.ShouldDeepEqual(actual.Item);
         }
 
         /// <summary>

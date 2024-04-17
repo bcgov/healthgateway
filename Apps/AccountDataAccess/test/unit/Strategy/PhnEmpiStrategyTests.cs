@@ -50,7 +50,7 @@ namespace AccountDataAccessTest.Strategy
             GetPatientMock mock = SetupGetPatientMock(useCache);
 
             // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Verify
             mock.Expected.ShouldDeepEqual(actual);

@@ -87,7 +87,6 @@ namespace HealthGateway.PatientTests.Services
         [InlineData(Phn, typeof(InvalidDataException), ErrorMessages.ClientRegistryReturnedDeceasedPerson, true)]
         [InlineData(Phn, typeof(InvalidDataException), ErrorMessages.InvalidServicesCard, true)]
         [InlineData(Phn, typeof(InvalidDataException), ErrorMessages.InvalidServicesCard, false)]
-        [InlineData(Phn, typeof(NotFoundException), ErrorMessages.ClientRegistryRecordsNotFound, true)]
         [InlineData(InvalidPhn, typeof(ValidationException), ErrorMessages.PhnInvalid, true)]
         public async Task GetPatientThrowsException(string phn, Type expectedExceptionType, string expectedErrorMessage, bool commonNameExists)
         {
@@ -106,7 +105,7 @@ namespace HealthGateway.PatientTests.Services
 
         private static IPatientService GetPatientService(PatientModel? patient = null)
         {
-            PatientQueryResult patientQueryResult = new(patient != null ? [patient] : []);
+            PatientQueryResult patientQueryResult = new(patient);
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(InvalidPhn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
@@ -129,7 +128,6 @@ namespace HealthGateway.PatientTests.Services
                 ErrorMessages.ClientRegistryReturnedDeceasedPerson => CreatePatient(deceased: true),
                 ErrorMessages.InvalidServicesCard => commonNameExists == false ? CreatePatient(commonNameExists: false, legalNameExists: false) : CreatePatient(string.Empty, string.Empty),
                 ErrorMessages.PhnInvalid => CreatePatient(),
-                ErrorMessages.ClientRegistryRecordsNotFound => null,
                 _ => CreatePatient(commonNameExists: commonNameExists, legalNameExists: legalNameExists),
             };
 

@@ -25,6 +25,7 @@ namespace AccountDataAccessTest.Strategy
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -58,7 +59,7 @@ namespace AccountDataAccessTest.Strategy
             GetPatientMock mock = SetupGetPatientMock(useCache);
 
             // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Verify
             mock.Expected.ShouldDeepEqual(actual);
@@ -75,7 +76,7 @@ namespace AccountDataAccessTest.Strategy
             GetPatientIdentityMock mock = SetupGetPatientIdentityMock();
 
             // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Verify
             mock.Expected.ShouldDeepEqual(actual);
@@ -91,11 +92,10 @@ namespace AccountDataAccessTest.Strategy
             // Arrange
             GetPatientHandlesExceptionMock mock = SetupGetPatientHandlesExceptionMock();
 
-            // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
-
-            // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            // Act and Assert
+            await Assert.ThrowsAsync(
+                mock.ExpectedExceptionType,
+                async () => { await mock.Strategy.GetPatientAsync(mock.PatientRequest); });
         }
 
         private static IConfigurationRoot GetConfiguration()
@@ -202,7 +202,6 @@ namespace AccountDataAccessTest.Strategy
         {
             PatientRequest patientRequest = new(PhsaHdidNotFound, false);
 
-            PatientModel? patient = null;
             PatientModel? cachedPatient = null;
 
             Mock<ICacheProvider> cacheProvider = new();
@@ -218,13 +217,13 @@ namespace AccountDataAccessTest.Strategy
 
             HdidAllStrategy hdidAllStrategy = GetHdidAllStrategy(cacheProvider, clientRegistriesDelegate, patientIdentityApi);
 
-            return new(hdidAllStrategy, patient, patientRequest);
+            return new(hdidAllStrategy, typeof(NotFoundException), patientRequest);
         }
 
         private sealed record GetPatientMock(HdidAllStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
 
-        private sealed record GetPatientIdentityMock(HdidAllStrategy Strategy, PatientModel? Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientIdentityMock(HdidAllStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
 
-        private sealed record GetPatientHandlesExceptionMock(HdidAllStrategy Strategy, PatientModel? Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientHandlesExceptionMock(HdidAllStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
     }
 }

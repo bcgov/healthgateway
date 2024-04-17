@@ -23,6 +23,7 @@ namespace AccountDataAccessTest.Strategy
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -55,24 +56,7 @@ namespace AccountDataAccessTest.Strategy
             GetPatientMock mock = SetupGetPatientMock(useCache);
 
             // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
-
-            // Assert
-            mock.Expected.ShouldDeepEqual(actual);
-        }
-
-        /// <summary>
-        /// Get patient identity by hdid handles PHSA null result.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task GetPatientIdentityHandlesPhsaNullResult()
-        {
-            // Arrange
-            GetPatientHandlesPhsaNullResultMock mock = SetupGetPatientHandlesPhsaNullResultMock();
-
-            // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Assert
             mock.Expected.ShouldDeepEqual(actual);
@@ -88,11 +72,10 @@ namespace AccountDataAccessTest.Strategy
             // Arrange
             GetPatientHandlesPhsaApiExceptionMock mock = SetupGetPatientHandlesPhsaApiExceptionMock();
 
-            // Act
-            PatientModel? actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
-
-            // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            // Act and Assert
+            await Assert.ThrowsAsync(
+                mock.ExpectedExceptionType,
+                async () => { await mock.Strategy.GetPatientAsync(mock.PatientRequest); });
         }
 
         private static IConfigurationRoot GetConfiguration()
@@ -154,23 +137,6 @@ namespace AccountDataAccessTest.Strategy
             return new(hdidPhsaStrategy, patient, patientRequest);
         }
 
-        private static GetPatientHandlesPhsaNullResultMock SetupGetPatientHandlesPhsaNullResultMock()
-        {
-            PatientModel? cachedPatient = null;
-            PatientIdentity? patientIdentity = null;
-            PatientRequest patientRequest = new(PhsaHdidNotFound, false);
-
-            Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
-
-            Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
-
-            HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
-
-            return new(hdidPhsaStrategy, null, patientRequest);
-        }
-
         private static GetPatientHandlesPhsaApiExceptionMock SetupGetPatientHandlesPhsaApiExceptionMock()
         {
             PatientModel? cachedPatient = null;
@@ -185,13 +151,13 @@ namespace AccountDataAccessTest.Strategy
 
             HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
 
-            return new(hdidPhsaStrategy, null, patientRequest);
+            return new(hdidPhsaStrategy, typeof(NotFoundException), patientRequest);
         }
 
         private sealed record GetPatientMock(HdidPhsaStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
 
-        private sealed record GetPatientHandlesPhsaNullResultMock(HdidPhsaStrategy Strategy, PatientModel? Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientHandlesPhsaNullResultMock(HdidPhsaStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
 
-        private sealed record GetPatientHandlesPhsaApiExceptionMock(HdidPhsaStrategy Strategy, PatientModel? Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientHandlesPhsaApiExceptionMock(HdidPhsaStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
     }
 }

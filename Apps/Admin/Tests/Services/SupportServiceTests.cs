@@ -38,7 +38,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -176,55 +175,6 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
             Assert.Equal(expectedCovidDetails, actualResult.CovidAssessmentDetails == null);
-        }
-
-        /// <summary>
-        /// Get patient support details async throws exception given client registry records not found.
-        /// </summary>
-        /// <param name="queryType">Value indicating the type of query to execute.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(ClientRegistryType.Hdid)]
-        [InlineData(ClientRegistryType.Phn)]
-        public async Task GetPatientSupportDetailsAsyncThrowsClientRegistryRecordsNotFound(ClientRegistryType queryType)
-        {
-            // Arrange
-            PatientDetailsQuery patientQuery = new()
-            {
-                Hdid = queryType == ClientRegistryType.Hdid ? Hdid : null, Phn = queryType == ClientRegistryType.Phn ? Phn : null,
-                Source = queryType == ClientRegistryType.Hdid ? PatientDetailSource.All : PatientDetailSource.Empi, UseCache = false,
-            };
-
-            // Patient null should cause exception to be thrown
-            PatientModel? patient = null;
-            IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
-            ISupportService supportService = CreateSupportService(
-                GetMessagingVerificationDelegateMock(messagingVerifications),
-                GetPatientRepositoryMock((patientQuery, patient)),
-                null,
-                null,
-                GetAuthenticationDelegateMock(AccessToken));
-
-            // Act
-            async Task Actual()
-            {
-                await supportService.GetPatientSupportDetailsAsync(
-                    new()
-                    {
-                        QueryType = queryType,
-                        QueryParameter = queryType == ClientRegistryType.Hdid ? Hdid : Phn,
-                        IncludeMessagingVerifications = true,
-                        IncludeBlockedDataSources = true,
-                        IncludeAgentActions = true,
-                        IncludeDependents = true,
-                        IncludeCovidDetails = true,
-                        RefreshVaccineDetails = false,
-                    });
-            }
-
-            // Verify
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
@@ -927,7 +877,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IPatientRepository> mock = new();
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
-                PatientQueryResult result = new(patient == null ? [] : [patient]);
+                PatientQueryResult result = new(patient);
                 mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 

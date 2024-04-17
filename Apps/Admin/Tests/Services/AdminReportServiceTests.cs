@@ -156,8 +156,8 @@ namespace HealthGateway.Admin.Tests.Services
                 Phn1, Phn2,
             ];
 
-            PatientQueryResult patientQueryResult1 = new([patient1]);
-            PatientQueryResult patientQueryResult2 = new([patient2]);
+            PatientQueryResult patientQueryResult1 = new(patient1);
+            PatientQueryResult patientQueryResult2 = new(patient2);
 
             Mock<IPatientRepository> patientRepositoryMock = new();
             patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query1), It.IsAny<CancellationToken>())).ReturnsAsync(patientQueryResult1);
