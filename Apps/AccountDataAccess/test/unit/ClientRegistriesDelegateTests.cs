@@ -874,11 +874,27 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
-        /// Client registry get demographics throws api patient exception given client registry not returning person.
+        /// Client registry get demographics throws not found exception given client registry not returning person.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryDoesNotReturnPerson()
+        public async Task GetDemographicsThrowsNotFoundExceptionGivenClientRegistryRecordNotFound()
+        {
+            // Setup
+            const string expectedResponseCode = "BCHCIM.GD.2.0018";
+            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode);
+
+            // Act and Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws not found exception given client registry not returning person.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetDemographicsThrowsNotFoundExceptionGivenClientRegistryDoesNotReturnPerson()
         {
             // Setup
             const string expectedResponseCode = "BCHCIM.GD.0.0099";
@@ -890,11 +906,11 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
-        /// Client registry get demographics throws api patient exception given client registry finds phn is invalid.
+        /// Client registry get demographics throws validation exception given client registry finds phn is invalid.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryPhnInvalid()
+        public async Task GetDemographicsThrowsValidationExceptionGivenClientRegistryPhnInvalid()
         {
             // Setup
             const string expectedResponseCode = "BCHCIM.GD.2.0006";
