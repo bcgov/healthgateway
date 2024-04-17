@@ -43,7 +43,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <param name="patientRequest">The patient request parameters to use.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model.</returns>
-        public async Task<PatientModel?> GetPatientAsync(PatientRequest patientRequest, CancellationToken ct = default)
+        public async Task<PatientModel> GetPatientAsync(PatientRequest patientRequest, CancellationToken ct = default)
         {
             return await this.patientQueryStrategy.GetPatientAsync(patientRequest, ct);
         }

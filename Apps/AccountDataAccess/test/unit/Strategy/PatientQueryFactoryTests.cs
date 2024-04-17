@@ -26,7 +26,7 @@ namespace AccountDataAccessTest.Strategy
         {
             PatientQueryFactory patientQueryFactory = new(new Mock<IServiceProvider>().Object);
 
-            string strategyType = "Not.A.Strategy.Type";
+            const string strategyType = "Not.A.Strategy.Type";
 
             Assert.Throws<ArgumentException>(() => patientQueryFactory.GetPatientQueryStrategy(strategyType));
         }

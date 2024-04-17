@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;

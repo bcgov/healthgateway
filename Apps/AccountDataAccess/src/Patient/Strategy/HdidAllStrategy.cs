@@ -23,6 +23,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -60,7 +61,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
+        public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
             PatientModel? patient = request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Hdid, ct) : null;
 
@@ -70,7 +71,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             }
             catch (CommunicationException ce)
             {
-                this.GetLogger().LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", ce);
+                this.GetLogger().LogError(ce, "Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Message}", ce.Message);
 
                 try
                 {
@@ -79,7 +80,8 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    this.GetLogger().LogInformation("PHSA could not find patient identity for {Hdid}", request.Identifier);
+                    this.GetLogger().LogInformation(e, "PHSA could not find patient identity for {Hdid}", request.Identifier);
+                    throw new NotFoundException(ErrorMessages.PatientIdentityNotFound);
                 }
             }
 

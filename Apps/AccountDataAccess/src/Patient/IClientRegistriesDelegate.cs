@@ -17,7 +17,9 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
 
     /// <summary>
     /// The Patient data service.
@@ -31,7 +33,9 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="identifier">The associated oid type's identifier to retrieve the patient demographics information.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <exception cref="NotFoundException">No patient could be found matching the provided criteria.</exception>
+        /// <exception cref="ValidationException">The provided PHN identifier is invalid.</exception>
         /// <returns>The patient model wrapped in an api result object.</returns>
-        Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default);
+        Task<PatientModel> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default);
     }
 }

@@ -214,8 +214,8 @@ namespace HealthGateway.AccountDataAccess.Patient
             // Get the appropriate strategy from factory to query patient
             PatientQueryStrategy patientQueryStrategy = this.patientQueryFactory.GetPatientQueryStrategy(strategy);
             PatientQueryContext context = new(patientQueryStrategy);
-            PatientModel? patient = await context.GetPatientAsync(patientRequest, ct);
-            return new PatientQueryResult(new[] { patient! });
+            PatientModel patient = await context.GetPatientAsync(patientRequest, ct);
+            return new PatientQueryResult(patient);
         }
     }
 }

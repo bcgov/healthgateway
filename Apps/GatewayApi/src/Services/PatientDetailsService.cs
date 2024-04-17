@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
@@ -67,14 +66,7 @@ namespace HealthGateway.GatewayApi.Services
 
             this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
 
-            PatientModel? patientModel = (await this.patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-
-            if (patientModel == null)
-            {
-                // BCHCIM.GD.2.0018 Not found
-                this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", "Not found");
-                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound, ErrorCodes.UpstreamError);
-            }
+            PatientModel patientModel = (await this.patientRepository.QueryAsync(query, ct)).Item;
 
             if (patientModel.LegalName == null && patientModel.CommonName == null)
             {

@@ -26,39 +26,48 @@ namespace AccountDataAccessTest.Strategy
     using Xunit;
 
     /// <summary>
-    /// Hdid Empi Strategy Unit Tests.
+    /// Cache Provider used in Strategy Unit Tests.
     /// </summary>
-    public class HdidEmpiStrategyTests
+    public class CacheProviderTests
     {
         private const string PatientCacheDomain = "PatientV2";
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
 
         /// <summary>
-        /// GetPatientAsync by hdid - happy path.
+        /// Cache patient when calling get patient.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task ShouldGetPatientByHdid(bool useCache)
+        public async Task ShouldCachePatientAsync(bool useCache)
         {
             // Arrange
-            GetPatientMock mock = SetupGetPatientMock(useCache);
+            CachePatientMock mock = SetupCachePatientMock(useCache);
 
             // Act
             PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
-            // Verify
+            // Assert
             mock.Expected.ShouldDeepEqual(actual);
+
+            // Verify
+            mock.CacheProvider.Verify(
+                v => v.AddItemAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<PatientModel>(),
+                    It.IsAny<TimeSpan?>(),
+                    It.IsAny<CancellationToken>()),
+                useCache ? Times.AtLeastOnce : Times.Never);
         }
 
-        private static IConfigurationRoot GetConfiguration()
+        private static IConfigurationRoot GetConfiguration(bool useCache)
         {
             Dictionary<string, string?> myConfiguration = new()
             {
-                { "PatientService:CacheTTL", "90" },
+                { "PatientService:CacheTTL", useCache ? "90" : "0" },
             };
 
             return new ConfigurationBuilder()
@@ -66,7 +75,7 @@ namespace AccountDataAccessTest.Strategy
                 .Build();
         }
 
-        private static GetPatientMock SetupGetPatientMock(bool useCache)
+        private static CachePatientMock SetupCachePatientMock(bool useCache)
         {
             PatientRequest patientRequest = new(Hdid, useCache);
 
@@ -85,14 +94,14 @@ namespace AccountDataAccessTest.Strategy
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
-                GetConfiguration(),
+                GetConfiguration(useCache),
                 cacheProvider.Object,
                 clientRegistriesDelegate.Object,
                 new Mock<ILogger<HdidEmpiStrategy>>().Object);
 
-            return new(hdidEmpiStrategy, patient, patientRequest);
+            return new(hdidEmpiStrategy, cacheProvider, patient, patientRequest);
         }
 
-        private sealed record GetPatientMock(HdidEmpiStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
+        private sealed record CachePatientMock(HdidEmpiStrategy Strategy, Mock<ICacheProvider> CacheProvider, PatientModel Expected, PatientRequest PatientRequest);
     }
 }

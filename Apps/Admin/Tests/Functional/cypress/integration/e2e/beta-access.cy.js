@@ -90,6 +90,7 @@ describe("Beta feature access", () => {
         cy.get("[data-testid=query-input]")
             .should("be.visible")
             .should("be.enabled")
+            .click()
             .clear()
             .should("be.empty")
             .type(validEmail);
