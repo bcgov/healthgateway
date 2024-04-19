@@ -23,6 +23,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
     /// Abstract exception class for Health Gateway.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
+    [ExcludeFromCodeCoverage]
     public abstract class HealthGatewayException : Exception
     {
         private const HttpStatusCode DefaultStatusCode = HttpStatusCode.InternalServerError;
