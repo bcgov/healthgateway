@@ -190,9 +190,15 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - User-Delegated Happy Path.
         /// </summary>
+        /// <param name="configContainsMaxAge">
+        /// Boolean value indicating whether the configuration contains a maximum age that
+        /// should be checked.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldAuthResourceDelegate()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldAuthResourceDelegate(bool configContainsMaxAge)
         {
             PatientModel patientModel = new()
             {
@@ -217,7 +223,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             UserDelegatedAccessHandler authHandler = new(
                 logger,
-                GetConfiguration(),
+                GetConfiguration(configContainsMaxAge),
                 httpContextAccessorMock.Object,
                 mockPatientService.Object,
                 mockDependentDelegate.Object);
@@ -228,6 +234,39 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             await authHandler.HandleAsync(context);
 
             Assert.True(context.HasSucceeded);
+            Assert.False(context.HasFailed);
+        }
+
+        /// <summary>
+        /// Handle Auth - Not Delegated.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldNotAuthNonDelegate()
+        {
+            ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock(claimsPrincipal);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger<UserDelegatedAccessHandler> logger = loggerFactory.CreateLogger<UserDelegatedAccessHandler>();
+
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
+            mockDependentDelegate.Setup(s => s.ExistsAsync(this.resourceHdid, this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+            Mock<IPatientService> mockPatientService = new();
+            UserDelegatedAccessHandler authHandler = new(
+                logger,
+                GetConfiguration(),
+                httpContextAccessorMock.Object,
+                mockPatientService.Object,
+                mockDependentDelegate.Object);
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true)];
+
+            AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
+            await authHandler.HandleAsync(context);
+
+            Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
 
@@ -274,12 +313,14 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             Assert.False(context.HasFailed);
         }
 
-        private static IConfigurationRoot GetConfiguration()
+        private static IConfigurationRoot GetConfiguration(bool includeMaxDependentAge = true)
         {
-            Dictionary<string, string?> configDictionary = new()
+            Dictionary<string, string?> configDictionary = [];
+            if (includeMaxDependentAge)
             {
-                { "Authorization:MaxDependentAge", MaxDependentAge.ToString(CultureInfo.CurrentCulture) },
-            };
+                configDictionary["Authorization:MaxDependentAge"] = MaxDependentAge.ToString(CultureInfo.CurrentCulture);
+            }
+
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();

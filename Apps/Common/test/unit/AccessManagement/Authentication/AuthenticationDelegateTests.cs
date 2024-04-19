@@ -90,8 +90,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest);
 
             expected.ShouldDeepEqual(actualModel);
-            mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Never());
-            mockCacheProvider.Verify(v => v.AddItem(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>()), Times.Never());
+            mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+            mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         /// <summary>
@@ -149,9 +149,14 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         /// <summary>
         /// AuthenticateAsSystem - Happy Path.
         /// </summary>
+        /// <param name="cacheEnabled">Boolean value indicating whether the cache is enabled.</param>
+        /// <param name="existsInCache">Boolean value indicating whether the token can be found in the cache.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldAuthenticateAsSystem()
+        [Theory]
+        [InlineData(true, true)]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        public async Task ShouldAuthenticateAsSystem(bool cacheEnabled, bool existsInCache)
         {
             const string json =
                 """
@@ -168,11 +173,37 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 """;
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using HttpResponseMessage httpResponseMessage = new();
-            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider(expected));
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider(existsInCache ? expected : null));
 
-            JwtModel actualModel = await authDelegate.AuthenticateAsSystemAsync(SystemClientCredentialsRequest);
+            JwtModel actualModel = await authDelegate.AuthenticateAsSystemAsync(SystemClientCredentialsRequest, cacheEnabled);
 
             expected.ShouldDeepEqual(actualModel);
+        }
+
+        /// <summary>
+        /// GetClientCredentialsRequestFromConfig - Happy Path.
+        /// </summary>
+        [Fact]
+        public void ShouldGetClientCredentialsRequestFromConfig()
+        {
+            using HttpResponseMessage httpResponseMessage = new();
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), CreateCacheProvider());
+
+            ClientCredentialsRequest actualModel = authDelegate.GetClientCredentialsRequestFromConfig("Authentication");
+
+            UserClientCredentialsRequest.ShouldDeepEqual(actualModel);
+        }
+
+        /// <summary>
+        /// GetClientCredentialsRequestFromConfig - Not Found.
+        /// </summary>
+        [Fact]
+        public void ShouldGetClientCredentialsRequestFromConfigNotFound()
+        {
+            using HttpResponseMessage httpResponseMessage = new();
+            IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), CreateCacheProvider());
+
+            Assert.Throws<ArgumentNullException>(() => authDelegate.GetClientCredentialsRequestFromConfig("MissingConfigSection"));
         }
 
         [Theory]
@@ -249,7 +280,15 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection([new("AuthCache:TokenCacheExpireMinutes", "20")])
+                .AddInMemoryCollection(
+                [
+                    new("AuthCache:TokenCacheExpireMinutes", "20"),
+                    new("Authentication:TokenUri", UserClientCredentialsRequest.TokenUri.ToString()),
+                    new("Authentication:ClientId", UserClientCredentialsRequest.Parameters.ClientId),
+                    new("Authentication:ClientSecret", UserClientCredentialsRequest.Parameters.ClientSecret),
+                    new("Authentication:Username", UserClientCredentialsRequest.Parameters.Username),
+                    new("Authentication:Password", UserClientCredentialsRequest.Parameters.Password),
+                ])
                 .Build();
         }
     }

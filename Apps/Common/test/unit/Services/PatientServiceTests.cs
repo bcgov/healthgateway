@@ -245,7 +245,7 @@ namespace HealthGateway.CommonTests.Services
             patientDelegateMock.Setup(p => p.GetDemographicsByHdidAsync(It.IsAny<string>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<ICacheProvider> cacheProviderMock = new();
-            cacheProviderMock.Setup(p => p.GetItem<PatientModel>(It.IsAny<string>())).Returns(returnNullPatientResult ? null : requestResult.ResourcePayload);
+            cacheProviderMock.Setup(p => p.GetItemAsync<PatientModel>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(returnNullPatientResult ? null : requestResult.ResourcePayload);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -285,7 +285,7 @@ namespace HealthGateway.CommonTests.Services
             Mock<ICacheProvider> cacheProviderMock = new();
             if (returnValidCache)
             {
-                cacheProviderMock.Setup(p => p.GetItem<PatientModel>(It.IsAny<string>())).Returns(requestResult.ResourcePayload);
+                cacheProviderMock.Setup(p => p.GetItemAsync<PatientModel>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult.ResourcePayload);
             }
 
             IPatientService service = new PatientService(

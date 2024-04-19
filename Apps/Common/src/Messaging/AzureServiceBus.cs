@@ -180,5 +180,5 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
         }
     }
 
-    private sealed record SessionState(bool IsFaulted);
+    internal sealed record SessionState(bool IsFaulted);
 }

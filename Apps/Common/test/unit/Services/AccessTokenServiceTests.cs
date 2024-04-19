@@ -45,11 +45,14 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get PHSA access token.
         /// </summary>
+        /// <param name="cacheEnabled">Boolean value indicating whether the token should be cached.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
-        [Fact]
-        public async Task GetPhsaToken()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task GetPhsaToken(bool cacheEnabled)
         {
             // Arrange
             TokenSwapResponse expectedTokenSwapResponse = new()
@@ -60,7 +63,7 @@ namespace HealthGateway.CommonTests.Services
                 Scope = "file.read",
             };
 
-            IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, false);
+            IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, false, cacheEnabled);
 
             // Act
             RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessTokenAsync();
@@ -114,7 +117,7 @@ namespace HealthGateway.CommonTests.Services
                 Scope = "file.read",
             };
 
-            IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, false, true);
+            IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, false, false);
 
             // Act
             RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessTokenAsync();
@@ -125,7 +128,7 @@ namespace HealthGateway.CommonTests.Services
             Assert.Null(actualResult.ResourcePayload);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot()
+        private static IConfigurationRoot GetIConfigurationRoot(bool cacheEnabled)
         {
             Dictionary<string, string?> configuration = new()
             {
@@ -135,12 +138,17 @@ namespace HealthGateway.CommonTests.Services
                 { "TokenSwap:GrantType", "healthdata.read" },
             };
 
+            if (cacheEnabled)
+            {
+                configuration["PhsaV2:TokenCacheEnabled"] = "true";
+            }
+
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
 
-        private static IAccessTokenService GetAccessTokenService(TokenSwapResponse response, bool isAccessTokenFound, bool useCache)
+        private static IAccessTokenService GetAccessTokenService(TokenSwapResponse response, bool isAccessTokenFound, bool existsInCache, bool cacheEnabled = true)
         {
             RequestResult<TokenSwapResponse> requestResult = new()
             {
@@ -156,14 +164,14 @@ namespace HealthGateway.CommonTests.Services
             mockTokenSwapDelegate.Setup(s => s.SwapTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<ICacheProvider> cacheProviderMock = new();
-            cacheProviderMock.Setup(p => p.GetItem<TokenSwapResponse>(It.IsAny<string>())).Returns(useCache ? response : null);
+            cacheProviderMock.Setup(p => p.GetItemAsync<TokenSwapResponse>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(existsInCache ? response : null);
 
             return new AccessTokenService(
                 new Mock<ILogger<AccessTokenService>>().Object,
                 mockTokenSwapDelegate.Object,
                 cacheProviderMock.Object,
                 mockAuthenticationDelegate.Object,
-                GetIConfigurationRoot());
+                GetIConfigurationRoot(cacheEnabled));
         }
     }
 }
