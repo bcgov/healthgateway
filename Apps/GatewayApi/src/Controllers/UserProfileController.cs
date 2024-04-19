@@ -44,28 +44,41 @@ namespace HealthGateway.GatewayApi.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IUserEmailService userEmailService;
         private readonly IUserProfileService userProfileService;
+        private readonly IUserProfileValidatorService userProfileValidatorService;
         private readonly IUserSmsService userSmsService;
+        private readonly IUserPreferenceService userPreferenceService;
+        private readonly ILegalAgreementService legalAgreementService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
         /// </summary>
         /// <param name="userProfileService">The injected user profile service.</param>
+        /// <param name="userProfileValidatorService">The injected user profile validator service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="userSmsService">The injected user sms service.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+        /// <param name="userPreferenceService">The injected user preference service.</param>
+        /// <param name="legalAgreementService">The injected legal agreement service.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public UserProfileController(
             IUserProfileService userProfileService,
+            IUserProfileValidatorService userProfileValidatorService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
             IUserSmsService userSmsService,
-            IAuthenticationDelegate authenticationDelegate)
+            IAuthenticationDelegate authenticationDelegate,
+            IUserPreferenceService userPreferenceService,
+            ILegalAgreementService legalAgreementService)
         {
             this.userProfileService = userProfileService;
+            this.userProfileValidatorService = userProfileValidatorService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;
             this.userSmsService = userSmsService;
             this.authenticationDelegate = authenticationDelegate;
+            this.userPreferenceService = userPreferenceService;
+            this.legalAgreementService = legalAgreementService;
         }
 
         /// <summary>
@@ -145,7 +158,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Read)]
         public async Task<RequestResult<bool>> Validate(string hdid, CancellationToken ct)
         {
-            return await this.userProfileService.ValidateMinimumAgeAsync(hdid, ct);
+            return await this.userProfileValidatorService.ValidateMinimumAgeAsync(hdid, ct);
         }
 
         /// <summary>
@@ -212,7 +225,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<RequestResult<TermsOfServiceModel>> GetLastTermsOfService(CancellationToken ct)
         {
-            return await this.userProfileService.GetActiveTermsOfServiceAsync(ct);
+            return await this.legalAgreementService.GetActiveTermsOfServiceAsync(ct);
         }
 
         /// <summary>
@@ -347,7 +360,7 @@ namespace HealthGateway.GatewayApi.Controllers
             }
 
             userPreferenceModel.UpdatedBy = hdid;
-            return await this.userProfileService.UpdateUserPreferenceAsync(userPreferenceModel, ct);
+            return await this.userPreferenceService.UpdateUserPreferenceAsync(userPreferenceModel, ct);
         }
 
         /// <summary>
@@ -376,7 +389,7 @@ namespace HealthGateway.GatewayApi.Controllers
             userPreferenceModel.HdId = hdid;
             userPreferenceModel.CreatedBy = hdid;
             userPreferenceModel.UpdatedBy = hdid;
-            return await this.userProfileService.CreateUserPreferenceAsync(userPreferenceModel, ct);
+            return await this.userPreferenceService.CreateUserPreferenceAsync(userPreferenceModel, ct);
         }
 
         /// <summary>
@@ -412,7 +425,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
-            return await this.userProfileService.IsPhoneNumberValidAsync(phoneNumber, ct);
+            return await this.userProfileValidatorService.IsPhoneNumberValidAsync(phoneNumber, ct);
         }
     }
 }
