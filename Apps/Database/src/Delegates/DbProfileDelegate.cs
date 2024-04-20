@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user profile in DB");
-            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, ct);
+            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, true, ct: ct);
             DbResult<UserProfile> result = new();
 
             if (userProfile != null)
@@ -89,6 +89,7 @@ namespace HealthGateway.Database.Delegates
                 userProfile.Version = profile.Version;
                 userProfile.YearOfBirth = profile.YearOfBirth;
                 userProfile.LastLoginClientCode = profile.LastLoginClientCode;
+                userProfile.BetaFeatureCodes = profile.BetaFeatureCodes;
                 result.Status = DbStatusCode.Deferred;
                 result.Payload = userProfile;
                 this.dbContext.UserProfile.Update(userProfile);
@@ -124,9 +125,30 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<UserProfile?> GetUserProfileAsync(string hdid, CancellationToken ct = default)
+        public async Task<UserProfile?> GetUserProfileAsync(string hdid, bool includeBetaFeatureCodes = false, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile.FindAsync([hdid], ct);
+            IQueryable<UserProfile> query = this.dbContext.UserProfile;
+
+            if (includeBetaFeatureCodes)
+            {
+                query = query.Include(p => p.BetaFeatureCodes);
+            }
+
+            return await query.SingleOrDefaultAsync(p => p.HdId == hdid, ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(string email, bool includeBetaFeatureCodes, CancellationToken ct = default)
+        {
+            IQueryable<UserProfile> query = this.dbContext.UserProfile;
+            query = query.Where(p => EF.Functions.ILike(p.Email, email));
+
+            if (includeBetaFeatureCodes)
+            {
+                query = query.Include(p => p.BetaFeatureCodes);
+            }
+
+            return await query.ToListAsync(ct);
         }
 
         /// <inheritdoc/>

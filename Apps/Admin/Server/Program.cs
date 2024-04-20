@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Server
             services.AddRefitClient<IImmunizationAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV1.BaseUrl);
 
-            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
+            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
             RequestLoggingSettings requestLoggingSettings = new();
@@ -157,6 +157,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IDelegationService, DelegationService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
             services.AddTransient<IAdminReportService, AdminReportService>();
+            services.AddTransient<IBetaFeatureService, BetaFeatureService>();
             services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
         }
 
@@ -177,6 +178,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
+            services.AddTransient<IBetaFeatureAccessDelegate, DbBetaFeatureAccessDelegate>();
         }
     }
 }

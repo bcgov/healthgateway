@@ -31,7 +31,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -346,7 +346,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICommentDelegate> commentDelegateMock = new();
 

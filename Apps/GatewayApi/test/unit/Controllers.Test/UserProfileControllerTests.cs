@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
@@ -49,19 +49,6 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         private readonly string userId = "1001";
 
         /// <summary>
-        /// GetUserProfile - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetUserProfile()
-        {
-            RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, []);
-
-            expected.ShouldDeepEqual(actualResult);
-        }
-
-        /// <summary>
         /// GetUserProfile - With Empty User Preferences.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -69,12 +56,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         public async Task ShouldGetUserProfileWithoutUserPreference()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, null);
+            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected);
 
-            Assert.NotNull(actualResult);
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Empty(actualResult.ResourcePayload?.Preferences);
+            expected.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -84,6 +68,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateUserProfile()
         {
+            CreateUserProfile createUserProfile = new(this.hdid, Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"));
+
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
@@ -92,7 +78,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             CreateUserRequest createUserRequest = new()
             {
-                Profile = userProfile,
+                Profile = createUserProfile,
             };
 
             RequestResult<UserProfileModel> expected = new()
@@ -126,6 +112,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldCreateUserProfileBadRequest()
         {
+            CreateUserProfile createUserProfile = new("badhdid", Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"));
+
             UserProfile userProfile = new()
             {
                 HdId = "badhdid",
@@ -134,7 +122,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             CreateUserRequest createUserRequest = new()
             {
-                Profile = userProfile,
+                Profile = createUserProfile,
             };
 
             RequestResult<UserProfileModel> expected = new()
@@ -591,9 +579,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
         }
 
-        private async Task<RequestResult<UserProfileModel>> GetUserProfile(
-            RequestResult<UserProfileModel> expected,
-            Dictionary<string, UserPreferenceModel>? userPreferencePayloadMock)
+        private async Task<RequestResult<UserProfileModel>> GetUserProfile(RequestResult<UserProfileModel> expected)
         {
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
@@ -601,8 +587,6 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new RequestResult<TermsOfServiceModel>());
-            userProfileServiceMock.Setup(s => s.GetUserPreferencesAsync(this.hdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new RequestResult<Dictionary<string, UserPreferenceModel>> { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();

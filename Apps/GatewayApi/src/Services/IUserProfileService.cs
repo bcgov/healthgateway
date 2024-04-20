@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
@@ -85,14 +84,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A userPreference wrapped in a RequestResult.</returns>
         Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
-
-        /// <summary>
-        /// Gets the user preference model.
-        /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The wrapped user reference.</returns>
-        Task<RequestResult<Dictionary<string, UserPreferenceModel>>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a value indicating if the patient age is valid for registration.

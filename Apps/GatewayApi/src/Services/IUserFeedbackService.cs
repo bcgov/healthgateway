@@ -39,9 +39,9 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Saves the rating to the database.
         /// </summary>
-        /// <param name="rating">The rating model to be saved.</param>
+        /// <param name="rating">The rating to be saved.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped rating.</returns>
-        Task<RequestResult<Rating>> CreateRatingAsync(Rating rating, CancellationToken ct = default);
+        Task<RequestResult<RatingModel>> CreateRatingAsync(SubmitRating rating, CancellationToken ct = default);
     }
 }

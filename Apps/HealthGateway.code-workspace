@@ -5,10 +5,6 @@
             "path": "WebClient/src/ClientApp"
         },
         {
-            "name": "AdminClientApp",
-            "path": "AdminWebClient/src/ClientApp"
-        },
-        {
             "name": "../Testing/functional/tests",
             "path": "../Testing/functional/tests"
         },

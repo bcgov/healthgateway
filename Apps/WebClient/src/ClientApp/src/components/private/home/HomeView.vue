@@ -9,6 +9,7 @@ import MessageModalComponent from "@/components/common/MessageModalComponent.vue
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddQuickLinkComponent from "@/components/private/home/AddQuickLinkComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
+import { BetaFeature } from "@/constants/betaFeature";
 import {
     EntryType,
     EntryTypeDetails,
@@ -143,6 +144,12 @@ const showHealthConnectButton = computed(
         ConfigUtil.isServiceEnabled(ServiceName.HealthConnectRegistry) &&
         !preferenceHealthConnectHidden.value
 );
+const betaUrl = computed(() => configStore.webConfig.betaUrl);
+const showBetaAlert = computed(
+    () =>
+        betaUrl.value &&
+        user.value.betaFeatures.includes(BetaFeature.Salesforce)
+);
 const enabledQuickLinks = computed(
     () =>
         quickLinks.value?.filter((quickLink) =>
@@ -177,7 +184,6 @@ const quickLinkCards = computed(() =>
         return card;
     })
 );
-
 const isAddQuickLinkButtonDisabled = computed(
     () =>
         [...entryTypeMap.values()].filter(
@@ -395,6 +401,24 @@ watch(vaccineRecordState, () => {
         :text="vaccineRecordStatusMessage"
     />
     <v-alert
+        v-if="showBetaAlert"
+        data-testid="beta-alert"
+        closable
+        type="info"
+        class="d-print-none mb-4"
+        title="Health Gateway – Beta Version Available"
+        variant="outlined"
+        border
+    >
+        <span class="text-body-1">
+            You are invited to try the new beta version of Health Gateway and
+            provide your feedback.
+            <a :href="betaUrl" target="_self" class="text-link">
+                Try the beta version now.
+            </a>
+        </span>
+    </v-alert>
+    <v-alert
         v-if="unverifiedEmail || unverifiedSms"
         data-testid="incomplete-profile-banner"
         closable
@@ -411,7 +435,7 @@ watch(vaccineRecordState, () => {
             <router-link
                 id="profilePageLink"
                 data-testid="profile-page-link"
-                variant="primary"
+                class="text-link"
                 to="/profile"
                 >Profile Page</router-link
             >

@@ -150,8 +150,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
-            PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-            return patient ?? throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
+            return (await patientRepository.QueryAsync(query, ct)).Item;
         }
 
         private async Task<PatientModel?> TryGetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
@@ -241,7 +240,7 @@ namespace HealthGateway.Admin.Server.Services
                 : patient?.Hdid;
             UserProfile? profile = hdid == null
                 ? null
-                : await userProfileDelegate.GetUserProfileAsync(hdid, ct);
+                : await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
             if (patient == null && profile == null)
             {

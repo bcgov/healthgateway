@@ -672,6 +672,96 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.BetaFeatureAccess", b =>
+                {
+                    b.Property<string>("Hdid")
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)")
+                        .HasColumnName("UserProfileId");
+
+                    b.Property<string>("BetaFeatureCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Hdid", "BetaFeatureCode");
+
+                    b.HasIndex("BetaFeatureCode");
+
+                    b.ToTable("BetaFeatureAccess", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.BetaFeatureCode", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("BetaFeatureCode", "gateway");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "Salesforce",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Salesforce Beta Feature Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        });
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.BlockedAccess", b =>
                 {
                     b.Property<string>("Hdid")
@@ -3691,6 +3781,23 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("TransactionResultCode")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.BetaFeatureAccess", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.BetaFeatureCode", null)
+                        .WithMany()
+                        .HasForeignKey("BetaFeatureCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("Hdid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>

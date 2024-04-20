@@ -15,8 +15,8 @@
     <ProjectReference Include="..\Database\src\Database.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="31.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
+    <PackageReference Include="CsvHelper" Version="31.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

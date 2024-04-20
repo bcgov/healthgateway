@@ -3,7 +3,6 @@
     "path": "HealthGateway.sln",
     "projects": [
       "AccountDataAccess\\src\\AccountDataAccess.csproj",
-      "AdminWebClient\\src\\AdminWebClient.csproj",
       "Admin\\Client\\Admin.Client.csproj",
       "Admin\\Common\\Admin.Common.csproj",
       "Admin\\Server\\Admin.Server.csproj",

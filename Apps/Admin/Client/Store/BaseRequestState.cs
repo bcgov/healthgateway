@@ -30,6 +30,16 @@ public record BaseRequestState
     /// Gets a value indicating whether the request is loading.
     /// </summary>
     public bool IsLoading { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether an error was returned with a message.
+    /// </summary>
+    public bool HasError => this.Error is { Message.Length: > 0 };
+
+    /// <summary>
+    /// Gets the error message if it exists. Otherwise, returns null.
+    /// </summary>
+    public string? ErrorMessage => this.HasError ? this.Error?.Message : null;
 }
 
 /// <summary>

@@ -36,7 +36,9 @@ namespace HealthGateway.Admin.Tests.Utils
                 {
                     cfg.AddProfile(new AddressProfile());
                     cfg.AddProfile(new AgentActionProfile());
+                    cfg.AddProfile(new AdminTagProfile());
                     cfg.AddProfile(new AdminUserProfileViewProfile());
+                    cfg.AddProfile(new UserFeedbackProfile());
                     cfg.AddProfile(new BroadcastProfile());
                     cfg.AddProfile(new DelegateInfoProfile());
                     cfg.AddProfile(new DependentInfoProfile());
@@ -45,6 +47,7 @@ namespace HealthGateway.Admin.Tests.Utils
                     cfg.AddProfile(new PatientSupportDetailsProfile());
                     cfg.AddProfile(new VaccineDoseProfile());
                     cfg.AddProfile(new CommunicationProfile());
+                    cfg.AddProfile(new BetaFeatureProfile());
                 });
 
             return config.CreateMapper();

@@ -97,7 +97,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </response>
         [HttpPost]
         [Route("Rating")]
-        public async Task<RequestResult<Rating>> CreateRating(Rating rating, CancellationToken ct)
+        public async Task<RequestResult<RatingModel>> CreateRating(SubmitRating rating, CancellationToken ct)
         {
             return await this.userFeedbackService.CreateRatingAsync(rating, ct);
         }

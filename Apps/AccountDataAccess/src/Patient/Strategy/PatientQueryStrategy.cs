@@ -19,8 +19,10 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -61,8 +63,10 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// </summary>
         /// <param name="request">The request parameter values to use in the query..</param>
         /// <param name="ct">The cancellation token.</param>
+        /// <exception cref="NotFoundException">No patient could be found matching the provided criteria.</exception>
+        /// <exception cref="ValidationException">The provided PHN identifier is invalid.</exception>
         /// <returns>A <see cref="PatientQueryStrategy"/> class.</returns>
-        public abstract Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default);
+        public abstract Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Returns the logger.

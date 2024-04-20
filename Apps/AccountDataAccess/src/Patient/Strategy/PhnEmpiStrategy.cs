@@ -49,7 +49,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
+        public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
             await new PhnValidator(ErrorMessages.PhnInvalid).ValidateAndThrowAsync(request.Identifier, ct);
 

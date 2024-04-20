@@ -31,7 +31,6 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using HealthGateway.GatewayApi.Api;
-    using HealthGateway.GatewayApi.MapProfiles;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -81,6 +80,7 @@ namespace HealthGateway.GatewayApi
 
             // Add services
             services.AddTransient<IGatewayApiMappingService, GatewayApiMappingService>();
+            services.AddTransient<IGatewayApiCommunicationService, GatewayApiCommunicationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
@@ -139,7 +139,7 @@ namespace HealthGateway.GatewayApi
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
-            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(PatientDetailsProfile));
+            services.AddAutoMapper(typeof(Startup), typeof(MessagingVerificationProfile));
         }
 
         /// <summary>

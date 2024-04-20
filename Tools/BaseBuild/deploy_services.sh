@@ -20,7 +20,6 @@ fi
 
 oc process -f ./service.yaml -p NAME=webclient -p APP_NAME=webclient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=hangfire -p APP_NAME=hangfire -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
-oc process -f ./service.yaml -p NAME=adminwebclient -p APP_NAME=adminwebclient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=encounter -p APP_NAME=encounter -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=laboratory -p APP_NAME=laboratory -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=immunization -p APP_NAME=immunization -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -

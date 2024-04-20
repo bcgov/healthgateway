@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest.Strategy
 {
+    using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.CacheProviders;
@@ -44,42 +45,13 @@ namespace AccountDataAccessTest.Strategy
         public async Task ShouldGetPatientByHdid(bool useCache)
         {
             // Arrange
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            PatientModel cachedPatient = patient;
-
-            HdidEmpiStrategy hdidEmpiStrategy = useCache ? GetHdidEmpiStrategy(patient, cachedPatient) : GetHdidEmpiStrategy(patient);
-
-            PatientRequest request = new(Hdid, useCache);
+            GetPatientMock mock = SetupGetPatientMock(useCache);
 
             // Act
-            PatientModel? result = await hdidEmpiStrategy.GetPatientAsync(request);
+            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Verify
-            Assert.Equal(Hdid, result?.Hdid);
-            Assert.Equal(Phn, result?.Phn);
-        }
-
-        private static HdidEmpiStrategy GetHdidEmpiStrategy(
-            PatientModel patient,
-            PatientModel? cachedPatient = null)
-        {
-            Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
-
-            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
-
-            HdidEmpiStrategy hdidEmpiStrategy = new(
-                GetConfiguration(),
-                cacheProvider.Object,
-                clientRegistriesDelegate.Object,
-                new Mock<ILogger<HdidEmpiStrategy>>().Object);
-            return hdidEmpiStrategy;
+            mock.Expected.ShouldDeepEqual(actual);
         }
 
         private static IConfigurationRoot GetConfiguration()
@@ -93,5 +65,34 @@ namespace AccountDataAccessTest.Strategy
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
+
+        private static GetPatientMock SetupGetPatientMock(bool useCache)
+        {
+            PatientRequest patientRequest = new(Hdid, useCache);
+
+            PatientModel patient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            PatientModel? cachedPatient = useCache ? patient : null;
+
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
+
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+
+            HdidEmpiStrategy hdidEmpiStrategy = new(
+                GetConfiguration(),
+                cacheProvider.Object,
+                clientRegistriesDelegate.Object,
+                new Mock<ILogger<HdidEmpiStrategy>>().Object);
+
+            return new(hdidEmpiStrategy, patient, patientRequest);
+        }
+
+        private sealed record GetPatientMock(HdidEmpiStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
     }
 }

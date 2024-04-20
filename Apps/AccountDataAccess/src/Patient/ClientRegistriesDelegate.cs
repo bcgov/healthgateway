@@ -36,6 +36,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private const string Instance = "INSTANCE";
         private static readonly List<string> WarningResponseCodes =
         [
             "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
@@ -62,7 +63,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default)
+        public async Task<PatientModel> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
             using Activity? activity = Source.StartActivity();
@@ -93,12 +94,12 @@ namespace HealthGateway.AccountDataAccess.Patient
                         typeCode = "RCV",
                         device = new MCCI_MT000100Device
                         {
-                            determinerCode = "INSTANCE", classCode = "DEV",
+                            determinerCode = Instance, classCode = "DEV",
                             id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" },
                             asAgent = new MCCI_MT000100Agent
                             {
                                 classCode = "AGNT",
-                                representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
+                                representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" },
                             },
                         },
                     },
@@ -106,7 +107,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
                 request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization
                 {
-                    determinerCode = "INSTANCE", classCode = "ORG",
+                    determinerCode = Instance, classCode = "ORG",
                     id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" },
                 };
 
@@ -115,18 +116,18 @@ namespace HealthGateway.AccountDataAccess.Patient
                     typeCode = "SND",
                     device = new MCCI_MT000100Device
                     {
-                        determinerCode = "INSTANCE", classCode = "DEV",
+                        determinerCode = Instance, classCode = "DEV",
                         id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" },
                         asAgent = new MCCI_MT000100Agent
                         {
                             classCode = "AGNT",
-                            representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
+                            representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" },
                         },
                     },
                 };
                 request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization
                 {
-                    determinerCode = "INSTANCE", classCode = "ORG",
+                    determinerCode = Instance, classCode = "ORG",
                     id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" },
                 };
 
@@ -224,6 +225,12 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private void CheckResponseCode(string responseCode)
         {
+            if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
+            {
+                this.logger.LogDebug("Return patient not found as response code is BCHCIM.GD.2.0018");
+                throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
+            }
+
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
@@ -246,7 +253,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         [SuppressMessage("Minor Code Smell", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension", Justification = "Team decision")]
         [SuppressMessage("Minor Code Smell", "S6605:Collection-specific \"Exists\" method should be used instead of the \"Any\" extension", Justification = "Team decision")]
-        private PatientModel? ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
+        private PatientModel ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity())
             {
@@ -266,7 +273,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 }
 
                 // Initialize model
-                PatientModel? patientModel = new()
+                PatientModel patientModel = new()
                 {
                     Birthdate = dob,
                     Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
@@ -296,12 +303,6 @@ namespace HealthGateway.AccountDataAccess.Patient
                 if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patientModel.ResponseCode = responseCode;
-                }
-
-                if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
-                {
-                    this.logger.LogDebug("Return null for patient as response code is BCHCIM.GD.2.0018");
-                    patientModel = null;
                 }
 
                 return patientModel;

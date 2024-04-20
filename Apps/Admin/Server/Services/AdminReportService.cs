@@ -44,17 +44,17 @@ namespace HealthGateway.Admin.Server.Services
                     async hdid =>
                     {
                         PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
-                        PatientQueryResult? patient = null;
+                        PatientModel? patient = null;
                         try
                         {
-                            patient = await patientRepository.QueryAsync(query, ct);
+                            patient = (await patientRepository.QueryAsync(query, ct)).Item;
                         }
                         catch (NotFoundException e)
                         {
-                            logger.Error("Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
+                            logger.Error(e, "Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
                         }
 
-                        return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);
+                        return new ProtectedDependentRecord(hdid, patient?.Phn);
                     });
 
             return new(await Task.WhenAll(tasks), new(totalHdids, page, pageSize));

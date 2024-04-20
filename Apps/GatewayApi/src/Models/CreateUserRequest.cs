@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Models
 {
-    using HealthGateway.Database.Models;
+    using System;
 
     /// <summary>
     /// Object that defines the request for creating a User.
@@ -23,8 +23,17 @@ namespace HealthGateway.GatewayApi.Models
     public class CreateUserRequest
     {
         /// <summary>
-        /// Gets or sets the user profile.
+        /// Gets the create user profile.
         /// </summary>
-        public UserProfile Profile { get; set; } = new();
+        public CreateUserProfile Profile { get; init; } = new(string.Empty, Guid.Empty);
     }
+
+    /// <summary>
+    /// The user profile to create.
+    /// </summary>
+    /// <param name="HdId">The hdid associated with the user profile to create.</param>
+    /// <param name="TermsOfServiceId">The terms of service id associated with the user profile to create.</param>
+    /// <param name="SmsNumber">The sms number associated with the user profile to create.</param>
+    /// <param name="Email">The email associated with the user profile to create.</param>
+    public record CreateUserProfile(string HdId, Guid TermsOfServiceId, string? SmsNumber = null, string? Email = null);
 }

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-apps=("offline" "webclient" "admin" "adminwebclient" "encounter" "hangfire" "immunization" "laboratory" "medication" "mock" "patient" "gatewayapi" "clinicaldocument" "hgcdogs")
+apps=("offline" "webclient" "admin" "encounter" "hangfire" "immunization" "laboratory" "medication" "mock" "patient" "gatewayapi" "clinicaldocument" "hgcdogs")
 declare -A artifacts # associative array
 artifacts["offline"]="OfflineImage"
 artifacts["webclient"]="WebClientImage"
 artifacts["admin"]="AdminBlazorImage"
-artifacts["adminwebclient"]="AdminWebClientImage"
 artifacts["encounter"]="EncounterServiceImage"
 artifacts["hangfire"]="HangfireImage"
 artifacts["immunization"]="ImmsServiceImage"

@@ -18,7 +18,9 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -52,6 +54,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <exception cref="NotFoundException">No patient could be found matching the provided criteria.</exception>
+        /// <exception cref="ValidationException">The provided PHN identifier is invalid.</exception>
         /// <returns>The patient model wrapped in a patient query result object.</returns>
         Task<PatientQueryResult> QueryAsync(PatientQuery query, CancellationToken ct = default);
 
@@ -97,8 +101,8 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// <summary>
     /// The query result.
     /// </summary>
-    /// <param name="Items">The result.</param>
-    public record PatientQueryResult(IEnumerable<PatientModel> Items);
+    /// <param name="Item">The result.</param>
+    public record PatientQueryResult(PatientModel Item);
 
     /// <summary>
     /// The patient details query.

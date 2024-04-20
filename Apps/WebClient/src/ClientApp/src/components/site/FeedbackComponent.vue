@@ -230,6 +230,7 @@ function resetFeedback(): void {
                     <template v-else>
                         <HgButtonComponent
                             v-if="isSuccessWithEmail"
+                            data-testid="feedback-got-it-btn"
                             text="Got it!"
                             variant="primary"
                             :loading="isLoading"

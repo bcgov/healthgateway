@@ -187,7 +187,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
                     string email = await this.GetUserEmailAsync(userFeedback.UserProfileId, ct);
-                    result.ResourcePayload = mappingService.MapToUserFeedbackView(userFeedback, email);
+                    result.ResourcePayload = mappingService.MapToUserFeedbackView(savedUserFeedbackResult.Payload, email);
                     result.ResultStatus = ResultType.Success;
                 }
                 else
@@ -214,7 +214,7 @@ namespace HealthGateway.Admin.Server.Services
             string email = string.Empty;
             if (hdid != null)
             {
-                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct);
+                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
                 if (userProfile != null)
                 {
                     email = userProfile.Email ?? string.Empty;

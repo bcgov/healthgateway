@@ -36,6 +36,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <inheritdoc/>
     public class BroadcastService : IBroadcastService
     {
+        private const string HttpRequestError = "Error with HTTP Request";
         private readonly ICommonMappingService commonMappingService;
         private readonly ILogger logger;
         private readonly ISystemBroadcastApi systemBroadcastApi;
@@ -88,10 +89,10 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Unable to create broadcast due to HTTP Request Exception {Error}", e.Message);
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = HttpRequestError,
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
@@ -120,10 +121,10 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Unable to get broadcast due to HTTP Request Exception {Error}", e.Message);
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = HttpRequestError,
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
@@ -165,10 +166,10 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Unable to update broadcast due to HTTP Request Exception {Error}", e.Message);
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = HttpRequestError,
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
@@ -197,10 +198,10 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Unable to delete broadcast due to HTTP Request Exception {Error}", e.Message);
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = HttpRequestError,
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
