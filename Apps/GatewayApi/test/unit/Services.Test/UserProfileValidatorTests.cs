@@ -68,6 +68,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="phoneNumber">The phone number to validate.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [InlineData("xxx3277465")]
+        [InlineData("abc")]
         [Theory]
         public async Task ShouldPhoneNumberNotBeValidAsync(string phoneNumber)
         {
@@ -207,7 +208,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mock.Expected.ShouldDeepEqual(actual);
         }
 
-        private static IConfigurationRoot GetIConfiguration(int minPatientAge = 19)
+        private static IConfigurationRoot GetIConfiguration(int minPatientAge = 12)
         {
             Dictionary<string, string?> myConfiguration = new()
             {

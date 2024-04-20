@@ -282,7 +282,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         private static IConfigurationRoot GetIConfiguration(
-            int minPatientAge = 10,
+            int minPatientAge = 12,
             int profileHistoryRecordLimit = 2,
             bool accountFeedEnabled = false,
             bool notificationFeedEnabled = false)
@@ -306,6 +306,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool notificationsFeedEnabled,
             bool smsIsValid)
         {
+            const int patientAge = 15;
+            const int minPatientAge = 10;
             const string jwtEmail = "user@healthgateway.ca";
             const string requestedEmail = "user@healthgateway.ca";
             const string smsVerificationCode = "12345";
@@ -313,7 +315,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime currentUtcDate = DateTime.UtcNow.Date;
-            DateTime birthDate = currentUtcDate.AddYears(-25).Date;
+            DateTime birthDate = currentUtcDate.AddYears(-patientAge).Date;
 
             PatientModel patientModel = GeneratePatientModel(birthDate);
 
@@ -408,6 +410,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(validationResult);
 
             IConfigurationRoot configuration = GetIConfiguration(
+                minPatientAge,
                 accountFeedEnabled: accountsFeedEnabled,
                 notificationFeedEnabled: notificationsFeedEnabled);
 
@@ -466,12 +469,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool smsIsVerified,
             bool tourChangeDateIsLatest)
         {
+            const int patientAge = 15;
+            const int minPatientAge = 10;
             string? smsNumber = smsIsVerified ? "2505556000" : null;
             string? email = emailIsVerified ? Email : null;
 
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime currentUtcDate = DateTime.UtcNow.Date;
-            DateTime birthDate = currentUtcDate.AddYears(-25).Date;
+            DateTime birthDate = currentUtcDate.AddYears(-patientAge).Date;
             DateTime jwtAuthTime = jwtAuthTimeIsDifferent ? currentUtcDate.AddHours(1) : currentUtcDate;
             DateTime latestTourChangeDateTime = tourChangeDateIsLatest ? currentUtcDate : currentUtcDate.AddDays(-5);
 
@@ -570,7 +575,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(smsInvite);
 
-            IConfigurationRoot configuration = GetIConfiguration();
+            IConfigurationRoot configuration = GetIConfiguration(minPatientAge: minPatientAge);
 
             IUserProfileService service = GetUserProfileService(
                 patientServiceMock,
