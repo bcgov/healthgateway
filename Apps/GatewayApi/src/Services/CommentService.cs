@@ -34,6 +34,8 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class CommentService : ICommentService
     {
+        private const string ProfileKeyNotSet = "Profile Key not set";
+
         private readonly IGatewayApiMappingService mappingService;
         private readonly ICommentDelegate commentDelegate;
         private readonly ILogger logger;
@@ -73,7 +75,7 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
-                return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
+                return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             Comment comment = this.mappingService.MapToComment(userComment, key);
@@ -97,7 +99,7 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {HdId}", hdId);
-                return RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
+                return RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             DbResult<IList<Comment>> dbComments = await this.commentDelegate.GetByParentEntryAsync(hdId, parentEntryId, ct);
@@ -124,7 +126,7 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {HdId}", hdId);
-                return RequestResultFactory.ServiceError<IDictionary<string, IEnumerable<UserComment>>>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
+                return RequestResultFactory.ServiceError<IDictionary<string, IEnumerable<UserComment>>>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             DbResult<IEnumerable<Comment>> dbComments = await this.commentDelegate.GetAllAsync(hdId, ct);
@@ -158,7 +160,7 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
-                return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
+                return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             Comment comment = this.mappingService.MapToComment(userComment, key);
@@ -187,7 +189,7 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
-                return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
+                return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             Comment comment = this.mappingService.MapToComment(userComment, key);
