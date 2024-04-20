@@ -61,14 +61,14 @@ namespace HealthGateway.PatientTests.Services
         public async Task ShouldGetPatient(PatientIdentifierType type, string identifier, bool commonNameExists, bool legalNameExists)
         {
             // Arrange
-            PatientModel? patient = GetPatient(commonNameExists, legalNameExists);
+            PatientModel patient = GetPatient(commonNameExists, legalNameExists);
             IPatientService patientService = GetPatientService(patient);
 
             // Act
             PatientDetails actual = await patientService.GetPatientAsync(identifier, type);
 
             // Assert
-            Assert.Equal(patient!.Hdid, actual.HdId);
+            Assert.Equal(patient.Hdid, actual.HdId);
             Assert.Equal(patient.Phn, actual.Phn);
         }
 
@@ -91,7 +91,7 @@ namespace HealthGateway.PatientTests.Services
         public async Task GetPatientThrowsException(string phn, Type expectedExceptionType, string expectedErrorMessage, bool commonNameExists)
         {
             // Arrange
-            PatientModel? patient = GetPatient(commonNameExists, errorMessage: expectedErrorMessage);
+            PatientModel patient = GetPatient(commonNameExists, errorMessage: expectedErrorMessage);
             IPatientService patientService = GetPatientService(patient);
 
             // Act & Verify
@@ -121,7 +121,7 @@ namespace HealthGateway.PatientTests.Services
                 MappingService);
         }
 
-        private static PatientModel? GetPatient(bool commonNameExists = true, bool legalNameExists = true, string? errorMessage = null)
+        private static PatientModel GetPatient(bool commonNameExists = true, bool legalNameExists = true, string? errorMessage = null)
         {
             return errorMessage switch
             {

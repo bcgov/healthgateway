@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// A collection of configuration items for use by Health Gateway and

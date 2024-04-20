@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
