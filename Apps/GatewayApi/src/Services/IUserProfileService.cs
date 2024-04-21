@@ -63,6 +63,14 @@ namespace HealthGateway.GatewayApi.Services
         Task<RequestResult<UserProfileModel>> RecoverUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
+        /// Gets a value indicating if the patient age is valid for registration.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A boolean result.</returns>
+        Task<RequestResult<bool>> ValidateMinimumAgeAsync(string hdid, CancellationToken ct = default);
+
+        /// <summary>
         /// Updates the user profile and sets the accepted terms of service to the supplied value.
         /// </summary>
         /// <param name="hdid">The users hdid.</param>
@@ -70,5 +78,13 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A user profile model wrapped in a RequestResult.</returns>
         Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default);
+
+        /// <summary>
+        /// Validates a phone number against the system wide accepted number validation logic.
+        /// </summary>
+        /// <param name="phoneNumber">This should be a phone number without a mask.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>True if the phone number is valid.</returns>
+        Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default);
     }
 }

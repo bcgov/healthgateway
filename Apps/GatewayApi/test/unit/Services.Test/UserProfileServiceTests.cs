@@ -132,17 +132,36 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="accountsFeedEnabled">The value indicates whether accounts change feed has been enabled or not.</param>
         /// <param name="notificationsFeedEnabled">The value indicates whether notification change feed has been enabled or not.</param>
         /// <param name="smsIsValid">The value indicates whether sms in the request is valid or not.</param>
+        /// <param name="patientAgeIsValid">The value indicates whether patient age is valid or not.</param>
+        /// <param name="patientErrorExists">The value indicates whether there is a patient error or not.</param>
+        /// <param name="expectedResultStatus">The expected result status.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(DbStatusCode.Created, true, true, true)] // Inserted profile with change feed enabled
-        [InlineData(DbStatusCode.Created, false, false, true)] // Inserted profile with change feed disabled
-        [InlineData(DbStatusCode.Created, false, false, false)] // Cannot insert due to sms validation error
-        [InlineData(DbStatusCode.Concurrency, false, false, true)] // Cannot insert due to database error
-        [InlineData(DbStatusCode.Error, false, false, true)] // Cannot insert due to database error
-        public async Task ShouldICreateUserProfileAsync(DbStatusCode insertedStatus, bool accountsFeedEnabled, bool notificationsFeedEnabled, bool smsIsValid)
+        [InlineData(DbStatusCode.Created, true, true, true, true, false, ResultType.Success)] // Inserted profile with change feed enabled
+        [InlineData(DbStatusCode.Created, false, false, true, true, false, ResultType.Success)] // Inserted profile with change feed disabled
+        [InlineData(DbStatusCode.Created, false, false, false, true, false, ResultType.Error)] // Cannot insert due to sms validation error
+        [InlineData(DbStatusCode.Created, false, false, true, false, false, ResultType.Error)] // Cannot insert due to patient minimum age validation error
+        [InlineData(DbStatusCode.Created, false, false, true, true, true, ResultType.Error)] // Cannot insert due to get patient error
+        [InlineData(DbStatusCode.Concurrency, false, false, true, true, false, ResultType.Error)] // Cannot insert due to database error
+        [InlineData(DbStatusCode.Error, false, false, true, true, false, ResultType.Error)] // Cannot insert due to database error
+        public async Task ShouldICreateUserProfileAsync(
+            DbStatusCode insertedStatus,
+            bool accountsFeedEnabled,
+            bool notificationsFeedEnabled,
+            bool smsIsValid,
+            bool patientAgeIsValid,
+            bool patientErrorExists,
+            ResultType expectedResultStatus)
         {
             // Arrange
-            CreateUserProfileMock mock = SetupCreateUserProfileMock(insertedStatus, accountsFeedEnabled, notificationsFeedEnabled, smsIsValid);
+            CreateUserProfileMock mock = SetupCreateUserProfileMock(
+                insertedStatus,
+                accountsFeedEnabled,
+                notificationsFeedEnabled,
+                smsIsValid,
+                patientAgeIsValid,
+                patientErrorExists,
+                expectedResultStatus);
 
             // Act
             RequestResult<UserProfileModel> actual = await mock.Service.CreateUserProfileAsync(mock.CreateUserRequest, mock.JwtAuthTime, mock.JwtEmailAddress);
@@ -246,6 +265,92 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mock.Expected.TimesSendEmail);
         }
 
+        /// <summary>
+        /// IsPhoneNumberValidAsync.
+        /// </summary>
+        /// <param name="phoneNumber">The phone number to validate.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [InlineData("3345678901")]
+        [InlineData("2507001000")]
+        [Theory]
+        public async Task ShouldPhoneNumberBeValidAsync(string phoneNumber)
+        {
+            // Arrange
+            IsPhoneNumberValidMock mock = SetupIsPhoneNumberValidMock(phoneNumber, true);
+
+            // Act
+            bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
+
+            // Assert
+            Assert.Equal(mock.Expected, actual);
+        }
+
+        /// <summary>
+        /// IsPhoneNumberValidAsync.
+        /// </summary>
+        /// <param name="phoneNumber">The phone number to validate.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [InlineData("xxx3277465")]
+        [InlineData("abc")]
+        [Theory]
+        public async Task ShouldPhoneNumberNotBeValidAsync(string phoneNumber)
+        {
+            // Arrange
+            IsPhoneNumberValidMock mock = SetupIsPhoneNumberValidMock(phoneNumber, false);
+
+            // Act
+            bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
+
+            // Assert
+            Assert.Equal(mock.Expected, actual);
+        }
+
+        /// <summary>
+        /// ValidateMinimumAgeAsync.
+        /// </summary>
+        /// <param name="age">The age to validate.</param>
+        /// <param name="minAge">The minimum age to validate against.</param>
+        /// <param name="patientErrorExists">The value indicating whether patient error exists or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [InlineData(0, 0, false)]
+        [InlineData(19, 19, false)]
+        [InlineData(20, 19, false)]
+        [Theory]
+        public async Task ShouldValidateMinimumAgeAsync(int age, int minAge, bool patientErrorExists)
+        {
+            // Arrange
+            ValidateMinimumAgeMock mock = SetupValidateMinimumAgeMock(age, minAge, patientErrorExists, true);
+
+            // Act
+            RequestResult<bool> actual = await mock.Service.ValidateMinimumAgeAsync(mock.Age);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// ValidateMinimumAgeAsync fails validation due to invalid age.
+        /// </summary>
+        /// <param name="age">The age to validate.</param>
+        /// <param name="minAge">The minimum age to validate against.</param>
+        /// <param name="patientErrorExists">The value indicating whether patient error exists or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [InlineData(0, 19, false)]
+        [InlineData(18, 19, false)]
+        [InlineData(19, 19, true)]
+        [Theory]
+        public async Task ShouldNotValidateInvalidMinimumAgeAsync(int age, int minAge, bool patientErrorExists)
+        {
+            // Arrange
+            ValidateMinimumAgeMock mock = SetupValidateMinimumAgeMock(age, minAge, patientErrorExists, false);
+
+            // Act
+            RequestResult<bool> actual = await mock.Service.ValidateMinimumAgeAsync(mock.Age);
+
+            // Assert
+            mock.Expected.ShouldDeepEqual(actual);
+        }
+
         private static PatientModel GeneratePatientModel(DateTime birthDate)
         {
             return new()
@@ -304,14 +409,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbStatusCode insertedStatus,
             bool accountsFeedEnabled,
             bool notificationsFeedEnabled,
-            bool smsIsValid)
+            bool smsIsValid,
+            bool patientAgeIsValid,
+            bool patientErrorExists,
+            ResultType expectedResultStatus)
         {
-            const int patientAge = 15;
             const int minPatientAge = 10;
             const string jwtEmail = "user@healthgateway.ca";
             const string requestedEmail = "user@healthgateway.ca";
             const string smsVerificationCode = "12345";
             string requestedSms = smsIsValid ? "2505556000" : "0000000000";
+            int patientAge = patientAgeIsValid ? minPatientAge : minPatientAge - 1;
 
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime currentUtcDate = DateTime.UtcNow.Date;
@@ -326,8 +434,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             RequestResult<PatientModel> patientResult = new()
             {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = patientModel,
+                ResultStatus = patientErrorExists ? ResultType.Error : ResultType.Success,
+                ResourcePayload = patientErrorExists ? null : patientModel,
+                ResultError = patientErrorExists
+                    ? new()
+                    {
+                        ResultMessage = "DB Error",
+                    }
+                    : null,
             };
 
             UserProfile userProfile = GenerateUserProfile(currentUtcDate);
@@ -340,7 +454,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.InsertUserProfileAsync(It.Is<UserProfile>(x => x.HdId == Hdid), It.Is<bool>(x => x == !accountsFeedEnabled), It.IsAny<CancellationToken>()))
+            userProfileDelegateMock.Setup(
+                    s => s.InsertUserProfileAsync(
+                        It.Is<UserProfile>(x => x.HdId == Hdid),
+                        It.Is<bool>(x => x == !accountsFeedEnabled),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(insertResult);
 
             Mock<IPatientService> patientServiceMock = new();
@@ -391,24 +509,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(currentUtcDate);
 
-            RequestResult<UserProfileModel>? validationResult = smsIsValid
-                ? null
-                : new()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new()
-                    {
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.SmsInvalid),
-                        ResultMessage = "Profile values entered are invalid",
-                    },
-                };
-            Mock<IUserProfileValidatorService> userProfileValidatorServiceMock = new();
-            userProfileValidatorServiceMock.Setup(
-                    s => s.ValidateUserProfileAsync(
-                        It.IsAny<CreateUserRequest>(),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validationResult);
-
             IConfigurationRoot configuration = GetIConfiguration(
                 minPatientAge,
                 accountFeedEnabled: accountsFeedEnabled,
@@ -424,12 +524,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userPreferenceServiceMock: userPreferenceServiceMock,
                 configurationRoot: configuration,
                 applicationSettingsServiceMock: applicationSettingsServiceMock,
-                userProfileValidatorServiceMock: userProfileValidatorServiceMock,
                 messageSenderMock: messageSenderMock);
 
             RequestResult<UserProfileModel> userProfileModelResult = new()
             {
-                ResourcePayload = insertResult.Status == DbStatusCode.Created && smsIsValid
+                ResourcePayload = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid)
                     ? new UserProfileModel
                     {
                         HdId = userProfile.HdId,
@@ -443,23 +542,56 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         LastLoginDateTime = currentUtcDate,
                     }
                     : null,
-                ResultStatus = insertResult.Status == DbStatusCode.Created && smsIsValid ? ResultType.Success : ResultType.Error,
-                ResultError = insertResult.Status != DbStatusCode.Created || !smsIsValid
-                    ? new()
-                    {
-                        ErrorCode = smsIsValid ? ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) : ErrorTranslator.InternalError(ErrorType.SmsInvalid),
-                        ResultMessage = smsIsValid ? insertResult.Message : "Profile values entered are invalid",
-                    }
+                ResultStatus = expectedResultStatus,
+                ResultError = !IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid)
+                    ? GetResultError(patientResult.ResultError, smsIsValid, patientAgeIsValid, insertResult.Message)
                     : null,
             };
 
-            Times timesSendEmail = insertedStatus == DbStatusCode.Created && smsIsValid ? Times.Once() : Times.Never();
-            Times timesSendAccountsFeed = insertedStatus == DbStatusCode.Created && smsIsValid && accountsFeedEnabled ? Times.Once() : Times.Never();
-            Times timesSendNotificationFeed = insertedStatus == DbStatusCode.Created && smsIsValid && notificationsFeedEnabled ? Times.Once() : Times.Never();
-            Times timesQueueNotificationSettings = insertedStatus == DbStatusCode.Created && smsIsValid ? Times.Once() : Times.Never();
+            Times timesSendEmail = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) ? Times.Once() : Times.Never();
+            Times timesSendAccountsFeed = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) && accountsFeedEnabled ? Times.Once() : Times.Never();
+            Times timesSendNotificationFeed = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) && notificationsFeedEnabled ? Times.Once() : Times.Never();
+            Times timesQueueNotificationSettings = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) ? Times.Once() : Times.Never();
 
             CreatedUserProfileResult expected = new(userProfileModelResult, timesSendEmail, timesSendAccountsFeed, timesSendNotificationFeed, timesQueueNotificationSettings);
             return new(service, userEmailServiceMock, notificationSettingsServiceMock, messageSenderMock, expected, createUserRequest, DateTime.Today, jwtEmail);
+
+            static RequestResultError GetResultError(RequestResultError? patientResultError, bool smsIsValid, bool patientAgeIsValid, string insertResultMessage)
+            {
+                if (patientResultError != null)
+                {
+                    return patientResultError;
+                }
+
+                if (!smsIsValid)
+                {
+                    return new RequestResultError
+                    {
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.SmsInvalid),
+                        ResultMessage = "Profile values entered are invalid",
+                    };
+                }
+
+                if (!patientAgeIsValid)
+                {
+                    return new RequestResultError
+                    {
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                        ResultMessage = "Patient under minimum age",
+                    };
+                }
+
+                return new RequestResultError
+                {
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    ResultMessage = insertResultMessage,
+                };
+            }
+
+            static bool IsInsertSuccessful(DbStatusCode insertStatus, bool patientErrorExists, bool smsIsValid, bool patientAgeIsValid)
+            {
+                return insertStatus == DbStatusCode.Created && !patientErrorExists && smsIsValid && patientAgeIsValid;
+            }
         }
 
         private static GetUserProfileMock SetupGetUserProfileMock(
@@ -953,6 +1085,56 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, emailQueueServiceMock, expected, Hdid);
         }
 
+        private static IsPhoneNumberValidMock SetupIsPhoneNumberValidMock(string phoneNumber, bool valid)
+        {
+            IUserProfileService service = GetUserProfileService(configurationRoot: GetIConfiguration());
+            return new(service, valid, phoneNumber);
+        }
+
+        private static ValidateMinimumAgeMock SetupValidateMinimumAgeMock(int age, int minAge, bool patientErrorExists, bool validAge)
+        {
+            DateTime currentUtcDate = DateTime.UtcNow;
+            DateTime birthDate = currentUtcDate.AddYears(-age).Date;
+
+            PatientModel patientModel = new()
+            {
+                HdId = Hdid,
+                Birthdate = birthDate,
+            };
+
+            RequestResult<PatientModel> patientResult = new()
+            {
+                ResultStatus = patientErrorExists ? ResultType.Error : ResultType.Success,
+                ResourcePayload = patientErrorExists ? null : patientModel,
+                ResultError = patientErrorExists
+                    ? new()
+                    {
+                        ResultMessage = "DB ERROR",
+                    }
+                    : null,
+            };
+
+            RequestResult<bool> expected = new()
+            {
+                ResourcePayload = validAge,
+                ResultStatus = patientResult.ResultStatus,
+                ResultError = patientResult.ResultError,
+            };
+
+            Mock<IPatientService> patientServiceMock = new();
+            patientServiceMock.Setup(
+                    s => s.GetPatientAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<PatientIdentifierType>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patientResult);
+
+            IConfigurationRoot configuration = GetIConfiguration(minAge);
+            IUserProfileService service = GetUserProfileService(configurationRoot: configuration, patientServiceMock: patientServiceMock);
+            return new(service, expected, age.ToString(CultureInfo.InvariantCulture));
+        }
+
         private static IUserProfileService GetUserProfileService(
             Mock<IPatientService>? patientServiceMock = null,
             Mock<IUserEmailService>? userEmailServiceMock = null,
@@ -966,7 +1148,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IConfigurationRoot? configurationRoot = null,
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IApplicationSettingsService>? applicationSettingsServiceMock = null,
-            Mock<IUserProfileValidatorService>? userProfileValidatorServiceMock = null,
             Mock<IPatientRepository>? patientRepositoryMock = null,
             Mock<IMessageSender>? messageSenderMock = null)
         {
@@ -982,7 +1163,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             configurationRoot = configurationRoot ?? GetIConfiguration();
             authenticationDelegateMock = authenticationDelegateMock ?? new();
             applicationSettingsServiceMock = applicationSettingsServiceMock ?? new();
-            userProfileValidatorServiceMock = userProfileValidatorServiceMock ?? new();
             patientRepositoryMock = patientRepositoryMock ?? new();
             messageSenderMock = messageSenderMock ?? new();
 
@@ -1002,7 +1182,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 MappingService,
                 authenticationDelegateMock.Object,
                 applicationSettingsServiceMock.Object,
-                userProfileValidatorServiceMock.Object,
                 patientRepositoryMock.Object,
                 messageSenderMock.Object);
         }
@@ -1057,5 +1236,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private sealed record UserProfileModelResult(
             RequestResult<UserProfileModel> Result,
             Times TimesSendEmail);
+
+        private sealed record IsPhoneNumberValidMock(
+            IUserProfileService Service,
+            bool Expected,
+            string PhoneNumber);
+
+        private sealed record ValidateMinimumAgeMock(
+            IUserProfileService Service,
+            RequestResult<bool>
+                Expected,
+            string Age);
     }
 }

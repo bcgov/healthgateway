@@ -25,6 +25,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
@@ -37,6 +38,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using PatientModel = HealthGateway.Common.Models.PatientModel;
@@ -46,15 +48,16 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
+        private const string MinPatientAgeKey = "MinPatientAge";
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IApplicationSettingsService applicationSettingsService;
-        private readonly IUserProfileValidatorService userProfileValidatorService;
         private readonly IGatewayApiMappingService mappingService;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IEmailQueueService emailQueueService;
         private readonly ILegalAgreementService legalAgreementService;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly int minPatientAge;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
         private readonly IUserEmailService userEmailService;
@@ -86,7 +89,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="mappingService">The inject automapper provider.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         /// <param name="applicationSettingsService">The injected Application Settings service.</param>
-        /// <param name="userProfileValidatorService">The injected user profile validator service.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="messageSender">The message sender.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
@@ -106,7 +108,6 @@ namespace HealthGateway.GatewayApi.Services
             IGatewayApiMappingService mappingService,
             IAuthenticationDelegate authenticationDelegate,
             IApplicationSettingsService applicationSettingsService,
-            IUserProfileValidatorService userProfileValidatorService,
             IPatientRepository patientRepository,
             IMessageSender messageSender)
         {
@@ -123,10 +124,10 @@ namespace HealthGateway.GatewayApi.Services
             this.cryptoDelegate = cryptoDelegate;
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
+            this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.mappingService = mappingService;
             this.authenticationDelegate = authenticationDelegate;
             this.applicationSettingsService = applicationSettingsService;
-            this.userProfileValidatorService = userProfileValidatorService;
             this.patientRepository = patientRepository;
             this.messageSender = messageSender;
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
@@ -211,7 +212,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
 
-            RequestResult<UserProfileModel>? validationResult = await this.userProfileValidatorService.ValidateUserProfileAsync(createProfileRequest, ct);
+            RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfileAsync(createProfileRequest, ct);
             if (validationResult != null)
             {
                 return validationResult;
@@ -345,6 +346,27 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
+        public async Task<RequestResult<bool>> ValidateMinimumAgeAsync(string hdid, CancellationToken ct = default)
+        {
+            if (this.minPatientAge == 0)
+            {
+                return RequestResultFactory.Success(true);
+            }
+
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
+
+            if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
+            {
+                this.logger.LogWarning("Error retrieving patient age... {Hdid}", hdid);
+                return RequestResultFactory.Error(false, patientResult.ResultError);
+            }
+
+            bool isValid = AgeRangeValidator.IsValid(patientResult.ResourcePayload.Birthdate, this.minPatientAge);
+
+            return RequestResultFactory.Success(isValid);
+        }
+
+        /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default)
         {
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
@@ -364,6 +386,38 @@ namespace HealthGateway.GatewayApi.Services
             UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(result.Payload, ct: ct);
 
             return RequestResultFactory.Success(userProfileModel);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default)
+        {
+            return await UserProfileValidator.ValidateUserProfileSmsNumberAsync(phoneNumber, ct);
+        }
+
+        private async Task<RequestResult<UserProfileModel>?> ValidateUserProfileAsync(CreateUserRequest createProfileRequest, CancellationToken ct)
+        {
+            // Validate registration age
+            string hdid = createProfileRequest.Profile.HdId;
+            RequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAgeAsync(hdid, ct);
+            if (isMinimumAgeResult.ResultStatus != ResultType.Success)
+            {
+                return RequestResultFactory.Error<UserProfileModel>(isMinimumAgeResult.ResultError);
+            }
+
+            if (!isMinimumAgeResult.ResourcePayload)
+            {
+                this.logger.LogWarning("Patient under minimum age... {Hdid}", createProfileRequest.Profile.HdId);
+                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Patient under minimum age");
+            }
+
+            // Validate UserProfile inputs
+            if (!await UserProfileValidator.ValidateUserProfileSmsNumberAsync(createProfileRequest.Profile.SmsNumber, ct))
+            {
+                this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
+                return RequestResultFactory.Error<UserProfileModel>(ErrorType.SmsInvalid, "Profile values entered are invalid");
+            }
+
+            return null;
         }
 
         private async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null, CancellationToken ct = default)
