@@ -63,29 +63,6 @@ namespace HealthGateway.GatewayApi.Services
         Task<RequestResult<UserProfileModel>> RecoverUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets the most recent active terms of service.
-        /// </summary>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The wrapped terms of service.</returns>
-        Task<RequestResult<TermsOfServiceModel>> GetActiveTermsOfServiceAsync(CancellationToken ct = default);
-
-        /// <summary>
-        /// Updates a User Preference in the backend.
-        /// </summary>
-        /// <param name="userPreferenceModel">The user preference to update.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
-
-        /// <summary>
-        /// Create a User Preference in the backend.
-        /// </summary>
-        /// <param name="userPreferenceModel">The user preference to create.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
-
-        /// <summary>
         /// Gets a value indicating if the patient age is valid for registration.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>

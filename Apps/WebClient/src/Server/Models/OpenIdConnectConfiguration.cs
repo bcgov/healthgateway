@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Server.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration to be used for OpenID Connect authentication.

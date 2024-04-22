@@ -13,26 +13,22 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.GatewayApi.Services
 {
-    using System.Text.Json.Serialization;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// The Application Settings service.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PhsaResult<T>
+    public interface IApplicationSettingsService
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets the latest tour change date from app settings.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PhsaLoadState LoadState { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the result section.
-        /// </summary>
-        [JsonPropertyName("result")]
-        public T? Result { get; set; }
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The latest tour change date.</returns>
+        Task<DateTime?> GetLatestTourChangeDateTimeAsync(CancellationToken ct = default);
     }
 }

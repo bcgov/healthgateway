@@ -156,8 +156,6 @@ namespace AccountDataAccessTest.Strategy
 
         private sealed record GetPatientMock(HdidPhsaStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
 
-        private sealed record GetPatientHandlesPhsaNullResultMock(HdidPhsaStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
-
         private sealed record GetPatientHandlesPhsaApiExceptionMock(HdidPhsaStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
     }
 }

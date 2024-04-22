@@ -99,7 +99,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest, CancellationToken.None);
             expected.ShouldDeepEqual(actualResult.Value);
@@ -143,7 +145,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest, CancellationToken.None);
             Assert.IsType<BadRequestResult>(actualResult.Result);
@@ -167,7 +171,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSmsService>().Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             RequestResult<bool> actualResult = await controller.Validate(this.hdid, It.IsAny<CancellationToken>());
 
@@ -303,19 +309,21 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResourcePayload = termsOfService,
             };
 
-            Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
+            Mock<ILegalAgreementService> legalAgreementServiceMock = new();
+            legalAgreementServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
-                userProfileServiceMock.Object,
+                new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                legalAgreementServiceMock.Object);
 
             RequestResult<TermsOfServiceModel> actualResult = await service.GetLastTermsOfService(It.IsAny<CancellationToken>());
             expectedResult.ShouldDeepEqual(actualResult);
@@ -337,7 +345,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSmsService>().Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             bool actualResult = await controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca", default);
 
@@ -370,7 +380,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSmsService>().Object,
-                mockAuthenticationDelegate.Object);
+                mockAuthenticationDelegate.Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid(), default);
             Assert.Equal(ResultType.Success, actualResult.Value?.ResultStatus);
@@ -401,7 +413,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSmsService>().Object,
-                mockAuthenticationDelegate.Object);
+                mockAuthenticationDelegate.Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid(), default);
             Assert.Equal(ResultType.Error, actualResult.Value?.ResultStatus);
@@ -423,7 +437,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             bool actualResult = await controller.UpdateUserSmsNumberAsync(this.hdid, "250 123 456", default);
             Assert.True(actualResult);
@@ -453,7 +469,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<bool>> actualResult = await controller.ValidateSms(this.hdid, "205 123 4567", CancellationToken.None);
 
@@ -486,7 +504,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<bool>> actualResult = await controller.ValidateSms(this.hdid, "205 123 4567", CancellationToken.None);
 
@@ -515,7 +535,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSmsService>().Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                new Mock<ILegalAgreementService>().Object);
 
             RequestResult<UserProfileModel> actualResult = await controller.UpdateAcceptedTerms(this.hdid, Guid.Empty, It.IsAny<CancellationToken>());
             expected.ShouldDeepEqual(actualResult);
@@ -586,7 +608,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
-            userProfileServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new RequestResult<TermsOfServiceModel>());
+
+            Mock<ILegalAgreementService> legalAgreementServiceMock = new();
+            legalAgreementServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new RequestResult<TermsOfServiceModel>());
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
@@ -596,7 +620,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IUserPreferenceService>().Object,
+                legalAgreementServiceMock.Object);
             return await controller.GetUserProfile(this.hdid, It.IsAny<CancellationToken>());
         }
 
@@ -605,24 +631,26 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new();
+            Mock<IUserPreferenceService> userPreferenceServiceMock = new();
             RequestResult<UserPreferenceModel> requestResult = new()
             {
                 ResourcePayload = userPref,
                 ResultStatus = ResultType.Success,
             };
 
-            userProfileServiceMock.Setup(s => s.UpdateUserPreferenceAsync(userPref, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            userPreferenceServiceMock.Setup(s => s.UpdateUserPreferenceAsync(userPref, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController controller = new(
-                userProfileServiceMock.Object,
+                new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                userPreferenceServiceMock.Object,
+                new Mock<ILegalAgreementService>().Object);
             return await controller.UpdateUserPreference(this.hdid, userPref, It.IsAny<CancellationToken>());
         }
 
@@ -631,24 +659,26 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new();
+            Mock<IUserPreferenceService> userPreferenceServiceMock = new();
             RequestResult<UserPreferenceModel> requestResult = new()
             {
                 ResourcePayload = userPref,
                 ResultStatus = ResultType.Success,
             };
 
-            userProfileServiceMock.Setup(s => s.CreateUserPreferenceAsync(userPref, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            userPreferenceServiceMock.Setup(s => s.CreateUserPreferenceAsync(userPref, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController controller = new(
-                userProfileServiceMock.Object,
+                new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                userPreferenceServiceMock.Object,
+                new Mock<ILegalAgreementService>().Object);
             return await controller.CreateUserPreference(this.hdid, userPref, It.IsAny<CancellationToken>());
         }
     }

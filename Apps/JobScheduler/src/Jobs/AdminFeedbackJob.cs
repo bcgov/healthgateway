@@ -20,7 +20,6 @@ namespace HealthGateway.JobScheduler.Jobs
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;

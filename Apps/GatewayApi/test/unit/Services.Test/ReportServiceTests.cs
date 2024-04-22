@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test
 {
+    using System.IO;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -39,18 +40,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <param name="templateType">Report Template Type.</param>
         /// <param name="reportName">Report Name.</param>
+        /// <param name="reportType">Report Type.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(TemplateType.Medication, "HealthGatewayMedicationReport")]
-        [InlineData(TemplateType.Notes, "HealthGatewayNotesReport")]
-        [InlineData(TemplateType.Encounter, "HealthGatewayEncounterReport")]
-        [InlineData(TemplateType.Immunization, "HealthGatewayImmunizationReport")]
-        [InlineData(TemplateType.Covid, "HealthGatewayCovidReport")]
-        [InlineData(TemplateType.MedicationRequest, "HealthGatewayMedicationRequestReport")]
-        [InlineData(TemplateType.Laboratory, "HealthGatewayLaboratoryReport")]
-        [InlineData(TemplateType.DependentImmunization, "HealthGatewayDependentImmunizationReport")]
-        [InlineData(TemplateType.HospitalVisit, "HealthGatewayHospitalVisitReport")]
-        public async Task ShouldGetReport(TemplateType templateType, string reportName)
+        [InlineData(TemplateType.Medication, "HealthGatewayMedicationReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.Notes, "HealthGatewayNotesReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.Encounter, "HealthGatewayEncounterReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.Immunization, "HealthGatewayImmunizationReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.Covid, "HealthGatewayCovidReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.MedicationRequest, "HealthGatewayMedicationRequestReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.Laboratory, "HealthGatewayLaboratoryReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.DependentImmunization, "HealthGatewayDependentImmunizationReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.HospitalVisit, "HealthGatewayHospitalVisitReport", ReportFormatType.Pdf)]
+        [InlineData(TemplateType.HospitalVisit, "HealthGatewayHospitalVisitReport", ReportFormatType.Csv)]
+        [InlineData(TemplateType.HospitalVisit, "HealthGatewayHospitalVisitReport", ReportFormatType.Xlsx)]
+        public async Task ShouldGetReport(TemplateType templateType, string reportName, ReportFormatType reportType)
         {
             RequestResult<ReportModel> expectedResult = new()
             {
@@ -65,11 +69,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Data = JsonDocument.Parse("{}").RootElement,
                 Template = templateType,
-                Type = ReportFormatType.Pdf,
+                Type = reportType,
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();
-            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
+            cdogsDelegateMock.Setup(
+                    s => s.GenerateReportAsync(
+                        It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedResult);
 
             IReportService service = new ReportService(
                 new Mock<ILogger<ReportService>>().Object,
@@ -78,6 +86,32 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedResult.ShouldDeepEqual(actualResult);
+        }
+
+        /// <summary>
+        /// GetReportAsync throws file not found exception.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetReportThrowsFileNotFoundException()
+        {
+            // Arrange
+            ReportRequestModel reportRequest = new()
+            {
+                Data = JsonDocument.Parse("{}").RootElement,
+                Template = TemplateType.Covid,
+                Type = (ReportFormatType)999, // An invalid report format type value will not map to a valid file extension for any of our assets
+            };
+
+            string expected = $"Template HealthGateway.GatewayApi.Assets.Templates.{reportRequest.Template}Report. not found.";
+
+            IReportService service = new ReportService(
+                new Mock<ILogger<ReportService>>().Object,
+                new Mock<ICDogsDelegate>().Object);
+
+            // Act and Assert
+            FileNotFoundException exception = await Assert.ThrowsAsync<FileNotFoundException>(() => service.GetReportAsync(reportRequest));
+            Assert.Equal(expected, exception.Message);
         }
     }
 }
