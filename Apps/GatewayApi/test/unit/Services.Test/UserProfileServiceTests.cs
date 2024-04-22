@@ -273,10 +273,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData("3345678901")]
         [InlineData("2507001000")]
         [Theory]
-        public async Task ShouldPhoneNumberBeValidAsync(string phoneNumber)
+        public async Task PhoneNumberShouldBeValidAsync(string phoneNumber)
         {
             // Arrange
-            IsPhoneNumberValidMock mock = SetupIsPhoneNumberValidMock(phoneNumber, true);
+            PhoneNumberShouldBeValidMock mock = SetupPhoneNumberShouldBeValidMock(phoneNumber, true);
 
             // Act
             bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
@@ -293,10 +293,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData("xxx3277465")]
         [InlineData("abc")]
         [Theory]
-        public async Task ShouldPhoneNumberNotBeValidAsync(string phoneNumber)
+        public async Task PhoneNumberShouldNotBeValidAsync(string phoneNumber)
         {
             // Arrange
-            IsPhoneNumberValidMock mock = SetupIsPhoneNumberValidMock(phoneNumber, false);
+            PhoneNumberShouldBeValidMock mock = SetupPhoneNumberShouldBeValidMock(phoneNumber, false);
 
             // Act
             bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
@@ -316,7 +316,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(19, 19, false)]
         [InlineData(20, 19, false)]
         [Theory]
-        public async Task ShouldValidateMinimumAgeAsync(int age, int minAge, bool patientErrorExists)
+        public async Task ShouldValidateValidMinimumAgeAsync(int age, int minAge, bool patientErrorExists)
         {
             // Arrange
             ValidateMinimumAgeMock mock = SetupValidateMinimumAgeMock(age, minAge, patientErrorExists, true);
@@ -339,7 +339,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(18, 19, false)]
         [InlineData(19, 19, true)]
         [Theory]
-        public async Task ShouldNotValidateInvalidMinimumAgeAsync(int age, int minAge, bool patientErrorExists)
+        public async Task ShouldValidateInvalidMinimumAgeAsync(int age, int minAge, bool patientErrorExists)
         {
             // Arrange
             ValidateMinimumAgeMock mock = SetupValidateMinimumAgeMock(age, minAge, patientErrorExists, false);
@@ -1085,7 +1085,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, emailQueueServiceMock, expected, Hdid);
         }
 
-        private static IsPhoneNumberValidMock SetupIsPhoneNumberValidMock(string phoneNumber, bool valid)
+        private static PhoneNumberShouldBeValidMock SetupPhoneNumberShouldBeValidMock(string phoneNumber, bool valid)
         {
             IUserProfileService service = GetUserProfileService(configurationRoot: GetIConfiguration());
             return new(service, valid, phoneNumber);
@@ -1237,7 +1237,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserProfileModel> Result,
             Times TimesSendEmail);
 
-        private sealed record IsPhoneNumberValidMock(
+        private sealed record PhoneNumberShouldBeValidMock(
             IUserProfileService Service,
             bool Expected,
             string PhoneNumber);

@@ -100,11 +100,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Data = JsonDocument.Parse("{}").RootElement,
                 Template = TemplateType.Covid,
-                Type = (ReportFormatType)999,
+                Type = (ReportFormatType)999, // An invalid report format type value will not map to a valid file extension for any of our assets
             };
 
-            string resourceName = $"HealthGateway.GatewayApi.Assets.Templates.{reportRequest.Template}Report.";
-            string expected = $"Template {resourceName} not found.";
+            string expected = $"Template HealthGateway.GatewayApi.Assets.Templates.{reportRequest.Template}Report. not found.";
 
             IReportService service = new ReportService(
                 new Mock<ILogger<ReportService>>().Object,

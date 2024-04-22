@@ -94,11 +94,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             It.IsAny<Func<Task<DateTime?>>>(),
                             It.IsAny<TimeSpan?>(),
                             It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(
+                    .Returns(
                         (string _, Func<Task<DateTime?>> valueFactory, TimeSpan _, CancellationToken _) =>
                         {
-                            Task<DateTime?> value = valueFactory.Invoke();
-                            return value.Result;
+                            Task<DateTime?> task = valueFactory.Invoke();
+                            return task;
                         });
             }
 
