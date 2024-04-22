@@ -26,7 +26,7 @@ namespace HealthGateway.GatewayApi.Services
     public interface IUserPreferenceService
     {
         /// <summary>
-        /// Updates a User Preference in the backend.
+        /// Updates a User Preference.
         /// </summary>
         /// <param name="userPreferenceModel">The user preference to update.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
