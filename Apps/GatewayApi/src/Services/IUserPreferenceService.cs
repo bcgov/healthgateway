@@ -34,7 +34,7 @@ namespace HealthGateway.GatewayApi.Services
         Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
 
         /// <summary>
-        /// Create a User Preference in the backend.
+        /// Create a User Preference.
         /// </summary>
         /// <param name="userPreferenceModel">The user preference to create.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
