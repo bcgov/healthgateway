@@ -102,14 +102,14 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (NpgsqlException e)
                 {
-                    this.logger.LogError("DB Error encountered in WaitChannelNotification: {Channel}\n{Exception}", Channel, e.ToString());
+                    this.logger.LogError(e, "DB Error encountered in WaitChannelNotification: {Channel}\n{Message}", Channel, e.Message);
                     if (!stoppingToken.IsCancellationRequested)
                     {
                         await Task.Delay(SleepDuration, stoppingToken);
                     }
                 }
 
-                this.logger.LogWarning($"Banner Listener on {Channel} exiting...");
+                this.logger.LogWarning("Banner Listener on {Channel} exiting...", Channel);
             }
         }
 

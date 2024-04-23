@@ -82,7 +82,7 @@ namespace HealthGateway.Encounter.Delegates
                 }
                 catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
-                    this.logger.LogError("Error while retrieving Msp Visits... {Error}", e);
+                    this.logger.LogError(e, "Error while retrieving Msp Visits... {Message}", e.Message);
                     HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
                     retVal.ResultError = new()
                     {

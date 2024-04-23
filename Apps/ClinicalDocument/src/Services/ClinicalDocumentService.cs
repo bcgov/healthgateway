@@ -110,7 +110,7 @@ namespace HealthGateway.ClinicalDocument.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("Error while retrieving Clinical Documents ... {Error}", e.ToString());
+                this.logger.LogCritical(e, "Error while retrieving Clinical Documents ... {Message}", e.Message);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error while retrieving Clinical Documents",
@@ -161,7 +161,7 @@ namespace HealthGateway.ClinicalDocument.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("Error while retrieving Clinical Document file ... {Error}", e.ToString());
+                this.logger.LogCritical(e, "Error while retrieving Clinical Document file ... {Message}", e.Message);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error while retrieving Clinical Document file",

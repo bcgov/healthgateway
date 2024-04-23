@@ -115,7 +115,7 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (DataException e)
                 {
-                    this.logger.LogError("Error writing to DB:\n{@Exception}", e);
+                    this.logger.LogError(e, "Error writing to DB:\n{Message}", e.Message);
                 }
             }
 

@@ -152,8 +152,7 @@ namespace HealthGateway.Medication.Services
             {
                 List<string> medicationIdentifiers = medSummaries.Select(s => s.Din.PadLeft(8, '0')).ToList();
 
-                this.logger.LogDebug("Getting drugs from DB");
-                this.logger.LogTrace("Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
+                this.logger.LogTrace("Getting drugs from DB - Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
                 List<string> uniqueDrugIdentifiers = medicationIdentifiers.Distinct().ToList();
                 this.logger.LogDebug(
                     "Total DrugIdentifiers: {MedicationIdentifiersCount} | Unique identifiers: {UniqueDrugIdentifiersCount}",
@@ -174,8 +173,7 @@ namespace HealthGateway.Medication.Services
                     provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
                 }
 
-                this.logger.LogDebug("Finished getting drugs from DB");
-                this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Count);
+                this.logger.LogTrace("Finished getting drugs from DB - Populating medication summary... {Count} records", medSummaries.Count);
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
                     string din = mdSummary.Din.PadLeft(8, '0');

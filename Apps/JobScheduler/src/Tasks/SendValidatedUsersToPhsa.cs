@@ -55,7 +55,7 @@ namespace HealthGateway.JobScheduler.Tasks
         /// <inheritdoc/>
         public async Task RunAsync(CancellationToken ct = default)
         {
-            this.logger.LogInformation("Performing Task {Name}", this.GetType().Name);
+            this.logger.LogDebug("Performing Task {Name}", this.GetType().Name);
             IEnumerable<UserProfile> users = await this.dbContext.UserProfile.Where(q => !string.IsNullOrEmpty(q.Email)).ToListAsync(ct);
             this.logger.LogInformation("Queueing NotificationSettings for {Count} users", users.Count());
             foreach (UserProfile user in users)
@@ -71,7 +71,7 @@ namespace HealthGateway.JobScheduler.Tasks
                 await this.notificationSettingsService.QueueNotificationSettingsAsync(nsr, ct);
             }
 
-            this.logger.LogInformation("Task {Name} has completed", this.GetType().Name);
+            this.logger.LogDebug("Task {Name} has completed", this.GetType().Name);
         }
     }
 }

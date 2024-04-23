@@ -95,7 +95,7 @@ namespace HealthGateway.Laboratory.Delegates
                     }
                     else
                     {
-                        this.logger.LogError("Error while retrieving Covid19 Orders... {Error}", e);
+                        this.logger.LogError(e, "Error while retrieving Covid19 Orders... {Message}", e.Message);
                         HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
 
                         retVal.ResultError = new()
@@ -140,7 +140,7 @@ namespace HealthGateway.Laboratory.Delegates
                 }
                 catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
-                    this.logger.LogError("Error retrieving Laboratory Report...{Error}", e);
+                    this.logger.LogError(e, "Error retrieving Laboratory Report...{Message}", e.Message);
                     HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
 
                     retVal.ResultError = new()
@@ -186,7 +186,7 @@ namespace HealthGateway.Laboratory.Delegates
                 }
                 else
                 {
-                    this.logger.LogError("Error while retrieving Laboratory Summary... {Error}", e);
+                    this.logger.LogError(e, "Error while retrieving Laboratory Summary... {Message}", e.Message);
                     HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
 
                     retVal.ResultError = new()

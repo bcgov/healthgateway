@@ -45,6 +45,7 @@ namespace HealthGateway.Immunization.Services
     {
         private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "PublicAuthentication";
+        private const string VaccineProofDocumentNotAvailable = "Vaccine Proof document is not available.";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IImmunizationMappingService mappingService;
         private readonly IHttpContextAccessor? httpContextAccessor;
@@ -125,7 +126,7 @@ namespace HealthGateway.Immunization.Services
                 {
                     this.logger.LogDebug("Vaccine Proof document is not available (not found)");
                     retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
+                    retVal.ResultError = ErrorTranslator.ActionRequired(VaccineProofDocumentNotAvailable, ActionType.Invalid);
                 }
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
@@ -133,7 +134,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
-                        ResultMessage = "Vaccine Proof document is not available.",
+                        ResultMessage = VaccineProofDocumentNotAvailable,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                     };
                 }
@@ -168,9 +169,9 @@ namespace HealthGateway.Immunization.Services
             {
                 if (payload.State == VaccineState.NotFound)
                 {
-                    this.logger.LogDebug("Vaccine Proof document is not available (not found)");
+                    this.logger.LogDebug(VaccineProofDocumentNotAvailable);
                     retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
+                    retVal.ResultError = ErrorTranslator.ActionRequired(VaccineProofDocumentNotAvailable, ActionType.Invalid);
                 }
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
@@ -178,7 +179,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
-                        ResultMessage = "Vaccine Proof document is not available.",
+                        ResultMessage = VaccineProofDocumentNotAvailable,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                     };
                 }
