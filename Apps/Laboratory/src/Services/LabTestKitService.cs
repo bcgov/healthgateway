@@ -91,7 +91,7 @@ namespace HealthGateway.Laboratory.Services
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
+                this.logger.LogCritical(e, "HTTP Request Exception {Message}", e.Message);
                 return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
         }
@@ -108,7 +108,7 @@ namespace HealthGateway.Laboratory.Services
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
+                this.logger.LogCritical(e, "HTTP Request Exception {Message}", e.Message);
                 return RequestResultFactory.ServiceError<LabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
         }

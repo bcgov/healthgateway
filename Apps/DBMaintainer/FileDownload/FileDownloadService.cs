@@ -80,7 +80,7 @@ namespace HealthGateway.DBMaintainer.FileDownload
             }
             catch (Exception exception)
             {
-                this.logger.LogCritical("{Exception}", exception.ToString());
+                this.logger.LogCritical(exception, "{Message}", exception.Message);
                 File.Delete(filePath);
                 fd.Name = string.Empty;
                 fd.LocalFilePath = string.Empty;

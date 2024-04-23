@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                logger.LogError("Error retrieving users with blocked data sources: {Exception}", e.ToString());
+                logger.LogError(e, "Error retrieving users with blocked data sources: {Message}", e.Message);
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction { Error = error });
             }

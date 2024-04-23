@@ -51,7 +51,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error adding broadcast, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error adding broadcast, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BroadcastsActions.AddFailureAction { Error = error });
         }
     }
@@ -77,7 +77,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error loading broadcasts, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error loading broadcasts, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BroadcastsActions.LoadFailureAction { Error = error });
         }
     }
@@ -103,7 +103,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error updating broadcasts, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error updating broadcasts, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BroadcastsActions.UpdateFailureAction { Error = error });
         }
     }
@@ -129,7 +129,7 @@ public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error deleting broadcast, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error deleting broadcast, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BroadcastsActions.DeleteFailureAction { Error = error });
         }
     }

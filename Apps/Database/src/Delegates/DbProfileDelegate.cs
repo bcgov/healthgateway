@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user profile in DB");
-            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, true, ct: ct);
+            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, true, ct);
             DbResult<UserProfile> result = new();
 
             if (userProfile != null)
@@ -108,7 +108,7 @@ namespace HealthGateway.Database.Delegates
                     }
                     catch (DbUpdateException e)
                     {
-                        this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
+                        this.logger.LogError(e, "Unable to update UserProfile to DB {Message}", e.Message);
                         result.Status = DbStatusCode.Error;
                         result.Message = e.Message;
                     }
@@ -138,7 +138,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<UserProfile>> GetUserProfilesAsync(string email, bool includeBetaFeatureCodes, CancellationToken ct = default)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(string email, bool includeBetaFeatureCodes = false, CancellationToken ct = default)
         {
             IQueryable<UserProfile> query = this.dbContext.UserProfile;
             query = query.Where(p => EF.Functions.ILike(p.Email, email));

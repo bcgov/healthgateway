@@ -58,7 +58,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error loading user feedback, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error loading user feedback, reason: {Message}", e.Message);
             dispatcher.Dispatch(new UserFeedbackActions.LoadFailureAction { Error = error });
         }
     }
@@ -89,7 +89,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error updating user feedback, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error updating user feedback, reason: {Message}", e.Message);
             dispatcher.Dispatch(new UserFeedbackActions.UpdateFailureAction { Error = error });
         }
     }
@@ -121,7 +121,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error associating tags to user feedback, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error associating tags to user feedback, reason: {Message}", e.Message);
             dispatcher.Dispatch(new UserFeedbackActions.SaveAssociatedTagsFailureAction { Error = error });
         }
     }

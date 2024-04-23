@@ -50,10 +50,11 @@ namespace HealthGateway.DBMaintainer.Apps
         /// <inheritdoc/>
         protected override async Task ProcessDownloadAsync(string sourceFolder, FileDownload downloadedFile, CancellationToken ct = default)
         {
-            this.Logger.LogInformation("Parsing Drug File and adding to DB Context");
+            // Parse Drug File and add to DB Context
             IList<DrugProduct> drugProducts = this.Parser.ParseDrugFile(sourceFolder, downloadedFile);
             await this.DrugDbContext.DrugProduct.AddRangeAsync(drugProducts, ct);
-            this.Logger.LogInformation("Parsing Other files and adding to DB Context");
+
+            // Parse other drug files and add to DB Context
             await this.DrugDbContext.ActiveIngredient.AddRangeAsync(this.Parser.ParseActiveIngredientFile(sourceFolder, drugProducts), ct);
             await this.DrugDbContext.Company.AddRangeAsync(this.Parser.ParseCompanyFile(sourceFolder, drugProducts), ct);
             await this.DrugDbContext.Status.AddRangeAsync(this.Parser.ParseStatusFile(sourceFolder, drugProducts), ct);
