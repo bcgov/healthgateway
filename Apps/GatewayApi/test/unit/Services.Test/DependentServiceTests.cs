@@ -65,14 +65,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly DateTime fromDate = DateTime.UtcNow.AddDays(-1);
         private readonly DateTime toDate = DateTime.UtcNow.AddDays(1);
 
-        public static TheoryData<RequestResult<PatientModel>, ResultType, string> InvalidPatientTheoryData => new()
-        {
-            { new(), ResultType.Error, "Communication Exception when trying to retrieve the Dependent" },
-            { new() { ResultStatus = ResultType.ActionRequired, ResultError = new() { ActionCode = ActionType.NoHdId } }, ResultType.ActionRequired, ErrorMessages.InvalidServicesCard },
-            { new() { ResultStatus = ResultType.ActionRequired }, ResultType.ActionRequired, ErrorMessages.DataMismatch },
-            { new() { ResultStatus = ResultType.Success }, ResultType.ActionRequired, ErrorMessages.DataMismatch },
-        };
-
         /// <summary>
         /// GetDependentsAsync by hdid - Happy Path.
         /// </summary>
@@ -177,14 +169,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// AddDependentAsync - Invalid Patient Response.
         /// </summary>
-        /// <param name="patient">Response from retrieving patient.</param>
+        /// <param name="patientRequestResultType">The result type from retrieving patient.</param>
         /// <param name="expectedResultType">Expected result type.</param>
         /// <param name="expectedErrorMessage">Expected error message.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [MemberData(nameof(InvalidPatientTheoryData))]
-        public async Task ValidateAddDependentWithInvalidPatient(RequestResult<PatientModel> patient, ResultType expectedResultType, string expectedErrorMessage)
+        [InlineData(ResultType.Error, ResultType.Error, "Communication Exception when trying to retrieve the Dependent")]
+        [InlineData(ResultType.ActionRequired, ResultType.ActionRequired, ErrorMessages.InvalidServicesCard)]
+        [InlineData(ResultType.ActionRequired, ResultType.ActionRequired, ErrorMessages.DataMismatch)]
+        [InlineData(ResultType.Success, ResultType.ActionRequired, ErrorMessages.DataMismatch)]
+        public async Task ValidateAddDependentWithInvalidPatient(ResultType patientRequestResultType, ResultType expectedResultType, string expectedErrorMessage)
         {
+            RequestResult<PatientModel> patient = SetupPatientRequestResultForInvalidPatient(patientRequestResultType, expectedErrorMessage);
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patient);
 
@@ -427,6 +423,28 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
+        }
+
+        private static RequestResult<PatientModel> SetupPatientRequestResultForInvalidPatient(ResultType resultType, string message)
+        {
+            if (resultType == ResultType.ActionRequired)
+            {
+                return new()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = message == ErrorMessages.InvalidServicesCard
+                        ? new()
+                        {
+                            ActionCode = ActionType.NoHdId,
+                        }
+                        : null,
+                };
+            }
+
+            return new()
+            {
+                ResultStatus = resultType,
+            };
         }
 
         private IList<ResourceDelegate> GenerateMockResourceDelegatesList()
