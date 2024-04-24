@@ -52,8 +52,15 @@ namespace AccountDataAccessTest.Strategy
             // Act
             PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
-            // Verify
+            // Assert
             mock.Expected.ShouldDeepEqual(actual);
+
+            // Verify
+            mock.CacheProvider.Verify(
+                v => v.GetItemAsync<PatientModel>(
+                    It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{mock.PatientRequest.Identifier}"),
+                    It.IsAny<CancellationToken>()),
+                useCache ? Times.AtLeastOnce : Times.Never);
         }
 
         /// <summary>
@@ -107,13 +114,23 @@ namespace AccountDataAccessTest.Strategy
             PatientModel? cachedPatient = useCache ? patient : null;
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{Phn}")).Returns(cachedPatient);
+            cacheProvider.Setup(
+                    s => s.GetItemAsync<PatientModel>(
+                        It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{Phn}"),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(
+                    s => s.GetDemographicsAsync(
+                        It.Is<OidType>(x => x == OidType.Phn),
+                        It.Is<string>(x => x == Phn),
+                        It.Is<bool>(x => x == false),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patient);
 
             PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(cacheProvider, clientRegistriesDelegate);
-            return new(phnEmpiStrategy, patient, patientRequest);
+            return new(phnEmpiStrategy, cacheProvider, patient, patientRequest);
         }
 
         private static GetPatientThrowsExceptionMock SetupGetPatientThrowsExceptionMock()
@@ -123,17 +140,34 @@ namespace AccountDataAccessTest.Strategy
             PatientModel patient = new();
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{Phn}")).Returns(cachedPatient);
+            cacheProvider.Setup(
+                    s => s.GetItemAsync<PatientModel>(
+                        It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{Phn}"),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(
+                    s => s.GetDemographicsAsync(
+                        It.Is<OidType>(x => x == OidType.Phn),
+                        It.Is<string>(x => x == Phn),
+                        It.Is<bool>(x => x == false),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patient);
 
             PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(cacheProvider, clientRegistriesDelegate);
             return new(phnEmpiStrategy, typeof(ValidationException), patientRequest);
         }
 
-        private sealed record GetPatientMock(PhnEmpiStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientMock(
+            PhnEmpiStrategy Strategy,
+            Mock<ICacheProvider> CacheProvider,
+            PatientModel Expected,
+            PatientRequest PatientRequest);
 
-        private sealed record GetPatientThrowsExceptionMock(PhnEmpiStrategy Strategy, Type Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientThrowsExceptionMock(
+            PhnEmpiStrategy Strategy,
+            Type Expected,
+            PatientRequest PatientRequest);
     }
 }
