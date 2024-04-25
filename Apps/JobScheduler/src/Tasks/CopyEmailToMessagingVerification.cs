@@ -84,7 +84,7 @@ namespace HealthGateway.JobScheduler.Tasks
 
                 emails = await query.Take(this.batchSize).ToListAsync(ct);
                 this.logger.LogInformation(
-                    "Saved message verification changes after {Processed} email(s) processed. \n The number of emails copied from Email.To to MessagingVerification.EmailAddress: {Emails}",
+                    "Saved message verification changes after {Processed} email(s) processed.\nThe number of emails copied from Email.To to MessagingVerification.EmailAddress: {Emails}",
                     processed,
                     emails.Count);
             }
