@@ -67,7 +67,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError("Unable to save AdminTag to DB {Exception}", e.ToString());
+                    this.logger.LogError(e, "Unable to save AdminTag to DB {Message}", e.Message);
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }

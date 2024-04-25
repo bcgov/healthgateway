@@ -102,7 +102,7 @@ namespace HealthGateway.JobScheduler.Jobs
                             Value = true.ToString(),
                         };
                         this.applicationSettingsDelegate.AddApplicationSetting(hasRunAppSetting);
-                        this.logger.LogInformation("OneTimeJob is commiting DB changes");
+                        this.logger.LogDebug("OneTimeJob is commiting DB changes");
                         await this.dbContext.SaveChangesAsync(ct);
                     }
                     else

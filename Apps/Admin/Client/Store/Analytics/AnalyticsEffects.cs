@@ -23,6 +23,8 @@ using Microsoft.Extensions.Logging;
 
 public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi analyticsApi)
 {
+    private const string ErrorMessage = "{ErrorMessage}";
+
     [EffectMethod(typeof(AnalyticsActions.LoadUserProfilesAction))]
     public async Task HandleLoadUserProfilesAction(IDispatcher dispatcher)
     {
@@ -41,7 +43,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting user profile report",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
@@ -63,7 +65,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting comments report.",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
@@ -85,7 +87,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting notes report.",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
@@ -107,7 +109,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting rating report.",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
@@ -129,7 +131,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting inactive users report.",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
@@ -151,7 +153,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting user feedback report.",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
@@ -173,7 +175,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
             Message = "Error exporting year of birth counts report.",
         };
 
-        logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError(ErrorMessage, error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 }

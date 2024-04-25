@@ -42,13 +42,13 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         catch (ApiException e) when (e.StatusCode == HttpStatusCode.Conflict)
         {
             RequestError error = new() { Message = "User already exists" };
-            logger.LogInformation("Agent already exists");
+            logger.LogInformation(e, "Agent already exists");
             dispatcher.Dispatch(new AgentAccessActions.AddFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error adding agent, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error adding agent, reason: {Message}", e.Message);
             dispatcher.Dispatch(new AgentAccessActions.AddFailureAction { Error = error });
         }
     }
@@ -66,7 +66,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError(e, "Error retrieving agents, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error retrieving agents, reason: {Message}", e.Message);
             dispatcher.Dispatch(new AgentAccessActions.SearchFailureAction { Error = error });
         }
     }
@@ -84,7 +84,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error updating agent access, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error updating agent access, reason: {Message}", e.Message);
             dispatcher.Dispatch(new AgentAccessActions.UpdateFailureAction { Error = error });
         }
     }
@@ -102,7 +102,7 @@ public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccess
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error removing agent access, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error removing agent access, reason: {Message}", e.Message);
             dispatcher.Dispatch(new AgentAccessActions.DeleteFailureAction { Error = error });
         }
     }

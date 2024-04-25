@@ -193,10 +193,10 @@ namespace HealthGateway.DBMaintainer.Apps
             // Add new pharmacy assessment file download to database
             await this.AddFileToDbAsync(pharmacyAssessmentFileDownload, ct);
 
-            this.Logger.LogInformation("Parsing Provincial PharmaCare Drug file");
+            // Parse Provincial PharmaCare Drug file
             IList<PharmaCareDrug> pharmaCareDrugs = await this.Parser.ParsePharmaCareDrugFileAsync(pharmaCareDrugFile, pharmaCareDrugFileDownload, ct);
 
-            this.Logger.LogInformation("Parsing Pharmacy Assessment file");
+            // Parse Pharmacy Assessment file
             IEnumerable<PharmacyAssessment> pharmacyAssessments = this.pharmacyAssessmentParser.ParsePharmacyAssessmentFile(pharmacyAssessmentFile, pharmacyAssessmentFileDownload);
 
             // If required, modify pharma care drug with pharmacy assessment

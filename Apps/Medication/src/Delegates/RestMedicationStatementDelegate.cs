@@ -125,7 +125,7 @@ namespace HealthGateway.Medication.Delegates
                         ResultMessage = "An error occured with the Medication History Provider",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                     };
-                    this.logger.LogError("Error with Medication Service: {Exception}", e.ToString());
+                    this.logger.LogError(e, "Error with Medication Service: {Message}", e.Message);
                 }
 
                 return retVal;

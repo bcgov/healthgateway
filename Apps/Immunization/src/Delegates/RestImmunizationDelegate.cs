@@ -85,7 +85,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("Get Immunization unexpected Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Get Immunization unexpected Exception {Message}", e.Message);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with Get Immunization Request",
@@ -115,7 +115,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("Get Immunizations unexpected Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Get Immunizations unexpected Exception {Message}", e.Message);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with Get Immunization Request",

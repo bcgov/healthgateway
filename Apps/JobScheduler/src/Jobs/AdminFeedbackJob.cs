@@ -93,7 +93,7 @@ namespace HealthGateway.JobScheduler.Jobs
             EmailTemplate? template = await this.emailService.GetEmailTemplateAsync(FeedbackTemplateName, ct);
             if (template == null)
             {
-                this.logger.LogCritical($"Email template {FeedbackTemplateName} is null");
+                this.logger.LogCritical("Email template {FeedbackTemplateName} is null", FeedbackTemplateName);
                 throw new InvalidOperationException($"Email template {FeedbackTemplateName} is null");
             }
 

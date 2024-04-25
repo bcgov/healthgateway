@@ -39,7 +39,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             catch (ApiException ex)
             {
                 RequestError error = StoreUtility.FormatRequestError(ex);
-                logger.LogError("Error loading external configuration, reason: {ErrorMessage}", error.Message);
+                logger.LogError(ex, "Error loading external configuration, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new ConfigurationActions.LoadFailureAction { Error = error });
             }
         }

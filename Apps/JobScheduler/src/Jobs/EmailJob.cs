@@ -142,7 +142,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
-                        this.logger.LogWarning("Error while sending {Id} - skipping for now\n{Exception}", email.Id.ToString(), e.ToString());
+                        this.logger.LogWarning(e, "Error while sending {Id} - skipping for now\n{Message}", email.Id.ToString(), e.Message);
                     }
                 }
             }
@@ -170,9 +170,10 @@ namespace HealthGateway.JobScheduler.Jobs
             catch (Exception e)
             {
                 this.logger.LogError(
-                    "Unexpected error while communicating to GC Notify API for email {Id}, Error = {Exception}",
+                    e,
+                    "Unexpected error while communicating to GC Notify API for email {Id}, Error = {Message}",
                     email.Id.ToString(),
-                    e.ToString());
+                    e.Message);
                 email.LastRetryDateTime = DateTime.UtcNow;
                 email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
                 await this.emailDelegate.UpdateEmailAsync(email, ct);
@@ -203,7 +204,7 @@ namespace HealthGateway.JobScheduler.Jobs
                         catch (SmtpCommandException e)
                         {
                             caught = e;
-                            this.logger.LogError("Unexpected error while sending email {Id}, SMTP Error = {SmtpStatusCode}\n{Exception}", email.Id.ToString(), email.SmtpStatusCode, e.ToString());
+                            this.logger.LogError(e, "Unexpected error while sending email {Id}, SMTP Error = {SmtpStatusCode}\n{Message}", email.Id.ToString(), email.SmtpStatusCode, e.Message);
                         }
 
                         await smtpClient.DisconnectAsync(true, ct);
@@ -212,17 +213,18 @@ namespace HealthGateway.JobScheduler.Jobs
                     {
                         caught = e;
                         this.logger.LogError(
-                            "Unexpected error while connecting to SMTP Server to send email {Id}, SMTP Error = {SmtpStatusCode}\n{Exception}",
+                            e,
+                            "Unexpected error while connecting to SMTP Server to send email {Id}, SMTP Error = {SmtpStatusCode}\n{Message}",
                             email.Id.ToString(),
                             email.SmtpStatusCode,
-                            e.ToString());
+                            e.Message);
                     }
                 }
             }
             catch (Exception e)
             {
                 caught = e;
-                this.logger.LogError("Unexpected error while sending email {Id} {Exception}", email.Id.ToString(), e.ToString());
+                this.logger.LogError(e, "Unexpected error while sending email {Id} {Message}", email.Id.ToString(), e.Message);
             }
 
             if (caught != null)
@@ -230,8 +232,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 email.LastRetryDateTime = DateTime.UtcNow;
                 email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
 
-                SmtpCommandException? smtpCommandException = caught as SmtpCommandException;
-                if (smtpCommandException != null)
+                if (caught is SmtpCommandException smtpCommandException)
                 {
                     email.SmtpStatusCode = (int)smtpCommandException.StatusCode;
                 }

@@ -40,7 +40,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving all-time counts, reason: {ErrorMessage}", error.Message);
+            logger.LogError(ex, "Error retrieving all-time counts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.GetAllTimeCountsFailureAction { Error = error });
         }
     }
@@ -59,7 +59,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving daily usage counts, reason: {ErrorMessage}", error.Message);
+            logger.LogError(ex, "Error retrieving daily usage counts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsFailureAction { Error = error });
         }
     }
@@ -78,7 +78,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving recurring user count, reason: {ErrorMessage}", error.Message);
+            logger.LogError(ex, "Error retrieving recurring user count, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountFailureAction { Error = error });
         }
     }
@@ -97,7 +97,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving recurring app login counts, reason: {ErrorMessage}", error.Message);
+            logger.LogError(ex, "Error retrieving recurring app login counts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsFailureAction { Error = error });
         }
     }
@@ -116,7 +116,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving ratings summary, reason: {ErrorMessage}", error.Message);
+            logger.LogError(ex, "Error retrieving ratings summary, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.GetRatingsSummaryFailureAction { Error = error });
         }
     }
@@ -135,7 +135,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving age counts, reason: {ErrorMessage}", error.Message);
+            logger.LogError(ex, "Error retrieving age counts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.GetAgeCountsFailureAction { Error = error });
         }
     }

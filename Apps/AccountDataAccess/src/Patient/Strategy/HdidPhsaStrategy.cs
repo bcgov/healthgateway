@@ -58,7 +58,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <inheritdoc/>
         public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
-            PatientModel? patient = request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null;
+            PatientModel? patient = request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Hdid, ct) : null;
 
             if (patient == null)
             {
