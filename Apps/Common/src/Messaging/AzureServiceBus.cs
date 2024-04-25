@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Messaging;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     }
 
     /// <inheritdoc/>
-    public virtual async Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
+    public async Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
         IEnumerable<ServiceBusMessage> sbMessages = messages.Select(
             m =>
@@ -93,60 +94,11 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
         }
     }
 
-#pragma warning disable CA1031 // Do not catch general exception types - need to handle all exception types thrown from receive handlers
-
-    // ReSharper disable once CognitiveComplexity
-
     /// <inheritdoc/>
-    public virtual async Task SubscribeAsync(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
+    [ExcludeFromCodeCoverage(Justification = "Non-virtual events can't easily be mocked: https://github.com/Azure/azure-sdk-for-net/issues/35660")]
+    public async Task SubscribeAsync(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
     {
-        this.sessionProcessor.ProcessMessageAsync += async args =>
-        {
-            this.logger.LogDebug("received message {Session}:{SequenceNumber}", args.Message.SessionId, args.Message.SequenceNumber);
-
-            try
-            {
-                SessionState? sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
-                if (sessionState is { IsFaulted: true } && args.Message.Subject != "unlock")
-                {
-                    // session is blocked, do not process this message and this message is not marked to unblock the session
-                    throw new InvalidOperationException($"Session {args.SessionId} is in error mode");
-                }
-
-                string? typeName = (args.Message.ApplicationProperties["$aqn"] ?? args.Message.ApplicationProperties["$type"])?.ToString();
-                if (string.IsNullOrEmpty(typeName))
-                {
-                    throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} is missing the type property");
-                }
-
-                Type? type = Type.GetType(typeName, true);
-
-                MessageBase message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type)
-                                      ?? throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
-
-                bool receiveResult = await receiveHandler(args.SessionId, new[] { new MessageEnvelope(message, args.Message.SessionId) });
-                if (!receiveResult)
-                {
-                    // put back in the queue if the handler rejected the messages
-                    await args.AbandonMessageAsync(args.Message, null, ct);
-                }
-
-                // clear the state
-                if (sessionState != null)
-                {
-                    await args.SetSessionStateAsync(null, ct);
-                }
-            }
-            catch (Exception e)
-            {
-                // send message to DLQ and set the state to fault
-                this.logger.LogError(e, "failed to receive message");
-                await args.DeadLetterMessageAsync(args.Message, e.Message, e.ToString(), ct);
-                await args.SetSessionStateAsync(BinaryData.FromObjectAsJson(new SessionState(true)), ct);
-                await errorHandler(e);
-            }
-        };
-
+        this.sessionProcessor.ProcessMessageAsync += args => this.HandleProcessMessageAsync(args, receiveHandler, errorHandler, ct);
         this.sessionProcessor.ProcessErrorAsync += args => errorHandler(args.Exception);
 
         if (!this.sessionProcessor.IsProcessing)
@@ -155,13 +107,77 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
         }
     }
 
-#pragma warning restore CA1031 // Do not catch general exception types
-
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         await this.sender.DisposeAsync();
         await this.sessionProcessor.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Handler for processing received messages.
+    /// </summary>
+    /// <param name="args">
+    /// Event arguments specific to the <see cref="ServiceBusReceivedMessage"/> and session that is being
+    /// processed.
+    /// </param>
+    /// <param name="receiveHandler">
+    /// Message receive handler that receives a session id and array of messages,
+    /// it can return false to reject the messages or true when processed successfully.
+    /// </param>
+    /// <param name="errorHandler">Error handler that receives the exception when an error occurred.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Need to handle all exception types thrown from receive handlers")]
+    internal async Task HandleProcessMessageAsync(
+        ProcessSessionMessageEventArgs args,
+        Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler,
+        Func<Exception, Task> errorHandler,
+        CancellationToken ct = default)
+    {
+        this.logger.LogDebug("received message {Session}:{SequenceNumber}", args.Message.SessionId, args.Message.SequenceNumber);
+
+        try
+        {
+            SessionState? sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
+            if (sessionState is { IsFaulted: true } && args.Message.Subject != "unlock")
+            {
+                // session is blocked, do not process this message and this message is not marked to unblock the session
+                throw new InvalidOperationException($"Session {args.SessionId} is in error mode");
+            }
+
+            string? typeName = (args.Message.ApplicationProperties["$aqn"] ?? args.Message.ApplicationProperties["$type"])?.ToString();
+            if (string.IsNullOrEmpty(typeName))
+            {
+                throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} is missing the type property");
+            }
+
+            Type? type = Type.GetType(typeName, true);
+
+            MessageBase message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type) ??
+                                  throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
+
+            bool receiveResult = await receiveHandler(args.SessionId, [new MessageEnvelope(message, args.Message.SessionId)]);
+            if (!receiveResult)
+            {
+                // put back in the queue if the handler rejected the messages
+                await args.AbandonMessageAsync(args.Message, null, ct);
+            }
+
+            // clear the state
+            if (sessionState != null)
+            {
+                await args.SetSessionStateAsync(null, ct);
+            }
+        }
+        catch (Exception e)
+        {
+            // send message to DLQ and set the state to fault
+            this.logger.LogError(e, "failed to receive message");
+            await args.DeadLetterMessageAsync(args.Message, e.Message, e.ToString(), ct);
+            await args.SetSessionStateAsync(BinaryData.FromObjectAsJson(new SessionState(true)), ct);
+            await errorHandler(e);
+        }
     }
 
     private sealed record SessionState(bool IsFaulted);
