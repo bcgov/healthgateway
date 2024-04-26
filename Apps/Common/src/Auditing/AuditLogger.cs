@@ -29,8 +29,6 @@ namespace HealthGateway.Common.Auditing
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Primitives;
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-
     /// <summary>
     /// The Abstract Audit Logger service.
     /// </summary>
@@ -80,26 +78,13 @@ namespace HealthGateway.Common.Auditing
         /// <returns>The mapped transaction result.</returns>
         private static AuditTransactionResult GetTransactionResultType(int statusCode)
         {
-            // Success codes (1xx, 2xx, 3xx)
-            if (statusCode < 400)
+            return statusCode switch
             {
-                return AuditTransactionResult.Success;
-            }
-
-            // Unauthorized and forbidden (401, 403)
-            if (statusCode == 401 || statusCode == 403)
-            {
-                return AuditTransactionResult.Unauthorized;
-            }
-
-            // Client/Request errors codes other than unauthorized and forbidden (4xx)
-            if (statusCode < 500)
-            {
-                return AuditTransactionResult.Failure;
-            }
-
-            // System error codes (5xx)
-            return AuditTransactionResult.SystemError;
+                < 400 => AuditTransactionResult.Success, // Success codes (1xx, 2xx, 3xx)
+                401 or 403 => AuditTransactionResult.Unauthorized, // Unauthorized and forbidden (401, 403)
+                < 500 => AuditTransactionResult.Failure, // Client/Request errors codes other than unauthorized and forbidden (4xx)
+                _ => AuditTransactionResult.SystemError, // System error codes (5xx)
+            };
         }
 
         /// <summary>
@@ -110,37 +95,20 @@ namespace HealthGateway.Common.Auditing
         private static string GetApplicationType()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly()!.GetName();
-            switch (assemblyName.Name)
+            return assemblyName.Name switch
             {
-                case "Configuration":
-                    return ApplicationType.Configuration;
-                case "GatewayApi":
-                case "WebClient":
-                    return ApplicationType.WebClient;
-                case "Immunization":
-                    return ApplicationType.Immunization;
-                case "Patient":
-                    return ApplicationType.Patient;
-                case "Medication":
-                    return ApplicationType.Medication;
-                case "Admin.Server":
-                    return ApplicationType.Admin;
-                case "Laboratory":
-                    return ApplicationType.Laboratory;
-                case "Encounter":
-                    return ApplicationType.Encounter;
-                case "ClinicalDocument":
-                    return ApplicationType.ClinicalDocument;
-                case "ReSharperTestRunner":
-                case "ReSharperTestRunner64":
-                case "ReSharperTestRunnerArm64":
-                case "testhost":
-                    return ApplicationType.Configuration;
-                default:
-                    throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
-            }
+                "Configuration" => ApplicationType.Configuration,
+                "GatewayApi" or "WebClient" => ApplicationType.WebClient,
+                "Immunization" => ApplicationType.Immunization,
+                "Patient" => ApplicationType.Patient,
+                "Medication" => ApplicationType.Medication,
+                "Admin.Server" => ApplicationType.Admin,
+                "Laboratory" => ApplicationType.Laboratory,
+                "Encounter" => ApplicationType.Encounter,
+                "ClinicalDocument" => ApplicationType.ClinicalDocument,
+                "ReSharperTestRunner" or "ReSharperTestRunner64" or "ReSharperTestRunnerArm64" or "testhost" => ApplicationType.Configuration,
+                _ => throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'"),
+            };
         }
     }
-
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
 }
