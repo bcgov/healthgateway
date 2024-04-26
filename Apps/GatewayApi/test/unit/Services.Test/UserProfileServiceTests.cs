@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -103,6 +104,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
+        /// GetUserProfileAsync throws not implemented exception for beta feature mapping.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetUserProfileThrowsNotImplementedException()
+        {
+            // Arrange
+            GetUserProfileMock mock = SetupGetUserProfileMock(validBetaFeature: false);
+
+            // Act and Assert
+            AutoMapperMappingException exception = await Assert.ThrowsAsync<AutoMapperMappingException>(() => mock.Service.GetUserProfileAsync(mock.Hdid, mock.JwtAuthTime));
+            Assert.NotNull(exception.InnerException);
+            Assert.IsType<NotImplementedException>(exception.InnerException);
+            Assert.Equal(mock.Expected.ExceptionMessage, exception.InnerException.Message);
+        }
+
+        /// <summary>
         /// Validates the Update Accepted Terms of Service.
         /// </summary>
         /// <param name="updatedStatus">The status to return from the mock db delegate after the update.</param>
@@ -164,16 +182,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 expectedResultStatus);
 
             // Act
-            RequestResult<UserProfileModel> actual = await mock.Service.CreateUserProfileAsync(mock.CreateUserRequest, mock.JwtAuthTime, mock.JwtEmailAddress);
+            RequestResult<UserProfileModel> actual = await mock.Service.CreateUserProfileAsync(
+                mock.CreateUserRequest,
+                mock.JwtAuthTime,
+                mock.JwtEmailAddress);
 
             // Assert
             mock.Expected.Result.ShouldDeepEqual(actual);
 
             mock.UserEmailServiceMock.Verify(
                 v => v.CreateUserEmailAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
+                    It.Is<string>(x => x == mock.CreateUserRequest.Profile.HdId),
+                    It.Is<string>(x => x == mock.CreateUserRequest.Profile.Email),
+                    It.Is<bool>(x => x == mock.Expected.Result.ResourcePayload!.IsEmailVerified),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
                 mock.Expected.TimesSendEmail);
@@ -193,7 +214,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mock.Expected.TimesSendNotificationChannelVerifiedEvent);
 
             mock.NotificationSettingsServiceMock.Verify(
-                v => v.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()),
+                v => v.QueueNotificationSettingsAsync(
+                    It.IsAny<NotificationSettingsRequest>(),
+                    It.IsAny<CancellationToken>()),
                 mock.Expected.TimesQueueNotificationSettings);
         }
 
@@ -360,7 +383,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
         }
 
-        private static UserProfile GenerateUserProfile(DateTime? loginDate = null, int daysFromLoginDate = 0, string? email = null, string? smsNumber = null)
+        private static UserProfile GenerateUserProfile(
+            DateTime? loginDate = null,
+            int daysFromLoginDate = 0,
+            string? email = null,
+            string? smsNumber = null,
+            BetaFeature? betaFeature = null)
         {
             DateTime lastLoginDateTime = loginDate?.Date ?? DateTime.UtcNow.Date;
 
@@ -371,6 +399,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = email,
                 SmsNumber = smsNumber,
                 LastLoginDateTime = lastLoginDateTime.AddDays(-daysFromLoginDate),
+                BetaFeatureCodes =
+                [
+                    new BetaFeatureCode
+                        { Code = betaFeature ?? BetaFeature.Salesforce },
+                ],
             };
         }
 
@@ -383,6 +416,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = Hdid,
                 Id = Guid.NewGuid(),
                 LastLoginDateTime = lastLoginDateTime.AddDays(-daysFromLoginDate),
+            };
+        }
+
+        private static RequestResult<PatientModel> GeneratePatientResult(bool patientErrorExists = false, PatientModel? patientModel = null)
+        {
+            return new()
+            {
+                ResultStatus = patientErrorExists ? ResultType.Error : ResultType.Success,
+                ResourcePayload = patientModel,
+                ResultError = patientErrorExists
+                    ? new()
+                    {
+                        ResultMessage = "DB Error",
+                    }
+                    : null,
             };
         }
 
@@ -432,17 +480,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Profile = new(patientModel.HdId, Guid.NewGuid(), requestedSms, requestedEmail),
             };
 
-            RequestResult<PatientModel> patientResult = new()
-            {
-                ResultStatus = patientErrorExists ? ResultType.Error : ResultType.Success,
-                ResourcePayload = patientErrorExists ? null : patientModel,
-                ResultError = patientErrorExists
-                    ? new()
-                    {
-                        ResultMessage = "DB Error",
-                    }
-                    : null,
-            };
+            RequestResult<PatientModel> patientResult = GeneratePatientResult(patientErrorExists, patientModel);
 
             UserProfile userProfile = GenerateUserProfile(currentUtcDate);
 
@@ -540,6 +578,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         HasTermsOfServiceUpdated = true,
                         HasTourUpdated = false,
                         LastLoginDateTime = currentUtcDate,
+                        BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
                     }
                     : null,
                 ResultStatus = expectedResultStatus,
@@ -548,15 +587,27 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     : null,
             };
 
-            Times timesSendEmail = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) ? Times.Once() : Times.Never();
-            Times timesSendAccountsFeed = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) && accountsFeedEnabled ? Times.Once() : Times.Never();
-            Times timesSendNotificationFeed = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) && notificationsFeedEnabled ? Times.Once() : Times.Never();
-            Times timesQueueNotificationSettings = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) ? Times.Once() : Times.Never();
+            Times timesSendEmail = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid)
+                ? Times.Once()
+                : Times.Never();
+            Times timesSendAccountsFeed = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) && accountsFeedEnabled
+                ? Times.Once()
+                : Times.Never();
+            Times timesSendNotificationFeed = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid) && notificationsFeedEnabled
+                ? Times.Once()
+                : Times.Never();
+            Times timesQueueNotificationSettings = IsInsertSuccessful(insertedStatus, patientErrorExists, smsIsValid, patientAgeIsValid)
+                ? Times.Once()
+                : Times.Never();
 
             CreatedUserProfileResult expected = new(userProfileModelResult, timesSendEmail, timesSendAccountsFeed, timesSendNotificationFeed, timesQueueNotificationSettings);
             return new(service, userEmailServiceMock, notificationSettingsServiceMock, messageSenderMock, expected, createUserRequest, DateTime.Today, jwtEmail);
 
-            static RequestResultError GetResultError(RequestResultError? patientResultError, bool smsIsValid, bool patientAgeIsValid, string insertResultMessage)
+            static RequestResultError GetResultError(
+                RequestResultError? patientResultError,
+                bool smsIsValid,
+                bool patientAgeIsValid,
+                string insertResultMessage)
             {
                 if (patientResultError != null)
                 {
@@ -588,18 +639,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 };
             }
 
-            static bool IsInsertSuccessful(DbStatusCode insertStatus, bool patientErrorExists, bool smsIsValid, bool patientAgeIsValid)
+            static bool IsInsertSuccessful(
+                DbStatusCode insertStatus,
+                bool patientErrorExists,
+                bool smsIsValid,
+                bool patientAgeIsValid)
             {
                 return insertStatus == DbStatusCode.Created && !patientErrorExists && smsIsValid && patientAgeIsValid;
             }
         }
 
         private static GetUserProfileMock SetupGetUserProfileMock(
-            bool userProfileExists,
-            bool jwtAuthTimeIsDifferent,
-            bool emailIsVerified,
-            bool smsIsVerified,
-            bool tourChangeDateIsLatest)
+            bool userProfileExists = true,
+            bool jwtAuthTimeIsDifferent = true,
+            bool emailIsVerified = true,
+            bool smsIsVerified = true,
+            bool tourChangeDateIsLatest = true,
+            bool validBetaFeature = true)
         {
             const int patientAge = 15;
             const int minPatientAge = 10;
@@ -609,10 +665,27 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime currentUtcDate = DateTime.UtcNow.Date;
             DateTime birthDate = currentUtcDate.AddYears(-patientAge).Date;
-            DateTime jwtAuthTime = jwtAuthTimeIsDifferent ? currentUtcDate.AddHours(1) : currentUtcDate;
-            DateTime latestTourChangeDateTime = tourChangeDateIsLatest ? currentUtcDate : currentUtcDate.AddDays(-5);
 
-            UserProfile? userProfile = userProfileExists ? GenerateUserProfile(currentUtcDate, email: email, smsNumber: smsNumber) : null;
+            DateTime jwtAuthTime = jwtAuthTimeIsDifferent
+                ? currentUtcDate.AddHours(1)
+                : currentUtcDate;
+
+            DateTime latestTourChangeDateTime = tourChangeDateIsLatest
+                ? currentUtcDate
+                : currentUtcDate.AddDays(-5);
+
+            BetaFeature betaFeature = validBetaFeature
+                ? BetaFeature.Salesforce
+                : (BetaFeature)999; // An invalid database beta feature value will not map to a valid ui beta feature value
+
+            string betaFeatureMappingErrorMessage = !validBetaFeature
+                ? $"Mapping for {betaFeature} is not implemented"
+                : string.Empty;
+
+            UserProfile? userProfile = userProfileExists
+                ? GenerateUserProfile(currentUtcDate, email: email, smsNumber: smsNumber, betaFeature: betaFeature)
+                : null;
+
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(
                     s => s.GetUserProfileAsync(
@@ -627,11 +700,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Returns(UserLoginClientType.Web);
 
             PatientModel patientModel = GeneratePatientModel(birthDate);
-            RequestResult<PatientModel> patientResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = patientModel,
-            };
+            RequestResult<PatientModel> patientResult = GeneratePatientResult(patientModel: patientModel);
 
             Mock<IPatientService> patientServiceMock = new();
             patientServiceMock.Setup(
@@ -742,14 +811,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             userProfileHistoryList[0].LastLoginDateTime,
                             userProfileHistoryList[1].LastLoginDateTime,
                         ],
+                        BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
                     }
                     : new(),
                 ResultStatus = ResultType.Success,
             };
 
-            Times timeUpdateUserProfile = jwtAuthTimeIsDifferent ? Times.Once() : Times.Never();
+            Times timesUpdateUserProfile = jwtAuthTimeIsDifferent
+                ? Times.Once()
+                : Times.Never();
 
-            GetUserProfileResult expected = new(userProfileModelResult, timeUpdateUserProfile);
+            GetUserProfileResult expected = new(userProfileModelResult, timesUpdateUserProfile, betaFeatureMappingErrorMessage);
             return new(service, userProfileDelegateMock, expected, Hdid, jwtAuthTime);
         }
 
@@ -835,7 +907,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         HasTourUpdated = false,
                     }
                     : null,
-                ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists ? ResultType.Error : ResultType.Success,
+                ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists
+                    ? ResultType.Error
+                    : ResultType.Success,
                 ResultError = updateResult.Status != DbStatusCode.Updated || !userProfileExists
                     ? new()
                     {
@@ -952,7 +1026,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         ClosedDateTime = updatedUserProfile.ClosedDateTime,
                     }
                     : null,
-                ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists ? ResultType.Error : ResultType.Success,
+                ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists
+                    ? ResultType.Error
+                    : ResultType.Success,
                 ResultError = updateResult.Status != DbStatusCode.Updated || !userProfileExists
                     ? new()
                     {
@@ -962,7 +1038,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     : null,
             };
 
-            Times timesSendEmail = userProfileExists && updatedStatus == DbStatusCode.Updated && !profileClosed ? Times.Once() : Times.Never();
+            Times timesSendEmail = userProfileExists && updatedStatus == DbStatusCode.Updated && !profileClosed
+                ? Times.Once()
+                : Times.Never();
             UserProfileModelResult expected = new(userProfileModel, timesSendEmail);
             return new(service, emailQueueServiceMock, expected, Hdid, userId);
         }
@@ -1070,7 +1148,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         ClosedDateTime = updatedUserProfile.ClosedDateTime,
                     }
                     : null,
-                ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists ? ResultType.Error : ResultType.Success,
+                ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists
+                    ? ResultType.Error
+                    : ResultType.Success,
                 ResultError = updateResult.Status != DbStatusCode.Updated || !userProfileExists
                     ? new()
                     {
@@ -1080,7 +1160,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     : null,
             };
 
-            Times timesSendEmail = userProfileExists && updatedStatus == DbStatusCode.Updated && profileClosed ? Times.Once() : Times.Never();
+            Times timesSendEmail = userProfileExists && updatedStatus == DbStatusCode.Updated && profileClosed
+                ? Times.Once()
+                : Times.Never();
             UserProfileModelResult expected = new(userProfileModel, timesSendEmail);
             return new(service, emailQueueServiceMock, expected, Hdid);
         }
@@ -1096,30 +1178,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DateTime currentUtcDate = DateTime.UtcNow;
             DateTime birthDate = currentUtcDate.AddYears(-age).Date;
 
-            PatientModel patientModel = new()
-            {
-                HdId = Hdid,
-                Birthdate = birthDate,
-            };
-
-            RequestResult<PatientModel> patientResult = new()
-            {
-                ResultStatus = patientErrorExists ? ResultType.Error : ResultType.Success,
-                ResourcePayload = patientErrorExists ? null : patientModel,
-                ResultError = patientErrorExists
-                    ? new()
-                    {
-                        ResultMessage = "DB ERROR",
-                    }
-                    : null,
-            };
-
-            RequestResult<bool> expected = new()
-            {
-                ResourcePayload = validAge,
-                ResultStatus = patientResult.ResultStatus,
-                ResultError = patientResult.ResultError,
-            };
+            PatientModel patientModel = GeneratePatientModel(birthDate);
+            RequestResult<PatientModel> patientResult = GeneratePatientResult(patientErrorExists, patientModel);
 
             Mock<IPatientService> patientServiceMock = new();
             patientServiceMock.Setup(
@@ -1129,6 +1189,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<bool>(),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientResult);
+
+            RequestResult<bool> expected = new()
+            {
+                ResourcePayload = validAge,
+                ResultStatus = patientResult.ResultStatus,
+                ResultError = patientResult.ResultError,
+            };
 
             IConfigurationRoot configuration = GetIConfiguration(minAge);
             IUserProfileService service = GetUserProfileService(configurationRoot: configuration, patientServiceMock: patientServiceMock);
@@ -1212,7 +1279,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private sealed record GetUserProfileResult(
             RequestResult<UserProfileModel> Result,
-            Times TimesUpdateUserProfile);
+            Times TimesUpdateUserProfile,
+            string ExceptionMessage);
 
         private sealed record UpdateAcceptedTermsMock(
             IUserProfileService Service,
@@ -1244,8 +1312,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private sealed record ValidateMinimumAgeMock(
             IUserProfileService Service,
-            RequestResult<bool>
-                Expected,
+            RequestResult<bool> Expected,
             string Age);
     }
 }

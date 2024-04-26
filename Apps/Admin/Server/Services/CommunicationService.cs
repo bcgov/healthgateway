@@ -37,11 +37,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<Communication>> AddAsync(Communication communication, CancellationToken ct = default)
         {
-            logger.LogTrace("Communication received: {Id)}", communication.Id.ToString());
+            logger.LogTrace("Communication received: {Id}", communication.Id.ToString());
 
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                logger.LogTrace("Adding communication... {Id)}", communication.Id.ToString());
+                logger.LogTrace("Adding communication... {Id}", communication.Id.ToString());
                 DbResult<Database.Models.Communication> dbResult = await communicationDelegate.AddAsync(mappingService.MapToDatabaseCommunication(communication), ct: ct);
                 return new RequestResult<Communication>
                 {
@@ -74,7 +74,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                logger.LogTrace("Updating communication... {Id)}", communication.Id.ToString());
+                logger.LogTrace("Updating communication... {Id}", communication.Id.ToString());
 
                 DbResult<Database.Models.Communication> dbResult = await communicationDelegate.UpdateAsync(mappingService.MapToDatabaseCommunication(communication), ct: ct);
                 return new RequestResult<Communication>
