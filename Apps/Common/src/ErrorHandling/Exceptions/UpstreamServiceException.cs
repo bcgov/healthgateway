@@ -25,6 +25,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
     /// The default status code is <see cref="HttpStatusCode.BadGateway"/> (502).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
+    [ExcludeFromCodeCoverage]
     public class UpstreamServiceException : HealthGatewayException
     {
         private const HttpStatusCode DefaultStatusCode = HttpStatusCode.BadGateway;

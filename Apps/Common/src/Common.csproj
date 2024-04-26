@@ -71,6 +71,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="CommonTests" />
     <InternalsVisibleTo Include="IntegrationTests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 </Project>

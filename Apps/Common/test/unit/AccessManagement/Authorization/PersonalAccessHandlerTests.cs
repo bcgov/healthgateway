@@ -253,6 +253,60 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         }
 
         /// <summary>
+        /// Handle Auth - No HDID Claim.
+        /// </summary>
+        [Fact]
+        public void ShouldNotAuthPatientReadWithoutHdidClaim()
+        {
+            // Setup
+            string hdid = "The User HDID";
+            string resourceHdid = hdid;
+            string token = "Fake Access Token";
+            string userId = "User ID";
+            string username = "User Name";
+
+            List<Claim> claims =
+            [
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+            ];
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
+
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+            };
+            RouteValueDictionary routeValues = new()
+            {
+                { "hdid", resourceHdid },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+            httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
+
+            Mock<HttpContext> httpContextMock = new();
+            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger<PersonalAccessHandler> logger = loggerFactory.CreateLogger<PersonalAccessHandler>();
+
+            PersonalAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read)];
+
+            AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
+            authHandler.HandleAsync(context);
+
+            Assert.False(context.HasSucceeded);
+            Assert.False(context.HasFailed);
+        }
+
+        /// <summary>
         /// Handle Auth - Non-owner Error.
         /// </summary>
         [Fact]

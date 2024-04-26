@@ -84,11 +84,13 @@ namespace HealthGateway.Common.Messaging
     /// <summary>
     /// Base class for Messaging configuration settings.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract record MessagingSettings;
 
     /// <summary>
     /// Configuration settings for service bus.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record AzureServiceBusSettings : MessagingSettings
     {
         /// <summary>

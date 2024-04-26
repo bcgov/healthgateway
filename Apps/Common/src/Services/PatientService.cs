@@ -27,7 +27,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
@@ -94,19 +93,6 @@ namespace HealthGateway.Common.Services
 
             activity?.Stop();
             return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<string> GetPatientHdidAsync(string phn, CancellationToken ct = default)
-        {
-            using Activity? activity = Source.StartActivity();
-            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
-            if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
-            {
-                throw new NotFoundException(patientResult.ResultError?.ResultMessage ?? "Unspecified error");
-            }
-
-            return patientResult.ResourcePayload.HdId;
         }
 
         /// <inheritdoc/>

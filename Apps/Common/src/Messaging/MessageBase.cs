@@ -17,6 +17,7 @@
 namespace HealthGateway.Common.Messaging;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using HealthGateway.Common.Utils;
 
@@ -24,6 +25,7 @@ using HealthGateway.Common.Utils;
 /// Base record for messages
 /// It uses PolymorphicJsonConverter to ensure the type is always serialized in the payload.
 /// </summary>
+[ExcludeFromCodeCoverage]
 [JsonConverter(typeof(PolymorphicJsonConverter<MessageBase>))]
 public abstract record MessageBase;
 
@@ -32,6 +34,7 @@ public abstract record MessageBase;
 /// </summary>
 /// <param name="SessionId">The session id to manage FIFO.</param>
 /// <param name="Content">The message.</param>
+[ExcludeFromCodeCoverage]
 public record MessageEnvelope(MessageBase Content, string SessionId)
 {
     /// <summary>
@@ -45,7 +48,7 @@ public record MessageEnvelope(MessageBase Content, string SessionId)
     public string MessageType => this.Content.GetType().Name;
 
     /// <summary>
-    /// Gets the creation time timestamp as as string.
+    /// Gets the creation time timestamp as a string.
     /// </summary>
     public string CreatedOnTimestamp => this.CreatedOn.ToString("o");
 }
