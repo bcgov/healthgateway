@@ -97,19 +97,6 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientHdidAsync(string phn, CancellationToken ct = default)
-        {
-            using Activity? activity = Source.StartActivity();
-            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
-            if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
-            {
-                throw new NotFoundException(patientResult.ResultError?.ResultMessage ?? "Unspecified error");
-            }
-
-            return patientResult.ResourcePayload.HdId;
-        }
-
-        /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetPatientAsync(
             string identifier,
             PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
