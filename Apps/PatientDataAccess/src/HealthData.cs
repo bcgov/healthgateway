@@ -17,10 +17,12 @@ namespace HealthGateway.PatientDataAccess
 {
 #pragma warning disable SA1201 // Elements should appear in the correct order
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// abstract record for health data.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract record HealthData
     {
         /// <summary>
@@ -37,6 +39,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// The details of a diagnostic imaging exam.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record DiagnosticImagingExam : HealthData
     {
         /// <summary>
@@ -83,6 +86,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// The details of a BC Cancer screening exam.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record BcCancerScreening : HealthData
     {
         /// <summary>
