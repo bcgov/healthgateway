@@ -46,8 +46,6 @@ namespace HealthGateway.CommonTests.Messaging
         private static readonly AccountClosedEvent AccountClosedEvent = new(Hdid2, DateTime);
         private static readonly DependentAddedEvent DependentAddedEvent = new(Hdid1, Hdid2);
 
-        // private AccountCreatedEvent Event1 = new(Hdid1, DateTime), Hdid1) { CreatedOn = DateTime };
-
         /// <summary>
         /// SendAsync - Happy Path.
         /// </summary>

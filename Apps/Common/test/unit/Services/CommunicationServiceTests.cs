@@ -161,7 +161,7 @@ namespace HealthGateway.CommonTests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetActiveCommunicationFromDbException()
+        public async Task GetActiveCommunicationDbExceptionShouldReturnError()
         {
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
             communicationDelegateMock.Setup(s => s.GetNextAsync(It.IsAny<CommunicationType>(), It.IsAny<CancellationToken>())).ThrowsAsync(new NpgsqlException());
