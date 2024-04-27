@@ -245,7 +245,7 @@ namespace HealthGateway.Common.Delegates
                     ResultMessage = $"Exception while fetching Vaccine Proof: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                 };
-                this.logger.LogError("Unexpected exception while fetching Vaccine Proof {Exception}", e);
+                this.logger.LogError(e, "Unexpected exception while fetching Vaccine Proof {Message}", e.Message);
             }
 
             return retVal;
@@ -322,7 +322,7 @@ namespace HealthGateway.Common.Delegates
                     ResultMessage = $"Exception while sending HTTP request to BC Mail Plus: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                 };
-                this.logger.LogError("Unexpected exception while sending HTTP request to BC Mail Plus {Exception}", e);
+                this.logger.LogError(e, "Unexpected exception while sending HTTP request to BC Mail Plus {Message}", e.Message);
             }
 
             return retVal;
