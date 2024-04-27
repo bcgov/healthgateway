@@ -99,7 +99,7 @@ namespace HealthGateway.Common.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("Request Exception {Error}", e.ToString());
+                this.logger.LogCritical(e, "Request Exception {Message}", e.Message);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with request for Personal Accounts",

@@ -254,7 +254,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
             catch (Exception e) when (e is HttpRequestException or InvalidOperationException or JsonException)
             {
-                this.logger.LogError("Error Message {Message}", e.Message);
+                this.logger.LogError(e, "Error Message {Message}", e.Message);
             }
 
             return authModel;

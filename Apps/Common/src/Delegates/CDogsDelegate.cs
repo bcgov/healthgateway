@@ -95,7 +95,7 @@ namespace HealthGateway.Common.Delegates
                         ResultMessage = $"Exception generating report: {e}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                     };
-                    this.logger.LogError("Unexpected exception in GenerateReport {Exception}", e);
+                    this.logger.LogError(e, "Unexpected exception in GenerateReport {Message}", e.Message);
                 }
 
                 return retVal;
