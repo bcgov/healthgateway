@@ -16,9 +16,12 @@
 namespace HealthGateway.CommonTests.CacheProviders
 {
     using System;
+    using System.Collections.Generic;
+    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Models.Cacheable;
     using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
@@ -26,6 +29,27 @@ namespace HealthGateway.CommonTests.CacheProviders
     using Xunit;
 
 #pragma warning disable S2925 // "Thread.Sleep" should not be used in tests
+
+    /// <summary>
+    /// Represents the object type to cache.
+    /// </summary>
+    public enum CacheType
+    {
+        /// <summary>
+        /// Specifies that cache type is numeric.
+        /// </summary>
+        NumericType,
+
+        /// <summary>
+        /// Specifies that cache type is string.
+        /// </summary>
+        StringType,
+
+        /// <summary>
+        /// Specifies that cache type is an object.
+        /// </summary>
+        ObjectType,
+    }
 
     /// <summary>
     /// Integration Tests for the RedisCacheProvider.
@@ -107,15 +131,19 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// <summary>
         /// Validates getting or setting items from the cache.
         /// </summary>
-        [Fact]
-        public void GetOrSetItemFromCache()
+        /// <param name="cacheType">The type of value to cache.</param>
+        [InlineData(CacheType.StringType)]
+        [InlineData(CacheType.NumericType)]
+        [InlineData(CacheType.ObjectType)]
+        [Theory]
+        public void GetOrSetItemFromCache(CacheType cacheType)
         {
-            string key = $"key_{GenerateRandomString()}";
-            string value = $"value_{GenerateRandomString()}";
+            string key = $"key_{cacheType}";
+            object? value = GetValue(cacheType);
 
-            Assert.Null(this.cacheProvider.GetItem<string>(key));
+            Assert.Null(this.cacheProvider.GetItem<object?>(key));
 
-            string? cacheItem = this.cacheProvider.GetOrSet(key, () => value);
+            object? cacheItem = this.cacheProvider.GetOrSet(key, () => value);
 
             Assert.Equal(value, cacheItem);
         }
@@ -197,18 +225,22 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// <summary>
         /// Validates getting or setting items from the cache.
         /// </summary>
+        /// <param name="cacheType">The type of value to cache.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
-        [Fact]
-        public async Task GetOrSetItemAsyncFromCache()
+        [InlineData(CacheType.StringType)]
+        [InlineData(CacheType.NumericType)]
+        [InlineData(CacheType.ObjectType)]
+        [Theory]
+        public async Task GetOrSetItemAsyncFromCache(CacheType cacheType)
         {
-            string key = $"key_{GenerateRandomString()}";
-            string value = $"value_{GenerateRandomString()}";
+            string key = $"key_{cacheType}";
+            object value = GetValue(cacheType);
 
-            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key));
+            Assert.Null(await this.cacheProvider.GetItemAsync<object?>(key));
 
-            string? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value));
+            object? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value));
 
             Assert.Equal(value, cacheItem);
         }
@@ -236,6 +268,29 @@ namespace HealthGateway.CommonTests.CacheProviders
         private static string GenerateRandomString()
         {
             return Guid.NewGuid().ToString()[..5];
+        }
+
+        private static Task<object?> GetValue(CacheType cacheType)
+        {
+            switch (cacheType)
+            {
+                case CacheType.NumericType:
+                    byte[] number = new byte[8];
+                    using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+                    {
+                        rng.GetBytes(number);
+                    }
+
+                    return Task.FromResult<object?>(number);
+
+                case CacheType.ObjectType:
+                    IEnumerable<DataSource> dataSources = new[] { DataSource.Immunization };
+                    return Task.FromResult<object?>(dataSources);
+
+                case CacheType.StringType:
+                default:
+                    return Task.FromResult<object?>(GenerateRandomString());
+            }
         }
     }
 }
