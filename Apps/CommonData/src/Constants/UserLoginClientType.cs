@@ -15,18 +15,30 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Constants
 {
+    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
     /// <summary>
     /// Represents the type of login client used.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum UserLoginClientType
     {
         /// <summary>
         /// Login from Health Gateway web app.
         /// </summary>
         Web,
+
+        /// <summary>
+        /// Login from Health Gateway Android mobile app.
+        /// </summary>
+        Android,
+
+        /// <summary>
+        /// Login from Health Gateway iOS mobile app.
+        /// </summary>
+        [EnumMember(Value = "iOS")]
+        Ios,
 
         /// <summary>
         /// Login from Health Gateway mobile app.

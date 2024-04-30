@@ -378,8 +378,8 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.ClientCode)
                 .HasConversion(
                     new ValueConverter<UserLoginClientType, string>(
-                        v => EnumUtility.ToEnumString(v, false),
-                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
+                        v => EnumUtility.ToEnumString(v, true),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, true)));
 
             modelBuilder.Entity<UserProfile>()
                 .HasIndex(p => p.LastLoginDateTime);
@@ -414,8 +414,8 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.UserLoginClientCode)
                 .HasConversion(
                     new ValueConverter<UserLoginClientType, string>(
-                        v => EnumUtility.ToEnumString(v, false),
-                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
+                        v => EnumUtility.ToEnumString(v, true),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, true)));
 
             // Create Foreign key for AllowedDelegation
             modelBuilder.Entity<AllowedDelegation>()
@@ -1198,6 +1198,24 @@ namespace HealthGateway.Database.Context
                     {
                         UserLoginClientCode = UserLoginClientType.Web,
                         Description = "Code for a login from the HG web app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Android,
+                        Description = "Code for a login from the HG Android mobile app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Ios,
+                        Description = "Code for a login from the HG iOS mobile app",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
