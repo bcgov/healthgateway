@@ -100,10 +100,13 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<int> DeleteAsync(uint daysAgo, int maxRows, bool shouldCommit = true, CancellationToken ct = default)
         {
+            DateTime dateFrom = DateTime.UtcNow.AddDays(daysAgo * -1).Date;
+            this.logger.LogDebug("Deleting {MaxRows} emails {DaysAgo} days ago from {DateFrom}", maxRows, daysAgo, dateFrom);
+
             int deletedCount = await this.dbContext.Email
                 .Where(
                     email => email.EmailStatusCode == EmailStatus.Processed &&
-                             email.CreatedDateTime <= DateTime.UtcNow.AddDays(daysAgo * -1).Date)
+                             email.CreatedDateTime <= dateFrom)
                 .Where(email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == email.To))
                 .OrderBy(email => email.CreatedDateTime)
                 .Take(maxRows)
