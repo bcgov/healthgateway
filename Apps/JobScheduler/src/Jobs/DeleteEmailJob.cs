@@ -15,9 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -32,6 +34,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly int deleteMaxRows;
         private readonly IEmailDelegate emailDelegate;
         private readonly ILogger<DeleteEmailJob> logger;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteEmailJob"/> class.
@@ -47,6 +50,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.logger = logger;
             this.emailDelegate = emailDelegate;
             IConfigurationSection section = configuration.GetSection("DeleteEmailJob");
+            this.configuration = configuration;
             this.deleteMaxRows = section.GetValue("DeleteMaxRows", 1000);
             this.deleteAfterDays = section.GetValue<uint>("DeleteAfterDays", 30);
         }
@@ -60,7 +64,8 @@ namespace HealthGateway.JobScheduler.Jobs
         public async Task DeleteOldEmailsAsync(CancellationToken ct = default)
         {
             this.logger.LogInformation("Delete job running: Delete emails {DeleteAfterDays} days old and limit to {DeleteMaxRows} deleted", this.deleteAfterDays, this.deleteMaxRows);
-            int count = await this.emailDelegate.DeleteAsync(this.deleteAfterDays, this.deleteMaxRows, ct: ct);
+            TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(this.configuration, DateTime.UtcNow);
+            int count = await this.emailDelegate.DeleteAsync(this.deleteAfterDays, this.deleteMaxRows, localTimeOffset, ct: ct);
             this.logger.LogInformation("Delete job finished after removing {Count} records", count);
         }
     }

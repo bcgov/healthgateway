@@ -74,9 +74,10 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="daysAgo">Delete emails where created on or before days ago.</param>
         /// <param name="maxRows">The maximum amount of emails to delete at one time.</param>
+        /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <param name="shouldCommit">If true, the records will be deleted from the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The number of rows deleted.</returns>
-        Task<int> DeleteAsync(uint daysAgo, int maxRows, bool shouldCommit = true, CancellationToken ct = default);
+        Task<int> DeleteAsync(uint daysAgo, int maxRows, TimeSpan timeOffset, bool shouldCommit = true, CancellationToken ct = default);
     }
 }
