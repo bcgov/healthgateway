@@ -41,14 +41,14 @@ namespace HealthGateway.CommonTests.CacheProviders
         NumericType,
 
         /// <summary>
-        /// Specifies that cache type is string.
-        /// </summary>
-        StringType,
-
-        /// <summary>
         /// Specifies that cache type is an object.
         /// </summary>
         ObjectType,
+
+        /// <summary>
+        /// Specifies that cache type is string.
+        /// </summary>
+        StringType,
     }
 
     /// <summary>
@@ -132,14 +132,14 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// Validates getting or setting items from the cache.
         /// </summary>
         /// <param name="cacheType">The type of value to cache.</param>
-        [InlineData(CacheType.StringType)]
         [InlineData(CacheType.NumericType)]
         [InlineData(CacheType.ObjectType)]
+        [InlineData(CacheType.StringType)]
         [Theory]
         public void GetOrSetItemFromCache(CacheType cacheType)
         {
             string key = $"key_{cacheType}";
-            object? value = GetValue(cacheType);
+            object? value = GetGeneratedItemValue(cacheType);
 
             Assert.Null(this.cacheProvider.GetItem<object?>(key));
 
@@ -229,14 +229,14 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
-        [InlineData(CacheType.StringType)]
         [InlineData(CacheType.NumericType)]
         [InlineData(CacheType.ObjectType)]
+        [InlineData(CacheType.StringType)]
         [Theory]
         public async Task GetOrSetItemAsyncFromCache(CacheType cacheType)
         {
             string key = $"key_{cacheType}";
-            object value = GetValue(cacheType);
+            object value = GetGeneratedItemValue(cacheType);
 
             Assert.Null(await this.cacheProvider.GetItemAsync<object?>(key));
 
@@ -270,7 +270,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             return Guid.NewGuid().ToString()[..5];
         }
 
-        private static Task<object?> GetValue(CacheType cacheType)
+        private static Task<object?> GetGeneratedItemValue(CacheType cacheType)
         {
             switch (cacheType)
             {
