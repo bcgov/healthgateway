@@ -32,8 +32,4 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Properties\ServiceDependencies\hgadmin - Web Deploy\profile.arm.json" />
-  </ItemGroup>
 </Project>

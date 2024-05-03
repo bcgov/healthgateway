@@ -139,9 +139,9 @@ namespace HealthGateway.CommonTests.CacheProviders
         public void GetOrSetItemFromCache(CacheType cacheType)
         {
             string key = $"key_{cacheType}";
-            object? value = GetGeneratedItemValue(cacheType);
+            object value = GetDefaultItemValue(cacheType);
 
-            Assert.Null(this.cacheProvider.GetItem<object?>(key));
+            Assert.Null(this.cacheProvider.GetItem<object>(key));
 
             object? cacheItem = this.cacheProvider.GetOrSet(key, () => value);
 
@@ -236,9 +236,9 @@ namespace HealthGateway.CommonTests.CacheProviders
         public async Task GetOrSetItemAsyncFromCache(CacheType cacheType)
         {
             string key = $"key_{cacheType}";
-            object value = GetGeneratedItemValue(cacheType);
+            object value = GetDefaultItemValue(cacheType);
 
-            Assert.Null(await this.cacheProvider.GetItemAsync<object?>(key));
+            Assert.Null(await this.cacheProvider.GetItemAsync<object>(key));
 
             object? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value));
 
@@ -270,7 +270,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             return Guid.NewGuid().ToString()[..5];
         }
 
-        private static Task<object?> GetGeneratedItemValue(CacheType cacheType)
+        private static object GetDefaultItemValue(CacheType cacheType)
         {
             switch (cacheType)
             {
@@ -281,15 +281,15 @@ namespace HealthGateway.CommonTests.CacheProviders
                         rng.GetBytes(number);
                     }
 
-                    return Task.FromResult<object?>(number);
+                    return number;
 
                 case CacheType.ObjectType:
                     IEnumerable<DataSource> dataSources = new[] { DataSource.Immunization };
-                    return Task.FromResult<object?>(dataSources);
+                    return dataSources;
 
                 case CacheType.StringType:
                 default:
-                    return Task.FromResult<object?>(GenerateRandomString());
+                    return GenerateRandomString();
             }
         }
     }
