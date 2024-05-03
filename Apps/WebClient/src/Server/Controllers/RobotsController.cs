@@ -29,6 +29,7 @@ namespace HealthGateway.WebClient.Server.Controllers
     /// <summary>
     /// Dynamic Robots.txt for search engines.
     /// </summary>
+    [Route("/")]
     public class RobotsController : Controller
     {
         private readonly string robotsFilePath;

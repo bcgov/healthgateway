@@ -25,13 +25,13 @@ const setDataSource = (dataSource: PcrDataSource) => {
             @click="setDataSource(PcrDataSource.Keycloak)"
         />
         <v-row class="my-4" align="center">
-            <v-col><v-divider role="presentation" /></v-col>
+            <v-col><v-divider /></v-col>
             <v-col cols="auto">
                 <h2 class="text-h6 font-weight-bold text-medium-emphasis">
                     OR
                 </h2>
             </v-col>
-            <v-col><v-divider role="presentation" /></v-col>
+            <v-col><v-divider /></v-col>
         </v-row>
         <HgButtonComponent
             id="btn-manual"
