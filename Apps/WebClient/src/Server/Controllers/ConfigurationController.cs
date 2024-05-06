@@ -29,7 +29,7 @@ namespace HealthGateway.WebClient.Server.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [Produces("application/json")]
-    public class ConfigurationController : ControllerBase
+    public class ConfigurationController : Controller
     {
         private readonly IConfigurationService configurationService;
 
