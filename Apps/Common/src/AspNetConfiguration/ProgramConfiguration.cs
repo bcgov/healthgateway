@@ -23,6 +23,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.Hosting;
     using Serilog;
     using Serilog.Events;
+    using Serilog.Exceptions;
     using Serilog.Extensions.Logging;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -82,9 +83,10 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .ReadFrom.Configuration(configuration)
                 .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
                 .CreateBootstrapLogger();
 
-            using var factory = new SerilogLoggerFactory(Log.Logger);
+            using SerilogLoggerFactory factory = new SerilogLoggerFactory(Log.Logger);
             return factory.CreateLogger("Startup");
         }
     }
