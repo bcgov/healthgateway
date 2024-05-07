@@ -16,7 +16,7 @@ defineProps<Props>();
                 <h2 v-if="subtitle" class="text-h5 mt-2">{{ subtitle }}</h2>
             </div>
             <slot />
-            <v-divider class="mt-4" />
+            <v-divider class="mt-4" role="presentation" />
         </v-col>
     </v-row>
 </template>
