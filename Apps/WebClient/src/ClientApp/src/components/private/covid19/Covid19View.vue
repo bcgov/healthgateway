@@ -383,7 +383,7 @@ fetchVaccineCardData();
                         >
                             Dose {{ index + 1 }}
                         </v-col>
-                        <v-col><v-divider /></v-col>
+                        <v-col><v-divider role="presentation" /></v-col>
                     </v-row>
                     <v-row dense>
                         <v-col>
