@@ -1,0 +1,41 @@
+{
+    "resourcePayload": {
+        "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "acceptedTermsOfService": true,
+        "termsOfServiceId": "2fab66e7-37c9-4b03-ba25-e8fad604dc7f",
+        "email": "nobody@healthgateway.gov.bc.ca",
+        "isEmailVerified": true,
+        "smsNumber": "2506715000",
+        "isSMSNumberVerified": false,
+        "hasTermsOfServiceUpdated": false,
+        "lastLoginDateTime": "2024-05-07T23:23:21Z",
+        "lastLoginDateTimes": [
+            "2024-05-07T23:23:21Z",
+            "2024-05-07T22:51:53Z",
+            "2024-05-07T22:05:47Z",
+            "2024-05-07T21:55:04Z",
+            "2024-05-07T21:41:56Z"
+        ],
+        "closedDateTime": null,
+        "hasTourUpdated": false,
+        "preferences": {
+            "quickLinks": {
+                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+                "preference": "quickLinks",
+                "value": "[{\"name\":\"Medications\",\"filter\":{\"modules\":[\"Medication\"]}},{\"name\":\"My Notes\",\"filter\":{\"modules\":[\"Note\"]}}]",
+                "version": 25966,
+                "createdDateTime": "2024-05-06T16:44:27.813723Z",
+                "createdBy": "System",
+                "updatedDateTime": "2024-05-06T16:44:27.813723Z",
+                "updatedBy": "System"
+            }
+        },
+        "blockedDataSources": [],
+        "betaFeatures": []
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}
