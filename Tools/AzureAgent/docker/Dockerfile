@@ -32,6 +32,10 @@ RUN mkdir -p /opt/bin && \
     curl -sL https://downloads-openshift-console.apps.gold.devops.gov.bc.ca/amd64/linux/oc.tar | tar -x && \
     rm -f oc.tar
 
+# Install Hashicorp Vault
+RUN curl -sL https://releases.hashicorp.com/vault/1.16.2/vault_1.16.2_linux_amd64.zip -o - | funzip > /opt/bin/vault && \
+chmod +x /opt/bin/vault 
+
 # Update environment variables
 ENV TARGETARCH=linux-x64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
