@@ -1003,6 +1003,10 @@ describe("Notes", () => {
             communicationFixture: CommunicationFixture.InApp,
         });
 
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "NoteService/notes-no-records.json",
+        });
+
         cy.intercept("POST", "**/Note/*", {
             statusCode: 429,
         });
