@@ -1,4 +1,12 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import {
+    CommunicationFixture,
+    CommunicationType,
+    setupCommunicationIntercept,
+    setupPatientIntercept,
+    setupUserProfileIntercept,
+} from "../../../support/functions/intercept";
+
 const homeUrl = "/home";
 const covid19Url = "/covid19";
 const timelineUrl = "/timeline";
@@ -6,6 +14,15 @@ const timelineUrl = "/timeline";
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
         cy.configureSettings({});
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -24,6 +41,14 @@ describe("Authenticated User - Home Page", () => {
             },
         });
 
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -36,6 +61,15 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Link to COVID-19 page", () => {
         cy.configureSettings({});
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -52,6 +86,15 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Link to timeline page", () => {
         cy.configureSettings({});
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -69,6 +112,14 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Federal Card button disabled", () => {
         cy.configureSettings({});
 
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -83,38 +134,20 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({
             datasets: [
                 {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "medication",
-                    enabled: true,
-                },
-                {
-                    name: "specialAuthorityRequest",
-                    enabled: true,
-                },
-                {
                     name: "note",
                     enabled: true,
                 },
             ],
+        });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept({
+            userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
+        });
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.intercept("GET", "**/Note/*", {

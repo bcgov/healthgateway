@@ -1,4 +1,12 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import {
+    CommunicationFixture,
+    CommunicationType,
+    setupCommunicationIntercept,
+    setupPatientIntercept,
+    setupUserProfileIntercept,
+} from "../../../support/functions/intercept";
+
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Filters", () => {
@@ -60,6 +68,15 @@ describe("Filters", () => {
                 },
             ],
         });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -194,10 +211,18 @@ describe("Describe Filters when all datasets blocked", () => {
                 },
             ],
         });
-        cy.intercept("GET", `**/UserProfile/*`, {
-            fixture:
+
+        setupPatientIntercept();
+        setupUserProfileIntercept({
+            userProfileFixture:
                 "UserProfileService/userProfileMultipleDatasetsBlocked.json",
         });
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -230,13 +255,22 @@ describe("Describe Filters when clinical doc dataset is blocked but immunization
                 },
             ],
         });
-        cy.intercept("GET", `**/UserProfile/*`, {
-            fixture:
+
+        setupPatientIntercept();
+        setupUserProfileIntercept({
+            userProfileFixture:
                 "UserProfileService/userProfileClinicalDocDatasetBlocked.json",
         });
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

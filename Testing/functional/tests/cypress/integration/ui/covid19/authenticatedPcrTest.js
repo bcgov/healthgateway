@@ -1,8 +1,15 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 import {
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
+import {
+    CommunicationFixture,
+    CommunicationType,
+    setupCommunicationIntercept,
+    setupPatientIntercept,
+    setupUserProfileIntercept,
+} from "../../../support/functions/intercept";
 
 const pcrTestUrl = "/pcrtest";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -22,6 +29,14 @@ const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.configureSettings({
             covid19: {
                 pcrTestEnabled: true,
@@ -100,6 +115,15 @@ describe("Authenticated Pcr Test Registration with Error", () => {
                 pcrTestEnabled: true,
             },
         });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -142,6 +166,15 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
                 pcrTestEnabled: true,
             },
         });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

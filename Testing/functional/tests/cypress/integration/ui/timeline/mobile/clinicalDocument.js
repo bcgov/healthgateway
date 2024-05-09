@@ -1,4 +1,11 @@
-const { AuthMethod } = require("../../../../support/constants");
+import { AuthMethod } from "../../../../support/constants";
+import {
+    CommunicationFixture,
+    CommunicationType,
+    setupCommunicationIntercept,
+    setupPatientIntercept,
+    setupUserProfileIntercept,
+} from "../../../../support/functions/intercept";
 
 describe("Clinical Document", () => {
     beforeEach(() => {
@@ -19,6 +26,14 @@ describe("Clinical Document", () => {
                     enabled: true,
                 },
             ],
+        });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.viewport("iphone-6");

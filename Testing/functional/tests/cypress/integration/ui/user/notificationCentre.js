@@ -1,4 +1,12 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import {
+    CommunicationFixture,
+    CommunicationType,
+    setupCommunicationIntercept,
+    setupPatientIntercept,
+    setupUserProfileIntercept,
+} from "../../../support/functions/intercept";
+
 const notificationIdOne = "f57bcb39-64ca-0a17-5477-92ea7f084fbf";
 const notificationIdTwo = "72c2d6c0-b370-24e6-0b5c-04e42b6511c8";
 const notificationIdImms = "9eb24f30-ab74-4cdc-3280-08db134f5424";
@@ -28,6 +36,14 @@ describe("Notification Centre", () => {
 
         cy.intercept("DELETE", `**/Notification/${HDID}`, {
             statusCode: 200,
+        });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.login(
@@ -125,8 +141,12 @@ describe("Notification Badge", () => {
             },
         });
 
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
 
         // The scheduledDateTimeUtc must be after user profile's last login in lastLoginDateTimes, which is the second entry
@@ -197,6 +217,14 @@ describe("Categorized web alerts", () => {
 
         cy.intercept("GET", `**/Immunization?hdid=*`, {
             fixture: "ImmunizationService/immunization.json",
+        });
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.login(

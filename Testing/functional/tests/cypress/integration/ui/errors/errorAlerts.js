@@ -332,9 +332,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
         communicationFixture: CommunicationFixture.InApp,
     });
 
-    setupPatientIntercept({
-        patientFixture: "PatientService/patientCombinedAddress.json",
-    });
+    setupPatientIntercept();
 
     setupUserProfileIntercept({
         userProfileFixture: "UserProfileService/userProfileQuickLinks.json",

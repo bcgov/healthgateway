@@ -1,17 +1,32 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import {
+    CommunicationFixture,
+    CommunicationType,
+    setupCommunicationIntercept,
+    setupPatientIntercept,
+    setupUserProfileIntercept,
+} from "../../../support/functions/intercept";
+
 const fakeSMSNumber = "2506714848";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
     beforeEach(() => {
         cy.configureSettings({});
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
+
+        setupPatientIntercept();
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
+
         cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
             body: true,
         });
         cy.configureSettings({});
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -181,9 +196,14 @@ describe("User Profile", () => {
 describe("User Profile - Validate Address", () => {
     beforeEach(() => {
         cy.configureSettings({});
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
+
+        setupUserProfileIntercept();
+        setupCommunicationIntercept();
+        setupCommunicationIntercept({
+            communicationType: CommunicationType.InApp,
+            communicationFixture: CommunicationFixture.InApp,
         });
+
         cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
             body: true,
         });
@@ -196,13 +216,8 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has combined address", () => {
-        cy.intercept(
-            "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
-            {
-                fixture: "PatientService/patientCombinedAddress.json",
-            }
-        );
+        setupPatientIntercept();
+
         cy.get("[data-testid=postal-address-label]")
             .should("be.visible")
             .contains("Address");
@@ -217,13 +232,9 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has different addresses", () => {
-        cy.intercept(
-            "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
-            {
-                fixture: "PatientService/patientDifferentAddress.json",
-            }
-        );
+        setupPatientIntercept({
+            patientFixture: "PatientService/patientDifferentAddress.json",
+        });
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -247,13 +258,9 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has no address", () => {
-        cy.intercept(
-            "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
-            {
-                fixture: "PatientService/patientNoAddress.json",
-            }
-        );
+        setupPatientIntercept({
+            patientFixture: "PatientService/patientNoAddress.json",
+        });
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -266,13 +273,9 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has only physical address", () => {
-        cy.intercept(
-            "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
-            {
-                fixture: "PatientService/patientOnlyPhysicalAddress.json",
-            }
-        );
+        setupPatientIntercept({
+            patientFixture: "PatientService/patientOnlyPhysicalAddress.json",
+        });
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -291,13 +294,9 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has only postal address", () => {
-        cy.intercept(
-            "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
-            {
-                fixture: "PatientService/patientOnlyPostalAddress.json",
-            }
-        );
+        setupPatientIntercept({
+            patientFixture: "PatientService/patientOnlyPostalAddress.json",
+        });
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
