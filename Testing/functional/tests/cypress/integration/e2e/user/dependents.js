@@ -482,7 +482,8 @@ describe("dependents", () => {
         });
     });
 
-    /* it("Validate Lab Results - Verify result and download", () => {
+    // test should be skipped until PHSA fixes test data for this dependent
+    it.skip("Validate Lab Results - Verify result and download", () => {
         cy.log("Validating Lab Results Tab - Verify result and download");
 
         cy.get(
@@ -506,7 +507,7 @@ describe("dependents", () => {
             interval: 5000,
             contains: true,
         });
-    }); */
+    });
 
     it("Validate Clinical Document - Verify result and download", () => {
         cy.log("Validating Clinical Document Tab - Verify result and download");

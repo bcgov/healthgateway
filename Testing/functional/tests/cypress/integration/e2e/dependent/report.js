@@ -272,7 +272,8 @@ describe("Reports", () => {
         );
     });
 
-    /* it("Validate Laboratory Report", () => {
+    // test should be skipped until PHSA fixes test data for this dependent
+    it.skip("Validate Laboratory Report", () => {
         const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
@@ -290,7 +291,7 @@ describe("Reports", () => {
                 ).should("not.exist");
             }
         );
-    }); */
+    });
 
     it("Validate Hospital Visits Report", () => {
         const hdid = dependent1.hdid;
