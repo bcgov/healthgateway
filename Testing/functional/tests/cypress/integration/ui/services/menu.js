@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 function toggleServices(enabled = true) {
     cy.configureSettings({
@@ -31,13 +25,7 @@ describe("Menu System when services are enabled", () => {
     beforeEach(() => {
         toggleServices(true);
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
     });
 
     it("Side bar contains services nav link and toggle validated", () => {
@@ -71,13 +59,7 @@ describe("Menu system when services are disabled", () => {
     beforeEach(() => {
         toggleServices(false);
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
     });
     it("Side bar does not contain services nav link when services is disabled", () => {
         cy.configureSettings({

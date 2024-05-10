@@ -1,25 +1,17 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Need to accept terms of service", () => {
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept({
-            hdid: HDID,
+        setupStandardIntercepts({
+            userProfileHdid: HDID,
             userProfileFixture: "UserProfileService/userProfileAcceptTos.json",
         });
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
+
+        cy.intercept("GET", "**/UserProfile/termsofservice", {
+            fixture: "UserProfileService/termsOfService.json",
         });
 
         cy.login(
@@ -46,13 +38,7 @@ describe("Need to accept terms of service", () => {
 
 describe("Does not need to accept terms of service", () => {
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

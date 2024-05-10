@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
@@ -28,13 +22,7 @@ describe("Reports - Medication", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -89,13 +77,7 @@ describe("Reports - Covid19", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -151,13 +133,7 @@ describe("Reports - Immunization", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -244,13 +220,7 @@ describe("Reports - MSP Visit", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -306,13 +276,7 @@ describe("Reports - Hospital Visits", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -368,13 +332,7 @@ describe("Reports - Notes (User-Entered)", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -430,13 +388,7 @@ describe("Reports - Laboratory Tests", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),

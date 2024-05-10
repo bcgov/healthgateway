@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const homeUrl = "/home";
 
@@ -30,13 +24,7 @@ describe("Federal Proof of Vaccination", () => {
             }
         );
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.configureSettings({
             homepage: {
@@ -69,6 +57,8 @@ describe("Federal Proof of Vaccination", () => {
             },
             datasets: [{ name: "immunization", enabled: true }],
         });
+
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),

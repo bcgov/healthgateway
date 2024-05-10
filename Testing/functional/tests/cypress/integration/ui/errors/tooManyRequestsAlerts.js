@@ -1,11 +1,5 @@
 import { AuthMethod, monthNames } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const vaccineCardUrl = "/vaccinecard";
 const dependentHdid = "645645767756756767";
@@ -40,13 +34,7 @@ function populateDatePicker(selector, dateValue) {
 
 describe("Authenticated Vaccine Card Downloads", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             statusCode: 429,
@@ -70,13 +58,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
     });
 
     it("Save As PDF Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             fixture:
@@ -210,13 +192,7 @@ describe("Landing Page - Too Many Requests", () => {
 
 describe("Immunization", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Immunization?hdid*", {
             statusCode: 429,
@@ -241,13 +217,7 @@ describe("Immunization", () => {
 
 describe("Encounter", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Encounter/*", {
             statusCode: 429,
@@ -272,13 +242,7 @@ describe("Encounter", () => {
 
 describe("Hospital Visits", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/HospitalVisit/*", {
             statusCode: 429,
@@ -303,13 +267,7 @@ describe("Hospital Visits", () => {
 
 describe("Medication Request", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/MedicationRequest/*", {
             statusCode: 429,
@@ -334,13 +292,7 @@ describe("Medication Request", () => {
 
 describe("Mobile - COVID-19 Orders", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             statusCode: 429,
@@ -366,13 +318,7 @@ describe("Mobile - COVID-19 Orders", () => {
 
 describe("Mobile - Immunization: Unsuccessful Response", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Immunization?hdid*", {
             statusCode: 429,
@@ -398,13 +344,7 @@ describe("Mobile - Immunization: Unsuccessful Response", () => {
 
 describe("Mobile - Encounter", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Encounter/*", {
             statusCode: 429,
@@ -430,13 +370,7 @@ describe("Mobile - Encounter", () => {
 
 describe("Mobile - Hospital Visits", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/HospitalVisit/*", {
             statusCode: 429,
@@ -462,13 +396,7 @@ describe("Mobile - Hospital Visits", () => {
 
 describe("Mobile - Laboratory Orders", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             statusCode: 429,
@@ -494,13 +422,7 @@ describe("Mobile - Laboratory Orders", () => {
 
 describe("Mobile - Laboratory Orders Report Download", () => {
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
@@ -584,13 +506,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
 
 describe("Mobile - Covid19 Orders Report Download", () => {
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
@@ -675,13 +591,7 @@ describe("User Profile", () => {
     beforeEach(() => {
         cy.configureSettings({});
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
             statusCode: 200,
@@ -752,13 +662,7 @@ describe("Dependents", () => {
     };
 
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
@@ -837,13 +741,7 @@ describe("Dependents", () => {
 
 describe("Dependent - Immunizaation History Tab - report download error handling", () => {
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
@@ -945,13 +843,7 @@ describe("Dependent - Immunizaation History Tab - report download error handling
 
 describe("Comments", () => {
     it("Add Comment: Too Many Requests Error", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
@@ -995,13 +887,7 @@ describe("Comments", () => {
 
 describe("Notes", () => {
     it("Add Note: Too Many Requests Error", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/notes-no-records.json",
@@ -1038,13 +924,7 @@ describe("Notes", () => {
     });
 
     it("Edit Note: Too Many Requests Error", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/notes-test-note.json",
@@ -1077,13 +957,7 @@ describe("Notes", () => {
     });
 
     it("Delete Note: Too Many Requests Error", () => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/notes-test-note.json",
@@ -1115,13 +989,7 @@ describe("Notes", () => {
 
 describe("Export Records - Immunizaation - report download error handling", () => {
     beforeEach(() => {
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });

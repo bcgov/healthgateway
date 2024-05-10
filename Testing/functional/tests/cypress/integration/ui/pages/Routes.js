@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const profilePath = "/profile";
 const homePath = "/home";
@@ -24,13 +18,7 @@ describe("Bookmark", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
     });
 
     it("Redirect to UserProfile", () => {

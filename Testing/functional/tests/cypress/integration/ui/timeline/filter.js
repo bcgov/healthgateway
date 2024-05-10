@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
@@ -69,13 +63,7 @@ describe("Filters", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -212,15 +200,9 @@ describe("Describe Filters when all datasets blocked", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept({
+        setupStandardIntercepts({
             userProfileFixture:
                 "UserProfileService/userProfileMultipleDatasetsBlocked.json",
-        });
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.login(
@@ -256,15 +238,9 @@ describe("Describe Filters when clinical doc dataset is blocked but immunization
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept({
+        setupStandardIntercepts({
             userProfileFixture:
                 "UserProfileService/userProfileClinicalDocDatasetBlocked.json",
-        });
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.intercept("GET", "**/Immunization?hdid=*", {

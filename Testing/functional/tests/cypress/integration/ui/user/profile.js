@@ -5,6 +5,7 @@ import {
     setupCommunicationIntercept,
     setupPatientIntercept,
     setupUserProfileIntercept,
+    setupStandardIntercepts,
 } from "../../../support/functions/intercept";
 
 const fakeSMSNumber = "2506714848";
@@ -14,13 +15,7 @@ describe("User Profile", () => {
     beforeEach(() => {
         cy.configureSettings({});
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
             body: true,
@@ -197,26 +192,19 @@ describe("User Profile - Validate Address", () => {
     beforeEach(() => {
         cy.configureSettings({});
 
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
-
         cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
             body: true,
         });
+    });
+
+    it("Verify user has combined address", () => {
+        setupStandardIntercepts();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/profile"
         );
-    });
-
-    it("Verify user has combined address", () => {
-        setupPatientIntercept();
 
         cy.get("[data-testid=postal-address-label]")
             .should("be.visible")
@@ -232,9 +220,15 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has different addresses", () => {
-        setupPatientIntercept({
+        setupStandardIntercepts({
             patientFixture: "PatientService/patientDifferentAddress.json",
         });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -258,9 +252,15 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has no address", () => {
-        setupPatientIntercept({
+        setupStandardIntercepts({
             patientFixture: "PatientService/patientNoAddress.json",
         });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -273,9 +273,15 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has only physical address", () => {
-        setupPatientIntercept({
+        setupStandardIntercepts({
             patientFixture: "PatientService/patientOnlyPhysicalAddress.json",
         });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -294,9 +300,15 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has only postal address", () => {
-        setupPatientIntercept({
+        setupStandardIntercepts({
             patientFixture: "PatientService/patientOnlyPostalAddress.json",
         });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")

@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 function login(isMobile) {
     cy.configureSettings({
@@ -20,13 +14,7 @@ function login(isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.login(
         Cypress.env("keycloak.username"),

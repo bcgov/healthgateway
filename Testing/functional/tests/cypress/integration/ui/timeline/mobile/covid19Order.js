@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../../support/functions/intercept";
 
 describe("COVID-19 Orders", () => {
     beforeEach(() => {
@@ -21,13 +15,7 @@ describe("COVID-19 Orders", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.viewport("iphone-6");
         cy.login(

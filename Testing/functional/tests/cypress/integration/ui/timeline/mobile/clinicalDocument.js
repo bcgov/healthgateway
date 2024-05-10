@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../../support/functions/intercept";
 
 describe("Clinical Document", () => {
     beforeEach(() => {
@@ -28,13 +22,7 @@ describe("Clinical Document", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.viewport("iphone-6");
         cy.login(

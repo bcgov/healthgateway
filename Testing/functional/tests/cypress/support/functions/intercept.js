@@ -1,6 +1,7 @@
 const defaultHdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const defaultPatientFixture = "PatientService/patientCombinedAddress.json";
 const defaultUserProfileFixture = "UserProfileService/userProfile.json";
+const defaultUserProfileStatusCode = 200;
 
 export const CommunicationType = {
     Banner: 0,
@@ -14,6 +15,46 @@ export const CommunicationFixture = {
 
 /*
 ----------------------------------------------------------------------------------------------------
+Usage for setupStandardIntercepts(options = {})
+
+Usage: setupStandardIntercept();
+Usage: setupStandardIntercept({ <PatientHdid> });
+Usage: setupStandardIntercept({ <USER_PROFILE_HDID>: <UserProfileHdid> });
+Usage: setupStandardIntercept({ <USER_PROFILE_STATUS_CODE>: <UserProfileStatusCode> });
+Usage: setupStandardIntercept({ <SERVICE>Fixture: <ServiceFixture> });
+Usage: setupStandardIntercept({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
+----------------------------------------------------------------------------------------------------
+*/
+export function setupStandardIntercepts(options = {}) {
+    const {
+        patientHdid = defaultHdid,
+        userProfileHdid = defaultHdid,
+        patientFixture = defaultPatientFixture,
+        userProfileFixture = defaultUserProfileFixture,
+        userProfileStatusCode = defaultUserProfileStatusCode,
+    } = options;
+
+    setupPatientIntercept({
+        hdid: patientHdid,
+        patientFixture: patientFixture,
+    });
+
+    setupUserProfileIntercept({
+        hdid: userProfileHdid,
+        userProfileFixture: userProfileFixture,
+        statusCode: userProfileStatusCode,
+    });
+
+    setupCommunicationIntercept();
+
+    setupCommunicationIntercept({
+        communicationType: CommunicationType.InApp,
+        communicationFixture: CommunicationFixture.InApp,
+    });
+}
+
+/*
+----------------------------------------------------------------------------------------------------
 Usage for setup<SERVICE>Intercept(options = {})
 
 Usage: setup<SERVICE>Intercept();
@@ -22,7 +63,6 @@ Usage: setup<SERVICE>Intercept({ <SERVICE>Fixture: <ServiceFixture> });
 Usage: setup<SERVICE>Intercept({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
 ----------------------------------------------------------------------------------------------------
 */
-
 export function setupCommunicationIntercept(options = {}) {
     const {
         communicationType = CommunicationType.Banner,
@@ -46,8 +86,16 @@ export function setupUserProfileIntercept(options = {}) {
     const {
         hdid = defaultHdid,
         userProfileFixture = defaultUserProfileFixture,
+        statusCode = defaultUserProfileStatusCode,
     } = options;
-    cy.intercept("GET", `**/UserProfile/${hdid}`, {
-        fixture: userProfileFixture,
-    });
+
+    if (statusCode === 200) {
+        cy.intercept("GET", `**/UserProfile/${hdid}`, {
+            fixture: userProfileFixture,
+        });
+    } else {
+        cy.intercept("GET", `**/UserProfile/${hdid}`, {
+            statusCode,
+        });
+    }
 }

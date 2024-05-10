@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const homeUrl = "/home";
 const covid19Url = "/covid19";
@@ -15,13 +9,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
         cy.configureSettings({});
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -41,13 +29,7 @@ describe("Authenticated User - Home Page", () => {
             },
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -62,13 +44,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Link to COVID-19 page", () => {
         cy.configureSettings({});
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -87,13 +63,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Link to timeline page", () => {
         cy.configureSettings({});
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -112,13 +82,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Federal Card button disabled", () => {
         cy.configureSettings({});
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -139,15 +103,8 @@ describe("Authenticated User - Home Page", () => {
                 },
             ],
         });
-
-        setupPatientIntercept();
-        setupUserProfileIntercept({
+        setupStandardIntercepts({
             userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
-        });
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
         });
 
         cy.intercept("GET", "**/Note/*", {

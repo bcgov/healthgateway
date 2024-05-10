@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../../support/functions/intercept";
 
 function selectCardByDate(date) {
     cy.contains("[data-testid=entryCardDate]", date)
@@ -27,13 +21,7 @@ describe("Medication", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",

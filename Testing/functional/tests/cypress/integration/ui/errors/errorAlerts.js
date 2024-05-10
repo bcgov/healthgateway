@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkChipSelector = "[data-testid=quick-link-modal-text] .v-chip";
@@ -30,14 +24,8 @@ function testGetConfigurationError(statusCode = serverErrorStatusCode) {
 function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    cy.intercept("GET", "**/UserProfile/*", {
-        statusCode,
-    });
-    setupPatientIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
+    setupStandardIntercepts({
+        userProfileStatusCode: statusCode,
     });
 
     cy.login(
@@ -59,15 +47,15 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
     const hdid = "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA";
 
-    setupUserProfileIntercept({
-        hdid,
+    setupStandardIntercepts({
+        patientHdid: hdid,
+        userProfileHdid: hdid,
+        patientFixture: "PatientService/patientUnregistered.json",
         userProfileFixture: "UserProfileService/userProfileUnregistered.json",
     });
-    setupPatientIntercept(hdid);
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
+
+    cy.intercept("GET", "**/UserProfile/termsofservice", {
+        fixture: "UserProfileService/termsOfService.json",
     });
 
     cy.intercept("GET", `**/UserProfile/${hdid}/Validate`, {
@@ -128,13 +116,7 @@ function testValidateEmailError(statusCode = serverErrorStatusCode) {
         statusCode,
     }).as("validateEmail");
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.login(
         Cypress.env("keycloak.username"),
@@ -188,13 +170,7 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
         ],
     });
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
@@ -242,13 +218,7 @@ function testAddCommentError(statusCode = serverErrorStatusCode) {
         ],
     });
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.intercept("POST", "**/UserProfile/*/Comment", {
         statusCode,
@@ -326,15 +296,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
         ],
     });
 
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
-
-    setupPatientIntercept();
-
-    setupUserProfileIntercept({
+    setupStandardIntercepts({
         userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
     });
 
@@ -371,13 +333,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
 function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
@@ -412,13 +368,7 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
 function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
@@ -450,13 +400,7 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
 function testVerifySmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
@@ -493,13 +437,7 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
 function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupPatientIntercept();
-    setupUserProfileIntercept();
-    setupCommunicationIntercept();
-    setupCommunicationIntercept({
-        communicationType: CommunicationType.InApp,
-        communicationFixture: CommunicationFixture.InApp,
-    });
+    setupStandardIntercepts();
 
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,

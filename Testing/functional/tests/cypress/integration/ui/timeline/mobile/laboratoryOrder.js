@@ -1,11 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-} from "../../../../support/functions/intercept";
+import { setupStandardIntercepts } from "../../../../support/functions/intercept";
 
 function checkPopoverIsVisible() {
     cy.get("[data-testid=laboratory-test-status-info-button]")
@@ -37,13 +31,7 @@ describe("Laboratory Orders", () => {
             ],
         });
 
-        setupPatientIntercept();
-        setupUserProfileIntercept();
-        setupCommunicationIntercept();
-        setupCommunicationIntercept({
-            communicationType: CommunicationType.InApp,
-            communicationFixture: CommunicationFixture.InApp,
-        });
+        setupStandardIntercepts();
 
         cy.viewport("iphone-6");
         cy.login(
@@ -264,6 +252,9 @@ describe("Laboratory Orders Refresh", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -318,6 +309,8 @@ describe("Laboratory Orders Queued", () => {
                 },
             ],
         });
+        setupStandardIntercepts();
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
