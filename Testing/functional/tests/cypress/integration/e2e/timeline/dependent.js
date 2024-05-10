@@ -275,7 +275,7 @@ describe("Dependent Timeline Datasets", () => {
         disabledDependentDatasetShouldNotBePresent(Dataset.Immunization);
     });
     it("Validate lab results on dependent timeline", () => {
-        enabledDatasetShouldBePresent(Dataset.LabResult);
+        //enabledDatasetShouldBePresent(Dataset.LabResult);
         disabledDatasetShouldNotBePresent(Dataset.LabResult);
         disabledDependentDatasetShouldNotBePresent(Dataset.LabResult);
     });

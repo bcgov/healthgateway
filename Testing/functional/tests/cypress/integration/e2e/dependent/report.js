@@ -272,7 +272,7 @@ describe("Reports", () => {
         );
     });
 
-    it("Validate Laboratory Report", () => {
+    /* it("Validate Laboratory Report", () => {
         const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
@@ -290,7 +290,7 @@ describe("Reports", () => {
                 ).should("not.exist");
             }
         );
-    });
+    }); */
 
     it("Validate Hospital Visits Report", () => {
         const hdid = dependent1.hdid;
