@@ -1,0 +1,18 @@
+{
+    "resourcePayload": {
+        "CommunicationId": "f3ce0b06-9372-495f-baff-784c38b09480",
+        "text": "<p>Test Banner - <a href=\"healthgateway@gov.bc.ca\" rel=\"noopener noreferrer nofollow\">healthgateway@gov.bc.ca</a></p>",
+        "subject": "Test Banner",
+        "effectiveDateTime": "2024-05-08T18:54:23.756525Z",
+        "expiryDateTime": "2024-05-09T18:54:23.756525Z",
+        "scheduledDateTime": null,
+        "communicationTypeCode": "Banner",
+        "communicationStatusCode": "New",
+        "priority": 10
+    },
+    "totalResultCount": 1,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

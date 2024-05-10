@@ -1,4 +1,6 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
+
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 function getDate(value) {
@@ -19,6 +21,9 @@ describe("Reports - Medication", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -71,6 +76,9 @@ describe("Reports - Covid19", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -124,6 +132,9 @@ describe("Reports - Immunization", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -208,6 +219,9 @@ describe("Reports - MSP Visit", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -261,6 +275,9 @@ describe("Reports - Hospital Visits", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -314,6 +331,9 @@ describe("Reports - Notes (User-Entered)", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -367,6 +387,9 @@ describe("Reports - Laboratory Tests", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

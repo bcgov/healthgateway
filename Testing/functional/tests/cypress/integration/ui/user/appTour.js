@@ -1,12 +1,9 @@
-const { AuthMethod } = require("../../../support/constants");
-
-const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 describe("App Tour Authenticated", () => {
     beforeEach(() => {
-        cy.intercept("GET", `**/UserProfile/${hdid}`, {
-            fixture: "UserProfileService/userProfile.json",
-        });
+        setupStandardIntercepts();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

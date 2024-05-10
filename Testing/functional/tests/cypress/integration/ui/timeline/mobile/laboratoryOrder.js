@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../../support/constants");
+import { AuthMethod } from "../../../../support/constants";
+import { setupStandardIntercepts } from "../../../../support/functions/intercept";
 
 function checkPopoverIsVisible() {
     cy.get("[data-testid=laboratory-test-status-info-button]")
@@ -29,6 +30,9 @@ describe("Laboratory Orders", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -248,6 +252,9 @@ describe("Laboratory Orders Refresh", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -302,6 +309,8 @@ describe("Laboratory Orders Queued", () => {
                 },
             ],
         });
+        setupStandardIntercepts();
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

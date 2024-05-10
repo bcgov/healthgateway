@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 function login(isMobile) {
     cy.configureSettings({
@@ -12,6 +13,9 @@ function login(isMobile) {
     if (isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }
+
+    setupStandardIntercepts();
+
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
