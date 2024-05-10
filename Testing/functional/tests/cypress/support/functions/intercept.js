@@ -17,12 +17,12 @@ export const CommunicationFixture = {
 ----------------------------------------------------------------------------------------------------
 Usage for setupStandardIntercepts(options = {})
 
-Usage: setupStandardIntercept();
-Usage: setupStandardIntercept({ <PatientHdid> });
-Usage: setupStandardIntercept({ <USER_PROFILE_HDID>: <UserProfileHdid> });
-Usage: setupStandardIntercept({ <USER_PROFILE_STATUS_CODE>: <UserProfileStatusCode> });
-Usage: setupStandardIntercept({ <SERVICE>Fixture: <ServiceFixture> });
-Usage: setupStandardIntercept({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
+Usage: setupStandardIntercepts();
+Usage: setupStandardIntercepts({ <PatientHdid> });
+Usage: setupStandardIntercepts({ <USER_PROFILE_HDID>: <UserProfileHdid> });
+Usage: setupStandardIntercepts({ <USER_PROFILE_STATUS_CODE>: <UserProfileStatusCode> });
+Usage: setupStandardIntercepts({ <SERVICE>Fixture: <ServiceFixture> });
+Usage: setupStandardIntercepts({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
 ----------------------------------------------------------------------------------------------------
 */
 export function setupStandardIntercepts(options = {}) {
