@@ -274,7 +274,8 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.Immunization);
         disabledDependentDatasetShouldNotBePresent(Dataset.Immunization);
     });
-    it("Validate lab results on dependent timeline", () => {
+    // test should be skipped until PHSA fixes test data for this dependent
+    it.skip("Validate lab results on dependent timeline", () => {
         enabledDatasetShouldBePresent(Dataset.LabResult);
         disabledDatasetShouldNotBePresent(Dataset.LabResult);
         disabledDependentDatasetShouldNotBePresent(Dataset.LabResult);

@@ -19,8 +19,8 @@ Usage for setupStandardIntercepts(options = {})
 
 Usage: setupStandardIntercepts();
 Usage: setupStandardIntercepts({ <PatientHdid> });
-Usage: setupStandardIntercepts({ <USER_PROFILE_HDID>: <UserProfileHdid> });
-Usage: setupStandardIntercepts({ <USER_PROFILE_STATUS_CODE>: <UserProfileStatusCode> });
+Usage: setupStandardIntercepts({ userProfileHdid: <UserProfileHdid> });
+Usage: setupStandardIntercepts({ userProfileStatusCode: <UserProfileStatusCode> });
 Usage: setupStandardIntercepts({ <SERVICE>Fixture: <ServiceFixture> });
 Usage: setupStandardIntercepts({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
 ----------------------------------------------------------------------------------------------------
