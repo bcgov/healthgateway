@@ -23,7 +23,6 @@ namespace HealthGateway.CommonTests.Services
     using Hangfire.Common;
     using Hangfire.States;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;

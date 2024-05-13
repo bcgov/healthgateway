@@ -45,6 +45,8 @@ namespace HealthGateway.GatewayApi.Controllers
         private readonly IUserEmailService userEmailService;
         private readonly IUserProfileService userProfileService;
         private readonly IUserSmsService userSmsService;
+        private readonly IUserPreferenceService userPreferenceService;
+        private readonly ILegalAgreementService legalAgreementService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -54,18 +56,24 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="userSmsService">The injected user sms service.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+        /// <param name="userPreferenceService">The injected user preference service.</param>
+        /// <param name="legalAgreementService">The injected legal agreement service.</param>
         public UserProfileController(
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
             IUserSmsService userSmsService,
-            IAuthenticationDelegate authenticationDelegate)
+            IAuthenticationDelegate authenticationDelegate,
+            IUserPreferenceService userPreferenceService,
+            ILegalAgreementService legalAgreementService)
         {
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;
             this.userSmsService = userSmsService;
             this.authenticationDelegate = authenticationDelegate;
+            this.userPreferenceService = userPreferenceService;
+            this.legalAgreementService = legalAgreementService;
         }
 
         /// <summary>
@@ -212,7 +220,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<RequestResult<TermsOfServiceModel>> GetLastTermsOfService(CancellationToken ct)
         {
-            return await this.userProfileService.GetActiveTermsOfServiceAsync(ct);
+            return await this.legalAgreementService.GetActiveTermsOfServiceAsync(ct);
         }
 
         /// <summary>
@@ -347,7 +355,7 @@ namespace HealthGateway.GatewayApi.Controllers
             }
 
             userPreferenceModel.UpdatedBy = hdid;
-            return await this.userProfileService.UpdateUserPreferenceAsync(userPreferenceModel, ct);
+            return await this.userPreferenceService.UpdateUserPreferenceAsync(userPreferenceModel, ct);
         }
 
         /// <summary>
@@ -376,7 +384,7 @@ namespace HealthGateway.GatewayApi.Controllers
             userPreferenceModel.HdId = hdid;
             userPreferenceModel.CreatedBy = hdid;
             userPreferenceModel.UpdatedBy = hdid;
-            return await this.userProfileService.CreateUserPreferenceAsync(userPreferenceModel, ct);
+            return await this.userPreferenceService.CreateUserPreferenceAsync(userPreferenceModel, ct);
         }
 
         /// <summary>

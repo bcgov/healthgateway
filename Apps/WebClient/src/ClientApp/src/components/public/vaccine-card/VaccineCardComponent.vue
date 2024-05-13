@@ -97,7 +97,6 @@ function hideDialog(): void {
             class="border-opacity-100 my-3"
             color="accent"
             :thickness="2"
-            role="presentation"
         />
         <p class="text-body-1 text-center">{{ name }}</p>
     </div>

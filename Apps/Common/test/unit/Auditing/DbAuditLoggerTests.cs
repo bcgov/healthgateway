@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Auditing
 {
     using System;
     using System.IO;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -34,18 +35,26 @@ namespace HealthGateway.CommonTests.Auditing
     /// </summary>
     public class DbAuditLoggerTests
     {
+        private const string Hdid = "EXAMPLE-HDID";
+        private const string Idir = "EXAMPLE-IDIR";
+
         /// <summary>
         /// PopulateWithHttpContext - Happy Path.
         /// </summary>
         [Fact]
         public void ShouldPopulateWithHttpContext()
         {
-            DefaultHttpContext ctx = new();
-            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                User = new(new ClaimsIdentity([new Claim("hdid", Hdid), new Claim("preferred_username", Idir)])),
+            };
             AuditEvent expected = new()
             {
+                ApplicationSubject = Hdid,
                 ApplicationType = ApplicationType.Configuration,
                 ClientIp = "127.0.0.1",
+                CreatedBy = Hdid,
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",
                 TransactionResultCode = AuditTransactionResult.Success,
@@ -63,14 +72,16 @@ namespace HealthGateway.CommonTests.Auditing
         }
 
         /// <summary>
-        /// PopulateWithHttpContext - handle http status 401.
+        /// PopulateWithHttpContext - HTTP Status 401.
         /// </summary>
         [Fact]
         public void ShouldPopulateWithHttpContextHandleStatus401()
         {
-            DefaultHttpContext ctx = new();
-            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
-            ctx.Response.StatusCode = 401;
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Response = { StatusCode = 401 },
+            };
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
@@ -88,19 +99,20 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent actual = new();
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
-            Assert.Equal(AuditTransactionResult.Unauthorized, actual.TransactionResultCode);
             actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
-        /// PopulateWithHttpContext - handle http 400 status other than 401 and 403.
+        /// PopulateWithHttpContext - HTTP Status 400-level (other than 401).
         /// </summary>
         [Fact]
         public void ShouldPopulateWithHttpContextHandleOtherStatus400()
         {
-            DefaultHttpContext ctx = new();
-            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
-            ctx.Response.StatusCode = 405;
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Response = { StatusCode = 405 },
+            };
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
@@ -118,7 +130,37 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent actual = new();
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
-            Assert.Equal(AuditTransactionResult.Failure, actual.TransactionResultCode);
+            actual.ShouldDeepEqual(expected);
+        }
+
+        /// <summary>
+        /// PopulateWithHttpContext - HTTP Status 500-level.
+        /// </summary>
+        [Fact]
+        public void ShouldPopulateWithHttpContextHandle500()
+        {
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Response = { StatusCode = 500 },
+            };
+            AuditEvent expected = new()
+            {
+                ApplicationType = ApplicationType.Configuration,
+                ClientIp = "127.0.0.1",
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.SystemError,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<DbAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
+
+            AuditEvent actual = new();
+            dbAuditLogger.PopulateWithHttpContext(ctx, actual);
+
             actual.ShouldDeepEqual(expected);
         }
 
@@ -129,8 +171,10 @@ namespace HealthGateway.CommonTests.Auditing
         [Fact]
         public async Task ShouldWriteAuditEvent()
         {
-            DefaultHttpContext ctx = new();
-            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+            };
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
@@ -165,8 +209,10 @@ namespace HealthGateway.CommonTests.Auditing
         [Fact]
         public async Task ShouldWriteAuditEventHandleException()
         {
-            DefaultHttpContext ctx = new();
-            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+            };
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,

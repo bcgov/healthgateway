@@ -86,7 +86,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("TokenSwap API Exception {Exception}", e.ToString());
+                this.logger.LogCritical(e, "TokenSwap API Exception {Message}", e.Message);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with Token Swap API",

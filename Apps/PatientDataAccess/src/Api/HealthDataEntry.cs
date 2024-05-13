@@ -23,6 +23,7 @@ namespace HealthGateway.PatientDataAccess.Api
     using System.Text.Json.Serialization;
 
     [JsonConverter(typeof(HealthDataJsonConverter))]
+    [ExcludeFromCodeCoverage]
     internal abstract record HealthDataEntry
     {
         public string? HealthDataId { get; set; }
@@ -107,6 +108,7 @@ namespace HealthGateway.PatientDataAccess.Api
         public string? ResultLink { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     internal record DiagnosticImagingExam : HealthDataEntry
     {
         public string? ProcedureDescription { get; set; }
@@ -126,6 +128,7 @@ namespace HealthGateway.PatientDataAccess.Api
         public bool? IsUpdated { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     internal record BcCancerScreening : HealthDataEntry
     {
         public CancerScreeningType EventType { get; set; }

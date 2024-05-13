@@ -78,7 +78,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Unexpected exception in GetVaccineStatus {Exception}", e);
+                this.logger.LogError(e, "Unexpected exception in GetVaccineStatus {Message}", e.Message);
             }
 
             if (retVal.ResourcePayload == null)
@@ -123,7 +123,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Unexpected exception in GetVaccineStatusPublic {Exception}", e);
+                this.logger.LogError(e, "Unexpected exception in GetVaccineStatusPublic {Message}", e.Message);
             }
 
             if (retVal.ResourcePayload == null)

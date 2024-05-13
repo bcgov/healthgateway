@@ -88,7 +88,7 @@ namespace HealthGateway.Encounter.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Error while retrieving Hospital Visits... {Error}", e);
+                this.logger.LogError(e, "Error while retrieving Hospital Visits... {Message}", e.Message);
                 return RequestResultFactory.ServiceError<PhsaResult<IEnumerable<HospitalVisit>>>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error while retrieving Hospital Visits");
             }
         }

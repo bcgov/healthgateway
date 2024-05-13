@@ -44,7 +44,7 @@ public class TagEffects(ILogger<TagEffects> logger, ITagApi api)
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error adding tag, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error adding tag, reason: {Message}", e.Message);
             dispatcher.Dispatch(new TagActions.AddFailureAction { Error = error });
         }
     }
@@ -63,7 +63,7 @@ public class TagEffects(ILogger<TagEffects> logger, ITagApi api)
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error loading Tag, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error loading Tag, reason: {Message}", e.Message);
             dispatcher.Dispatch(new TagActions.LoadFailureAction { Error = error });
         }
     }
@@ -82,7 +82,7 @@ public class TagEffects(ILogger<TagEffects> logger, ITagApi api)
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error deleting tag, reason: {ErrorMessage}", e.ToString());
+            logger.LogError(e, "Error deleting tag, reason: {ErrorMessage}", e.Message);
             dispatcher.Dispatch(new TagActions.DeleteFailureAction { Error = error });
         }
     }

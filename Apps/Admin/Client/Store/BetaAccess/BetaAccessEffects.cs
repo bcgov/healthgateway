@@ -42,7 +42,7 @@ public class BetaAccessEffects(ILogger<BetaAccessEffects> logger, IBetaFeatureAp
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error setting user access, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error setting user access, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BetaAccessActions.SetUserAccessFailureAction { Error = error });
         }
     }
@@ -60,13 +60,13 @@ public class BetaAccessEffects(ILogger<BetaAccessEffects> logger, IBetaFeatureAp
         catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
         {
             RequestError error = new() { Message = $"No users found matching the supplied email address ({action.Email})" };
-            logger.LogInformation("No users found matching the supplied email address");
+            logger.LogError(e, "No users found matching the supplied email address");
             dispatcher.Dispatch(new BetaAccessActions.GetUserAccessFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError(e, "Error retrieving user access, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error retrieving user access, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BetaAccessActions.GetUserAccessFailureAction { Error = error });
         }
     }
@@ -84,7 +84,7 @@ public class BetaAccessEffects(ILogger<BetaAccessEffects> logger, IBetaFeatureAp
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error retrieving all user access, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error retrieving all user access, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BetaAccessActions.GetAllUserAccessFailureAction { Error = error });
         }
     }

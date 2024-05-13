@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 describe("MSP Visits Rolloff", () => {
     beforeEach(() => {
@@ -15,6 +16,9 @@ describe("MSP Visits Rolloff", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

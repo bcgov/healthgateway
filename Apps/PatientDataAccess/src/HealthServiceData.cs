@@ -15,15 +15,19 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
+    using System.Diagnostics.CodeAnalysis;
+
 #pragma warning disable SA1201 // Elements should appear in the correct order
     /// <summary>
     /// abstract class for health service data.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract record HealthServiceData : HealthData;
 
     /// <summary>
     /// BC Transplant organ donor service data.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record OrganDonorRegistration : HealthServiceData
     {
         /// <summary>

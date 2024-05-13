@@ -57,7 +57,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     _ => StoreUtility.FormatRequestError(e),
                 };
 
-                logger.LogError(e, "Error retrieving delegation info, reason: {Exception}", e.ToString());
+                logger.LogError(e, "Error retrieving delegation info, reason: {Message}", e.Message);
                 dispatcher.Dispatch(new DelegationActions.SearchFailureAction { Error = error });
             }
         }
@@ -80,7 +80,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     _ => StoreUtility.FormatRequestError(e),
                 };
 
-                logger.LogError(e, "Error retrieving delegate info, reason: {Exception}", e.ToString());
+                logger.LogError(e, "Error retrieving delegate info, reason: {Message}", e.Message);
                 dispatcher.Dispatch(new DelegationActions.DelegateSearchFailureAction { Error = error });
             }
         }
@@ -112,7 +112,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
-                logger.LogError("Error protecting dependent, reason: {Exception}", e.ToString());
+                logger.LogError(e, "Error protecting dependent, reason: {Message}", e.Message);
                 dispatcher.Dispatch(new DelegationActions.ProtectDependentFailureAction { Error = error });
             }
         }
@@ -140,7 +140,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
-                logger.LogError("Error unprotecting dependent, reason: {Exception}", e.ToString());
+                logger.LogError(e, "Error unprotecting dependent, reason: {Message}", e.Message);
                 dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailureAction { Error = error });
             }
         }

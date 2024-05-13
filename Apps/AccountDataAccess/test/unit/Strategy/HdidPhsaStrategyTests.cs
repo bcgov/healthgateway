@@ -60,6 +60,13 @@ namespace AccountDataAccessTest.Strategy
 
             // Assert
             mock.Expected.ShouldDeepEqual(actual);
+
+            // Verify
+            mock.CacheProvider.Verify(
+                v => v.GetItemAsync<PatientModel>(
+                    It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{mock.PatientRequest.Identifier}"),
+                    It.IsAny<CancellationToken>()),
+                useCache ? Times.AtLeastOnce : Times.Never);
         }
 
         /// <summary>
@@ -127,14 +134,22 @@ namespace AccountDataAccessTest.Strategy
             PatientRequest patientRequest = new(Hdid, useCache);
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
+            cacheProvider.Setup(
+                    p => p.GetItemAsync<PatientModel>(
+                        It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{Hdid}"),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cachedPatient);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(
+                    p => p.GetPatientIdentityAsync(
+                        It.Is<string>(x => x == Hdid),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patientIdentity);
 
             HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
 
-            return new(hdidPhsaStrategy, patient, patientRequest);
+            return new(hdidPhsaStrategy, cacheProvider, patient, patientRequest);
         }
 
         private static GetPatientHandlesPhsaApiExceptionMock SetupGetPatientHandlesPhsaApiExceptionMock()
@@ -143,21 +158,33 @@ namespace AccountDataAccessTest.Strategy
             PatientRequest patientRequest = new(PhsaHdidNotFound, false);
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
+            cacheProvider.Setup(
+                    s => s.GetItemAsync<PatientModel>(
+                        It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{Hdid}"),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cachedPatient);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound, It.IsAny<CancellationToken>()))!.Throws(
-                RefitExceptionUtil.CreateApiException(HttpStatusCode.NotFound).Result);
+            patientIdentityApi.Setup(
+                    s => s.GetPatientIdentityAsync(
+                        It.Is<string>(x => x == PhsaHdidNotFound),
+                        It.IsAny<CancellationToken>()))
+                .Throws(RefitExceptionUtil.CreateApiException(HttpStatusCode.NotFound).Result);
 
             HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(cacheProvider, patientIdentityApi);
 
             return new(hdidPhsaStrategy, typeof(NotFoundException), patientRequest);
         }
 
-        private sealed record GetPatientMock(HdidPhsaStrategy Strategy, PatientModel Expected, PatientRequest PatientRequest);
+        private sealed record GetPatientMock(
+            HdidPhsaStrategy Strategy,
+            Mock<ICacheProvider> CacheProvider,
+            PatientModel Expected,
+            PatientRequest PatientRequest);
 
-        private sealed record GetPatientHandlesPhsaNullResultMock(HdidPhsaStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
-
-        private sealed record GetPatientHandlesPhsaApiExceptionMock(HdidPhsaStrategy Strategy, Type ExpectedExceptionType, PatientRequest PatientRequest);
+        private sealed record GetPatientHandlesPhsaApiExceptionMock(
+            HdidPhsaStrategy Strategy,
+            Type ExpectedExceptionType,
+            PatientRequest PatientRequest);
     }
 }

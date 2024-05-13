@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
 
 describe("Medication Request", () => {
     beforeEach(() => {
@@ -13,6 +14,9 @@ describe("Medication Request", () => {
         cy.intercept("GET", "**/MedicationRequest/*", {
             fixture: "MedicationService/medicationRequest.json",
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

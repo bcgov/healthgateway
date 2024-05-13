@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
@@ -163,6 +164,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// The patient request.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal record PatientRequest(
         string Identifier,
         bool UseCache,

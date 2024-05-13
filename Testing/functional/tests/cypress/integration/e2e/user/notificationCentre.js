@@ -4,6 +4,7 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 describe("Notification Centre", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Notification/*").as("getNotification");
+        cy.intercept("DELETE", "**/Notification/*").as("deleteNotification");
 
         cy.configureSettings({
             notificationCentre: {
@@ -39,6 +40,8 @@ describe("Notification Centre", () => {
         cy.get("[data-testid=notification-centre-close-button]")
             .should("be.visible", "be.enabled")
             .click();
+
+        cy.wait("@deleteNotification");
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
         );

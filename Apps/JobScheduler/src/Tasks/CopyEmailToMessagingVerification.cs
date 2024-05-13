@@ -56,7 +56,7 @@ namespace HealthGateway.JobScheduler.Tasks
         /// <inheritdoc/>
         public async Task RunAsync(CancellationToken ct = default)
         {
-            this.logger.LogInformation("Performing Task {Name} started", this.GetType().Name);
+            this.logger.LogDebug("Performing Task {Name} started", this.GetType().Name);
 
             IQueryable<Email> query = this.dbContext.Email.Where(
                 email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == null));
@@ -81,13 +81,15 @@ namespace HealthGateway.JobScheduler.Tasks
                 await Task.WhenAll(tasks);
 
                 await this.dbContext.SaveChangesAsync(ct);
-                this.logger.LogInformation("Saved message verification changes after {Processed} email(s) processed", processed);
 
                 emails = await query.Take(this.batchSize).ToListAsync(ct);
-                this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}", emails.Count);
+                this.logger.LogInformation(
+                    "Saved message verification changes after {Processed} email(s) processed.\nThe number of emails copied from Email.To to MessagingVerification.EmailAddress: {Emails}",
+                    processed,
+                    emails.Count);
             }
 
-            this.logger.LogInformation("Performing Task {Name} finished", this.GetType().Name);
+            this.logger.LogDebug("Performing Task {Name} finished", this.GetType().Name);
         }
     }
 }

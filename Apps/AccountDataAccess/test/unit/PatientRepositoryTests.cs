@@ -25,6 +25,7 @@ namespace AccountDataAccessTest
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Messaging;
@@ -206,18 +207,6 @@ namespace AccountDataAccessTest
             mock.Expected.ShouldDeepEqual(actual);
         }
 
-        private static IConfigurationRoot GetConfiguration()
-        {
-            Dictionary<string, string?> configDictionary = new()
-            {
-                { "PatientService:CacheTTL", "90" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList())
-                .Build();
-        }
-
         private static bool AssertAgentAudit(AgentAudit expected, AgentAudit actual)
         {
             Assert.Equal(expected.Hdid, actual.Hdid);
@@ -245,6 +234,7 @@ namespace AccountDataAccessTest
         {
             Dictionary<string, string?> myConfiguration = new()
             {
+                { "PatientService:CacheTTL", "90" },
                 { "BlockedAccess:CacheTtl", "5" },
                 { "ChangeFeed:BlockedDataSources:Enabled", blockedDataSourcesEnabled.ToString() },
             };
@@ -280,8 +270,16 @@ namespace AccountDataAccessTest
             };
 
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
-            blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess.DataSources);
+            blockedAccessDelegate.Setup(
+                    s => s.GetBlockedAccessAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(blockedAccess);
+            blockedAccessDelegate.Setup(
+                    s => s.GetDataSourcesAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(blockedAccess.DataSources);
 
             BlockAccessCommand command = new(Hdid, dataSources, reason);
             Mock<IMessageSender> messageSender = new();
@@ -312,8 +310,11 @@ namespace AccountDataAccessTest
             HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
             Mock<ICacheProvider> cacheProviderMock = new();
             cacheProviderMock.Setup(
-                    p =>
-                        p.GetOrSetAsync(It.IsAny<string>(), It.IsAny<Func<Task<IEnumerable<DataSource>>>>(), It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
+                    s => s.GetOrSetAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dataSources);
 
             PatientRepository patientRepository = new(
@@ -337,7 +338,11 @@ namespace AccountDataAccessTest
             };
 
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
-            blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess);
+            blockedAccessDelegate.Setup(
+                    s => s.GetBlockedAccessAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(blockedAccess);
 
             PatientRepository patientRepository = new(
                 new Mock<ILogger<PatientRepository>>().Object,
@@ -358,7 +363,11 @@ namespace AccountDataAccessTest
             Mock<ICacheProvider> cacheProviderMock = new();
             cacheProviderMock.Setup(
                     s =>
-                        s.GetOrSetAsync(It.Is<string>(x => x.Contains(cacheKey)), It.IsAny<Func<Task<IEnumerable<DataSource>>>>(), It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
+                        s.GetOrSetAsync(
+                            It.Is<string>(x => x.Contains(cacheKey)),
+                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                            It.IsAny<TimeSpan>(),
+                            It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dataSources);
 
             PatientRepository patientRepository = new(
@@ -375,7 +384,11 @@ namespace AccountDataAccessTest
 
         private static QueryMock SetupQueryMock(PatientDetailSource source, bool useHdid, bool useCache)
         {
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: useHdid ? Hdid : null, Phn: !useHdid ? Phn : null, Source: source, UseCache: useCache);
+            PatientDetailsQuery patientDetailsQuery = new(
+                Hdid: useHdid ? Hdid : null,
+                Phn: !useHdid ? Phn : null,
+                Source: source,
+                UseCache: useCache);
 
             PatientRequest patientRequest = new(useHdid ? Hdid : Phn, useCache);
 
@@ -385,43 +398,72 @@ namespace AccountDataAccessTest
                 Hdid = Hdid,
             };
 
+            PatientIdentity patientIdentity = new()
+            {
+                Phn = Phn,
+                HdId = Hdid,
+            };
+
+            PatientModel expected = source == PatientDetailSource.Phsa && !useCache
+                ? Mapper.Map<PatientIdentity, PatientModel>(patientIdentity)
+                : patient;
+
             ServiceCollection serviceCollection = [];
 
-            Mock<HdidEmpiStrategy> hdidEmpiStrategyMock = new(
-                GetConfiguration(),
-                new Mock<ICacheProvider>().Object,
-                new Mock<IClientRegistriesDelegate>().Object,
+            Mock<ICacheProvider> cacheProviderMock = new();
+            cacheProviderMock.Setup(
+                    s => s.GetItemAsync<PatientModel>(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patient);
+
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
+            clientRegistriesDelegate.Setup(
+                    s => s.GetDemographicsAsync(
+                        It.IsAny<OidType>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patient);
+
+            HdidEmpiStrategy hdidEmpiStrategy = new(
+                GetIConfigurationRoot(),
+                cacheProviderMock.Object,
+                clientRegistriesDelegate.Object,
                 new Mock<ILogger<HdidEmpiStrategy>>().Object);
-            hdidEmpiStrategyMock.Setup(s => s.GetPatientAsync(It.Is<PatientRequest>(x => x == patientRequest), It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
-            Mock<PhnEmpiStrategy> phnEmpiStrategyMock = new(
-                GetConfiguration(),
-                new Mock<ICacheProvider>().Object,
-                new Mock<IClientRegistriesDelegate>().Object,
+            PhnEmpiStrategy phnEmpiStrategy = new(
+                GetIConfigurationRoot(),
+                cacheProviderMock.Object,
+                clientRegistriesDelegate.Object,
                 new Mock<ILogger<PhnEmpiStrategy>>().Object);
-            phnEmpiStrategyMock.Setup(s => s.GetPatientAsync(It.Is<PatientRequest>(x => x == patientRequest), It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
-            Mock<HdidAllStrategy> hdidAllStrategyMock = new(
-                GetConfiguration(),
-                new Mock<ICacheProvider>().Object,
-                new Mock<IClientRegistriesDelegate>().Object,
-                new Mock<IPatientIdentityApi>().Object,
+            Mock<IPatientIdentityApi> patientIdentityApiMock = new();
+            patientIdentityApiMock.Setup(
+                    s => s.GetPatientIdentityAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patientIdentity);
+
+            HdidAllStrategy hdidAllStrategy = new(
+                GetIConfigurationRoot(),
+                cacheProviderMock.Object,
+                clientRegistriesDelegate.Object,
+                patientIdentityApiMock.Object,
                 new Mock<ILogger<HdidAllStrategy>>().Object,
                 Mapper);
-            hdidAllStrategyMock.Setup(s => s.GetPatientAsync(It.Is<PatientRequest>(x => x == patientRequest), It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
-            Mock<HdidPhsaStrategy> hdidPhsaStrategyMock = new(
-                GetConfiguration(),
-                new Mock<ICacheProvider>().Object,
-                new Mock<IPatientIdentityApi>().Object,
+            HdidPhsaStrategy hdidPhsaStrategy = new(
+                GetIConfigurationRoot(),
+                cacheProviderMock.Object,
+                patientIdentityApiMock.Object,
                 new Mock<ILogger<HdidPhsaStrategy>>().Object,
                 Mapper);
-            hdidPhsaStrategyMock.Setup(s => s.GetPatientAsync(It.Is<PatientRequest>(x => x == patientRequest), It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
-            serviceCollection.AddScoped<HdidEmpiStrategy>(_ => hdidEmpiStrategyMock.Object);
-            serviceCollection.AddScoped<PhnEmpiStrategy>(_ => phnEmpiStrategyMock.Object);
-            serviceCollection.AddScoped<HdidAllStrategy>(_ => hdidAllStrategyMock.Object);
-            serviceCollection.AddScoped<HdidPhsaStrategy>(_ => hdidPhsaStrategyMock.Object);
+            serviceCollection.AddScoped<HdidEmpiStrategy>(_ => hdidEmpiStrategy);
+            serviceCollection.AddScoped<PhnEmpiStrategy>(_ => phnEmpiStrategy);
+            serviceCollection.AddScoped<HdidAllStrategy>(_ => hdidAllStrategy);
+            serviceCollection.AddScoped<HdidPhsaStrategy>(_ => hdidPhsaStrategy);
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
             PatientRepository patientRepository = new(
@@ -433,12 +475,19 @@ namespace AccountDataAccessTest
                 new PatientQueryFactory(serviceProvider),
                 new Mock<IMessageSender>().Object);
 
-            return new(patientRepository, patient, patientDetailsQuery);
+            return new(patientRepository, expected, patientDetailsQuery);
         }
 
-        private static QueryThrowsInvalidOperationExceptionMock SetupQueryThrowsInvalidOperationExceptionMock(string? hdid, string? phn, CancellationToken ct)
+        private static QueryThrowsInvalidOperationExceptionMock SetupQueryThrowsInvalidOperationExceptionMock(
+            string? hdid,
+            string? phn,
+            CancellationToken ct)
         {
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: hdid, Phn: phn, Source: PatientDetailSource.Empi, UseCache: true);
+            PatientDetailsQuery patientDetailsQuery = new(
+                Hdid: hdid,
+                Phn: phn,
+                Source: PatientDetailSource.Empi,
+                UseCache: true);
             string expected = string.Empty;
 
             if (string.IsNullOrEmpty(hdid))
@@ -477,11 +526,20 @@ namespace AccountDataAccessTest
             bool Commit,
             BlockAccessCommand Command);
 
-        private sealed record CanAccessDatasourceMock(PatientRepository PatientRepository, bool Expected, DataSource DataSource);
+        private sealed record CanAccessDatasourceMock(
+            PatientRepository PatientRepository,
+            bool Expected,
+            DataSource DataSource);
 
-        private sealed record GetBlockedAccessMock(PatientRepository PatientRepository, BlockedAccess Expected, string Hdid);
+        private sealed record GetBlockedAccessMock(
+            PatientRepository PatientRepository,
+            BlockedAccess Expected,
+            string Hdid);
 
-        private sealed record GetDataSourcesMock(PatientRepository PatientRepository, IEnumerable<DataSource> Expected, string Hdid);
+        private sealed record GetDataSourcesMock(
+            PatientRepository PatientRepository,
+            IEnumerable<DataSource> Expected,
+            string Hdid);
 
         private sealed record QueryMock(
             PatientRepository PatientRepository,

@@ -37,6 +37,10 @@ namespace HealthGateway.Database.Context
     [ExcludeFromCodeCoverage]
     public class GatewayDbContext : BaseDbContext
     {
+        private const string HgDoNotReply = "HG_Donotreply@gov.bc.ca";
+        private const string DateFormat = "MM/dd/yyyy";
+        private const string TimezoneDateFormat = "MM/dd/yyyy K";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
         /// </summary>
@@ -772,7 +776,7 @@ namespace HealthGateway.Database.Context
                     {
                         Id = Guid.Parse("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"),
                         Name = "Registration",
-                        From = "HG_Donotreply@gov.bc.ca",
+                        From = HgDoNotReply,
                         Subject = "Health Gateway Email Verification ${Environment}",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html"),
                         Priority = EmailPriority.Standard,
@@ -787,7 +791,7 @@ namespace HealthGateway.Database.Context
                     {
                         Id = Guid.Parse("79503a38-c14a-4992-b2fe-5586629f552e"),
                         Name = "AccountClosed",
-                        From = "HG_Donotreply@gov.bc.ca",
+                        From = HgDoNotReply,
                         Subject = "Health Gateway Account Closed ",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountClosed.html"),
                         Priority = EmailPriority.Low,
@@ -802,7 +806,7 @@ namespace HealthGateway.Database.Context
                     {
                         Id = Guid.Parse("2fe8c825-d4de-4884-be6a-01a97b466425"),
                         Name = "AccountRecovered",
-                        From = "HG_Donotreply@gov.bc.ca",
+                        From = HgDoNotReply,
                         Subject = "Health Gateway Account Recovered",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRecovered.html"),
                         Priority = EmailPriority.Low,
@@ -817,7 +821,7 @@ namespace HealthGateway.Database.Context
                     {
                         Id = Guid.Parse("d9898318-4e53-4074-9979-5d24bd370055"),
                         Name = "AccountRemoved",
-                        From = "HG_Donotreply@gov.bc.ca",
+                        From = HgDoNotReply,
                         Subject = "Health Gateway Account Closure Complete",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRemoved.html"),
                         Priority = EmailPriority.Low,
@@ -832,7 +836,7 @@ namespace HealthGateway.Database.Context
                     {
                         Id = Guid.Parse("75c79b3e-1a61-403b-82ee-fddcda7144af"),
                         Name = "AdminFeedback",
-                        From = "HG_Donotreply@gov.bc.ca",
+                        From = HgDoNotReply,
                         Subject = "Health Gateway Feedback Received",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.AdminFeedback.html"),
                         Priority = EmailPriority.Low,
@@ -880,55 +884,55 @@ namespace HealthGateway.Database.Context
                         Id = Guid.Parse("ec438d12-f8e2-4719-8444-28e35d34674c"),
                         LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200317.html"),
-                        EffectiveDate = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        EffectiveDate = DateTime.ParseExact("03/18/2020", DateFormat, CultureInfo.InvariantCulture),
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        CreatedDateTime = DateTime.ParseExact("03/18/2020", DateFormat, CultureInfo.InvariantCulture),
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        UpdatedDateTime = DateTime.ParseExact("03/18/2020", DateFormat, CultureInfo.InvariantCulture),
                     },
                     new LegalAgreement // Updated Terms of Service for Lab/Covid Update
                     {
                         Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
                         LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200511.html"),
-                        EffectiveDate = DateTime.ParseExact("07/31/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        EffectiveDate = DateTime.ParseExact("07/31/2020", DateFormat, CultureInfo.InvariantCulture),
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        CreatedDateTime = DateTime.ParseExact("06/22/2020", DateFormat, CultureInfo.InvariantCulture),
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        UpdatedDateTime = DateTime.ParseExact("06/22/2020", DateFormat, CultureInfo.InvariantCulture),
                     },
                     new LegalAgreement // Updated Terms of Service for Dependents
                     {
                         Id = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
                         LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20201224.html"),
-                        EffectiveDate = DateTime.ParseExact("01/07/2021", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        EffectiveDate = DateTime.ParseExact("01/07/2021", DateFormat, CultureInfo.InvariantCulture),
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = DateTime.ParseExact("12/24/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        CreatedDateTime = DateTime.ParseExact("12/24/2020", DateFormat, CultureInfo.InvariantCulture),
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = DateTime.ParseExact("01/06/2021", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        UpdatedDateTime = DateTime.ParseExact("01/06/2021", DateFormat, CultureInfo.InvariantCulture),
                     },
                     new LegalAgreement // Updated Terms of Service Fix Contact
                     {
                         Id = Guid.Parse("eafeee76-8a64-49ee-81ba-ddfe2c01deb8"),
                         LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20220519.html"),
-                        EffectiveDate = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                        EffectiveDate = DateTime.ParseExact("05/19/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                        CreatedDateTime = DateTime.ParseExact("05/19/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                        UpdatedDateTime = DateTime.ParseExact("05/19/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                     },
                     new LegalAgreement // Revamped Terms of Service
                     {
                         Id = Guid.Parse("2fab66e7-37c9-4b03-ba25-e8fad604dc7f"),
                         LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20220607.html"),
-                        EffectiveDate = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                        EffectiveDate = DateTime.ParseExact("06/07/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                        CreatedDateTime = DateTime.ParseExact("06/07/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                        UpdatedDateTime = DateTime.ParseExact("06/07/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                     });
         }
 

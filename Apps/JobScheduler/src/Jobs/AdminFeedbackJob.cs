@@ -20,7 +20,6 @@ namespace HealthGateway.JobScheduler.Jobs
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -94,7 +93,7 @@ namespace HealthGateway.JobScheduler.Jobs
             EmailTemplate? template = await this.emailService.GetEmailTemplateAsync(FeedbackTemplateName, ct);
             if (template == null)
             {
-                this.logger.LogCritical($"Email template {FeedbackTemplateName} is null");
+                this.logger.LogCritical("Email template {FeedbackTemplateName} is null", FeedbackTemplateName);
                 throw new InvalidOperationException($"Email template {FeedbackTemplateName} is null");
             }
 

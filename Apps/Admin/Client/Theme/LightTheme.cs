@@ -23,6 +23,8 @@ namespace HealthGateway.Admin.Client.Theme
     /// </summary>
     public class LightTheme : HgTheme
     {
+        private const string White = "#FFFFFF";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LightTheme"/> class.
         /// </summary>
@@ -33,11 +35,11 @@ namespace HealthGateway.Admin.Client.Theme
                 Black = Colors.Shades.Black,
                 White = Colors.Shades.White,
                 Primary = "#245FA6",
-                PrimaryContrastText = "#FFFFFF",
+                PrimaryContrastText = White,
                 Secondary = "#7B5800",
-                SecondaryContrastText = "#FFFFFF",
+                SecondaryContrastText = White,
                 Tertiary = "#526070",
-                TertiaryContrastText = "#FFFFFF",
+                TertiaryContrastText = White,
                 Info = "#17A2B8",
                 InfoContrastText = Colors.Shades.White,
                 Success = "#2E8540",
@@ -45,7 +47,7 @@ namespace HealthGateway.Admin.Client.Theme
                 Warning = "#FAA500",
                 WarningContrastText = "#412D00",
                 Error = "#BA1A1A",
-                ErrorContrastText = "#FFFFFF",
+                ErrorContrastText = White,
                 Dark = Colors.Grey.Darken3,
                 DarkContrastText = Colors.Shades.White,
                 TextPrimary = "#0F1D2A",

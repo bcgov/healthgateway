@@ -53,9 +53,8 @@ public class CommunicationsEffects(ILogger<CommunicationsEffects> logger, ICommu
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            logger.LogError("Error adding communication...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
+            logger.LogError(e, "Error adding communication, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new CommunicationsActions.AddFailureAction { Error = error });
         }
     }
@@ -82,9 +81,8 @@ public class CommunicationsEffects(ILogger<CommunicationsEffects> logger, ICommu
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            logger.LogError("Error loading communications...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error loading communications, reason: {ErrorMessage}", error.Message);
+            logger.LogError(e, "Error loading communications, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new CommunicationsActions.LoadFailureAction { Error = error });
         }
     }
@@ -111,9 +109,8 @@ public class CommunicationsEffects(ILogger<CommunicationsEffects> logger, ICommu
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            logger.LogError("Error updating communication...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
+            logger.LogError(e, "Error updating communication, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new CommunicationsActions.UpdateFailureAction { Error = error });
         }
     }
@@ -140,9 +137,8 @@ public class CommunicationsEffects(ILogger<CommunicationsEffects> logger, ICommu
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            logger.LogError("Error deleting communication...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
+            logger.LogError(e, "Error deleting communication, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new CommunicationsActions.DeleteFailureAction { Error = error });
         }
     }

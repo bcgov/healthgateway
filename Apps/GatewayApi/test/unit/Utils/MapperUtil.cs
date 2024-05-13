@@ -38,6 +38,7 @@ namespace HealthGateway.GatewayApiTests.Utils
                     cfg.AddProfile<DependentInformationProfile>();
                     cfg.AddProfile<DependentProfile>();
                     cfg.AddProfile<FeedbackProfile>();
+                    cfg.AddProfile<PatientDetailsProfile>();
                     cfg.AddProfile<RatingProfile>();
                     cfg.AddProfile<TermsOfServiceProfile>();
                     cfg.AddProfile<UserCommentProfile>();

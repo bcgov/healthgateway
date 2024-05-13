@@ -38,6 +38,8 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private const string Instance = "INSTANCE";
+
         private static readonly List<string> WarningResponseCodes =
         [
             "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
@@ -84,7 +86,7 @@ namespace HealthGateway.Common.Delegates
                 }
                 catch (CommunicationException e)
                 {
-                    this.logger.LogError("{Exception}", e.ToString());
+                    this.logger.LogError(e, "{Message}", e.Message);
                     return new RequestResult<PatientModel>
                     {
                         ResultStatus = ResultType.Error,
@@ -113,7 +115,7 @@ namespace HealthGateway.Common.Delegates
                 }
                 catch (CommunicationException e)
                 {
-                    this.logger.LogError("{Exception}", e.ToString());
+                    this.logger.LogError(e, "{Message}", e.Message);
                     return new RequestResult<PatientModel>
                     {
                         ResultStatus = ResultType.Error,
@@ -141,19 +143,19 @@ namespace HealthGateway.Common.Delegates
                 request.acceptAckCode = new CS { code = "NE" };
 
                 request.receiver = new MCCI_MT000100Receiver { typeCode = "RCV" };
-                request.receiver.device = new MCCI_MT000100Device { determinerCode = "INSTANCE", classCode = "DEV" };
+                request.receiver.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
                 request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = clientIp };
                 request.receiver.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
-                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
+                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
+                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
                 request.receiver.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
 
                 request.sender = new MCCI_MT000100Sender { typeCode = "SND" };
-                request.sender.device = new MCCI_MT000100Device { determinerCode = "INSTANCE", classCode = "DEV" };
+                request.sender.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
                 request.sender.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" };
                 request.sender.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
-                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
+                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
+                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
                 request.sender.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
 
                 request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess { classCode = "ACCM", moodCode = "EVN" };

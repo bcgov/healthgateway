@@ -42,9 +42,8 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                logger.LogError("Error loading patient details...{Error}", e);
                 RequestError error = StoreUtility.FormatRequestError(e);
-                logger.LogError("Error loading patient details, reason: {ErrorMessage}", error.Message);
+                logger.LogError(e, "Error loading patient details, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new PatientDetailsActions.LoadFailureAction { Error = error });
             }
         }
@@ -61,7 +60,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                logger.LogError("Error blocking access: {Exception}", e.ToString());
+                logger.LogError(e, "Error blocking access: {Message}", e.Message);
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction { Error = error });
             }
@@ -92,7 +91,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                logger.LogError("Error submitting COVID-19 treatment assessment: {Exception}", e.ToString());
+                logger.LogError(e, "Error submitting COVID-19 treatment assessment: {Message}", e.Message);
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailureAction { Error = error });
             }

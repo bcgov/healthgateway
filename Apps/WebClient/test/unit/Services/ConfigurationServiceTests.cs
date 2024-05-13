@@ -56,75 +56,7 @@ namespace HealthGateway.WebClientTests.Services
         [Fact]
         public async Task TestGetConfig()
         {
-            ExternalConfiguration expectedResult = new()
-            {
-                OpenIdConnect = new OpenIdConnectConfiguration
-                {
-                    Authority = "Authority",
-                    ClientId = "ClientId",
-                    ResponseType = "ResponseType",
-                    Scope = "Scope",
-                    Callbacks = new Dictionary<string, Uri>
-                    {
-                        { "Logon", new Uri("https://localhost/logon") },
-                        { "Logout", new Uri("https://localhost/logout") },
-                    },
-                },
-                IdentityProviders = new[]
-                {
-                    new IdentityProviderConfiguration
-                    {
-                        Id = "Id",
-                        Name = "Name",
-                        Icon = "Icon",
-                        Hint = "Hint",
-                        Disabled = true,
-                    },
-                },
-                WebClient = new WebClientConfiguration
-                {
-                    LogLevel = "LogLevel",
-                    Timeouts = new TimeOutsConfiguration
-                    {
-                        Idle = 10000,
-                        LogoutRedirect = "LogoutRedirect",
-                    },
-                    ExternalUrLs = new Dictionary<string, Uri>
-                    {
-                        {
-                            "External", new Uri("https://localhost/external")
-                        },
-                    },
-                    FeatureToggleFilePath = "Assets/featuretoggleconfig.json",
-                    FeatureToggleConfiguration = new FeatureToggleConfiguration(
-                        new HomepageSettings(true, true),
-                        new NotificationCentreSettings(true),
-                        new TimelineSettings(true),
-                        new DatasetSettings[]
-                        {
-                            new("bcCancerScreening", true),
-                            new("clinicalDocument", true),
-                            new("covid19TestResult", true),
-                            new("diagnosticImaging", true),
-                            new("healthVisit", true),
-                            new("hospitalVisit", true),
-                            new("immunization", true),
-                            new("labResult", true),
-                            new("medication", true),
-                            new("note", true),
-                            new("specialAuthorityRequest", true),
-                        },
-                        new Covid19Settings(true, new PublicCovid19Settings(true), new ProofOfVaccinationSettings(false)),
-                        new DependentsSettings(true, true, new DatasetSettings[] { new("note", false) }),
-                        new ServicesSettings(true, new ServiceSetting[] { new("organDonorRegistration", true), new("healthConnectRegistry", true) })),
-                },
-                ServiceEndpoints = new Dictionary<string, Uri>
-                {
-                    {
-                        "Service", new Uri("https://localhost/service")
-                    },
-                },
-            };
+            ExternalConfiguration expectedResult = GenerateExternalConfiguration();
             ExternalConfiguration actualResult = await this.service.GetConfigurationAsync();
 
             expectedResult.ShouldDeepEqual(actualResult);
@@ -184,6 +116,121 @@ namespace HealthGateway.WebClientTests.Services
             MobileConfiguration actualResult = await this.service.GetMobileConfigurationAsync();
 
             expectedResult.ShouldDeepEqual(actualResult);
+        }
+
+        /// <summary>
+        /// GetConfigurationAsync - Handles exception.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetConfigurationAsyncHandlesException()
+        {
+            // Arrange
+            const string invalidPath = "invalid path";
+
+            ExternalConfiguration expected = GenerateExternalConfiguration(
+                invalidPath,
+                false);
+
+            IConfiguration originalConfiguration = new ConfigurationBuilder()
+                .AddJsonFile("Assets/appsettings.json")
+                .Build();
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddConfiguration(originalConfiguration)
+                .AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        { "WebClient:FeatureToggleFilePath", invalidPath },
+                    })
+                .Build();
+
+            ConfigurationService configurationService = new(
+                new Mock<ILogger<ConfigurationService>>().Object,
+                configuration);
+
+            // Act
+            ExternalConfiguration actual = await configurationService.GetConfigurationAsync();
+
+            // Assert
+            expected.ShouldDeepEqual(actual);
+        }
+
+        private static ExternalConfiguration GenerateExternalConfiguration(
+            string featureToggleConfigurationPath = "Assets/featuretoggleconfig.json",
+            bool showFeatureToggleConfiguration = true)
+        {
+            return new()
+            {
+                OpenIdConnect = new OpenIdConnectConfiguration
+                {
+                    Authority = "Authority",
+                    ClientId = "ClientId",
+                    ResponseType = "ResponseType",
+                    Scope = "Scope",
+                    Callbacks = new Dictionary<string, Uri>
+                    {
+                        { "Logon", new Uri("https://localhost/logon") },
+                        { "Logout", new Uri("https://localhost/logout") },
+                    },
+                },
+                IdentityProviders = new[]
+                {
+                    new IdentityProviderConfiguration
+                    {
+                        Id = "Id",
+                        Name = "Name",
+                        Icon = "Icon",
+                        Hint = "Hint",
+                        Disabled = true,
+                    },
+                },
+                WebClient = new WebClientConfiguration
+                {
+                    LogLevel = "LogLevel",
+                    Timeouts = new TimeOutsConfiguration
+                    {
+                        Idle = 10000,
+                        LogoutRedirect = "LogoutRedirect",
+                    },
+                    ExternalUrLs = new Dictionary<string, Uri>
+                    {
+                        {
+                            "External", new Uri("https://localhost/external")
+                        },
+                    },
+                    FeatureToggleFilePath = featureToggleConfigurationPath,
+                    FeatureToggleConfiguration = showFeatureToggleConfiguration
+                        ? new FeatureToggleConfiguration(
+                            new HomepageSettings(true, true),
+                            new NotificationCentreSettings(true),
+                            new TimelineSettings(true),
+                            new DatasetSettings[]
+                            {
+                                new("bcCancerScreening", true),
+                                new("clinicalDocument", true),
+                                new("covid19TestResult", true),
+                                new("diagnosticImaging", true),
+                                new("healthVisit", true),
+                                new("hospitalVisit", true),
+                                new("immunization", true),
+                                new("labResult", true),
+                                new("medication", true),
+                                new("note", true),
+                                new("specialAuthorityRequest", true),
+                            },
+                            new Covid19Settings(true, new PublicCovid19Settings(true), new ProofOfVaccinationSettings(false)),
+                            new DependentsSettings(true, true, new DatasetSettings[] { new("note", false) }),
+                            new ServicesSettings(true, new ServiceSetting[] { new("organDonorRegistration", true), new("healthConnectRegistry", true) }))
+                        : null,
+                },
+                ServiceEndpoints = new Dictionary<string, Uri>
+                {
+                    {
+                        "Service", new Uri("https://localhost/service")
+                    },
+                },
+            };
         }
     }
 }

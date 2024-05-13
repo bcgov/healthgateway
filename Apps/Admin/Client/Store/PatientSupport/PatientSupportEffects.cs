@@ -43,7 +43,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
-                logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
+                logger.LogError(e, "Error loading patients, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new PatientSupportActions.LoadFailureAction { Error = error });
             }
         }

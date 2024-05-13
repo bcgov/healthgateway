@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
                     }
                     else
                     {
-                        this.logger.LogError("Error inserting resource delegate to DB with exception {Exception}", e.ToString());
+                        this.logger.LogError(e, "Error inserting resource delegate to DB with exception {Message}", e.Message);
                         result.Message = e.Message;
                     }
                 }

@@ -112,7 +112,7 @@ namespace HealthGateway.Medication.Delegates
                         ResultMessage = "Error while retrieving Medication Requests",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                     };
-                    this.logger.LogError("Unexpected exception in GetMedicationRequestsAsync {Exception}", e.ToString());
+                    this.logger.LogError(e, "Unexpected exception in GetMedicationRequestsAsync {Message}", e.Message);
                 }
 
                 this.logger.LogDebug("Finished getting Medication Requests");

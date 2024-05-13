@@ -192,28 +192,32 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userFeedbackDelegateMock.Setup(
                     s => s.InsertUserFeedbackAsync(
                         It.Is<UserFeedback>(
-                            r => r.Comment == userFeedback.Comment && r.Id == userFeedback.Id && r.UserProfileId == userFeedback.UserProfileId &&
-                                 r.IsSatisfied == userFeedback.IsSatisfied && r.IsReviewed == userFeedback.IsReviewed),
+                            r => r.Comment == userFeedback.Comment &&
+                                 r.UserProfileId == userFeedback.UserProfileId),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
-            Mock<IUserProfileDelegate> mockProfileDelegate = new();
-            mockProfileDelegate.Setup(s => s.GetUserProfileAsync(It.Is<string>(h => h == userFeedback.UserProfileId), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+            userProfileDelegateMock.Setup(
+                    s => s.GetUserProfileAsync(
+                        It.Is<string>(h => h == userFeedback.UserProfileId),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(profile);
 
-            Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
-            mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserClientType()).Returns(defaultClientType);
-
-            Mock<IGatewayApiMappingService> mockMappingService = new();
-            mockMappingService.Setup(s => s.MapToUserFeedback(It.IsAny<Feedback>(), It.IsAny<string>())).Returns(userFeedback);
+            Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
+            authenticationDelegateMock.Setup(
+                    s => s.FetchAuthenticatedUserClientType())
+                .Returns(defaultClientType);
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
                 userFeedbackDelegateMock.Object,
                 new Mock<IRatingDelegate>().Object,
-                mockProfileDelegate.Object,
+                userProfileDelegateMock.Object,
                 new Mock<IBackgroundJobClient>().Object,
-                mockMappingService.Object,
-                mockAuthenticationDelegate.Object);
+                MappingService,
+                authenticationDelegateMock.Object);
 
             return new(service, dbResult, feedback, hdid);
         }

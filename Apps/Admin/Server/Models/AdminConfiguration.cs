@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration data to be used by the Health Gateway Admin.

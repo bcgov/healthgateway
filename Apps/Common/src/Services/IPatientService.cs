@@ -35,14 +35,6 @@ namespace HealthGateway.Common.Services
         Task<RequestResult<string>> GetPatientPhnAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets the patient HDID by PHN.
-        /// </summary>
-        /// <param name="phn">The patient PHN.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The patient HDID.</returns>
-        Task<string> GetPatientHdidAsync(string phn, CancellationToken ct = default);
-
-        /// <summary>
         /// Gets the patient record.
         /// </summary>
         /// <param name="identifier">The patient identifier.</param>

@@ -53,8 +53,8 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         {
             await new PhnValidator(ErrorMessages.PhnInvalid).ValidateAndThrowAsync(request.Identifier, ct);
 
-            PatientModel? patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null) ??
-                                    await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation, ct);
+            PatientModel patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null) ??
+                                   await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation, ct);
 
             await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;

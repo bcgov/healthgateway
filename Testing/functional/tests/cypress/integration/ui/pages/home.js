@@ -1,4 +1,6 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
+
 const homeUrl = "/home";
 const covid19Url = "/covid19";
 const timelineUrl = "/timeline";
@@ -6,6 +8,9 @@ const timelineUrl = "/timeline";
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
         cy.configureSettings({});
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -24,6 +29,8 @@ describe("Authenticated User - Home Page", () => {
             },
         });
 
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -36,6 +43,9 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Link to COVID-19 page", () => {
         cy.configureSettings({});
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -52,6 +62,9 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Link to timeline page", () => {
         cy.configureSettings({});
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -69,6 +82,8 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Federal Card button disabled", () => {
         cy.configureSettings({});
 
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -83,38 +98,13 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({
             datasets: [
                 {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "medication",
-                    enabled: true,
-                },
-                {
-                    name: "specialAuthorityRequest",
-                    enabled: true,
-                },
-                {
                     name: "note",
                     enabled: true,
                 },
             ],
+        });
+        setupStandardIntercepts({
+            userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
         });
 
         cy.intercept("GET", "**/Note/*", {

@@ -89,7 +89,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                     ResultMessage = "Error while sending notification settings to PHSA",
                     ErrorCode = errorCode,
                 };
-                this.logger.LogError("Unexpected exception in SetNotificationSettings {Exception}", e);
+                this.logger.LogError(e, "Unexpected exception in SetNotificationSettings {Message}", e.Message);
             }
 
             this.logger.LogDebug("Finished sending notification settings to PHSA");

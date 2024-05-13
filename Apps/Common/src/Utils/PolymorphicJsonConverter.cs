@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Utils
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
@@ -65,6 +66,7 @@ namespace HealthGateway.Common.Utils
         /// <param name="typeToConvert">The type to convert to.</param>
         /// <param name="actualType">The type parsed from the json payload.</param>
         /// <returns>True if actual type can be converted.</returns>
+        [ExcludeFromCodeCoverage]
         protected virtual bool CanConvert(Type typeToConvert, Type actualType)
         {
             return typeToConvert.IsAssignableFrom(actualType);
@@ -75,6 +77,7 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="discriminatorValue">The discovered discriminator value.</param>
         /// <returns>Type to use for deserialization, null if type not found.</returns>
+        [ExcludeFromCodeCoverage]
         protected virtual Type? ResolveType(string? discriminatorValue)
         {
             return string.IsNullOrEmpty(discriminatorValue)
@@ -87,6 +90,7 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="value">The serialized value.</param>
         /// <returns>The discriminator value.</returns>
+        [ExcludeFromCodeCoverage]
         protected virtual string ResolveDiscriminatorValue(T value)
         {
             return value!.GetType().AssemblyQualifiedName!;

@@ -18,6 +18,7 @@ namespace HealthGateway.PatientDataAccess
 #pragma warning disable SA1201 // Elements should appear in the correct order
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -38,11 +39,13 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Abstract query record.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract record PatientDataQuery;
 
     /// <summary>
     /// Query parameters for health services.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record HealthQuery(Guid Pid, IEnumerable<HealthCategory> Categories) : PatientDataQuery;
 
     /// <summary>
@@ -69,16 +72,19 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Query patient files.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record PatientFileQuery(Guid Pid, string FileId) : PatientDataQuery;
 
     /// <summary>
     /// The health data query result payload.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record PatientDataQueryResult(IEnumerable<HealthData> Items);
 
     /// <summary>
     /// Represents a patient file.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record PatientFile : HealthData
     {
         /// <summary>

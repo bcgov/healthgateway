@@ -17,6 +17,7 @@ namespace HealthGateway.Patient.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -52,12 +53,14 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Hdid">The patient hdid.</param>
     /// <param name="PatientDataTypes">The data types to query.</param>
+    [ExcludeFromCodeCoverage]
     public record PatientDataQuery(string Hdid, IEnumerable<PatientDataType> PatientDataTypes);
 
     /// <summary>
     /// Response message with patient data.
     /// </summary>
     /// <param name="Items">list of patient data information.</param>
+    [ExcludeFromCodeCoverage]
     public record PatientDataResponse(IEnumerable<PatientData> Items);
 
     /// <summary>
@@ -67,6 +70,7 @@ namespace HealthGateway.Patient.Services
     [KnownType(typeof(OrganDonorRegistration))]
     [KnownType(typeof(DiagnosticImagingExam))]
     [KnownType(typeof(BcCancerScreening))]
+    [ExcludeFromCodeCoverage]
     public abstract record PatientData
     {
         /// <summary>
@@ -83,6 +87,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// Organ donor patient data.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record OrganDonorRegistration : PatientData
     {
         /// <summary>
@@ -112,6 +117,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// Diagnostic imaging exam patient data.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record DiagnosticImagingExam : PatientData
     {
         /// <summary>
@@ -166,6 +172,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// BC Cancer screening exam patient data.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record BcCancerScreening : PatientData
     {
         /// <summary>
@@ -202,6 +209,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Hdid">Patient's hdid.</param>
     /// <param name="FileId">File id.</param>
+    [ExcludeFromCodeCoverage]
     public record PatientFileQuery(string Hdid, string FileId);
 
     /// <summary>
@@ -209,6 +217,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Content">The file content.</param>
     /// <param name="ContentType">The file content type.</param>
+    [ExcludeFromCodeCoverage]
     public record PatientFileResponse(IEnumerable<byte> Content, string ContentType);
 
 // Disable documentation for internal class.

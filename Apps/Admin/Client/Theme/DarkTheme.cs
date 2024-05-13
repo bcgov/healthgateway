@@ -23,6 +23,8 @@ namespace HealthGateway.Admin.Client.Theme
     /// </summary>
     public class DarkTheme : HgTheme
     {
+        private const string TranslucentWhite = "rgba(255,255,255, 0.12)";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DarkTheme"/> class.
         /// </summary>
@@ -53,7 +55,7 @@ namespace HealthGateway.Admin.Client.Theme
                 TextDisabled = "rgba(255,255,255, 0.2)",
                 ActionDefault = "#91A3BF",
                 ActionDisabled = "rgba(255,255,255, 0.26)",
-                ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+                ActionDisabledBackground = TranslucentWhite,
                 Background = "#001E30",
                 BackgroundGrey = "#FDBB1B",
                 Surface = "#123147",
@@ -62,12 +64,12 @@ namespace HealthGateway.Admin.Client.Theme
                 DrawerIcon = "#CAE6FF",
                 AppbarBackground = "#0D2C41",
                 AppbarText = "#CAE6FF",
-                LinesDefault = "rgba(255,255,255, 0.12)",
+                LinesDefault = TranslucentWhite,
                 LinesInputs = "rgba(255,255,255, 0.3)",
-                TableLines = "rgba(255,255,255, 0.12)",
+                TableLines = TranslucentWhite,
                 TableStriped = new MudColor(Colors.Shades.Black).SetAlpha(0.02).ToString(MudColorOutputFormats.RGBA),
                 TableHover = new MudColor(Colors.Shades.Black).SetAlpha(0.04).ToString(MudColorOutputFormats.RGBA),
-                Divider = "rgba(255,255,255, 0.12)",
+                Divider = TranslucentWhite,
                 DividerLight = "rgba(255,255,255, 0.06)",
                 HoverOpacity = .35,
                 GrayDefault = Colors.Grey.Default,

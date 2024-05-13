@@ -19,6 +19,7 @@ namespace HealthGateway.PatientDataAccess.Api
 #pragma warning disable SA1602 // Disables documentation for internal class.
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using Refit;
@@ -68,14 +69,19 @@ namespace HealthGateway.PatientDataAccess.Api
         Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query(CollectionFormat.Multi)] string[] categories, CancellationToken ct = default);
     }
 
+    [ExcludeFromCodeCoverage]
     internal record FileResult(string? MediaType, string? Data, string? Encoding);
 
+    [ExcludeFromCodeCoverage]
     internal record HealthOptionsResult(HealthOptionsMetadata Metadata, IEnumerable<HealthOptionsData> Data);
 
+    [ExcludeFromCodeCoverage]
     internal record HealthDataResult(HealthDataMetadata Metadata, IEnumerable<HealthDataEntry> Data);
 
+    [ExcludeFromCodeCoverage]
     internal record HealthOptionsMetadata;
 
+    [ExcludeFromCodeCoverage]
     internal record HealthDataMetadata;
 }
 #pragma warning restore SA1600

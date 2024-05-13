@@ -32,6 +32,7 @@ namespace HealthGateway.CommonTests.Services
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Moq;
+    using Npgsql;
     using Xunit;
 
     /// <summary>
@@ -153,6 +154,27 @@ namespace HealthGateway.CommonTests.Services
             {
                 Assert.Equal(0, actualResult.TotalResultCount);
             }
+        }
+
+        /// <summary>
+        /// GetActiveCommunicationAsync - DB Exception.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetActiveCommunicationDbExceptionShouldReturnError()
+        {
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
+            communicationDelegateMock.Setup(s => s.GetNextAsync(It.IsAny<CommunicationType>(), It.IsAny<CancellationToken>())).ThrowsAsync(new NpgsqlException());
+
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                communicationDelegateMock.Object,
+                this.cacheProvider);
+
+            RequestResult<Communication?> actualResult = await service.GetActiveCommunicationAsync(CommunicationType.Banner);
+
+            Assert.NotNull(actualResult);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         // ReSharper disable once CognitiveComplexity
@@ -278,6 +300,32 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICommunicationDelegate>().Object,
                 new Mock<ICacheProvider>().Object);
             await Assert.ThrowsAsync<NotImplementedException>(() => service.GetActiveCommunicationAsync(CommunicationType.Email));
+        }
+
+        /// <summary>
+        /// ClearCache - Happy Path.
+        /// </summary>
+        [Fact]
+        public void ValidateClearCache()
+        {
+            // Arrange
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                new Mock<ICommunicationDelegate>().Object,
+                this.cacheProvider);
+
+            Communication communication = new();
+            this.cacheProvider.AddItem(CommunicationService.BannerCacheKey, communication);
+            this.cacheProvider.AddItem(CommunicationService.InAppCacheKey, communication);
+            this.cacheProvider.AddItem(CommunicationService.MobileCacheKey, communication);
+
+            // Act
+            service.ClearCache();
+
+            // Assert
+            Assert.Null(this.cacheProvider.GetItem<Communication>(CommunicationService.BannerCacheKey));
+            Assert.Null(this.cacheProvider.GetItem<Communication>(CommunicationService.InAppCacheKey));
+            Assert.Null(this.cacheProvider.GetItem<Communication>(CommunicationService.MobileCacheKey));
         }
 
         private static RequestResult<Communication?> GetCommResult(Communication? communication, ResultType resultStatus)

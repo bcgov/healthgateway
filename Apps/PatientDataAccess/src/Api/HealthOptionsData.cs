@@ -17,11 +17,14 @@ namespace HealthGateway.PatientDataAccess.Api
 {
 #pragma warning disable SA1600 // Disables documentation for internal class.
 #pragma warning disable SA1602 // Disables documentation for internal class.
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     [JsonConverter(typeof(HealthOptionDataJsonConverter))]
+    [ExcludeFromCodeCoverage]
     internal abstract record HealthOptionsData;
 
+    [ExcludeFromCodeCoverage]
     internal record OrganDonorRegistration : HealthOptionsData
     {
         public string? HealthOptionsId { get; set; }

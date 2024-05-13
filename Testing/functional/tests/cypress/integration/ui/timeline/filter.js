@@ -1,4 +1,6 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardIntercepts } from "../../../support/functions/intercept";
+
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Filters", () => {
@@ -60,6 +62,9 @@ describe("Filters", () => {
                 },
             ],
         });
+
+        setupStandardIntercepts();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -194,10 +199,12 @@ describe("Describe Filters when all datasets blocked", () => {
                 },
             ],
         });
-        cy.intercept("GET", `**/UserProfile/*`, {
-            fixture:
+
+        setupStandardIntercepts({
+            userProfileFixture:
                 "UserProfileService/userProfileMultipleDatasetsBlocked.json",
         });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -230,13 +237,16 @@ describe("Describe Filters when clinical doc dataset is blocked but immunization
                 },
             ],
         });
-        cy.intercept("GET", `**/UserProfile/*`, {
-            fixture:
+
+        setupStandardIntercepts({
+            userProfileFixture:
                 "UserProfileService/userProfileClinicalDocDatasetBlocked.json",
         });
+
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

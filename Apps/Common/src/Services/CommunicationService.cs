@@ -81,7 +81,7 @@ namespace HealthGateway.Common.Services
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogError("Error getting Communication from DB {Error}", e.ToString());
+                    this.logger.LogError(e, "Error getting Communication from DB {Message}", e.Message);
                     cacheEntry = new()
                     {
                         ResultStatus = ResultType.Error,

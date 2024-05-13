@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    public class ConfigurationController : Controller
+    public class ConfigurationController : ControllerBase
     {
         /// <summary>
         /// Returns the external Health Gateway configuration.
