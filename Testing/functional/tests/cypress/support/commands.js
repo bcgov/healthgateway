@@ -7,7 +7,11 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-const { AuthMethod, localDevUri } = require("./constants");
+import { AuthMethod, localDevUri } from "./constants";
+import {
+    setupWaitStandardIntercepts,
+    waitStandardIntercepts,
+} from "./functions/intercept";
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
@@ -206,7 +210,9 @@ Cypress.Commands.add(
                 });
             });
             cy.log(`Visit path: ${path}`);
+            setupWaitStandardIntercepts();
             cy.visit(path, { timeout: 60000 });
+            waitStandardIntercepts();
         } else if (authMethod == AuthMethod.BCSC) {
             cy.log(
                 `Authenticating as BC Services Card user ${username} using the UI`

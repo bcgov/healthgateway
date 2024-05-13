@@ -26,6 +26,7 @@ Usage: setupStandardIntercepts({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <
 ----------------------------------------------------------------------------------------------------
 */
 export function setupStandardIntercepts(options = {}) {
+    cy.log("Setting up standard intercepts.");
     const {
         patientHdid = defaultHdid,
         userProfileHdid = defaultHdid,
@@ -51,6 +52,36 @@ export function setupStandardIntercepts(options = {}) {
         communicationType: CommunicationType.InApp,
         communicationFixture: CommunicationFixture.InApp,
     });
+}
+
+export function setupWaitStandardIntercepts() {
+    cy.log("Setting up wait standard intercepts.");
+    cy.intercept("GET", "**/Patient/*").as("getPatient");
+    cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+    cy.intercept("GET", "**/Communication/*").as("getCommunication");
+    cy.intercept("GET", "**/ClinicalDocument/*").as("getClinicalDocument");
+    cy.intercept("GET", "**/PatientData/*").as("getPatientData");
+}
+
+export function waitStandardIntercepts() {
+    cy.log("Waiting on standard intercepts.");
+
+    const waitForIntercept = (alias, timeout) => {
+        return cy.intercept(`@${alias}`, { timeout }).then((interception) => {
+            if (interception) {
+                cy.wait(`@${alias}`);
+            } else {
+                cy.log(`Intercept "${alias}" not found.`);
+            }
+        });
+    };
+
+    // Wait for each intercept with a reasonable timeout
+    waitForIntercept("getPatient", 5000);
+    waitForIntercept("getUserProfile", 5000);
+    waitForIntercept("getCommunication", 5000);
+    waitForIntercept("getClinicalDocument", 5000);
+    waitForIntercept("getPatientData", 5000);
 }
 
 /*
