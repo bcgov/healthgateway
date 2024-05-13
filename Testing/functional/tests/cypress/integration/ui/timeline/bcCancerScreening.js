@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("BC Cancer Screening cards", () => {
     function testCard(cardTitle, cardButtonText) {
@@ -29,7 +29,7 @@ describe("BC Cancer Screening cards", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

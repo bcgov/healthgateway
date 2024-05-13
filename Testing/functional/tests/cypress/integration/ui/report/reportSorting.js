@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
@@ -22,7 +22,7 @@ describe("Reports - Medication", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -77,7 +77,7 @@ describe("Reports - Covid19", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -133,7 +133,7 @@ describe("Reports - Immunization", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -220,7 +220,7 @@ describe("Reports - MSP Visit", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -276,7 +276,7 @@ describe("Reports - Hospital Visits", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -332,7 +332,7 @@ describe("Reports - Notes (User-Entered)", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -388,7 +388,7 @@ describe("Reports - Laboratory Tests", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("Immunization - With Refresh", () => {
     beforeEach(() => {
@@ -25,7 +25,7 @@ describe("Immunization - With Refresh", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -77,7 +77,7 @@ describe("Immunization", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -109,7 +109,7 @@ describe("Timeline - Immunization - Invalid Doses", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 function login(isMobile) {
     cy.configureSettings({
@@ -14,7 +14,7 @@ function login(isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.login(
         Cypress.env("keycloak.username"),

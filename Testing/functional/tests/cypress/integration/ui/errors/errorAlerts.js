@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkChipSelector = "[data-testid=quick-link-modal-text] .v-chip";
@@ -24,7 +24,7 @@ function testGetConfigurationError(statusCode = serverErrorStatusCode) {
 function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupStandardIntercepts({
+    setupStandardFixtures({
         userProfileStatusCode: statusCode,
     });
 
@@ -47,7 +47,7 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
     const hdid = "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA";
 
-    setupStandardIntercepts({
+    setupStandardFixtures({
         patientHdid: hdid,
         userProfileHdid: hdid,
         patientFixture: "PatientService/patientUnregistered.json",
@@ -116,7 +116,7 @@ function testValidateEmailError(statusCode = serverErrorStatusCode) {
         statusCode,
     }).as("validateEmail");
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.login(
         Cypress.env("keycloak.username"),
@@ -170,7 +170,7 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
         ],
     });
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
@@ -218,7 +218,7 @@ function testAddCommentError(statusCode = serverErrorStatusCode) {
         ],
     });
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.intercept("POST", "**/UserProfile/*/Comment", {
         statusCode,
@@ -296,7 +296,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
         ],
     });
 
-    setupStandardIntercepts({
+    setupStandardFixtures({
         userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
     });
 
@@ -333,7 +333,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
 function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
@@ -368,7 +368,7 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
 function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
@@ -400,7 +400,7 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
 function testVerifySmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
@@ -437,7 +437,7 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
 function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
-    setupStandardIntercepts();
+    setupStandardFixtures();
 
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,

@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import { setupStandardIntercepts } from "../../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 describe("Immunization", () => {
     beforeEach(() => {
@@ -15,7 +15,7 @@ describe("Immunization", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.viewport("iphone-6");
         cy.login(

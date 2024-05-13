@@ -1,12 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import {
-    CommunicationFixture,
-    CommunicationType,
-    setupCommunicationIntercept,
-    setupPatientIntercept,
-    setupUserProfileIntercept,
-    setupStandardIntercepts,
-} from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const fakeSMSNumber = "2506714848";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -15,7 +8,7 @@ describe("User Profile", () => {
     beforeEach(() => {
         cy.configureSettings({});
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
             body: true,
@@ -198,7 +191,7 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has combined address", () => {
-        setupStandardIntercepts();
+        setupStandardFixtures();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -220,7 +213,7 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has different addresses", () => {
-        setupStandardIntercepts({
+        setupStandardFixtures({
             patientFixture: "PatientService/patientDifferentAddress.json",
         });
         cy.login(
@@ -252,7 +245,7 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has no address", () => {
-        setupStandardIntercepts({
+        setupStandardFixtures({
             patientFixture: "PatientService/patientNoAddress.json",
         });
         cy.login(
@@ -273,7 +266,7 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has only physical address", () => {
-        setupStandardIntercepts({
+        setupStandardFixtures({
             patientFixture: "PatientService/patientOnlyPhysicalAddress.json",
         });
         cy.login(
@@ -300,7 +293,7 @@ describe("User Profile - Validate Address", () => {
     });
 
     it("Verify user has only postal address", () => {
-        setupStandardIntercepts({
+        setupStandardFixtures({
             patientFixture: "PatientService/patientOnlyPostalAddress.json",
         });
         cy.login(

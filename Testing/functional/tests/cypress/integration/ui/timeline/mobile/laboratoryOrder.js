@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import { setupStandardIntercepts } from "../../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 function checkPopoverIsVisible() {
     cy.get("[data-testid=laboratory-test-status-info-button]")
@@ -31,7 +31,7 @@ describe("Laboratory Orders", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.viewport("iphone-6");
         cy.login(
@@ -253,7 +253,7 @@ describe("Laboratory Orders Refresh", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.viewport("iphone-6");
         cy.login(
@@ -309,7 +309,7 @@ describe("Laboratory Orders Queued", () => {
                 },
             ],
         });
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.viewport("iphone-6");
         cy.login(

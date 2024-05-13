@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
@@ -63,7 +63,7 @@ describe("Filters", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -200,7 +200,7 @@ describe("Describe Filters when all datasets blocked", () => {
             ],
         });
 
-        setupStandardIntercepts({
+        setupStandardFixtures({
             userProfileFixture:
                 "UserProfileService/userProfileMultipleDatasetsBlocked.json",
         });
@@ -238,7 +238,7 @@ describe("Describe Filters when clinical doc dataset is blocked but immunization
             ],
         });
 
-        setupStandardIntercepts({
+        setupStandardFixtures({
             userProfileFixture:
                 "UserProfileService/userProfileClinicalDocDatasetBlocked.json",
         });

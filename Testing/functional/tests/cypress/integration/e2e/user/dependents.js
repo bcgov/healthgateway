@@ -647,6 +647,17 @@ describe("CRUD Operations", () => {
 
         cy.log("Adding same dependent as another user");
 
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.protected.username"),
             Cypress.env("keycloak.password"),

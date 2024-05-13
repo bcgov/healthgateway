@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const homeUrl = "/home";
 
@@ -24,7 +24,7 @@ describe("Federal Proof of Vaccination", () => {
             }
         );
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.configureSettings({
             homepage: {
@@ -58,7 +58,7 @@ describe("Federal Proof of Vaccination", () => {
             datasets: [{ name: "immunization", enabled: true }],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

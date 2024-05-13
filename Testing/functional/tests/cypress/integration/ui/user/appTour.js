@@ -1,9 +1,10 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("App Tour Authenticated", () => {
     beforeEach(() => {
-        setupStandardIntercepts();
+        cy.configureSettings({});
+        setupStandardFixtures();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
