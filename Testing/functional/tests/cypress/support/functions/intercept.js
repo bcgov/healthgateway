@@ -346,7 +346,7 @@ function waitForOrganDonorRegistratonStatusService(
         !organDonorRegistrationBlocked &&
         path === "/services"
     ) {
-        cy.log("Wait on patient data for ogran donor registration.");
+        cy.log("Wait on patient data for organ donor registration.");
         cy.wait("@getOrganDonorRegistrationStatus", {
             timeout: defaultTimeout,
         });
