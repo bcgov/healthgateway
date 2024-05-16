@@ -231,21 +231,20 @@ function waitForClinicalDocument(featureToggle, path, blockedDataSources) {
         (x) => x.enabled && x.name === "clinicalDocument"
     );
 
-    const dependentClinicalDocumentEnabled =
-        featureToggle.dependents.enabled &&
+    const dependentClinicalDocumentDisabled =
         featureToggle.dependents.datasets.some(
-            (x) => x.enabled && x.name === "clinicalDocument"
+            (x) => !x.enabled && x.name === "clinicalDocument"
         );
 
     cy.log(
-        `waitForClinicalDocument called - enabled: ${clinicalDocumentEnabled} - dependent enabled: ${dependentClinicalDocumentEnabled} - blocked: ${clinicalDocumentBlocked}`
+        `waitForClinicalDocument called - enabled: ${clinicalDocumentEnabled} - dependent disabled: ${dependentClinicalDocumentDisabled} - blocked: ${clinicalDocumentBlocked}`
     );
 
     if (
-        (!clinicalDocumentBlocked &&
-            clinicalDocumentEnabled &&
-            isTimeline(path)) ||
-        (isDependentsTimeline(path) && dependentClinicalDocumentEnabled)
+        !clinicalDocumentBlocked &&
+        clinicalDocumentEnabled &&
+        (isTimeline(path) ||
+            (isDependentsTimeline(path) && !dependentClinicalDocumentDisabled))
     ) {
         cy.log("Wait on clinical document.");
         cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
@@ -264,21 +263,20 @@ function waitForPatientDataForBcCancerScreening(
         (x) => x.enabled && x.name === "bcCancerScreening"
     );
 
-    const dependentBcCancerScreeningEnabled =
-        featureToggle.dependents.enabled &&
+    const dependentBcCancerScreeningDisabled =
         featureToggle.dependents.datasets.some(
-            (x) => x.enabled && x.name === "bcCancerScreening"
+            (x) => !x.enabled && x.name === "bcCancerScreening"
         );
 
     cy.log(
-        `waitForPatientDataForBcCancerScreening called - enabled: ${bcCancerScreeningEnabled} - dependent enabled: ${dependentBcCancerScreeningEnabled} - blocked: ${bcCancerScreeningBlocked}`
+        `waitForPatientDataForBcCancerScreening called - enabled: ${bcCancerScreeningEnabled} - dependent disabled: ${dependentBcCancerScreeningDisabled} - blocked: ${bcCancerScreeningBlocked}`
     );
 
     if (
-        (!bcCancerScreeningBlocked &&
-            bcCancerScreeningEnabled &&
-            isTimeline(path)) ||
-        (isDependentsTimeline(path) && dependentBcCancerScreeningEnabled)
+        !bcCancerScreeningBlocked &&
+        bcCancerScreeningEnabled &&
+        (isTimeline(path) ||
+            (isDependentsTimeline(path) && !dependentBcCancerScreeningDisabled))
     ) {
         cy.log("Wait on patient data for bc cancer screening.");
         cy.wait("@getPatientDataForBcCancerScreening", {
@@ -299,21 +297,20 @@ function waitForPatientDataForDiagnosticImaging(
         (x) => x.enabled && x.name === "diagnosticImaging"
     );
 
-    const dependentDiagnosticImagingEnabled =
-        featureToggle.dependents.enabled &&
+    const dependentDiagnosticImagingDisabled =
         featureToggle.dependents.datasets.some(
-            (x) => x.enabled && x.name === "diagnosticImaging"
+            (x) => !x.enabled && x.name === "diagnosticImaging"
         );
 
     cy.log(
-        `waitForPatientDataForDiagnosticImaging called - enabled: ${diagnosticImagingEnabled} - dependent enabled: ${dependentDiagnosticImagingEnabled} - blocked: ${diagnosticImagingBlocked}`
+        `waitForPatientDataForDiagnosticImaging called - enabled: ${diagnosticImagingEnabled} - dependent disabled: ${dependentDiagnosticImagingDisabled} - blocked: ${diagnosticImagingBlocked}`
     );
 
     if (
-        (!diagnosticImagingBlocked &&
-            diagnosticImagingEnabled &&
-            isTimeline(path)) ||
-        (isDependentsTimeline(path) && dependentDiagnosticImagingEnabled)
+        !diagnosticImagingBlocked &&
+        diagnosticImagingEnabled &&
+        (isTimeline(path) ||
+            (isDependentsTimeline(path) && !dependentDiagnosticImagingDisabled))
     ) {
         cy.log("Wait on patient data for diagnostic imaging.");
         cy.wait("@getPatientDataForDiagnosticImaging", {
