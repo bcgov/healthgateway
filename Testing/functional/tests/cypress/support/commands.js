@@ -428,7 +428,7 @@ Cypress.Commands.add("configureSettings", (settings) => {
                 body: config,
             });
 
-            // Set copy of confg in session to be accessed by login for handling wait on busy endpoint calls
+            // Set copy of config in session to be accessed by login for handling wait on busy endpoint calls
             cy.window().then((window) => {
                 window.sessionStorage.setItem(
                     "configSettingsKey",
