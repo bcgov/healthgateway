@@ -132,10 +132,11 @@ Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
-            cy.log("Calling session storage");
             cy.window().then((window) => {
-                const configSettings =
+                cy.log("Calling session storage");
+                let configSettings =
                     window.sessionStorage.getItem("configSettingsKey");
+
                 cy.session([username, authMethod], () => {
                     cy.readConfig().then((config) => {
                         cy.logout();
@@ -225,8 +226,21 @@ Cypress.Commands.add(
                 cy.log(`Visit path: ${path}`);
                 cy.visit(path, { timeout: 60000 });
 
-                // Make sure to wait on busy endpoint calls
-                waitForInitialDataLoad(username, configSettings, path);
+                if (configSettings === null) {
+                    cy.readConfig().then((config) => {
+                        cy.log(`Read config: ${JSON.stringify(config)}`);
+                        // Make sure to wait on busy endpoint calls
+                        waitForInitialDataLoad(username, config, path);
+                    });
+                } else {
+                    cy.log(`Session config: ${JSON.stringify(configSettings)}`);
+                    // Make sure to wait on busy endpoint calls
+                    waitForInitialDataLoad(
+                        username,
+                        JSON.parse(configSettings),
+                        path
+                    );
+                }
             });
         } else if (authMethod == AuthMethod.BCSC) {
             cy.log(

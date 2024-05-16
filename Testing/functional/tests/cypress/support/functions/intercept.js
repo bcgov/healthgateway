@@ -3,7 +3,7 @@ const defaultNotificationFixture = "NotificationService/notifications.json";
 const defaultPatientFixture = "PatientService/patientCombinedAddress.json";
 const defaultUserProfileFixture = "UserProfileService/userProfile.json";
 const defaultUserProfileStatusCode = 200;
-const defaultTimeout = 45000;
+const defaultTimeout = 60000;
 
 export const CommunicationType = {
     Banner: 0,
@@ -76,8 +76,7 @@ export function setupStandardAliases() {
 }
 
 export function waitForInitialDataLoad(username, config, path) {
-    const configSettings = JSON.parse(config);
-    const featureToggle = configSettings?.webClient?.featureToggleConfiguration;
+    const featureToggle = config.webClient.featureToggleConfiguration;
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);
@@ -132,9 +131,8 @@ function waitForUserProfile(username) {
 
 function waitForNotification(featureToggle) {
     if (
-        featureToggle === undefined ||
-        (featureToggle?.notificationCentre &&
-            featureToggle?.notificationCentre.enabled)
+        featureToggle.notificationCentre &&
+        featureToggle.notificationCentre.enabled
     ) {
         cy.log("Wait on notification.");
         cy.wait("@getNotification", { timeout: defaultTimeout });
@@ -147,30 +145,23 @@ function waitForClinicalDocument(featureToggle, path, blockedDataSources) {
     const clinicalDocumentBlocked =
         checkClinicalDocumentBlocked(blockedDataSources);
 
-    if (featureToggle === undefined) {
-        if (!clinicalDocumentBlocked && isTimelineOrDependentsTimeline(path)) {
-            cy.log("Wait on clinical document.");
-            cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
-        }
-    } else {
-        const clinicalDocumentEnabled = featureToggle?.datasets.some(
+    const clinicalDocumentEnabled = featureToggle?.datasets.some(
+        (x) => x.enabled && x.name === "clinicalDocument"
+    );
+
+    const dependentClinicalDocumentEnabled =
+        featureToggle.dependents.enabled &&
+        featureToggle.dependents.datasets.some(
             (x) => x.enabled && x.name === "clinicalDocument"
         );
 
-        const dependentClinicalDocumentEnabled =
-            featureToggle?.dependents.enabled &&
-            featureToggle?.dependents.datasets.some(
-                (x) => x.enabled && x.name === "clinicalDocument"
-            );
-
-        if (
-            (clinicalDocumentEnabled || dependentClinicalDocumentEnabled) &&
-            !clinicalDocumentBlocked &&
-            isTimelineOrDependentsTimeline(path)
-        ) {
-            cy.log("Wait on clinical document.");
-            cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
-        }
+    if (
+        (clinicalDocumentEnabled || dependentClinicalDocumentEnabled) &&
+        !clinicalDocumentBlocked &&
+        isTimelineOrDependentsTimeline(path)
+    ) {
+        cy.log("Wait on clinical document.");
+        cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
     }
 }
 
@@ -182,59 +173,47 @@ function waitForPatientData(featureToggle, path, blockedDataSources) {
     const diagnosticImagingBlocked =
         checkDiagnosticImagingBlocked(blockedDataSources);
 
-    if (featureToggle === undefined) {
-        if (
-            !bcCancerScreeningBlocked &&
-            !diagnosticImagingBlocked &&
-            isTimelineOrDependentsTimeline(path)
-        ) {
-            cy.log("Wait on patient data.");
-            cy.wait("@getPatientData", { timeout: defaultTimeout });
-        }
-    } else {
-        const bcCancerScreeningEnabled = featureToggle?.datasets.some(
+    const bcCancerScreeningEnabled = featureToggle?.datasets.some(
+        (x) => x.enabled && x.name === "bcCancerScreening"
+    );
+
+    const diagnosticImagingEnabled = featureToggle?.datasets.some(
+        (x) => x.enabled && x.name === "diagnosticImaging"
+    );
+
+    const dependentBcCancerScreeningEnabled =
+        featureToggle.dependents.enabled &&
+        featureToggle.dependents.datasets.some(
             (x) => x.enabled && x.name === "bcCancerScreening"
         );
 
-        const diagnosticImagingEnabled = featureToggle?.datasets.some(
+    const dependentDiagnosticImagingEnabled =
+        featureToggle.dependents.enabled &&
+        featureToggle.dependents.datasets.some(
             (x) => x.enabled && x.name === "diagnosticImaging"
         );
 
-        const dependentBcCancerScreeningEnabled =
-            featureToggle?.dependents.enabled &&
-            featureToggle?.dependents.datasets.some(
-                (x) => x.enabled && x.name === "bcCancerScreening"
-            );
+    const dependentBcCancerScreeningNotDefined =
+        featureToggle.dependents.enabled &&
+        !featureToggle.dependents.datasets.some(
+            (x) => x.name === "bcCancerScreening" && x.enabled
+        );
 
-        const dependentDiagnosticImagingEnabled =
-            featureToggle?.dependents.enabled &&
-            featureToggle?.dependents.datasets.some(
-                (x) => x.enabled && x.name === "diagnosticImaging"
-            );
+    const dependentDiagnosticImagingNotDefined =
+        featureToggle.dependents.enabled &&
+        !featureToggle.dependents.datasets.some(
+            (x) => x.name === "diagnosticImaging" && x.enabled
+        );
 
-        const dependentBcCancerScreeningNotDefined =
-            featureToggle?.dependents.enabled &&
-            !featureToggle?.dependents.datasets.some(
-                (x) => x.name === "bcCancerScreening" && x.enabled
-            );
-
-        const dependentDiagnosticImagingNotDefined =
-            featureToggle?.dependents.enabled &&
-            !featureToggle?.dependents.datasets.some(
-                (x) => x.name === "diagnosticImaging" && x.enabled
-            );
-
-        if (
-            (((bcCancerScreeningEnabled || dependentBcCancerScreeningEnabled) &&
-                !bcCancerScreeningBlocked) ||
-                ((diagnosticImagingEnabled ||
-                    dependentDiagnosticImagingEnabled) &&
-                    !diagnosticImagingBlocked)) &&
-            isTimelineOrDependentsTimeline(path)
-        ) {
-            cy.log("Wait on patient data.");
-            cy.wait("@getPatientData", { timeout: defaultTimeout });
-        }
+    if (
+        (((bcCancerScreeningEnabled || dependentBcCancerScreeningEnabled) &&
+            !bcCancerScreeningBlocked) ||
+            ((diagnosticImagingEnabled || dependentDiagnosticImagingEnabled) &&
+                !diagnosticImagingBlocked)) &&
+        isTimelineOrDependentsTimeline(path)
+    ) {
+        cy.log("Wait on patient data.");
+        cy.wait("@getPatientData", { timeout: defaultTimeout });
     }
 }
 
@@ -247,38 +226,27 @@ function waitForServices(featureToggle, path, blockedDataSources) {
         checkHealthConnectRegistryBlocked(blockedDataSources);
 
     const organDonorRegistrationEnabled =
-        featureToggle?.services &&
-        featureToggle?.services.enabled &&
-        featureToggle?.datasets.some(
+        featureToggle.services &&
+        featureToggle.services.enabled &&
+        featureToggle.datasets.some(
             (x) => x.enabled && x.name === "organDonorRegistration"
         );
 
     const healthConnectRegisgtryEnabled =
-        featureToggle?.services &&
-        featureToggle?.services.enabled &&
-        featureToggle?.datasets.some(
+        featureToggle.services &&
+        featureToggle.services.enabled &&
+        featureToggle.datasets.some(
             (x) => x.enabled && x.name === "healthConnectRegistry"
         );
 
-    if (featureToggle === undefined) {
-        if (
-            !organDonorRegistrationBlocked &&
+    if (
+        (organDonorRegistrationBlocked && !organDonorRegistrationBlocked) ||
+        (healthConnectRegisgtryEnabled &&
             !healthConnectRegisgtryBlocked &&
-            path === "/services"
-        ) {
-            cy.log("Wait on patient data.");
-            cy.wait("@getPatientData", { timeout: defaultTimeout });
-        }
-    } else {
-        if (
-            (organDonorRegistrationBlocked && !organDonorRegistrationBlocked) ||
-            (healthConnectRegisgtryEnabled &&
-                !healthConnectRegisgtryBlocked &&
-                path === "/services")
-        ) {
-            cy.log("Wait on patient data.");
-            cy.wait("@getPatientData", { timeout: defaultTimeout });
-        }
+            path === "/services")
+    ) {
+        cy.log("Wait on patient data.");
+        cy.wait("@getPatientData", { timeout: defaultTimeout });
     }
 }
 
@@ -291,7 +259,6 @@ function checkBcCancerScreeningBlocked(blockedDataSources) {
 }
 
 function checkClinicalDocumentBlocked(blockedDataSources) {
-    cy.log("Check clinical doc: " + JSON.stringify(blockedDataSources));
     return (
         blockedDataSources &&
         Array.isArray(blockedDataSources) &&
