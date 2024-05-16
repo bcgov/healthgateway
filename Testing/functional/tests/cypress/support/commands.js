@@ -224,16 +224,25 @@ Cypress.Commands.add(
                 setupStandardAliases();
 
                 cy.log(`Visit path: ${path}`);
-                cy.visit(path, { timeout: 60000 });
 
                 if (configSettings === null) {
                     cy.readConfig().then((config) => {
-                        cy.log(`Read config: ${JSON.stringify(config)}`);
+                        cy.visit(path, { timeout: 60000 });
+
+                        cy.log(
+                            `Config in session was null so usiing config from Read config: ${JSON.stringify(
+                                config
+                            )}`
+                        );
+
                         // Make sure to wait on busy endpoint calls
                         waitForInitialDataLoad(username, config, path);
                     });
                 } else {
-                    cy.log(`Session config: ${JSON.stringify(configSettings)}`);
+                    cy.visit(path, { timeout: 60000 });
+
+                    cy.log(`Use config from session: ${configSettings}`);
+
                     // Make sure to wait on busy endpoint calls
                     waitForInitialDataLoad(
                         username,

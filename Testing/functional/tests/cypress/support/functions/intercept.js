@@ -217,10 +217,7 @@ function waitForNotification(featureToggle) {
         `waitForNotification called - enabled: ${featureToggle.notificationCentre.enabled}`
     );
 
-    if (
-        featureToggle.notificationCentre &&
-        featureToggle.notificationCentre.enabled
-    ) {
+    if (featureToggle.notificationCentre.enabled) {
         cy.log("Wait on notification.");
         cy.wait("@getNotification", { timeout: defaultTimeout });
     }
@@ -245,9 +242,10 @@ function waitForClinicalDocument(featureToggle, path, blockedDataSources) {
     );
 
     if (
-        (clinicalDocumentEnabled || dependentClinicalDocumentEnabled) &&
-        !clinicalDocumentBlocked &&
-        isTimelineOrDependentsTimeline(path)
+        (!clinicalDocumentBlocked &&
+            clinicalDocumentEnabled &&
+            isTimeline(path)) ||
+        (isDependentsTimeline(path) && dependentClinicalDocumentEnabled)
     ) {
         cy.log("Wait on clinical document.");
         cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
@@ -277,9 +275,10 @@ function waitForPatientDataForBcCancerScreening(
     );
 
     if (
-        (bcCancerScreeningEnabled || dependentBcCancerScreeningEnabled) &&
-        !bcCancerScreeningBlocked &&
-        isTimelineOrDependentsTimeline(path)
+        (!bcCancerScreeningBlocked &&
+            bcCancerScreeningEnabled &&
+            isTimeline(path)) ||
+        (isDependentsTimeline(path) && dependentBcCancerScreeningEnabled)
     ) {
         cy.log("Wait on patient data for bc cancer screening.");
         cy.wait("@getPatientDataForBcCancerScreening", {
@@ -311,9 +310,10 @@ function waitForPatientDataForDiagnosticImaging(
     );
 
     if (
-        (diagnosticImagingEnabled || dependentDiagnosticImagingEnabled) &&
-        !diagnosticImagingBlocked &&
-        isTimelineOrDependentsTimeline(path)
+        (!diagnosticImagingBlocked &&
+            diagnosticImagingEnabled &&
+            isTimeline(path)) ||
+        (isDependentsTimeline(path) && dependentDiagnosticImagingEnabled)
     ) {
         cy.log("Wait on patient data for diagnostic imaging.");
         cy.wait("@getPatientDataForDiagnosticImaging", {
@@ -355,7 +355,6 @@ function waitForOrganDonorRegistratonStatusService(
 
 function checkBcCancerScreeningBlocked(blockedDataSources) {
     return (
-        blockedDataSources &&
         Array.isArray(blockedDataSources) &&
         blockedDataSources.includes("BcCancerScreening")
     );
@@ -363,7 +362,6 @@ function checkBcCancerScreeningBlocked(blockedDataSources) {
 
 function checkClinicalDocumentBlocked(blockedDataSources) {
     return (
-        blockedDataSources &&
         Array.isArray(blockedDataSources) &&
         blockedDataSources.includes("ClinicalDocument")
     );
@@ -371,7 +369,6 @@ function checkClinicalDocumentBlocked(blockedDataSources) {
 
 function checkDiagnosticImagingBlocked(blockedDataSources) {
     return (
-        blockedDataSources &&
         Array.isArray(blockedDataSources) &&
         blockedDataSources.includes("DiagnosticImaging")
     );
@@ -379,23 +376,15 @@ function checkDiagnosticImagingBlocked(blockedDataSources) {
 
 function checkOrganDonorRegistrationBlocked(blockedDataSources) {
     return (
-        blockedDataSources &&
         Array.isArray(blockedDataSources) &&
         blockedDataSources.includes("OrganDonorRegistration")
     );
 }
 
-function checkHealthConnectRegistryBlocked(blockedDataSources) {
-    return (
-        blockedDataSources &&
-        Array.isArray(blockedDataSources) &&
-        blockedDataSources.includes("HelathConnectRegistry")
-    );
+function isDependentsTimeline(path) {
+    return path.startsWith("/dependents/") && path.endsWith("/timeline");
 }
 
-function isTimelineOrDependentsTimeline(path) {
-    return (
-        path === "/timeline" ||
-        (path.startsWith("/dependents/") && path.endsWith("/timeline"))
-    );
+function isTimeline(path) {
+    return path === "/timeline";
 }
