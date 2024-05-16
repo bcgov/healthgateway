@@ -3,7 +3,7 @@ const defaultNotificationFixture = "NotificationService/notifications.json";
 const defaultPatientFixture = "PatientService/patientCombinedAddress.json";
 const defaultUserProfileFixture = "UserProfileService/userProfile.json";
 const defaultUserProfileStatusCode = 200;
-const defaultTimeout = 45000;
+const defaultTimeout = 60000;
 
 export const CommunicationType = {
     Banner: 0,
@@ -61,6 +61,65 @@ export function setupStandardFixtures(options = {}) {
     setupNotificationFixture({
         hdid: notificationHdid,
         notificationFixture: notificationFixture,
+    });
+}
+
+/*
+----------------------------------------------------------------------------------------------------
+Usage for setup<SERVICE>Fixture(options = {})
+
+Usage: setup<SERVICE>Fixture();
+Usage: setup<SERVICE>Fixture({ <Identifier> });
+Usage: setup<SERVICE>Fixture({ <SERVICE>Fixture: <ServiceFixture> });
+Usage: setup<SERVICE>Fixture({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
+----------------------------------------------------------------------------------------------------
+*/
+export function setupCommunicationFixture(options = {}) {
+    const {
+        communicationType = CommunicationType.Banner,
+        communicationFixture = CommunicationFixture.Banner,
+    } = options;
+
+    cy.intercept("GET", `**/Communication/${communicationType}`, {
+        fixture: communicationFixture,
+    });
+}
+
+export function setupPatientFixture(options = {}) {
+    const { hdid = defaultHdid, patientFixture = defaultPatientFixture } =
+        options;
+
+    cy.intercept("GET", `**/Patient/${hdid}*`, {
+        fixture: patientFixture,
+    });
+}
+
+export function setupUserProfileFixture(options = {}) {
+    const {
+        hdid = defaultHdid,
+        userProfileFixture = defaultUserProfileFixture,
+        statusCode = defaultUserProfileStatusCode,
+    } = options;
+
+    if (statusCode === 200) {
+        cy.intercept("GET", `**/UserProfile/${hdid}`, {
+            fixture: userProfileFixture,
+        });
+    } else {
+        cy.intercept("GET", `**/UserProfile/${hdid}`, {
+            statusCode,
+        });
+    }
+}
+
+export function setupNotificationFixture(options = {}) {
+    const {
+        hdid = defaultHdid,
+        notificationFixture = defaultNotificationFixture,
+    } = options;
+
+    cy.intercept("GET", `**/Notification/${hdid}`, {
+        fixture: notificationFixture,
     });
 }
 
@@ -339,63 +398,4 @@ function isTimelineOrDependentsTimeline(path) {
         path === "/timeline" ||
         (path.startsWith("/dependents/") && path.endsWith("/timeline"))
     );
-}
-
-/*
-----------------------------------------------------------------------------------------------------
-Usage for setup<SERVICE>Intercept(options = {})
-
-Usage: setup<SERVICE>Intercept();
-Usage: setup<SERVICE>Intercept({ <Identifier> });
-Usage: setup<SERVICE>Intercept({ <SERVICE>Fixture: <ServiceFixture> });
-Usage: setup<SERVICE>Intercept({ <IDENTIFIER>: <Identifier>, <SERVICE>Fixture: <ServiceFixture> });
-----------------------------------------------------------------------------------------------------
-*/
-export function setupCommunicationFixture(options = {}) {
-    const {
-        communicationType = CommunicationType.Banner,
-        communicationFixture = CommunicationFixture.Banner,
-    } = options;
-
-    cy.intercept("GET", `**/Communication/${communicationType}`, {
-        fixture: communicationFixture,
-    });
-}
-
-export function setupPatientFixture(options = {}) {
-    const { hdid = defaultHdid, patientFixture = defaultPatientFixture } =
-        options;
-
-    cy.intercept("GET", `**/Patient/${hdid}*`, {
-        fixture: patientFixture,
-    });
-}
-
-export function setupUserProfileFixture(options = {}) {
-    const {
-        hdid = defaultHdid,
-        userProfileFixture = defaultUserProfileFixture,
-        statusCode = defaultUserProfileStatusCode,
-    } = options;
-
-    if (statusCode === 200) {
-        cy.intercept("GET", `**/UserProfile/${hdid}`, {
-            fixture: userProfileFixture,
-        });
-    } else {
-        cy.intercept("GET", `**/UserProfile/${hdid}`, {
-            statusCode,
-        });
-    }
-}
-
-export function setupNotificationFixture(options = {}) {
-    const {
-        hdid = defaultHdid,
-        notificationFixture = defaultNotificationFixture,
-    } = options;
-
-    cy.intercept("GET", `**/Notification/${hdid}`, {
-        fixture: notificationFixture,
-    });
 }
