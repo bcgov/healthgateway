@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const notificationIdOne = "f57bcb39-64ca-0a17-5477-92ea7f084fbf";
 const notificationIdTwo = "72c2d6c0-b370-24e6-0b5c-04e42b6511c8";
@@ -20,10 +20,6 @@ describe("Notification Centre", () => {
             },
         });
 
-        cy.intercept("GET", `**/Notification/${HDID}`, {
-            fixture: "NotificationService/notifications.json",
-        });
-
         cy.intercept("DELETE", `**/Notification/${HDID}/*`, {
             statusCode: 200,
         });
@@ -32,7 +28,10 @@ describe("Notification Centre", () => {
             statusCode: 200,
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures({
+            notificationHdid: HDID,
+            notificationFixture: "NotificationService/notifications.json",
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -129,7 +128,7 @@ describe("Notification Badge", () => {
             },
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         // The scheduledDateTimeUtc must be after user profile's last login in lastLoginDateTimes, which is the second entry
         // not the first entry. The first entry is the current login.
@@ -201,7 +200,7 @@ describe("Categorized web alerts", () => {
             fixture: "ImmunizationService/immunization.json",
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

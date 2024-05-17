@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 function toggleServices(enabled = true) {
     cy.configureSettings({
@@ -25,7 +25,7 @@ describe("Menu System when services are enabled", () => {
     beforeEach(() => {
         toggleServices(true);
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
     });
 
     it("Side bar contains services nav link and toggle validated", () => {
@@ -59,7 +59,7 @@ describe("Menu system when services are disabled", () => {
     beforeEach(() => {
         toggleServices(false);
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
     });
     it("Side bar does not contain services nav link when services is disabled", () => {
         cy.configureSettings({

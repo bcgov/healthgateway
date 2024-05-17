@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import { setupStandardIntercepts } from "../../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 function selectCardByDate(date) {
     cy.contains("[data-testid=entryCardDate]", date)
@@ -21,7 +21,7 @@ describe("Medication", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",

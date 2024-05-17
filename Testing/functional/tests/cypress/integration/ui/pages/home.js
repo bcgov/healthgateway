@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const homeUrl = "/home";
 const covid19Url = "/covid19";
@@ -9,7 +9,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
         cy.configureSettings({});
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -29,7 +29,7 @@ describe("Authenticated User - Home Page", () => {
             },
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -44,7 +44,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Link to COVID-19 page", () => {
         cy.configureSettings({});
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -63,7 +63,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Link to timeline page", () => {
         cy.configureSettings({});
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -82,7 +82,7 @@ describe("Authenticated User - Home Page", () => {
     it("Home - Federal Card button disabled", () => {
         cy.configureSettings({});
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -103,7 +103,7 @@ describe("Authenticated User - Home Page", () => {
                 },
             ],
         });
-        setupStandardIntercepts({
+        setupStandardFixtures({
             userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
         });
 

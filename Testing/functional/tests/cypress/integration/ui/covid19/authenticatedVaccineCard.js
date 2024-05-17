@@ -1,11 +1,11 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const covid19Url = "/covid19";
 
 describe("Authenticated Vaccine Card Downloads", () => {
     beforeEach(() => {
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             fixture:

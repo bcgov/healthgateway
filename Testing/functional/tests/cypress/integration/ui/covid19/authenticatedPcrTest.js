@@ -3,7 +3,7 @@ import {
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const pcrTestUrl = "/pcrtest";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -23,7 +23,7 @@ const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.configureSettings({
             covid19: {
@@ -104,7 +104,7 @@ describe("Authenticated Pcr Test Registration with Error", () => {
             },
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -149,7 +149,7 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
             },
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
