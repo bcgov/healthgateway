@@ -482,7 +482,8 @@ describe("dependents", () => {
         });
     });
 
-    it("Validate Lab Results - Verify result and download", () => {
+    // test should be skipped until PHSA fixes test data for this dependent
+    it.skip("Validate Lab Results - Verify result and download", () => {
         cy.log("Validating Lab Results Tab - Verify result and download");
 
         cy.get(
@@ -646,6 +647,17 @@ describe("CRUD Operations", () => {
 
         cy.log("Adding same dependent as another user");
 
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.protected.username"),
             Cypress.env("keycloak.password"),

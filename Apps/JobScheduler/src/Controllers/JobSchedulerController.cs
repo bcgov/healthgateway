@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Controllers
 {
-    using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Http;
@@ -25,6 +24,7 @@ namespace HealthGateway.JobScheduler.Controllers
     /// <summary>
     /// The JobSchedulerController controller enabling secure web access to JobScheduler.
     /// </summary>
+    [Route("/")]
     public class JobSchedulerController : Controller
     {
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -45,7 +45,7 @@ namespace HealthGateway.JobScheduler.Controllers
         /// Login Challenge.
         /// </summary>
         /// <returns>EmptyResult if authenticated; otherwise a ChallengeResult.</returns>
-        [HttpGet(AuthorizationConstants.LoginPath)]
+        [HttpGet("login")]
         public IActionResult Login()
         {
 #pragma warning disable CA1303 //Disable literals
@@ -71,7 +71,7 @@ namespace HealthGateway.JobScheduler.Controllers
         /// </summary>
         /// <returns>Redirect to main page.</returns>
 #pragma warning disable CA1822 //  does not access instance data and can be marked as static
-        [HttpGet(AuthorizationConstants.LogoutPath)]
+        [HttpGet("logout")]
         public IActionResult Logout()
         {
             return new SignOutResult(

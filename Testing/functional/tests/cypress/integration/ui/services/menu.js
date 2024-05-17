@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 function toggleServices(enabled = true) {
     cy.configureSettings({
@@ -23,6 +24,8 @@ function login(isMobile) {
 describe("Menu System when services are enabled", () => {
     beforeEach(() => {
         toggleServices(true);
+
+        setupStandardFixtures();
     });
 
     it("Side bar contains services nav link and toggle validated", () => {
@@ -55,6 +58,8 @@ describe("Menu System when services are enabled", () => {
 describe("Menu system when services are disabled", () => {
     beforeEach(() => {
         toggleServices(false);
+
+        setupStandardFixtures();
     });
     it("Side bar does not contain services nav link when services is disabled", () => {
         cy.configureSettings({

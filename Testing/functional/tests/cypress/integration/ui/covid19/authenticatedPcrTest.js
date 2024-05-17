@@ -1,8 +1,9 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 import {
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const pcrTestUrl = "/pcrtest";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -22,6 +23,8 @@ const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
+        setupStandardFixtures();
+
         cy.configureSettings({
             covid19: {
                 pcrTestEnabled: true,
@@ -100,6 +103,9 @@ describe("Authenticated Pcr Test Registration with Error", () => {
                 pcrTestEnabled: true,
             },
         });
+
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -142,6 +148,9 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
                 pcrTestEnabled: true,
             },
         });
+
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

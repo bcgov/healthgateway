@@ -1,4 +1,6 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
+
 const profilePath = "/profile";
 const homePath = "/home";
 
@@ -15,6 +17,8 @@ describe("Bookmark", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
     });
 
     it("Redirect to UserProfile", () => {

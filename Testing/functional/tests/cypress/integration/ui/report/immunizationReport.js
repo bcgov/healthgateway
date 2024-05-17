@@ -1,4 +1,6 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
+
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Immunization History Report", () => {
@@ -28,6 +30,9 @@ describe("Immunization History Report", () => {
             }
             isLoading = !isLoading;
         });
+
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -111,6 +116,9 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

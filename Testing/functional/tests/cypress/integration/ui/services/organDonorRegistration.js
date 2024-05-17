@@ -1,16 +1,9 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("Services - Organ Donor Registration Card", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services"
-        );
-    });
-
-    it("Should by default handle an unregistered patient", () => {
+        setupStandardFixtures();
         cy.configureSettings({
             services: {
                 enabled: true,
@@ -22,13 +15,22 @@ describe("Services - Organ Donor Registration Card", () => {
                 ],
             },
         });
+    });
 
+    it("Should by default handle an unregistered patient", () => {
         cy.intercept(
             "GET",
             `**/PatientData/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*OrganDonorRegistrationStatus*`,
             {
                 fixture: "PatientData/donorRegistrationNotRegistered.json",
             }
+        );
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/services"
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
@@ -41,24 +43,19 @@ describe("Services - Organ Donor Registration Card", () => {
     });
 
     it("Should handle a Registered patient", () => {
-        cy.configureSettings({
-            services: {
-                enabled: true,
-                services: [
-                    {
-                        name: "organDonorRegistration",
-                        enabled: true,
-                    },
-                ],
-            },
-        });
-
         cy.intercept(
             "GET",
             `**/PatientData/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*OrganDonorRegistrationStatus*`,
             {
                 fixture: "PatientData/donorRegistrationRegistered.json",
             }
+        );
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/services"
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
@@ -86,20 +83,11 @@ describe("Services - Organ Donor Registration Card", () => {
 });
 
 describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () => {
-    beforeEach(() => {
-        cy.intercept("GET", `**/UserProfile/*`, {
-            fixture:
+    it("Should not show Organ Donor Registration Card", () => {
+        setupStandardFixtures({
+            userProfileFixture:
                 "UserProfileService/userProfileOrganDonorRegistrationDatasetBlocked.json",
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services"
-        );
-    });
-
-    it("Should not show Organ Donor Registration Card", () => {
         cy.configureSettings({
             services: {
                 enabled: true,
@@ -111,6 +99,13 @@ describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () =>
                 ],
             },
         });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/services"
+        );
 
         cy.get("[data-testid=organ-donor-registration-card]").should(
             "not.exist"

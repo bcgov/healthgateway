@@ -1,8 +1,12 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
+
 const covid19Url = "/covid19";
 
 describe("Authenticated Vaccine Card Downloads", () => {
     beforeEach(() => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             fixture:
                 "ImmunizationService/authenticatedVaccinationStatusLoaded.json",

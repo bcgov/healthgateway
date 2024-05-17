@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("Banner Error", () => {
     beforeEach(() => {
@@ -13,6 +14,8 @@ describe("Banner Error", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

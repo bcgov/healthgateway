@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("User Email Verification", () => {
     beforeEach(() => {
@@ -13,11 +14,12 @@ describe("User Email Verification", () => {
         cy.intercept("GET", `${baseUrl}/email/validate/expired`, {
             fixture: "WebClientService/EmailValidation/expired.json",
         });
-        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
         cy.configureSettings({});
     });
 
     it("Check verified email invite", () => {
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -27,13 +29,12 @@ describe("User Email Verification", () => {
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=verifiedInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]").click();
-        cy.wait("@getUserProfile").then((interception) => {
-            assert.equal(interception.response.statusCode, 200);
-        });
         cy.url().should("include", "/home");
     });
 
     it("Check already verified email invite", () => {
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -47,6 +48,8 @@ describe("User Email Verification", () => {
     });
 
     it("Check expired email invite", () => {
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

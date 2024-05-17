@@ -1,8 +1,18 @@
 {
     "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-    "personalhealthnumber": "9735353315",
-    "firstname": "BONNET",
-    "lastname": "PROTERVITY",
+    "personalHealthNumber": "9735353315",
+    "commonName": {
+        "givenName": "BONNET",
+        "surname": "PROTERVITY"
+    },
+    "legalName": {
+        "givenName": "BONNET",
+        "surname": "PROTERVITY"
+    },
+    "preferredName": {
+        "givenName": "BONNET",
+        "surname": "PROTERVITY"
+    },
     "birthdate": "1967-06-02",
     "gender": "Female",
     "physicalAddress": {
@@ -17,6 +27,7 @@
         "city": "CHATHAM",
         "state": "BC",
         "postalCode": "V0G8B8",
-        "country": "CA"
-    }
+        "country": ""
+    },
+    "responseCode": ""
 }

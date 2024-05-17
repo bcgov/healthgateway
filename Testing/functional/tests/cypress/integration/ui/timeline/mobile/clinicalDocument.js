@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../../support/constants");
+import { AuthMethod } from "../../../../support/constants";
+import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 describe("Clinical Document", () => {
     beforeEach(() => {
@@ -20,6 +21,8 @@ describe("Clinical Document", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
 
         cy.viewport("iphone-6");
         cy.login(

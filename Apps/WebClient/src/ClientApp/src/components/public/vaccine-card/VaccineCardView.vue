@@ -381,7 +381,6 @@ watch(vaccineRecord, (value) => {
                     class="border-opacity-100 mt-4 mb-6"
                     color="accent"
                     thickness="3"
-                    role="presentation"
                 />
                 <p class="mb-6">
                     To get your BC Vaccine Card and Federal Proof of
@@ -492,7 +491,7 @@ watch(vaccineRecord, (value) => {
                 </InfoPopoverComponent>
                 <div class="text-center">
                     <v-row class="my-4 no-gutters d-flex align-center">
-                        <v-col><v-divider role="presentation" /></v-col>
+                        <v-col><v-divider /></v-col>
                         <v-col cols="auto">
                             <h2
                                 class="text-h6 font-weight-bold text-medium-emphasis"
@@ -500,7 +499,7 @@ watch(vaccineRecord, (value) => {
                                 OR
                             </h2>
                         </v-col>
-                        <v-col><v-divider role="presentation" /></v-col>
+                        <v-col><v-divider /></v-col>
                     </v-row>
                     <p>Already a Health Gateway user?</p>
                     <HgButtonComponent

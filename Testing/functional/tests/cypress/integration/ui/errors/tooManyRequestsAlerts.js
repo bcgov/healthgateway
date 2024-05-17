@@ -1,4 +1,5 @@
-const { AuthMethod, monthNames } = require("../../../support/constants");
+import { AuthMethod, monthNames } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const vaccineCardUrl = "/vaccinecard";
 const dependentHdid = "645645767756756767";
@@ -33,6 +34,8 @@ function populateDatePicker(selector, dateValue) {
 
 describe("Authenticated Vaccine Card Downloads", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             statusCode: 429,
         });
@@ -55,6 +58,13 @@ describe("Authenticated Vaccine Card Downloads", () => {
     });
 
     it("Save As PDF Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
+            fixture:
+                "ImmunizationService/authenticatedVaccinationStatusLoaded.json",
+        });
+
         cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*", {
             statusCode: 429,
         });
@@ -170,14 +180,8 @@ describe("Landing Page - Too Many Requests", () => {
 
     it("Too Many Requests Banner Doesn't Appear on 200 Response", () => {
         cy.configureSettings({});
-        cy.intercept("GET", "**/Communication/*", { statusCode: 200 }).as(
-            "getCommunication"
-        );
+        cy.intercept("GET", "**/Communication/*", { statusCode: 200 });
         cy.visit("/");
-
-        // wait for both Communication calls to complete
-        cy.wait("@getCommunication");
-        cy.wait("@getCommunication");
 
         cy.contains(
             "[data-testid=communicationBanner]",
@@ -188,6 +192,8 @@ describe("Landing Page - Too Many Requests", () => {
 
 describe("Immunization", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Immunization?hdid*", {
             statusCode: 429,
         });
@@ -211,6 +217,8 @@ describe("Immunization", () => {
 
 describe("Encounter", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Encounter/*", {
             statusCode: 429,
         });
@@ -234,6 +242,8 @@ describe("Encounter", () => {
 
 describe("Hospital Visits", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/HospitalVisit/*", {
             statusCode: 429,
         });
@@ -257,6 +267,8 @@ describe("Hospital Visits", () => {
 
 describe("Medication Request", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/MedicationRequest/*", {
             statusCode: 429,
         });
@@ -280,6 +292,8 @@ describe("Medication Request", () => {
 
 describe("Mobile - COVID-19 Orders", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             statusCode: 429,
         });
@@ -304,6 +318,8 @@ describe("Mobile - COVID-19 Orders", () => {
 
 describe("Mobile - Immunization: Unsuccessful Response", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Immunization?hdid*", {
             statusCode: 429,
         });
@@ -328,6 +344,8 @@ describe("Mobile - Immunization: Unsuccessful Response", () => {
 
 describe("Mobile - Encounter", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Encounter/*", {
             statusCode: 429,
         });
@@ -352,6 +370,8 @@ describe("Mobile - Encounter", () => {
 
 describe("Mobile - Hospital Visits", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/HospitalVisit/*", {
             statusCode: 429,
         });
@@ -376,6 +396,8 @@ describe("Mobile - Hospital Visits", () => {
 
 describe("Mobile - Laboratory Orders", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             statusCode: 429,
         });
@@ -400,6 +422,8 @@ describe("Mobile - Laboratory Orders", () => {
 
 describe("Mobile - Laboratory Orders Report Download", () => {
     beforeEach(() => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
@@ -482,6 +506,8 @@ describe("Mobile - Laboratory Orders Report Download", () => {
 
 describe("Mobile - Covid19 Orders Report Download", () => {
     beforeEach(() => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
@@ -564,9 +590,9 @@ describe("Mobile - Covid19 Orders Report Download", () => {
 describe("User Profile", () => {
     beforeEach(() => {
         cy.configureSettings({});
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
-        });
+
+        setupStandardFixtures();
+
         cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
             statusCode: 200,
             body: true,
@@ -597,9 +623,6 @@ describe("User Profile", () => {
     it("Verify SMS number: Too Many Requests Error", () => {
         cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
             statusCode: 429,
-        });
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=verifySMSBtn]")
             .should("be.visible")
@@ -639,6 +662,8 @@ describe("Dependents", () => {
     };
 
     beforeEach(() => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
@@ -716,6 +741,8 @@ describe("Dependents", () => {
 
 describe("Dependent - Immunizaation History Tab - report download error handling", () => {
     beforeEach(() => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
@@ -816,6 +843,12 @@ describe("Dependent - Immunizaation History Tab - report download error handling
 
 describe("Comments", () => {
     it("Add Comment: Too Many Requests Error", () => {
+        setupStandardFixtures();
+
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
         });
@@ -854,6 +887,12 @@ describe("Comments", () => {
 
 describe("Notes", () => {
     it("Add Note: Too Many Requests Error", () => {
+        setupStandardFixtures();
+
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "NoteService/notes-no-records.json",
+        });
+
         cy.intercept("POST", "**/Note/*", {
             statusCode: 429,
         });
@@ -885,6 +924,8 @@ describe("Notes", () => {
     });
 
     it("Edit Note: Too Many Requests Error", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/notes-test-note.json",
         });
@@ -916,6 +957,8 @@ describe("Notes", () => {
     });
 
     it("Delete Note: Too Many Requests Error", () => {
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/notes-test-note.json",
         });
@@ -946,6 +989,7 @@ describe("Notes", () => {
 
 describe("Export Records - Immunizaation - report download error handling", () => {
     beforeEach(() => {
+        setupStandardFixtures();
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
@@ -972,21 +1016,11 @@ describe("Export Records - Immunizaation - report download error handling", () =
 
         cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-        // Click download button
-        cy.get("[data-testid=export-record-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
-
-        // Select and click first option
-        cy.document()
-            .find(`[data-testid=export-record-menu] .v-list-item`)
-            .first()
-            .click();
-
-        // Confirmation modal
+        cy.get("[data-testid=export-record-btn]").click();
+        cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
 
@@ -997,21 +1031,11 @@ describe("Export Records - Immunizaation - report download error handling", () =
 
         cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-        // Click download button
-        cy.get("[data-testid=export-record-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
-
-        // Select and click first option
-        cy.document()
-            .find(`[data-testid=export-record-menu] .v-list-item`)
-            .first()
-            .click();
-
-        // Confirmation modal
+        cy.get("[data-testid=export-record-btn]").click();
+        cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
         cy.get("[data-testid=errorBanner]").should("not.be.empty");
     });
 });

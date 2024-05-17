@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const startDateId = "[data-testid=start-date-input] input";
 const endDateId = "[data-testid=end-date-input] input";
@@ -49,6 +50,9 @@ describe("Report Filtering", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
+
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",
         });

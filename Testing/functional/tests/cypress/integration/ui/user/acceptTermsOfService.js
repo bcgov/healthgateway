@@ -1,15 +1,25 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
+
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Need to accept terms of service", () => {
     beforeEach(() => {
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfileAcceptTos.json",
+        cy.configureSettings({});
+        setupStandardFixtures({
+            userProfileHdid: HDID,
+            userProfileFixture: "UserProfileService/userProfileAcceptTos.json",
         });
+
+        cy.intercept("GET", "**/UserProfile/termsofservice", {
+            fixture: "UserProfileService/termsOfService.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.accept.tos.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/home"
         );
     });
 
@@ -30,9 +40,7 @@ describe("Need to accept terms of service", () => {
 
 describe("Does not need to accept terms of service", () => {
     beforeEach(() => {
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
-        });
+        setupStandardFixtures();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

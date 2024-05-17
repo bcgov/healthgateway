@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("BC Cancer Screening cards", () => {
     function testCard(cardTitle, cardButtonText) {
@@ -27,6 +28,9 @@ describe("BC Cancer Screening cards", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

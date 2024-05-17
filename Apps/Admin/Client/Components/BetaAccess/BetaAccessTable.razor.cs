@@ -22,8 +22,6 @@ namespace HealthGateway.Admin.Client.Components.BetaAccess
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.Extensions.Logging;
-    using MudBlazor;
 
     /// <summary>
     /// Backing logic for the BetaAccessTable component.
@@ -46,15 +44,6 @@ namespace HealthGateway.Admin.Client.Components.BetaAccess
 
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
-
-        [Inject]
-        private IState<BetaAccessState> BetaFeatureState { get; set; } = default!;
-
-        [Inject]
-        private IDialogService Dialog { get; set; } = default!;
-
-        [Inject]
-        private ILogger<BetaAccessTable> Logger { get; set; } = default!;
 
         private void HandleToggleAccess(UserBetaAccess row, BetaFeature betaFeature, bool value)
         {

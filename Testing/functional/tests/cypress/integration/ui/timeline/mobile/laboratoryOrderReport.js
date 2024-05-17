@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../../support/constants");
+import { AuthMethod } from "../../../../support/constants";
+import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 describe("Laboratory Orders - Report", () => {
     beforeEach(() => {
@@ -20,6 +21,9 @@ describe("Laboratory Orders - Report", () => {
                 },
             ],
         });
+
+        setupStandardFixtures();
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
