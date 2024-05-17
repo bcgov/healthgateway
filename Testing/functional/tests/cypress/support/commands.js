@@ -230,7 +230,7 @@ Cypress.Commands.add(
                         cy.visit(path, { timeout: 60000 });
 
                         cy.log(
-                            `Config in session was null so usiing config from Read config: ${JSON.stringify(
+                            `Config in session was null so fetched actual config: ${JSON.stringify(
                                 config
                             )}`
                         );
