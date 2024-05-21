@@ -1,6 +1,6 @@
 resource "keycloak_openid_client" "hg_mobile_android_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = var.client_hg_mobile_android.id
+  client_id                    = var.client_hg_mobile.id
   name                         = "Health Gateway Mobile Android - ${var.environment.name}"
   description                  = "Health Gateway Mobile Android applications"
   enabled                      = true
