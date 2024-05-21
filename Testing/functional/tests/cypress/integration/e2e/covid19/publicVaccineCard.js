@@ -13,7 +13,7 @@ const fullyVaccinatedDovDay = "20";
 
 function enterVaccineCardPHN(phn) {
     cy.get("[data-testid=phnInput] input")
-        .should("be.visible", "be.enabled")
+        .should("be.enabled")
         .clear()
         .type(phn);
 }
