@@ -1208,18 +1208,18 @@ namespace HealthGateway.Database.Context
                         UserLoginClientCode = UserLoginClientType.Android,
                         Description = "Code for a login from the HG Android mobile app",
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = this.DefaultSeedDate,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = this.DefaultSeedDate,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     },
                     new UserLoginClientTypeCode
                     {
                         UserLoginClientCode = UserLoginClientType.Ios,
                         Description = "Code for a login from the HG iOS mobile app",
                         CreatedBy = UserId.DefaultUser,
-                        CreatedDateTime = this.DefaultSeedDate,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
                         UpdatedBy = UserId.DefaultUser,
-                        UpdatedDateTime = this.DefaultSeedDate,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     },
                     new UserLoginClientTypeCode
                     {

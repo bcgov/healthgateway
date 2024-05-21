@@ -3451,20 +3451,20 @@ namespace HealthGateway.Database.Migrations
                         {
                             UserLoginClientCode = "Android",
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Code for a login from the HG Android mobile app",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
                         },
                         new
                         {
                             UserLoginClientCode = "iOS",
                             CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Code for a login from the HG iOS mobile app",
                             UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
                         },
                         new
