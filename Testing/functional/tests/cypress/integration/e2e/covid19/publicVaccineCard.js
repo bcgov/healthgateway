@@ -12,10 +12,7 @@ const fullyVaccinatedDovMonth = "JAN";
 const fullyVaccinatedDovDay = "20";
 
 function enterVaccineCardPHN(phn) {
-    cy.get("[data-testid=phnInput] input")
-        .should("be.visible", "be.enabled")
-        .clear()
-        .type(phn);
+    cy.get("[data-testid=phnInput] input").clear().type(phn);
 }
 
 function clickVaccineCardEnterButton() {
