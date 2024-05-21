@@ -76,6 +76,8 @@ namespace HealthGateway.WebClientTests.Services
                     new Uri("https://loginproxy.gov.bc.ca/auth/realms/health-gateway-gold"),
                     "bcsc-mobile",
                     "hg-mobile",
+                    "hg-mobile-android",
+                    "hg-mobile-ios",
                     "myhealthbc://*"),
                 2)
             {

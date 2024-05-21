@@ -209,6 +209,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         [Theory]
         [InlineData("hg", UserLoginClientType.Web)]
         [InlineData("hg-mobile", UserLoginClientType.Mobile)]
+        [InlineData("hg-mobile-android", UserLoginClientType.Android)]
+        [InlineData("hg-mobile-ios", UserLoginClientType.Ios)]
         [InlineData("should-be-null", null)]
         public void ShouldBeAbleToDetermineLoginClientType(string clientAzp, UserLoginClientType? clientType)
         {
