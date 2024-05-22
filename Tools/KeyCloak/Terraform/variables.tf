@@ -130,6 +130,20 @@ variable "client_hg_mobile" {
   description = "HealthGateway mobile client configuration"
 }
 
+variable "client_hg_mobile_android" {
+  type = object({
+    id              = optional(string, "hg-mobile-android")
+  })
+  description = "HealthGateway mobile android client configuration"
+}
+
+variable "client_hg_mobile_ios" {
+  type = object({
+    id              = optional(string, "hg-mobile-ios")
+  })
+  description = "HealthGateway mobile ios client configuration"
+}
+
 variable "client_pcare" {
   type = object({
     id              = optional(string, "pcare")

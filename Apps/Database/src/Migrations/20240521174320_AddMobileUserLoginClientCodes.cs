@@ -36,8 +36,8 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "UserLoginClientCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { "Android", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Code for a login from the HG Android mobile app", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { "iOS", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Code for a login from the HG iOS mobile app", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { "Android", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Code for a login from the HG Android mobile app", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { "iOS", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Code for a login from the HG iOS mobile app", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) }
                 });
         }
 
