@@ -1,12 +1,12 @@
 @page "/covid-19-treatment-assessment"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Support},{Roles.Admin}")]
+@using HealthGateway.Admin.Client.Components.Support
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Admin.Common.Constants
 @using HealthGateway.Common.Ui.Constants
 @using System.Globalization
-@using HealthGateway.Admin.Client.Components.Support
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin COVID-19 Treatment Assessment</PageTitle>
@@ -171,7 +171,7 @@
             </AssessmentQuestion>
             <AssessmentQuestion
                 Number="7"
-                Title="Have you been diagnosed by a health care provider with a chronic condition or received a letter from Dr. Bonnie Henry stating that you are Clinically Extremely Vulnerable (CEV)?"
+                Title="Have you been diagnosed by a health care provider with a chronic condition such as severe lung disease, diabetes requiring insulin, severe kidney disease, a developmental disability or a genetic blood or metabolic condition?"
                 AdditionalInfo="Citizen has a chronic condition."
                 DisplayAdditionalInfo="@(AssessmentInfo.HasDocumentedChronicCondition)">
                 <AssessmentOptionRadio
@@ -179,22 +179,7 @@
                     IncludeNotSureOption="@true"
                     OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.Yes" />
             </AssessmentQuestion>
-            <AssessmentQuestion Number="8" Title="Do you identify as Indigenous?">
-                <AssessmentOptionRadio
-                    @bind-SelectedOption="Request.IdentifiesIndigenous"
-                    OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.Yes" />
-            </AssessmentQuestion>
-            <AssessmentQuestion
-                Number="9"
-                Title="Are you up to date on your COVID‑19 vaccines?"
-                AdditionalInfo="Citizen has had 3 doses of vaccine for more than 14 days."
-                DisplayAdditionalInfo="@AssessmentInfo.Has3DoseMoreThan14Days">
-                <AssessmentOptionRadio
-                    @bind-SelectedOption="Request.Reports3DosesC19Vaccine"
-                    IncludeNotSureOption="@true"
-                    OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.No" />
-            </AssessmentQuestion>
-            <AssessmentQuestion Number="10" Title="Do you agree to the information being added to your CareConnect electronic health record as part of the process to obtain COVID‑19 treatment? *">
+            <AssessmentQuestion Number="8" Title="Do you agree to the information being added to your CareConnect electronic health record as part of the process to obtain COVID‑19 treatment? *">
                 <AssessmentOptionRadio @bind-SelectedOption="Request.ConsentToSendCc" Validation="@ValidateRequiredOption" />
             </AssessmentQuestion>
             <MudPaper Elevation="0" Class="mt-4 py-4 px-10">

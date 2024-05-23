@@ -150,27 +150,6 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
         cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
     });
 
-    cy.get("[data-testid=assessment-question-8]").within(() => {
-        cy.get("[data-testid=assessment-option-yes]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should(
-            "be.visible"
-        );
-
-        cy.get("[data-testid=assessment-option-no]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
-    });
-
-    cy.get("[data-testid=assessment-question-9]").within(() => {
-        cy.get("[data-testid=assessment-option-yes]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
-        cy.get("[data-testid=assessment-option-no]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=assessment-option-not-sure]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
-    });
-
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
 }
@@ -215,12 +194,6 @@ function validateCovid19TreatmentAssessmentFormRequiredInputs() {
 
     cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=assessment-question-8] div")
-        .contains("Required")
-        .should("not.exist");
-    cy.get("[data-testid=assessment-question-9] div")
-        .contains("Required")
-        .should("not.exist");
-    cy.get("[data-testid=assessment-question-10] div")
         .contains("Required")
         .should("be.visible");
 
@@ -276,13 +249,7 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
         "[data-testid=assessment-question-7] [data-testid=assessment-option-yes]"
     ).click();
     cy.get(
-        "[data-testid=assessment-question-8] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-10] [data-testid=assessment-option-no]"
+        "[data-testid=assessment-question-8] [data-testid=assessment-option-no]"
     ).click();
 
     cy.get("[data-testid=notes-input]")
