@@ -1,3 +1,5 @@
+import "cypress-real-events/support";
+
 // midnight on 2022-07-02, the middle of the year
 const utcDate = new Date(Date.UTC(2022, 7 - 1, 2));
 const localDate = new Date(2022, 7 - 1, 2);
@@ -17,16 +19,28 @@ function getPastDate(daysAgo) {
     return dateString;
 }
 
+function setupAppLoginCountsFixtures(
+    mobileCount = 3,
+    androidCount = 1,
+    iosCount = 1
+) {
+    cy.intercept("GET", "**/Dashboard/AppLoginCounts*", {
+        body: {
+            mobile: mobileCount,
+            android: androidCount,
+            ios: iosCount,
+            web: 4,
+            salesforce: 2,
+        },
+    });
+}
+
 describe("Dashboard", () => {
     beforeEach(() => {
         cy.log(`"Today" is ${utcDate.toISOString()}`);
 
         cy.intercept("GET", "**/Dashboard/AllTimeCounts*", {
-            body: {
-                registeredUsers: 6,
-                dependents: 2,
-                closedAccounts: 1,
-            },
+            fixture: "DashboardService/all-time-counts.json",
         });
 
         cy.intercept("GET", "**/Dashboard/DailyUsageCounts*", {
@@ -58,13 +72,7 @@ describe("Dashboard", () => {
             body: 2,
         });
 
-        cy.intercept("GET", "**/Dashboard/AppLoginCounts*", {
-            body: {
-                Mobile: 1,
-                Web: 4,
-                Salesforce: 2,
-            },
-        });
+        setupAppLoginCountsFixtures();
 
         cy.login(
             Cypress.env("keycloak_username"),
@@ -85,7 +93,7 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-dependents]").contains(2);
         cy.get("[data-testid=average-rating]").contains("4.00");
         cy.get("[data-testid=recurring-user-count]").contains(2);
-        cy.get("[data-testid=total-mobile-users]").contains(1);
+        cy.get("[data-testid=total-mobile-users]").contains(3);
         cy.get("[data-testid=total-web-users]").contains(4);
         cy.get("[data-testid=total-salesforce-users]").contains(2);
 
@@ -118,6 +126,142 @@ describe("Dashboard", () => {
         cy.get("[data-testid=unique-days-input]").clear().type(2);
         cy.get("[data-testid=recurring-user-count]").click();
         cy.get("[data-testid=recurring-user-count]").contains(3);
+
+        cy.log("Dashboard test finished.");
+    });
+});
+
+describe("Dashboard Mobile Login Count Tooltip", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/Dashboard/AllTimeCounts*", {
+            fixture: "DashboardService/all-time-counts.json",
+        });
+
+        cy.intercept("GET", "**/Dashboard/DailyUsageCounts*", {
+            fixture: "DashboardService/daily-usage-counts.json",
+        });
+
+        cy.intercept("GET", "**/Dashboard/Ratings/Summary*", {
+            fixture: "DashboardService/summary.json",
+        });
+
+        cy.intercept("GET", "**/Dashboard/RecurringUserCount?days=3*", {
+            body: 2,
+        });
+    });
+
+    it("Verify tooltip exists with android count > 0 and ios count > 0.", () => {
+        cy.log("Dashboard test started.");
+
+        const mobileCount = 3;
+        const androidCount = 1;
+        const iosCount = 1;
+
+        setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
+
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/dashboard"
+        );
+
+        cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
+
+        // Activate tooltip
+        cy.get("[data-testid=total-mobile-users]").realHover();
+
+        cy.get("[data-testid=android-count]").contains(androidCount);
+        cy.get("[data-testid=ios-count]").contains(iosCount);
+
+        cy.log("Dashboard test finished.");
+    });
+
+    it("Verify tooltip exists with android count == 0 and ios count > 0.", () => {
+        cy.log("Dashboard test started.");
+
+        const mobileCount = 2;
+        const androidCount = 0;
+        const iosCount = 1;
+
+        setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
+
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/dashboard"
+        );
+
+        cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
+
+        // Activate tooltip
+        cy.get("[data-testid=total-mobile-users]").realHover();
+
+        cy.get("[data-testid=android-count]").contains(androidCount);
+        cy.get("[data-testid=ios-count]").contains(iosCount);
+
+        cy.log("Dashboard test finished.");
+    });
+
+    it("Verify tooltip exists with android count > 0 and ios count == 0..", () => {
+        cy.log("Dashboard test started.");
+
+        const mobileCount = 2;
+        const androidCount = 1;
+        const iosCount = 0;
+
+        setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
+
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/dashboard"
+        );
+
+        cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
+
+        // Activate tooltip
+        cy.get("[data-testid=total-mobile-users]").realHover();
+
+        cy.get("[data-testid=android-count]").contains(androidCount);
+        cy.get("[data-testid=ios-count]").contains(iosCount);
+
+        cy.log("Dashboard test finished.");
+    });
+
+    it("Verify tooltip does not exist with android count == 0 and ios count == 0.", () => {
+        cy.log("Dashboard test started.");
+
+        const mobileCount = 1;
+        const androidCount = 0;
+        const iosCount = 0;
+
+        setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
+
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/dashboard"
+        );
+
+        cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
+
+        // Activate tooltip
+        cy.get("[data-testid=total-mobile-users]").realHover();
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
 
         cy.log("Dashboard test finished.");
     });

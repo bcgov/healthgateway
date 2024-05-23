@@ -83,7 +83,7 @@ VALUES (
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
 	null,
 	'1995',
-	'Web'
+	'iOS'
 );
 
 /* Invaliddoses - Keycloak User (hthgtwy20) */
@@ -215,7 +215,7 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	'2001',
-	'Web'
+	'Android'
 );
 
 /* PHN: 9735352535 used for admin covid assessment and blocked dataset tests */
