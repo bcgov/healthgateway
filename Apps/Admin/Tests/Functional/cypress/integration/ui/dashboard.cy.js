@@ -167,6 +167,9 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
 
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
+
         // Activate tooltip
         cy.get("[data-testid=total-mobile-users]").realHover();
 
@@ -192,6 +195,9 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
         );
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
 
         // Activate tooltip
         cy.get("[data-testid=total-mobile-users]").realHover();
@@ -219,6 +225,9 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
 
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
+
         // Activate tooltip
         cy.get("[data-testid=total-mobile-users]").realHover();
 
@@ -244,6 +253,9 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
         );
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
+
+        cy.get("[data-testid=android-count]").should("not.exist");
+        cy.get("[data-testid=ios-count]").should("not.exist");
 
         // Activate tooltip
         cy.get("[data-testid=total-mobile-users]").realHover();
