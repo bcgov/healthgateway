@@ -20,9 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Factories;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
@@ -33,12 +31,11 @@ namespace HealthGateway.GatewayApi.Services
     public class LegalAgreementServiceV2(ILegalAgreementDelegate legalAgreementDelegate, IGatewayApiMappingService mappingService) : ILegalAgreementServiceV2
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<TermsOfServiceModel>> GetActiveTermsOfServiceAsync(CancellationToken ct = default)
+        public async Task<TermsOfServiceModel> GetActiveTermsOfServiceAsync(CancellationToken ct = default)
         {
-            LegalAgreement? legalAgreement = await legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct);
-            return legalAgreement == null
-                ? RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.LegalAgreementNotFound)
-                : RequestResultFactory.Success(mappingService.MapToTermsOfServiceModel(legalAgreement));
+            LegalAgreement legalAgreement = await legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct)
+                                            ?? throw new DatabaseException(ErrorMessages.LegalAgreementNotFound);
+            return mappingService.MapToTermsOfServiceModel(legalAgreement);
         }
 
         /// <inheritdoc/>

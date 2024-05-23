@@ -13,27 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApiTests.Validations
+namespace HealthGateway.GatewayApi.Validations
 {
-    using System.Threading.Tasks;
-    using FluentValidation.Results;
-    using HealthGateway.GatewayApi.Validations;
-    using Xunit;
+    using FluentValidation;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Validations;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// <see cref="OptionalEmailAddressValidator"/> unit tests.
+    /// Validates <see cref="UserProfile"/> instances.
     /// </summary>
-    public class OptionalEmailAddressValidatorTests
+    public class UserPreferenceModelValidator : AbstractNotNullValidator<UserPreferenceModel>
     {
-        [Theory]
-        [InlineData("test]invalid@test.com", false)]
-        [InlineData("noStructure", false)]
-        [InlineData("test.valid.complex{something}@test.com", true)]
-        [InlineData("", true)]
-        public async Task ShouldValidate(string? email, bool expected)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserPreferenceModelValidator"/> class.
+        /// </summary>
+        public UserPreferenceModelValidator()
         {
-            ValidationResult result = await new OptionalEmailAddressValidator().ValidateAsync(email);
-            Assert.Equal(expected, result.IsValid);
+            this.RuleFor(p => p!.Preference).NotEmpty();
         }
     }
 }

@@ -19,11 +19,10 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// The Legal Agreement service.
+    /// The legal agreement service.
     /// </summary>
     public interface ILegalAgreementServiceV2
     {
@@ -31,8 +30,8 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets the most recent active terms of service.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The wrapped terms of service.</returns>
-        Task<RequestResult<TermsOfServiceModel>> GetActiveTermsOfServiceAsync(CancellationToken ct = default);
+        /// <returns>The terms of service.</returns>
+        Task<TermsOfServiceModel> GetActiveTermsOfServiceAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Gets the id of the active legal agreement.

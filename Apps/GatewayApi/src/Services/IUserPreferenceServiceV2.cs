@@ -21,32 +21,34 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// The User Preference service.
+    /// The user preference service.
     /// </summary>
     public interface IUserPreferenceServiceV2
     {
         /// <summary>
-        /// Updates a User Preference.
+        /// Updates a user preference.
         /// </summary>
+        /// <param name="hdid">The hdid associated with the user.</param>
         /// <param name="userPreferenceModel">The user preference to update.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
+        /// <returns>The updated user preference model.</returns>
+        Task<UserPreferenceModel> UpdateUserPreferenceAsync(string hdid, UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
 
         /// <summary>
-        /// Create a User Preference.
+        /// Creates a user preference.
         /// </summary>
+        /// <param name="hdid">The hdid associated with the user.</param>
         /// <param name="userPreferenceModel">The user preference to create.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
+        /// <returns>The created user preference model.</returns>
+        Task<UserPreferenceModel> CreateUserPreferenceAsync(string hdid, UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets user preferences associated with the hdid.
+        /// Gets preferences associated with a user.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the user preferences.</param>
+        /// <param name="hdid">The hdid associated with the user.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request</param>
-        /// <returns>A dictionary mapping preference with its associated user preference model. </returns>
+        /// <returns>A dictionary mapping preference names with their associated user preference models. </returns>
         Task<Dictionary<string, UserPreferenceModel>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default);
     }
 }

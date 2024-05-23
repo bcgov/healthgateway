@@ -23,14 +23,15 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -78,50 +79,49 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<bool>> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default)
+        public async Task<bool> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default)
         {
             this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 
-            RequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
             MessagingVerification? smsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct);
-            if (userProfile != null &&
-                smsVerification is { Validated: false, Deleted: false, VerificationAttempts: < MaxVerificationAttempts } &&
-                smsVerification.UserProfileId == hdid &&
-                smsVerification.SmsValidationCode == validationCode &&
-                smsVerification.ExpireDate >= DateTime.UtcNow)
+            if (smsVerification is not { Validated: false, Deleted: false, VerificationAttempts: < MaxVerificationAttempts } ||
+                smsVerification.SmsValidationCode != validationCode ||
+                smsVerification.ExpireDate < DateTime.UtcNow)
             {
-                smsVerification.Validated = true;
-                await this.messageVerificationDelegate.UpdateAsync(smsVerification, !this.notificationsChangeFeedEnabled, ct);
-                userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
-                await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
-                if (this.notificationsChangeFeedEnabled)
-                {
-                    MessageEnvelope[] events =
-                    {
-                        new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber), hdid),
-                    };
-                    await this.messageSender.SendAsync(events, ct);
-                }
-
-                retVal.ResourcePayload = true;
-
-                // Update the notification settings
-                await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
-            }
-            else
-            {
-                smsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
                 if (smsVerification is { Validated: false })
                 {
                     smsVerification.VerificationAttempts++;
                     await this.messageVerificationDelegate.UpdateAsync(smsVerification, ct: ct);
                 }
+
+                this.logger.LogDebug("Finished validating sms");
+                return false;
             }
 
+            smsVerification.Validated = true;
+            await this.messageVerificationDelegate.UpdateAsync(smsVerification, false, ct);
+
+            userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
+
+            if (dbResult.Status != DbStatusCode.Updated && dbResult.Status != DbStatusCode.Deferred)
+            {
+                throw new DatabaseException(dbResult.Message);
+            }
+
+            if (this.notificationsChangeFeedEnabled)
+            {
+                MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber), hdid)];
+                await this.messageSender.SendAsync(events, ct);
+            }
+
+            // Update the notification settings
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
+
             this.logger.LogDebug("Finished validating sms");
-            return retVal;
+            return true;
         }
 
         /// <inheritdoc/>
@@ -135,17 +135,21 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default)
+        public async Task UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default)
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = SanitizeSms(sms);
             await UserProfileValidator.ValidateSmsNumberAndThrowAsync(sanitizedSms, ct);
 
-            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ??
-                                      throw new NotFoundException($"User profile not found for hdid {hdid}");
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
             userProfile.SmsNumber = null;
-            await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
+
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
+            if (dbResult.Status != DbStatusCode.Updated)
+            {
+                throw new DatabaseException(dbResult.Message);
+            }
 
             bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
             MessagingVerification? lastSmsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
@@ -167,7 +171,6 @@ namespace HealthGateway.GatewayApi.Services
             await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
 
             this.logger.LogDebug("Finished updating user sms");
-            return true;
         }
 
         /// <summary>

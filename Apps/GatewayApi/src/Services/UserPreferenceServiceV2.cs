@@ -20,8 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Factories;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -35,34 +34,48 @@ namespace HealthGateway.GatewayApi.Services
     public class UserPreferenceServiceV2(IUserPreferenceDelegate userPreferenceDelegate, IGatewayApiMappingService mappingService, ILogger<UserPreferenceServiceV2> logger) : IUserPreferenceServiceV2
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
+        public async Task<UserPreferenceModel> UpdateUserPreferenceAsync(string hdid, UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
-            logger.LogTrace("Updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
-            UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
-            DbResult<UserPreference> dbResult = await userPreferenceDelegate.UpdateUserPreferenceAsync(userPreference, ct: ct);
+            logger.LogTrace("Updating user preference... {Preference} for {PreferenceHdid} by {UpdaterHdid}", userPreferenceModel.Preference, userPreferenceModel.HdId, hdid);
 
-            return dbResult.Status != DbStatusCode.Updated
-                ? RequestResultFactory.ServiceError<UserPreferenceModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
-                : RequestResultFactory.Success(mappingService.MapToUserPreferenceModel(dbResult.Payload));
+            userPreferenceModel.UpdatedBy = hdid;
+            UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
+
+            DbResult<UserPreference> dbResult = await userPreferenceDelegate.UpdateUserPreferenceAsync(userPreference, ct: ct);
+            if (dbResult.Status != DbStatusCode.Updated)
+            {
+                throw new DatabaseException(dbResult.Message);
+            }
+
+            return mappingService.MapToUserPreferenceModel(dbResult.Payload);
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
+        public async Task<UserPreferenceModel> CreateUserPreferenceAsync(string hdid, UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
             logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
-            UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
-            DbResult<UserPreference> dbResult = await userPreferenceDelegate.CreateUserPreferenceAsync(userPreference, ct: ct);
 
-            return dbResult.Status != DbStatusCode.Created
-                ? RequestResultFactory.ServiceError<UserPreferenceModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
-                : RequestResultFactory.Success(mappingService.MapToUserPreferenceModel(dbResult.Payload));
+            userPreferenceModel.HdId = hdid;
+            userPreferenceModel.CreatedBy = hdid;
+            userPreferenceModel.UpdatedBy = hdid;
+            UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
+
+            DbResult<UserPreference> dbResult = await userPreferenceDelegate.CreateUserPreferenceAsync(userPreference, ct: ct);
+            if (dbResult.Status != DbStatusCode.Created)
+            {
+                throw new DatabaseException(dbResult.Message);
+            }
+
+            return mappingService.MapToUserPreferenceModel(dbResult.Payload);
         }
 
         /// <inheritdoc/>
         public async Task<Dictionary<string, UserPreferenceModel>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
         {
             logger.LogTrace("Getting user preference... {Hdid}", hdid);
+
             IEnumerable<UserPreference> userPreferences = await userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
+
             return userPreferences.Select(mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x);
         }
     }

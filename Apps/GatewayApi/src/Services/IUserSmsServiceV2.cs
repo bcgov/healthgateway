@@ -17,11 +17,10 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The User SMS service.
+    /// The user SMS service.
     /// </summary>
     public interface IUserSmsServiceV2
     {
@@ -32,7 +31,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="validationCode">The SMS validation code.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
-        Task<RequestResult<bool>> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default);
+        Task<bool> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default);
 
         /// <summary>
         /// Create the user SMS number.
@@ -49,7 +48,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>returns true if the sms number was successfully updated.</returns>
-        Task<bool> UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default);
     }
 }
