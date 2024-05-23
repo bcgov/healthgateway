@@ -1,9 +1,8 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Notification Centre", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/Notification/*").as("getNotification");
         cy.intercept("DELETE", "**/Notification/*").as("deleteNotification");
 
         cy.configureSettings({
@@ -23,9 +22,6 @@ describe("Notification Centre", () => {
     });
 
     it("Get notifications", () => {
-        // Wait for request to complete
-        cy.wait("@getNotification");
-
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();

@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../../support/constants";
-import { setupStandardIntercepts } from "../../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 describe("COVID-19 Orders", () => {
     beforeEach(() => {
@@ -15,7 +15,7 @@ describe("COVID-19 Orders", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.viewport("iphone-6");
         cy.login(

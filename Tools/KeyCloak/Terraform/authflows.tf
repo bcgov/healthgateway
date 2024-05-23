@@ -72,11 +72,22 @@ resource "keycloak_authentication_flow" "icarus_login" {
   alias    = "icarus Login"
 }
 
+resource "keycloak_authentication_execution" "icarus_cookie_execution" {
+  realm_id          = data.keycloak_realm.hg_realm.id
+  parent_flow_alias = keycloak_authentication_flow.icarus_login.alias
+  authenticator     = "auth-cookie"
+  requirement       = "ALTERNATIVE"
+}
+
 resource "keycloak_authentication_execution" "icarus_idp_redirector_execution" {
   realm_id          = data.keycloak_realm.hg_realm.id
   parent_flow_alias = keycloak_authentication_flow.icarus_login.alias
   authenticator     = "identity-provider-redirector"
-  requirement       = "REQUIRED"
+  requirement       = "ALTERNATIVE"
+
+  depends_on = [
+    keycloak_authentication_execution.icarus_cookie_execution
+  ]
 }
 
 resource "keycloak_authentication_execution_config" "icarus_idp_redirector_execution_config" {

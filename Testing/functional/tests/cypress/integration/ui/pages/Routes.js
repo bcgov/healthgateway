@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const profilePath = "/profile";
 const homePath = "/home";
@@ -18,7 +18,7 @@ describe("Bookmark", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
     });
 
     it("Redirect to UserProfile", () => {

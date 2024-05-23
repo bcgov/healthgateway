@@ -7,7 +7,11 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-const { AuthMethod, localDevUri } = require("./constants");
+import { AuthMethod, localDevUri } from "./constants";
+import {
+    setupStandardAliases,
+    waitForInitialDataLoad,
+} from "./functions/intercept";
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
@@ -128,85 +132,125 @@ Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
-            cy.session([username, authMethod], () => {
-                cy.readConfig().then((config) => {
-                    cy.logout();
-                    let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
-                    let codeVerifier = generateRandomString(96);
-                    cy.log(
-                        `State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`
-                    );
-                    const loginCallback =
-                        config.openIdConnect.callbacks?.Logon ||
-                        `${Cypress.config().baseUrl}/loginCallback`;
-                    const stateStore = {
-                        id: stateId,
-                        created: new Date().getTime(),
-                        request_type: "si:r",
-                        code_verifier: codeVerifier,
-                        redirect_uri: loginCallback,
-                        authority: config.openIdConnect.authority,
-                        client_id: config.openIdConnect.clientId,
-                        response_mode: "query",
-                        scope: config.openIdConnect.scope,
-                        extraTokenParams: {},
-                    };
-                    cy.log("Creating OIDC StateStore in Local storage");
-                    window.sessionStorage.setItem(
-                        `oidc.${stateStore.id}`,
-                        JSON.stringify(stateStore)
-                    );
+            cy.window().then((window) => {
+                cy.log("Calling session storage");
+                let configSettings =
+                    window.sessionStorage.getItem("configSettingsKey");
 
-                    const escapedRedirectPath = encodeURI(path);
-                    const redirectUri = `${loginCallback}?redirect=${escapedRedirectPath}`;
-
-                    cy.log("Requesting Keycloak Authentication form");
-                    cy.request({
-                        url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
-                        followRedirect: false,
-                        qs: {
-                            scope: config.openIdConnect.scope,
-                            response_type: config.openIdConnect.responseType,
-                            approval_prompt: "auto",
-                            redirect_uri: redirectUri,
+                cy.session([username, authMethod], () => {
+                    cy.readConfig().then((config) => {
+                        cy.logout();
+                        let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
+                        let codeVerifier = generateRandomString(96);
+                        cy.log(
+                            `State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`
+                        );
+                        const loginCallback =
+                            config.openIdConnect.callbacks?.Logon ||
+                            `${Cypress.config().baseUrl}/loginCallback`;
+                        const stateStore = {
+                            id: stateId,
+                            created: new Date().getTime(),
+                            request_type: "si:r",
+                            code_verifier: codeVerifier,
+                            redirect_uri: loginCallback,
+                            authority: config.openIdConnect.authority,
                             client_id: config.openIdConnect.clientId,
                             response_mode: "query",
-                            state: stateStore.id,
-                        },
-                    })
-                        .then((response) => {
-                            cy.log("Posting credentials");
-                            const html = document.createElement("html");
-                            html.innerHTML = response.body;
-                            const form = html.getElementsByTagName("form")[0];
-                            const url = form.action;
-                            return cy.request({
-                                method: "POST",
-                                url,
-                                followRedirect: false,
-                                form: true,
-                                body: {
-                                    username: username,
-                                    password: password,
-                                },
-                            });
+                            scope: config.openIdConnect.scope,
+                            extraTokenParams: {},
+                        };
+                        cy.log("Creating OIDC StateStore in Local storage");
+                        window.sessionStorage.setItem(
+                            `oidc.${stateStore.id}`,
+                            JSON.stringify(stateStore)
+                        );
+
+                        const escapedRedirectPath = encodeURI(path);
+                        const redirectUri = `${loginCallback}?redirect=${escapedRedirectPath}`;
+
+                        cy.log("Requesting Keycloak Authentication form");
+                        cy.request({
+                            url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+                            followRedirect: false,
+                            qs: {
+                                scope: config.openIdConnect.scope,
+                                response_type:
+                                    config.openIdConnect.responseType,
+                                approval_prompt: "auto",
+                                redirect_uri: redirectUri,
+                                client_id: config.openIdConnect.clientId,
+                                response_mode: "query",
+                                state: stateStore.id,
+                            },
                         })
-                        .then((response) => {
-                            let callBackQS = response.headers["location"];
-                            const callbackURL = `${callBackQS}`;
-                            cy.log(`Visiting Callback ${callBackQS}`, response);
-                            cy.visit(callbackURL, { timeout: 60000 });
-                            // store auth cookies
-                            cy.getCookies({ timeout: 60000 }).then(
-                                (cookies) => {
-                                    globalStorage.authCookies = cookies;
-                                }
-                            );
-                        });
+                            .then((response) => {
+                                cy.log("Posting credentials");
+                                const html = document.createElement("html");
+                                html.innerHTML = response.body;
+                                const form =
+                                    html.getElementsByTagName("form")[0];
+                                const url = form.action;
+                                return cy.request({
+                                    method: "POST",
+                                    url,
+                                    followRedirect: false,
+                                    form: true,
+                                    body: {
+                                        username: username,
+                                        password: password,
+                                    },
+                                });
+                            })
+                            .then((response) => {
+                                let callBackQS = response.headers["location"];
+                                const callbackURL = `${callBackQS}`;
+                                cy.log(
+                                    `Visiting Callback ${callBackQS}`,
+                                    response
+                                );
+                                cy.visit(callbackURL, { timeout: 60000 });
+                                // store auth cookies
+                                cy.getCookies({ timeout: 60000 }).then(
+                                    (cookies) => {
+                                        globalStorage.authCookies = cookies;
+                                    }
+                                );
+                            });
+                    });
                 });
+
+                // Setup standard aliases for busy endpoint calls
+                setupStandardAliases();
+
+                cy.log(`Visit path: ${path}`);
+
+                if (configSettings === null) {
+                    cy.readConfig().then((config) => {
+                        cy.visit(path, { timeout: 60000 });
+
+                        cy.log(
+                            `Config in session was null so fetched actual config: ${JSON.stringify(
+                                config
+                            )}`
+                        );
+
+                        // Make sure to wait on busy endpoint calls
+                        waitForInitialDataLoad(username, config, path);
+                    });
+                } else {
+                    cy.visit(path, { timeout: 60000 });
+
+                    cy.log(`Use config from session: ${configSettings}`);
+
+                    // Make sure to wait on busy endpoint calls
+                    waitForInitialDataLoad(
+                        username,
+                        JSON.parse(configSettings),
+                        path
+                    );
+                }
             });
-            cy.log(`Visit path: ${path}`);
-            cy.visit(path, { timeout: 60000 });
         } else if (authMethod == AuthMethod.BCSC) {
             cy.log(
                 `Authenticating as BC Services Card user ${username} using the UI`
@@ -391,6 +435,14 @@ Cypress.Commands.add("configureSettings", (settings) => {
             cy.intercept("GET", "**/configuration", {
                 statusCode: 200,
                 body: config,
+            });
+
+            // Set copy of config in session to be accessed by login for handling wait on busy endpoint calls
+            cy.window().then((window) => {
+                window.sessionStorage.setItem(
+                    "configSettingsKey",
+                    JSON.stringify(config)
+                );
             });
         });
 });

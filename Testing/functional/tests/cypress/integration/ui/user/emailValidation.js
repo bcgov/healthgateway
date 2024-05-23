@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("User Email Verification", () => {
     beforeEach(() => {
@@ -18,7 +18,7 @@ describe("User Email Verification", () => {
     });
 
     it("Check verified email invite", () => {
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -33,7 +33,7 @@ describe("User Email Verification", () => {
     });
 
     it("Check already verified email invite", () => {
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -48,7 +48,7 @@ describe("User Email Verification", () => {
     });
 
     it("Check expired email invite", () => {
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { setupStandardIntercepts } from "../../../support/functions/intercept";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const sensitiveDocMessage =
     "The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off.";
@@ -33,7 +33,7 @@ describe("COVID-19", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -185,7 +185,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -321,7 +321,7 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -395,7 +395,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             ],
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -463,7 +463,7 @@ describe("Dependents Tabs Disabled", () => {
             },
         });
 
-        setupStandardIntercepts();
+        setupStandardFixtures();
 
         cy.login(
             Cypress.env("keycloak.username"),

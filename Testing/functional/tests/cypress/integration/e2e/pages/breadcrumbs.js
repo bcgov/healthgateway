@@ -1,7 +1,18 @@
 const { AuthMethod } = require("../../../support/constants");
 
 function testPageBreadcrumb(url, dataTestId) {
+    if (url === "/covid19") {
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
+            "getVaccinationStatus"
+        );
+    }
+
     cy.visit(url);
+
+    if (url === "/covid19") {
+        cy.wait("@getVaccinationStatus");
+    }
+
     cy.get("[data-testid=breadcrumbs]").should("be.visible");
     cy.get(`[data-testid='${dataTestId}'].v-breadcrumbs-item--active`).should(
         "be.visible"
