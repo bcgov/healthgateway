@@ -20,6 +20,8 @@ namespace HealthGateway.Admin.Common.Models
     /// </summary>
     /// <param name="Web">Number of Health Gateway web app logins.</param>
     /// <param name="Mobile">Number of Health Gateway mobile app logins.</param>
+    /// <param name="Android">Number of Health Gateway android app logins.</param>
+    /// <param name="Ios">Number of Health Gateway ios app logins.</param>
     /// <param name="Salesforce">Number of Health Gateway Salesforce app logins.</param>
-    public record AppLoginCounts(int Web, int Mobile, int Salesforce);
+    public record AppLoginCounts(int Web, int Mobile, int Android, int Ios, int Salesforce);
 }
