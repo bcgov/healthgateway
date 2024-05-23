@@ -5,9 +5,10 @@ import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import OrganDonorDetailsCard from "@/components/private/services/OrganDonorDetailsCard.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import { DataSource } from "@/constants/dataSource";
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import { PatientData, PatientDataType } from "@/models/patientDataResponse";
+import { PatientDataType } from "@/models/patientDataResponse";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
@@ -36,15 +37,25 @@ const isOrganDonorServiceEnabled = computed(() =>
     ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration)
 );
 
-function retrievePatientData(): Promise<PatientData[]> {
-    return patientDataStore.retrievePatientData(userStore.hdid, [
-        PatientDataType.OrganDonorRegistrationStatus,
-    ]);
+const isOrganDonorServiceBlocked = computed(() =>
+    userStore.blockedDataSources.includes(DataSource.OrganDonorRegistration)
+);
+
+function retrievePatientData(): void {
+    let dataTypes: PatientDataType[] = [];
+    if (isOrganDonorServiceEnabled.value && !isOrganDonorServiceBlocked.value) {
+        dataTypes = [
+            ...dataTypes,
+            PatientDataType.OrganDonorRegistrationStatus,
+        ];
+    }
+
+    if (dataTypes.length > 0) {
+        patientDataStore.retrievePatientData(userStore.hdid, dataTypes);
+    }
 }
 
-if (isOrganDonorServiceEnabled.value) {
-    retrievePatientData();
-}
+retrievePatientData();
 </script>
 
 <template>
