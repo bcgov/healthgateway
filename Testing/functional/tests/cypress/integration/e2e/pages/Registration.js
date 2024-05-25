@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 const registrationPath = "/registration";
 const homePath = "/home";
 
@@ -11,11 +11,11 @@ describe("Registration Page", () => {
             AuthMethod.KeyCloak,
             homePath
         );
-        cy.location("pathname").should("eq", registrationPath);
         cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
+        cy.location("pathname").should("eq", registrationPath);
     });
 
-    it("No sidebar or footer", () => {
+    it("Registering leads to home page and opens app tour", () => {
         cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
@@ -23,19 +23,13 @@ describe("Registration Page", () => {
             AuthMethod.KeyCloak,
             homePath
         );
+
+        cy.contains("#subject", "Registration").should("be.visible");
         cy.location("pathname").should("eq", registrationPath);
+
         cy.get("[data-testid=sidebar]").should("not.exist");
         cy.get("[data-testid=footer]").should("not.exist");
-    });
 
-    it("Registering leads to home page and opens app tour", () => {
-        cy.login(
-            Cypress.env("keycloak.unregistered.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
-        );
-        cy.location("pathname").should("eq", registrationPath);
         cy.get("[data-testid=emailCheckbox] input")
             .should("be.enabled")
             .check({ force: true });
@@ -69,6 +63,9 @@ describe("Registration Page", () => {
             AuthMethod.KeyCloak,
             homePath
         );
+        cy.get("[data-testid=patient-retrieval-error]")
+            .should("exist")
+            .contains("Error retrieving user information");
         cy.url().should("include", "/patientRetrievalError");
     });
 });

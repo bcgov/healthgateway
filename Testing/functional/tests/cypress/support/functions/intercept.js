@@ -330,7 +330,7 @@ function waitForOrganDonorRegistratonStatusService(
     const organDonorRegistrationEnabled =
         featureToggle.services &&
         featureToggle.services.enabled &&
-        featureToggle.datasets.some(
+        featureToggle.services.services.some(
             (x) => x.enabled && x.name === "organDonorRegistration"
         );
 
