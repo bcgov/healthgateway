@@ -59,7 +59,7 @@ namespace HealthGateway.WebClientTests.Services
             ExternalConfiguration expectedResult = GenerateExternalConfiguration();
             ExternalConfiguration actualResult = await this.service.GetConfigurationAsync();
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace HealthGateway.WebClientTests.Services
 
             MobileConfiguration actualResult = await this.service.GetMobileConfigurationAsync();
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace HealthGateway.WebClientTests.Services
             ExternalConfiguration actual = await configurationService.GetConfigurationAsync();
 
             // Assert
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static ExternalConfiguration GenerateExternalConfiguration(

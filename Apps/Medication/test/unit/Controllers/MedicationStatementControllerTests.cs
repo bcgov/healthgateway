@@ -106,7 +106,7 @@ namespace HealthGateway.MedicationTests.Controllers
 
             // Verify
             Assert.NotNull(actual);
-            expectedResult.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expectedResult);
 
             // Medication Summary
             Assert.Equal(expectedPharmacistAssessment, actual.ResourcePayload![0].MedicationSummary.IsPharmacistAssessment);

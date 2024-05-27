@@ -94,7 +94,7 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn);
 
             Assert.NotNull(actualResult);
-            expectedDelegationInfo.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedDelegationInfo);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn);
 
             Assert.NotNull(actualResult);
-            expectedDelegationInfo.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedDelegationInfo);
         }
 
         /// <summary>
@@ -469,7 +469,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Protected = false,
             };
             DependentInfo actual = MappingService.MapToDependentInfo(patientModel);
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -502,7 +502,7 @@ namespace HealthGateway.Admin.Tests.Services
                 PhysicalAddress = patientModel.PhysicalAddress,
             };
             DelegateInfo actual = MappingService.MapToDelegateInfo(patientModel);
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static bool AssertProtectedDependant(Dependent expected, Dependent actual)

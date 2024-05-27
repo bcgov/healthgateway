@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Assert
             Assert.Single(actual);
-            mock.Expected.ShouldDeepEqual(actual.First());
+            actual.First().ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Tests.Services
             AdminAgent actual = await mock.Service.ProvisionAgentAccessAsync(mock.AdminAgent);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
             mock.KeycloakAdminApiMock.Verify(
                 v => v.AddUserAsync(
                     It.Is<UserRepresentation>(x => x.Username == mock.Username),
@@ -167,7 +167,7 @@ namespace HealthGateway.Admin.Tests.Services
             AdminAgent actual = await mock.Service.UpdateAgentAccessAsync(mock.AdminAgent);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static AdminAgent GenerateAdminAgent(Guid id, string username, ISet<IdentityAccessRole> roles)

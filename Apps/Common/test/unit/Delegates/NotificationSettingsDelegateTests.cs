@@ -64,7 +64,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> actualResult =
                 await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty);
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> actualResult =
                 await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty);
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> actualResult =
                 await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty);
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         private static NotificationSettingsRequest GetNotificationSettingsRequest()

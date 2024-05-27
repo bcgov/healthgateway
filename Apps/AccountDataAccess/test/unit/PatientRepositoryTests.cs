@@ -72,7 +72,7 @@ namespace AccountDataAccessTest
             PatientQueryResult actual = await mock.PatientRepository.QueryAsync(mock.PatientDetailsQuery, CancellationToken.None);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual.Item);
+            actual.Item.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace AccountDataAccessTest
             BlockedAccess? actual = await mock.PatientRepository.GetBlockedAccessRecordsAsync(mock.Hdid);
 
             // Verify
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace AccountDataAccessTest
             IEnumerable<DataSource> actual = await mock.PatientRepository.GetDataSourcesAsync(mock.Hdid);
 
             // Verify
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static bool AssertAgentAudit(AgentAudit expected, AgentAudit actual)

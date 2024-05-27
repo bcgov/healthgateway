@@ -132,7 +132,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             RequestResult<RatingModel> actual = await mock.Controller.CreateRating(mock.Rating, default);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static CreateRatingMock SetupCreateRatingMock()
