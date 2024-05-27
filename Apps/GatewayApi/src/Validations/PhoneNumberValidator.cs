@@ -17,12 +17,13 @@ namespace HealthGateway.GatewayApi.Validations
 {
     using System;
     using FluentValidation;
+    using HealthGateway.Common.Data.Validations;
     using PhoneNumbers;
 
     /// <summary>
     /// Class encapsulating validation phone numbers leveraging Google's libphonenumber library.
     /// </summary>
-    public class PhoneNumberValidator : AbstractValidator<string>
+    public class PhoneNumberValidator : AbstractNotNullValidator<string>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PhoneNumberValidator"/> class.
@@ -32,7 +33,6 @@ namespace HealthGateway.GatewayApi.Validations
         {
             PhoneNumberUtil util = PhoneNumberUtil.GetInstance();
             this.RuleFor(number => number)
-                .NotNull()
                 .Must(
                     number =>
                     {
@@ -56,7 +56,7 @@ namespace HealthGateway.GatewayApi.Validations
         /// <returns>True if phone number passes the validation for the current region.</returns>
         public static bool IsValid(string? phoneNumber, string region = "US")
         {
-            return !string.IsNullOrEmpty(phoneNumber) && new PhoneNumberValidator(region).Validate(phoneNumber).IsValid;
+            return new PhoneNumberValidator(region).Validate(phoneNumber).IsValid;
         }
     }
 }

@@ -25,6 +25,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -114,6 +115,47 @@ namespace HealthGateway.CommonTests.ErrorHandling
         }
 
         /// <summary>
+        /// DbUpdateExceptionHandler TryHandleAsync - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateDbUpdateExceptionHandlerTryHandleAsync()
+        {
+            // Arrange
+            HttpContext httpContext = new DefaultHttpContext();
+            using StringContent httpContent = new("content");
+            Exception exception = new DbUpdateException("DB Error");
+
+            DbUpdateExceptionHandlerSetup setup = GetDbUpdateExceptionHandlerSetup(true);
+
+            // Act
+            bool actual = await setup.ExceptionHandler.TryHandleAsync(httpContext, exception, default);
+
+            // Assert
+            Assert.True(actual);
+        }
+
+        /// <summary>
+        /// DbUpdateExceptionHandler TryHandleAsync - Unsupported Exception Type.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateDbUpdateExceptionHandlerTryHandleAsyncUnsupportedException()
+        {
+            // Arrange
+            HttpContext httpContext = new DefaultHttpContext();
+            Exception exception = new InvalidOperationException();
+
+            DbUpdateExceptionHandlerSetup setup = GetDbUpdateExceptionHandlerSetup(true);
+
+            // Act
+            bool actual = await setup.ExceptionHandler.TryHandleAsync(httpContext, exception, default);
+
+            // Assert
+            Assert.False(actual);
+        }
+
+        /// <summary>
         /// ValidationExceptionHandler TryHandleAsync - Happy Path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -166,6 +208,19 @@ namespace HealthGateway.CommonTests.ErrorHandling
             return new(GetApiExceptionHandler(mocks, configuration), mocks);
         }
 
+        private static DbUpdateExceptionHandlerSetup GetDbUpdateExceptionHandlerSetup(bool includeExceptionDetailsInResponse)
+        {
+            DbUpdateExceptionHandlerMocks mocks = new(new());
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(
+                [
+                    new("IncludeExceptionDetailsInResponse", includeExceptionDetailsInResponse.ToString()),
+                ])
+                .Build();
+
+            return new(GetDbUpdateExceptionHandler(mocks, configuration), mocks);
+        }
+
         private static DefaultExceptionHandlerSetup GetDefaultExceptionHandlerSetup(bool includeExceptionDetailsInResponse)
         {
             IConfiguration configuration = new ConfigurationBuilder()
@@ -195,6 +250,11 @@ namespace HealthGateway.CommonTests.ErrorHandling
             return new(configuration, mocks.Logger.Object);
         }
 
+        private static DbUpdateExceptionHandler GetDbUpdateExceptionHandler(DbUpdateExceptionHandlerMocks mocks, IConfiguration configuration)
+        {
+            return new(configuration, mocks.Logger.Object);
+        }
+
         private static DefaultExceptionHandler GetDefaultExceptionHandler(IConfiguration configuration)
         {
             return new(configuration);
@@ -207,10 +267,14 @@ namespace HealthGateway.CommonTests.ErrorHandling
 
         private sealed record ApiExceptionHandlerSetup(ApiExceptionHandler ExceptionHandler, ApiExceptionHandlerMocks Mocks);
 
+        private sealed record DbUpdateExceptionHandlerSetup(DbUpdateExceptionHandler ExceptionHandler, DbUpdateExceptionHandlerMocks Mocks);
+
         private sealed record DefaultExceptionHandlerSetup(DefaultExceptionHandler ExceptionHandler);
 
         private sealed record ValidationExceptionHandlerSetup(ValidationExceptionHandler ExceptionHandler);
 
         private sealed record ApiExceptionHandlerMocks(Mock<ILogger<ApiExceptionHandler>> Logger);
+
+        private sealed record DbUpdateExceptionHandlerMocks(Mock<ILogger<DbUpdateExceptionHandler>> Logger);
     }
 }

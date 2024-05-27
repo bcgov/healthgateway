@@ -13,27 +13,28 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApiTests.Validations
+
+namespace HealthGateway.Common.Data.Validations
 {
-    using System.Threading.Tasks;
+    using FluentValidation;
     using FluentValidation.Results;
-    using HealthGateway.GatewayApi.Validations;
-    using Xunit;
 
     /// <summary>
-    /// <see cref="OptionalEmailAddressValidator"/> unit tests.
+    /// Abstract validator that returns a validation failure instead of throwing an exception when the model is null.
     /// </summary>
-    public class OptionalEmailAddressValidatorTests
+    /// <typeparam name="T">The type of the object being validated</typeparam>
+    public abstract class AbstractNotNullValidator<T> : AbstractValidator<T?>
     {
-        [Theory]
-        [InlineData("test]invalid@test.com", false)]
-        [InlineData("noStructure", false)]
-        [InlineData("test.valid.complex{something}@test.com", true)]
-        [InlineData("", true)]
-        public async Task ShouldValidate(string? email, bool expected)
+        /// <inheritdoc/>
+        protected override bool PreValidate(ValidationContext<T?> context, ValidationResult result)
         {
-            ValidationResult result = await new OptionalEmailAddressValidator().ValidateAsync(email);
-            Assert.Equal(expected, result.IsValid);
+            if (context.InstanceToValidate == null)
+            {
+                result.Errors.Add(new ValidationFailure(typeof(T).Name, "'{PropertyName}' must not be empty."));
+                return false;
+            }
+
+            return true;
         }
     }
 }

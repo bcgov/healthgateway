@@ -13,27 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApiTests.Validations
+namespace HealthGateway.GatewayApi.Validations
 {
-    using System.Threading.Tasks;
-    using FluentValidation.Results;
-    using HealthGateway.GatewayApi.Validations;
-    using Xunit;
+    using FluentValidation;
+    using HealthGateway.Common.Data.Validations;
 
     /// <summary>
-    /// <see cref="OptionalEmailAddressValidator"/> unit tests.
+    /// Validates SMS numbers for user profiles.
     /// </summary>
-    public class OptionalEmailAddressValidatorTests
+    public class SmsNumberValidator : AbstractNullableValidator<string>
     {
-        [Theory]
-        [InlineData("test]invalid@test.com", false)]
-        [InlineData("noStructure", false)]
-        [InlineData("test.valid.complex{something}@test.com", true)]
-        [InlineData("", true)]
-        public async Task ShouldValidate(string? email, bool expected)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SmsNumberValidator"/> class.
+        /// </summary>
+        public SmsNumberValidator()
         {
-            ValidationResult result = await new OptionalEmailAddressValidator().ValidateAsync(email);
-            Assert.Equal(expected, result.IsValid);
+            this.RuleFor(smsNumber => smsNumber)
+                .Must(smsNumber => PhoneNumberValidator.IsValid(smsNumber))
+                .When(smsNumber => !string.IsNullOrEmpty(smsNumber))
+                .OverridePropertyName("SmsNumber");
         }
     }
 }
