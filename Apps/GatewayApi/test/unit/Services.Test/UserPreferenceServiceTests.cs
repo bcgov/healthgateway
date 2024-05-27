@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserPreferenceModel> actual = await mock.Service.CreateUserPreferenceAsync(mock.UserPreferenceModel);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserPreferenceModel> actual = await mock.Service.UpdateUserPreferenceAsync(mock.UserPreferenceModel);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Dictionary<string, UserPreferenceModel> actual = await mock.Service.GetUserPreferencesAsync(mock.Hdid);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static IUserPreferenceService GetUserPreferenceService(IMock<IUserPreferenceDelegate> userPreferenceDelegateMock)

@@ -113,7 +113,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             if (canAccessDataSource)
             {
-                expectedResult.ShouldDeepEqual(actualResult);
+                actualResult.ShouldDeepEqual(expectedResult);
             }
             else
             {
@@ -174,7 +174,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             RequestResult<ImmunizationEvent> actualResult = await service.GetImmunizationAsync("immz_id");
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
             // Assert
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
             ImmunizationRecommendation? actualRecommendation = actualResult.ResourcePayload?.Recommendations.First();
             Assert.NotNull(actualRecommendation);
             Assert.Equal(RecommendationSetId, actualRecommendation.RecommendationSetId);
@@ -275,7 +275,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         private static RequestResult<PhsaResult<ImmunizationResponse>> GetPhsaResult(ImmunizationRecommendationResponse immzRecommendationResponse)

@@ -56,7 +56,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             AesCryptoDelegate aesDelegate = new(configuration);
 
-            expectedConfig.ShouldDeepEqual(aesDelegate.AesConfig);
+            aesDelegate.AesConfig.ShouldDeepEqual(expectedConfig);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             AesCryptoDelegate aesDelegate = new(configuration);
 
-            expectedConfig.ShouldDeepEqual(aesDelegate.AesConfig);
+            aesDelegate.AesConfig.ShouldDeepEqual(expectedConfig);
         }
 
         /// <summary>

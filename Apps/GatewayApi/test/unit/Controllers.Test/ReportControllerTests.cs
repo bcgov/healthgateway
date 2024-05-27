@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             ReportController controller = new(reportServiceMock.Object);
             RequestResult<ReportModel> actualResult = await controller.GenerateReport(request, It.IsAny<CancellationToken>());
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
     }
 }

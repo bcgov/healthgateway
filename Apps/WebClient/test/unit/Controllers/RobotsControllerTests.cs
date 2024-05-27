@@ -83,7 +83,7 @@ namespace HealthGateway.WebClientTests.Controllers
 
             // Assert
             Assert.IsType<ContentResult>(actualResult);
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
     }
 }
