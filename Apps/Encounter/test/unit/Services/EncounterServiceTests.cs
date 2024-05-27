@@ -270,7 +270,7 @@ namespace HealthGateway.EncounterTests.Services
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            errorPatientResult.ResultError.ShouldDeepEqual(actualResult.ResultError);
+            actualResult.ResultError.ShouldDeepEqual(errorPatientResult.ResultError);
         }
 
         /// <summary>

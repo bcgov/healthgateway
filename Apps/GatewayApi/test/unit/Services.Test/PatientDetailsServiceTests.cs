@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             PatientDetails actual = await mock.Service.GetPatientAsync(mock.Identifier, mock.IdentifierType);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>

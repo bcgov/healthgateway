@@ -67,7 +67,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<CommunicationModel> actual = await mock.Service.GetActiveCommunicationAsync(mock.CommunicationType);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<CommunicationModel> actual = await mock.Service.GetActiveCommunicationAsync(mock.CommunicationType);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static IGatewayApiCommunicationService GetGatewayCommunicationService(IMock<ICommunicationService> communicationServiceMock)

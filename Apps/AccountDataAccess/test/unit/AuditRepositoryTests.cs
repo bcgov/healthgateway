@@ -56,7 +56,7 @@ namespace AccountDataAccessTest
             // Verify
             IEnumerable<AgentAudit> collection = actual.ToList();
             Assert.Single(collection);
-            agentAudits.Single().ShouldDeepEqual(collection.Single());
+            collection.Single().ShouldDeepEqual(agentAudits.Single());
         }
 
         private static AuditRepository GetAuditRepository(IEnumerable<AgentAudit> agentAudits)

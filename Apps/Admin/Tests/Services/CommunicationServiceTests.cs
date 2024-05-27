@@ -108,7 +108,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<Communication> actual = await service.AddAsync(communication);
 
             // Assert
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<Communication> actual = await service.DeleteAsync(communication);
 
             // Assert
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<IEnumerable<Communication>> actual = await service.GetAllAsync();
 
             // Assert
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<Communication> actual = await service.UpdateAsync(communication);
 
             // Assert
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static ICommunicationService GetCommunicationService(Mock<ICommunicationDelegate> communicationDelegateMock)

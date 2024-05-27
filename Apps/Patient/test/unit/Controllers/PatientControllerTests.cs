@@ -78,7 +78,7 @@ namespace HealthGateway.PatientTests.Controllers
             RequestResult<PatientModel> actualResult = await patientController.GetPatient("123", default);
 
             // Assert
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

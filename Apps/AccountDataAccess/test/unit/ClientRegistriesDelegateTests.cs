@@ -175,8 +175,8 @@ namespace AccountDataAccessTest
             Assert.Equal(expectedLastName, actual.PreferredName.Surname);
             Assert.Equal(expectedBirthDate, actual.Birthdate);
             Assert.Equal(expectedGender, actual.Gender);
-            expectedPhysicalAddr.ShouldDeepEqual(actual.PhysicalAddress);
-            expectedPostalAddr.ShouldDeepEqual(actual.PostalAddress);
+            actual.PhysicalAddress.ShouldDeepEqual(expectedPhysicalAddr);
+            actual.PostalAddress.ShouldDeepEqual(expectedPostalAddr);
         }
 
         /// <summary>

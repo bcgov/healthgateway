@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IEnumerable<WebAlert> actual = await service.GetWebAlertsAsync(Hdid);
 
             // Assert
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>

@@ -156,7 +156,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 {
                     case (true, DbStatusCode.Read):
                         Assert.Equal(ResultType.Success, actual.ResultStatus);
-                        expected.ShouldDeepEqual(actual.ResourcePayload);
+                        actual.ResourcePayload.ShouldDeepEqual(expected);
                         break;
 
                     case (true, _):
@@ -216,7 +216,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
                 Assert.Null(actual.ResultError);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {
@@ -269,7 +269,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
                 Assert.Null(actual.ResultError);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {
@@ -322,7 +322,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
                 Assert.Null(actual.ResultError);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {

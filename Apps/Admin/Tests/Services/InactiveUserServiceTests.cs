@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<List<AdminUserProfileView>> actual = await mock.Service.GetInactiveUsersAsync(mock.InactiveDays);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static JwtModel GenerateJwt()

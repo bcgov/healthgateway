@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             RequestResult<UserNote> actualResult = await controller.CreateNote(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             RequestResult<UserNote> actualResult = await controller.UpdateNote(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             RequestResult<UserNote> actualResult = await controller.DeleteNote(expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

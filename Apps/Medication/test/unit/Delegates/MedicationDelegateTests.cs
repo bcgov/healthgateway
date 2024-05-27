@@ -151,7 +151,7 @@ namespace HealthGateway.MedicationTests.Delegates
                     string.Empty);
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
-            medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
+            response.ResourcePayload.ShouldDeepEqual(medicationHistory.Response);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace HealthGateway.MedicationTests.Delegates
                     string.Empty);
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
-            medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
+            response.ResourcePayload.ShouldDeepEqual(medicationHistory.Response);
         }
 
         /// <summary>

@@ -85,7 +85,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<ReportModel> actualResult = await service.GetReportAsync(reportRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

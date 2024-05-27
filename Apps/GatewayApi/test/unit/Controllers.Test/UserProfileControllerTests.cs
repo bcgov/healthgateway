@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
             RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected);
 
-            expected.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<ILegalAgreementService>().Object);
 
             ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest, CancellationToken.None);
-            expected.ShouldDeepEqual(actualResult.Value);
+            actualResult.Value.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 legalAgreementServiceMock.Object);
 
             RequestResult<TermsOfServiceModel> actualResult = await service.GetLastTermsOfService(It.IsAny<CancellationToken>());
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -540,7 +540,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<ILegalAgreementService>().Object);
 
             RequestResult<UserProfileModel> actualResult = await controller.UpdateAcceptedTerms(this.hdid, Guid.Empty, It.IsAny<CancellationToken>());
-            expected.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expected);
         }
 
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)

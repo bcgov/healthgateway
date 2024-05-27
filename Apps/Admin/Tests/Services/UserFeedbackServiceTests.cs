@@ -85,7 +85,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<UserFeedbackView> actual = await mock.Service.AssociateFeedbackTagsAsync(userFeedbackId, adminTags.Select(x => x.AdminTagId).ToList());
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<AdminTagView> actual = await mock.Service.CreateTagAsync(mock.TagName);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<AdminTagView> actual = await mock.Service.CreateTagAsync(mock.TagName);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<AdminTagView> actual = await mock.Service.DeleteTagAsync(new() { Id = mock.AdminTagId, Name = mock.TagName });
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<AdminTagView> actual = await mock.Service.DeleteTagAsync(new() { Id = mock.AdminTagId, Name = mock.TagName });
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<IList<AdminTagView>> actual = await mock.Service.GetAllTagsAsync();
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<IList<UserFeedbackView>> actual = await mock.Service.GetUserFeedbackAsync();
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<UserFeedbackView> actual = await mock.Service.UpdateFeedbackReviewAsync(mock.Update);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
 
             feedbackDelegateMock.Verify(
                 v => v.UpdateUserFeedbackAsync(
