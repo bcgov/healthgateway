@@ -24,11 +24,15 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Endpoint">Gets the URI for the Authentication server.</param>
     /// <param name="IdentityProviderId">Gets the ID of the Identity Provider to be used.</param>
     /// <param name="ClientId">Gets the client ID.</param>
+    /// <param name="AndroidClientId">Gets the android client ID.</param>
+    /// <param name="IosClientId">Gets the ios client ID.</param>
     /// <param name="RedirectUri">Gets the redirect URI.</param>
     public record MobileAuthenticationSettings(
         Uri? Endpoint = null,
         string? IdentityProviderId = null,
         string? ClientId = null,
+        string? AndroidClientId = null,
+        string? IosClientId = null,
         [SuppressMessage("Design", "CA1054:URI-like parameters should not be strings", Justification = "Special URI Values")]
         [SuppressMessage("Design", "CA1056:URI properties should not be strings", Justification = "Special URI Values")]
         string? RedirectUri = null);
