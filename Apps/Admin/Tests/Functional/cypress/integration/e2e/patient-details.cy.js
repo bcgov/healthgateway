@@ -1,4 +1,4 @@
-import { performSearch } from "../../utilities/supportUtilities";
+import { performSearch as supportUtilitiesPerformSearch } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -8,6 +8,26 @@ const phnWithBlockedImmunizations = "9873659643";
 const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
+const defaultTimeout = 60000;
+
+function setupPatientDetailsAliases() {
+    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
+        "getPatientSupportDetails"
+    );
+
+    cy.intercept("GET", "**/Support/Users*").as("getUsers");
+}
+
+function waitForPatientDetailsDataLoad() {
+    cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+    cy.wait("@getUsers", { timeout: defaultTimeout });
+}
+
+function performSearch(queryType, queryString) {
+    setupPatientDetailsAliases();
+    supportUtilitiesPerformSearch(queryType, queryString);
+    waitForPatientDetailsDataLoad();
+}
 
 function selectPatientTab(tabText) {
     selectTab("[data-testid=patient-details-tabs]", tabText);
@@ -655,10 +675,8 @@ describe("Patient Details as Support", () => {
             .contains(phnWithBlockedImmunizations);
         cy.get("[data-testid=patient-hdid]").should("not.exist");
 
-        getTableRows("[data-testid=immunization-table]").should("not.exist");
-        getTableRows("[data-testid=assessment-history-table]").should(
-            "not.exist"
-        );
+        cy.get("[data-testid=immunization-table]").should("not.exist");
+        cy.get("[data-testid=assessment-history-table]").should("not.exist");
         cy.get("[data-testid=blocked-immunization-alert").should("be.visible");
     });
 
