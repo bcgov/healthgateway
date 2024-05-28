@@ -110,7 +110,10 @@ function validateMailAddressFormSubmission() {
 function validateCovid19TreatmentAssessmentFormBackCancel() {
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
+    setupPatientDetailsAliases();
     cy.get("[data-testid=back-button]").click();
+    waitForPatientDetailsDataLoad();
+    cy.get("[data-testid=patient-details-back-button]").should("be.visible");
     cy.url().should("include", "/patient-details");
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
