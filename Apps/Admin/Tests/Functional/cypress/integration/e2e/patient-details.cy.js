@@ -103,7 +103,11 @@ function validateMailAddressFormSubmission() {
     cy.get("[data-testid=province-input]").click();
     cy.get("[data-testid=province]").contains("British Columbia").click();
     cy.get("[data-testid=postal-code-input]").clear().type("V3X 4J5");
+
+    cy.intercept("POST", "**/Patient/Document").as("postDocument");
     cy.get("[data-testid=address-confirmation-button]").click();
+    cy.wait("@postDocument", { timeout: defaultTimeout });
+
     cy.get("[data-testid=address-confirmation-form]").should("not.exist");
 }
 
@@ -281,7 +285,12 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
 
     cy.get("[data-testid=submit-covid-19-treatment-assessment]").click();
     cy.get("[data-testid=address-confirmation-form]").should("be.visible");
+
+    cy.intercept("POST", "**/Support/CovidAssessment").as(
+        "postCovidAssessment"
+    );
     cy.get("[data-testid=address-confirmation-button]").click();
+    cy.wait("@postCovidAssessment", { timeout: defaultTimeout });
     cy.get("[data-testid=address-confirmation-form]").should("not.exist");
     cy.url().should("include", "/patient-details");
 }
