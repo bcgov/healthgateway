@@ -1,4 +1,4 @@
-import { performSearch as supportUtilitiesPerformSearch } from "../../utilities/supportUtilities";
+import { performSearch as search } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -25,7 +25,7 @@ function waitForPatientDetailsDataLoad() {
 
 function performSearch(queryType, queryString) {
     setupPatientDetailsAliases();
-    supportUtilitiesPerformSearch(queryType, queryString);
+    search(queryType, queryString);
     waitForPatientDetailsDataLoad();
 }
 
