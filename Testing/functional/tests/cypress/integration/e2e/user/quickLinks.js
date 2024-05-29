@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 
 const homePath = "/home";
 
@@ -24,6 +24,8 @@ const cardButtonTitleSelector = "[data-testid=card-button-title]";
 const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 
+const defaultTimeout = 60000;
+
 function getQuickLinkChip(module) {
     return cy.get(`${addQuickLinkChipSelector}[name=${module}-filter]`);
 }
@@ -35,7 +37,7 @@ function getQuickLinkCard(title) {
 }
 
 describe("Quick Links", () => {
-    it("Add and Remove Quick Link", () => {
+    it("Add, Verify Timeline Link and Remove Quick Link", () => {
         cy.configureSettings({
             datasets: [
                 {
@@ -73,9 +75,17 @@ describe("Quick Links", () => {
             .should("not.be.enabled");
 
         cy.log("Verifying quick link card is present and links to timeline");
+        cy.intercept("GET", `**/Communication/*`).as("getCommunication");
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
+            "getCovid19Orders"
+        );
+
         getQuickLinkCard(laboratoryTitle)
             .should("be.visible", "be.enabled")
             .click();
+
+        cy.wait("@getCommunication", { timeout: defaultTimeout });
+        cy.wait("@getCovid19Orders", { timeout: defaultTimeout });
         cy.checkTimelineHasLoaded();
 
         cy.log("Verifying filter is active");
@@ -111,7 +121,7 @@ describe("Quick Links", () => {
             .should("be.enabled");
     });
 
-    it("Add and Remove Multiple Quick Links", () => {
+    it("Add, Cancel, Add and Remove Multiple Quick Links", () => {
         cy.configureSettings({
             datasets: [
                 {
@@ -140,38 +150,86 @@ describe("Quick Links", () => {
 
         cy.log("Opening add quick link modal");
         cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.log("Verifying 3 checkboxes exist");
         cy.get(addQuickLinkChipSelector).should("have.length", 3);
-
-        cy.log("Selecting encounters and immunization checkboxes");
-        getQuickLinkChip(encounterModule)
-            .should("exist")
-            .click({ force: true });
-        getQuickLinkChip(immunizationModule)
-            .should("exist")
-            .click({ force: true });
-
-        cy.log("Adding quick links");
+        cy.log(
+            "Verifying submit button is disabled beccause no quick links have been selected"
+        );
         cy.get(addQuickLinkSubmitButtonSelector)
             .should("be.visible")
-            .should("be.enabled")
-            .click();
+            .should("not.be.enabled");
+
+        cy.log("Selecting encounters and immunization checkboxes");
+        getQuickLinkChip(encounterModule).should("exist").click();
+        getQuickLinkChip(immunizationModule).should("exist").click();
+        getQuickLinkChip(laboratoryModule)
+            .should("exist")
+            .should("not.have.class", "v-chip--selected");
+
+        // Cancel
+        cy.get(addQuickLinkCancelButtonSelector).click();
+        cy.contains(cardButtonTitleSelector, encounterTitle).should(
+            "not.exist"
+        );
+        cy.contains(cardButtonTitleSelector, immunizationTitle).should(
+            "not.exist"
+        );
+        cy.contains(cardButtonTitleSelector, laboratoryTitle).should(
+            "not.exist"
+        );
+
+        // Open quick link modal again
+        cy.log("Opening add quick link modal again to verify cancel");
+        cy.get(addQuickLinkButtonSelector).click();
+        cy.get(addQuickLinkModalTextSelector).should("exist");
+
+        cy.log(
+            "Verifying submit button is disabled beccause no quick links have been selected"
+        );
+        cy.get(addQuickLinkSubmitButtonSelector)
+            .should("be.visible")
+            .should("not.be.enabled");
+
+        // Verify quick links are back in modal
+        getQuickLinkChip(encounterModule)
+            .should("exist")
+            .should("not.have.class", "v-chip--selected");
+        getQuickLinkChip(immunizationModule)
+            .should("exist")
+            .should("not.have.class", "v-chip--selected");
+        getQuickLinkChip(laboratoryModule)
+            .should("exist")
+            .should("not.have.class", "v-chip--selected");
+
+        // Select quick links again to add
+        cy.log("Select quick links again to add");
+        getQuickLinkChip(encounterModule).should("exist").click();
+        getQuickLinkChip(immunizationModule).should("exist").click();
+        getQuickLinkChip(laboratoryModule)
+            .should("exist")
+            .should("not.have.class", "v-chip--selected");
+
+        cy.log("Adding quick links");
+        cy.get(addQuickLinkSubmitButtonSelector).click();
 
         cy.log("Verifying quick link cards are present");
         getQuickLinkCard(encounterTitle).should("be.visible", "be.enabled");
         getQuickLinkCard(immunizationTitle).should("be.visible", "be.enabled");
+        cy.contains(cardButtonTitleSelector, laboratoryTitle).should(
+            "not.exist"
+        );
 
         cy.log("Opening add quick link modal");
         cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
-        cy.log("Verifying submit quick link button is disabled");
+        cy.log(
+            "Verifying submit button is disabled beccause no quick links have been selected"
+        );
         cy.get(addQuickLinkSubmitButtonSelector)
             .should("be.visible")
             .should("not.be.enabled");
@@ -184,15 +242,12 @@ describe("Quick Links", () => {
 
         cy.log("Cancelling add quick link modal");
         cy.get(addQuickLinkCancelButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.log("Removing quick links");
         getQuickLinkCard(encounterTitle).within(() => {
-            cy.get(quickLinkMenuButtonSelector)
-                .should("be.visible", "be.enabled")
-                .click();
+            cy.get(quickLinkMenuButtonSelector).click();
         });
         cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         cy.contains(cardButtonTitleSelector, encounterTitle).should(
@@ -210,134 +265,18 @@ describe("Quick Links", () => {
 
         cy.log("Opening add quick link modal");
         cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.log("Verifying 3 checkboxes exist");
         cy.get(addQuickLinkChipSelector).should("have.length", 3);
-    });
-});
 
-describe("Add Quick Link Modal", () => {
-    beforeEach(() => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-                {
-                    name: "medication",
-                    enabled: true,
-                },
-                {
-                    name: "specialAuthorityRequest",
-                    enabled: true,
-                },
-                {
-                    name: "note",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.log(
+            "Verifying submit button is disabled beccause no quick links have been selected"
         );
-
-        // Validate home page has displayed before clicking on quick link.
-        cy.get("[data-testid=health-records-card]").should("be.visible");
-    });
-
-    it("Add Quick Link  - Cancel when all selected", () => {
-        cy.get(addQuickLinkButtonSelector).click();
-        cy.get(addQuickLinkModalTextSelector).should("exist");
-
-        // Check off
-        getQuickLinkChip(encounterModule).should("exist").click();
-
-        getQuickLinkChip(immunizationModule).should("exist").click();
-
-        getQuickLinkChip(laboratoryModule).should("exist").click();
-
-        getQuickLinkChip(allLaboratoryModule).should("exist").click();
-
-        getQuickLinkChip(medicationRequestModule).should("exist").click();
-
-        // Cancel
-        cy.get(addQuickLinkCancelButtonSelector).click();
-        cy.get(addQuickLinkButtonSelector).click();
-        cy.get(addQuickLinkModalTextSelector).should("exist");
-
-        // Verify
-        getQuickLinkChip(encounterModule)
-            .should("exist")
-            .should("not.have.class", "v-chip--selected");
-        getQuickLinkChip(immunizationModule)
-            .should("exist")
-            .should("not.have.class", "v-chip--selected");
-        getQuickLinkChip(laboratoryModule)
-            .should("exist")
-            .should("not.have.class", "v-chip--selected");
-        getQuickLinkChip(allLaboratoryModule)
-            .should("exist")
-            .should("not.have.class", "v-chip--selected");
-        getQuickLinkChip(medicationRequestModule)
-            .should("exist")
-            .should("not.have.class", "v-chip--selected");
-    });
-
-    it("Add Quick Link - 2 selected and 1 un-selected", () => {
-        cy.get(addQuickLinkButtonSelector).click();
-        cy.get(addQuickLinkModalTextSelector).should("exist");
-
-        // Check off
-        getQuickLinkChip(immunizationModule)
-            .should("exist")
-            .click()
-            .should("have.class", "v-chip--selected");
-
-        getQuickLinkChip(laboratoryModule)
-            .should("exist")
-            .click()
-            .should("have.class", "v-chip--selected");
-
-        getQuickLinkChip(immunizationModule)
-            .should("exist")
-            .click()
-            .should("not.have.class", "v-chip--selected");
-
-        // Verify
-        getQuickLinkChip(encounterModule)
-            .should("exist")
-            .and("not.have.class", "v-chip--selected");
-        getQuickLinkChip(immunizationModule)
-            .should("exist")
-            .and("not.have.class", "v-chip--selected");
-        getQuickLinkChip(laboratoryModule)
-            .should("exist")
-            .and("have.class", "v-chip--selected");
-        getQuickLinkChip(allLaboratoryModule)
-            .should("exist")
-            .and("not.have.class", "v-chip--selected");
-        getQuickLinkChip(medicationRequestModule)
-            .should("exist")
-            .and("not.have.class", "v-chip--selected");
+        cy.get(addQuickLinkSubmitButtonSelector)
+            .should("be.visible")
+            .should("not.be.enabled");
     });
 });
 
