@@ -1,17 +1,32 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+
+const defaultTimeout = 60000;
 
 function testPageBreadcrumb(url, dataTestId) {
-    if (url === "/covid19") {
-        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
-            "getVaccinationStatus"
-        );
-    }
+    cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
+        "getVaccinationStatus"
+    );
+    cy.intercept("GET", `**/Communication/*`).as("getCommunication");
+    cy.intercept("GET", "**/Patient/*").as("getPatient");
+    cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+    cy.intercept("GET", "**/UserProfile/*/Dependent").as("getDependent");
 
     cy.visit(url);
 
     if (url === "/covid19") {
-        cy.wait("@getVaccinationStatus");
+        cy.wait("@getVaccinationStatus", { timeout: defaultTimeout });
     }
+
+    if (url === "/dependents") {
+        cy.wait("@getDependent", { timeout: defaultTimeout });
+    }
+
+    if (url !== "/dependents" && url !== "/profile") {
+        cy.wait("@getPatient", { timeout: defaultTimeout });
+        cy.wait("@getUserProfile", { timeout: defaultTimeout });
+    }
+
+    cy.wait("@getCommunication", { timeout: defaultTimeout });
 
     cy.get("[data-testid=breadcrumbs]").should("be.visible");
     cy.get(`[data-testid='${dataTestId}'].v-breadcrumbs-item--active`).should(

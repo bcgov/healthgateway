@@ -5,8 +5,6 @@ const homePath = "/home";
 const encounterModule = "Encounter";
 const immunizationModule = "Immunization";
 const laboratoryModule = "Laboratory";
-const allLaboratoryModule = "AllLaboratory";
-const medicationRequestModule = "MedicationRequest";
 
 const encounterTitle = "Health Visits";
 const immunizationTitle = "Immunizations";
