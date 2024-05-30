@@ -324,9 +324,11 @@ describe("dependents", () => {
             "Validating Immunization History Tab - Verify result and download"
         );
 
+        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
+        cy.wait("@getImmunization", { timeout: defaultTimeout });
 
         // History tab
         cy.log("Validating history tab");
@@ -403,9 +405,11 @@ describe("dependents", () => {
             "Validating Immunization Forecast Tab - Verify result and download"
         );
 
+        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
+        cy.wait("@getImmunization", { timeout: defaultTimeout });
 
         // Forecast tab
         cy.log("Validating forecast tab");
@@ -514,16 +518,12 @@ describe("dependents", () => {
     it("Validate Clinical Document - Verify result and download", () => {
         cy.log("Validating Clinical Document Tab - Verify result and download");
 
-        cy.intercept("GET", "**/UserProfile/*/Dependent").as("getDependent");
-        cy.intercept("GET", `**/Communication/*`).as("getCommunication");
         cy.intercept("GET", "**/ClinicalDocument/*").as("getClinicalDocument");
 
         cy.get(
             `[data-testid=clinical-document-tab-title-${validDependentHdid}]`
         ).click();
 
-        cy.wait("@getDependent", { timeout: defaultTimeout });
-        cy.wait("@getCommunication", { timeout: defaultTimeout });
         cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
 
         // Expecting more than 1 row to return because also need to consider the table headers.
