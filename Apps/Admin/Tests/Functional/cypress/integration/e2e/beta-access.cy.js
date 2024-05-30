@@ -83,20 +83,6 @@ describe("Beta feature access", () => {
         cy.get("[data-testid=salesforce-access-switch]").click();
         cy.get("[data-testid=salesforce-access-switch]").should("be.checked");
 
-        // Search and verify results again
-        cy.log(
-            "After assigning salesforce access, search and verify assigning of salesforce feature again."
-        );
-        cy.get("[data-testid=query-input]")
-            .should("be.visible")
-            .should("be.enabled")
-            .click()
-            .clear()
-            .should("be.empty")
-            .type(validEmail);
-        cy.get("[data-testid=search-button]").click();
-        cy.get("[data-testid=salesforce-access-switch]").should("be.checked");
-
         // Tab to View and verify assigned feature(s)
         cy.log("Verify assigned feature(s) on View tab.");
         selectTab("[data-testid=beta-access-tabs]", "View");

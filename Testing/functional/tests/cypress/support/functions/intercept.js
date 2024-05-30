@@ -143,7 +143,7 @@ export function setupStandardAliases() {
         "**/PatientData/*?patientDataTypes=OrganDonorRegistrationStatus*"
     ).as("getOrganDonorRegistrationStatus");
     cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
-    cy.intercept("GET", "**/UserProfile/*/Dependent").as("getDependent");
+    cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 }
 
 export function waitForInitialDataLoad(username, config, path) {

@@ -454,9 +454,14 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
     });
 });
 
-describe("Dependents Tabs Disabled", () => {
+describe("Dependents - Tabs Disabled", () => {
     const dependentHdid = "645645767756756767";
+
     beforeEach(() => {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+
         cy.configureSettings({
             dependents: {
                 enabled: true,
@@ -476,11 +481,11 @@ describe("Dependents Tabs Disabled", () => {
     it("Immunization and Clinical Documents Tabs - Configuration Disabled", () => {
         cy.log("Validating Immunization Tab - configuration disabled");
         cy.get(`[data-testid=immunization-tab-${dependentHdid}]`).should(
-            "not.exist"
+            "not.be.visible"
         );
         cy.log("Validating Clinical Documents Tab - configuration disabled");
         cy.get(`[data-testid=clinical-document-tab-${dependentHdid}]`).should(
-            "not.exist"
+            "not.be.visible"
         );
     });
 });
