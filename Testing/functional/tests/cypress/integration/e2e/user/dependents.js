@@ -140,9 +140,11 @@ describe("dependents", () => {
             force: true,
         });
 
+        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
         cy.get("[data-testid=register-dependent-btn]")
             .should("be.disabled")
             .click({ force: true });
+        cy.wait("@postDependent", { timeout: defaultTimeout });
 
         // Validate the modal has not closed
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
@@ -256,7 +258,9 @@ describe("dependents", () => {
             force: true,
         });
 
+        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
         cy.get("[data-testid=register-dependent-btn]").click();
+        cy.wait("@postDependent", { timeout: defaultTimeout });
 
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
@@ -307,7 +311,9 @@ describe("dependents", () => {
             force: true,
         });
 
+        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
         cy.get("[data-testid=register-dependent-btn]").click();
+        cy.wait("@postDependent", { timeout: defaultTimeout });
 
         // Validate the modal is not done
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
@@ -603,7 +609,9 @@ describe("CRUD Operations", () => {
             force: true,
         });
 
+        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
         cy.get("[data-testid=register-dependent-btn]").click();
+        cy.wait("@postDependent", { timeout: defaultTimeout });
 
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
@@ -633,7 +641,11 @@ describe("CRUD Operations", () => {
 
         cy.get("@newDependentCard").within(() => {
             // Validate the tab and elements are present
+            cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
+                "getCovid19Orders"
+            );
             cy.get("[data-testid=covid19TabTitle]").click();
+            cy.wait("@getCovid19Orders", { timeout: defaultTimeout });
             cy.get("[data-testid=dependentCovidTestDate]").each(($date) => {
                 cy.wrap($date).contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
             });
@@ -697,7 +709,9 @@ describe("CRUD Operations", () => {
             force: true,
         });
 
+        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
         cy.get("[data-testid=register-dependent-btn]").click();
+        cy.wait("@postDependent", { timeout: defaultTimeout });
 
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
