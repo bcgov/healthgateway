@@ -26,6 +26,7 @@
     <Content Remove="Assets\docs\EmailValidationTemplate.html" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\docs\AdminAddDependentMismatch.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20200511.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />

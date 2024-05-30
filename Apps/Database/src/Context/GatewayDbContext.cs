@@ -846,6 +846,21 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new EmailTemplate
+                    {
+                        Id = Guid.Parse("491dabc6-f799-427c-ace4-b49ece2d612c"),
+                        Name = "AdminAddDependentMismatch",
+                        From = HgDoNotReply,
+                        Subject = "Health Gateway Debug Info: Add Dependent Mismatch",
+                        Body = ReadResource("HealthGateway.Database.Assets.docs.AdminAddDependentMismatch.html"),
+                        Priority = EmailPriority.Low,
+                        EffectiveDate = this.DefaultSeedDateUtc,
+                        FormatCode = EmailFormat.Html,
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     });
         }
 
