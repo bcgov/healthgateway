@@ -34,6 +34,26 @@ function getQuickLinkCard(title) {
         .parents(quickLinkCardSelector);
 }
 
+function clickRemoveQuickLinkSelector(isPost = false) {
+    if (isPost) {
+        cy.intercept("POST", "**/UserProfile/*/preference*").as(
+            "postUserProfilePreference"
+        );
+    } else {
+        cy.intercept("PUT", "**/UserProfile/*/preference*").as(
+            "putUserProfilePreference"
+        );
+    }
+
+    cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+
+    if (isPost) {
+        cy.wait("@postUserProfilePreference", { timeout: defaultTimeout });
+    } else {
+        cy.wait("@putUserProfilePreference", { timeout: defaultTimeout });
+    }
+}
+
 describe("Quick Links", () => {
     it("Add, Verify Timeline Link and Remove Quick Link", () => {
         cy.configureSettings({
@@ -106,7 +126,8 @@ describe("Quick Links", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+
+        clickRemoveQuickLinkSelector();
 
         cy.log("Verifying quick link card no longer exists");
         cy.contains(cardButtonTitleSelector, laboratoryTitle).should(
@@ -247,7 +268,7 @@ describe("Quick Links", () => {
         getQuickLinkCard(encounterTitle).within(() => {
             cy.get(quickLinkMenuButtonSelector).click();
         });
-        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        clickRemoveQuickLinkSelector();
         cy.contains(cardButtonTitleSelector, encounterTitle).should(
             "not.exist"
         );
@@ -256,7 +277,7 @@ describe("Quick Links", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        clickRemoveQuickLinkSelector();
         cy.contains(cardButtonTitleSelector, immunizationTitle).should(
             "not.exist"
         );
@@ -317,7 +338,7 @@ describe("Organ Donor Quick Link", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        clickRemoveQuickLinkSelector(true);
 
         cy.log("Verifying organ donor quick link no longer exists");
         cy.get(organDonorQuickLinkCardSelector).should("not.exist");
@@ -427,7 +448,7 @@ describe("Vaccine Card Quick Link", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        clickRemoveQuickLinkSelector(true);
 
         cy.log("Verifying vaccine card quick link no longer exists");
         cy.get(vaccineCardQuickLinkCardSelector).should("not.exist");
@@ -496,7 +517,7 @@ describe("Health Connect Registry Card", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        clickRemoveQuickLinkSelector(true);
 
         cy.log("Verifying health connect quick link no longer exists");
         cy.get(healthConnectQuickLinkCardSelector).should("not.exist");
