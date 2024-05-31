@@ -9,7 +9,7 @@ function testPageBreadcrumb(url, dataTestId) {
     cy.intercept("GET", `**/Communication/*`).as("getCommunication");
     cy.intercept("GET", "**/Patient/*").as("getPatient");
     cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
-    cy.intercept("GET", "**/UserProfile/*/Dependent").as("getDependent");
+    cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 
     cy.visit(url);
 
