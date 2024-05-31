@@ -1,16 +1,28 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+
+const defaultTimeout = 60000;
 
 function testPageBreadcrumb(url, dataTestId) {
-    if (url === "/covid19") {
-        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
-            "getVaccinationStatus"
-        );
-    }
+    cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
+        "getVaccinationStatus"
+    );
+    cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
+    cy.intercept("GET", "**/UserProfile/termsofservice").as(
+        "getTermsOfService"
+    );
 
     cy.visit(url);
 
     if (url === "/covid19") {
-        cy.wait("@getVaccinationStatus");
+        cy.wait("@getVaccinationStatus", { timeout: defaultTimeout });
+    }
+
+    if (url === "/dependents") {
+        cy.wait("@getDependent", { timeout: defaultTimeout });
+    }
+
+    if (url == "/termsOfService") {
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
     }
 
     cy.get("[data-testid=breadcrumbs]").should("be.visible");
