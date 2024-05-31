@@ -6,9 +6,6 @@ function testPageBreadcrumb(url, dataTestId) {
     cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
         "getVaccinationStatus"
     );
-    cy.intercept("GET", `**/Communication/*`).as("getCommunication");
-    cy.intercept("GET", "**/Patient/*").as("getPatient");
-    cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
     cy.intercept("GET", "**/UserProfile/termsofservice").as(
         "getTermsOfService"
@@ -27,8 +24,6 @@ function testPageBreadcrumb(url, dataTestId) {
     if (url == "/termsOfService") {
         cy.wait("@getTermsOfService", { timeout: defaultTimeout });
     }
-
-    cy.wait("@getCommunication", { timeout: defaultTimeout });
 
     cy.get("[data-testid=breadcrumbs]").should("be.visible");
     cy.get(`[data-testid='${dataTestId}'].v-breadcrumbs-item--active`).should(
