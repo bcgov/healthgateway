@@ -76,7 +76,9 @@ describe("Validate Modals Popup", () => {
             AuthMethod.KeyCloak
         );
         cy.checkTimelineHasLoaded();
-        cy.get("[data-testid=protectiveWordCloseButton]").click();
+        cy.get("[data-testid=protectiveWordCloseButton]")
+            .should("be.visible", "be.enabled")
+            .click();
         cy.get("[data-testid=protectiveWordModal]").should("not.exist");
     });
 });
