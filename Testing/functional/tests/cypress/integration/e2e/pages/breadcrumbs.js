@@ -10,6 +10,9 @@ function testPageBreadcrumb(url, dataTestId) {
     cy.intercept("GET", "**/Patient/*").as("getPatient");
     cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
+    cy.intercept("GET", "**/UserProfile/termsofservice").as(
+        "getTermsOfService"
+    );
 
     cy.visit(url);
 
@@ -21,9 +24,8 @@ function testPageBreadcrumb(url, dataTestId) {
         cy.wait("@getDependent", { timeout: defaultTimeout });
     }
 
-    if (url !== "/dependents" && url !== "/profile") {
-        cy.wait("@getPatient", { timeout: defaultTimeout });
-        cy.wait("@getUserProfile", { timeout: defaultTimeout });
+    if (url == "/termsOfService") {
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
     }
 
     cy.wait("@getCommunication", { timeout: defaultTimeout });
