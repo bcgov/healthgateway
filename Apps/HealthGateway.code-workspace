@@ -5,6 +5,10 @@
             "path": "WebClient/src/ClientApp"
         },
         {
+            "name": "Landing",
+            "path": "Landing/src"
+        },
+        {
             "name": "../Testing/functional/tests",
             "path": "../Testing/functional/tests"
         },
