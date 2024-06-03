@@ -958,7 +958,7 @@ VALUES (
                     >
                         <div role="img" aria - label="Health Gateway Logo">
                             <img
-                                src="https://dev.healthgateway.gov.bc.ca/Logo.png"
+                                src="https://dev-legacy.healthgateway.gov.bc.ca/Logo.png"
                                 alt="Health Gateway Logo"
                             />
                         </div>
@@ -982,7 +982,7 @@ VALUES (
                         </p>
                         <a
                             style="color: #1292c5; font-weight: 600"
-                            href="https://dev.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
+                            href="https://dev-legacy.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
                         >
                             Health Gateway Account Verification
                         </a>
@@ -1056,7 +1056,7 @@ VALUES (
                     >
                         <div role="img" aria - label="Health Gateway Logo">
                             <img
-                                src="https://dev.healthgateway.gov.bc.ca/Logo.png"
+                                src="https://dev-legacy.healthgateway.gov.bc.ca/Logo.png"
                                 alt="Health Gateway Logo"
                             />
                         </div>
@@ -1080,7 +1080,7 @@ VALUES (
                         </p>
                         <a
                             style="color: #1292c5; font-weight: 600"
-                            href="https://dev.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
+                            href="https://dev-legacy.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
                         >
                             Health Gateway Account Verification
                         </a>
@@ -1154,7 +1154,7 @@ VALUES (
                     >
                         <div role="img" aria - label="Health Gateway Logo">
                             <img
-                                src="https://dev.healthgateway.gov.bc.ca/Logo.png"
+                                src="https://dev-legacy.healthgateway.gov.bc.ca/Logo.png"
                                 alt="Health Gateway Logo"
                             />
                         </div>
@@ -1178,7 +1178,7 @@ VALUES (
                         </p>
                         <a
                             style="color: #1292c5; font-weight: 600"
-                            href="https://dev.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
+                            href="https://dev-legacy.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
                         >
                             Health Gateway Account Verification
                         </a>
