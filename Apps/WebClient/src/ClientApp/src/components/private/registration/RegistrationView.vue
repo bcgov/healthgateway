@@ -78,6 +78,11 @@ const isLoading = computed(
 const termsOfServiceLoaded = computed(
     () => !isLoading.value && Boolean(termsOfService.value?.content)
 );
+
+const validateEmail = (value: string) => {
+    return !isEmailChecked.value || isValidEmail(value);
+};
+
 const validations = computed(() => ({
     smsNumber: {
         required: requiredIf(isSMSNumberChecked),
@@ -128,7 +133,7 @@ const v$ = useVuelidate(validations, {
     accepted,
 });
 
-function validateEmail(emailAddress: string): boolean {
+function isValidEmail(emailAddress: string): boolean {
     return ValidationRegEx.Email.test(emailAddress);
 }
 
@@ -298,6 +303,7 @@ loadTermsOfService();
                 <v-checkbox
                     id="smsCheckbox"
                     v-model="isSMSNumberChecked"
+                    data-testid="sms-checkbox"
                     label="Text Notifications"
                     @change="onSMSOptout($event)"
                 />
