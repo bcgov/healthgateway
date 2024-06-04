@@ -8,7 +8,6 @@ import TileComponent from "@/components/public/landing/TileComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";
-import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
 import ConfigUtil from "@/utility/configUtil";
@@ -34,7 +33,6 @@ const datasetEntryTypes: EntryType[] = [
 const serviceEntryTypes: EntryType[] = [EntryType.BcCancerScreening];
 
 const configStore = useConfigStore();
-const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
@@ -45,7 +43,6 @@ const showTabletTooltip = ref(false);
 const showSmartphoneTooltip = ref(false);
 
 const isOffline = computed(() => configStore.isOffline);
-const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
 
 const offlineMessage = computed(
     () => configStore.webConfig.offlineMode?.message ?? ""
@@ -135,7 +132,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                     Health Gateway provides secure and convenient access to your
                     health records in British Columbia
                 </p>
-                <div v-if="!oidcIsAuthenticated" class="mb-4">
+                <div class="mb-4">
                     <HgButtonComponent
                         id="btnLogin"
                         class="btn-auth-landing"

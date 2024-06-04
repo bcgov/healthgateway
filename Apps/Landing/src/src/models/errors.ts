@@ -1,18 +1,6 @@
 import { ActionType } from "@/constants/actionType";
 import { ResultErrorDetails } from "@/models/requestResult";
 
-export interface BannerError {
-    title: string;
-    traceId?: string;
-    source: string;
-}
-
-export interface CustomBannerError {
-    title: string;
-    description: string;
-    detail?: string;
-}
-
 export class HttpError extends Error {
     // The HTTP status code returned by the request.
     statusCode?: number;

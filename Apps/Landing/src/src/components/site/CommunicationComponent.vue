@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { computed, ref } from "vue";
 
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -8,61 +7,30 @@ import Communication, { CommunicationType } from "@/models/communication";
 import { ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { ICommunicationService, ILogger } from "@/services/interfaces";
-import { useAuthStore } from "@/stores/auth";
-import { useConfigStore } from "@/stores/config";
-import { useUserStore } from "@/stores/user";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const communicationService = container.get<ICommunicationService>(
     SERVICE_IDENTIFIER.CommunicationService
 );
-const route = useRoute();
-const authStore = useAuthStore();
-const configStore = useConfigStore();
-const userStore = useUserStore();
 
 const bannerCommunication = ref<Communication | null>(null);
-const inAppCommunication = ref<Communication | null>(null);
 
-const displayInAppBanner = computed(() => {
-    return (
-        authStore.oidcIsAuthenticated &&
-        userStore.userIsRegistered &&
-        userStore.isValidIdentityProvider &&
-        !configStore.isOffline
-    );
-});
-const hasCommunication = computed(() =>
-    displayInAppBanner.value
-        ? inAppCommunication.value != null
-        : bannerCommunication.value != null
-);
-const text = computed(() =>
-    displayInAppBanner.value
-        ? inAppCommunication.value?.text
-        : bannerCommunication.value?.text
-);
+const hasCommunication = computed(() => bannerCommunication.value != null);
+const text = computed(() => bannerCommunication.value?.text);
 
-function setCommunication(
-    type: CommunicationType,
-    communication: Communication | null
-) {
-    if (type === CommunicationType.Banner) {
-        bannerCommunication.value = communication;
-    } else {
-        inAppCommunication.value = communication;
-    }
+function setCommunication(communication: Communication | null) {
+    bannerCommunication.value = communication;
 }
 
 function fetchCommunication(type: CommunicationType): void {
     communicationService
-        .getActive(type)
+        .getActive(CommunicationType.Banner)
         .then((requestResult: RequestResult<Communication | null>) =>
-            setCommunication(type, requestResult.resourcePayload)
+            setCommunication(requestResult.resourcePayload)
         )
         .catch((err: ResultError) => {
             if (err.statusCode === 429) {
-                setCommunication(type, {
+                setCommunication({
                     text: "We are experiencing higher than usual site traffic, which may cause delays in accessing your health records. Please try again later.",
                     communicationTypeCode: type,
                 });
@@ -71,13 +39,7 @@ function fetchCommunication(type: CommunicationType): void {
         });
 }
 
-watch(
-    () => route.path,
-    () => fetchCommunication(CommunicationType.InApp)
-);
-
 fetchCommunication(CommunicationType.Banner);
-fetchCommunication(CommunicationType.InApp);
 </script>
 
 <template>

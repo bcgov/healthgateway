@@ -5,7 +5,6 @@ import {
     ExternalConfiguration,
     IdentityProviderConfiguration,
 } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
 import { HttpDelegate } from "@/services/httpDelegate";
 import { LoglevelLogger } from "@/services/loglevelLogger";
@@ -34,15 +33,15 @@ export const useConfigStore = defineStore("config", () => {
         const offlineConfig = webConfig.value.offlineMode;
 
         if (offlineConfig) {
-            const startTime = DateWrapper.fromIso(offlineConfig.startDateTime);
+            const startTime = new Date(offlineConfig.startDateTime);
             const endTime = offlineConfig.endDateTime
-                ? DateWrapper.fromIso(offlineConfig.endDateTime)
-                : DateWrapper.fromNumerical(2050, 12, 31);
+                ? new Date(offlineConfig.endDateTime)
+                : new Date(2050, 11, 31);
 
-            const now = DateWrapper.now();
+            const now = new Date();
             if (
-                now.isAfterOrSame(startTime) &&
-                now.isBeforeOrSame(endTime) &&
+                now >= startTime &&
+                now <= endTime &&
                 !offlineConfig.whitelist.includes(clientIP)
             ) {
                 return true;
