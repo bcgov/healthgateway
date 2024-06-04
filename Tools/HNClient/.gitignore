@@ -1,6 +1,0 @@
-#HNClient config
-HNCLIENT.id
-fwlist.txt
-*.log
-*.cli
-*.trc
