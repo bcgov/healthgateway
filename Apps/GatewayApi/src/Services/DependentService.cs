@@ -48,18 +48,22 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
+        private const string MonitoredHdidsKey = "MonitoredHdids";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IGatewayApiMappingService mappingService;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
         private readonly bool dependentsChangeFeedEnabled;
+        private readonly string[] monitoredHdids;
+        private readonly string adminEmailAddress;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessageSender messageSender;
+        private readonly IEmailQueueService emailQueueService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -72,7 +76,8 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="messageSender">The message sender.</param>
-        /// <param name="mappingService">The inject automapper provider.</param>
+        /// <param name="mappingService">The injected mapping service.</param>
+        /// <param name="emailQueueService">The injected email queue service.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
         public DependentService(
             IConfiguration configuration,
@@ -83,7 +88,8 @@ namespace HealthGateway.GatewayApi.Services
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessageSender messageSender,
-            IGatewayApiMappingService mappingService)
+            IGatewayApiMappingService mappingService,
+            IEmailQueueService emailQueueService)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -95,7 +101,10 @@ namespace HealthGateway.GatewayApi.Services
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.dependentsChangeFeedEnabled = changeFeedConfiguration?.Dependents.Enabled ?? false;
+            this.monitoredHdids = configuration.GetSection(MonitoredHdidsKey).Get<string[]>() ?? [];
+            this.adminEmailAddress = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>()?.AdminEmail ?? string.Empty;
             this.mappingService = mappingService;
+            this.emailQueueService = emailQueueService;
         }
 
         /// <inheritdoc/>
@@ -255,26 +264,26 @@ namespace HealthGateway.GatewayApi.Services
             return RequestResultFactory.Success(new DependentModel());
         }
 
-        private static bool IsMatch(AddDependentRequest? dependent, PatientModel? patientModel)
+        private static bool IsMatch(AddDependentRequest? request, PatientModel? response)
         {
-            if (dependent == null || patientModel == null)
+            if (request == null || response == null)
             {
                 return false;
             }
 
-            if (!patientModel.LastName.Equals(ReplaceSmartApostrophe(dependent.LastName), StringComparison.OrdinalIgnoreCase))
+            if (!response.LastName.Equals(ReplaceSmartApostrophe(request.LastName), StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
 
-            if (!patientModel.FirstName.Equals(ReplaceSmartApostrophe(dependent.FirstName), StringComparison.OrdinalIgnoreCase))
+            if (!response.FirstName.Equals(ReplaceSmartApostrophe(request.FirstName), StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
 
-            if (patientModel.Birthdate.Year != dependent.DateOfBirth.Year ||
-                patientModel.Birthdate.Month != dependent.DateOfBirth.Month ||
-                patientModel.Birthdate.Day != dependent.DateOfBirth.Day)
+            if (response.Birthdate.Year != request.DateOfBirth.Year ||
+                response.Birthdate.Month != request.DateOfBirth.Month ||
+                response.Birthdate.Day != request.DateOfBirth.Day)
             {
                 return false;
             }
@@ -282,10 +291,38 @@ namespace HealthGateway.GatewayApi.Services
             return true;
         }
 
-        private static string ReplaceSmartApostrophe(string value)
+        private static string? ReplaceSmartApostrophe(string? value)
         {
-            string replacedValue = value.Replace(SmartApostrophe, RegularApostrophe, StringComparison.Ordinal);
-            return replacedValue;
+            return string.IsNullOrEmpty(value) ? value : value.Replace(SmartApostrophe, RegularApostrophe, StringComparison.Ordinal);
+        }
+
+        private async Task NotifyAddDependentMismatch(string delegateHdid, AddDependentRequest request, PatientModel? response, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(this.adminEmailAddress))
+            {
+                return;
+            }
+
+            Dictionary<string, string> keyValues = new()
+            {
+                ["delegateHdid"] = FormatValue(delegateHdid),
+                ["requestPhn"] = FormatValue(request.Phn),
+                ["responsePhn"] = FormatValue(response?.PersonalHealthNumber),
+                ["requestFirstName"] = FormatValue(ReplaceSmartApostrophe(request.FirstName)),
+                ["responseFirstName"] = FormatValue(response?.FirstName),
+                ["requestLastName"] = FormatValue(ReplaceSmartApostrophe(request.LastName)),
+                ["responseLastName"] = FormatValue(response?.LastName),
+                ["requestBirthdate"] = FormatValue(request.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                ["responseBirthdate"] = FormatValue(response?.Birthdate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+            };
+
+            await this.emailQueueService.QueueNewEmailAsync(this.adminEmailAddress, "AdminAddDependentMismatch", keyValues, ct: ct);
+            return;
+
+            static string FormatValue(string? s)
+            {
+                return s == null ? "null" : $"\"{s}\"";
+            }
         }
 
         private async Task<RequestResult<DependentModel>?> ValidateDependentAsync(
@@ -308,6 +345,11 @@ namespace HealthGateway.GatewayApi.Services
                 default:
                     if (!IsMatch(addDependentRequest, dependentResult.ResourcePayload))
                     {
+                        if (Array.Exists(this.monitoredHdids, hdid => string.Equals(hdid, delegateHdid, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            await this.NotifyAddDependentMismatch(delegateHdid, addDependentRequest, dependentResult.ResourcePayload, ct);
+                        }
+
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
                     }
 
