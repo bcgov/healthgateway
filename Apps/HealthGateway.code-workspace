@@ -47,6 +47,20 @@
                 }
             },
             {
+                "label": "Run Landing",
+                "type": "shell",
+                "command": "npm run dev",
+                "group": {
+                    "kind": "build"
+                },
+                "options": {
+                    "cwd": "${workspaceFolder:Apps}/Landing/src"
+                },
+                "presentation": {
+                    "clear": true
+                }
+            },
+            {
                 "label": "Run Cypress Tests",
                 "type": "shell",
                 "command": "npx cypress open --e2e --browser chrome",
