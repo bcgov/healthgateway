@@ -6,6 +6,7 @@ import {
 
 import { Path } from "@/constants/path";
 import { afterEachHook } from "@/router/afterEachHook";
+import { beforeEachGuard } from "@/router/beforeEachGuard";
 
 const LandingView = () =>
     import(
@@ -35,6 +36,76 @@ const routes = [
         component: TermsOfServiceView,
     },
     {
+        path: Path.Covid19,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/",
+        },
+    },
+    {
+        path: Path.Dependents,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/dependents",
+        },
+    },
+    {
+        path: Path.Home,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/",
+        },
+    },
+    {
+        path: Path.Login,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/",
+        },
+    },
+    {
+        path: Path.Profile,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/profile",
+        },
+    },
+    {
+        path: Path.Registration,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/",
+        },
+    },
+    {
+        path: Path.Reports,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/export-records",
+        },
+    },
+    {
+        path: Path.Services,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/service",
+        },
+    },
+    {
+        path: Path.Timeline,
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/timeline",
+        },
+    },
+    {
+        path: Path.ValidateEmail + "/:inviteKey",
+        component: NotFoundView,
+        meta: {
+            redirectPath: "s/validateEmail",
+        },
+    },
+    {
         path: "/:pathMatch(.*)*", // will catch all other paths not covered previously
         redirect: Path.NotFound,
     },
@@ -59,6 +130,7 @@ function initializeRouter() {
         scrollBehavior: scrollBehaviour,
     });
 
+    router.beforeEach(beforeEachGuard);
     router.afterEach(afterEachHook);
     return router;
 }
