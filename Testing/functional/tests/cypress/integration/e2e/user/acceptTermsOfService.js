@@ -1,21 +1,27 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
+const defaultTimeout = 60000;
 
 describe("Need to accept terms of service", () => {
-    beforeEach(() => {
+    it("Validate accept terms of service", () => {
         cy.configureSettings({});
+        cy.intercept("GET", "**/UserProfile/termsofservice").as(
+            "getTermsOfService"
+        );
         cy.login(
             Cypress.env("keycloak.accept.tos.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/home"
         );
-    });
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
 
-    it("Validate accept terms of service", () => {
+        cy.get("[data-testid=tos-page-title]")
+            .should("exist")
+            .contains("Update to our Terms of Service");
+
         cy.url().should("include", "/acceptTermsOfService");
 
-        cy.get("[data-testid=tos-page-title]").should("be.visible");
         cy.get("[data-testid=tos-text-area-component]").should("be.visible");
 
         cy.get("[data-testid=accept-tos-checkbox] input").should("be.enabled");

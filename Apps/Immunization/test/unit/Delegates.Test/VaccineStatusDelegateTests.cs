@@ -80,7 +80,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 await vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
+            actualResult.ResourcePayload.ShouldDeepEqual(expectedPayload);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 await vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            expectedError.ShouldDeepEqual(actualResult.ResultError);
+            actualResult.ResultError.ShouldDeepEqual(expectedError);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 await vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            expectedError.ShouldDeepEqual(actualResult.ResultError);
+            actualResult.ResultError.ShouldDeepEqual(expectedError);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 await vaccineStatusDelegate.GetVaccineStatusAsync(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
+            actualResult.ResourcePayload.ShouldDeepEqual(expectedPayload);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 await vaccineStatusDelegate.GetVaccineStatusAsync(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            expectedError.ShouldDeepEqual(actualResult.ResultError);
+            actualResult.ResultError.ShouldDeepEqual(expectedError);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 await vaccineStatusDelegate.GetVaccineStatusAsync(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            expectedError.ShouldDeepEqual(actualResult.ResultError);
+            actualResult.ResultError.ShouldDeepEqual(expectedError);
         }
 
         private static RequestResultError GetRequestResultError()

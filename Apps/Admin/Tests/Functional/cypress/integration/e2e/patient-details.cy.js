@@ -1,4 +1,4 @@
-import { performSearch } from "../../utilities/supportUtilities";
+import { performSearch as search } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -8,6 +8,26 @@ const phnWithBlockedImmunizations = "9873659643";
 const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
+const defaultTimeout = 60000;
+
+function setupPatientDetailsAliases() {
+    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
+        "getPatientSupportDetails"
+    );
+
+    cy.intercept("GET", "**/Support/Users*").as("getUsers");
+}
+
+function waitForPatientDetailsDataLoad() {
+    cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+    cy.wait("@getUsers", { timeout: defaultTimeout });
+}
+
+function performSearch(queryType, queryString) {
+    setupPatientDetailsAliases();
+    search(queryType, queryString);
+    waitForPatientDetailsDataLoad();
+}
 
 function selectPatientTab(tabText) {
     selectTab("[data-testid=patient-details-tabs]", tabText);
@@ -83,14 +103,21 @@ function validateMailAddressFormSubmission() {
     cy.get("[data-testid=province-input]").click();
     cy.get("[data-testid=province]").contains("British Columbia").click();
     cy.get("[data-testid=postal-code-input]").clear().type("V3X 4J5");
+
+    cy.intercept("POST", "**/Patient/Document").as("postDocument");
     cy.get("[data-testid=address-confirmation-button]").click();
+    cy.wait("@postDocument", { timeout: defaultTimeout });
+
     cy.get("[data-testid=address-confirmation-form]").should("not.exist");
 }
 
 function validateCovid19TreatmentAssessmentFormBackCancel() {
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
+    setupPatientDetailsAliases();
     cy.get("[data-testid=back-button]").click();
+    waitForPatientDetailsDataLoad();
+    cy.get("[data-testid=patient-details-back-button]").should("be.visible");
     cy.url().should("include", "/patient-details");
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
@@ -150,27 +177,6 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
         cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
     });
 
-    cy.get("[data-testid=assessment-question-8]").within(() => {
-        cy.get("[data-testid=assessment-option-yes]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should(
-            "be.visible"
-        );
-
-        cy.get("[data-testid=assessment-option-no]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
-    });
-
-    cy.get("[data-testid=assessment-question-9]").within(() => {
-        cy.get("[data-testid=assessment-option-yes]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
-        cy.get("[data-testid=assessment-option-no]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=assessment-option-not-sure]").click();
-        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
-    });
-
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
 }
@@ -215,12 +221,6 @@ function validateCovid19TreatmentAssessmentFormRequiredInputs() {
 
     cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=assessment-question-8] div")
-        .contains("Required")
-        .should("not.exist");
-    cy.get("[data-testid=assessment-question-9] div")
-        .contains("Required")
-        .should("not.exist");
-    cy.get("[data-testid=assessment-question-10] div")
         .contains("Required")
         .should("be.visible");
 
@@ -276,13 +276,7 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
         "[data-testid=assessment-question-7] [data-testid=assessment-option-yes]"
     ).click();
     cy.get(
-        "[data-testid=assessment-question-8] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-10] [data-testid=assessment-option-no]"
+        "[data-testid=assessment-question-8] [data-testid=assessment-option-no]"
     ).click();
 
     cy.get("[data-testid=notes-input]")
@@ -291,7 +285,12 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
 
     cy.get("[data-testid=submit-covid-19-treatment-assessment]").click();
     cy.get("[data-testid=address-confirmation-form]").should("be.visible");
+
+    cy.intercept("POST", "**/Support/CovidAssessment").as(
+        "postCovidAssessment"
+    );
     cy.get("[data-testid=address-confirmation-button]").click();
+    cy.wait("@postCovidAssessment", { timeout: defaultTimeout });
     cy.get("[data-testid=address-confirmation-form]").should("not.exist");
     cy.url().should("include", "/patient-details");
 }
@@ -688,10 +687,8 @@ describe("Patient Details as Support", () => {
             .contains(phnWithBlockedImmunizations);
         cy.get("[data-testid=patient-hdid]").should("not.exist");
 
-        getTableRows("[data-testid=immunization-table]").should("not.exist");
-        getTableRows("[data-testid=assessment-history-table]").should(
-            "not.exist"
-        );
+        cy.get("[data-testid=immunization-table]").should("not.exist");
+        cy.get("[data-testid=assessment-history-table]").should("not.exist");
         cy.get("[data-testid=blocked-immunization-alert").should("be.visible");
     });
 

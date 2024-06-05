@@ -47,7 +47,9 @@ public partial class DashboardPage : FluxorComponent
 
     private int RecurringUserCount => this.DashboardState.Value.GetRecurringUserCount.Result ?? 0;
 
-    private AppLoginCounts AppLoginCounts => this.DashboardState.Value.GetAppLoginCounts.Result ?? new(0, 0, 0);
+    private AppLoginCounts AppLoginCounts => this.DashboardState.Value.GetAppLoginCounts.Result ?? new(0, 0, 0, 0, 0);
+
+    private bool ShowAppLoginTooltip => this.AppLoginCounts.Android > 0 || this.AppLoginCounts.Ios > 0;
 
     private IDictionary<int, int> AgeCounts => this.DashboardState.Value.AgeCounts;
 

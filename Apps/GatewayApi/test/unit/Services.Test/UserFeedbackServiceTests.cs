@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<RatingModel> actual = await mock.Service.CreateRatingAsync(mock.Rating);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<RatingModel> actual = await mock.Service.CreateRatingAsync(mock.Rating);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserFeedback> actual = await mock.Service.CreateUserFeedbackAsync(mock.Feedback, mock.Hdid);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static Mock<ICryptoDelegate> GetCryptoDelegateMock()

@@ -325,7 +325,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             AdminUserProfileView actual = MappingService.MapToAdminUserProfileView(userRepresentation);
 
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

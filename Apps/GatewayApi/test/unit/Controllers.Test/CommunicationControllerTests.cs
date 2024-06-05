@@ -55,7 +55,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             CommunicationController controller = new(communicationServiceMock.Object);
             RequestResult<CommunicationModel> actualResult = await controller.Get();
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
     }
 }

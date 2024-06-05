@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             CommentController controller = new(commentServiceMock.Object);
 
             ActionResult<RequestResult<UserComment>> actualResult = await controller.Create(Hdid, expectedResult.ResourcePayload, It.IsAny<CancellationToken>());
-            expectedResult.ShouldDeepEqual(actualResult.Value);
+            actualResult.Value.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             RequestResult<UserComment>? actualRequestResult = actualResult.Value;
             Assert.NotNull(actualRequestResult);
             Assert.Equal(ResultType.Success, actualRequestResult.ResultStatus);
-            expectedResult.ShouldDeepEqual(actualRequestResult);
+            actualRequestResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

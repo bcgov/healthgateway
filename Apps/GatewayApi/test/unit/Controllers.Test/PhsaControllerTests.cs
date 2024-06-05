@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             ActionResult<RequestResult<IEnumerable<DependentModel>>> actualResult = await phsaController.GetAll(this.hdid, default);
 
             RequestResult<IEnumerable<DependentModel>>? actualRequestResult = actualResult.Value;
-            expectedResult.ShouldDeepEqual(actualRequestResult);
+            actualRequestResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 It.IsAny<CancellationToken>());
 
             RequestResult<IEnumerable<GetDependentResponse>>? actualRequestResult = actualResult.Value;
-            expectedResult.ShouldDeepEqual(actualRequestResult);
+            actualRequestResult.ShouldDeepEqual(expectedResult);
         }
 
         private static IEnumerable<GetDependentResponse> GetMockDependentResponses()

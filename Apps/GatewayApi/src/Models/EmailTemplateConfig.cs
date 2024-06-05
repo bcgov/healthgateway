@@ -26,6 +26,11 @@ namespace HealthGateway.GatewayApi.Models
         public const string ConfigurationSectionKey = "EmailTemplate";
 
         /// <summary>
+        /// Gets the admin email address.
+        /// </summary>
+        public string AdminEmail { get; init; } = string.Empty;
+
+        /// <summary>
         /// Gets the host.
         /// </summary>
         public string Host { get; init; } = string.Empty;

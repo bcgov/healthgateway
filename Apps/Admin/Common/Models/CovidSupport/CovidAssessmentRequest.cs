@@ -56,12 +56,6 @@ public class CovidAssessmentRequest
     public string PhoneNumber { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the response to the identifies indigenous question.
-    /// </summary>
-    [JsonPropertyName("identifiesIndigenous")]
-    public CovidTherapyAssessmentOption IdentifiesIndigenous { get; set; }
-
-    /// <summary>
     /// Gets or sets the response to the family doctor or NP question.
     /// </summary>
     [JsonPropertyName("hasAFamilyDoctorOrNp")]
@@ -102,12 +96,6 @@ public class CovidAssessmentRequest
     /// </summary>
     [JsonPropertyName("hasImmunityCompromisingMedicalCondition")]
     public CovidTherapyAssessmentOption HasImmunityCompromisingMedicalCondition { get; set; }
-
-    /// <summary>
-    /// Gets or sets the response to the 3 doses of COVID-19 vaccine question.
-    /// </summary>
-    [JsonPropertyName("reports3DosesC19Vaccine")]
-    public CovidTherapyAssessmentOption Reports3DosesC19Vaccine { get; set; }
 
     /// <summary>
     /// Gets or sets the response to the chronic condition diagnoses question.

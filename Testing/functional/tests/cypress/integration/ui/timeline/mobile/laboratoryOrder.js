@@ -244,6 +244,20 @@ describe("Laboratory Orders", () => {
 
 describe("Laboratory Orders Refresh", () => {
     beforeEach(() => {
+        let isLoading = false;
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", (req) => {
+            if (!isLoading) {
+                req.reply({
+                    fixture: "LaboratoryService/laboratoryOrdersRefresh.json",
+                });
+            } else {
+                req.reply({
+                    fixture: "LaboratoryService/laboratoryOrders.json",
+                });
+            }
+            isLoading = !isLoading;
+        });
+
         cy.configureSettings({
             datasets: [
                 {
@@ -261,18 +275,11 @@ describe("Laboratory Orders Refresh", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+
         cy.checkOnTimeline();
     });
 
     it("Validate Refresh", () => {
-        cy.log("Verify on timeline and refresh in progress");
-        cy.get("[data-testid=loading-toast]").should("exist");
-        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
-            "not.exist"
-        );
-        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrdersRefresh.json",
-        });
         // Verify initial call
         cy.log(
             "Verify refresh in progress call from PHSA has returned 1 record."
@@ -285,10 +292,9 @@ describe("Laboratory Orders Refresh", () => {
         cy.log(
             "Verify refresh in progress call from PHSA has returned remaining records."
         );
-        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrders.json",
-        });
         cy.get("[data-testid=loading-toast]").should("exist");
+        cy.get("[data-testid=loading-toast]").should("not.exist");
+        cy.scrollTo("top");
         cy.get("[data-testid=timeline-record-count]")
             .should("be.visible")
             .contains(recordDisplayMessage(1, 9, 9));

@@ -150,7 +150,7 @@ namespace AccountDataAccessTest
             PatientModel actual = Mapper.Map<PatientModel>(patientIdentity);
 
             // Verify
-            expectedPatient.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expectedPatient);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace AccountDataAccessTest
             PatientModel actual = Mapper.Map<PatientModel>(patientIdentity);
 
             // Verify
-            expectedPatient.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expectedPatient);
         }
     }
 }

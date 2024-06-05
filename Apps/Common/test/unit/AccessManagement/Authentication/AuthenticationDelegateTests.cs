@@ -89,7 +89,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
 
             JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest);
 
-            expected.ShouldDeepEqual(actualModel);
+            actualModel.ShouldDeepEqual(expected);
             mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
             mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Never());
         }
@@ -108,7 +108,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
 
             JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest, true);
 
-            expected.ShouldDeepEqual(actualModel);
+            actualModel.ShouldDeepEqual(expected);
             mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
             mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
         }
@@ -127,7 +127,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
 
             JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest, true);
 
-            expected.ShouldDeepEqual(actualModel);
+            actualModel.ShouldDeepEqual(expected);
             mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
             mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Never());
         }
@@ -177,7 +177,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
 
             JwtModel actualModel = await authDelegate.AuthenticateAsSystemAsync(SystemClientCredentialsRequest, cacheEnabled);
 
-            expected.ShouldDeepEqual(actualModel);
+            actualModel.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
 
             ClientCredentialsRequest actualModel = authDelegate.GetClientCredentialsRequestFromConfig("Authentication");
 
-            UserClientCredentialsRequest.ShouldDeepEqual(actualModel);
+            actualModel.ShouldDeepEqual(UserClientCredentialsRequest);
         }
 
         /// <summary>
@@ -209,6 +209,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         [Theory]
         [InlineData("hg", UserLoginClientType.Web)]
         [InlineData("hg-mobile", UserLoginClientType.Mobile)]
+        [InlineData("hg-mobile-android", UserLoginClientType.Android)]
+        [InlineData("hg-mobile-ios", UserLoginClientType.Ios)]
         [InlineData("should-be-null", null)]
         public void ShouldBeAbleToDetermineLoginClientType(string clientAzp, UserLoginClientType? clientType)
         {

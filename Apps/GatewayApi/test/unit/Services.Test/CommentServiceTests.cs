@@ -102,7 +102,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (success)
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {
@@ -157,7 +157,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (success)
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {
@@ -211,7 +211,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (success)
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {
@@ -265,7 +265,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (success)
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {
@@ -319,7 +319,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (success)
             {
                 Assert.Equal(ResultType.Success, actual.ResultStatus);
-                expected.ShouldDeepEqual(actual.ResourcePayload);
+                actual.ResourcePayload.ShouldDeepEqual(expected);
             }
             else
             {

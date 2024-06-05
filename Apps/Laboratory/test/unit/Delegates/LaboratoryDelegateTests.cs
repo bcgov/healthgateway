@@ -564,7 +564,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 ResultReady = result,
             };
             Covid19Test actual = MappingService.MapToCovid19Test(phsaData);
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

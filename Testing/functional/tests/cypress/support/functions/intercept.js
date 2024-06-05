@@ -143,6 +143,7 @@ export function setupStandardAliases() {
         "**/PatientData/*?patientDataTypes=OrganDonorRegistrationStatus*"
     ).as("getOrganDonorRegistrationStatus");
     cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+    cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 }
 
 export function waitForInitialDataLoad(username, config, path) {
@@ -178,6 +179,7 @@ export function waitForInitialDataLoad(username, config, path) {
     cy.wait("@getCommunication", { timeout: defaultTimeout });
 
     waitForNotification(featureToggle);
+    waitForDependent(featureToggle, path);
 }
 
 function waitForUserProfile(username) {
@@ -248,6 +250,17 @@ function waitForClinicalDocument(featureToggle, path, blockedDataSources) {
     ) {
         cy.log("Wait on clinical document.");
         cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
+    }
+}
+
+function waitForDependent(featureToggle, path) {
+    cy.log(
+        `waitForDependent called - enabled: ${featureToggle.dependents.enabled} - path: ${path}`
+    );
+
+    if (featureToggle.dependents.enabled && isDependents(path)) {
+        cy.log("Wait on dependent.");
+        cy.wait("@getDependent", { timeout: defaultTimeout });
     }
 }
 
@@ -330,7 +343,7 @@ function waitForOrganDonorRegistratonStatusService(
     const organDonorRegistrationEnabled =
         featureToggle.services &&
         featureToggle.services.enabled &&
-        featureToggle.datasets.some(
+        featureToggle.services.services.some(
             (x) => x.enabled && x.name === "organDonorRegistration"
         );
 
@@ -376,6 +389,10 @@ function checkOrganDonorRegistrationBlocked(blockedDataSources) {
         Array.isArray(blockedDataSources) &&
         blockedDataSources.includes("OrganDonorRegistration")
     );
+}
+
+function isDependents(path) {
+    return path === "/dependents";
 }
 
 function isDependentsTimeline(path) {

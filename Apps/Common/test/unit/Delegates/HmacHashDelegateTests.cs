@@ -59,7 +59,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             HmacHashDelegate hashDelegate = new(configuration);
 
-            expectedConfig.ShouldDeepEqual(hashDelegate.HashConfig);
+            hashDelegate.HashConfig.ShouldDeepEqual(expectedConfig);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             HmacHashDelegate hashDelegate = new(configuration);
 
-            expectedConfig.ShouldDeepEqual(hashDelegate.HashConfig);
+            hashDelegate.HashConfig.ShouldDeepEqual(expectedConfig);
         }
 
         /// <summary>

@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Validations
 {
+    using System.Threading.Tasks;
     using FluentValidation.Results;
     using HealthGateway.GatewayApi.Validations;
     using Xunit;
@@ -29,7 +30,7 @@ namespace HealthGateway.GatewayApiTests.Validations
         [InlineData("noStructure", false)]
         [InlineData("test.valid.complex{something}@test.com", true)]
         [InlineData("", true)]
-        public async void ShouldValidate(string? email, bool expected)
+        public async Task ShouldValidate(string? email, bool expected)
         {
             ValidationResult? result = await new OptionalEmailAddressValidator().ValidateAsync(email);
             Assert.Equal(expected, result.IsValid);

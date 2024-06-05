@@ -88,10 +88,24 @@ namespace HealthGateway.Admin.Server.Services
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, localTimeOffset);
 
             IDictionary<UserLoginClientType, int> lastLoginClientCounts = await userProfileDelegate.GetLoginClientCountsAsync(startDate, endDate, ct);
+
+            int webCount = GetCount(UserLoginClientType.Web);
+            int mobileCount = GetCount(UserLoginClientType.Mobile) + GetCount(UserLoginClientType.Android) + GetCount(UserLoginClientType.Ios);
+            int androidCount = GetCount(UserLoginClientType.Android);
+            int iosCount = GetCount(UserLoginClientType.Ios);
+            int salesforceCount = GetCount(UserLoginClientType.Salesforce);
+
             return new(
-                lastLoginClientCounts.TryGetValue(UserLoginClientType.Web, out int webCount) ? webCount : 0,
-                lastLoginClientCounts.TryGetValue(UserLoginClientType.Mobile, out int mobileCount) ? mobileCount : 0,
-                lastLoginClientCounts.TryGetValue(UserLoginClientType.Salesforce, out int salesforceCount) ? salesforceCount : 0);
+                webCount,
+                mobileCount,
+                androidCount,
+                iosCount,
+                salesforceCount);
+
+            int GetCount(UserLoginClientType clientType)
+            {
+                return lastLoginClientCounts.TryGetValue(clientType, out int count) ? count : 0;
+            }
         }
 
         /// <inheritdoc/>

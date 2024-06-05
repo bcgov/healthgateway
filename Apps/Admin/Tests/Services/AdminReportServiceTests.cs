@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Assert
             Assert.Single(actual);
             Assert.Equal(Hdid1, actual.First().Hdid);
-            mock.Expected.ShouldDeepEqual(actual.First().BlockedSources);
+            actual.First().BlockedSources.ShouldDeepEqual(mock.Expected);
         }
 
         private static IAdminReportService GetAdminReportService(

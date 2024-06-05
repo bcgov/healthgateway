@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
         private readonly string mockLastName = "O'Neil"; // Last name with regular apostrophe
-        private readonly string mockParentHdid = "MockFirstName";
+        private readonly string mockParentHdid = "MockDelegateHdid";
         private readonly string mockPhn = "9735353315";
         private readonly string noHdidError = "Please ensure you are using a current BC Services Card.";
         private readonly int mockTotalDelegateCount = 2;
@@ -138,7 +138,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ValidateAddDependent()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -157,7 +157,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.FirstName = "Tory D’Bill"; // First name with smart apostrophe
             addDependentRequest.LastName = "O’Neil"; // Last name with smart apostrophe
-            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -182,7 +182,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             RequestResult<PatientModel> patient = SetupPatientRequestResultForInvalidPatient(patientRequestResultType, expectedErrorMessage);
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patient);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest, null, patient);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -206,7 +206,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Error,
             };
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest, insertResult);
 
             DatabaseException exception =
                 (await Should.ThrowAsync<DatabaseException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
@@ -224,7 +224,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-20));
-            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -243,7 +243,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.FirstName = "wrong";
-            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -262,7 +262,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.LastName = "wrong";
-            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -281,7 +281,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.DateOfBirth = DateOnly.FromDateTime(DateTime.Now);
-            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -289,6 +289,49 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
+        }
+
+        /// <summary>
+        /// AddDependentAsync - Mismatch Monitoring.
+        /// </summary>
+        /// <param name="isHdidMonitored">Value indicating whether the delegate's HDID is on the list of monitored HDIDs.</param>
+        /// <param name="isAdminEmailAddressPopulated">Value indicating whether the configuration includes an admin email address.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task ValidateAddDependentMismatchMonitoring(bool isHdidMonitored, bool isAdminEmailAddressPopulated)
+        {
+            AddDependentRequest addDependentRequest = this.SetupMockInput();
+            addDependentRequest.FirstName = "wrong first";
+            addDependentRequest.LastName = "wrong last";
+            addDependentRequest.DateOfBirth = addDependentRequest.DateOfBirth.AddDays(1);
+
+            Dictionary<string, string?> configValues = new()
+            {
+                ["EmailTemplate"] = null,
+                ["EmailTemplate:AdminEmail"] = isAdminEmailAddressPopulated ? "fakeemail@example.com" : null,
+                ["MonitoredHdids"] = null,
+            };
+
+            if (isHdidMonitored)
+            {
+                configValues["MonitoredHdids:0"] = this.mockParentHdid;
+            }
+
+            IConfigurationRoot configuration = GetIConfigurationRoot(configValues);
+
+            Mock<IEmailQueueService> mockEmailQueueService = new();
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest, configuration: configuration, mockEmailQueueService: mockEmailQueueService);
+
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
+
+            Assert.Equal(this.mismatchedError, actualResult.ResultError?.ResultMessage);
+
+            Times expectedQueueEmailCalls = isHdidMonitored && isAdminEmailAddressPopulated ? Times.Once() : Times.Never();
+            mockEmailQueueService
+                .Verify(m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), expectedQueueEmailCalls);
         }
 
         /// <summary>
@@ -312,7 +355,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             };
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            IDependentService service = this.SetupMockDependentService(addDependentRequest, patientResult: patientResult);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest, patientResult: patientResult);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -336,7 +379,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Protected = true,
                 AllowedDelegations = [new() { DependentHdId = this.mockHdId, DelegateHdId = this.mockParentHdid }],
             };
-            IDependentService service = this.SetupMockDependentService(addDependentRequest, dependent: dependent);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest, dependent: dependent);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -356,7 +399,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.mockHdId,
                 Protected = true,
             };
-            IDependentService service = this.SetupMockDependentService(addDependentRequest, dependent: dependent);
+            IDependentService service = this.SetupMockForAddDependent(addDependentRequest, dependent: dependent);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
@@ -548,7 +591,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockResourceDelegateDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
-                MappingService);
+                MappingService,
+                new Mock<IEmailQueueService>().Object);
         }
 
         private IDependentService SetupMockForRemoveDependent(IList<ResourceDelegate> resourceDelegates, DbResult<ResourceDelegate> dbResult)
@@ -577,14 +621,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockResourceDelegateDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
-                MappingService);
+                MappingService,
+                new Mock<IEmailQueueService>().Object);
         }
 
-        private IDependentService SetupMockDependentService(
+        private IDependentService SetupMockForAddDependent(
             AddDependentRequest addDependentRequest,
             DbResult<ResourceDelegate>? insertResult = null,
             RequestResult<PatientModel>? patientResult = null,
-            Dependent? dependent = null)
+            Dependent? dependent = null,
+            IConfigurationRoot? configuration = null,
+            Mock<IEmailQueueService>? mockEmailQueueService = null)
         {
             Mock<IPatientService> mockPatientService = new();
 
@@ -653,8 +700,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
 
+            configuration ??= GetIConfigurationRoot(null);
+            mockEmailQueueService ??= new();
+
             return new DependentService(
-                GetIConfigurationRoot(null),
+                configuration,
                 new Mock<ILogger<DependentService>>().Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
@@ -662,7 +712,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
                 mockMessageSender.Object,
-                MappingService);
+                MappingService,
+                mockEmailQueueService.Object);
         }
 
         private AddDependentRequest SetupMockInput()

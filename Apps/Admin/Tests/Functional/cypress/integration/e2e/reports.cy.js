@@ -1,14 +1,34 @@
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const blockedHdid = "GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA";
+const defaultTimeout = 60000;
+
+function setupPatientDetailsAliases() {
+    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
+        "getPatientSupportDetails"
+    );
+
+    cy.intercept("GET", "**/Support/Users*").as("getUsers");
+}
+
+function waitForPatientDetailsDataLoad() {
+    cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+    cy.wait("@getUsers", { timeout: defaultTimeout });
+}
 
 describe("Reports", () => {
     beforeEach(() => {
+        cy.intercept("GET", `**/AdminReport/BlockedAccess`).as(
+            "getBlockedAccess"
+        );
+
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
             "/reports"
         );
+
+        cy.wait("@getBlockedAccess", { timeout: defaultTimeout });
     });
 
     it("Verify blocked access reports", () => {
@@ -19,9 +39,15 @@ describe("Reports", () => {
         );
 
         cy.log("Checking blocked access row click goes to patient details");
+        setupPatientDetailsAliases();
         cy.contains("[data-testid=blocked-access-hdid]", blockedHdid)
             .should("be.visible")
             .click();
+
+        waitForPatientDetailsDataLoad();
+        cy.get("[data-testid=patient-details-back-button]").should(
+            "be.visible"
+        );
 
         cy.url().should("include", "/patient-details");
         selectTab("[data-testid=patient-details-tabs]", "Account");

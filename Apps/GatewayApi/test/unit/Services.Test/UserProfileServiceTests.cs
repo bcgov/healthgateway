@@ -93,7 +93,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserProfileModel> actual = await mock.Service.GetUserProfileAsync(mock.Hdid, mock.JwtAuthTime);
 
             // Assert
-            mock.Expected.Result.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected.Result);
 
             mock.UserProfileDelegateMock.Verify(
                 v => v.UpdateAsync(
@@ -140,7 +140,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserProfileModel> actual = await mock.Service.UpdateAcceptedTermsAsync(mock.Hdid, mock.TermsOfServiceId);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mock.JwtEmailAddress);
 
             // Assert
-            mock.Expected.Result.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected.Result);
 
             mock.UserEmailServiceMock.Verify(
                 v => v.CreateUserEmailAsync(
@@ -242,7 +242,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserProfileModel> actual = await mock.Service.CloseUserProfileAsync(mock.Hdid, mock.UserId);
 
             // Assert
-            mock.Expected.Result.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected.Result);
 
             mock.EmailQueueServiceMock.Verify(
                 v => v.QueueNewEmailAsync(
@@ -276,7 +276,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<UserProfileModel> actual = await mock.Service.RecoverUserProfileAsync(mock.Hdid);
 
             // Assert
-            mock.Expected.Result.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected.Result);
 
             mock.EmailQueueServiceMock.Verify(
                 v => v.QueueNewEmailAsync(
@@ -305,7 +305,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
 
             // Assert
-            Assert.Equal(mock.Expected, actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<bool> actual = await mock.Service.ValidateMinimumAgeAsync(mock.Age);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -371,7 +371,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<bool> actual = await mock.Service.ValidateMinimumAgeAsync(mock.Age);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static PatientModel GeneratePatientModel(DateTime birthDate)
