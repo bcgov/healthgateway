@@ -19,6 +19,7 @@ parameters:
       - GatewayApi
       - ClinicalDocument
       - PatientDataAccess
+      - Landing
       - NotSpecified
 
   - name: ImageName
@@ -98,6 +99,8 @@ jobs:
     displayName: "Build ${{ parameters.Application }} in Azure Cloud"
     condition: eq(variables['EnableAzure'], true)
     steps:
+      - script: |
+            echo "Application parameter value: ${{ parameters.Application }}"
       - template: /Build/hg-steps-template.yaml
         parameters:
           licenseplate: "0bd5ad"

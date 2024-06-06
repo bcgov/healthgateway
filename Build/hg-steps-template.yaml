@@ -19,26 +19,64 @@ steps:
       packageType: sdk
       version: 8.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
-    
+
   - task: Cache@2
-    displayName: "Fetch NPM Cache"
-    condition: eq(variables['NPMInstall'], true)
+    displayName: "Fetch NPM Cache for Non Landing"
+    condition: and(eq(variables['NPMInstall'], true), ne(variables['App.Name'], 'Landing'))
     inputs:
       key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
       path: "$(App.Home)/src/ClientApp/node_modules"
       cacheHitVar: "CACHE_RESTORED"
       restoreKeys: 'npm | "$(Agent.OS)"'
 
+  - task: Cache@2
+    displayName: "Fetch NPM Cache for Landing"
+    condition: and(eq(variables['NPMInstall'], true), eq(variables['App.Name'], 'Landing'))
+    inputs:
+      key: 'npm | "$(Agent.OS)" | $(App.Home)/src/package-lock.json'
+      path: "$(App.Home)/src/node_modules"
+      cacheHitVar: "CACHE_RESTORED"
+      restoreKeys: 'npm | "$(Agent.OS)"'
+
   - task: Npm@1
-    displayName: "Installing NPM Packages"
-    condition: and(succeeded(), and(ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true)))
+    displayName: "Installing NPM Packages for Non Landing"
+    condition: and(succeeded(), ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true), ne(variables['App.Name'], 'Landing'))
     inputs:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
 
+  - task: Npm@1
+    displayName: "Installing NPM Packages for Landing"
+    condition: and(succeeded(), ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true), eq(variables['App.Name'], 'Landing'))
+    inputs:
+      command: "install"
+      workingDir: "$(App.Home)/src"
+
+  - script: |
+      npm run build
+    displayName: 'Build Landing'
+    condition: eq(variables['App.Name'], 'Landing')
+    workingDirectory: "$(App.Home)/src"
+
+  - task: CopyFiles@2
+    displayName: 'Copy Landing build output to artifact staging directory'
+    condition: eq(variables['App.Name'], 'Landing')
+    inputs:
+      SourceFolder: '$(App.Home)/src/dist'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/src/dist'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Landing nginx.conf to artifact staging directory'
+    condition: eq(variables['App.Name'], 'Landing')
+    inputs:
+      SourceFolder: '$(App.Home)'
+      Contents: 'nginx.conf'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false))
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), ne(variables['App.Name'], 'Landing'))
     inputs:
       projects: "$(App.Home)/src"
       arguments: "--no-incremental /warnaserror"
@@ -115,7 +153,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false))
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), ne(variables['App.Name'], 'Landing'))
     inputs:
       modifyOutputPath: false
       command: "publish"
@@ -143,7 +181,17 @@ steps:
       Dockerfile: "$(App.Home)/Dockerfile"
       buildContext: "$(Build.BinariesDirectory)"
       tags: "$(Build.BuildNumber)"
-    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)), ne(variables['App.Name'], 'Landing'))
+
+  - task: Docker@2
+    displayName: "Building Image for Landing and pushing to Docker Hub"
+    inputs:
+      containerRegistry: "docker-health"
+      repository: $(DockerRepo)/$(Image.Name)
+      Dockerfile: "$(App.Home)/Dockerfile"
+      buildContext: "$(Build.ArtifactStagingDirectory)"
+      tags: "$(Build.BuildNumber)"
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)), eq(variables['App.Name'], 'Landing'))
 
   - script: |
       set -e
@@ -157,7 +205,7 @@ steps:
       oc project ${{ parameters.licenseplate }}-tools
       cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
       oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(Image.Name) | oc apply -f -
-      oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+      oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory)
       oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
     displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))
