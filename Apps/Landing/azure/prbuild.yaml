@@ -15,4 +15,4 @@ extends:
   parameters:
     Application: Landing
     DotNetTests: false
-    NPMInstall: false
+    NPMInstall: true
