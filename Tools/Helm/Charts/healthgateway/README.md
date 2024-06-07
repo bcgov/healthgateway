@@ -24,7 +24,7 @@ helm -n [license plate]-[env] install [env] . -f envs/[env]/values[_dr].yaml
 To debug the generated yaml:
 
 ```sh
-helm template . -f envs/[env]/values[_dr].yaml > debug.yaml
+helm template --release-name [env] . -f envs/[env]/values[_dr].yaml > debug.yaml
 ```
 
 **Note: notice the Gold cluster you're currently logged in and use the correct values file**
