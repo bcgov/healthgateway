@@ -130,13 +130,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 RequestResult<VaccineStatus> actualResultPublic = await service.GetPublicVaccineStatusAsync(this.phn, dobString, dovString);
 
-                expectedResult.ShouldDeepEqual(actualResultPublic);
+                actualResultPublic.ShouldDeepEqual(expectedResult);
             }
             else
             {
                 RequestResult<VaccineStatus> actualResultAuthenticated = await service.GetAuthenticatedVaccineStatusAsync(this.hdid);
 
-                expectedResult.ShouldDeepEqual(actualResultAuthenticated);
+                actualResultAuthenticated.ShouldDeepEqual(expectedResult);
             }
         }
 

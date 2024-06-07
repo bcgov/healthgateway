@@ -105,9 +105,19 @@
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
                     Mobile App Logins
                 </MudText>
-                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
-                    @FormatNumber(AppLoginCounts.Mobile)
-                </MudText>
+                <div class="d-flex justify-center">
+                    <MudTooltip ShowOnHover="ShowAppLoginTooltip">
+                        <TooltipContent>
+                            <MudText Align="Align.Left" Typo="Typo.body2" data-testid="android-count">Android: @FormatNumber(AppLoginCounts.Android)</MudText>
+                            <MudText Align="Align.Left" Typo="Typo.body2" data-testid="ios-count">iOS: @FormatNumber(AppLoginCounts.Ios)</MudText>
+                        </TooltipContent>
+                        <ChildContent>
+                            <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
+                                @FormatNumber(AppLoginCounts.Mobile)
+                            </MudText>
+                        </ChildContent>
+                    </MudTooltip>
+                </div>
             }
         </MudPaper>
     </MudItem>

@@ -1,6 +1,8 @@
 import { AuthMethod } from "../../../support/constants";
 const registrationPath = "/registration";
 const homePath = "/home";
+const invalidEmail = "gov.bc.ca";
+const invalidPhone = "250";
 
 describe("Registration Page", () => {
     it("Minimum age error", () => {
@@ -32,20 +34,56 @@ describe("Registration Page", () => {
 
         cy.get("[data-testid=emailCheckbox] input")
             .should("be.enabled")
-            .check({ force: true });
+            .check();
         cy.get("[data-testid=emailInput]")
             .should("be.visible", "be.enabled")
-            .type(Cypress.env("emailAddress"));
+            .type(invalidEmail);
+        cy.get("[data-testid=emailInput]").within(() => {
+            cy.get("div").contains("Invalid email").should("be.visible");
+        });
+
         cy.get("[data-testid=emailConfirmationInput]")
             .should("be.visible", "be.enabled")
-            .type(Cypress.env("emailAddress"));
+            .type(invalidEmail);
+        cy.get("[data-testid=emailConfirmationInput]").within(() => {
+            cy.get("div").contains("Invalid email").should("be.visible");
+        });
+
+        cy.get("[data-testid=sms-checkbox] input").should("be.enabled").check();
         cy.get("[data-testid=smsNumberInput]")
             .should("be.visible", "be.enabled")
+            .type(invalidPhone);
+        cy.get("[data-testid=smsNumberInput]").within(() => {
+            cy.get("div").contains("Invalid phone number").should("be.visible");
+        });
+
+        cy.get("[data-testid=emailInput]")
+            .should("be.visible", "be.enabled")
+            .clear()
+            .type(Cypress.env("emailAddress"));
+        cy.get("[data-testid=emailInput]").within(() => {
+            cy.get("div").contains("Invalid email").should("not.exist");
+        });
+
+        cy.get("[data-testid=emailConfirmationInput]")
+            .should("be.visible", "be.enabled")
+            .clear()
+            .type(Cypress.env("emailAddress"));
+        cy.get("[data-testid=emailConfirmationInput]").within(() => {
+            cy.get("div").contains("Invalid email").should("not.exist");
+        });
+
+        cy.get("[data-testid=smsNumberInput]")
+            .should("be.visible", "be.enabled")
+            .clear()
             .type(Cypress.env("phoneNumber"));
+        cy.get("[data-testid=smsNumberInput]").within(() => {
+            cy.get("div").contains("Invalid phone number").should("not.exist");
+        });
+
         cy.get("[data-testid=acceptCheckbox] input")
             .should("be.enabled")
-            .check({ force: true })
-            .wait(500);
+            .check();
         cy.get("[data-testid=registerButton]")
             .should("be.visible", "be.enabled")
             .click();

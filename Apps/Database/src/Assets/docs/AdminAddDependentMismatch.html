@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Health Gateway Debug Info: Add Dependent Mismatch</title>
+        <style>
+            td:not(:first-child),
+            th:not(:first-child) {
+                padding: 0.5em;
+            }
+            pre {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body style="margin: 0">
+        <strong>Hi Health Gateway Team,</strong>
+        <p>
+            Find debug information below relating to a failed request to add a
+            dependent due to mismatched data.
+        </p>
+        <table>
+            <tbody>
+                <tr>
+                    <td><strong>Delegate HDID</strong></td>
+                    <td>
+                        <pre>${delegateHdid}</pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Request</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PHN</strong></td>
+                    <td><pre>${requestPhn}</pre></td>
+                    <td><pre>${responsePhn}</pre></td>
+                </tr>
+                <tr>
+                    <td><strong>Given Name(s)</strong></td>
+                    <td><pre>${requestFirstName}</pre></td>
+                    <td><pre>${responseFirstName}</pre></td>
+                </tr>
+                <tr>
+                    <td><strong>Last Name</strong></td>
+                    <td><pre>${requestLastName}</pre></td>
+                    <td><pre>${responseLastName}</pre></td>
+                </tr>
+                <tr>
+                    <td><strong>Birthdate</strong></td>
+                    <td><pre>${requestBirthdate}</pre></td>
+                    <td><pre>${responseBirthdate}</pre></td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

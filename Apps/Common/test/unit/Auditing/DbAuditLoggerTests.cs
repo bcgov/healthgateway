@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Auditing
 {
     using System;
     using System.IO;
+    using System.Net;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -46,7 +47,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             DefaultHttpContext ctx = new()
             {
-                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
                 User = new(new ClaimsIdentity([new Claim("hdid", Hdid), new Claim("preferred_username", Idir)])),
             };
             AuditEvent expected = new()
@@ -68,7 +69,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent actual = new();
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
-            expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             DefaultHttpContext ctx = new()
             {
-                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
                 Response = { StatusCode = 401 },
             };
             AuditEvent expected = new()
@@ -110,7 +111,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             DefaultHttpContext ctx = new()
             {
-                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
                 Response = { StatusCode = 405 },
             };
             AuditEvent expected = new()
@@ -141,7 +142,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             DefaultHttpContext ctx = new()
             {
-                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
                 Response = { StatusCode = 500 },
             };
             AuditEvent expected = new()
@@ -173,7 +174,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             DefaultHttpContext ctx = new()
             {
-                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
             };
             AuditEvent expected = new()
             {
@@ -211,7 +212,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             DefaultHttpContext ctx = new()
             {
-                Connection = { RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
             };
             AuditEvent expected = new()
             {

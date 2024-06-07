@@ -74,7 +74,7 @@ namespace HealthGateway.CommonTests.Delegates
             CDogsRequestModel request = GetRequestModel();
             RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request);
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace HealthGateway.CommonTests.Delegates
             CDogsRequestModel request = GetRequestModel();
             RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request);
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

@@ -378,8 +378,8 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.ClientCode)
                 .HasConversion(
                     new ValueConverter<UserLoginClientType, string>(
-                        v => EnumUtility.ToEnumString(v, false),
-                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
+                        v => EnumUtility.ToEnumString(v, true),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, true)));
 
             modelBuilder.Entity<UserProfile>()
                 .HasIndex(p => p.LastLoginDateTime);
@@ -414,8 +414,8 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.UserLoginClientCode)
                 .HasConversion(
                     new ValueConverter<UserLoginClientType, string>(
-                        v => EnumUtility.ToEnumString(v, false),
-                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
+                        v => EnumUtility.ToEnumString(v, true),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, true)));
 
             // Create Foreign key for AllowedDelegation
             modelBuilder.Entity<AllowedDelegation>()
@@ -846,6 +846,21 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new EmailTemplate
+                    {
+                        Id = Guid.Parse("491dabc6-f799-427c-ace4-b49ece2d612c"),
+                        Name = "AdminAddDependentMismatch",
+                        From = HgDoNotReply,
+                        Subject = "Health Gateway Debug Info: Add Dependent Mismatch",
+                        Body = ReadResource("HealthGateway.Database.Assets.docs.AdminAddDependentMismatch.html"),
+                        Priority = EmailPriority.Low,
+                        EffectiveDate = this.DefaultSeedDateUtc,
+                        FormatCode = EmailFormat.Html,
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     });
         }
 
@@ -1202,6 +1217,24 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Android,
+                        Description = "Code for a login from the HG Android mobile app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Ios,
+                        Description = "Code for a login from the HG iOS mobile app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDateUtc,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDateUtc,
                     },
                     new UserLoginClientTypeCode
                     {

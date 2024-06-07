@@ -23,7 +23,7 @@ Create a cypress.env.json and update with passwords or any other environment var
 
 ```bash
 {
-    "baseUrl": "https://dev.healthgateway.gov.bc.ca",
+    "baseUrl": "https://dev-legacy.healthgateway.gov.bc.ca",
     "bcsc.password": "THE PASSWORD",
     "keycloak.password": "THE PASSWORD",
     "idir.password": "THE PASSWORD",
@@ -46,7 +46,7 @@ $Env:CYPRESS_BASE_URL = "http://localhost:5002"
 npx cypress open --e2e --browser chrome
 ```
 
-If you want to verify the tests against <https://dev.healthgateway.gov.bc.ca> then do not set the CYPRESS_BASE_URL environment variable.
+If you want to verify the tests against <https://dev-legacy.healthgateway.gov.bc.ca> then do not set the CYPRESS_BASE_URL environment variable.
 
 e2e: contains tests that will be run in the dev environment only.
 ui: contains tests that are either stubbed or cosmetic only and can be run in any environment

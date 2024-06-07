@@ -59,7 +59,7 @@ namespace AccountDataAccessTest.Strategy
             PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
 
             // Verify
             mock.CacheProvider.Verify(

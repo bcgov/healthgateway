@@ -5,8 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
@@ -26,6 +26,7 @@
     <Content Remove="Assets\docs\EmailValidationTemplate.html" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\docs\AdminAddDependentMismatch.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20200511.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />

@@ -13,8 +13,8 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-dependents]").contains(6);
         cy.get("[data-testid=total-closed-accounts]").contains(1);
         cy.get("[data-testid=recurring-user-count]").contains(2);
-        cy.get("[data-testid=total-mobile-users]").contains(2);
-        cy.get("[data-testid=total-web-users]").contains(4);
+        cy.get("[data-testid=total-mobile-users]").contains(4);
+        cy.get("[data-testid=total-web-users]").contains(3);
         cy.get("[data-testid=total-salesforce-users]").contains(1);
         cy.get("[data-testid=average-rating]").contains("4.00");
 

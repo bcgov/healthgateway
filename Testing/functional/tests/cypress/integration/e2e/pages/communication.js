@@ -1,4 +1,5 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+const defaultTimeout = 60000;
 
 describe("Communication", () => {
     beforeEach(() => {
@@ -7,17 +8,25 @@ describe("Communication", () => {
 
     it("Landing Banner", () => {
         cy.logout();
+        cy.intercept("GET", `**/Communication/*`).as("getCommunication");
         cy.visit("/");
+        cy.wait("@getCommunication", { timeout: defaultTimeout });
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("Test Banner");
 
+        cy.intercept("GET", "**/UserProfile/termsofservice").as(
+            "getTermsOfService"
+        );
         cy.visit("/termsOfService");
+        cy.wait("@getCommunication", { timeout: defaultTimeout });
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("Test Banner");
 
         cy.visit("/404");
+        cy.wait("@getCommunication", { timeout: defaultTimeout });
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("Test Banner");

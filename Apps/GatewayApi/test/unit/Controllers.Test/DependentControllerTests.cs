@@ -69,7 +69,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object);
             RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid, It.IsAny<CancellationToken>());
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 httpContextAccessorMock.Object);
             RequestResult<DependentModel> actualResult = await dependentController.AddDependent(new AddDependentRequest(), CancellationToken.None);
 
-            expectedResult.ShouldDeepEqual(actualResult);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete(delegateId, dependentId, dependentModel, CancellationToken.None);
-            expectedResult.ShouldDeepEqual(actualResult.Value);
+            actualResult.Value.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

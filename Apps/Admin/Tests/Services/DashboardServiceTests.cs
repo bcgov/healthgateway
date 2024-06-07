@@ -50,7 +50,7 @@ namespace HealthGateway.Admin.Tests.Services
             AllTimeCounts actual = await mock.Service.GetAllTimeCountsAsync();
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace HealthGateway.Admin.Tests.Services
             DailyUsageCounts actual = await mock.Service.GetDailyUsageCountsAsync(mock.StartDate, mock.EndDate);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace HealthGateway.Admin.Tests.Services
             AppLoginCounts actual = await mock.Service.GetAppLoginCountsAsync(mock.StartDate, mock.EndDate);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace HealthGateway.Admin.Tests.Services
             IDictionary<string, int> actual = await mock.Service.GetRatingsSummaryAsync(mock.StartDate, mock.EndDate);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace HealthGateway.Admin.Tests.Services
             IDictionary<int, int> actual = await mock.Service.GetAgeCountsAsync(mock.StartDate, mock.EndDate);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -262,16 +262,20 @@ namespace HealthGateway.Admin.Tests.Services
 
             const int webCount = 5;
             const int mobileCount = 2;
+            const int androidCount = 1;
+            const int iosCount = 1;
             const int salesforceCount = 2;
 
             IDictionary<UserLoginClientType, int> lastLoginClientCounts = new Dictionary<UserLoginClientType, int>
             {
                 { UserLoginClientType.Web, webCount },
                 { UserLoginClientType.Mobile, mobileCount },
+                { UserLoginClientType.Android, androidCount },
+                { UserLoginClientType.Ios, iosCount },
                 { UserLoginClientType.Salesforce, salesforceCount },
             };
 
-            AppLoginCounts expected = new(webCount, mobileCount, salesforceCount);
+            AppLoginCounts expected = new(webCount, mobileCount + androidCount + iosCount, androidCount, iosCount, salesforceCount);
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetLoginClientCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))

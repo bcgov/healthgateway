@@ -56,7 +56,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<TermsOfServiceModel> actual = await mock.LegalAgreementService.GetActiveTermsOfServiceAsync();
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Guid? actual = await mock.LegalAgreementService.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService);
 
             // Assert
-            mock.Expected.ShouldDeepEqual(actual);
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         private static ActiveTermsOfServiceMock SetupActiveTermsOfServiceMock(bool legalAgreementFound)
