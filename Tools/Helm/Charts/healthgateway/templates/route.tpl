@@ -12,7 +12,7 @@
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: {{ $name }}-{{ default $host.host $host.name }}-rt
+  name: {{ $name }}-{{ $host.name | default $host.host }}-rt
   namespace: {{ $namespace }}
   labels: {{ $labels | nindent 4 }}
   annotations:
