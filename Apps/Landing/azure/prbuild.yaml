@@ -16,3 +16,4 @@ extends:
     Application: Landing
     DotNetTests: false
     NPMInstall: true
+    WebBuild: true
