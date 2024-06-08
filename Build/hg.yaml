@@ -54,6 +54,10 @@ parameters:
     type: boolean
     default: false
 
+  - name: WebBuild
+    type: boolean
+    default: false
+
 #Build variables
 variables:
   - group: Secrets
@@ -61,6 +65,8 @@ variables:
     value: ${{ parameters.Application }}
   - name: DBScripts
     value: ${{ parameters.DBScripts }}
+  - name: WebBuild
+    value: ${{ parameters.WebBuild }}
   - name: WASMBuild
     value: ${{ parameters.WASMBuild }}
   - name: NPMInstall
@@ -99,8 +105,6 @@ jobs:
     displayName: "Build ${{ parameters.Application }} in Azure Cloud"
     condition: eq(variables['EnableAzure'], true)
     steps:
-      - script: |
-            echo "Application parameter value: ${{ parameters.Application }}"
       - template: /Build/hg-steps-template.yaml
         parameters:
           licenseplate: "0bd5ad"

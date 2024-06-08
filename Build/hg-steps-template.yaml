@@ -39,12 +39,12 @@ steps:
   - script: |
       npm run build
     displayName: 'Build Landing'
-    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['App.Name'], 'Landing'))
+    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     workingDirectory: "$(App.Home)/src/ClientApp"
 
   - task: CopyFiles@2
     displayName: 'Copy Landing build output to artifact staging directory'
-    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['App.Name'], 'Landing'))
+    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
       SourceFolder: '$(App.Home)/src/ClientApp/dist'
       Contents: '**'
@@ -52,7 +52,7 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy Landing nginx.conf to artifact staging directory'
-    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['App.Name'], 'Landing'))
+    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
       SourceFolder: '$(App.Home)'
       Contents: 'nginx.conf'
@@ -60,7 +60,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false), ne(variables['App.Name'], 'Landing'))
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), eq(variables['WebBuild'], false))
     inputs:
       projects: "$(App.Home)/src"
       arguments: "--no-incremental /warnaserror"
@@ -137,7 +137,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false), ne(variables['App.Name'], 'Landing'))
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), eq(variables['WebBuild'], false))
     inputs:
       modifyOutputPath: false
       command: "publish"
@@ -159,7 +159,7 @@ steps:
 
   - script: |
       set -e
-      if [ "$(App.Name)" = "Landing" ]; then
+      if [ "$(WebBuild)" = True ]; then
         echo "##vso[task.setvariable variable=buildContext]$(Build.ArtifactStagingDirectory)"
       else
         echo "##vso[task.setvariable variable=buildContext]$(Build.BinariesDirectory)"
