@@ -4,7 +4,8 @@
     "version": "2.0.0-alpha",
     "scripts": {
         "dev": "vite",
-        "build": "vue-tsc --noEmit && npm run lintcheck && vite build",
+        "build:development": "NODE_ENV=development vite build",
+        "build": "NODE_ENV=production vue-tsc --noEmit && npm run lintcheck && vite build",
         "preview": "vite preview",
         "lintcheck": "eslint src --max-warnings 0",
         "lint": "eslint src --fix"
@@ -28,6 +29,7 @@
         "@vitejs/plugin-vue": "^4.6.2",
         "@vue/eslint-config-prettier": "^7.1.0",
         "@vue/eslint-config-typescript": "^11.0.0",
+        "dotenv": "^16.4.5",
         "eslint": "^8.57.0",
         "eslint-plugin-simple-import-sort": "^10.0.0",
         "eslint-plugin-unused-imports": "^2.0.0",
