@@ -17,4 +17,3 @@ extends:
     DotNetTests: false
     NPMInstall: true
     WebBuild: true
-    ClientPath: src
