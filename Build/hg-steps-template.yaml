@@ -157,22 +157,13 @@ steps:
       arguments: "-c Release -o $(Build.BinariesDirectory)"
       zipAfterPublish: false
 
-  - script: |
-      set -e
-      if [ "$(WebBuild)" = True ]; then
-        echo "##vso[task.setvariable variable=buildContext]$(Build.ArtifactStagingDirectory)"
-      else
-        echo "##vso[task.setvariable variable=buildContext]$(Build.BinariesDirectory)"
-      fi
-    displayName: "Set buildContext variable"
-
   - task: Docker@2
     displayName: "Building Image for $(App.Name) and pushing to Docker Hub"
     inputs:
       containerRegistry: "docker-health"
       repository: $(DockerRepo)/$(Image.Name)
       Dockerfile: "$(App.Home)/Dockerfile"
-      buildContext: "$(buildContext)"
+      buildContext: "$(Image.BuildContext)"
       tags: "$(Build.BuildNumber)"
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
 

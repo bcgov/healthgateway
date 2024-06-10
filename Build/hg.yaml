@@ -92,6 +92,11 @@ variables:
       value: $[lower('${{ parameters.ImageName }}')]
     ${{ if not(parameters.ImageName) }}:
       value: $[lower(variables['App.Name'])]
+  - name: Image.BuildContext
+    ${{ if eq(variables['WebBuild'], true) }}:
+      value: $(Build.ArtifactStagingDirectory)
+    ${{ if eq(variables['WebBuild'], false) }}:
+      value: $(Build.BinariesDirectory)
   - name: App.UnitTests
     value: $(App.Home)/test/unit
   - name: PullRequest
