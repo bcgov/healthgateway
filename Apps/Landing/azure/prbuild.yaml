@@ -1,0 +1,20 @@
+name: PR$(Rev:.r) #Build number
+
+pr:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Landing
+
+trigger: none
+
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Landing
+    DotNetTests: false
+    NPMInstall: true
+    WebBuild: true
+    ClientPath: src

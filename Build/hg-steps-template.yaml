@@ -13,19 +13,19 @@ parameters:
 
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
+    displayName: "Use .NET Core sdk"
     condition: eq(variables['EnableAzure'], True)
     inputs:
       packageType: sdk
       version: 8.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
-    
+
   - task: Cache@2
     displayName: "Fetch NPM Cache"
     condition: eq(variables['NPMInstall'], true)
     inputs:
-      key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
-      path: "$(App.Home)/src/ClientApp/node_modules"
+      key: 'npm | "$(Agent.OS)" | $(App.Client)/package-lock.json'
+      path: "$(App.Client)/node_modules"
       cacheHitVar: "CACHE_RESTORED"
       restoreKeys: 'npm | "$(Agent.OS)"'
 
@@ -34,11 +34,33 @@ steps:
     condition: and(succeeded(), and(ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true)))
     inputs:
       command: "install"
-      workingDir: "$(App.Home)/src/ClientApp"
+      workingDir: "$(App.Client)"
+
+  - script: |
+      npm run build
+    displayName: "Build client"
+    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
+    workingDirectory: "$(App.Client)"
+
+  - task: CopyFiles@2
+    displayName: "Copy client build output to artifact staging directory"
+    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
+    inputs:
+      SourceFolder: "$(App.Client)/dist"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)/src/ClientApp/dist"
+
+  - task: CopyFiles@2
+    displayName: "Copy client nginx.conf to artifact staging directory"
+    condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
+    inputs:
+      SourceFolder: "$(App.Home)"
+      Contents: "nginx.conf"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
 
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false))
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), eq(variables['WebBuild'], false))
     inputs:
       projects: "$(App.Home)/src"
       arguments: "--no-incremental /warnaserror"
@@ -51,7 +73,7 @@ steps:
       arguments: "--no-incremental /warnaserror"
 
   - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for $(App.Name)"
+    displayName: "Running Unit Tests for $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
@@ -60,7 +82,7 @@ steps:
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
   - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
+    displayName: "Running Unit Tests for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
@@ -115,7 +137,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false))
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), eq(variables['WebBuild'], false))
     inputs:
       modifyOutputPath: false
       command: "publish"
@@ -141,7 +163,7 @@ steps:
       containerRegistry: "docker-health"
       repository: $(DockerRepo)/$(Image.Name)
       Dockerfile: "$(App.Home)/Dockerfile"
-      buildContext: "$(Build.BinariesDirectory)"
+      buildContext: "$(Image.BuildContext)"
       tags: "$(Build.BuildNumber)"
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
 
@@ -157,7 +179,7 @@ steps:
       oc project ${{ parameters.licenseplate }}-tools
       cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
       oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(Image.Name) | oc apply -f -
-      oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+      oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory)
       oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
     displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))

@@ -8,7 +8,7 @@
         }
     },
     "profiles": {
-        "WebClient": {
+        "WebClient and SPA": {
             "commandName": "Project",
             "launchBrowser": true,
             "applicationUrl": "http://localhost:3025",
@@ -17,6 +17,16 @@
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "HealthGateway_WebClient__NewClient": "true",
                 "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
+            }
+        },
+        "WebClient Only": {
+            "commandName": "Project",
+            "launchBrowser": false,
+            "applicationUrl": "http://localhost:3025",
+            "environmentVariables": {
+                "DOTNET_USE_POLLING_FILE_WATCHER": "1",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "HealthGateway_WebClient__NewClient": "true"
             }
         }
     }
