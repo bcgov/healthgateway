@@ -64,16 +64,17 @@ nextTick(() => {
     <v-app-bar
         v-model="isHeaderVisible"
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
-        class="border-b-md border-accent border-opacity-100 d-print-none"
-        color="primary"
+        class="d-print-none px-3 px-sm-5"
+        color="white"
         :scroll-threshold="headerScrollThreshold"
-        flat
+        height="82"
     >
-        <router-link to="/" class="px-2" style="width: 160px">
+        <router-link to="/">
             <v-img
                 alt="Go to Health Gateway home page"
-                src="@/assets/images/gov/hg-logo-rev.svg"
-                max-width="135px"
+                src="@/assets/images/gov/hg-logo.png"
+                width="151"
+                height="82"
             />
         </router-link>
         <v-spacer />
@@ -81,6 +82,7 @@ nextTick(() => {
             v-if="isLogInButtonShown"
             variant="secondary"
             inverse
+            class="mr-0"
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
