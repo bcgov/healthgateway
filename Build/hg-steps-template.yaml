@@ -13,7 +13,7 @@ parameters:
 
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
+    displayName: "Use .NET Core sdk"
     condition: eq(variables['EnableAzure'], True)
     inputs:
       packageType: sdk
@@ -38,25 +38,25 @@ steps:
 
   - script: |
       npm run build
-    displayName: 'Build Landing'
+    displayName: "Build Landing"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     workingDirectory: "$(App.Client)"
 
   - task: CopyFiles@2
-    displayName: 'Copy Landing build output to artifact staging directory'
+    displayName: "Copy Landing build output to artifact staging directory"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
-      SourceFolder: '$(App.Client)/dist'
-      Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/src/ClientApp/dist'
+      SourceFolder: "$(App.Client)/dist"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)/src/ClientApp/dist"
 
   - task: CopyFiles@2
-    displayName: 'Copy Landing nginx.conf to artifact staging directory'
+    displayName: "Copy Landing nginx.conf to artifact staging directory"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
-      SourceFolder: '$(App.Home)'
-      Contents: 'nginx.conf'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      SourceFolder: "$(App.Home)"
+      Contents: "nginx.conf"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
 
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
