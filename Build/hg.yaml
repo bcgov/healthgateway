@@ -50,6 +50,10 @@ parameters:
     type: boolean
     default: false
 
+  - name: ClientPath
+    type: string
+    default: "src/ClientApp"
+
   - name: DBScripts
     type: boolean
     default: false
@@ -81,6 +85,8 @@ variables:
     value: ${{ parameters.EnableAzure }}
   - name: App.Home
     value: $(Build.SourcesDirectory)/Apps/$(App.Name)
+  - name: App.Client
+    value: $(App.Home)/$(parameters.ClientPath)
   - name: Image.Name
     ${{ if parameters.ImageName }}:
       value: $[lower('${{ parameters.ImageName }}')]
