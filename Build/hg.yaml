@@ -19,6 +19,7 @@ parameters:
       - GatewayApi
       - ClinicalDocument
       - PatientDataAccess
+      - Landing
       - NotSpecified
 
   - name: ImageName
@@ -49,7 +50,15 @@ parameters:
     type: boolean
     default: false
 
+  - name: ClientPath
+    type: string
+    default: "src/ClientApp"
+
   - name: DBScripts
+    type: boolean
+    default: false
+
+  - name: WebBuild
     type: boolean
     default: false
 
@@ -60,6 +69,8 @@ variables:
     value: ${{ parameters.Application }}
   - name: DBScripts
     value: ${{ parameters.DBScripts }}
+  - name: WebBuild
+    value: ${{ parameters.WebBuild }}
   - name: WASMBuild
     value: ${{ parameters.WASMBuild }}
   - name: NPMInstall
@@ -74,11 +85,18 @@ variables:
     value: ${{ parameters.EnableAzure }}
   - name: App.Home
     value: $(Build.SourcesDirectory)/Apps/$(App.Name)
+  - name: App.Client
+    value: $(App.Home)/${{ parameters.ClientPath }}
   - name: Image.Name
     ${{ if parameters.ImageName }}:
       value: $[lower('${{ parameters.ImageName }}')]
     ${{ if not(parameters.ImageName) }}:
       value: $[lower(variables['App.Name'])]
+  - name: Image.BuildContext
+    ${{ if eq(variables['WebBuild'], true) }}:
+      value: $(Build.ArtifactStagingDirectory)
+    ${{ if eq(variables['WebBuild'], false) }}:
+      value: $(Build.BinariesDirectory)
   - name: App.UnitTests
     value: $(App.Home)/test/unit
   - name: PullRequest
