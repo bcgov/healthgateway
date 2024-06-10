@@ -73,7 +73,7 @@ steps:
       arguments: "--no-incremental /warnaserror"
 
   - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for $(App.Name)"
+    displayName: "Running Unit Tests for $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
@@ -82,7 +82,7 @@ steps:
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
   - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
+    displayName: "Running Unit Tests for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
