@@ -24,8 +24,8 @@ steps:
     displayName: "Fetch NPM Cache"
     condition: eq(variables['NPMInstall'], true)
     inputs:
-      key: 'npm | "$(Agent.OS)" | $(App.Client)/package-lock.json'
-      path: "$(App.Client)/node_modules"
+      key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
+      path: "$(App.Home)/src/ClientApp/node_modules"
       cacheHitVar: "CACHE_RESTORED"
       restoreKeys: 'npm | "$(Agent.OS)"'
 
@@ -34,19 +34,19 @@ steps:
     condition: and(succeeded(), and(ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true)))
     inputs:
       command: "install"
-      workingDir: "$(App.Client)"
+      workingDir: "$(App.Home)/src/ClientApp"
 
   - script: |
       npm run build
     displayName: "Build client"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
-    workingDirectory: "$(App.Client)"
+    workingDirectory: "$(App.Home)/src/ClientApp"
 
   - task: CopyFiles@2
     displayName: "Copy client build output to artifact staging directory"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
-      SourceFolder: "$(App.Client)/dist"
+      SourceFolder: "$(App.Home)/src/ClientApp/dist"
       Contents: "**"
       TargetFolder: "$(Build.ArtifactStagingDirectory)/src/ClientApp/dist"
 
