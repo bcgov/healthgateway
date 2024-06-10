@@ -156,7 +156,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
             <v-col
                 xs="false"
                 lg="7"
-                class="d-none d-lg-block text-center col-7"
+                class="d-none d-lg-block text-center col-7 pt-0"
             >
                 <v-img
                     src="@/assets/images/landing/landing-top.png"
