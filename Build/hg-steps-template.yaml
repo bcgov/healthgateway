@@ -38,12 +38,12 @@ steps:
 
   - script: |
       npm run build
-    displayName: "Build Landing"
+    displayName: "Build client"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     workingDirectory: "$(App.Client)"
 
   - task: CopyFiles@2
-    displayName: "Copy Landing build output to artifact staging directory"
+    displayName: "Copy client build output to artifact staging directory"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
       SourceFolder: "$(App.Client)/dist"
@@ -51,7 +51,7 @@ steps:
       TargetFolder: "$(Build.ArtifactStagingDirectory)/src/ClientApp/dist"
 
   - task: CopyFiles@2
-    displayName: "Copy Landing nginx.conf to artifact staging directory"
+    displayName: "Copy client nginx.conf to artifact staging directory"
     condition: and(succeeded(), eq(variables['NPMInstall'], true), eq(variables['WebBuild'], true))
     inputs:
       SourceFolder: "$(App.Home)"
