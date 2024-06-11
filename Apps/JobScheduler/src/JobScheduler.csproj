@@ -32,8 +32,6 @@
   <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Utils\" />
-    <Folder Include="Views\" />
-    <Folder Include="Views\DumpHeaders\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\_ViewImports.cshtml" />
