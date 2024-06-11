@@ -12,7 +12,9 @@ const isProduction = computed(
     () =>
         Process.NODE_ENV == EnvironmentType.production &&
         (host.value.startsWith("HEALTHGATEWAY") ||
-            host.value.startsWith("WWW.HEALTHGATEWAY"))
+            host.value.startsWith("WWW.HEALTHGATEWAY") ||
+            host.value.startsWith("CLASSIC.HEALTHGATEWAY") ||
+            host.value.startsWith("LEGACY.HEALTHGATEWAY"))
 );
 </script>
 
