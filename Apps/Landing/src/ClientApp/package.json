@@ -4,13 +4,14 @@
     "version": "2.0.0-alpha",
     "scripts": {
         "dev": "vite",
-        "build:development": "NODE_ENV=development npm-run-all clean build:vite",
-        "build": "NODE_ENV=production npm run typecheck && npm run lintcheck && npm run build:vite",
+        "build:development": "npm-run-all clean build:vite:development",
+        "build": "npm run typecheck && npm run lintcheck && npm run build:vite",
         "preview": "vite preview",
         "lintcheck": "eslint src --max-warnings 0",
         "lint": "eslint src --fix",
         "clean": "rimraf dist",
         "build:vite": "vite build",
+        "build:vite:development": "vite build --mode development",
         "typecheck": "vue-tsc --noEmit"
     },
     "dependencies": {
@@ -32,7 +33,6 @@
         "@vitejs/plugin-vue": "^4.6.2",
         "@vue/eslint-config-prettier": "^7.1.0",
         "@vue/eslint-config-typescript": "^11.0.0",
-        "dotenv": "^16.4.5",
         "eslint": "^8.57.0",
         "eslint-plugin-simple-import-sort": "^10.0.0",
         "eslint-plugin-unused-imports": "^2.0.0",
