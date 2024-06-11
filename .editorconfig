@@ -10,6 +10,7 @@ charset = utf-8
 
 # ReSharper properties
 resharper_html_space_before_self_closing = true
+resharper_entity_framework_model_validation_unlimited_string_length_highlighting = none
 
 [*.{yml,yaml}]
 indent_size = 2

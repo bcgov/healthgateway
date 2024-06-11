@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Messaging
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -48,6 +49,7 @@ namespace HealthGateway.CommonTests.Messaging
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
+        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod", Justification = "Rider re-adds the supposedly redundant type argument upon save")]
         public async Task ValidateStoreAsync()
         {
             // Arrange
@@ -101,6 +103,7 @@ namespace HealthGateway.CommonTests.Messaging
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
+        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod", Justification = "Rider re-adds the supposedly redundant type argument upon save")]
         public async Task ValidateDispatchOutboxItemsAsync()
         {
             // Arrange
@@ -177,7 +180,7 @@ namespace HealthGateway.CommonTests.Messaging
             ICollection<IEnumerable<OutboxItem>> enqueuedItemsCollection = [];
             mocks.OutboxQueueDelegate.Setup(m => m.Enqueue(Capture.In(enqueuedItemsCollection)));
 
-            return new(GetDbOutboxStore(mocks), mocks, enqueuedItemsCollection);
+            return new(GetDbOutboxStore(mocks), enqueuedItemsCollection);
         }
 
         private static DispatchOutboxItemsAsyncSetup GetDispatchOutboxItemsAsyncSetup(IEnumerable<OutboxItem> dequeuedItems)
@@ -189,7 +192,7 @@ namespace HealthGateway.CommonTests.Messaging
             ICollection<IEnumerable<MessageEnvelope>> sentMessagesCollection = [];
             mocks.MessageSender.Setup(m => m.SendAsync(Capture.In(sentMessagesCollection), It.IsAny<CancellationToken>()));
 
-            return new(GetDbOutboxStore(mocks), mocks, sentMessagesCollection);
+            return new(GetDbOutboxStore(mocks), sentMessagesCollection);
         }
 
         private static DispatchOutboxItemsAsyncThrowsExceptionSetup GetDispatchOutboxItemsAsyncThrowsExceptionSetup(Exception exception)
@@ -206,9 +209,9 @@ namespace HealthGateway.CommonTests.Messaging
             return new(mocks.OutboxQueueDelegate.Object, mocks.BackgroundJobClient.Object, mocks.MessageSender.Object, mocks.Logger.Object);
         }
 
-        private sealed record StoreAsyncSetup(DbOutboxStore DbOutboxStore, Mocks Mocks, ICollection<IEnumerable<OutboxItem>> EnqueuedItemsCollection);
+        private sealed record StoreAsyncSetup(DbOutboxStore DbOutboxStore, ICollection<IEnumerable<OutboxItem>> EnqueuedItemsCollection);
 
-        private sealed record DispatchOutboxItemsAsyncSetup(DbOutboxStore DbOutboxStore, Mocks Mocks, ICollection<IEnumerable<MessageEnvelope>> SentMessagesCollection);
+        private sealed record DispatchOutboxItemsAsyncSetup(DbOutboxStore DbOutboxStore, ICollection<IEnumerable<MessageEnvelope>> SentMessagesCollection);
 
         private sealed record DispatchOutboxItemsAsyncThrowsExceptionSetup(DbOutboxStore DbOutboxStore, Mocks Mocks);
 

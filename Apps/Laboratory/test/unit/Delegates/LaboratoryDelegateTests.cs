@@ -157,7 +157,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
 
             // Arrange
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error");
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
             mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
 
@@ -271,7 +271,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error retrieving Laboratory Report";
 
             // Arrange
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error");
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
             mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
 
@@ -388,7 +388,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error retrieving Laboratory Report";
 
             // Arrange
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error");
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
             mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
 
@@ -507,7 +507,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
 
             // Arrange
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error");
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
             mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
 
