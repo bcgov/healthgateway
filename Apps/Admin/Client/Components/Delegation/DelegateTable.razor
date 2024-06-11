@@ -46,16 +46,16 @@
                 <MudHidden Breakpoint="@Breakpoint.MdAndDown">
                     <MudCheckBox
                         T="bool"
-                        Checked="@context.ToBeRemoved"
-                        CheckedChanged="@(value => ToggleRemoveDelegate(context.Hdid, value))"
+                        Value="@context.ToBeRemoved"
+                        ValueChanged="@(value => ToggleRemoveDelegate(context.Hdid, value))"
                         Size="Size.Small"
                         data-testid="delegate-to-be-removed-checkbox" />
                 </MudHidden>
                 <MudHidden Breakpoint="@Breakpoint.MdAndDown" Invert="true">
                     <MudCheckBox
                         T="bool"
-                        Checked="@context.ToBeRemoved"
-                        CheckedChanged="@(value => ToggleRemoveDelegate(context.Hdid, value))"
+                        Value="@context.ToBeRemoved"
+                        ValueChanged="@(value => ToggleRemoveDelegate(context.Hdid, value))"
                         Size="Size.Small"
                         Dense="true"
                         Class="mr-3"
