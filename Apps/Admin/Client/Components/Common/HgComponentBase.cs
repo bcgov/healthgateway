@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Client.Components.Common
         /// They will be splatted onto the underlying element.
         /// </summary>
         [Parameter(CaptureUnmatchedValues = true)]
-        public IReadOnlyDictionary<string, object> UnmatchedAttributes { get; set; } = new Dictionary<string, object>();
+        public IReadOnlyDictionary<string, object?> UnmatchedAttributes { get; set; } = new Dictionary<string, object?>();
 
         /// <summary>
         /// Gets or sets a value indicating at what breakpoint to include the standard left margin on the component.
