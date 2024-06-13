@@ -93,15 +93,14 @@ namespace HealthGateway.GatewayApi.Services
                 smsVerification.ExpireDate >= DateTime.UtcNow)
             {
                 smsVerification.Validated = true;
-                await this.messageVerificationDelegate.UpdateAsync(smsVerification, !this.notificationsChangeFeedEnabled, ct);
+                await this.messageVerificationDelegate.UpdateAsync(smsVerification, false, ct);
+
                 userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
-                await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
+                await this.profileDelegate.UpdateAsync(userProfile, true, ct);
+
                 if (this.notificationsChangeFeedEnabled)
                 {
-                    MessageEnvelope[] events =
-                    {
-                        new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber), hdid),
-                    };
+                    MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber), hdid)];
                     await this.messageSender.SendAsync(events, ct);
                 }
 

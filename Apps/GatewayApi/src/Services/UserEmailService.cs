@@ -154,16 +154,14 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             matchingVerification.Validated = true;
-            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, !this.notificationsChangeFeedEnabled, ct);
+            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
+
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-            await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
+            await this.profileDelegate.UpdateAsync(userProfile, true, ct);
 
             if (this.notificationsChangeFeedEnabled)
             {
-                MessageEnvelope[] events =
-                {
-                    new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid),
-                };
+                MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid)];
                 await this.messageSender.SendAsync(events, ct);
             }
 
@@ -196,7 +194,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Updating user email...");
 
-            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct: ct) ??
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct) ??
                                       throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             bool result = string.IsNullOrWhiteSpace(emailAddress)
