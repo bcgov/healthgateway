@@ -28,12 +28,15 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -157,7 +160,11 @@ namespace HealthGateway.GatewayApi.Services
             await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
 
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-            await this.profileDelegate.UpdateAsync(userProfile, true, ct);
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, true, ct);
+            if (dbResult.Status != DbStatusCode.Updated)
+            {
+                return RequestResultFactory.ServiceError<bool>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.CannotPerformAction);
+            }
 
             if (this.notificationsChangeFeedEnabled)
             {
