@@ -267,6 +267,7 @@ namespace HealthGateway.GatewayApi.Services
                 ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
                 Email = this.emailQueueService.ProcessTemplate(toEmail, emailTemplate, keyValues),
                 EmailAddress = toEmail,
+                Validated = isVerified,
             };
 
             if (isVerified)
