@@ -129,8 +129,8 @@ namespace HealthGateway.GatewayApi.Services
             await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
 
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
-            if (dbResult.Status != DbStatusCode.Updated && dbResult.Status != DbStatusCode.Deferred)
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, true, ct);
+            if (dbResult.Status != DbStatusCode.Updated)
             {
                 throw new DatabaseException(dbResult.Message);
             }

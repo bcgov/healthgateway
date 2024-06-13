@@ -104,9 +104,8 @@ namespace HealthGateway.GatewayApi.Services
             await this.messageVerificationDelegate.UpdateAsync(smsVerification, false, ct);
 
             userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
-            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
-
-            if (dbResult.Status != DbStatusCode.Updated && dbResult.Status != DbStatusCode.Deferred)
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, true, ct);
+            if (dbResult.Status != DbStatusCode.Updated)
             {
                 throw new DatabaseException(dbResult.Message);
             }
