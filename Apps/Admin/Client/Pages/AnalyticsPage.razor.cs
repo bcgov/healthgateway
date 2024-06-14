@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Pages;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -53,6 +54,7 @@ public partial class AnalyticsPage : FluxorComponent
 
     private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
+    [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Two-way binding")]
     private DateRange SelectedDateRange
     {
         get => this.DateRange;

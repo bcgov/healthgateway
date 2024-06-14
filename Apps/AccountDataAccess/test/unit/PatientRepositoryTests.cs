@@ -390,8 +390,6 @@ namespace AccountDataAccessTest
                 Source: source,
                 UseCache: useCache);
 
-            PatientRequest patientRequest = new(useHdid ? Hdid : Phn, useCache);
-
             PatientModel patient = new()
             {
                 Phn = Phn,

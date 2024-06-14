@@ -19,9 +19,6 @@
     <ItemGroup>
         <AdditionalFiles Include="..\..\stylecop.json" />
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Views\DumpHeaders\" />
-    </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="Assets\Templates\CovidReport.docx" />

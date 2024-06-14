@@ -192,6 +192,7 @@ namespace HealthGateway.GatewayApi.Services
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "CognitiveComplexity", Justification = "Team decision")]
         public async Task<bool> UpdateUserEmailAsync(string hdid, string emailAddress, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user email...");

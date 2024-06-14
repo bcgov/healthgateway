@@ -30,8 +30,8 @@
         <MudTd data-testid="dependent-protected" DataLabel="Protected">
             <MudSwitch
                 T="bool"
-                Checked="@(InEditMode || context.Protected)"
-                CheckedChanged="@(value => ToggleProtectedSwitchAsync(value))"
+                Value="@(InEditMode || context.Protected)"
+                ValueChanged="@(value => ToggleProtectedSwitchAsync(value))"
                 Color="@(InEditMode ? Color.Warning : Color.Success)"
                 UnCheckedColor="Color.Tertiary"
                 Class="mr-n4"
