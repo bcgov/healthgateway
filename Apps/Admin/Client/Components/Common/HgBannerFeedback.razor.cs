@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.Common
 {
+    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using Microsoft.AspNetCore.Components;
@@ -73,10 +74,14 @@ namespace HealthGateway.Admin.Client.Components.Common
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+        protected override async ValueTask DisposeAsyncCore(bool disposing)
         {
-            this.ActionSubscriber.UnsubscribeFromAllActions(this);
-            base.Dispose(disposing);
+            if (disposing)
+            {
+                this.ActionSubscriber.UnsubscribeFromAllActions(this);
+            }
+
+            await base.DisposeAsyncCore(disposing);
         }
 
         private void HandleResetAction(TResetAction action)

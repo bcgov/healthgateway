@@ -88,10 +88,14 @@ public partial class AnalyticsPage : FluxorComponent
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
+    protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
-        this.ActionSubscriber.UnsubscribeFromAllActions(this);
-        base.Dispose(disposing);
+        if (disposing)
+        {
+            this.ActionSubscriber.UnsubscribeFromAllActions(this);
+        }
+
+        await base.DisposeAsyncCore(disposing);
     }
 
     private void GetProfilesData()

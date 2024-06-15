@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
+    using Fluxor.Blazor.Web.ReduxDevTools;
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Services;
@@ -92,11 +93,18 @@ namespace HealthGateway.Admin.Client
                 .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
+            bool enableReduxDevTools = builder.Configuration.GetValue("EnableReduxDevTools", false);
             Assembly currentAssembly = typeof(Program).Assembly;
             builder.Services.AddFluxor(
-                options => options
-                    .ScanAssemblies(currentAssembly)
-                    .UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin"));
+                options =>
+                {
+                    options.ScanAssemblies(currentAssembly).UseRouting();
+
+                    if (enableReduxDevTools)
+                    {
+                        options.UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin");
+                    }
+                });
 
             builder.Services.AddBlazoredLocalStorage();
 
