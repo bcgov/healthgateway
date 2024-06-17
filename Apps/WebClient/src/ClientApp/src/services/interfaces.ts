@@ -129,10 +129,7 @@ export interface IUserProfileService {
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<UserProfile>;
     recoverAccount(hdid: string): Promise<UserProfile>;
-    validateEmail(
-        hdid: string,
-        inviteKey: string
-    ): Promise<RequestResult<boolean>>;
+    validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
     validateSms(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
     updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean>;

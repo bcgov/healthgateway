@@ -1,7 +1,7 @@
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { HttpError } from "@/models/errors";
+import { HttpError, ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
@@ -168,10 +168,7 @@ export class RestUserProfileService implements IUserProfileService {
             });
     }
 
-    public validateEmail(
-        hdid: string,
-        inviteKey: string
-    ): Promise<RequestResult<boolean>> {
+    public validateEmail(hdid: string, inviteKey: string): Promise<boolean> {
         return this.http
             .get<RequestResult<boolean>>(
                 `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
@@ -184,6 +181,18 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
+            })
+            .then((result) => {
+                if (result.resultError) {
+                    const error = ResultError.fromModel(result.resultError);
+                    if (result.resourcePayload) {
+                        error.statusCode = 409;
+                    }
+
+                    throw error;
+                }
+
+                return result.resourcePayload;
             });
     }
 

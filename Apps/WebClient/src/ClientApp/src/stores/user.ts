@@ -355,18 +355,14 @@ export const useUserStore = defineStore("user", () => {
     function validateEmail(inviteKey: string) {
         return userProfileService
             .validateEmail(user.value.hdid, inviteKey)
-            .then((result) => {
-                if (result.resourcePayload === true) {
-                    user.value.verifiedEmail = true;
-                }
-                return result;
-            })
             .catch((resultError: ResultError) => {
-                handleError(
-                    resultError,
-                    ErrorType.Update,
-                    ErrorSourceType.User
-                );
+                if (resultError.statusCode !== 409) {
+                    handleError(
+                        resultError,
+                        ErrorType.Update,
+                        ErrorSourceType.User
+                    );
+                }
                 throw resultError;
             });
     }
