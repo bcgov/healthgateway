@@ -269,17 +269,8 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function updateUserEmail(emailAddress: string): Promise<void> {
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return userProfileService
             .updateEmail(user.value.hdid, emailAddress)
-            .then((emailUpdated) => {
-                if (!emailUpdated) {
-                    logger.warn(`updateEmail response false`);
-                }
-            })
             .catch((resultError: ResultError) => {
                 setUserError(resultError.message);
                 throw resultError;

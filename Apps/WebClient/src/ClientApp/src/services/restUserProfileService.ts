@@ -80,7 +80,7 @@ export class RestUserProfileService implements IUserProfileService {
             });
     }
 
-    public closeAccount(hdid: string): Promise<UserProfile> {
+    public closeAccount(hdid: string): Promise<void> {
         return this.http
             .delete<RequestResult<UserProfile>>(
                 `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
@@ -98,11 +98,10 @@ export class RestUserProfileService implements IUserProfileService {
                 this.logger.debug(
                     `closeAccount ${JSON.stringify(requestResult)}`
                 );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
-    public recoverAccount(hdid: string): Promise<UserProfile> {
+    public recoverAccount(hdid: string): Promise<void> {
         return this.http
             .get<RequestResult<UserProfile>>(
                 `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
@@ -120,7 +119,6 @@ export class RestUserProfileService implements IUserProfileService {
                 this.logger.debug(
                     `recoverAccount ${JSON.stringify(requestResult)}`
                 );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
@@ -215,7 +213,7 @@ export class RestUserProfileService implements IUserProfileService {
             );
     }
 
-    public updateEmail(hdid: string, email: string): Promise<boolean> {
+    public updateEmail(hdid: string, email: string): Promise<void> {
         const headers: Dictionary<string> = {};
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
@@ -233,11 +231,10 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then(() => true);
+            });
     }
 
-    public updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean> {
+    public updateSmsNumber(hdid: string, smsNumber: string): Promise<void> {
         const headers: Dictionary<string> = {};
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
@@ -255,8 +252,7 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then(() => true);
+            });
     }
 
     public updateUserPreference(
@@ -290,7 +286,7 @@ export class RestUserProfileService implements IUserProfileService {
     public updateAcceptedTerms(
         hdid: string,
         termsOfServiceId: string
-    ): Promise<UserProfile> {
+    ): Promise<void> {
         const headers: Dictionary<string> = {};
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
@@ -315,7 +311,6 @@ export class RestUserProfileService implements IUserProfileService {
                         requestResult
                     )}`
                 );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
