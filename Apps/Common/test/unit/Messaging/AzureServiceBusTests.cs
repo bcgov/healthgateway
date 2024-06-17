@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Messaging
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace HealthGateway.CommonTests.Messaging
         [InlineData(3, 1, 3)]
         [InlineData(3, 2, 2)]
         [InlineData(3, 3, 1)]
+        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod", Justification = "Rider re-adds the supposedly redundant type argument upon save")]
         public async Task ValidateSendAsync(int messageCount, int batchSize, int expectedBatchCount)
         {
             // Arrange
@@ -117,7 +119,10 @@ namespace HealthGateway.CommonTests.Messaging
         /// <summary>
         /// HandleProcessMessageAsync - Happy Path.
         /// </summary>
-        /// <param name="receiveHandlerResponse">Boolean value returned from the receive message handler indicating whether the message was processed successfully.</param>
+        /// <param name="receiveHandlerResponse">
+        /// Boolean value returned from the receive message handler indicating whether the
+        /// message was processed successfully.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true)]
@@ -249,7 +254,7 @@ namespace HealthGateway.CommonTests.Messaging
         private static ServiceBusReceivedMessage GenerateServiceBusReceivedMessage(BinaryData serializedObject, Type? supposedType)
         {
             return ServiceBusModelFactory.ServiceBusReceivedMessage(
-                body: serializedObject,
+                serializedObject,
                 properties: new Dictionary<string, object>
                 {
                     ["$type"] = supposedType?.Name ?? string.Empty,
@@ -273,7 +278,7 @@ namespace HealthGateway.CommonTests.Messaging
 
             parameterMocks.ReceiveHandler.Setup(m => m(It.IsAny<string>(), It.IsAny<IEnumerable<MessageEnvelope>>())).ReturnsAsync(receiveResponse);
 
-            return new(GetAzureServiceBus(mocks), mocks, parameterMocks, args);
+            return new(GetAzureServiceBus(mocks), parameterMocks, args);
         }
 
         private static AzureServiceBus GetAzureServiceBus(Mocks mocks)
@@ -297,7 +302,7 @@ namespace HealthGateway.CommonTests.Messaging
 
         private sealed record DisposeAsyncSetup(AzureServiceBus AzureServiceBus, Mocks Mocks);
 
-        private sealed record HandleProcessMessageAsyncSetup(AzureServiceBus AzureServiceBus, Mocks Mocks, HandleProcessMessageAsyncParameterMocks ParameterMocks, ProcessSessionMessageEventArgs Args);
+        private sealed record HandleProcessMessageAsyncSetup(AzureServiceBus AzureServiceBus, HandleProcessMessageAsyncParameterMocks ParameterMocks, ProcessSessionMessageEventArgs Args);
 
         private sealed record Mocks(
             Mock<ServiceBusSender> ServiceBusSender,

@@ -29,8 +29,8 @@
                                 Label="@FormattingUtility.FormatDataSource(dataSource)"
                                 UnCheckedColor="Color.Tertiary"
                                 Color="Color.Success"
-                                Checked="@IsBlocked(dataSource)"
-                                CheckedChanged="@(_ => ToggleDataSource(dataSource))"
+                                Value="@IsBlocked(dataSource)"
+                                ValueChanged="@(_ => ToggleDataSource(dataSource))"
                                 ReadOnly="@(!CanEdit)"
                                 data-testid="@("block-access-switch-" + dataSource)" />
                         </MudItem>

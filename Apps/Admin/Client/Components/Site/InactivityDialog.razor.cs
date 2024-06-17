@@ -45,11 +45,15 @@ namespace HealthGateway.Admin.Client.Components.Site
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+        protected override async ValueTask DisposeAsyncCore(bool disposing)
         {
-            base.Dispose(disposing);
-            this.timer.Stop();
-            this.timer.Dispose();
+            if (disposing)
+            {
+                this.timer.Stop();
+                this.timer.Dispose();
+            }
+
+            await base.DisposeAsyncCore(disposing);
         }
 
         private void CountdownTimerTick(object? sender, ElapsedEventArgs e)

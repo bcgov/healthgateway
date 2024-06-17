@@ -27,6 +27,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -255,7 +256,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock ??= new();
             userProfileDelegateMock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
             userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DbResult<UserProfile>());
+                .ReturnsAsync(new DbResult<UserProfile> { Status = DbStatusCode.Updated });
 
             notificationSettingsServiceMock ??= new();
             messageSenderMock ??= new();

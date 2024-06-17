@@ -205,7 +205,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
                 ])
                 .Build();
 
-            return new(GetApiExceptionHandler(mocks, configuration), mocks);
+            return new(GetApiExceptionHandler(mocks, configuration));
         }
 
         private static DbUpdateExceptionHandlerSetup GetDbUpdateExceptionHandlerSetup(bool includeExceptionDetailsInResponse)
@@ -265,7 +265,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
             return new(configuration);
         }
 
-        private sealed record ApiExceptionHandlerSetup(ApiExceptionHandler ExceptionHandler, ApiExceptionHandlerMocks Mocks);
+        private sealed record ApiExceptionHandlerSetup(ApiExceptionHandler ExceptionHandler);
 
         private sealed record DbUpdateExceptionHandlerSetup(DbUpdateExceptionHandler ExceptionHandler, DbUpdateExceptionHandlerMocks Mocks);
 

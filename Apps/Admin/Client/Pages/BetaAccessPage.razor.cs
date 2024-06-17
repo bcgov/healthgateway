@@ -100,14 +100,14 @@ namespace HealthGateway.Admin.Client.Pages
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+        protected override async ValueTask DisposeAsyncCore(bool disposing)
         {
             if (disposing)
             {
                 this.KeyInterceptorService.Dispose();
             }
 
-            base.Dispose(disposing);
+            await base.DisposeAsyncCore(disposing);
         }
 
         /// <summary>

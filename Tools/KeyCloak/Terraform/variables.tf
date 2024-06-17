@@ -43,7 +43,7 @@ variable "keycloak_idp_bcsc" {
     client_id     = string
     client_secret = string
     issuer_path   = optional(string, "/oauth2/")
-    jwks_path     = optional(string, "/oauth2/jwk.json")
+    jwks_path     = optional(string, "/oauth2/jwk")
   })
   sensitive   = true
   description = "The configuration settings for the BCSC IDP"
@@ -58,7 +58,7 @@ variable "keycloak_idp_bcsc_mobile" {
     client_id     = string
     client_secret = string
     issuer_path   = optional(string, "/oauth2/")
-    jwks_path     = optional(string, "/oauth2/jwk.json")
+    jwks_path     = optional(string, "/oauth2/jwk")
   })
   sensitive   = true
   description = "The configuration settings for the BCSC Mobile IDP"
@@ -73,7 +73,7 @@ variable "keycloak_idp_bcsc_pcare" {
     client_id     = string
     client_secret = string
     issuer_path   = optional(string, "/oauth2/")
-    jwks_path     = optional(string, "/oauth2/jwk.json")
+    jwks_path     = optional(string, "/oauth2/jwk")
   })
   sensitive   = true
   description = "The configuration settings for the BCSC Primary Care IDP"

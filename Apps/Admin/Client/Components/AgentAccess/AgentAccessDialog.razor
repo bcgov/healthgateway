@@ -54,7 +54,7 @@
                     <MudSelect T="IdentityAccessRole"
                                Label="Roles"
                                MultiSelection="@true"
-                               SelectedValues="@Agent.Roles"
+                               SelectedValues="@Agent.Roles.AsEnumerable()"
                                SelectedValuesChanged="@(UpdateRoles)"
                                Variant="@Variant.Filled"
                                Dense="@true"

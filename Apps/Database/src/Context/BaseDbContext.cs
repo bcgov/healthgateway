@@ -98,6 +98,7 @@ namespace HealthGateway.Database.Context
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
+        [SuppressMessage("ReSharper", "CognitiveComplexity", Justification = "Team decision")]
         private void UpdateAuditProperties()
         {
             DateTime now = DateTime.UtcNow;

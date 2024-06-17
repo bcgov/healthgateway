@@ -167,8 +167,6 @@ namespace HealthGateway.JobScheduler
             app.UseEndpoints(
                 endpoints =>
                 {
-                    endpoints.MapDefaultControllerRoute();
-                    endpoints.MapRazorPages();
                     endpoints.MapControllers();
                     endpoints.MapHangfireDashboard(
                             string.Empty,

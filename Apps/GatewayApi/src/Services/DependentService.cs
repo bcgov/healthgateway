@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Text;
@@ -325,6 +326,7 @@ namespace HealthGateway.GatewayApi.Services
             }
         }
 
+        [SuppressMessage("ReSharper", "CognitiveComplexity", Justification = "Team decision")]
         private async Task<RequestResult<DependentModel>?> ValidateDependentAsync(
             AddDependentRequest addDependentRequest,
             string delegateHdid,

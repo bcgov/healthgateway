@@ -5,6 +5,10 @@
             "path": "WebClient/src/ClientApp"
         },
         {
+            "name": "Landing",
+            "path": "Landing/src/ClientApp"
+        },
+        {
             "name": "../Testing/functional/tests",
             "path": "../Testing/functional/tests"
         },
@@ -37,6 +41,20 @@
                 },
                 "options": {
                     "cwd": "${workspaceFolder:Apps}/WebClient/src/ClientApp"
+                },
+                "presentation": {
+                    "clear": true
+                }
+            },
+            {
+                "label": "Run Landing",
+                "type": "shell",
+                "command": "npm run dev",
+                "group": {
+                    "kind": "build"
+                },
+                "options": {
+                    "cwd": "${workspaceFolder:Apps}/Landing/src/ClientApp"
                 },
                 "presentation": {
                     "clear": true
@@ -98,7 +116,7 @@
                 "id": "cypressBaseUrl",
                 "description": "Choose your environment.",
                 "options": [
-                    "https://dev.healthgateway.gov.bc.ca",
+                    "https://dev-classic.healthgateway.gov.bc.ca",
                     "http://localhost:5002"
                 ]
             }

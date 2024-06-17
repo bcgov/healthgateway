@@ -19,6 +19,7 @@ parameters:
       - GatewayApi
       - ClinicalDocument
       - PatientDataAccess
+      - Landing
       - NotSpecified
 
   - name: ImageName
@@ -53,6 +54,10 @@ parameters:
     type: boolean
     default: false
 
+  - name: WebBuild
+    type: boolean
+    default: false
+
 #Build variables
 variables:
   - group: Secrets
@@ -60,6 +65,8 @@ variables:
     value: ${{ parameters.Application }}
   - name: DBScripts
     value: ${{ parameters.DBScripts }}
+  - name: WebBuild
+    value: ${{ parameters.WebBuild }}
   - name: WASMBuild
     value: ${{ parameters.WASMBuild }}
   - name: NPMInstall
@@ -79,6 +86,11 @@ variables:
       value: $[lower('${{ parameters.ImageName }}')]
     ${{ if not(parameters.ImageName) }}:
       value: $[lower(variables['App.Name'])]
+  - name: Image.BuildContext
+    ${{ if eq(variables['WebBuild'], true) }}:
+      value: $(Build.ArtifactStagingDirectory)
+    ${{ if eq(variables['WebBuild'], false) }}:
+      value: $(Build.BinariesDirectory)
   - name: App.UnitTests
     value: $(App.Home)/test/unit
   - name: PullRequest

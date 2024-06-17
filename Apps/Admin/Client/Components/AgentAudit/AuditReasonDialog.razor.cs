@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Components.AgentAudit;
 
 using System;
+using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
@@ -82,10 +83,14 @@ public partial class AuditReasonDialog<TErrorAction, TSuccessAction> : FluxorCom
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
+    protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
-        this.ActionSubscriber.UnsubscribeFromAllActions(this);
-        base.Dispose(disposing);
+        if (disposing)
+        {
+            this.ActionSubscriber.UnsubscribeFromAllActions(this);
+        }
+
+        await base.DisposeAsyncCore(disposing);
     }
 
     private void HandleActionSuccess(TSuccessAction successAction)

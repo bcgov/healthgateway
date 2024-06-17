@@ -28,12 +28,15 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -154,16 +157,18 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             matchingVerification.Validated = true;
-            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, !this.notificationsChangeFeedEnabled, ct);
+            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
+
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-            await this.profileDelegate.UpdateAsync(userProfile, !this.notificationsChangeFeedEnabled, ct);
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, true, ct);
+            if (dbResult.Status != DbStatusCode.Updated)
+            {
+                return RequestResultFactory.ServiceError<bool>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.CannotPerformAction);
+            }
 
             if (this.notificationsChangeFeedEnabled)
             {
-                MessageEnvelope[] events =
-                {
-                    new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid),
-                };
+                MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid)];
                 await this.messageSender.SendAsync(events, ct);
             }
 
@@ -192,11 +197,12 @@ namespace HealthGateway.GatewayApi.Services
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "CognitiveComplexity", Justification = "Team decision")]
         public async Task<bool> UpdateUserEmailAsync(string hdid, string emailAddress, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user email...");
 
-            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct: ct) ??
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct) ??
                                       throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             bool result = string.IsNullOrWhiteSpace(emailAddress)
@@ -267,6 +273,7 @@ namespace HealthGateway.GatewayApi.Services
                 ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
                 Email = this.emailQueueService.ProcessTemplate(toEmail, emailTemplate, keyValues),
                 EmailAddress = toEmail,
+                Validated = isVerified,
             };
 
             if (isVerified)
