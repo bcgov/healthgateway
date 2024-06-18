@@ -137,8 +137,13 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
-            UserProfile userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
+            UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
+
+            if (userProfile == null)
+            {
+                return new UserProfileModel();
+            }
 
             DateTime previousLastLogin = userProfile.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
