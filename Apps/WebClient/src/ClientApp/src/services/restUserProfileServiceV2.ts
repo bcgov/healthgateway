@@ -1,8 +1,7 @@
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { HttpError, ResultError } from "@/models/errors";
-import RequestResult from "@/models/requestResult";
+import { HttpError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
@@ -12,13 +11,13 @@ import {
     IUserProfileService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import RequestResultUtil from "@/utility/requestResultUtil";
 
-export class RestUserProfileService implements IUserProfileService {
+export class RestUserProfileServiceV2 implements IUserProfileService {
     private readonly APPLICATION_JSON: string =
         "application/json; charset=utf-8";
     private readonly CONTENT_TYPE: string = "Content-Type";
     private readonly USER_PROFILE_BASE_URI: string = "UserProfile";
+    private readonly API_VERSION: string = "2.0";
     private logger;
     private http;
     private baseUri;
@@ -35,8 +34,8 @@ export class RestUserProfileService implements IUserProfileService {
 
     public getProfile(hdid: string): Promise<UserProfile> {
         return this.http
-            .getWithCors<RequestResult<UserProfile>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
+            .getWithCors<UserProfile>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -46,12 +45,6 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.debug(
-                    `getProfile ${JSON.stringify(requestResult)}`
-                );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
@@ -59,8 +52,8 @@ export class RestUserProfileService implements IUserProfileService {
         createRequest: CreateUserRequest
     ): Promise<UserProfile> {
         return this.http
-            .post<RequestResult<UserProfile>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
+            .post<UserProfile>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}?api-version=${this.API_VERSION}`,
                 createRequest
             )
             .catch((err: HttpError) => {
@@ -71,19 +64,13 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.debug(
-                    `createProfile ${JSON.stringify(requestResult)}`
-                );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
     public closeAccount(hdid: string): Promise<void> {
         return this.http
-            .delete<RequestResult<UserProfile>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
+            .delete<void>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -93,18 +80,13 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.debug(
-                    `closeAccount ${JSON.stringify(requestResult)}`
-                );
             });
     }
 
     public recoverAccount(hdid: string): Promise<void> {
         return this.http
-            .get<RequestResult<UserProfile>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
+            .get<void>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -114,40 +96,30 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.debug(
-                    `recoverAccount ${JSON.stringify(requestResult)}`
-                );
             });
     }
 
     public validateAge(hdid: string): Promise<boolean> {
         return this.http
-            .get<RequestResult<boolean>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
+            .get<boolean>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/Validate?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestUserProfileService.validateAge()`
                 );
+
                 throw ErrorTranslator.internalNetworkError(
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.debug(
-                    `validateAge ${JSON.stringify(requestResult)}`
-                );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
     public getTermsOfService(): Promise<TermsOfService> {
         return this.http
-            .get<RequestResult<TermsOfService>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/termsofservice`
+            .get<TermsOfService>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/termsofservice?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -157,19 +129,13 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.debug(
-                    `getTermsOfService ${JSON.stringify(requestResult)}`
-                );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
     public validateEmail(hdid: string, inviteKey: string): Promise<boolean> {
         return this.http
-            .get<RequestResult<boolean>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
+            .get<boolean>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -179,25 +145,13 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((result) => {
-                if (result.resultError) {
-                    const error = ResultError.fromModel(result.resultError);
-                    if (result.resourcePayload) {
-                        error.statusCode = 409;
-                    }
-
-                    throw error;
-                }
-
-                return result.resourcePayload;
             });
     }
 
     public validateSms(hdid: string, digit: string): Promise<boolean> {
         return this.http
-            .get<RequestResult<boolean>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`
+            .get<boolean>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -207,10 +161,7 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) =>
-                RequestResultUtil.handleResult(requestResult)
-            );
+            });
     }
 
     public updateEmail(hdid: string, email: string): Promise<void> {
@@ -219,7 +170,7 @@ export class RestUserProfileService implements IUserProfileService {
 
         return this.http
             .put<void>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email`,
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email?api-version=${this.API_VERSION}`,
                 JSON.stringify(email),
                 headers
             )
@@ -240,7 +191,7 @@ export class RestUserProfileService implements IUserProfileService {
 
         return this.http
             .put<void>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms`,
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms?api-version=${this.API_VERSION}`,
                 JSON.stringify(smsNumber),
                 headers
             )
@@ -260,8 +211,8 @@ export class RestUserProfileService implements IUserProfileService {
         userPreference: UserPreference
     ): Promise<UserPreference> {
         return this.http
-            .put<RequestResult<UserPreference>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
+            .put<UserPreference>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference?api-version=${this.API_VERSION}`,
                 userPreference
             )
             .catch((err: HttpError) => {
@@ -272,14 +223,6 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.verbose(
-                    `update user preference result: ${JSON.stringify(
-                        requestResult
-                    )}`
-                );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
@@ -291,8 +234,8 @@ export class RestUserProfileService implements IUserProfileService {
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
         return this.http
-            .put<RequestResult<UserProfile>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/acceptedterms`,
+            .put<void>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/acceptedterms?api-version=${this.API_VERSION}`,
                 JSON.stringify(termsOfServiceId),
                 headers
             )
@@ -304,13 +247,6 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.verbose(
-                    `update user accepted terms result: ${JSON.stringify(
-                        requestResult
-                    )}`
-                );
             });
     }
 
@@ -319,8 +255,8 @@ export class RestUserProfileService implements IUserProfileService {
         userPreference: UserPreference
     ): Promise<UserPreference> {
         return this.http
-            .post<RequestResult<UserPreference>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
+            .post<UserPreference>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference?api-version=${this.API_VERSION}`,
                 userPreference
             )
             .catch((err: HttpError) => {
@@ -331,21 +267,13 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((requestResult) => {
-                this.logger.verbose(
-                    `create user preference result: ${JSON.stringify(
-                        requestResult
-                    )}`
-                );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
     public isPhoneNumberValid(phoneNumber: string): Promise<boolean> {
         return this.http
             .get<boolean>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/IsValidPhoneNumber/${phoneNumber}`
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/IsValidPhoneNumber/${phoneNumber}?api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
@@ -355,12 +283,6 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then((result: boolean) => {
-                this.logger.verbose(
-                    `Validate phone number format result: ${result}`
-                );
-                return result;
             });
     }
 }

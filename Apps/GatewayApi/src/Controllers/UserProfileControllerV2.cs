@@ -128,7 +128,6 @@ namespace HealthGateway.GatewayApi.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
-        /// <response code="404">User profile was not found.</response>
         /// <response code="500">Internal server error.</response>
         /// <response code="502">Upstream error.</response>
         [HttpGet]
@@ -139,7 +138,6 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<UserProfileModel> GetUserProfile(string hdid, CancellationToken ct)

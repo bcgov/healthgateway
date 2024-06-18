@@ -269,17 +269,8 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function updateUserEmail(emailAddress: string): Promise<void> {
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return userProfileService
             .updateEmail(user.value.hdid, emailAddress)
-            .then((emailUpdated) => {
-                if (!emailUpdated) {
-                    logger.warn(`updateEmail response false`);
-                }
-            })
             .catch((resultError: ResultError) => {
                 setUserError(resultError.message);
                 throw resultError;
@@ -355,18 +346,14 @@ export const useUserStore = defineStore("user", () => {
     function validateEmail(inviteKey: string) {
         return userProfileService
             .validateEmail(user.value.hdid, inviteKey)
-            .then((result) => {
-                if (result.resourcePayload === true) {
-                    user.value.verifiedEmail = true;
-                }
-                return result;
-            })
             .catch((resultError: ResultError) => {
-                handleError(
-                    resultError,
-                    ErrorType.Update,
-                    ErrorSourceType.User
-                );
+                if (resultError.statusCode !== 409) {
+                    handleError(
+                        resultError,
+                        ErrorType.Update,
+                        ErrorSourceType.User
+                    );
+                }
                 throw resultError;
             });
     }

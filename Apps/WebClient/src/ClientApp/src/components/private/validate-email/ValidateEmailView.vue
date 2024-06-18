@@ -3,9 +3,9 @@ import { computed, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { Loader } from "@/constants/loader";
-import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { ResultError } from "@/models/errors";
 import { ILogger } from "@/services/interfaces";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
@@ -20,21 +20,11 @@ const userStore = useUserStore();
 const loadingStore = useLoadingStore();
 
 const isLoading = computed(() => loadingStore.isLoading(Loader.ValidateEmail));
-const validationPayload = ref<boolean>();
-const resultStatus = ref<ResultType>();
+const isVerified = ref<boolean>();
+const isAlreadyVerified = ref<boolean>();
 
-const isVerified = computed(
-    () =>
-        resultStatus.value === ResultType.Success &&
-        validationPayload.value === true
-);
-const isAlreadyVerified = computed(
-    () =>
-        resultStatus.value === ResultType.Error &&
-        validationPayload.value === true
-);
 const isSuccess = computed(() => isAlreadyVerified.value || isVerified.value);
-const validationFailed = computed(() => validationPayload.value === false);
+const validationFailed = computed(() => isVerified.value === false);
 
 // Created hook
 loadingStore.applyLoader(
@@ -43,10 +33,15 @@ loadingStore.applyLoader(
     userStore
         .validateEmail(props.inviteKey)
         .then((result) => {
-            validationPayload.value = result.resourcePayload;
-            resultStatus.value = result.resultStatus;
+            isVerified.value = result;
         })
-        .catch(() => logger.error("Error while validating email."))
+        .catch((resultError: ResultError) => {
+            if (resultError.statusCode === 409) {
+                isAlreadyVerified.value = true;
+            } else {
+                logger.error("Error while validating email.");
+            }
+        })
 );
 </script>
 
