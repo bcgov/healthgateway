@@ -11,10 +11,16 @@ import HeaderComponent from "@/components/site/HeaderComponent.vue";
         <HeaderComponent />
         <v-main class="position-relative">
             <CommunicationComponent />
-            <v-container fluid class="pt-6">
+            <v-container class="pt-6">
                 <router-view />
             </v-container>
         </v-main>
         <FooterComponent :order="-1" />
     </v-app>
 </template>
+
+<style lang="scss" scoped>
+.v-container {
+    max-width: 1200px;
+}
+</style>
