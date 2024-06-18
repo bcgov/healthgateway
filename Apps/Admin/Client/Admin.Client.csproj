@@ -5,6 +5,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <PublishTrimmed>false</PublishTrimmed>  
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' ">
     <ExternalConsole>true</ExternalConsole>
