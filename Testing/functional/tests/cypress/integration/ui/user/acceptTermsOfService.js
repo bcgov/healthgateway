@@ -11,7 +11,7 @@ describe("Need to accept terms of service", () => {
             userProfileFixture: "UserProfileService/userProfileAcceptTos.json",
         });
 
-        cy.intercept("GET", "**/UserProfile/termsofservice", {
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0", {
             fixture: "UserProfileService/termsOfService.json",
         });
 
