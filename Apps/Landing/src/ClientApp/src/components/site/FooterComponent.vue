@@ -17,6 +17,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
         v-if="isFooterShown"
         data-testid="footer"
         color="white"
+        class="justify-center"
         elevation="4"
         :app="isFooterFixed"
     >
@@ -76,3 +77,9 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
         </v-row>
     </v-footer>
 </template>
+
+<style lang="scss" scoped>
+.v-footer > .v-row {
+    max-width: var(--site-max-width);
+}
+</style>

@@ -43,12 +43,17 @@ fetchCommunication(CommunicationType.Banner);
 </script>
 
 <template>
-    <!-- eslint-disable vue/no-v-html -->
-    <div
-        v-if="hasCommunication"
-        data-testid="communicationBanner"
-        class="bg-accent text-black text-center pa-2"
-        v-html="text"
-    />
-    <!-- eslint-enable vue/no-v-html -->
+    <v-banner v-if="hasCommunication" class="bg-accent justify-center">
+        <v-banner-text>
+            <!-- eslint-disable vue/no-v-html -->
+            <div data-testid="communicationBanner" v-html="text" />
+            <!-- eslint-enable vue/no-v-html -->
+        </v-banner-text>
+    </v-banner>
 </template>
+
+<style lang="scss">
+.v-banner__content {
+    max-width: var(--site-max-width);
+}
+</style>
