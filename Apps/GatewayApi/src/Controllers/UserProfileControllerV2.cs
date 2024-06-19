@@ -118,10 +118,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <summary>
         /// Gets a user profile.
         /// </summary>
-        /// <returns>The user profile.</returns>
+        /// <returns>The requested user profile, or an empty profile if the requested profile doesn't exist.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <response code="200">Returns the user profile.</response>
+        /// <response code="200">Returns the requested user profile, or an empty profile if the requested profile doesn't exists.</response>
         /// <response code="400">Validation error.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
