@@ -21,6 +21,6 @@ import HeaderComponent from "@/components/site/HeaderComponent.vue";
 
 <style lang="scss" scoped>
 .v-container {
-    max-width: 1200px;
+    max-width: var(--site-max-width);
 }
 </style>

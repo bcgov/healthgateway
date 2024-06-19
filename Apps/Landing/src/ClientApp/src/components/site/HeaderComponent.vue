@@ -64,7 +64,7 @@ nextTick(() => {
     <v-app-bar
         v-model="isHeaderVisible"
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
-        class="d-print-none px-3 px-sm-5"
+        class="d-print-none px-3 px-sm-5 align-center"
         color="white"
         :scroll-threshold="headerScrollThreshold"
         height="82"
@@ -90,3 +90,9 @@ nextTick(() => {
         />
     </v-app-bar>
 </template>
+
+<style lang="scss">
+.v-toolbar__content {
+    max-width: var(--site-max-width);
+}
+</style>
