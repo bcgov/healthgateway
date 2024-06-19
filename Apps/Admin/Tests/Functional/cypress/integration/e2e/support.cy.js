@@ -46,7 +46,7 @@ describe("Support", () => {
         verifySearchInput("Email", email);
     });
 
-   it("Verify no results hdid query.", () => {
+    it("Verify no results hdid query.", () => {
         performSearch("HDID", hdidNotFound);
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
