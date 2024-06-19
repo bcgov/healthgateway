@@ -51,3 +51,9 @@ fetchCommunication(CommunicationType.Banner);
         </v-banner-text>
     </v-banner>
 </template>
+
+<style lang="scss">
+.v-banner__content {
+    max-width: var(--site-max-width);
+}
+</style>
