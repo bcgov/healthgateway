@@ -593,7 +593,7 @@ describe("User Profile", () => {
 
         setupStandardFixtures();
 
-        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms?api-version=2.0`, {
             statusCode: 200,
             body: true,
         });
@@ -606,7 +606,7 @@ describe("User Profile", () => {
     });
 
     it("Edit email address: Too Many Requests Error", () => {
-        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email?api-version=2.0`, {
             statusCode: 429,
         });
 

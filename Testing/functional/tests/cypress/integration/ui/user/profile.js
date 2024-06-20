@@ -50,7 +50,7 @@ describe("User Profile", () => {
     });
 
     it("Email address", () => {
-        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email?api-version=2.0`, {
             statusCode: 200,
             body: true,
         });
@@ -68,8 +68,8 @@ describe("User Profile", () => {
                 }
             }
         ).then((data) => {
-            data.resourcePayload.email = Cypress.env("emailAddress");
-            cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            data.email = Cypress.env("emailAddress");
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
                 ...data,
             });
         });
@@ -98,7 +98,7 @@ describe("User Profile", () => {
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=email-input] input").clear();
         cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
             fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=editEmailSaveBtn]").click();
@@ -107,21 +107,18 @@ describe("User Profile", () => {
     });
 
     it("Verify SMS number", () => {
-        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms?api-version=2.0`, {
             statusCode: 200,
             body: true,
         });
         cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
             statusCode: 200,
-            body: {
-                resultStatus: 1,
-                resourcePayload: true,
-            },
+            body: true,
         });
 
         cy.log("Verify SMS number");
         cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
             fixture: "UserProfileService/userProfileSMSVerified.json",
         });
         cy.get("[data-testid=verifySMSBtn]")
@@ -141,7 +138,7 @@ describe("User Profile", () => {
         cy.get("[data-testid=smsStatusVerified]").should("be.visible");
 
         cy.log("Edit SMS number");
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
             fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=editSMSBtn]").click();
@@ -171,8 +168,8 @@ describe("User Profile", () => {
                 }
             }
         ).then((data) => {
-            data.resourcePayload.smsNumber = undefined;
-            cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            data.smsNumber = undefined;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
                 ...data,
             });
         });

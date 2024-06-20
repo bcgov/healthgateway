@@ -5,7 +5,7 @@ const defaultTimeout = 60000;
 describe("Need to accept terms of service", () => {
     it("Validate accept terms of service", () => {
         cy.configureSettings({});
-        cy.intercept("GET", "**/UserProfile/termsofservice").as(
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
             "getTermsOfService"
         );
         cy.login(
