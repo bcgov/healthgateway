@@ -27,16 +27,6 @@ using Refit;
 public interface IImmunizationApi
 {
     /// <summary>
-    /// Retrieves a PhsaResult containing the specified immunization.
-    /// </summary>
-    /// <param name="immunizationId">The ID of the immunization to retrieve.</param>
-    /// <param name="token">The bearer token to authorize the call.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>A PhsaResult containing the immunization that matches the given ID.</returns>
-    [Get("/api/v1/Immunizations/{ImmunizationId}")]
-    Task<PhsaResult<ImmunizationViewResponse>> GetImmunizationAsync(string immunizationId, [Authorize] string token, CancellationToken ct = default);
-
-    /// <summary>
     /// Retrieves a PhsaResult containing the immunizations and recommendations of a given patient.
     /// </summary>
     /// <param name="subjectHdid">The Hdid to query immunizations and recommendations.</param>

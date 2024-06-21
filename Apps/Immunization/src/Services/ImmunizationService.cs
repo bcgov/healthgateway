@@ -21,7 +21,6 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
@@ -46,29 +45,6 @@ namespace HealthGateway.Immunization.Services
             this.immunizationDelegate = immunizationDelegate;
             this.patientRepository = patientRepository;
             this.mappingService = mappingService;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<ImmunizationEvent>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default)
-        {
-            RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationAsync(immunizationId, ct);
-            if (delegateResult.ResultStatus == ResultType.Success)
-            {
-                return new RequestResult<ImmunizationEvent>
-                {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = this.mappingService.MapToImmunizationEvent(delegateResult.ResourcePayload!.Result),
-                    PageIndex = delegateResult.PageIndex,
-                    PageSize = delegateResult.PageSize,
-                    TotalResultCount = delegateResult.TotalResultCount,
-                };
-            }
-
-            return new RequestResult<ImmunizationEvent>
-            {
-                ResultStatus = delegateResult.ResultStatus,
-                ResultError = delegateResult.ResultError,
-            };
         }
 
         /// <inheritdoc/>
