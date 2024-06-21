@@ -8,6 +8,7 @@ resource "keycloak_openid_client" "hgadmin_client" {
   login_theme                  = local.development ? "bcgov-no-brand" : "bcgov-idp-login-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
+  service_accounts_enabled     = false
   valid_redirect_uris          = var.client_hg_admin.valid_redirects
   web_origins                  = var.client_hg_admin.web_origins
   full_scope_allowed           = false
