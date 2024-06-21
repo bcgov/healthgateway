@@ -5,15 +5,23 @@ describe("User Email Verification", () => {
     beforeEach(() => {
         const baseUrl =
             "**/UserProfile/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.intercept("GET", `${baseUrl}/email/validate/valid`, {
-            fixture: "WebClientService/EmailValidation/valid.json",
+        cy.intercept("GET", `${baseUrl}/email/validate/valid?api-version=2.0`, {
+            body: true,
         });
-        cy.intercept("GET", `${baseUrl}/email/validate/invalid`, {
-            fixture: "WebClientService/EmailValidation/invalid.json",
-        });
-        cy.intercept("GET", `${baseUrl}/email/validate/expired`, {
-            fixture: "WebClientService/EmailValidation/expired.json",
-        });
+        cy.intercept(
+            "GET",
+            `${baseUrl}/email/validate/invalid?api-version=2.0`,
+            {
+                statusCode: 409,
+            }
+        );
+        cy.intercept(
+            "GET",
+            `${baseUrl}/email/validate/expired?api-version=2.0`,
+            {
+                body: false,
+            }
+        );
         cy.configureSettings({});
     });
 

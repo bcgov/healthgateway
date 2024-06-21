@@ -127,15 +127,12 @@ export interface IUserProfileService {
     getProfile(hdid: string): Promise<UserProfile>;
     validateAge(hdid: string): Promise<boolean>;
     getTermsOfService(): Promise<TermsOfService>;
-    closeAccount(hdid: string): Promise<UserProfile>;
-    recoverAccount(hdid: string): Promise<UserProfile>;
-    validateEmail(
-        hdid: string,
-        inviteKey: string
-    ): Promise<RequestResult<boolean>>;
+    closeAccount(hdid: string): Promise<void>;
+    recoverAccount(hdid: string): Promise<void>;
+    validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
     validateSms(hdid: string, digit: string): Promise<boolean>;
-    updateEmail(hdid: string, email: string): Promise<boolean>;
-    updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean>;
+    updateEmail(hdid: string, email: string): Promise<void>;
+    updateSmsNumber(hdid: string, smsNumber: string): Promise<void>;
     updateUserPreference(
         hdid: string,
         userPreference: UserPreference
@@ -144,10 +141,7 @@ export interface IUserProfileService {
         hdid: string,
         userPreference: UserPreference
     ): Promise<UserPreference>;
-    updateAcceptedTerms(
-        hdid: string,
-        termsOfServiceId: string
-    ): Promise<UserProfile>;
+    updateAcceptedTerms(hdid: string, termsOfServiceId: string): Promise<void>;
     isPhoneNumberValid(phoneNumber: string): Promise<boolean>;
 }
 
