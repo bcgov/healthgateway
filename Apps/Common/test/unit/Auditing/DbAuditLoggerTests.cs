@@ -41,7 +41,7 @@ namespace HealthGateway.CommonTests.Auditing
     {
         private const string Hdid = "EXAMPLE-HDID";
         private const string RouteHdid = "EXAMPLE-ROUTE-HDID";
-        private const string QueryParamHdid = "EXAMPLE-QUERY_PARAM-HDID";
+        private const string QueryParamHdid = "EXAMPLE-QUERY-PARAM-HDID";
         private const string Idir = "EXAMPLE-IDIR";
 
         /// <summary>
@@ -245,19 +245,19 @@ namespace HealthGateway.CommonTests.Auditing
 
             if (useRouteValues)
             {
-                ctx.Request.Query = new QueryCollection(
-                    new Dictionary<string, StringValues>
-                    {
-                        { "HDID", RouteHdid }, // Use HDID for Hdid to check for case insensitivity
-                    });
+                ctx.Request.RouteValues = new RouteValueDictionary
+                {
+                    { "HDID", RouteHdid }, // Use HDID for Hdid to check for case insensitivity
+                };
             }
 
             if (useQueryParamValues)
             {
-                ctx.Request.RouteValues = new RouteValueDictionary
-                {
-                    { "hdid", QueryParamHdid }, // Use hdid for Hdid to check for case insensitivity
-                };
+                ctx.Request.Query = new QueryCollection(
+                    new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        { "hdid", QueryParamHdid }, // Use hdid for Hdid to check for case insensitivity
+                    });
             }
 
             AuditEvent expected = new()
