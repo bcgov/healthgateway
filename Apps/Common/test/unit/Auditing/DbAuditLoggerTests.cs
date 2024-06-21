@@ -57,7 +57,7 @@ namespace HealthGateway.CommonTests.Auditing
         {
             // Arrange
             AuditEvent actual = new();
-            GetPopulateWithHttpContextMock mock = SetupGetPopulateWithHttpContextMock(useRouteValues, useQueryParamValues);
+            PopulateWithHttpContextMock mock = SetupPopulateWithHttpContextMock(useRouteValues, useQueryParamValues);
 
             // Act
             mock.DbAuditLogger.PopulateWithHttpContext(mock.DefaultHttpContext, actual);
@@ -235,7 +235,7 @@ namespace HealthGateway.CommonTests.Auditing
                 Times.Once);
         }
 
-        private static GetPopulateWithHttpContextMock SetupGetPopulateWithHttpContextMock(bool useRouteValues, bool useQueryParamValues)
+        private static PopulateWithHttpContextMock SetupPopulateWithHttpContextMock(bool useRouteValues, bool useQueryParamValues)
         {
             DefaultHttpContext ctx = new()
             {
@@ -248,7 +248,7 @@ namespace HealthGateway.CommonTests.Auditing
                 ctx.Request.Query = new QueryCollection(
                     new Dictionary<string, StringValues>
                     {
-                        { "Hdid", RouteHdid },
+                        { "HDID", RouteHdid }, // Use HDID for Hdid to check for case insensitivity
                     });
             }
 
@@ -256,7 +256,7 @@ namespace HealthGateway.CommonTests.Auditing
             {
                 ctx.Request.RouteValues = new RouteValueDictionary
                 {
-                    { "Hdid", QueryParamHdid },
+                    { "hdid", QueryParamHdid }, // Use hdid for Hdid to check for case insensitivity
                 };
             }
 
@@ -279,6 +279,6 @@ namespace HealthGateway.CommonTests.Auditing
             return new(dbAuditLogger, ctx, expected);
         }
 
-        private sealed record GetPopulateWithHttpContextMock(DbAuditLogger DbAuditLogger, DefaultHttpContext DefaultHttpContext, AuditEvent Expected);
+        private sealed record PopulateWithHttpContextMock(DbAuditLogger DbAuditLogger, DefaultHttpContext DefaultHttpContext, AuditEvent Expected);
     }
 }

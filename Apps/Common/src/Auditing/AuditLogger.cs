@@ -59,11 +59,15 @@ namespace HealthGateway.Common.Auditing
 
             // Check if Hdid is in route values
             RouteValueDictionary routeValues = context.Request.RouteValues;
-            string? routeHdid = routeValues["Hdid"] as string;
+            string? routeHdid = routeValues
+                .FirstOrDefault(r => string.Equals(r.Key, "Hdid", StringComparison.OrdinalIgnoreCase))
+                .Value as string;
 
             // Check if Hdid is in query parameters
-            context.Request.Query.TryGetValue("Hdid", out StringValues queryHdidParameter);
-            string? queryHdid = queryHdidParameter.FirstOrDefault();
+            string? queryHdid = context.Request.Query
+                .FirstOrDefault(q => q.Key.Equals("Hdid", StringComparison.OrdinalIgnoreCase))
+                .Value
+                .FirstOrDefault();
 
             auditEvent.ApplicationSubject = routeHdid ?? queryHdid ?? hdid ?? subjectPhn ?? subjectQuery;
             auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
