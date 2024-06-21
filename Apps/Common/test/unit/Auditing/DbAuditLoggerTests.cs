@@ -16,6 +16,7 @@
 namespace HealthGateway.CommonTests.Auditing
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Security.Claims;
@@ -27,7 +28,9 @@ namespace HealthGateway.CommonTests.Auditing
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Moq;
     using Xunit;
 
@@ -37,39 +40,30 @@ namespace HealthGateway.CommonTests.Auditing
     public class DbAuditLoggerTests
     {
         private const string Hdid = "EXAMPLE-HDID";
+        private const string RouteHdid = "EXAMPLE-ROUTE-HDID";
+        private const string QueryParamHdid = "EXAMPLE-QUERY_PARAM-HDID";
         private const string Idir = "EXAMPLE-IDIR";
 
         /// <summary>
         /// PopulateWithHttpContext - Happy Path.
         /// </summary>
-        [Fact]
-        public void ShouldPopulateWithHttpContext()
+        /// <param name="useRouteValues">The value indicating whether route values should be used or not.</param>
+        /// <param name="useQueryParamValues">The value indicating whether query param values should be used or not.</param>
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(false, false)]
+        [Theory]
+        public void ShouldPopulateWithHttpContext(bool useRouteValues, bool useQueryParamValues)
         {
-            DefaultHttpContext ctx = new()
-            {
-                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
-                User = new(new ClaimsIdentity([new Claim("hdid", Hdid), new Claim("preferred_username", Idir)])),
-            };
-            AuditEvent expected = new()
-            {
-                ApplicationSubject = Hdid,
-                ApplicationType = ApplicationType.Configuration,
-                ClientIp = "127.0.0.1",
-                CreatedBy = Hdid,
-                Trace = ctx.TraceIdentifier,
-                TransactionName = @"\",
-                TransactionResultCode = AuditTransactionResult.Success,
-                TransactionVersion = string.Empty,
-            };
-
-            Mock<ILogger<DbAuditLogger>> logger = new();
-            Mock<IWriteAuditEventDelegate> dbContext = new();
-            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
-
+            // Arrange
             AuditEvent actual = new();
-            dbAuditLogger.PopulateWithHttpContext(ctx, actual);
+            GetPopulateWithHttpContextMock mock = SetupGetPopulateWithHttpContextMock(useRouteValues, useQueryParamValues);
 
-            actual.ShouldDeepEqual(expected);
+            // Act
+            mock.DbAuditLogger.PopulateWithHttpContext(mock.DefaultHttpContext, actual);
+
+            // Assert
+            actual.ShouldDeepEqual(mock.Expected);
         }
 
         /// <summary>
@@ -240,5 +234,51 @@ namespace HealthGateway.CommonTests.Auditing
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
         }
+
+        private static GetPopulateWithHttpContextMock SetupGetPopulateWithHttpContextMock(bool useRouteValues, bool useQueryParamValues)
+        {
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                User = new(new ClaimsIdentity([new Claim("hdid", Hdid), new Claim("preferred_username", Idir)])),
+            };
+
+            if (useRouteValues)
+            {
+                ctx.Request.Query = new QueryCollection(
+                    new Dictionary<string, StringValues>
+                    {
+                        { "Hdid", RouteHdid },
+                    });
+            }
+
+            if (useQueryParamValues)
+            {
+                ctx.Request.RouteValues = new RouteValueDictionary
+                {
+                    { "Hdid", QueryParamHdid },
+                };
+            }
+
+            AuditEvent expected = new()
+            {
+                ApplicationSubject = useRouteValues ? RouteHdid : useQueryParamValues ? QueryParamHdid : Hdid,
+                ApplicationType = ApplicationType.Configuration,
+                ClientIp = "127.0.0.1",
+                CreatedBy = Hdid,
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.Success,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<DbAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
+
+            return new(dbAuditLogger, ctx, expected);
+        }
+
+        private sealed record GetPopulateWithHttpContextMock(DbAuditLogger DbAuditLogger, DefaultHttpContext DefaultHttpContext, AuditEvent Expected);
     }
 }
