@@ -92,21 +92,11 @@ variable "keycloak_idp_phsa" {
   description = "The configuration settings for the PHSA IDP"
 }
 
-variable "client_hg_admin_blazor" {
-  type = object({
-    id              = optional(string, "hg-admin-blazor")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-  })
-  description = "HealthGateway Admin Blazor client configuration"
-}
-
 variable "client_hg_admin" {
   type = object({
     id              = optional(string, "hg-admin")
     valid_redirects = list(string)
     web_origins     = list(string)
-    token_lifespan  = number
   })
   description = "HealthGateway Admin client configuration"
 }

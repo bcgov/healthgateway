@@ -4,15 +4,13 @@ resource "keycloak_openid_client" "hgadmin_client" {
   name                         = "Health Gateway Administration - ${var.environment.name}"
   description                  = "Health Gateway Administration web application"
   enabled                      = true
-  access_type                  = "CONFIDENTIAL"
+  access_type                  = "PUBLIC"
   login_theme                  = local.development ? "bcgov-no-brand" : "bcgov-idp-login-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
-  service_accounts_enabled     = local.development ? true : false
   valid_redirect_uris          = var.client_hg_admin.valid_redirects
   web_origins                  = var.client_hg_admin.web_origins
   full_scope_allowed           = false
-  access_token_lifespan        = var.client_hg_admin.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hgadmin_client_default_scopes" {
@@ -32,8 +30,8 @@ resource "keycloak_openid_client_optional_scopes" "hgadmin_client_optional_scope
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   optional_scopes = [
-    "phone",
-    "microprofile-jwt"
+    "microprofile-jwt",
+    "offline_access"
   ]
 }
 
@@ -53,6 +51,12 @@ resource "keycloak_generic_role_mapper" "hgadmin_supportuser" {
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.SupportUser.id
+}
+
+resource "keycloak_generic_role_mapper" "hgadmin_adminanalyst" {
+  realm_id  = data.keycloak_realm.hg_realm.id
+  client_id = keycloak_openid_client.hgadmin_client.id
+  role_id   = keycloak_role.AdminAnalyst.id
 }
 
 resource "keycloak_openid_user_attribute_protocol_mapper" "hgadmin_auth_method" {
@@ -76,31 +80,7 @@ resource "keycloak_openid_audience_protocol_mapper" "hgadmin_audience" {
   add_to_access_token      = true
 }
 
-resource "keycloak_openid_user_property_protocol_mapper" "hgadmin_username" {
-  realm_id            = data.keycloak_realm.hg_realm.id
-  client_id           = keycloak_openid_client.hgadmin_client.id
-  name                = "username"
-  user_property       = "username"
-  claim_name          = "preferred_username"
-  claim_value_type    = "String"
-  add_to_id_token     = true
-  add_to_access_token = true
-  add_to_userinfo     = true
-}
-
 resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadmin_realmroles" {
-  realm_id            = data.keycloak_realm.hg_realm.id
-  client_id           = keycloak_openid_client.hgadmin_client.id
-  name                = "hangfire roles"
-  multivalued         = true
-  claim_name          = "user_realm_roles"
-  claim_value_type    = "String"
-  add_to_id_token     = true
-  add_to_access_token = true
-  add_to_userinfo     = true
-}
-
-resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadmin_realmroles2" {
   realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hgadmin_client.id
   name                = "realm roles"
