@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Auditing
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
 
-            auditEvent.ApplicationSubject = hdid ?? subjectPhn ?? subjectQuery;
+            auditEvent.ApplicationSubject = subjectQuery ?? hdid ?? subjectPhn;
             auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;
