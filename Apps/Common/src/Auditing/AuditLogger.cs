@@ -57,10 +57,17 @@ namespace HealthGateway.Common.Auditing
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
 
-            auditEvent.ApplicationSubject = subjectQuery ?? hdid ?? subjectPhn;
+            // Check if Hdid is in route values
+            RouteValueDictionary routeValues = context.Request.RouteValues;
+            string? routeHdid = routeValues["Hdid"] as string;
+
+            // Check if Hdid is in query parameters
+            context.Request.Query.TryGetValue("Hdid", out StringValues queryHdidParameter);
+            string? queryHdid = queryHdidParameter.FirstOrDefault();
+
+            auditEvent.ApplicationSubject = routeHdid ?? queryHdid ?? hdid ?? subjectPhn ?? subjectQuery;
             auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
 
-            RouteValueDictionary routeValues = context.Request.RouteValues;
             auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
 
             auditEvent.Trace = context.TraceIdentifier;
