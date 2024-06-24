@@ -101,6 +101,14 @@ variable "client_hg_admin" {
   description = "HealthGateway Admin client configuration"
 }
 
+variable "client_hg_admin_services" {
+  type = object({
+    id              = optional(string, "hg-admin-services")
+    token_lifespan  = number
+  })
+  description = "HealthGateway Admin services client configuration"
+}
+
 variable "client_hg_k6" {
   type = object({
     id              = optional(string, "hg-k6")

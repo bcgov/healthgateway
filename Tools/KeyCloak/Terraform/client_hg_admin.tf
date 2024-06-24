@@ -36,30 +36,6 @@ resource "keycloak_openid_client_optional_scopes" "hgadmin_client_optional_scope
   ]
 }
 
-resource "keycloak_generic_role_mapper" "hgadmin_adminreviewer" {
-  realm_id  = data.keycloak_realm.hg_realm.id
-  client_id = keycloak_openid_client.hgadmin_client.id
-  role_id   = keycloak_role.AdminReviewer.id
-}
-
-resource "keycloak_generic_role_mapper" "hgadmin_adminuser" {
-  realm_id  = data.keycloak_realm.hg_realm.id
-  client_id = keycloak_openid_client.hgadmin_client.id
-  role_id   = keycloak_role.AdminUser.id
-}
-
-resource "keycloak_generic_role_mapper" "hgadmin_supportuser" {
-  realm_id  = data.keycloak_realm.hg_realm.id
-  client_id = keycloak_openid_client.hgadmin_client.id
-  role_id   = keycloak_role.SupportUser.id
-}
-
-resource "keycloak_generic_role_mapper" "hgadmin_adminanalyst" {
-  realm_id  = data.keycloak_realm.hg_realm.id
-  client_id = keycloak_openid_client.hgadmin_client.id
-  role_id   = keycloak_role.AdminAnalyst.id
-}
-
 resource "keycloak_openid_user_attribute_protocol_mapper" "hgadmin_auth_method" {
   realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hgadmin_client.id
