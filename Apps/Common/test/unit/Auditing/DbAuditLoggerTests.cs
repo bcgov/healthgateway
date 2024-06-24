@@ -247,7 +247,7 @@ namespace HealthGateway.CommonTests.Auditing
             {
                 ctx.Request.RouteValues = new RouteValueDictionary
                 {
-                    { "HDID", RouteHdid }, // Use HDID for Hdid to check for case insensitivity
+                    { "Hdid", RouteHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
                 };
             }
 
@@ -256,7 +256,7 @@ namespace HealthGateway.CommonTests.Auditing
                 ctx.Request.Query = new QueryCollection(
                     new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase)
                     {
-                        { "hdid", QueryParamHdid }, // Use hdid for Hdid to check for case insensitivity
+                        { "Hdid", QueryParamHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
                     });
             }
 
