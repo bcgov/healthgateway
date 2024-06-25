@@ -24,6 +24,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -72,7 +73,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             IEnumerable<PersonalFhirRequirement> pendingRequirements = context.PendingRequirements.OfType<PersonalFhirRequirement>();
             foreach (PersonalFhirRequirement requirement in pendingRequirements)
             {
-                string? resourceHdid = this.GetResourceHdid(requirement.SubjectLookupMethod);
+                string? resourceHdid = HttpContextHelper.GetResourceHdid(this.HttpContextAccessor.HttpContext, requirement.SubjectLookupMethod);
                 if (resourceHdid == null)
                 {
                     this.logger.LogWarning("UserDelegatedAccessHandler has been invoked without patient HDID specified in the request, ignoring");

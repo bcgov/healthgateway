@@ -31,9 +31,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     public abstract class BaseFhirAuthorizationHandler : IAuthorizationHandler
     {
         private const string System = "system";
-        private const string RouteResourceIdentifier = "hdid";
 
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
 
         /// <summary>
@@ -44,28 +42,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         protected BaseFhirAuthorizationHandler(ILogger logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
-            this.httpContextAccessor = httpContextAccessor;
+            this.HttpContextAccessor = httpContextAccessor;
         }
+
+        /// <summary>
+        /// Gets the HTTP context accessor.
+        /// </summary>
+        protected IHttpContextAccessor HttpContextAccessor { get; }
 
         /// <inheritdoc/>
         public abstract Task HandleAsync(AuthorizationHandlerContext context);
-
-        /// <summary>
-        /// Gets the subject identifier for requested health data resource(s) from the request context.
-        /// </summary>
-        /// <param name="lookupMethod">The mechanism with which to retrieve the subject identifier.</param>
-        /// <returns>The subject identifier for requested health data resource(s).</returns>
-        protected string? GetResourceHdid(FhirSubjectLookupMethod lookupMethod)
-        {
-            string? retVal = lookupMethod switch
-            {
-                FhirSubjectLookupMethod.Route => this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string,
-                FhirSubjectLookupMethod.Parameter => this.httpContextAccessor.HttpContext?.Request.Query[RouteResourceIdentifier],
-                _ => null,
-            };
-
-            return retVal;
-        }
 
         /// <summary>
         /// Check if the authenticated user has system-delegated access to the resource(s).

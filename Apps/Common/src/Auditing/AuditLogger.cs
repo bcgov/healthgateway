@@ -22,7 +22,9 @@ namespace HealthGateway.Common.Auditing
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
@@ -57,7 +59,13 @@ namespace HealthGateway.Common.Auditing
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
 
-            auditEvent.ApplicationSubject = hdid ?? subjectPhn ?? subjectQuery;
+            // Check if Hdid is in route values
+            string? routeHdid = HttpContextHelper.GetResourceHdid(context, FhirSubjectLookupMethod.Route);
+
+            // Check if Hdid is in query parameters
+            string? queryHdid = HttpContextHelper.GetResourceHdid(context, FhirSubjectLookupMethod.Parameter);
+
+            auditEvent.ApplicationSubject = routeHdid ?? queryHdid ?? hdid ?? subjectPhn ?? subjectQuery;
             auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;
