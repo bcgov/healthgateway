@@ -82,7 +82,31 @@ resource "keycloak_openid_audience_protocol_mapper" "hgadminservices_audience" {
   add_to_access_token      = true
 }
 
+resource "keycloak_openid_user_property_protocol_mapper" "hgadminservices_username" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hgadminservices_client.id
+  name                = "username"
+  user_property       = "username"
+  claim_name          = "preferred_username"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
 resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadminservices_realmroles" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hgadminservices_client.id
+  name                = "hangfire roles"
+  multivalued         = true
+  claim_name          = "user_realm_roles"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadminservices_realmroles2" {
   realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hgadminservices_client.id
   name                = "realm roles"
