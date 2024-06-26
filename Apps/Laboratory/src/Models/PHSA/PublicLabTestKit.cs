@@ -32,6 +32,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// <summary>
         /// Gets or sets the date of birth for the identified PHN.
         /// </summary>
+        [JsonRequired]
         [JsonPropertyName("dob")]
         public DateTime Dob { get; set; }
 
@@ -50,6 +51,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// <summary>
         /// Gets or sets when the test was used.
         /// </summary>
+        [JsonRequired]
         [JsonPropertyName("testTakenMinutesAgo")]
         public int TestTakenMinutesAgo { get; set; }
 
