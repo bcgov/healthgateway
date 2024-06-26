@@ -91,6 +91,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="applicationSettingsService">The injected application settings service.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="messageSender">The injected message sender.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public UserProfileServiceV2(
             ILogger<UserProfileServiceV2> logger,
             IPatientDetailsService patientDetailsService,

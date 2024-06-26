@@ -25,6 +25,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// <summary>
         /// Gets or sets when the test was used.
         /// </summary>
+        [JsonRequired]
         [JsonPropertyName("testTakenMinutesAgo")]
         public int TestTakenMinutesAgo { get; set; }
 
