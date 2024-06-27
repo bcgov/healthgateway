@@ -64,6 +64,28 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+  - job: "Admin_Authentication_Tests"
+    displayName: "Admin Authentication Functional Tests"
+    pool:
+      vmImage: "ubuntu-latest"
+    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    dependsOn:
+      - "Admin_Seed"
+      - "Admin_Unauthorized_Tests"
+    timeoutInMinutes: 5
+    steps:
+      - task: Bash@3
+        displayName: 'Run Admin Authentication Functional Tests'
+        inputs:
+          targetType: filePath
+          filePath: './Tools/Pipelines/scripts/azp_runAdminAuthenticationFunctionalTests.sh'
+          arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+        env: # Required environment settings and secrets for admin tests
+          TERM: xterm
+          CYPRESS_ADMIN_KEY: $(cypress.admin.key)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
   - job: "Admin_AgentAccess_Tests"
     displayName: "Admin Agent Access Functional Tests"
     pool:
@@ -71,7 +93,7 @@ jobs:
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
-      - "Admin_Unauthorized_Tests"
+      - "Admin_Authentication_Tests"
     timeoutInMinutes: 5
     steps:
       - task: Bash@3

@@ -9,7 +9,7 @@
 // ***********************************************
 require("cy-verify-downloads").addCustomCommand();
 
-const openIdConnectClientId = "hg-admin-blazor";
+const openIdConnectClientId = "hg-admin";
 const resizeObserverLoopErr = "ResizeObserver loop limit exceeded";
 
 function generateRandomString(length) {

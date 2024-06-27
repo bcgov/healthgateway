@@ -18,7 +18,6 @@ namespace HealthGateway.Immunization.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
@@ -26,14 +25,6 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public interface IImmunizationService
     {
-        /// <summary>
-        /// Gets the ImmunizationEvent for the given id.
-        /// </summary>
-        /// <param name="immunizationId">The security token representing the authenticated user.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationEvent>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default);
-
         /// <summary>
         /// Gets the ImmunizationResult including load state and a list of immunization records.
         /// </summary>

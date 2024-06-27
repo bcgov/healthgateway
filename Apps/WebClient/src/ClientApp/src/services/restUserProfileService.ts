@@ -1,7 +1,7 @@
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { HttpError } from "@/models/errors";
+import { HttpError, ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
@@ -80,7 +80,7 @@ export class RestUserProfileService implements IUserProfileService {
             });
     }
 
-    public closeAccount(hdid: string): Promise<UserProfile> {
+    public closeAccount(hdid: string): Promise<void> {
         return this.http
             .delete<RequestResult<UserProfile>>(
                 `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
@@ -98,11 +98,10 @@ export class RestUserProfileService implements IUserProfileService {
                 this.logger.debug(
                     `closeAccount ${JSON.stringify(requestResult)}`
                 );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
-    public recoverAccount(hdid: string): Promise<UserProfile> {
+    public recoverAccount(hdid: string): Promise<void> {
         return this.http
             .get<RequestResult<UserProfile>>(
                 `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
@@ -120,7 +119,6 @@ export class RestUserProfileService implements IUserProfileService {
                 this.logger.debug(
                     `recoverAccount ${JSON.stringify(requestResult)}`
                 );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 
@@ -168,10 +166,7 @@ export class RestUserProfileService implements IUserProfileService {
             });
     }
 
-    public validateEmail(
-        hdid: string,
-        inviteKey: string
-    ): Promise<RequestResult<boolean>> {
+    public validateEmail(hdid: string, inviteKey: string): Promise<boolean> {
         return this.http
             .get<RequestResult<boolean>>(
                 `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
@@ -184,6 +179,18 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
+            })
+            .then((result) => {
+                if (result.resultError) {
+                    const error = ResultError.fromModel(result.resultError);
+                    if (result.resourcePayload) {
+                        error.statusCode = 409;
+                    }
+
+                    throw error;
+                }
+
+                return result.resourcePayload;
             });
     }
 
@@ -206,7 +213,7 @@ export class RestUserProfileService implements IUserProfileService {
             );
     }
 
-    public updateEmail(hdid: string, email: string): Promise<boolean> {
+    public updateEmail(hdid: string, email: string): Promise<void> {
         const headers: Dictionary<string> = {};
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
@@ -224,11 +231,10 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then(() => true);
+            });
     }
 
-    public updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean> {
+    public updateSmsNumber(hdid: string, smsNumber: string): Promise<void> {
         const headers: Dictionary<string> = {};
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
@@ -246,8 +252,7 @@ export class RestUserProfileService implements IUserProfileService {
                     err,
                     ServiceCode.HealthGatewayUser
                 );
-            })
-            .then(() => true);
+            });
     }
 
     public updateUserPreference(
@@ -281,7 +286,7 @@ export class RestUserProfileService implements IUserProfileService {
     public updateAcceptedTerms(
         hdid: string,
         termsOfServiceId: string
-    ): Promise<UserProfile> {
+    ): Promise<void> {
         const headers: Dictionary<string> = {};
         headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
@@ -306,7 +311,6 @@ export class RestUserProfileService implements IUserProfileService {
                         requestResult
                     )}`
                 );
-                return RequestResultUtil.handleResult(requestResult);
             });
     }
 

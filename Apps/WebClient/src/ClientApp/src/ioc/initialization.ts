@@ -49,7 +49,7 @@ import { RestTrackingService } from "@/services/restTrackingService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
-import { RestUserProfileService } from "@/services/restUserProfileService";
+import { RestUserProfileServiceV2 } from "@/services/restUserProfileServiceV2";
 import { RestUserRatingService } from "@/services/restUserRatingService";
 import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
 import { useConfigStore } from "@/stores/config";
@@ -264,7 +264,7 @@ export async function initializeServices(): Promise<void> {
     container.set<IUserProfileService>(
         SERVICE_IDENTIFIER.UserProfileService,
         (c) =>
-            new RestUserProfileService(
+            new RestUserProfileServiceV2(
                 c.get<ILogger>(SERVICE_IDENTIFIER.Logger),
                 c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
                 configStore.config

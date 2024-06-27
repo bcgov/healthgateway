@@ -137,7 +137,7 @@ namespace HealthGateway.EncounterTests.Delegates
         public async Task GetHospitalVisitShouldHandleHttpRequestException()
         {
             // Arrange
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error");
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);

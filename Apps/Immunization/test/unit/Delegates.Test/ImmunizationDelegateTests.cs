@@ -48,33 +48,6 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetImmunization()
-        {
-            ImmunizationViewResponse expectedViewResponse = new()
-            {
-                Id = Guid.NewGuid(),
-                SourceSystemId = "mockSourceSystemId",
-                Name = "mockName",
-                OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-            };
-
-            PhsaResult<ImmunizationViewResponse> phsaResponse = new()
-            {
-                Result = expectedViewResponse,
-            };
-
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationAsync(It.IsAny<string>());
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(expectedViewResponse.Id, actualResult.ResourcePayload?.Result?.Id);
-        }
-
-        /// <summary>
-        /// GetImmunizations - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
         public async Task GetImmunizations()
         {
             ImmunizationViewResponse expectedViewResponse = new()
@@ -98,32 +71,6 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Equal(expectedViewResponse.Id, actualResult.ResourcePayload?.Result?.ImmunizationViews.First().Id);
-        }
-
-        /// <summary>
-        /// GetImmunization - HttpRequestException.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetImmunizationThrowsException()
-        {
-            ImmunizationViewResponse expectedViewResponse = new()
-            {
-                Id = Guid.NewGuid(),
-                SourceSystemId = "mockSourceSystemId",
-                Name = "mockName",
-                OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-            };
-
-            PhsaResult<ImmunizationViewResponse> phsaResponse = new()
-            {
-                Result = expectedViewResponse,
-            };
-
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationAsync(It.IsAny<string>());
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -168,38 +115,6 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
-        }
-
-        private static IImmunizationDelegate GetImmunizationDelegate(PhsaResult<ImmunizationViewResponse> response, HttpStatusCode statusCode, bool throwException)
-        {
-            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
-
-            Mock<IApiResponse<PhsaResult<ImmunizationViewResponse>>> mockApiResponse = new();
-            mockApiResponse.Setup(s => s.Content).Returns(response);
-            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
-
-            Mock<IImmunizationApi> mockImmunizationApi = new();
-            if (!throwException)
-            {
-                mockImmunizationApi.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), AccessToken, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(response);
-            }
-            else
-            {
-                mockImmunizationApi.Setup(
-                        s =>
-                            s.GetImmunizationAsync(It.IsAny<string>(), AccessToken, It.IsAny<CancellationToken>()))
-                    .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
-            }
-
-            IImmunizationDelegate mockImmunizationDelegate = new RestImmunizationDelegate(
-                new Mock<ILogger<RestImmunizationDelegate>>().Object,
-                GetIConfigurationRoot(),
-                mockAuthDelegate.Object,
-                mockImmunizationApi.Object);
-
-            return mockImmunizationDelegate;
         }
 
         private static IImmunizationDelegate GetImmunizationDelegate(PhsaResult<ImmunizationResponse> response, HttpStatusCode statusCode, bool throwException)

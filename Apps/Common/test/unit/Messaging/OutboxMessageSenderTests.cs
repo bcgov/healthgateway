@@ -71,7 +71,7 @@ namespace HealthGateway.CommonTests.Messaging
             ICollection<IEnumerable<MessageEnvelope>> storedMessagesCollection = [];
             mocks.OutboxStore.Setup(m => m.StoreAsync(Capture.In(storedMessagesCollection), It.IsAny<CancellationToken>()));
 
-            return new StoreAsyncSetup(GetOutboxMessageSender(mocks), mocks, storedMessagesCollection);
+            return new StoreAsyncSetup(GetOutboxMessageSender(mocks), storedMessagesCollection);
         }
 
         private static OutboxMessageSender GetOutboxMessageSender(Mocks mocks)
@@ -79,7 +79,7 @@ namespace HealthGateway.CommonTests.Messaging
             return new(mocks.OutboxStore.Object, mocks.Logger.Object);
         }
 
-        private sealed record StoreAsyncSetup(OutboxMessageSender OutboxMessageSender, Mocks Mocks, ICollection<IEnumerable<MessageEnvelope>> StoredMessagesCollection);
+        private sealed record StoreAsyncSetup(OutboxMessageSender OutboxMessageSender, ICollection<IEnumerable<MessageEnvelope>> StoredMessagesCollection);
 
         private sealed record Mocks(
             Mock<IOutboxStore> OutboxStore,

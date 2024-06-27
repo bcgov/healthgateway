@@ -59,22 +59,6 @@ namespace HealthGateway.EncounterTests.Services
         private static readonly IEncounterMappingService MappingService = new EncounterMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
         private readonly string ipAddress = "127.0.0.1";
 
-        private readonly Claim excludeClaim = new()
-        {
-            ClaimId = 3,
-            FeeDesc = "PRIMARY CARE PANEL REPORT with appended data",
-            PractitionerName = "Mock Name 2",
-            ServiceDate = DateTime.ParseExact("2010/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
-        };
-
-        private readonly Claim oddClaim = new()
-        {
-            ClaimId = 2,
-            FeeDesc = "VALID REPORT",
-            PractitionerName = "Mock Name 2",
-            ServiceDate = DateTime.ParseExact("2015/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
-        };
-
         private readonly RequestResult<PatientModel> patientResult = new()
         {
             ResultStatus = ResultType.Success,
@@ -103,18 +87,31 @@ namespace HealthGateway.EncounterTests.Services
             },
         };
 
+        private readonly Claim differentClaim = new()
+        {
+            ClaimId = 2,
+            FeeDesc = "ANOTHER VALID REPORT",
+            PractitionerName = "Mock Name 2",
+            ServiceDate = DateTime.ParseExact("2015/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
+        };
+
         /// <summary>
         /// GetEncounters - Happy Path.
         /// </summary>
         /// <param name="canAccessDataSource">The value indicates whether the health visit data source can be accessed or not.</param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous unit test.
-        /// </returns>
+        /// <param name="enableClaimExclusions">
+        /// A value indicating whether the configuration defines any fee descriptions that
+        /// should be excluded from the result.
+        /// </param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ValidateEncounters(bool canAccessDataSource)
+        [InlineData(true, true)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public async Task ValidateEncounters(bool canAccessDataSource, bool enableClaimExclusions)
         {
+            IList<Claim> includedClaims = [this.sameClaim, this.differentClaim, this.sameClaim];
+            IList<Claim> excludedClaims = GenerateExpectedExcludedClaims();
             RequestResult<MspVisitHistoryResponse> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
@@ -122,13 +119,7 @@ namespace HealthGateway.EncounterTests.Services
                 PageIndex = 1,
                 ResourcePayload = new MspVisitHistoryResponse
                 {
-                    Claims =
-                    [
-                        this.sameClaim,
-                        this.oddClaim,
-                        this.sameClaim,
-                        this.excludeClaim,
-                    ],
+                    Claims = [..includedClaims, ..excludedClaims],
                 },
             };
             string hdid = "MOCKHDID";
@@ -152,7 +143,7 @@ namespace HealthGateway.EncounterTests.Services
                 mockMspDelegate.Object,
                 new Mock<IHospitalVisitDelegate>().Object,
                 patientRepository.Object,
-                Configuration,
+                GetIConfigurationRoot(enableClaimExclusions),
                 MappingService);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncountersAsync(hdid);
@@ -161,7 +152,15 @@ namespace HealthGateway.EncounterTests.Services
 
             if (canAccessDataSource)
             {
-                Assert.Equal(2, actualResult.ResourcePayload.Count()); // should return distinct claims only.
+                // only distinct claims should be returned
+                int expectedClaimCount = includedClaims.Distinct().Count();
+                if (!enableClaimExclusions)
+                {
+                    // the excluded claims should only be returned if claim exclusions have not been enabled
+                    expectedClaimCount += excludedClaims.Distinct().Count();
+                }
+
+                Assert.Equal(expectedClaimCount, actualResult.ResourcePayload.Count());
             }
             else
             {
@@ -432,17 +431,74 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(0, actualResult.TotalResultCount);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot()
+        private static IList<Claim> GenerateExpectedExcludedClaims()
+        {
+            // full current list of fee descriptions that should be excluded
+            string[] excludedFeeDescriptions =
+            [
+                "PRIMARY CARE PANEL REPORT",
+                "LFP CLINIC DIRECT PATIENT CARE TIME",
+                "LFP INDIRECT PATIENT CARE TIME",
+                "LFP CLINICAL ADMIN TIME",
+                "LFP LOCUM CLINIC DIRECT PATIENT CARE TIME",
+                "LFP LOCUM INDIRECT PATIENT CARE TIME",
+                "LFP LOCUM CLINICAL ADMINISTRATION SVCS",
+                "LFP TRAVEL TIME",
+                "LFP LTC/PALLIATIVE DIRECT PAT CARE TIME TIME-WEEKDAY",
+                "LFP LTC/PLTV CARE DIRECT PAT CARE TIME-EVENING",
+                "LFP LTC/PLTV CARE DIRECT PAT CARE TIME-WKND/STAT",
+                "LFP LTC/PALLIATIVE CARE DIRECT CARE TIME-NIGHT ",
+                "LFP INPATIENT DIRECT PATIENT CARE TIME-WEEKDAY",
+                "LFP INPATIENT DIRECT PATIENT CARE TIME-EVENING",
+                "LFP INPATIENT DIRECT PATIENT CARE TIME-WKND/STAT",
+                "LFP INPATIENT DIRECT PATIENT CARE TIME-NIGHT",
+                "LFP PREG/NEWBORN DIRECT PAT CARE TIME-WEEKDAY",
+                "LFP PREG/NEWBORN DIRECT PAT CARE TIME-EVENING",
+                "LFP PREG/NEWBORN DIRECT PAT CARE TIME-WKND/STAT",
+                "LFP PREG/NEWBORN DIRECT PATIENT CARE TIME-NIGHT",
+                "LFP LOCUM TRAVEL TIME",
+                "LFP LOCUM LTC/PALL DIRECT PAT CARE TIME - WEEKDAY",
+                "LFP LOCUM LTC/PALL DIRECT PAT CARE TIME -EVENING",
+                "LFP LOCUM LTC/PALL DIRECT PAT CARE TIME WKND/STAT",
+                "LFP LOCUM LTC/PALL DIRECT PAT CARE TIME - NIGHT",
+                "LFP LOCUM INPATIENT DIRECT PAT CARE TIME - WEEKDAY",
+                "LFP LOCUM INPATIENT DIRECT PAT CARE TIME - EVENING",
+                "LFP LOCUM INPATIENT DIRECT PAT CARE TIME-WKND/STAT",
+                "LFP LOCUM INPATIENT DIRECT PAT CARE TIME - NIGHT",
+                "LFP LOCUM PREG/NEWBORN DIRECT CARE TIME - WKDAY",
+                "LFP LOCUM PREG/NEWBORN DIRECT CARE TIME -  EVENING",
+                "LFP LOCUM PREG/NEWBORN DIRECT CARE TIME -WKND/STAT",
+                "LFP LOCUM PREG/NEWBORN DIRECT CARE TIME - NIGHT",
+            ];
+
+            return excludedFeeDescriptions.Select(
+                    (d, i) => new Claim
+                    {
+                        ClaimId = 1000 + i,
+                        FeeDesc = d,
+                        PractitionerName = "Mock Name 3",
+                        ServiceDate = new DateTime(2010, 7, 15, 0, 0, 0, DateTimeKind.Unspecified).AddDays(i),
+                    })
+                .ToList();
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot(bool enableClaimExclusions = true)
         {
             Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:BaseUrl", ConfigBaseUrl },
                 { "PHSA:FetchSize", ConfigFetchSize },
                 { "PHSA:BackOffMilliseconds", ConfigBackOffMilliseconds },
-                { "MspVisit:ExcludedFeeDescriptions", "PRIMARY CARE PANEL REPORT,LFP DIRECT PATIENT CARE TIME,LFP INDIRECT PATIENT CARE TIME" },
                 { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
                 { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
             };
+
+            if (enableClaimExclusions)
+            {
+                // current list of excluded fee description prefixes from appsettings.json
+                configuration["MspVisit:ExcludedFeeDescriptions"] =
+                    "LFP DIRECT PATIENT CARE TIME,LFP LOCUM DIRECT PATIENT CARE TIME,PRIMARY CARE PANEL REPORT,LFP CLINIC DIRECT PATIENT CARE TIME,LFP INDIRECT PATIENT CARE TIME,LFP CLINICAL ADMIN TIME,LFP LOCUM CLINIC DIRECT PATIENT CARE TIME,LFP LOCUM INDIRECT PATIENT CARE TIME,LFP LOCUM CLINICAL ADMINISTRATION,LFP TRAVEL TIME,LFP LTC/PALLIATIVE DIRECT PAT CARE TIME TIME,LFP LTC/PLTV CARE DIRECT PAT CARE TIME,LFP LTC/PALLIATIVE CARE DIRECT CARE TIME,LFP INPATIENT DIRECT PATIENT CARE TIME,LFP PREG/NEWBORN DIRECT PAT CARE TIME,LFP PREG/NEWBORN DIRECT PATIENT CARE TIME,LFP LOCUM TRAVEL TIME,LFP LOCUM LTC/PALL DIRECT PAT CARE TIME,LFP LOCUM INPATIENT DIRECT PAT CARE TIME,LFP LOCUM PREG/NEWBORN DIRECT CARE TIME";
+            }
 
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(configuration)

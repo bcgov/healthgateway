@@ -26,14 +26,6 @@ namespace HealthGateway.Immunization.Delegates
     public interface IImmunizationDelegate
     {
         /// <summary>
-        /// Returns the matching immunization for the given id.
-        /// </summary>
-        /// <param name="immunizationId">The id of the immunization to retrieve.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The immunization that matches the given id.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default);
-
-        /// <summary>
         /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
         /// It has a collection of one or more Immunizations.
         /// </summary>

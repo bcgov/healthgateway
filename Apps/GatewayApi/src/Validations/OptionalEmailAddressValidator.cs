@@ -43,7 +43,8 @@ namespace HealthGateway.GatewayApi.Validations
                             return false;
                         }
                     })
-                .When(emailAddress => !string.IsNullOrEmpty(emailAddress));
+                .When(emailAddress => !string.IsNullOrEmpty(emailAddress))
+                .OverridePropertyName("EmailAddress");
         }
     }
 }

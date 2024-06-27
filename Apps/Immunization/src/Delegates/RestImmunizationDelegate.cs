@@ -67,36 +67,6 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default)
-        {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting immunization {ImmunizationId}", immunizationId);
-
-            RequestResult<PhsaResult<ImmunizationViewResponse>> requestResult = InitializeResult<ImmunizationViewResponse>();
-            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
-
-            try
-            {
-                PhsaResult<ImmunizationViewResponse> response =
-                    await this.immunizationApi.GetImmunizationAsync(immunizationId, accessToken, ct);
-                requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload!.Result = response.Result;
-                requestResult.TotalResultCount = 1;
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.logger.LogCritical(e, "Get Immunization unexpected Exception {Message}", e.Message);
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "Error with Get Immunization Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
-
-            return requestResult;
-        }
-
-        /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();

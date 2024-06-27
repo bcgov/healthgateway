@@ -102,11 +102,11 @@ export function setupUserProfileFixture(options = {}) {
     } = options;
 
     if (statusCode === 200) {
-        cy.intercept("GET", `**/UserProfile/${hdid}`, {
+        cy.intercept("GET", `**/UserProfile/${hdid}?api-version=2.0`, {
             fixture: userProfileFixture,
         });
     } else {
-        cy.intercept("GET", `**/UserProfile/${hdid}`, {
+        cy.intercept("GET", `**/UserProfile/${hdid}?api-version=2.0`, {
             statusCode,
         });
     }
@@ -194,8 +194,7 @@ function waitForUserProfile(username) {
             cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
                 (interception) => {
                     const responseBody = interception.response.body;
-                    blockedDataSources =
-                        responseBody.resourcePayload?.blockedDataSources;
+                    blockedDataSources = responseBody.blockedDataSources;
 
                     cy.log(
                         `Get User Profile Blocked Data Sources: ${

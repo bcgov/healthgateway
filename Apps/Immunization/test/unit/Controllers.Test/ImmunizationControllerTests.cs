@@ -99,50 +99,5 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             int count = actual.ResourcePayload?.Immunizations.Count() ?? 0;
             Assert.Equal(2, count);
         }
-
-        /// <summary>
-        /// GetImmunization - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetSingleImmunization()
-        {
-            RequestResult<ImmunizationEvent> expectedRequestResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                TotalResultCount = 2,
-                ResourcePayload = new()
-                {
-                    DateOfImmunization = DateTime.Today,
-                    ProviderOrClinic = "Mocked Clinic",
-                    Immunization = new ImmunizationDefinition
-                    {
-                        Name = "Mocked Name",
-                        ImmunizationAgents =
-                        [
-                            new()
-                            {
-                                Name = "mocked agent",
-                                Code = "mocked code",
-                                LotNumber = "mocked lot number",
-                                ProductName = "mocked product",
-                            },
-                        ],
-                    },
-                },
-            };
-
-            string immunizationId = "test_immunization_id";
-            Mock<IImmunizationService> svcMock = new();
-            svcMock.Setup(s => s.GetImmunizationAsync(immunizationId, It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
-
-            ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
-
-            // Act
-            RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId, default);
-
-            // Verify
-            Assert.True(actual is { ResultStatus: ResultType.Success });
-        }
     }
 }

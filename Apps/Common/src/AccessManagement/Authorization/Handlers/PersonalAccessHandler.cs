@@ -19,6 +19,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
+    using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -50,7 +51,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             foreach (PersonalFhirRequirement requirement in context.PendingRequirements.OfType<PersonalFhirRequirement>())
             {
-                string? resourceHdid = this.GetResourceHdid(requirement.SubjectLookupMethod);
+                string? resourceHdid = HttpContextHelper.GetResourceHdid(this.HttpContextAccessor.HttpContext, requirement.SubjectLookupMethod);
                 if (resourceHdid == null)
                 {
                     this.logger.LogWarning("PersonalAccessHandler has been invoked without patient HDID specified in the request, ignoring");

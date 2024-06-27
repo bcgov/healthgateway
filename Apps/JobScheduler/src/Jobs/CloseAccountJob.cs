@@ -120,37 +120,7 @@ namespace HealthGateway.JobScheduler.Jobs
 
                 foreach (UserProfile profile in userProfiles)
                 {
-                    this.dbContext.UserProfile.Remove(profile);
-                    if (this.accountsChangeFeedEnabled)
-                    {
-                        MessageEnvelope[] events =
-                        {
-                            new(new AccountClosedEvent(profile.HdId, DateTime.Now), profile.HdId),
-                        };
-                        await this.messageSender.SendAsync(
-                            events,
-                            ct);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(profile.Email))
-                    {
-                        await this.emailService.QueueNewEmailAsync(profile.Email!, this.emailTemplate, false, ct);
-                    }
-
-                    JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
-
-                    try
-                    {
-                        await this.keycloakAdminApi.DeleteUserAsync(profile.IdentityManagementId!.Value, jwtModel.AccessToken, ct);
-                    }
-                    catch (Exception e) when (e is ApiException or HttpRequestException)
-                    {
-                        this.logger.LogError(
-                            e,
-                            "Error deleting {Id} from Keycloak with exception: {Message}",
-                            profile.IdentityManagementId,
-                            e.Message);
-                    }
+                    await this.DeleteAccount(profile, ct);
                 }
 
                 this.logger.LogInformation("Removed and sent emails for {Count} closed profiles", userProfiles.Count);
@@ -160,6 +130,36 @@ namespace HealthGateway.JobScheduler.Jobs
             while (userProfiles.Count == this.profilesPageSize);
 
             this.logger.LogInformation("Completed processing {Page} page(s) with page size set to {ProfilesPageSize}", page, this.profilesPageSize);
+        }
+
+        private async Task DeleteAccount(UserProfile profile, CancellationToken ct)
+        {
+            this.dbContext.UserProfile.Remove(profile);
+            if (this.accountsChangeFeedEnabled)
+            {
+                MessageEnvelope[] events = [new(new AccountClosedEvent(profile.HdId, DateTime.Now), profile.HdId)];
+                await this.messageSender.SendAsync(events, ct);
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Email))
+            {
+                await this.emailService.QueueNewEmailAsync(profile.Email!, this.emailTemplate, false, ct);
+            }
+
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+
+            try
+            {
+                await this.keycloakAdminApi.DeleteUserAsync(profile.IdentityManagementId!.Value, jwtModel.AccessToken, ct);
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogError(
+                    e,
+                    "Error deleting {Id} from Keycloak with exception: {Message}",
+                    profile.IdentityManagementId,
+                    e.Message);
+            }
         }
     }
 }

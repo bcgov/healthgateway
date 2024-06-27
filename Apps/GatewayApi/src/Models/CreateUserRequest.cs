@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Object that defines the request for creating a User.
@@ -35,5 +36,5 @@ namespace HealthGateway.GatewayApi.Models
     /// <param name="TermsOfServiceId">The terms of service id associated with the user profile to create.</param>
     /// <param name="SmsNumber">The sms number associated with the user profile to create.</param>
     /// <param name="Email">The email associated with the user profile to create.</param>
-    public record CreateUserProfile(string HdId, Guid TermsOfServiceId, string? SmsNumber = null, string? Email = null);
+    public record CreateUserProfile(string HdId, [property: JsonRequired] Guid TermsOfServiceId, string? SmsNumber = null, string? Email = null);
 }

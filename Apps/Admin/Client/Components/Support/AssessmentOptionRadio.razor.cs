@@ -81,6 +81,6 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// They will be splatted onto the underlying element.
         /// </summary>
         [Parameter(CaptureUnmatchedValues = true)]
-        public IReadOnlyDictionary<string, object> UnmatchedAttributes { get; set; } = new Dictionary<string, object>();
+        public IReadOnlyDictionary<string, object?> UnmatchedAttributes { get; set; } = new Dictionary<string, object?>();
     }
 }

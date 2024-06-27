@@ -4,7 +4,7 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 describe("Banner Error", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Note/*", {
-            fixture: "WebClientService/dbError.json",
+            fixture: "NoteService/dbError.json",
         });
         cy.configureSettings({
             datasets: [

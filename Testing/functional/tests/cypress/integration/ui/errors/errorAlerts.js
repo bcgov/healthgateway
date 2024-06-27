@@ -54,20 +54,14 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
         userProfileFixture: "UserProfileService/userProfileUnregistered.json",
     });
 
-    cy.intercept("GET", "**/UserProfile/termsofservice", {
+    cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0", {
         fixture: "UserProfileService/termsOfService.json",
     });
 
-    cy.intercept("GET", `**/UserProfile/${hdid}/Validate`, {
-        body: {
-            resourcePayload: true,
-            totalResultCount: 1,
-            pageIndex: 0,
-            pageSize: 1,
-            resultStatus: 1, // success
-        },
+    cy.intercept("GET", `**/UserProfile/${hdid}/Validate?api-version=2.0*`, {
+        body: true,
     });
-    cy.intercept("POST", `**/UserProfile/${hdid}`, {
+    cy.intercept("POST", `**/UserProfile/${hdid}?api-version=2.0`, {
         statusCode,
     });
     cy.login(
@@ -112,9 +106,13 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
 
 function testValidateEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
-    cy.intercept("GET", "**/UserProfile/*/email/validate/dummyinvitekey", {
-        statusCode,
-    }).as("validateEmail");
+    cy.intercept(
+        "GET",
+        "**/UserProfile/*/email/validate/dummyinvitekey?api-version=2.0",
+        {
+            statusCode,
+        }
+    ).as("validateEmail");
 
     setupStandardFixtures();
 
@@ -172,10 +170,10 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
 
     setupStandardFixtures();
 
-    cy.intercept("PUT", "**/UserProfile/*/preference", {
+    cy.intercept("PUT", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
-    cy.intercept("POST", "**/UserProfile/*/preference", {
+    cy.intercept("POST", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
     cy.login(
@@ -300,10 +298,10 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
         userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
     });
 
-    cy.intercept("PUT", "**/UserProfile/*/preference", {
+    cy.intercept("PUT", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
-    cy.intercept("POST", "**/UserProfile/*/preference", {
+    cy.intercept("POST", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
     cy.login(
@@ -335,10 +333,10 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
 
     setupStandardFixtures();
 
-    cy.intercept("PUT", "**/UserProfile/*/preference", {
+    cy.intercept("PUT", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
-    cy.intercept("POST", "**/UserProfile/*/preference", {
+    cy.intercept("POST", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
     cy.login(
@@ -373,10 +371,10 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
     });
-    cy.intercept("PUT", "**/UserProfile/*/sms", {
+    cy.intercept("PUT", "**/UserProfile/*/sms?api-version=2.0", {
         statusCode,
     });
-    cy.intercept("POST", "**/UserProfile/*/sms", {
+    cy.intercept("POST", "**/UserProfile/*/sms?api-version=2.0", {
         statusCode,
     });
     cy.login(
@@ -442,10 +440,10 @@ function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
         body: true,
     });
-    cy.intercept("PUT", "**/UserProfile/*/email", {
+    cy.intercept("PUT", "**/UserProfile/*/email?api-version=2.0", {
         statusCode,
     });
-    cy.intercept("POST", "**/UserProfile/*/email", {
+    cy.intercept("POST", "**/UserProfile/*/email?api-version=2.0", {
         statusCode,
     });
     cy.login(

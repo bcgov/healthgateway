@@ -15,15 +15,15 @@ describe("Registration Page", () => {
                 "UserProfileService/userProfileUnregistered.json",
         });
 
-        cy.intercept("GET", "**/UserProfile/termsofservice", {
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0", {
             fixture: "UserProfileService/termsOfService.json",
         });
 
-        cy.intercept("GET", `**/UserProfile/${hdid}/Validate`, {
-            fixture: "UserProfileService/userProfileValidate.json",
+        cy.intercept("GET", `**/UserProfile/${hdid}/Validate?api-version=2.0`, {
+            body: true,
         });
 
-        cy.intercept("POST", `**/UserProfile/${hdid}`, {
+        cy.intercept("POST", `**/UserProfile/${hdid}?api-version=2.0`, {
             fixture:
                 "UserProfileService/userProfileUnregisteredRegistered.json",
         });

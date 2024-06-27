@@ -1,22 +1,15 @@
 {
-    "resourcePayload": {
-        "hdId": null,
-        "acceptedTermsOfService": false,
-        "termsOfServiceId": "00000000-0000-0000-0000-000000000000",
-        "email": null,
-        "isEmailVerified": false,
-        "smsNumber": null,
-        "isSMSNumberVerified": false,
-        "hasTermsOfServiceUpdated": false,
-        "lastLoginDateTime": null,
-        "lastLoginDateTimes": [],
-        "closedDateTime": null,
-        "preferences": {},
-        "blockedDataSources": []
-    },
-    "totalResultCount": null,
-    "pageIndex": null,
-    "pageSize": null,
-    "resultStatus": 1,
-    "resultError": null
+    "hdId": null,
+    "acceptedTermsOfService": false,
+    "termsOfServiceId": "00000000-0000-0000-0000-000000000000",
+    "email": null,
+    "isEmailVerified": false,
+    "smsNumber": null,
+    "isSMSNumberVerified": false,
+    "hasTermsOfServiceUpdated": false,
+    "lastLoginDateTime": null,
+    "lastLoginDateTimes": [],
+    "closedDateTime": null,
+    "preferences": {},
+    "blockedDataSources": []
 }

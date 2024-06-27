@@ -90,7 +90,6 @@ namespace HealthGateway.Medication
 
             // Add services
             services.AddTransient<IMedicationMappingService, MedicationMappingService>();
-            services.AddTransient<IMedicationService, RestMedicationService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationRequestService, MedicationRequestService>();
 

@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApiTests.Validations
     using Xunit;
 
     /// <summary>
-    /// <see cref="OptionalEmailAddressValidatorTests"/> unit tests.
+    /// <see cref="OptionalEmailAddressValidator"/> unit tests.
     /// </summary>
     public class OptionalEmailAddressValidatorTests
     {
@@ -32,7 +32,7 @@ namespace HealthGateway.GatewayApiTests.Validations
         [InlineData("", true)]
         public async Task ShouldValidate(string? email, bool expected)
         {
-            ValidationResult? result = await new OptionalEmailAddressValidator().ValidateAsync(email);
+            ValidationResult result = await new OptionalEmailAddressValidator().ValidateAsync(email);
             Assert.Equal(expected, result.IsValid);
         }
     }

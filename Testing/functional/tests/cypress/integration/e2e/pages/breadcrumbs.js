@@ -7,7 +7,7 @@ function testPageBreadcrumb(url, dataTestId) {
         "getVaccinationStatus"
     );
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
-    cy.intercept("GET", "**/UserProfile/termsofservice").as(
+    cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
         "getTermsOfService"
     );
 

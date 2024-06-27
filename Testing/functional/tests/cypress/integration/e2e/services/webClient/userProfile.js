@@ -13,7 +13,7 @@ describe("GatewayApi UserProfile Service", () => {
     it("Verify Get UserProfile Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -27,7 +27,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -48,7 +48,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}?api-version=2.0`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -59,7 +59,7 @@ describe("GatewayApi UserProfile Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    expect(response.body.resourcePayload.hdId).to.equal(HDID);
+                    expect(response.body.hdId).to.equal(HDID);
                 });
             });
         });
@@ -69,7 +69,7 @@ describe("GatewayApi UserProfile Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "POST",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -84,7 +84,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "POST",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -104,7 +104,7 @@ describe("GatewayApi UserProfile Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "DELETE",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -119,7 +119,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "DELETE",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -138,7 +138,7 @@ describe("GatewayApi UserProfile Service", () => {
     it("Verify Get UserProfile TermsOfService", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}termsofservice`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}termsofservice?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -150,7 +150,7 @@ describe("GatewayApi UserProfile Service", () => {
     it("Verify Get UserProfile Validate Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Validate`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Validate?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -164,7 +164,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Validate`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Validate?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -183,7 +183,7 @@ describe("GatewayApi UserProfile Service", () => {
     it("Verify Get UserProfile Recover Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/recover`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/recover?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -197,7 +197,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/recover`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/recover?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -216,7 +216,7 @@ describe("GatewayApi UserProfile Service", () => {
     it("Verify Get UserProfile Email Validate Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/email/validate/123`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/email/validate/123?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -230,7 +230,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/email/validate/123`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/email/validate/123?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -250,7 +250,7 @@ describe("GatewayApi UserProfile Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "PUT",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/email`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/email?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -265,7 +265,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/email`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/email?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -284,7 +284,7 @@ describe("GatewayApi UserProfile Service", () => {
     it("Verify Get UserProfile SMS Validate Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/sms/validate/123`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/sms/validate/123?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -298,7 +298,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/sms/validate/123`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/sms/validate/123?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -318,7 +318,7 @@ describe("GatewayApi UserProfile Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "PUT",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/sms`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/sms?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -333,7 +333,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/sms`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/sms?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -353,7 +353,7 @@ describe("GatewayApi UserProfile Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "PUT",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/preference`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/preference?api-version=2.0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -368,7 +368,7 @@ describe("GatewayApi UserProfile Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/preference`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/preference?api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {

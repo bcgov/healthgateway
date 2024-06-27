@@ -1,6 +1,6 @@
 @page "/beta-access"
 @layout MainLayout
-@attribute [Authorize(Roles = $"{Roles.Admin}")]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Components.BetaAccess
 @using HealthGateway.Admin.Client.Store.BetaAccess
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent

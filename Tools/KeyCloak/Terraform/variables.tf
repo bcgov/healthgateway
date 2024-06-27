@@ -43,7 +43,7 @@ variable "keycloak_idp_bcsc" {
     client_id     = string
     client_secret = string
     issuer_path   = optional(string, "/oauth2/")
-    jwks_path     = optional(string, "/oauth2/jwk.json")
+    jwks_path     = optional(string, "/oauth2/jwk")
   })
   sensitive   = true
   description = "The configuration settings for the BCSC IDP"
@@ -58,7 +58,7 @@ variable "keycloak_idp_bcsc_mobile" {
     client_id     = string
     client_secret = string
     issuer_path   = optional(string, "/oauth2/")
-    jwks_path     = optional(string, "/oauth2/jwk.json")
+    jwks_path     = optional(string, "/oauth2/jwk")
   })
   sensitive   = true
   description = "The configuration settings for the BCSC Mobile IDP"
@@ -73,7 +73,7 @@ variable "keycloak_idp_bcsc_pcare" {
     client_id     = string
     client_secret = string
     issuer_path   = optional(string, "/oauth2/")
-    jwks_path     = optional(string, "/oauth2/jwk.json")
+    jwks_path     = optional(string, "/oauth2/jwk")
   })
   sensitive   = true
   description = "The configuration settings for the BCSC Primary Care IDP"
@@ -92,23 +92,21 @@ variable "keycloak_idp_phsa" {
   description = "The configuration settings for the PHSA IDP"
 }
 
-variable "client_hg_admin_blazor" {
-  type = object({
-    id              = optional(string, "hg-admin-blazor")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-  })
-  description = "HealthGateway Admin Blazor client configuration"
-}
-
 variable "client_hg_admin" {
   type = object({
     id              = optional(string, "hg-admin")
     valid_redirects = list(string)
     web_origins     = list(string)
-    token_lifespan  = number
   })
   description = "HealthGateway Admin client configuration"
+}
+
+variable "client_hg_admin_services" {
+  type = object({
+    id              = optional(string, "hg-admin-services")
+    token_lifespan  = number
+  })
+  description = "HealthGateway Admin services client configuration"
 }
 
 variable "client_hg_k6" {

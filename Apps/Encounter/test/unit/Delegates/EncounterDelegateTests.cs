@@ -162,7 +162,7 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             // Arrange
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error");
             Mock<IMspVisitApi> mockMspVisitApi = new();
             mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
