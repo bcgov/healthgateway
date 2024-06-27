@@ -62,35 +62,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             logger.LogDebug("ConfigureAuthorizationServices...");
 
-            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, PersonalAccessHandler>();
             services.AddScoped<IAuthorizationHandler, SystemDelegatedAccessHandler>();
 
             AuthorizationBuilder authBuilder = services.AddAuthorizationBuilder();
-            authBuilder.AddPolicy(
-                    UserPolicy.UserOnly,
-                    policy =>
-                    {
-                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.Requirements.Add(new UserRequirement(false));
-                    })
-                .AddPolicy(
-                    UserPolicy.Read,
-                    policy =>
-                    {
-                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.Requirements.Add(new UserRequirement(true));
-                    })
-                .AddPolicy(
-                    UserPolicy.Write,
-                    policy =>
-                    {
-                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.Requirements.Add(new UserRequirement(true));
-                    });
 
             // System-Delegated Policies
             authBuilder.AddPolicy(
