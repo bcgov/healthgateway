@@ -214,7 +214,7 @@ namespace HealthGateway.GatewayApi.Services
                 LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
 
-            DbResult<UserProfile> dbResult = await this.userProfileDelegate.InsertUserProfileAsync(profile, !this.accountsChangeFeedEnabled, ct);
+            DbResult<UserProfile> dbResult = await this.userProfileDelegate.InsertUserProfileAsync(profile, ct: ct);
             if (dbResult.Status != DbStatusCode.Created)
             {
                 this.logger.LogError("Error creating user profile... {Hdid}", hdid);
