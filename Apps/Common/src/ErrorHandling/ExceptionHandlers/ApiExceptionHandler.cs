@@ -16,14 +16,16 @@
 namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
+    using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
@@ -34,7 +36,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is not Refit.ApiException apiException)
+            if (exception is not ApiException apiException)
             {
                 return false;
             }
@@ -51,19 +53,31 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
             return true;
         }
 
-        private static UpstreamServiceException WrapException(Refit.ApiException apiException)
+        private static UpstreamServiceException WrapException(ApiException apiException)
         {
             // include HTTP method, URI, and response content in message for easier debugging
             string message = $"Unexpected response ({(int)apiException.StatusCode}) from API call {apiException.HttpMethod} {apiException.Uri}";
+
+            // Include response content if available
             if (!string.IsNullOrEmpty(apiException.Content))
             {
                 message += $"{Environment.NewLine}{Environment.NewLine}Content:{Environment.NewLine}{apiException.Content}";
             }
 
+            // Include request URL and HTTP method
+            message += $"{Environment.NewLine}{Environment.NewLine}Request URL:{Environment.NewLine}{apiException.Uri}";
+            message += $"{Environment.NewLine}HTTP Method:{Environment.NewLine}{apiException.HttpMethod}";
+
+            // Include response status code
+            message += $"{Environment.NewLine}Status Code:{Environment.NewLine}{(int)apiException.StatusCode}";
+
+            // Include response headers if available
+            message += $"{Environment.NewLine}{Environment.NewLine}Headers:{Environment.NewLine}";
+            message = apiException.Headers.Aggregate(message, (current, header) => current + $"{header.Key}: {string.Join(", ", header.Value)}{Environment.NewLine}");
             return new(message, apiException);
         }
 
-        private void LogException(Refit.ApiException apiException)
+        private void LogException(ApiException apiException)
         {
             logger.LogError(apiException, "Unexpected response ({ResponseCode}) from API call {Method} {Uri}", (int)apiException.StatusCode, apiException.HttpMethod, apiException.Uri);
         }

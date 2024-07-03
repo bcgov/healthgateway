@@ -7,6 +7,10 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
+import {
+    setupStandardAliases,
+    waitForInitialDataLoad,
+} from "./functions/intercept";
 require("cy-verify-downloads").addCustomCommand();
 
 const openIdConnectClientId = "hg-admin";
@@ -102,7 +106,11 @@ Cypress.Commands.add("login", (username, password, path) => {
         });
     });
     cy.log(`Visiting ${path}`);
+    setupStandardAliases(path);
+
     cy.visit(path, { timeout: 60000 });
+    waitForInitialDataLoad(path);
+
     // wait for log in to complete
     cy.get("[data-testid=user-account-icon]").should("exist");
 });
