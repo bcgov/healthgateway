@@ -47,17 +47,23 @@ describe("Support", () => {
     });
 
     it("Verify no results hdid query.", () => {
-        performSearch("HDID", hdidNotFound);
+        performSearch("HDID", hdidNotFound, {
+            waitForPatientSupportDetails: false,
+        });
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 
     it("Verify no results sms query.", () => {
-        performSearch("SMS", smsNotFound);
+        performSearch("SMS", smsNotFound, {
+            waitForPatientSupportDetails: false,
+        });
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 
     it("Verify no results email query.", () => {
-        performSearch("Email", emailNotFound);
+        performSearch("Email", emailNotFound, {
+            waitForPatientSupportDetails: false,
+        });
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 

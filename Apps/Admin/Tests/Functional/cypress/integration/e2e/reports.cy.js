@@ -18,17 +18,11 @@ function waitForPatientDetailsDataLoad() {
 
 describe("Reports", () => {
     beforeEach(() => {
-        cy.intercept("GET", `**/AdminReport/BlockedAccess`).as(
-            "getBlockedAccess"
-        );
-
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
             "/reports"
         );
-
-        cy.wait("@getBlockedAccess", { timeout: defaultTimeout });
     });
 
     it("Verify blocked access reports", () => {

@@ -1,10 +1,14 @@
 import { getTableRows, selectTab } from "./sharedUtilities";
 
+const defaultTimeout = 60000;
+
 function selectPatientTab(tabText) {
     selectTab("[data-testid=patient-details-tabs]", tabText);
 }
 
-export function performSearch(queryType, queryString) {
+export function performSearch(queryType, queryString, options = {}) {
+    const { waitForUser = true, waitForPatientSupportDetails = true } = options;
+
     cy.get("[data-testid=query-type-select]").click({ force: true });
     cy.get("[data-testid=query-type]")
         .contains(queryType)
@@ -16,7 +20,20 @@ export function performSearch(queryType, queryString) {
         cy.get("[data-testid=query-input]").clear();
     }
 
+    cy.intercept("GET", "**/Support/Users*").as("getUsers");
+    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
+        "getPatientSupportDetails"
+    );
+
     cy.get("[data-testid=search-btn]").click();
+
+    if (waitForUser) {
+        cy.wait("@getUsers", { timeout: defaultTimeout });
+    }
+
+    if (waitForPatientSupportDetails) {
+        cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+    }
 }
 
 export function verifySearchInput(queryType, queryString) {

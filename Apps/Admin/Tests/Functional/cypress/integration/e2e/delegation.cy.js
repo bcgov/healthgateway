@@ -6,10 +6,13 @@ const dependentToProtect = "9872868095"; // Jeffrey Lawrence Stallings
 const guardianToAdd = "9735352488"; // Turpentine Garlandry
 const guardianNotFound = "9735352489";
 const guardianAlreadyAdded = "9735353315"; // BONNET PROTERVITY
+const defaultTimeout = 60000;
 
 function performSearch(phn) {
+    cy.intercept("GET", "**/Delegation/").as("getDelegation");
     cy.get("[data-testid=query-input]").clear().type(phn);
     cy.get("[data-testid=search-button]").click();
+    cy.wait("@getDelegation", { timeout: defaultTimeout });
 }
 
 function getTableRows(tableSelector) {
@@ -27,10 +30,7 @@ describe("Delegation Search", () => {
     });
 
     it("Verify response when searching for dependent without delegate.", () => {
-        cy.get("[data-testid=query-input]")
-            .clear()
-            .type(dependentWithoutGuardian.phn);
-        cy.get("[data-testid=search-button]").click();
+        performSearch(dependentWithoutGuardian.phn);
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
@@ -90,8 +90,7 @@ describe("Delegation Search", () => {
     });
 
     it("Verify response contains dependent audit in descending datetime order as per seeded data.", () => {
-        cy.get("[data-testid=query-input]").clear().type(dependentWithAudit);
-        cy.get("[data-testid=search-button]").click();
+        performSearch(dependentWithAudit);
 
         // Click delegation change header to show dependent audit
         cy.get("[data-testid=delegation-changes-header")
@@ -161,10 +160,7 @@ describe("Delegation Protect", () => {
     });
 
     it("Verify protect dependent toggle and delegation cancel.", () => {
-        cy.get("[data-testid=query-input]")
-            .clear()
-            .type(dependentWithGuardian.phn);
-        cy.get("[data-testid=search-button]").click();
+        performSearch(dependentWithGuardian.phn);
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
@@ -219,8 +215,7 @@ describe("Delegation Protect", () => {
     });
 
     it("Verify add delegate dialog guardian not found and guardian already added.", () => {
-        cy.get("[data-testid=query-input]").clear().type(dependentWithAudit);
-        cy.get("[data-testid=search-button]").click();
+        performSearch(dependentWithAudit);
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
@@ -229,12 +224,14 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=add-button]").click();
 
         // Delegate modal - phn not found
+        cy.intercept("GET", "**/Delegation/Delegate").as("getDelegate");
         cy.get("[data-testid=delegate-phn-input]")
             .clear()
             .type(guardianNotFound);
         cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
             cy.get("[data-testid=search-button]").click();
         });
+        cy.wait("@getDelegate", { timeout: defaultTimeout });
         cy.get("[data-testid=delegate-search-error-message]").should(
             "be.visible"
         );
@@ -262,8 +259,7 @@ describe("Delegation Protect", () => {
     });
 
     it("Verify protect/unprotect dependent toggle, add delegate, remove delegate, delegation save and delegation confirmation.", () => {
-        cy.get("[data-testid=query-input]").clear().type(dependentToProtect);
-        cy.get("[data-testid=search-button]").click();
+        performSearch(dependentToProtect);
 
         // Confirm delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 2);
@@ -274,6 +270,9 @@ describe("Delegation Protect", () => {
         );
 
         // Protect
+        cy.intercept("PUT", "**/Delegation/*/ProtectDependent").as(
+            "protectDependent"
+        );
         cy.get("[data-testid=dependent-protected-switch]").click();
         cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
 
@@ -283,15 +282,18 @@ describe("Delegation Protect", () => {
         // Delegation Confirmation button
         cy.get("[data-testid=audit-reason-input]").type("test");
         cy.get("[data-testid=audit-confirm-button]").click({ force: true });
+        cy.wait("@protectDependent", { timeout: defaultTimeout });
 
         // Add guardian
         cy.get("[data-testid=add-button]").click();
 
         // Delegate dialog - search with valid phn
+        cy.intercept("GET", "**/Delegation/Delegate").as("getDelegate");
         cy.get("[data-testid=delegate-phn-input]").clear().type(guardianToAdd);
         cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
             cy.get("[data-testid=search-button]").click();
         });
+        cy.wait("@getDelegate", { timeout: defaultTimeout });
         cy.get("[data-testid=delegate-search-error-message]").should(
             "not.exist"
         );
@@ -305,6 +307,7 @@ describe("Delegation Protect", () => {
         // Delegation Confirmation button
         cy.get("[data-testid=audit-reason-input]").type("test");
         cy.get("[data-testid=audit-confirm-button]").click({ force: true });
+        cy.wait("@protectDependent", { timeout: defaultTimeout });
 
         // Confirm guardian has been added to delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 3);
@@ -335,11 +338,15 @@ describe("Delegation Protect", () => {
         getTableRows("[data-testid=delegate-table]").should("have.length", 2);
 
         // Unprotect
+        cy.intercept("PUT", "**/Delegation/*/UnprotectDependent").as(
+            "unprotectDependent"
+        );
         cy.get("[data-testid=dependent-protected-switch]").click();
 
         // Confirmation button
         cy.get("[data-testid=audit-reason-input]").type("test");
         cy.get("[data-testid=audit-confirm-button]").click({ force: true });
+        cy.wait("@unprotectDependent", { timeout: defaultTimeout });
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
