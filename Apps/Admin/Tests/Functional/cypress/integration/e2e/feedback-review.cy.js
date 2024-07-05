@@ -1,5 +1,7 @@
 const suggestionTag = "suggestion";
 const questionTag = "question";
+const defaultTimeout = 60000;
+const rowSelector = "[data-testid=feedback-table] tbody tr.mud-table-row";
 
 function validateTableRowCount(tableSelector, count) {
     cy.log(`Validating table contains ${count} rows of data.`);
@@ -8,7 +10,17 @@ function validateTableRowCount(tableSelector, count) {
         .should("have.length.gte", count);
 }
 
-const rowSelector = "[data-testid=feedback-table] tbody tr.mud-table-row";
+function setupPatientDetailsAliases() {
+    cy.intercept("GET", "**/Support/Users*").as("getUsers");
+    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
+        "getPatientSupportDetails"
+    );
+}
+
+function waitForPatientDetailsDataLoad() {
+    cy.wait("@getUsers", { timeout: defaultTimeout });
+    cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+}
 
 describe("Feedback Review", () => {
     beforeEach(() => {
@@ -26,6 +38,7 @@ describe("Feedback Review", () => {
         validateTableRowCount("[data-testid=feedback-table]", 4);
 
         cy.log("Reviewing feedback.");
+        cy.intercept("PATCH", "**/UserFeedback/").as("patchUserFeedback");
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -34,7 +47,8 @@ describe("Feedback Review", () => {
                     .should("have.class", "mud-error-text")
                     .click();
             });
-        cy.validateTableLoad("[data-testid=feedback-table]");
+        cy.wait("@patchUserFeedback", { timeout: defaultTimeout });
+
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -43,16 +57,21 @@ describe("Feedback Review", () => {
                     .should("have.class", "mud-success-text")
                     .click();
             });
+        cy.wait("@patchUserFeedback", { timeout: defaultTimeout });
 
         cy.log("Adding tags.");
+        cy.intercept("POST", "**/Tag/").as("postTag");
         cy.get("[data-testid=add-tag-input]").clear().type(suggestionTag);
         cy.get("[data-testid=add-tag-button]").click();
+        cy.wait("@postTag", { timeout: defaultTimeout });
         cy.get("[data-testid=tag-collection-item]").contains(suggestionTag);
         cy.get("[data-testid=add-tag-input]").clear().type(questionTag);
         cy.get("[data-testid=add-tag-button]").click();
+        cy.wait("@postTag", { timeout: defaultTimeout });
         cy.get("[data-testid=tag-collection-item]").contains(questionTag);
 
         cy.log("Assigning tags.");
+        cy.intercept("PUT", "**/UserFeedback/*/Tag").as("putUserFeedbackTag");
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -66,7 +85,8 @@ describe("Feedback Review", () => {
                     .should("be.enabled")
                     .click();
             });
-        cy.validateTableLoad("[data-testid=feedback-table]");
+        cy.wait("@putUserFeedbackTag", { timeout: defaultTimeout });
+
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -112,7 +132,8 @@ describe("Feedback Review", () => {
                     .should("be.enabled")
                     .click();
             });
-        cy.validateTableLoad("[data-testid=feedback-table]");
+        cy.wait("@putUserFeedbackTag", { timeout: defaultTimeout });
+
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -126,19 +147,24 @@ describe("Feedback Review", () => {
             });
 
         cy.log("Removing tags.");
+        cy.intercept("DELETE", "**/Tag/").as("deleteTag");
         cy.get("[data-testid=tag-collection-item]")
             .contains(suggestionTag)
             .children("button")
             .click();
+        cy.wait("@deleteTag", { timeout: defaultTimeout });
         cy.get("[data-testid=tag-collection-item]")
             .contains(questionTag)
             .children("button")
             .click();
+        cy.wait("@deleteTag", { timeout: defaultTimeout });
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
     });
 
     it("Navigating to Support Page", () => {
         cy.log("Looking up feedback author.");
+        setupPatientDetailsAliases();
+
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -146,6 +172,8 @@ describe("Feedback Review", () => {
                     .should("be.visible")
                     .click();
             });
+
+        waitForPatientDetailsDataLoad();
         cy.location("pathname").should("eq", "/patient-details");
     });
 });

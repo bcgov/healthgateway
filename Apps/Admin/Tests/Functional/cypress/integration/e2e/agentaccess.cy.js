@@ -1,9 +1,7 @@
 import { removeUserIfExists } from "../../utilities/kcUtilities";
 
-const username = Cypress.env("idir_username");
-const password = Cypress.env("idir_password");
 const user = "FncTstUser1";
-const timeout = 45000;
+const defaultTimeout = 60000;
 
 describe("Provision", () => {
     beforeEach(() => {
@@ -29,7 +27,10 @@ describe("Provision", () => {
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
         cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
+
+        cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
         cy.get("[data-testid=save-btn]").click();
+        cy.wait("@postAgentAccess", { timeout: defaultTimeout });
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate user was created.");
@@ -59,8 +60,10 @@ describe("Provision", () => {
         cy.get("[data-testid=identity-provider]").contains("IDIR").click();
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
+        cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
         cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
         cy.get("[data-testid=save-btn]").click();
+        cy.wait("@postAgentAccess", { timeout: defaultTimeout });
 
         cy.log("Validate duplicate user error.");
         cy.get("[data-testid=add-error-alert]").should("exist");
@@ -72,7 +75,7 @@ describe("Provision", () => {
         cy.intercept("GET", `**/AgentAccess/?query=${user}`).as("getUser");
         cy.get("[data-testid=query-input]").clear().type(user);
         cy.get("[data-testid=search-btn]").click();
-        cy.wait("@getUser", { timeout });
+        cy.wait("@getUser", { timeout: defaultTimeout });
         cy.get("[data-testid^=agent-table-username-]")
             .contains(user.toLowerCase())
             .parents(".mud-table-row")
@@ -93,8 +96,10 @@ describe("Provision", () => {
         // This line may trigger ResizeObserver exception
         cy.get("[data-testid=role]").contains("AdminAnalyst").click();
 
+        cy.intercept("PUT", "**/AgentAccess/").as("putAgentAccess");
         cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
         cy.get("[data-testid=save-btn]").click();
+        cy.wait("@putAgentAccess", { timeout: defaultTimeout });
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate user edit.");
@@ -115,15 +120,19 @@ describe("Provision", () => {
     });
 
     it("Delete User", () => {
+        cy.intercept("GET", `**/AgentAccess/?query=${user}`).as("getUser");
         cy.get("[data-testid=query-input]").clear().type(user);
         cy.get("[data-testid=search-btn]").click();
+        cy.wait("@getUser", { timeout: defaultTimeout });
         cy.get("[data-testid^=agent-table-username-]")
             .contains(user.toLowerCase())
             .parents(".mud-table-row")
             .get("[data-testid^=agent-table-delete-btn]")
             .click();
         cy.get("[data-testid=confirm-delete-message]").should("be.visible");
+        cy.intercept("DELETE", "**/AgentAccess/?id=*").as("deleteAgentAccess");
         cy.get("[data-testid=confirm-delete-btn]").click();
+        cy.wait("@deleteAgentAccess", { timeout: defaultTimeout });
         cy.get("[data-testid=confirm-delete-message]").should("not.exist");
 
         cy.log("Validate user delete.");

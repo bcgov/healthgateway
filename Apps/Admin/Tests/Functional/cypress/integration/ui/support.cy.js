@@ -17,7 +17,10 @@ const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const sms = "2506715000";
 
 function verifyParameterIsRequired(queryType) {
-    performSearch(queryType, null);
+    performSearch(queryType, null, {
+        waitForUser: false,
+        waitForPatientSupportDetails: false,
+    });
     cy.get("div").contains("Search parameter is required").should("be.visible");
     cy.get("[data-testid=user-table]").should("not.exist");
 }
@@ -84,6 +87,11 @@ describe("Support", () => {
             }
         );
 
+        // Patient support details
+        cy.intercept("GET", "**/PatientSupportDetails*", {
+            fixture: "SupportService/patient-details.json",
+        });
+
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
@@ -124,7 +132,10 @@ describe("Support", () => {
     });
 
     it("Verify error handling", () => {
-        performSearch("PHN", phnError);
+        performSearch("PHN", phnError, {
+            waitForUser: false,
+            waitForPatientSupportDetails: false,
+        });
         cy.get("[data-testid=user-banner-feedback-error-message]").should(
             "be.visible"
         );
@@ -137,7 +148,10 @@ describe("Support", () => {
     });
 
     it("Verify query fails on invalid PHN", () => {
-        performSearch("PHN", phnInvalid);
+        performSearch("PHN", phnInvalid, {
+            waitForUser: false,
+            waitForPatientSupportDetails: false,
+        });
         cy.get(".d-flex").contains("Invalid PHN").should("be.visible");
         cy.get("[data-testid=user-table]").should("not.exist");
     });
@@ -151,7 +165,9 @@ describe("Support", () => {
     });
 
     it("Verify clear button", () => {
-        performSearch("SMS", sms);
+        performSearch("SMS", sms, {
+            waitForPatientSupportDetails: false,
+        });
         verifySupportTableResults(hdid, phn, 2);
         cy.get("[data-testid=clear-btn]").click();
         cy.get("[data-testid=query-type-select]").should("have.value", "Sms");
