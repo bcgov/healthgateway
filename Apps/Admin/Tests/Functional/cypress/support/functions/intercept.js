@@ -25,19 +25,19 @@ export function setupStandardAliases(page) {
 
 export function waitForInitialDataLoad(page) {
     switch (page) {
-        case "dashboard":
+        case "/dashboard":
             waitForDashboard();
             break;
-        case "communications":
+        case "/communications":
             waitForCommunication();
             break;
-        case "feedback":
+        case "/feedback":
             waitForFeedback();
             break;
-        case "beta-access":
+        case "/beta-access":
             waitForBetaAccess();
             break;
-        case "reports":
+        case "/reports":
             waitForReport();
             break;
         default:
@@ -69,7 +69,7 @@ function setupCommunicationAliases() {
     cy.log("Setting up communication aliases.");
 
     cy.intercept("GET", "**/Broadcast/").as("getBroadcast");
-    cy.intercept("GET", `**/Communication/*`).as("getCommunication");
+    cy.intercept("GET", `**/Communication/`).as("getCommunication");
 }
 
 function setupFeedbackAliases() {
@@ -96,24 +96,29 @@ function setupReportAliases() {
 
 function waitForDashboard() {
     cy.log("Wait on dashboard");
-    cy.wait("@getAllTimeCounts", { timeout: defaultTimeout });
-    cy.wait("@getAppLoginCounts", { timeout: defaultTimeout });
-    cy.wait("@getRatingsSummary", { timeout: defaultTimeout });
-    cy.wait("@getAgeCounts", { timeout: defaultTimeout });
-    cy.wait("@getDailyUsageCounts", { timeout: defaultTimeout });
-    cy.wait("@getRecurringUserCount", { timeout: defaultTimeout });
+    cy.wait(
+        [
+            "@getAllTimeCounts",
+            "@getAppLoginCounts",
+            "@getRatingsSummary",
+            "@getAgeCounts",
+            "@getDailyUsageCounts",
+            "@getRecurringUserCount",
+        ],
+        { timeout: defaultTimeout }
+    );
 }
 
 function waitForCommunication() {
     cy.log("Wait on communication");
-    cy.wait("@getBroadcast", { timeout: defaultTimeout });
-    cy.wait("@getCommunication", { timeout: defaultTimeout });
+    cy.wait(["@getBroadcast", "@getCommunication"], {
+        timeout: defaultTimeout,
+    });
 }
 
 function waitForFeedback() {
     cy.log("Wait on feedback");
-    cy.wait("@getTag", { timeout: defaultTimeout });
-    cy.wait("@getUserFeedback", { timeout: defaultTimeout });
+    cy.wait(["@getTag", "@getUserFeedback"], { timeout: defaultTimeout });
 }
 
 function waitForBetaAccess() {
@@ -123,6 +128,7 @@ function waitForBetaAccess() {
 
 function waitForReport() {
     cy.log("Wait on report");
-    cy.wait("@getBlockedAccess", { timeout: defaultTimeout });
-    cy.wait("@getProtectedDependents", { timeout: defaultTimeout });
+    cy.wait(["@getBlockedAccess", "@getProtectedDependents"], {
+        timeout: defaultTimeout,
+    });
 }
