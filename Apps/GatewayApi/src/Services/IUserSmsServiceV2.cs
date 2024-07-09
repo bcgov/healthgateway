@@ -25,22 +25,13 @@ namespace HealthGateway.GatewayApi.Services
     public interface IUserSmsServiceV2
     {
         /// <summary>
-        /// Validates the SMS number that matches the given validation code.
-        /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="validationCode">The SMS validation code.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
-        Task<bool> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default);
-
-        /// <summary>
-        /// Create the user SMS number.
+        /// Verifies an SMS number for a user with the given verification code.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="sms">SMS number to be set for the user.</param>
+        /// <param name="verificationCode">The SMS verification code.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>returns true if the sms number was successfully created.</returns>
-        Task<MessagingVerification> CreateUserSmsAsync(string hdid, string sms, CancellationToken ct = default);
+        /// <returns>A value indicating whether the verification was successful.</returns>
+        Task<bool> VerifySmsNumberAsync(string hdid, string verificationCode, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user SMS number.
@@ -49,6 +40,15 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="sms">SMS number to be set for the user.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default);
+        Task UpdateSmsNumberAsync(string hdid, string sms, CancellationToken ct = default);
+
+        /// <summary>
+        /// Generates a messaging verification using the provided HDID and SMS number.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="sms">SMS number to verify.</param>
+        /// <param name="sanitize">If set to true, the provided SMS number will be sanitized before being used.</param>
+        /// <returns>The generated messaging verification.</returns>
+        MessagingVerification GenerateMessagingVerification(string hdid, string sms, bool sanitize = true);
     }
 }

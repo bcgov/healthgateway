@@ -164,23 +164,16 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             IList<UserProfileHistory> userProfileHistoryList = await this.userProfileDelegate.GetUserProfileHistoryListAsync(hdid, this.userProfileHistoryRecordLimit, ct);
-            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(userProfile, userProfileHistoryList, ct);
 
-            if (!userProfileModel.IsEmailVerified)
-            {
-                this.logger.LogTrace("Retrieving last email invite... {Hdid}", hdid);
-                MessagingVerification? emailInvite = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
-                this.logger.LogDebug("Finished retrieving email invite... {Hdid}", hdid);
-                userProfileModel.Email = emailInvite?.Email?.To;
-            }
+            string? emailAddress = !string.IsNullOrEmpty(userProfile.Email)
+                ? userProfile.Email
+                : (await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct))?.Email?.To;
 
-            if (!userProfileModel.IsSmsNumberVerified)
-            {
-                this.logger.LogTrace("Retrieving last sms invite... {Hdid}", hdid);
-                MessagingVerification? smsInvite = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
-                this.logger.LogDebug("Finished retrieving sms invite... {Hdid}", hdid);
-                userProfileModel.SmsNumber = smsInvite?.SmsNumber;
-            }
+            string? smsNumber = !string.IsNullOrEmpty(userProfile.SmsNumber)
+                ? userProfile.SmsNumber
+                : (await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct))?.SmsNumber;
+
+            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(userProfile, userProfileHistoryList, emailAddress, smsNumber, ct);
 
             return userProfileModel;
         }
@@ -188,23 +181,31 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<UserProfileModel> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
+            this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
             string hdid = createProfileRequest.Profile.HdId;
-            this.logger.LogTrace("Creating user profile... {Hdid}", hdid);
+            string? requestedEmail = createProfileRequest.Profile.Email;
+            string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
+            bool isEmailVerified = !string.IsNullOrWhiteSpace(requestedEmail) && string.Equals(requestedEmail, jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
 
-            await new SmsNumberValidator().ValidateAndThrowAsync(createProfileRequest.Profile.SmsNumber, ct);
-
+            // validate provided SMS number and patient age
+            await new SmsNumberValidator().ValidateAndThrowAsync(requestedSmsNumber, ct);
             PatientDetails patient = await this.patientDetailsService.GetPatientAsync(hdid, ct: ct);
             if (this.minPatientAge > 0)
             {
                 await new AgeRangeValidator(this.minPatientAge).ValidateAndThrowAsync(patient.Birthdate.ToDateTime(TimeOnly.MinValue), ct);
             }
 
+            // add SMS and email messaging verifications to DB without committing changes
+            MessagingVerification? smsVerification = await this.AddSmsVerification(hdid, requestedSmsNumber, ct);
+            MessagingVerification? emailVerification = await this.AddEmailVerification(hdid, requestedEmail, isEmailVerified, ct);
+
+            // initialize user profile
             UserProfile profile = new()
             {
                 HdId = hdid,
                 IdentityManagementId = null,
                 TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
-                Email = string.Empty,
+                Email = isEmailVerified ? requestedEmail : string.Empty,
                 SmsNumber = null,
                 CreatedBy = hdid,
                 UpdatedBy = hdid,
@@ -214,41 +215,26 @@ namespace HealthGateway.GatewayApi.Services
                 LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
 
-            DbResult<UserProfile> dbResult = await this.userProfileDelegate.InsertUserProfileAsync(profile, ct: ct);
+            // add user profile to DB and commit changes
+            DbResult<UserProfile> dbResult = await this.userProfileDelegate.InsertUserProfileAsync(profile, true, ct);
             if (dbResult.Status != DbStatusCode.Created)
             {
                 this.logger.LogError("Error creating user profile... {Hdid}", hdid);
                 throw new DatabaseException(dbResult.Message);
             }
 
-            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(dbResult.Payload, [], ct);
-
-            string? requestedEmail = createProfileRequest.Profile.Email;
-            bool isEmailVerified = !string.IsNullOrWhiteSpace(requestedEmail) && requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-            if (!string.IsNullOrWhiteSpace(requestedEmail))
+            // queue verification email
+            if (emailVerification != null && !isEmailVerified)
             {
-                userProfileModel.Email = requestedEmail;
-                userProfileModel.IsEmailVerified = isEmailVerified;
-
-                // Add email verification
-                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.notificationsChangeFeedEnabled, ct);
+                await this.emailQueueService.QueueNewEmailAsync(emailVerification.Email, true, ct);
             }
 
-            string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
-            NotificationSettingsRequest notificationRequest = new(dbResult.Payload, requestedEmail, requestedSmsNumber);
-            if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
-            {
-                userProfileModel.SmsNumber = requestedSmsNumber;
+            // notify partners about new account
+            await this.NotifyAccountCreated(profile, requestedEmail, requestedSmsNumber, isEmailVerified, smsVerification?.SmsValidationCode, ct);
 
-                // Add SMS verification
-                MessagingVerification smsVerification = await this.userSmsService.CreateUserSmsAsync(hdid, requestedSmsNumber, ct);
-                notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
-            }
-
-            await this.NotifyAccountCreated(hdid, notificationRequest, isEmailVerified, ct);
-
-            this.logger.LogDebug("Finished creating user profile... {Hdid}", dbResult.Payload.HdId);
-
+            // build and return model
+            UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(dbResult.Payload, [], requestedEmail, requestedSmsNumber, ct);
+            this.logger.LogTrace("Finished creating user profile... {Hdid}", dbResult.Payload.HdId);
             return userProfileModel;
         }
 
@@ -332,10 +318,17 @@ namespace HealthGateway.GatewayApi.Services
             return (await new SmsNumberValidator().ValidateAsync(phoneNumber, ct)).IsValid;
         }
 
-        private async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, ICollection<UserProfileHistory> historyCollection, CancellationToken ct = default)
+        private async Task<UserProfileModel> BuildUserProfileModelAsync(
+            UserProfile userProfile,
+            ICollection<UserProfileHistory> historyCollection,
+            string emailAddress,
+            string smsNumber,
+            CancellationToken ct = default)
         {
             Guid? termsOfServiceId = await this.legalAgreementService.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService, ct);
             UserProfileModel userProfileModel = this.mappingService.MapToUserProfileModel(userProfile, termsOfServiceId);
+            userProfileModel.Email = emailAddress;
+            userProfileModel.SmsNumber = smsNumber;
 
             DateTime? latestTourChangeDateTime = await this.applicationSettingsService.GetLatestTourChangeDateTimeAsync(ct);
             userProfileModel.HasTourUpdated = historyCollection.Count != 0 &&
@@ -349,19 +342,47 @@ namespace HealthGateway.GatewayApi.Services
             return userProfileModel;
         }
 
-        private async Task NotifyAccountCreated(string hdid, NotificationSettingsRequest notificationRequest, bool isEmailVerified, CancellationToken ct)
+        private async Task<MessagingVerification?> AddSmsVerification(string hdid, string? requestedSmsNumber, CancellationToken ct)
         {
+            MessagingVerification? smsVerification = null;
+            if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
+            {
+                smsVerification = this.userSmsService.GenerateMessagingVerification(hdid, requestedSmsNumber);
+                await this.messageVerificationDelegate.InsertAsync(smsVerification, false, ct);
+            }
+
+            return smsVerification;
+        }
+
+        private async Task<MessagingVerification?> AddEmailVerification(string hdid, string? requestedEmail, bool isEmailVerified, CancellationToken ct)
+        {
+            MessagingVerification? emailVerification = null;
+            if (!string.IsNullOrWhiteSpace(requestedEmail))
+            {
+                emailVerification = await this.userEmailService.GenerateMessagingVerificationAsync(hdid, requestedEmail, Guid.NewGuid(), isEmailVerified, ct);
+                await this.messageVerificationDelegate.InsertAsync(emailVerification, false, ct);
+            }
+
+            return emailVerification;
+        }
+
+        private async Task NotifyAccountCreated(UserProfile profile, string requestedEmail, string requestedSmsNumber, bool isEmailVerified, string smsVerificationCode, CancellationToken ct)
+        {
+            // notify account was created
             if (this.accountsChangeFeedEnabled)
             {
-                await this.messageSender.SendAsync([new MessageEnvelope(new AccountCreatedEvent(hdid, DateTime.UtcNow), hdid)], ct);
+                await this.messageSender.SendAsync([new MessageEnvelope(new AccountCreatedEvent(profile.HdId, DateTime.UtcNow), profile.HdId)], ct);
             }
 
+            // notify email verification was successful
             if (isEmailVerified && this.notificationsChangeFeedEnabled)
             {
-                await this.messageSender.SendAsync([new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, notificationRequest.EmailAddress), hdid)], ct);
+                await this.messageSender.SendAsync([new(new NotificationChannelVerifiedEvent(profile.HdId, NotificationChannel.Email, requestedEmail), profile.HdId)], ct);
             }
 
-            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
+            // queue notification settings job
+            NotificationSettingsRequest notificationSettingsRequest = new(profile, requestedEmail, requestedSmsNumber) { SmsVerificationCode = smsVerificationCode };
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
         }
 
         private async Task SendEmailAsync(string? emailAddress, string emailTemplateName, CancellationToken ct)

@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 messagingVerificationDelegateMock
                     .Verify(
-                        s => s.ExpireAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                        s => s.ExpireAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                         Times.Once);
 
                 messagingVerificationDelegateMock
@@ -220,7 +220,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             userProfileDelegateMock ??= new();
             userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-            userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DbResult<UserProfile> { Status = DbStatusCode.Updated });
+            userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DbResult<UserProfile> { Status = DbStatusCode.Updated });
 
             messageSenderMock ??= new();
             notificationSettingsServiceMock ??= new();

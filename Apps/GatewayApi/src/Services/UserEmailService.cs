@@ -141,7 +141,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (matchingVerification.Validated)
             {
-                this.logger.LogDebug("Email already validated");
+                this.logger.LogDebug("Email already verified");
 
                 // Verification already verified
                 return new RequestResult<bool>
@@ -190,7 +190,7 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<bool> CreateUserEmailAsync(string hdid, string emailAddress, bool isVerified, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user email...");
-            await this.AddVerificationEmailAsync(hdid, emailAddress, Guid.NewGuid(), isVerified, commit, ct);
+            await this.AddVerificationEmailAsync(hdid, emailAddress, Guid.NewGuid(), isVerified, ct);
             this.logger.LogDebug("Finished creating user email");
             return true;
         }
@@ -225,7 +225,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogInformation("Expiring old email validation for user {Hdid}", hdid);
                 bool isDeleted = string.IsNullOrEmpty(emailAddress);
-                await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isDeleted, ct);
+                await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isDeleted, ct: ct);
                 if (!isDeleted)
                 {
                     this.logger.LogInformation("Sending new email verification for user {Hdid}", hdid);
@@ -252,7 +252,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         [ExcludeFromCodeCoverage]
-        private async Task AddVerificationEmailAsync(string hdid, string toEmail, Guid inviteKey, bool isVerified = false, bool commit = true, CancellationToken ct = default)
+        private async Task AddVerificationEmailAsync(string hdid, string toEmail, Guid inviteKey, bool isVerified = false, CancellationToken ct = default)
         {
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
@@ -273,13 +273,12 @@ namespace HealthGateway.GatewayApi.Services
                 ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
                 Email = this.emailQueueService.ProcessTemplate(toEmail, emailTemplate, keyValues),
                 EmailAddress = toEmail,
-                Validated = isVerified,
             };
 
             if (isVerified)
             {
                 messageVerification.Email.EmailStatusCode = EmailStatus.Processed;
-                await this.messageVerificationDelegate.InsertAsync(messageVerification, commit, ct);
+                await this.messageVerificationDelegate.InsertAsync(messageVerification, ct: ct);
                 await this.ValidateEmailAsync(hdid, inviteKey, ct);
             }
             else
