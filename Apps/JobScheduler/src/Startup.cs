@@ -190,6 +190,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJobAsync<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.ProcessAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<OneTimeJob>(this.configuration, "OneTime", j => j.ProcessAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmailsAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<AssignBetaFeatureAccessJob>(this.configuration, AssignBetaFeatureAccessJob.JobKey, j => j.ProcessAsync(CancellationToken.None));
         }
     }
 }
