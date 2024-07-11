@@ -159,7 +159,7 @@ namespace HealthGateway.GatewayApi.Services
             if (lastSmsVerification != null)
             {
                 this.logger.LogInformation("Expiring old sms validation for user {Hdid}", hdid);
-                await this.messageVerificationDelegate.ExpireAsync(lastSmsVerification, isDeleted, ct);
+                await this.messageVerificationDelegate.ExpireAsync(lastSmsVerification, isDeleted, ct: ct);
             }
 
             NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms);

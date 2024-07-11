@@ -121,11 +121,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, CancellationToken ct = default)
+        public async Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, bool commit = true, CancellationToken ct = default)
         {
             messageVerification.ExpireDate = DateTime.UtcNow;
             messageVerification.Deleted = markDeleted;
-            await this.UpdateAsync(messageVerification, ct: ct);
+            await this.UpdateAsync(messageVerification, commit, ct);
 
             this.logger.LogDebug("Finished Expiring messaging verification from DB");
         }
