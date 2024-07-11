@@ -310,6 +310,121 @@ function validatePrintVaccineCardSubmission() {
     });
 }
 
+function validateDatasetAccess() {
+    cy.log("Verify initial dataset access.");
+    cy.get("[data-testid=block-access-loader]").should("not.be.visible");
+    cy.get("[data-testid=block-access-switches]").should("be.visible");
+    cy.get(`[data-testid*="block-access-switch"]`).should(
+        "not.have.attr",
+        "readonly"
+    );
+    cy.get("[data-testid=block-access-cancel]").should("not.exist");
+    cy.get("[data-testid=block-access-save]").should("not.exist");
+
+    cy.log("Verify blocked access change can be cancelled.");
+    cy.get(`[data-testid=block-access-switch-${switchName}]`)
+        .should("exist")
+        .click();
+
+    cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+        "be.checked"
+    );
+
+    cy.get("[data-testid=block-access-save]").should("be.visible");
+    cy.get("[data-testid=block-access-cancel]").should("be.visible").click();
+
+    cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+        "not.be.checked"
+    );
+
+    cy.log("Verify blocked access can be blocked with audit reason.");
+    selectPatientTab("Notes");
+
+    checkAgentAuditHistory().then((presaveCount) => {
+        selectPatientTab("Manage");
+
+        cy.get(`[data-testid=block-access-switch-${switchName}]`)
+            .should("exist")
+            .click();
+
+        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+            "be.checked"
+        );
+
+        cy.get("[data-testid=block-access-cancel]").should(
+            "exist",
+            "be.visible"
+        );
+        cy.get("[data-testid=block-access-save]")
+            .should("exist", "be.visible")
+            .click();
+
+        cy.get("[data-testid=audit-reason-input")
+            .should("be.visible")
+            .type(auditBlockReason);
+
+        cy.get("[data-testid=audit-confirm-button]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+            "be.checked"
+        );
+
+        selectPatientTab("Notes");
+
+        checkAgentAuditHistory().then((postsaveCount) => {
+            expect(Number(postsaveCount)).to.equal(Number(presaveCount) + 1);
+        });
+    });
+
+    cy.log("Verify blocked access can be unblocked with audit reason.");
+    selectPatientTab("Manage");
+
+    cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+        "be.checked"
+    );
+
+    selectPatientTab("Notes");
+
+    checkAgentAuditHistory().then((presaveCount) => {
+        selectPatientTab("Manage");
+
+        cy.get(`[data-testid=block-access-switch-${switchName}]`)
+            .should("exist")
+            .click();
+        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+            "not.be.checked"
+        );
+
+        cy.get("[data-testid=block-access-cancel]").should(
+            "exist",
+            "be.visible"
+        );
+        cy.get("[data-testid=block-access-save]")
+            .should("exist", "be.visible")
+            .click();
+
+        cy.get("[data-testid=audit-reason-input")
+            .should("be.visible")
+            .type(auditUnblockReason);
+
+        cy.get("[data-testid=audit-confirm-button]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+            "not.be.checked"
+        );
+
+        selectPatientTab("Notes");
+
+        checkAgentAuditHistory().then((postsaveCount) => {
+            expect(Number(postsaveCount)).to.equal(Number(presaveCount) + 1);
+        });
+    });
+}
+
 describe("Patient details page as admin user", () => {
     beforeEach(() => {
         cy.login(
@@ -319,11 +434,12 @@ describe("Patient details page as admin user", () => {
         );
     });
 
-    it("Verify message verification", () => {
+    it("Verify profile, account and manage tab details", () => {
         performSearch("HDID", hdid);
 
         selectPatientTab("Profile");
 
+        cy.log("Verify patient details.");
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
@@ -332,6 +448,7 @@ describe("Patient details page as admin user", () => {
 
         selectPatientTab("Account");
 
+        cy.log("Verify account details.");
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(hdid);
@@ -339,17 +456,16 @@ describe("Patient details page as admin user", () => {
         cy.get("[data-testid=profile-last-login-datetime]").should(
             "be.visible"
         );
+
+        cy.log("Verify verification.");
         getTableRows("[data-testid=messaging-verification-table]").should(
             "have.length",
             3
         );
-    });
-
-    it("Verify dependent section", () => {
-        performSearch("HDID", hdid);
 
         selectPatientTab("Manage");
 
+        cy.log("Verify dependents.");
         getTableRows("[data-testid=dependent-table]")
             .should("have.length.gt", 1)
             .first()
@@ -367,9 +483,11 @@ describe("Patient details page as admin user", () => {
                     "not.exist"
                 );
             });
+
+        validateDatasetAccess();
     });
 
-    it("Verify covid immunization section (not blocked), assessment section and contains invalid dose", () => {
+    it("Verify covid immunization section (not blocked), assessment section, contains invalid dose, mails address submission, prints vaccine card and submits covid19 treatment assessment", () => {
         performSearch("PHN", phnWithInvalidDoses);
 
         selectPatientTab("Profile");
@@ -424,150 +542,6 @@ describe("Patient details page as admin user", () => {
             0
         );
         cy.get("[data-testid=invalid-dose-alert").should("not.exist");
-    });
-
-    it("Verify block access initial", () => {
-        performSearch("HDID", hdid);
-
-        selectPatientTab("Manage");
-
-        cy.get("[data-testid=block-access-switches]").should("be.visible");
-        cy.get(`[data-testid*="block-access-switch"]`).should(
-            "not.have.attr",
-            "readonly"
-        );
-        cy.get("[data-testid=block-access-cancel]").should("not.exist");
-        cy.get("[data-testid=block-access-save]").should("not.exist");
-    });
-
-    it("Verify block access change can be cancelled", () => {
-        performSearch("HDID", hdid);
-
-        selectPatientTab("Manage");
-
-        cy.get("[data-testid=block-access-loader]").should("not.be.visible");
-
-        cy.get(`[data-testid=block-access-switch-${switchName}]`)
-            .should("exist")
-            .click();
-
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "be.checked"
-        );
-
-        cy.get("[data-testid=block-access-save]").should("be.visible");
-        cy.get("[data-testid=block-access-cancel]")
-            .should("be.visible")
-            .click();
-
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "not.be.checked"
-        );
-    });
-
-    it("Verify block access can be blocked with audit reason.", () => {
-        performSearch("HDID", hdid);
-
-        selectPatientTab("Manage");
-
-        cy.get("[data-testid=block-access-loader]").should("not.be.visible");
-
-        selectPatientTab("Notes");
-
-        checkAgentAuditHistory().then((presaveCount) => {
-            selectPatientTab("Manage");
-
-            cy.get(`[data-testid=block-access-switch-${switchName}]`)
-                .should("exist")
-                .click();
-
-            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-                "be.checked"
-            );
-
-            cy.get("[data-testid=block-access-cancel]").should(
-                "exist",
-                "be.visible"
-            );
-            cy.get("[data-testid=block-access-save]")
-                .should("exist", "be.visible")
-                .click();
-
-            cy.get("[data-testid=audit-reason-input")
-                .should("be.visible")
-                .type(auditBlockReason);
-
-            cy.get("[data-testid=audit-confirm-button]")
-                .should("be.visible")
-                .click({ force: true });
-
-            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-                "be.checked"
-            );
-
-            selectPatientTab("Notes");
-
-            // Check agent audit history
-            checkAgentAuditHistory().then((postsaveCount) => {
-                expect(Number(postsaveCount)).to.equal(
-                    Number(presaveCount) + 1
-                );
-            });
-        });
-    });
-
-    it("Verify block access can be unblocked with audit reason.", () => {
-        performSearch("HDID", hdid);
-
-        selectPatientTab("Manage");
-
-        cy.get("[data-testid=block-access-loader]").should("not.be.visible");
-
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "be.checked"
-        );
-
-        selectPatientTab("Notes");
-
-        checkAgentAuditHistory().then((presaveCount) => {
-            selectPatientTab("Manage");
-
-            cy.get(`[data-testid=block-access-switch-${switchName}]`)
-                .should("exist")
-                .click();
-            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-                "not.be.checked"
-            );
-
-            cy.get("[data-testid=block-access-cancel]").should(
-                "exist",
-                "be.visible"
-            );
-            cy.get("[data-testid=block-access-save]")
-                .should("exist", "be.visible")
-                .click();
-
-            cy.get("[data-testid=audit-reason-input")
-                .should("be.visible")
-                .type(auditUnblockReason);
-
-            cy.get("[data-testid=audit-confirm-button]")
-                .should("be.visible")
-                .click({ force: true });
-
-            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-                "not.be.checked"
-            );
-
-            selectPatientTab("Notes");
-
-            // Check agent audit history
-            checkAgentAuditHistory().then((postsaveCount) => {
-                expect(Number(postsaveCount)).to.equal(
-                    Number(presaveCount) + 1
-                );
-            });
-        });
     });
 });
 
@@ -639,15 +613,6 @@ describe("Patient Details as Support", () => {
         cy.get(
             "[data-testid=start-covid-19-treatment-assessment-button]"
         ).should("be.visible", "be.enabled");
-
-        validateMailAddressFormCancel();
-        validateMailAddressFormRequiredInputs();
-        validateCovid19TreatmentAssessmentFormBackCancel();
-        validateCovid19TreatmentAssessmentFormRequiredInputs();
-        validateCovid19TreatmentAssessmentInfoMessageForRadioSelection();
-        validateMailAddressFormSubmission();
-        validateCovid19TreatmentAssessmentFormSubmission();
-        validatePrintVaccineCardSubmission();
     });
 
     it("Verify covid immunization section (not blocked), assessment section and contains valid dose", () => {

@@ -1,5 +1,7 @@
 import { getTodayPlusDaysDate } from "../../utilities/sharedUtilities";
 
+const defaultTimeout = 60000;
+
 describe("Communications", () => {
     beforeEach(() => {
         cy.login(
@@ -26,7 +28,10 @@ describe("Communications", () => {
             .clear()
             .focus()
             .type("Test Notification Content");
+
+        cy.intercept("POST", "**/Broadcast/").as("postBroadcast");
         cy.get("[data-testid=save-btn]").click();
+        cy.wait("@postBroadcast", { timeout: defaultTimeout });
         cy.get("[data-testid=broadcast-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate notification was created.");
@@ -86,7 +91,9 @@ describe("Communications", () => {
             .focus()
             .type("https://www.healthgateway.gov.bc.ca");
 
+        cy.intercept("PUT", "**/Broadcast/").as("putBroadcast");
         cy.get("[data-testid=save-btn]").click();
+        cy.wait("@putBroadcast", { timeout: defaultTimeout });
         cy.get("[data-testid=broadcast-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate notification was edited.");
@@ -111,12 +118,13 @@ describe("Communications", () => {
             });
 
         cy.get("[data-testid=confirm-delete-message]").should("be.visible");
+        cy.intercept("DELETE", "**/Broadcast/").as("deleteBroadcast");
         cy.get("[data-testid=confirm-delete-btn]").click();
+        cy.wait("@deleteBroadcast", { timeout: defaultTimeout });
         cy.get("[data-testid=confirm-delete-message]").should("not.exist");
 
         cy.log("Validate notification was deleted.");
 
-        cy.validateTableLoad("[data-testid=broadcast-table]");
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -191,7 +199,10 @@ describe("Communications", () => {
                 .focus()
                 .type("Edited Mobile Comm");
         });
+
+        cy.intercept("PUT", "**/Communication/").as("putCommunication");
         cy.get("[data-testid=save-btn]").click();
+        cy.wait("@putCommunication", { timeout: defaultTimeout });
         cy.get("[data-testid=comm-table-subject]").contains(
             "Edited Mobile Comm"
         );
@@ -205,7 +216,11 @@ describe("Communications", () => {
         cy.get("[data-testid=confirm-cancel-btn]").click();
         cy.get("[data-testid=confirm-delete-message]").should("not.exist");
         cy.get("[data-testid=comm-table-delete-btn]").click();
+
+        cy.intercept("DELETE", "**/Communication/").as("deleteCommunication");
         cy.get("[data-testid=confirm-delete-btn]").click();
+        cy.wait("@deleteCommunication", { timeout: defaultTimeout });
+
         cy.get("[data-testid=confirm-delete-message]").should("not.exist");
         cy.get("[data-testid=comm-table-subject]").should("not.exist");
 
@@ -227,7 +242,10 @@ describe("Communications", () => {
         cy.get("[data-testid=status-type]")
             .contains("Publish")
             .click({ force: true });
+
+        cy.intercept("POST", "**/Communication/").as("postCommunication");
         cy.get("[data-testid=save-btn]").click({ force: true });
+        cy.wait("@postCommunication", { timeout: defaultTimeout });
         cy.get("[data-testid=comm-table-subject]").contains("New Mobile Comm");
 
         cy.log("Validate add communication finished.");

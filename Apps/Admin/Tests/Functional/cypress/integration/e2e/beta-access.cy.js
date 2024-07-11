@@ -4,6 +4,23 @@ const existingEmail = "somebody@healthgateway.gov.bc.ca";
 const validEmail = "nobody@healthgateway.gov.bc.ca";
 const notFoundEmail = "nobody@salesforce.gov.bc.ca";
 const invalidEmail = "nobody@";
+const defaultTimeout = 60000;
+
+function setupGetUserAccessAlias() {
+    cy.intercept("GET", "**/BetaFeature/UserAccess*").as("getUserAccess");
+}
+
+function setupPutUserAccessAlias() {
+    cy.intercept("PUT", "**/UserAccess").as("putUserAccess");
+}
+
+function waitForGetUserAccess() {
+    cy.wait("@getUserAccess", { timeout: defaultTimeout });
+}
+
+function waitForPutUserAccess() {
+    cy.wait("@putUserAccess", { timeout: defaultTimeout });
+}
 
 describe("Beta feature access", () => {
     beforeEach(() => {
@@ -48,8 +65,11 @@ describe("Beta feature access", () => {
             .should("be.enabled")
             .clear()
             .type(notFoundEmail);
+
         cy.get(".d-flex").contains("Invalid email format").should("not.exist");
+        setupGetUserAccessAlias();
         cy.get("[data-testid=search-button]").click();
+        waitForGetUserAccess();
 
         cy.get("[data-testid=get-user-access-error-message]").should(
             "be.visible"
@@ -62,13 +82,17 @@ describe("Beta feature access", () => {
         // Tab to Search and search with a valid email
         cy.log("Verify search with valid email.");
         selectTab("[data-testid=beta-access-tabs]", "Search");
+        setupGetUserAccessAlias();
+
         cy.get("[data-testid=query-input]")
             .should("be.visible")
             .should("be.enabled")
             .clear()
             .type(validEmail);
+
         cy.get(".d-flex").contains("Invalid email format").should("not.exist");
         cy.get("[data-testid=search-button]").click();
+        waitForGetUserAccess();
 
         cy.get("[data-testid=get-user-access-error-message]").should(
             "not.exist"
@@ -80,7 +104,9 @@ describe("Beta feature access", () => {
 
         // Assign salesforce feature
         cy.log("Verify assign salesforce feature on Search.");
+        setupPutUserAccessAlias();
         cy.get("[data-testid=salesforce-access-switch]").click();
+        waitForPutUserAccess();
         cy.get("[data-testid=salesforce-access-switch]").should("be.checked");
 
         // Tab to View and verify assigned feature(s)
@@ -132,7 +158,9 @@ describe("Beta feature access", () => {
 
         // Assign salesforce feature again on Search
         cy.log("Verify re-assign salesforce feature access on Search tab.");
+        setupPutUserAccessAlias();
         cy.get("[data-testid=salesforce-access-switch]").click();
+        waitForPutUserAccess();
         cy.get("[data-testid=salesforce-access-switch]").should("be.checked");
 
         // Tab back to View and verify salesforce is assigned
@@ -155,7 +183,9 @@ describe("Beta feature access", () => {
 
         // Un-assign salesforce on Search
         cy.log("Verify un-assign salesforce feature on Search tab.");
+        setupPutUserAccessAlias();
         cy.get("[data-testid=salesforce-access-switch]").click();
+        waitForPutUserAccess();
         cy.get("[data-testid=salesforce-access-switch]").should(
             "not.be.checked"
         );
