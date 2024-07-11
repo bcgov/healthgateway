@@ -410,7 +410,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateRemove()
         {
-            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
             IList<ResourceDelegate> resourceDelegates = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } };
             DbResult<ResourceDelegate> dbResult = new()
             {
@@ -418,7 +417,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
             IDependentService service = this.SetupMockForRemoveDependent(resourceDelegates, dbResult);
 
-            RequestResult<DependentModel> actualResult = await service.RemoveAsync(delegateModel);
+            RequestResult<DependentModel> actualResult = await service.RemoveAsync(this.mockParentHdid, this.mockHdId);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
@@ -426,12 +425,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateRemoveNotFound()
         {
-            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
             IDependentService service = this.SetupMockForRemoveDependent([], new());
 
             async Task Actual()
             {
-                await service.RemoveAsync(delegateModel);
+                await service.RemoveAsync(this.mockParentHdid, this.mockHdId);
             }
 
             await Assert.ThrowsAsync<NotFoundException>(Actual);
@@ -440,8 +438,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateRemoveDatabaseException()
         {
-            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
-            IList<ResourceDelegate> resourceDelegates = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } };
+            IList<ResourceDelegate> resourceDelegates = [new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId }];
             DbResult<ResourceDelegate> dbResult = new()
             {
                 Status = DbStatusCode.Error,
@@ -450,7 +447,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             async Task Actual()
             {
-                await service.RemoveAsync(delegateModel);
+                await service.RemoveAsync(this.mockParentHdid, this.mockHdId);
             }
 
             await Assert.ThrowsAsync<DatabaseException>(Actual);

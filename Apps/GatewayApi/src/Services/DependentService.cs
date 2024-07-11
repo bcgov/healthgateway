@@ -239,12 +239,12 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default)
+        public async Task<RequestResult<DependentModel>> RemoveAsync(string delegateHdid, string dependentHdid, CancellationToken ct = default)
         {
-            ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(dependent.DelegateId, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
+            ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(delegateHdid, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependentHdid);
             if (resourceDelegate == null)
             {
-                throw new NotFoundException($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}");
+                throw new NotFoundException($"Dependent {dependentHdid} not found for delegate {delegateHdid}");
             }
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
@@ -255,11 +255,11 @@ namespace HealthGateway.GatewayApi.Services
                 throw new DatabaseException(dbDependent.Message);
             }
 
-            await this.UpdateNotificationSettingsAsync(dependent.OwnerId, dependent.DelegateId, true, ct);
+            await this.UpdateNotificationSettingsAsync(dependentHdid, delegateHdid, true, ct);
 
             if (this.dependentsChangeFeedEnabled)
             {
-                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentRemovedEvent(dependent.DelegateId, dependent.OwnerId), dependent.DelegateId) }, ct);
+                await this.messageSender.SendAsync([new MessageEnvelope(new DependentRemovedEvent(delegateHdid, dependentHdid), delegateHdid)], ct);
             }
 
             return RequestResultFactory.Success(new DependentModel());

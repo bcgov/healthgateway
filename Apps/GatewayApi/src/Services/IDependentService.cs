@@ -58,11 +58,12 @@ namespace HealthGateway.GatewayApi.Services
         Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdid, AddDependentRequest addDependentRequest, CancellationToken ct = default);
 
         /// <summary>
-        /// Removes a dependent delegate relation.
+        /// Removes a dependent-delegate relation.
         /// </summary>
-        /// <param name="dependent">The dependent model to be deleted.</param>
+        /// <param name="delegateHdid">The HDID of the delegate.</param>
+        /// <param name="dependentHdid">The HDID of the dependent.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default);
+        /// <returns>An empty dependent model wrapped in a RequestResult.</returns>
+        Task<RequestResult<DependentModel>> RemoveAsync(string delegateHdid, string dependentHdid, CancellationToken ct = default);
     }
 }

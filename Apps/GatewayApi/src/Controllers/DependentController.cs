@@ -114,10 +114,9 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <summary>
         /// Deletes a dependent from the database.
         /// </summary>
-        /// <returns>The http status.</returns>
+        /// <returns>An empty dependent model wrapped in a RequestResult.</returns>
         /// <param name="hdid">The Delegate hdid.</param>
         /// <param name="dependentHdid">The Dependent hdid.</param>
-        /// <param name="dependent">The dependent model object to be deleted.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="400">The request is invalid.</response>
@@ -130,15 +129,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpDelete]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]/{dependentHdid}")]
-        public async Task<ActionResult<RequestResult<DependentModel>>> Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent, CancellationToken ct)
+        public async Task<ActionResult<RequestResult<DependentModel>>> Delete(string hdid, string dependentHdid, CancellationToken ct)
         {
-            if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
-            {
-                this.logger.LogError("Parameters do not match body of delete");
-                return new BadRequestResult();
-            }
-
-            return await this.dependentService.RemoveAsync(dependent, ct);
+            return await this.dependentService.RemoveAsync(hdid, dependentHdid, ct);
         }
     }
 }
