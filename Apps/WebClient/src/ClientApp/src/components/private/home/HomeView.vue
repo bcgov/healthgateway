@@ -236,6 +236,16 @@ function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
         });
 }
 
+function handleClickBetaLink(): void {
+    trackingService.trackEvent({
+        action: Action.Visit,
+        text: Text.ExternalLink,
+        destination: Destination.HealthGatewayBeta,
+        origin: Origin.Home,
+    });
+    window.open(betaUrl.value, "_self");
+}
+
 function handleClickHealthRecords(): void {
     trackingService.trackEvent({
         action: Action.Visit,
@@ -412,7 +422,11 @@ watch(vaccineRecordState, () => {
     >
         <span class="text-body-1">
             You are invited to try the
-            <a :href="betaUrl" target="_self" class="text-link"
+            <a
+                :href="betaUrl"
+                target="_self"
+                class="text-link"
+                @click.prevent="handleClickBetaLink()"
                 >new beta version of Health Gateway</a
             >
             and provide your feedback.

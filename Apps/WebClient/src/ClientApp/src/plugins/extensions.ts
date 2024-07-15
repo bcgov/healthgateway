@@ -53,6 +53,7 @@ export const enum Destination {
     BcGovImmunizations = "BC Gov Immunizations",
     BcVaccineCard = "BC Vaccine Card",
     BookVaccine = "Book a Vaccine",
+    HealthGatewayBeta = "Health Gateway Beta",
     ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
     OrganDonorRegistration = "Organ Donor Registration",
     PrimaryCare = "Primary Care",
