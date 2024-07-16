@@ -122,16 +122,15 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         {
             string delegateId = this.hdid;
             string dependentId = "123";
-            DependentModel dependentModel = new() { DelegateId = delegateId, OwnerId = dependentId };
 
             RequestResult<DependentModel> expectedResult = new()
             {
-                ResourcePayload = dependentModel,
+                ResourcePayload = new(),
                 ResultStatus = ResultType.Success,
             };
 
             Mock<IDependentService> dependentServiceMock = new();
-            dependentServiceMock.Setup(s => s.RemoveAsync(dependentModel, CancellationToken.None)).ReturnsAsync(expectedResult);
+            dependentServiceMock.Setup(s => s.RemoveAsync(delegateId, dependentId, CancellationToken.None)).ReturnsAsync(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
@@ -139,40 +138,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete(delegateId, dependentId, dependentModel, CancellationToken.None);
+            ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete(delegateId, dependentId, CancellationToken.None);
             actualResult.Value.ShouldDeepEqual(expectedResult);
-        }
-
-        /// <summary>
-        /// DeleteDependent - BadRequest path scenario.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldFailDeleteDependent()
-        {
-            string delegateId = this.hdid;
-            string dependentId = "123";
-            DependentModel dependentModel = new() { DelegateId = delegateId, OwnerId = dependentId };
-
-            RequestResult<DependentModel> expectedResult = new()
-            {
-                ResourcePayload = dependentModel,
-                ResultStatus = ResultType.Success,
-            };
-
-            Mock<IDependentService> dependentServiceMock = new();
-            dependentServiceMock.Setup(s => s.RemoveAsync(dependentModel, CancellationToken.None)).ReturnsAsync(expectedResult);
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, delegateId);
-
-            DependentController dependentController = new(
-                new Mock<ILogger<DependentController>>().Object,
-                dependentServiceMock.Object,
-                httpContextAccessorMock.Object);
-
-            ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete("anotherId", "wrongId", dependentModel, CancellationToken.None);
-
-            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         private static IEnumerable<DependentModel> GetMockDependents()
