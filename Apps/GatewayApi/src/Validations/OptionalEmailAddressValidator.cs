@@ -17,11 +17,12 @@ namespace HealthGateway.GatewayApi.Validations
 {
     using System.Net.Mail;
     using FluentValidation;
+    using HealthGateway.Common.Data.Validations;
 
     /// <summary>
     /// Class encapsulating validation for email addresses.
     /// </summary>
-    public class OptionalEmailAddressValidator : AbstractValidator<string>
+    public class OptionalEmailAddressValidator : AbstractNullableValidator<string>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionalEmailAddressValidator"/> class.

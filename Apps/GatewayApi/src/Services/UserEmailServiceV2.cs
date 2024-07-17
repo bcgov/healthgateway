@@ -137,7 +137,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogInformation("Expiring old email validation for user {Hdid}", hdid);
                 await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isEmpty, false, ct);
-                if (emailAddress.Equals(lastEmailVerification.Email?.To, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(emailAddress, lastEmailVerification.Email?.To, StringComparison.OrdinalIgnoreCase))
                 {
                     // reuse same invite key if the last verification was for the same email address
                     inviteKey = lastEmailVerification.InviteKey!.Value;
