@@ -381,7 +381,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // queue notification settings job
-            NotificationSettingsRequest notificationSettingsRequest = new(profile, requestedEmail, requestedSmsNumber) { SmsVerificationCode = smsVerificationCode };
+            NotificationSettingsRequest notificationSettingsRequest = new(profile, profile.Email, requestedSmsNumber) { SmsVerificationCode = smsVerificationCode };
             await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
         }
 
