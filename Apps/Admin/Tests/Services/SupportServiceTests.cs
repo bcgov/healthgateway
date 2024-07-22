@@ -29,9 +29,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -125,7 +123,6 @@ namespace HealthGateway.Admin.Tests.Services
 
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
             VaccineDetails vaccineDetails = GenerateVaccineDetails(GenerateVaccineDose());
-            CovidAssessmentDetailsResponse covidAssessmentDetailsResponse = GenerateCovidAssessmentDetailsResponse();
             AgentAuditQuery auditQuery = new(Hdid);
             IEnumerable<AgentAudit> agentAudits = new[] { GenerateAgentAudit() };
             IEnumerable<DataSource> blockedDataSources = new[]
@@ -150,7 +147,6 @@ namespace HealthGateway.Admin.Tests.Services
                 null,
                 GetAuthenticationDelegateMock(AccessToken),
                 GetImmunizationAdminDelegateMock(vaccineDetails),
-                GetImmunizationAdminApiMock(covidAssessmentDetailsResponse),
                 GetAuditRepositoryMock((auditQuery, agentAudits)));
 
             // Act
@@ -174,7 +170,6 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedBlockedDataSourceCount, actualResult.BlockedDataSources?.Count());
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
-            Assert.Equal(expectedCovidDetails, actualResult.CovidAssessmentDetails == null);
         }
 
         /// <summary>
@@ -202,6 +197,11 @@ namespace HealthGateway.Admin.Tests.Services
                 null,
                 GetAuthenticationDelegateMock(AccessToken));
 
+            // Verify
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
+            return;
+
             // Act
             async Task Actual()
             {
@@ -218,10 +218,6 @@ namespace HealthGateway.Admin.Tests.Services
                         RefreshVaccineDetails = false,
                     });
             }
-
-            // Verify
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
-            Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
         }
 
         /// <summary>
@@ -775,22 +771,6 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static CovidAssessmentDetailsResponse GenerateCovidAssessmentDetailsResponse()
-        {
-            return new()
-            {
-                Has3DoseMoreThan14Days = false,
-                HasDocumentedChronicCondition = false,
-                HasKnownPositiveC19Past7Days = false,
-                CitizenIsConsideredImmunoCompromised = true,
-                PreviousAssessmentDetailsList = new[]
-                {
-                    new PreviousAssessmentDetails
-                        { DateTimeOfAssessment = DateTime.Now, FormId = "a81aa087-891a-441e-9f96-09ddae71f9db" },
-                },
-            };
-        }
-
         private static PatientModel GeneratePatientModel(
             string phn,
             string hdid,
@@ -911,13 +891,6 @@ namespace HealthGateway.Admin.Tests.Services
             return mock;
         }
 
-        private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(CovidAssessmentDetailsResponse response)
-        {
-            Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.GetCovidAssessmentDetailsAsync(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
-            return mock;
-        }
-
         private static ISupportService CreateSupportService(
             Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
             Mock<IPatientRepository>? patientRepositoryMock = null,
@@ -925,7 +898,6 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IImmunizationAdminDelegate>? immunizationAdminDelegateMock = null,
-            Mock<IImmunizationAdminApi>? immunizationAdminApiMock = null,
             Mock<IAuditRepository>? auditRepositoryMock = null)
         {
             userProfileDelegateMock ??= new Mock<IUserProfileDelegate>();
@@ -934,7 +906,6 @@ namespace HealthGateway.Admin.Tests.Services
             resourceDelegateDelegateMock ??= new Mock<IResourceDelegateDelegate>();
             authenticationDelegateMock ??= new Mock<IAuthenticationDelegate>();
             immunizationAdminDelegateMock ??= new Mock<IImmunizationAdminDelegate>();
-            immunizationAdminApiMock ??= new Mock<IImmunizationAdminApi>();
             auditRepositoryMock ??= new Mock<IAuditRepository>();
 
             return new SupportService(
@@ -946,7 +917,6 @@ namespace HealthGateway.Admin.Tests.Services
                 userProfileDelegateMock.Object,
                 authenticationDelegateMock.Object,
                 immunizationAdminDelegateMock.Object,
-                immunizationAdminApiMock.Object,
                 auditRepositoryMock.Object,
                 new Mock<ICacheProvider>().Object,
                 new Mock<ILogger<SupportService>>().Object);

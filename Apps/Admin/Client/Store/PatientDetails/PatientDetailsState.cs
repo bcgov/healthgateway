@@ -56,11 +56,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public VaccineDetails? VaccineDetails { get; init; }
 
         /// <summary>
-        /// Gets the covid assessment details linked to the patient support details.
-        /// </summary>
-        public CovidAssessmentDetailsResponse? CovidAssessmentDetails { get; init; }
-
-        /// <summary>
         /// Gets the request state for block access requests.
         /// </summary>
         public BaseRequestState BlockAccess { get; init; } = new();

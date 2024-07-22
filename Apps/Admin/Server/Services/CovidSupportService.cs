@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
@@ -45,7 +44,6 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
     /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
     /// <param name="vaccineStatusDelegate">The injected delegate to get the vaccine status.</param>
-    /// <param name="immunizationAdminApi">The api client to use for immunization.</param>
     /// <param name="patientRepository">The injected patient repository.</param>
     public class CovidSupportService(
         IConfiguration configuration,
@@ -53,7 +51,6 @@ namespace HealthGateway.Admin.Server.Services
         IAuthenticationDelegate authenticationDelegate,
         IVaccineProofDelegate vaccineProofDelegate,
         IVaccineStatusDelegate vaccineStatusDelegate,
-        IImmunizationAdminApi immunizationAdminApi,
         IPatientRepository patientRepository) : ICovidSupportService
     {
         private readonly BcMailPlusConfig bcmpConfig = configuration.GetSection(BcMailPlusConfig.ConfigSectionKey).Get<BcMailPlusConfig>() ?? new();
@@ -76,15 +73,6 @@ namespace HealthGateway.Admin.Server.Services
             VaccinationStatus vaccinationStatus = this.GetVaccinationStatus(vaccineStatusResult);
             VaccineProofResponse vaccineProofResponse = await this.GetVaccineProofAsync(vaccinationStatus, vaccineStatusResult.QrCode.Data, ct);
             return await this.GetVaccineProofReportAsync(vaccineProofResponse.AssetUri, ct);
-        }
-
-        /// <inheritdoc/>
-        public async Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync(CovidAssessmentRequest request, CancellationToken ct = default)
-        {
-            string accessToken = await this.GetAccessTokenAsync(ct);
-
-            request.Submitted = DateTime.UtcNow;
-            return await immunizationAdminApi.SubmitCovidAssessmentAsync(request, accessToken, ct);
         }
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)

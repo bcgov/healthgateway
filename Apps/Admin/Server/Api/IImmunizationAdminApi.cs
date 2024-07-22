@@ -17,8 +17,6 @@ namespace HealthGateway.Admin.Server.Api;
 
 using System.Threading;
 using System.Threading.Tasks;
-using HealthGateway.Admin.Common.Models.CovidSupport;
-using HealthGateway.Admin.Server.Models.CovidSupport;
 using HealthGateway.Admin.Server.Models.Immunization;
 using HealthGateway.Common.Data.Models.PHSA;
 using HealthGateway.Common.Models.PHSA;
@@ -29,26 +27,6 @@ using Refit;
 /// </summary>
 public interface IImmunizationAdminApi
 {
-    /// <summary>
-    /// Submit a completed Anti Viral screening form.
-    /// </summary>
-    /// <param name="request">The covid assessment request to use for submission.</param>
-    /// <param name="token">The bearer token to authorize the call.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>The response to the submitted covid anti viral therapeutic assessment form.</returns>
-    [Post("/api/v1/Support/Immunizations/AntiViralScreenerSubmission")]
-    Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync([Body] CovidAssessmentRequest request, [Authorize] string token, CancellationToken ct = default);
-
-    /// <summary>
-    /// Get details to help support the covid anti viral therapeutic assessment form for a phn.
-    /// </summary>
-    /// <param name="request">The covid assessment details request to identity the covid therapy assessment.</param>
-    /// <param name="token">The bearer token to authorize the call.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>The details to help support covid anti viral therapeutic assessment.</returns>
-    [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
-    Task<CovidAssessmentDetailsResponse> GetCovidAssessmentDetailsAsync([Body] CovidAssessmentDetailsRequest request, [Authorize] string token, CancellationToken ct = default);
-
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.
     /// </summary>
