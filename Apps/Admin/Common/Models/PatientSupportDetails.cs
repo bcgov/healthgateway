@@ -49,10 +49,5 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets the vaccine details.
         /// </summary>
         public VaccineDetails? VaccineDetails { get; init; }
-
-        /// <summary>
-        /// Gets the COVID-19 treatment assessment details.
-        /// </summary>
-        public CovidAssessmentDetailsResponse? CovidAssessmentDetails { get; init; }
     }
 }

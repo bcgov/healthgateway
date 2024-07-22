@@ -75,12 +75,4 @@ public interface ISupportApi
     /// <returns>The encoded immunization document.</returns>
     [Get("/Patient/Document?phn={phn}")]
     Task<ReportModel> RetrieveVaccineRecordAsync(string phn);
-
-    /// <summary>
-    /// Submitting a completed anti viral screening form.
-    /// </summary>
-    /// <param name="request">The covid therapy assessment request to use for submission.</param>
-    /// <returns>A CovidAssessmentResponse.</returns>
-    [Post("/CovidAssessment")]
-    Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync(CovidAssessmentRequest request);
 }

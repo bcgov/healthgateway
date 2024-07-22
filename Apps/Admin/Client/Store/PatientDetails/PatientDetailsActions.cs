@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -95,38 +94,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// The action representing a failed update of a patient's blocked access.
         /// </summary>
         public record BlockAccessFailureAction : BaseFailureAction;
-
-        /// <summary>
-        /// The action representing the initiation of a COVID-19 treatment assessment submission.
-        /// </summary>
-        public record SubmitCovid19TreatmentAssessmentAction
-        {
-            /// <summary>
-            /// Gets the COVID-19 therapy assessment request.
-            /// </summary>
-            public required CovidAssessmentRequest Request { get; init; }
-
-            /// <summary>
-            /// Gets the PHN associated with the patient.
-            /// </summary>
-            public required string Phn { get; init; }
-        }
-
-        /// <summary>
-        /// The action representing a successful COVID-19 treatment assessment submission.
-        /// </summary>
-        public record SubmitCovid19TreatmentAssessmentSuccessAction
-        {
-            /// <summary>
-            /// Gets the PHN associated with the patient.
-            /// </summary>
-            public required string Phn { get; init; }
-        }
-
-        /// <summary>
-        /// The action representing a failed COVID-19 treatment assessment submission.
-        /// </summary>
-        public record SubmitCovid19TreatmentAssessmentFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action that clears the state.

@@ -42,7 +42,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 AgentActions = action.Data.AgentActions?.ToImmutableList(),
                 Dependents = action.Data.Dependents?.ToImmutableList(),
                 VaccineDetails = action.Data.VaccineDetails,
-                CovidAssessmentDetails = action.Data.CovidAssessmentDetails,
             };
         }
 
@@ -69,7 +68,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 AgentActions = null,
                 Dependents = null,
                 VaccineDetails = null,
-                CovidAssessmentDetails = null,
             };
         }
 

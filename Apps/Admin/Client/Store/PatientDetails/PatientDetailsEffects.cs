@@ -79,36 +79,5 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 });
             return Task.CompletedTask;
         }
-
-        [EffectMethod]
-        public async Task HandleSubmitCovid19TreatmentAssessmentAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction action, IDispatcher dispatcher)
-        {
-            logger.LogInformation("Submitting COVID-19 treatment assessment");
-            try
-            {
-                await supportApi.SubmitCovidAssessmentAsync(action.Request);
-                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction { Phn = action.Phn });
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                logger.LogError(e, "Error submitting COVID-19 treatment assessment: {Message}", e.Message);
-                RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailureAction { Error = error });
-            }
-        }
-
-        [EffectMethod]
-        public Task HandleSubmitCovid19TreatmentAssessmentSuccessAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction action, IDispatcher dispatcher)
-        {
-            logger.LogInformation("Reload the patient's data for details page");
-            dispatcher.Dispatch(
-                new PatientDetailsActions.LoadAction
-                {
-                    QueryType = ClientRegistryType.Phn,
-                    QueryString = action.Phn,
-                    RefreshVaccineDetails = false,
-                });
-            return Task.CompletedTask;
-        }
     }
 }
