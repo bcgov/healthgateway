@@ -63,6 +63,7 @@ export class RestAuthenticationService implements IAuthenticationService {
 
         await keycloak.init({
             onLoad: "check-sso",
+            scope: oidcConfig.scope,
         });
 
         return new RestAuthenticationService(logger, keycloak, oidcConfig);
