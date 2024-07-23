@@ -259,15 +259,15 @@ namespace HealthGateway.GatewayApi.Services
             UserProfile dbModel = insertResult.Payload;
             string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
             string? requestedEmail = createProfileRequest.Profile.Email;
+            bool isEmailVerified = !string.IsNullOrWhiteSpace(requestedEmail) && requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
 
             UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(dbModel, ct: ct);
 
-            NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
+            NotificationSettingsRequest notificationRequest = new(dbModel, isEmailVerified ? requestedEmail : string.Empty, requestedSmsNumber);
 
             // Add email verification
             if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
-                bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
                 await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.notificationsChangeFeedEnabled, ct);
                 userProfileModel.Email = requestedEmail;
                 userProfileModel.IsEmailVerified = isEmailVerified;

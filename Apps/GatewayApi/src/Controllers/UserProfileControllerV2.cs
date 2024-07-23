@@ -259,16 +259,16 @@ namespace HealthGateway.GatewayApi.Controllers
         }
 
         /// <summary>
-        /// Validates an email address.
+        /// Verifies an email address.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="verificationKey">The email verification key.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A boolean value indicating whether the validation was successful.</returns>
-        /// <response code="200">Returns a boolean value indicating whether the validation was successful.</response>
+        /// <returns>A boolean value indicating whether the verification was successful.</returns>
+        /// <response code="200">Returns a boolean value indicating whether the verification was successful.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The verification key was not found.</response>
-        /// <response code="409">The validation has already been performed.</response>
+        /// <response code="409">The verification has already been performed.</response>
         /// <response code="500">Internal server error.</response>
         [HttpGet]
         [Route("{hdid}/email/validate/{verificationKey}")]
@@ -280,25 +280,25 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<bool> ValidateEmail(string hdid, Guid verificationKey, CancellationToken ct)
+        public async Task<bool> VerifyEmailAddress(string hdid, Guid verificationKey, CancellationToken ct)
         {
-            return await this.userEmailService.ValidateEmailAsync(hdid, verificationKey, ct);
+            return await this.userEmailService.VerifyEmailAddressAsync(hdid, verificationKey, ct);
         }
 
         /// <summary>
-        /// Validates an SMS number.
+        /// Verifies an SMS number.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="validationCode">The SMS validation code.</param>
+        /// <param name="verificationCode">The SMS verification code.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A boolean value indicating whether the validation was successful.</returns>
-        /// <response code="200">Returns a boolean value indicating whether the validation was successful.</response>
+        /// <returns>A boolean value indicating whether the verification was successful.</returns>
+        /// <response code="200">Returns a boolean value indicating whether the verification was successful.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">User profile was not found.</response>
         /// <response code="500">Internal server error.</response>
         /// <response code="502">Upstream error.</response>
         [HttpGet]
-        [Route("{hdid}/sms/validate/{validationCode}")]
+        [Route("{hdid}/sms/validate/{verificationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Produces("application/json")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
@@ -307,16 +307,16 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<bool> ValidateSms(string hdid, string validationCode, CancellationToken ct)
+        public async Task<bool> VerifySmsNumber(string hdid, string verificationCode, CancellationToken ct)
         {
-            return await this.userSmsService.ValidateSmsAsync(hdid, validationCode, ct);
+            return await this.userSmsService.VerifySmsNumberAsync(hdid, verificationCode, ct);
         }
 
         /// <summary>
         /// Updates a user's email address.
         /// </summary>
         /// <param name="hdid">The user HDID.</param>
-        /// <param name="emailAddress">The new email.</param>
+        /// <param name="emailAddress">The new email address.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An empty result.</returns>
         /// <response code="200">The user's email address has been successfully updated.</response>
@@ -338,9 +338,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string emailAddress = "", CancellationToken ct = default)
+        public async Task<IActionResult> UpdateUserEmailAddress(string hdid, [FromBody] string emailAddress = "", CancellationToken ct = default)
         {
-            await this.userEmailService.UpdateUserEmailAsync(hdid, emailAddress, ct);
+            await this.userEmailService.UpdateEmailAddressAsync(hdid, emailAddress, ct);
             return this.Ok();
         }
 
@@ -372,7 +372,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct)
         {
-            await this.userSmsService.UpdateUserSmsAsync(hdid, smsNumber, ct);
+            await this.userSmsService.UpdateSmsNumberAsync(hdid, smsNumber, ct);
             return this.Ok();
         }
 

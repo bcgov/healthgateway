@@ -67,9 +67,10 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="messageVerification">The message verification to expire.</param>
         /// <param name="markDeleted">Mark the verification as deleted.</param>
+        /// <param name="commit">If commit is set to true the change will be persisted immediately.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, CancellationToken ct = default);
+        Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a list of messaging verifications matching the query.

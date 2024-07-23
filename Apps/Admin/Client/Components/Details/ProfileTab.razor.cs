@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.Details
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
@@ -51,14 +50,7 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
-        private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?phn={this.Phn}";
-
         private VaccineDetails? VaccineDetails => this.PatientDetailsState.Value.VaccineDetails;
-
-        private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
-
-        private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
-            (this.AssessmentInfo?.PreviousAssessmentDetailsList ?? []).OrderByDescending(a => a.DateTimeOfAssessment);
 
         private bool ImmunizationsAreBlocked => this.VaccineDetails?.Blocked ?? false;
 

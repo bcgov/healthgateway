@@ -27,7 +27,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -51,7 +50,6 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
     /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
     /// <param name="immunizationAdminDelegate">The injected immunization admin delegate.</param>
-    /// <param name="immunizationAdminApi">The injected immunization admin api.</param>
     /// <param name="auditRepository">The injected audit repository.</param>
     /// <param name="cacheProvider">The injected cache provider.</param>
     /// <param name="logger">The injected logger provider.</param>
@@ -65,7 +63,6 @@ namespace HealthGateway.Admin.Server.Services
         IUserProfileDelegate userProfileDelegate,
         IAuthenticationDelegate authenticationDelegate,
         IImmunizationAdminDelegate immunizationAdminDelegate,
-        IImmunizationAdminApi immunizationAdminApi,
         IAuditRepository auditRepository,
         ICacheProvider cacheProvider,
         ILogger<SupportService> logger) : ISupportService
@@ -89,9 +86,6 @@ namespace HealthGateway.Admin.Server.Services
             Task<VaccineDetails>? getVaccineDetails =
                 query.IncludeCovidDetails ? this.GetVaccineDetailsAsync(patient, query.RefreshVaccineDetails, ct) : null;
 
-            Task<CovidAssessmentDetailsResponse>? getCovidAssessmentDetails =
-                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetailsAsync(new() { Phn = patient.Phn }, await this.GetAccessTokenAsync(ct), ct) : null;
-
             IEnumerable<MessagingVerificationModel>? messagingVerifications =
                 query.IncludeMessagingVerifications ? await this.GetMessagingVerificationsAsync(patient.Hdid, ct) : null;
 
@@ -111,7 +105,6 @@ namespace HealthGateway.Admin.Server.Services
                 AgentActions = agentActions,
                 Dependents = dependents,
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
-                CovidAssessmentDetails = getCovidAssessmentDetails == null ? null : await getCovidAssessmentDetails,
             };
         }
 

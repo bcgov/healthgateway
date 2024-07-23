@@ -23,7 +23,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -82,15 +81,11 @@ namespace HealthGateway.Admin.Tests.Services
                 ResourcePayload = null,
             };
 
-            Guid covidAssessmentId = Guid.NewGuid();
-            CovidAssessmentResponse covidAssessmentResponse = GenerateCovidAssessmentResponse(covidAssessmentId);
-
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
-                GetVaccineProofDelegateMock(vaccineProofResult, expected),
-                GetImmunizationAdminApiMock(covidAssessmentResponse));
+                GetVaccineProofDelegateMock(vaccineProofResult, expected));
 
             // Act and Assert
             NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
@@ -134,15 +129,11 @@ namespace HealthGateway.Admin.Tests.Services
                 },
             };
 
-            Guid covidAssessmentId = Guid.NewGuid();
-            CovidAssessmentResponse covidAssessmentResponse = GenerateCovidAssessmentResponse(covidAssessmentId);
-
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
-                GetVaccineProofDelegateMock(vaccineProofResult, expected),
-                GetImmunizationAdminApiMock(covidAssessmentResponse));
+                GetVaccineProofDelegateMock(vaccineProofResult, expected));
 
             // Act and Assert
             UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
@@ -317,7 +308,7 @@ namespace HealthGateway.Admin.Tests.Services
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken),
-                GetVaccineStatusDelegateMock()); // this will setup maximum retry attempts reached
+                GetVaccineStatusDelegateMock()); // this will set up maximum retry attempts reached
 
             // Act and Assert
             UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
@@ -331,7 +322,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Mail vaccine card async throws exception given given vaccine status result payload is empty.
+        /// Mail vaccine card async throws exception given vaccine status result payload is empty.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -494,15 +485,11 @@ namespace HealthGateway.Admin.Tests.Services
                 Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
-            Guid covidAssessmentId = Guid.NewGuid();
-            CovidAssessmentResponse covidAssessmentResponse = GenerateCovidAssessmentResponse(covidAssessmentId);
-
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
-                GetVaccineProofDelegateMock(vaccineProofResult),
-                GetImmunizationAdminApiMock(covidAssessmentResponse));
+                GetVaccineProofDelegateMock(vaccineProofResult));
 
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
@@ -552,15 +539,11 @@ namespace HealthGateway.Admin.Tests.Services
                 },
             };
 
-            Guid covidAssessmentId = Guid.NewGuid();
-            CovidAssessmentResponse covidAssessmentResponse = GenerateCovidAssessmentResponse(covidAssessmentId);
-
             ICovidSupportService service = CreateCovidSupportService(
                 GetPatientRepositoryMock((query, patient)),
                 GetAuthenticationDelegateMock(AccessToken),
                 GetVaccineStatusDelegateMock(vaccineStatusResult),
-                GetVaccineProofDelegateMock(vaccineProofResult, expected),
-                GetImmunizationAdminApiMock(covidAssessmentResponse));
+                GetVaccineProofDelegateMock(vaccineProofResult, expected));
 
             // Act
             ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn);
@@ -569,78 +552,16 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expected.ResourcePayload, actual);
         }
 
-        /// <summary>
-        /// Should submit covid assessment async successfully.
-        /// </summary>
-        /// <param name="accessTokenExists">bool indicating whether access token exists or not.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldSubmitCovidAssessmentAsyncAsync(bool accessTokenExists)
-        {
-            // Arrange
-            Guid covidAssessmentId = Guid.NewGuid();
-            CovidAssessmentResponse expected = GenerateCovidAssessmentResponse(covidAssessmentId);
-            string? accessToken = accessTokenExists ? AccessToken : null;
-
-            ICovidSupportService service = CreateCovidSupportService(
-                GetAuthenticationDelegateMock(accessToken),
-                GetImmunizationAdminApiMock(expected));
-
-            CovidAssessmentRequest request = new()
-            {
-                Phn = Phn,
-            };
-
-            if (accessTokenExists)
-            {
-                // Act
-                CovidAssessmentResponse actual = await service.SubmitCovidAssessmentAsync(request);
-
-                // Assert
-                Assert.Equal(expected, actual);
-            }
-            else
-            {
-                // Act
-                async Task Actual()
-                {
-                    await service.SubmitCovidAssessmentAsync(request);
-                }
-
-                // Assert
-                UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(Actual);
-                Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
-            }
-        }
-
-        private static ICovidSupportService CreateCovidSupportService(
-            Mock<IAuthenticationDelegate> authenticationDelegateMock,
-            Mock<IImmunizationAdminApi> immunizationAdminApiMock)
-        {
-            return new CovidSupportService(
-                Configuration,
-                new Mock<ILogger<CovidSupportService>>().Object,
-                authenticationDelegateMock.Object,
-                new Mock<IVaccineProofDelegate>().Object,
-                new Mock<IVaccineStatusDelegate>().Object,
-                immunizationAdminApiMock.Object,
-                new Mock<IPatientRepository>().Object);
-        }
-
         private static ICovidSupportService CreateCovidSupportService(
             Mock<IPatientRepository>? patientRepositoryMock = null,
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IVaccineStatusDelegate>? vaccineStatusDelegateMock = null,
-            Mock<IVaccineProofDelegate>? vaccineProofDelegateMock = null,
-            Mock<IImmunizationAdminApi>? immunizationAdminApiMock = null)
+            Mock<IVaccineProofDelegate>? vaccineProofDelegateMock = null)
         {
             patientRepositoryMock ??= new Mock<IPatientRepository>();
             authenticationDelegateMock ??= new Mock<IAuthenticationDelegate>();
             vaccineStatusDelegateMock ??= new Mock<IVaccineStatusDelegate>();
             vaccineProofDelegateMock ??= new Mock<IVaccineProofDelegate>();
-            immunizationAdminApiMock ??= new Mock<IImmunizationAdminApi>();
 
             return new CovidSupportService(
                 Configuration,
@@ -648,16 +569,7 @@ namespace HealthGateway.Admin.Tests.Services
                 authenticationDelegateMock.Object,
                 vaccineProofDelegateMock.Object,
                 vaccineStatusDelegateMock.Object,
-                immunizationAdminApiMock.Object,
                 patientRepositoryMock.Object);
-        }
-
-        private static CovidAssessmentResponse GenerateCovidAssessmentResponse(Guid id)
-        {
-            return new()
-            {
-                Id = id,
-            };
         }
 
         private static MailDocumentRequest GenerateMailDocumentRequest()
@@ -717,13 +629,6 @@ namespace HealthGateway.Admin.Tests.Services
         {
             Mock<IAuthenticationDelegate> mock = new();
             mock.Setup(d => d.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(accessToken);
-            return mock;
-        }
-
-        private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(CovidAssessmentResponse response)
-        {
-            Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.SubmitCovidAssessmentAsync(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 

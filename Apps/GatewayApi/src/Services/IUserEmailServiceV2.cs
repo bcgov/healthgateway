@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The user email service.
@@ -25,32 +26,35 @@ namespace HealthGateway.GatewayApi.Services
     public interface IUserEmailServiceV2
     {
         /// <summary>
-        /// Validates an email address using the given invite key.
+        /// Verifies an email address using the given invite key.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>Returns a boolean value indicating whether the validation was successful.</returns>
-        Task<bool> ValidateEmailAsync(string hdid, Guid inviteKey, CancellationToken ct = default);
+        /// <returns>A boolean value indicating whether the verification was successful.</returns>
+        Task<bool> VerifyEmailAddressAsync(string hdid, Guid inviteKey, CancellationToken ct = default);
 
         /// <summary>
-        /// Initializes user's email address.
-        /// </summary>
-        /// <param name="hdid">The user hdid.</param>
-        /// <param name="emailAddress">Email address to be set for the user.</param>
-        /// <param name="isVerified">Indicates whether the email address is verified.</param>
-        /// <param name="commit">If set to true the changes to database are persisted immediately.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>returns true if the email was successfully created.</returns>
-        Task<bool> CreateUserEmailAsync(string hdid, string emailAddress, bool isVerified, bool commit = true, CancellationToken ct = default);
-
-        /// <summary>
-        /// Updates the user email.
+        /// Updates user's email address.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task UpdateUserEmailAsync(string hdid, string emailAddress, CancellationToken ct = default);
+        Task UpdateEmailAddressAsync(string hdid, string emailAddress, CancellationToken ct = default);
+
+        /// <summary>
+        /// Generates a messaging verification and email template using the provided HDID, email address, and invite key.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="emailAddress">Email address to verify.</param>
+        /// <param name="inviteKey">The email invite key.</param>
+        /// <param name="isVerified">
+        /// If the address is already verified, the verification will be marked as already validated
+        /// and the generated email will be marked as already sent.
+        /// </param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The generated messaging verification.</returns>
+        Task<MessagingVerification> GenerateMessagingVerificationAsync(string hdid, string emailAddress, Guid inviteKey, bool isVerified, CancellationToken ct = default);
     }
 }

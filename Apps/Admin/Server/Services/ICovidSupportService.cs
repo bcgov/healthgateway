@@ -40,13 +40,5 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="ct">A cancellation token.</param>
         /// <returns>The encoded document.</returns>
         Task<ReportModel> RetrieveVaccineRecordAsync(string phn, CancellationToken ct = default);
-
-        /// <summary>
-        /// Submits a covid therapy assessment request.
-        /// </summary>
-        /// <param name="request">The request containing the assessment.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>Returns the covid therapy assessment response.</returns>
-        Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync(CovidAssessmentRequest request, CancellationToken ct = default);
     }
 }
