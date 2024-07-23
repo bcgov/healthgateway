@@ -68,4 +68,17 @@ export default abstract class ValidationUtil {
             : validator.$silentErrors;
         return errors.map((e) => unref(e.$message));
     }
+
+    /**
+     * Conditionally returns either the provided validator object or an empty object, depending on the value of the predicate.
+     * @param predicate Condition that determines whether the validators should be returned.
+     * @param validatorObject An object containing the conditional validators.
+     * @returns the provided validator object if the predicate is true, otherwise an empty object.
+     */
+    public static getConditionalValidators(
+        predicate: boolean,
+        validatorObject: object
+    ) {
+        return predicate ? validatorObject : {};
+    }
 }
