@@ -51,7 +51,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const int EmailVerificationExpirySeconds = 43200;
 
         /// <summary>
-        /// ValidateEmailAsync - Happy path scenario.
+        /// VerifyEmailAddressAsync - Happy path scenario.
         /// </summary>
         /// <param name="changeFeedEnabled">
         /// The bool value indicating whether change feed on notifications is enabled or not.
@@ -60,55 +60,59 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ValidateEmail(bool changeFeedEnabled)
+        public async Task ShouldVerifyEmailAddressAsync(bool changeFeedEnabled)
         {
             // Arrange
+            Times expectedNotificationChannelVerifiedEventTimes = ConvertToTimes(changeFeedEnabled);
+
             VerifyEmailAddressMock mock = SetupVerifyEmailAddressMock(changeFeedEnabled);
 
             // Act
             bool actual = await mock.Service.VerifyEmailAddressAsync(mock.Hdid, mock.InviteKey, CancellationToken.None);
 
             // Assert and Verify
-            actual.ShouldDeepEqual(mock.Expected);
-            Verify(mock.Verify);
+            Assert.True(actual);
+
+            VerifyVerificationUpdateValidatedTrue(mock.MessagingVerificationDelegateMock);
+            VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
+            VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
+            VerifyNotificationChannelVerifiedEvent(mock.MessageSenderMock, expectedNotificationChannelVerifiedEventTimes);
         }
 
         /// <summary>
-        /// ValidateEmailAsync - Too many attempts.
+        /// VerifyEmailAddressAsync - Too many attempts.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ValidateEmailTooManyAttempts()
+        public async Task VerifyEmailAddressTooManyAttempts()
         {
             // Arrange
-            VerifyEmailAddressMock mock = SetupVerifyEmailAddressTooManyAttemptsMock();
+            VerifyEmailAddressExceptionMock mock = SetupVerifyEmailAddressTooManyAttemptsMock();
 
             // Act
             bool actual = await mock.Service.VerifyEmailAddressAsync(mock.Hdid, mock.InviteKey, CancellationToken.None);
 
             // Assert and Verify
-            actual.ShouldDeepEqual(mock.Expected);
-            Verify(mock.Verify);
+            Assert.False(actual);
         }
 
         /// <summary>
-        /// ValidateEmailAsync - Already validated.
+        /// VerifyEmailAddressAsync - Already validated.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ValidateEmailAlreadyValidated()
+        public async Task VerifyEmailAddressAsyncAlreadyValidated()
         {
             // Arrange
-            VerifyEmailAddressThrowsExceptionMock mock = SetupVerifyEmailAddressThrowsAlreadyExistsExceptionMock();
+            VerifyEmailAddressExceptionMock mock = SetupVerifyEmailAddressThrowsAlreadyExistsExceptionMock();
 
             // Act and assert
-            await Assert.ThrowsAsync(
-                mock.Expected, // AlreadyExistsException
+            await Assert.ThrowsAsync<AlreadyExistsException>(
                 async () => { await mock.Service.VerifyEmailAddressAsync(mock.Hdid, mock.InviteKey); });
         }
 
         /// <summary>
-        /// ValidateEmailAsync - invalid invite.
+        /// VerifyEmailAddressAsync - invalid invite last sent.
         /// </summary>
         /// <param name="hdid">The hdid associated with the verification by invite key.</param>
         /// <param name="verificationExists">
@@ -120,10 +124,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(InvalidHdid, true, false)] // User Profile Hdid does not match hdid in matching verification.
         [InlineData(Hdid, false, false)] // Matching verification does not exist.
         [InlineData(Hdid, true, true)] // Matching verification is deleted.
-        public async Task InvalidInviteLastSent(string hdid, bool verificationExists, bool deleted)
+        public async Task VerifyEmailAddressAsyncInvalidInvite(string hdid, bool verificationExists, bool deleted)
         {
             // Arrange
-            VerifyEmailAddressMock mock = SetupVerifyEmailAddressInvalidInviteMock(
+            VerifyEmailAddressInvalidInviteMock mock = SetupVerifyEmailAddressInvalidInviteMock(
                 hdid,
                 deleted,
                 verificationExists);
@@ -132,23 +136,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool actual = await mock.Service.VerifyEmailAddressAsync(mock.Hdid, mock.InviteKey);
 
             // Assert and Verify
-            actual.ShouldDeepEqual(mock.Expected);
-            Verify(mock.Verify);
+            Assert.False(actual);
+
+            VerifyVerificationUpdateValidatedFalse(mock.MessagingVerificationDelegateMock);
         }
 
         /// <summary>
-        /// ValidateEmailAsync - Update UserProfile database exception.
+        /// VerifyEmailAddressAsync throws database exception.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ValidateEmailThrowsDatabaseException()
+        public async Task VerifyEmailAddressAsyncThrowsDatabaseException()
         {
             // Arrange
-            VerifyEmailAddressThrowsExceptionMock mock = SetupVerifyEmailAddressThrowsDatabaseExceptionMock();
+            VerifyEmailAddressExceptionMock mock = SetupVerifyEmailAddressThrowsDatabaseExceptionMock();
 
             // Act and Assert
-            await Assert.ThrowsAsync(
-                mock.Expected,
+            await Assert.ThrowsAsync<DatabaseException>(
                 async () => { await mock.Service.VerifyEmailAddressAsync(mock.Hdid, mock.InviteKey); });
         }
 
@@ -160,24 +164,32 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task GenerateMessagingVerificationAsync(bool isVerified)
+        public async Task ShouldGenerateMessagingVerificationAsync(bool isVerified)
         {
             // Arrange
-            GenerateMessagingVerificationMock mock = SetupGenerateMessagingVerificationMock(isVerified);
+            Guid inviteKey = Guid.NewGuid();
+            Email email = GenerateEmail();
+
+            MessagingVerification expected = GenerateMessagingVerification(validated: isVerified, email: email, inviteKey: inviteKey);
+
+            GenerateMessagingVerificationMock mock = SetupGenerateMessagingVerificationMock(inviteKey, email);
 
             // Act
-            MessagingVerification actual = await mock.Service.GenerateMessagingVerificationAsync(mock.Hdid, mock.EmailAddress, mock.InviteKey, isVerified);
+            MessagingVerification actual = await mock.Service.GenerateMessagingVerificationAsync(
+                mock.Hdid,
+                mock.EmailAddress,
+                mock.InviteKey,
+                isVerified);
 
             // Assert
-            Assert.Equal(mock.Expected.InviteKey, actual.InviteKey);
-            Assert.Equal(mock.Expected.UserProfileId, actual.UserProfileId);
-            Assert.Equal(mock.Expected.Validated, actual.Validated);
-            Assert.Equal(mock.Expected.EmailAddress, actual.EmailAddress);
+            Assert.Equal(expected.InviteKey, actual.InviteKey);
+            Assert.Equal(expected.UserProfileId, actual.UserProfileId);
+            Assert.Equal(expected.Validated, actual.Validated);
+            Assert.Equal(expected.EmailAddress, actual.EmailAddress);
             Assert.Equal(
-                TruncateToSeconds(mock.Expected.ExpireDate),
-                TruncateToSeconds(actual.ExpireDate)
-            );
-            actual.Email.ShouldDeepEqual(mock.Expected.Email);
+                TruncateToSeconds(expected.ExpireDate),
+                TruncateToSeconds(actual.ExpireDate));
+            actual.Email.ShouldDeepEqual(expected.Email);
             return;
 
             static DateTime TruncateToSeconds(DateTime dateTime)
@@ -189,8 +201,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     dateTime.Hour,
                     dateTime.Minute,
                     dateTime.Second,
-                    dateTime.Kind
-                );
+                    dateTime.Kind);
             }
         }
 
@@ -210,16 +221,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(false, MainEmailAddress)]
         [InlineData(true, SecondaryEmailAddress)]
         [InlineData(false, SecondaryEmailAddress)]
-        public async Task UpdateEmailAddressAsync(bool latestVerificationExists, string? emailAddress)
+        public async Task ShouldUpdateEmailAddressAsync(bool latestVerificationExists, string? emailAddress)
         {
             // Arrange
+            Times expectedVerificationExpireTimes = ConvertToTimes(latestVerificationExists);
+            Times expectedVerificationInsertTimes = ConvertToTimes(!string.IsNullOrEmpty(emailAddress));
+            Times expectedQueueNewEmailByEntityTimes = ConvertToTimes(!string.IsNullOrEmpty(emailAddress));
+
             UpdateEmailAddressMock mock = SetupUpdateEmailAddressMock(
                 latestVerificationExists,
-                emailAddress: emailAddress);
+                emailAddress);
 
             // Act and Verify
             await mock.Service.UpdateEmailAddressAsync(mock.Hdid, mock.EmailAddress);
-            Verify(mock.Verify);
+
+            VerifyVerificationExpire(mock.MessagingVerificationDelegateMock, expectedVerificationExpireTimes);
+            VerifyVerificationInsert(mock.MessagingVerificationDelegateMock, expectedVerificationInsertTimes);
+            VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
+            VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
+            VerifyQueueNewEmailByEntity(mock.EmailQueueServiceMock, expectedQueueNewEmailByEntityTimes);
         }
 
         /// <summary>
@@ -228,129 +248,109 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="userProfileExists">
         /// The bool value indicating whether the user profile exists or not.
         /// </param>
-        /// <param name="userProfileUpdateStatus">The status returned when user profile is updated.</param>
+        /// <param name="updateProfileStatus">The status returned when user profile is updated.</param>
+        /// <param name="expectedException">The expected exception type to be thrown.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(false, DbStatusCode.Updated)] // Throws NotFoundException
-        [InlineData(true, DbStatusCode.Error)] // Throws DatabaseException
-        public async Task UpdateEmailAddressThrowsExceptionAsync(bool userProfileExists, DbStatusCode userProfileUpdateStatus)
+        [InlineData(false, DbStatusCode.Updated, typeof(NotFoundException))]
+        [InlineData(true, DbStatusCode.Error, typeof(DatabaseException))]
+        public async Task UpdateEmailAddressAsyncThrowsExceptionAsync(
+            bool userProfileExists,
+            DbStatusCode updateProfileStatus,
+            Type expectedException)
         {
             // Arrange
-            UpdateEmailAddressThrowsExceptionMock mock = SetupUpdateEmailAddressThrowsExceptionMock(
+            UpdateEmailAddressExceptionMock mock = SetupUpdateEmailAddressThrowsExceptionMock(
                 userProfileExists,
-                userProfileUpdateStatus);
+                updateProfileStatus);
 
             // Act and Assert
             await Assert.ThrowsAsync(
-                mock.Expected,
+                expectedException,
                 async () => { await mock.Service.UpdateEmailAddressAsync(mock.Hdid, mock.EmailAddress); });
         }
 
-        private static void Verify(VerifyMock mock)
+        private static void VerifyUserProfileUpdate(Mock<IUserProfileDelegate> userProfileDelegateMock, Times? times = null)
         {
-            mock.MessagingVerificationDelegateMock.Verify(
-                s => s.UpdateAsync(
-                    It.Is<MessagingVerification>(
-                        mv => mv.Validated == true),
+            userProfileDelegateMock.Verify(
+                v => v.UpdateAsync(
+                    It.IsAny<UserProfile>(),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
-                mock.ExpectedValidVerificationUpdateTimes);
+                times ?? Times.Once());
+        }
 
-            mock.MessagingVerificationDelegateMock.Verify(
+        private static void VerifyQueueNewEmailByEntity(Mock<IEmailQueueService> emailQueueServiceMock, Times? times = null)
+        {
+            emailQueueServiceMock.Verify(
+                v => v.QueueNewEmailAsync(
+                    It.IsAny<Email>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
+        }
+
+        private static void VerifyNotificationChannelVerifiedEvent(Mock<IMessageSender> messageSenderMock, Times? times = null)
+        {
+            messageSenderMock.Verify(
+                v => v.SendAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(
+                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                    It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
+        }
+
+        private static void VerifyVerificationExpire(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
+        {
+            messagingVerificationDelegateMock.Verify(
+                s => s.ExpireAsync(
+                    It.IsAny<MessagingVerification>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
+        }
+
+        private static void VerifyVerificationInsert(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
+        {
+            messagingVerificationDelegateMock.Verify(
+                s => s.InsertAsync(
+                    It.IsAny<MessagingVerification>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
+        }
+
+        private static void VerifyVerificationUpdateValidatedFalse(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
+        {
+            messagingVerificationDelegateMock.Verify(
                 s => s.UpdateAsync(
                     It.Is<MessagingVerification>(
                         mv => mv.Validated == false &&
                               mv.VerificationAttempts == 1),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
-                mock.ExpectedInvalidVerificationUpdateTimes);
-
-            mock.MessagingVerificationDelegateMock.Verify(
-                s => s.ExpireAsync(
-                    It.IsAny<MessagingVerification>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()),
-                mock.ExpectedVerificationExpireTimes);
-
-            mock.MessagingVerificationDelegateMock.Verify(
-                s => s.InsertAsync(
-                    It.IsAny<MessagingVerification>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()),
-                mock.ExpectedVerificationInsertTimes);
-
-            mock.UserProfileDelegateMock
-                .Verify(
-                    s => s.UpdateAsync(
-                        It.IsAny<UserProfile>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()),
-                    mock.ExpectedUserProfileUpdateTimes);
-
-            mock.NotificationSettingsServiceMock
-                .Verify(
-                    s => s.QueueNotificationSettingsAsync(
-                        It.IsAny<NotificationSettingsRequest>(),
-                        It.IsAny<CancellationToken>()),
-                    mock.ExpectedQueueNotificationSettingsTimes);
-
-            mock.MessageSenderMock.Verify(
-                m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    CancellationToken.None),
-                mock.ExpectedMessageSenderSendTimes);
-
-            mock.EmailQueueServiceMock
-                .Verify(
-                    s => s.QueueNewEmailAsync(
-                        It.IsAny<Email>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()),
-                    mock.ExpectedQueueNewEmailTimes);
+                times ?? Times.Once());
         }
 
-        private static IConfiguration GetConfiguration(bool changeFeedEnabled)
+        private static void VerifyVerificationUpdateValidatedTrue(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
         {
-            const string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
-            const string emailVerificationExpirySecondsKey = "WebClient:EmailVerificationExpirySeconds";
-            const string emailTemplateHostKey = "EmailTemplate:Host";
-
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { changeFeedKey, changeFeedEnabled.ToString() },
-                { emailVerificationExpirySecondsKey, EmailVerificationExpirySeconds.ToString(CultureInfo.InvariantCulture) },
-                { emailTemplateHostKey, EmailTemplateHost },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
+            messagingVerificationDelegateMock.Verify(
+                s => s.UpdateAsync(
+                    It.Is<MessagingVerification>(
+                        mv => mv.Validated == true),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
         }
 
-        private static IUserEmailServiceV2 GetUserEmailService(
-            Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
-            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
-            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
-            Mock<IMessageSender>? messageSenderMock = null,
-            Mock<IEmailQueueService>? emailQueueServiceMock = null,
-            bool changeFeedEnabled = false)
+        private static void VerifyQueueNotificationSettings(Mock<INotificationSettingsService> notificationSettingsServiceMock, Times? times = null)
         {
-            messagingVerificationDelegateMock ??= new();
-            userProfileDelegateMock ??= new();
-            notificationSettingsServiceMock ??= new();
-            messageSenderMock ??= new();
-            emailQueueServiceMock ??= new();
-
-            return new UserEmailServiceV2(
-                new Mock<ILogger<UserEmailServiceV2>>().Object,
-                messagingVerificationDelegateMock.Object,
-                userProfileDelegateMock.Object,
-                emailQueueServiceMock.Object,
-                notificationSettingsServiceMock.Object,
-                GetConfiguration(changeFeedEnabled),
-                messageSenderMock.Object);
+            notificationSettingsServiceMock.Verify(
+                v => v.QueueNotificationSettingsAsync(
+                    It.IsAny<NotificationSettingsRequest>(),
+                    It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
         }
 
         private static Email GenerateEmail(Guid? emailId = null, string toEmailAddress = MainEmailAddress)
@@ -385,6 +385,53 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
         }
 
+        private static Times ConvertToTimes(bool expected)
+        {
+            return expected ? Times.Once() : Times.Never();
+        }
+
+        private static IConfiguration GetConfiguration(bool changeFeedEnabled)
+        {
+            const string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
+            const string emailVerificationExpirySecondsKey = "WebClient:EmailVerificationExpirySeconds";
+            const string emailTemplateHostKey = "EmailTemplate:Host";
+
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { changeFeedKey, changeFeedEnabled.ToString() },
+                { emailVerificationExpirySecondsKey, EmailVerificationExpirySeconds.ToString(CultureInfo.InvariantCulture) },
+                { emailTemplateHostKey, EmailTemplateHost },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection([.. myConfiguration])
+                .Build();
+        }
+
+        private static IUserEmailServiceV2 GetUserEmailService(
+            Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
+            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
+            Mock<IMessageSender>? messageSenderMock = null,
+            Mock<IEmailQueueService>? emailQueueServiceMock = null,
+            bool changeFeedEnabled = false)
+        {
+            messagingVerificationDelegateMock ??= new();
+            userProfileDelegateMock ??= new();
+            notificationSettingsServiceMock ??= new();
+            messageSenderMock ??= new();
+            emailQueueServiceMock ??= new();
+
+            return new UserEmailServiceV2(
+                new Mock<ILogger<UserEmailServiceV2>>().Object,
+                messagingVerificationDelegateMock.Object,
+                userProfileDelegateMock.Object,
+                emailQueueServiceMock.Object,
+                notificationSettingsServiceMock.Object,
+                GetConfiguration(changeFeedEnabled),
+                messageSenderMock.Object);
+        }
+
         private static Mock<IMessagingVerificationDelegate> SetupMessagingVerificationDelegateMock(
             string userProfileId = Hdid,
             bool setupMatchingVerification = true,
@@ -401,6 +448,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             matchingVerificationInviteKey ??= Guid.NewGuid();
             latestVerificationInviteKey ??= Guid.NewGuid();
+
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
 
             if (setupMatchingVerification)
@@ -449,7 +497,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return messagingVerificationDelegateMock;
         }
 
-        private static Mock<IUserProfileDelegate> SetupUserProfileDelegateMock(bool userProfileExists = true, DbStatusCode? dbUpdateStatus = null)
+        private static Mock<IUserProfileDelegate> SetupUserProfileDelegateMock(
+            bool userProfileExists = true,
+            DbStatusCode? dbUpdateStatus = null)
         {
             UserProfile? userProfile = userProfileExists ? new() : null;
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
@@ -476,53 +526,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static VerifyMock SetupVerifyMock(
-            Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
-            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
-            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
-            Mock<IEmailQueueService>? emailQueueServiceMock = null,
-            Mock<IMessageSender>? messageSenderMock = null,
-            bool expectValidVerificationUpdate = false,
-            bool expectInvalidVerificationUpdate = false,
-            bool expectVerificationExpire = false,
-            bool expectVerificationInsert = false,
-            bool expectUserProfileUpdate = false,
-            bool expectQueueNotificationSettings = false,
-            bool expectQueueNewEmail = false,
-            bool expectMessageSenderSend = false)
-        {
-            messagingVerificationDelegateMock ??= new();
-            userProfileDelegateMock ??= new();
-            notificationSettingsServiceMock ??= new();
-            emailQueueServiceMock ??= new();
-            messageSenderMock ??= new();
-
-            return new(
-                messagingVerificationDelegateMock,
-                userProfileDelegateMock,
-                notificationSettingsServiceMock,
-                emailQueueServiceMock,
-                messageSenderMock,
-                Convert(expectValidVerificationUpdate), // ExpectedValidVerificationUpdateTimes
-                Convert(expectInvalidVerificationUpdate), // ExpectedInvalidVerificationUpdateTimes
-                Convert(expectVerificationExpire), // ExpectedVerificationExpireTimes
-                Convert(expectVerificationInsert), // ExpectedVerificationInsertTime
-                Convert(expectUserProfileUpdate), // ExpectedUserProfileUpdateTimes
-                Convert(expectQueueNotificationSettings), // ExpectedQueueNotificationSettingsTimes
-                Convert(expectQueueNewEmail), // ExpectedQueueNewEmailTimes
-                Convert(expectMessageSenderSend)); // ExpectedMessageSenderSendTimes
-
-            static Times Convert(bool expect)
-            {
-                return expect ? Times.Once() : Times.Never();
-            }
-        }
-
         private static VerifyEmailAddressMock SetupVerifyEmailAddressMock(bool changeFeedEnabled)
         {
             Guid inviteKey = Guid.NewGuid();
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = SetupMessagingVerificationDelegateMock(matchingVerificationInviteKey: inviteKey);
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(dbUpdateStatus: DbStatusCode.Updated);
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock =
+                SetupMessagingVerificationDelegateMock(matchingVerificationInviteKey: inviteKey);
+            Mock<IUserProfileDelegate> userProfileDelegateMock =
+                SetupUserProfileDelegateMock(dbUpdateStatus: DbStatusCode.Updated);
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
             Mock<IMessageSender> messageSenderMock = new();
 
@@ -533,54 +543,24 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messageSenderMock,
                 changeFeedEnabled: changeFeedEnabled);
 
-            VerifyMock verifyMock = SetupVerifyMock(
+            return new(
+                service,
+                messageSenderMock,
                 messagingVerificationDelegateMock,
-                userProfileDelegateMock,
                 notificationSettingsServiceMock,
-                messageSenderMock: messageSenderMock,
-                expectValidVerificationUpdate: true,
-                expectUserProfileUpdate: true,
-                expectQueueNotificationSettings: true,
-                expectMessageSenderSend: changeFeedEnabled);
-
-            return new(
-                service,
+                userProfileDelegateMock,
                 Hdid,
-                inviteKey,
-                true, // Valid email
-                verifyMock);
+                inviteKey);
         }
 
-        private static VerifyEmailAddressMock SetupVerifyEmailAddressTooManyAttemptsMock()
+        private static VerifyEmailAddressExceptionMock SetupVerifyEmailAddressTooManyAttemptsMock()
         {
             Guid inviteKey = Guid.NewGuid();
             Mock<IMessagingVerificationDelegate>
                 messagingVerificationDelegateMock =
-                    SetupMessagingVerificationDelegateMock(matchingVerificationInviteKey: inviteKey, matchingVerificationAttempts: 1000000000); // This will cause too many attempts error.
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock();
-
-            IUserEmailServiceV2 service = GetUserEmailService(
-                messagingVerificationDelegateMock,
-                userProfileDelegateMock);
-
-            VerifyMock verifyMock = SetupVerifyMock(
-                messagingVerificationDelegateMock,
-                userProfileDelegateMock);
-
-            return new(
-                service,
-                Hdid,
-                inviteKey,
-                false, // Invalid email
-                verifyMock);
-        }
-
-        private static VerifyEmailAddressThrowsExceptionMock SetupVerifyEmailAddressThrowsAlreadyExistsExceptionMock()
-        {
-            Guid inviteKey = Guid.NewGuid();
-            Mock<IMessagingVerificationDelegate>
-                messagingVerificationDelegateMock =
-                    SetupMessagingVerificationDelegateMock(matchingVerificationInviteKey: inviteKey, matchingVerificationValidated: true); // This will cause an AlreadyExistsException to be thrown.
+                    SetupMessagingVerificationDelegateMock(
+                        matchingVerificationInviteKey: inviteKey,
+                        matchingVerificationAttempts: 1000000000); // This will cause too many attempts error.
             Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock();
 
             IUserEmailServiceV2 service = GetUserEmailService(
@@ -590,11 +570,30 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(
                 service,
                 Hdid,
-                inviteKey,
-                typeof(AlreadyExistsException)); // Invalid email - exception is thrown
+                inviteKey);
         }
 
-        private static VerifyEmailAddressMock SetupVerifyEmailAddressInvalidInviteMock(
+        private static VerifyEmailAddressExceptionMock SetupVerifyEmailAddressThrowsAlreadyExistsExceptionMock()
+        {
+            Guid inviteKey = Guid.NewGuid();
+            Mock<IMessagingVerificationDelegate>
+                messagingVerificationDelegateMock =
+                    SetupMessagingVerificationDelegateMock(
+                        matchingVerificationInviteKey: inviteKey,
+                        matchingVerificationValidated: true); // This will cause an AlreadyExistsException to be thrown.
+            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock();
+
+            IUserEmailServiceV2 service = GetUserEmailService(
+                messagingVerificationDelegateMock,
+                userProfileDelegateMock);
+
+            return new(
+                service,
+                Hdid,
+                inviteKey);
+        }
+
+        private static VerifyEmailAddressInvalidInviteMock SetupVerifyEmailAddressInvalidInviteMock(
             string userProfileId = Hdid,
             bool matchingVerificationDeleted = false,
             bool matchingVerificationExists = true)
@@ -615,24 +614,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationDelegateMock,
                 userProfileDelegateMock);
 
-            VerifyMock verifyMock = SetupVerifyMock(
-                messagingVerificationDelegateMock,
-                userProfileDelegateMock,
-                expectInvalidVerificationUpdate: true);
-
             return new(
                 service,
+                messagingVerificationDelegateMock,
                 Hdid,
-                inviteKey,
-                false, // Invalid email
-                verifyMock);
+                inviteKey);
         }
 
-        private static VerifyEmailAddressThrowsExceptionMock SetupVerifyEmailAddressThrowsDatabaseExceptionMock()
+        private static VerifyEmailAddressExceptionMock SetupVerifyEmailAddressThrowsDatabaseExceptionMock()
         {
             Guid inviteKey = Guid.NewGuid();
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = SetupMessagingVerificationDelegateMock(matchingVerificationInviteKey: inviteKey);
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(dbUpdateStatus: DbStatusCode.Error); // This will cause a DatabaseException to be thrown.
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock =
+                SetupMessagingVerificationDelegateMock(matchingVerificationInviteKey: inviteKey);
+            Mock<IUserProfileDelegate> userProfileDelegateMock =
+                SetupUserProfileDelegateMock(dbUpdateStatus: DbStatusCode.Error); // This will cause a DatabaseException to be thrown.
 
             IUserEmailServiceV2 service = GetUserEmailService(
                 messagingVerificationDelegateMock,
@@ -641,20 +636,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(
                 service,
                 Hdid,
-                inviteKey,
-                typeof(DatabaseException)); // Invalid email - exception is thrown
+                inviteKey);
         }
 
         private static EmailQueueServiceMock SetupEmailQueueServiceMock(
             string toEmailAddress,
             string? emailAddress = null,
-            bool isVerified = true)
+            Guid? inviteKey = null,
+            Email? email = null)
         {
-            Guid inviteKey = Guid.NewGuid();
+            inviteKey ??= Guid.NewGuid();
             Guid emailId = Guid.NewGuid();
             Guid emailTemplateId = Guid.NewGuid();
 
-            Email email = GenerateEmail(emailId, toEmailAddress);
+            email ??= GenerateEmail(emailId, toEmailAddress);
             EmailTemplate emailTemplate = new()
             {
                 Id = emailTemplateId,
@@ -675,31 +670,30 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<Dictionary<string, string>>()))
                 .Returns(email);
 
-            MessagingVerification expected = GenerateMessagingVerification(
-                inviteKey: inviteKey,
-                validated: isVerified,
-                email: email);
-
-            return new(emailQueueServiceMock, Hdid, inviteKey, emailAddress, expected);
+            return new(emailQueueServiceMock, Hdid, inviteKey.Value, emailAddress);
         }
 
-        private static GenerateMessagingVerificationMock SetupGenerateMessagingVerificationMock(bool isVerified)
+        private static GenerateMessagingVerificationMock SetupGenerateMessagingVerificationMock(Guid inviteKey, Email? email)
         {
-            EmailQueueServiceMock emailQueueServiceMock = SetupEmailQueueServiceMock(MainEmailAddress, MainEmailAddress, isVerified);
+            EmailQueueServiceMock emailQueueServiceMock =
+                SetupEmailQueueServiceMock(
+                    MainEmailAddress,
+                    MainEmailAddress,
+                    inviteKey,
+                    email);
             IUserEmailServiceV2 service = GetUserEmailService(emailQueueServiceMock: emailQueueServiceMock.Service);
 
             return new(
                 service,
                 emailQueueServiceMock.Hdid,
                 emailQueueServiceMock.InviteKey,
-                emailQueueServiceMock.EmailAddress,
-                emailQueueServiceMock.Expected);
+                emailQueueServiceMock.EmailAddress);
         }
 
         private static UpdateEmailAddressMock SetupUpdateEmailAddressMock(
             bool latestVerificationExists,
-            DbStatusCode userProfileUpdateStatus = DbStatusCode.Updated,
-            string? emailAddress = null)
+            string? emailAddress,
+            DbStatusCode updateProfileStatus = DbStatusCode.Updated)
         {
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock =
                 SetupMessagingVerificationDelegateMock(
@@ -708,7 +702,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     latestVerificationExists: latestVerificationExists,
                     latestVerificationEmailAddress: MainEmailAddress);
 
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(dbUpdateStatus: userProfileUpdateStatus);
+            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(dbUpdateStatus: updateProfileStatus);
             EmailQueueServiceMock emailQueueServiceMock = SetupEmailQueueServiceMock(MainEmailAddress, emailAddress);
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
 
@@ -718,34 +712,26 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 notificationSettingsServiceMock,
                 emailQueueServiceMock: emailQueueServiceMock.Service);
 
-            VerifyMock verifyMock = SetupVerifyMock(
-                messagingVerificationDelegateMock,
-                userProfileDelegateMock,
-                notificationSettingsServiceMock,
-                emailQueueServiceMock.Service,
-                expectVerificationExpire: latestVerificationExists,
-                expectVerificationInsert: !string.IsNullOrEmpty(emailAddress),
-                expectUserProfileUpdate: true,
-                expectQueueNotificationSettings: true,
-                expectQueueNewEmail: !string.IsNullOrEmpty(emailAddress));
-
             return new(
                 service,
+                emailQueueServiceMock.Service,
+                messagingVerificationDelegateMock,
+                notificationSettingsServiceMock,
+                userProfileDelegateMock,
                 emailQueueServiceMock.Hdid,
-                emailQueueServiceMock.EmailAddress,
-                verifyMock);
+                emailQueueServiceMock.EmailAddress);
         }
 
-        private static UpdateEmailAddressThrowsExceptionMock SetupUpdateEmailAddressThrowsExceptionMock(
+        private static UpdateEmailAddressExceptionMock SetupUpdateEmailAddressThrowsExceptionMock(
             bool userProfileExists = true, // if false, NotFoundException is thrown
-            DbStatusCode userProfileUpdateStatus = DbStatusCode.Updated) // if DbStatusCode.Error, DatabaseException is thrown
+            DbStatusCode updateProfileStatus = DbStatusCode.Updated) // if DbStatusCode.Error, DatabaseException is thrown
         {
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock =
                 SetupMessagingVerificationDelegateMock(
                     setupMatchingVerification: false,
                     setupLatestVerification: true);
 
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(userProfileExists, userProfileUpdateStatus);
+            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(userProfileExists, updateProfileStatus);
             EmailQueueServiceMock emailQueueServiceMock = SetupEmailQueueServiceMock(MainEmailAddress, MainEmailAddress);
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
 
@@ -755,67 +741,56 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 notificationSettingsServiceMock,
                 emailQueueServiceMock: emailQueueServiceMock.Service);
 
-            Type expected = !userProfileExists ? typeof(NotFoundException) : typeof(DatabaseException);
-
             return new(
                 service,
                 Hdid,
-                MainEmailAddress,
-                expected);
+                MainEmailAddress);
         }
 
         private sealed record EmailQueueServiceMock(
             Mock<IEmailQueueService> Service,
             string Hdid,
             Guid InviteKey,
-            string EmailAddress,
-            MessagingVerification Expected);
+            string EmailAddress);
 
         private sealed record VerifyEmailAddressMock(
             IUserEmailServiceV2 Service,
+            Mock<IMessageSender> MessageSenderMock,
+            Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
+            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
+            Mock<IUserProfileDelegate> UserProfileDelegateMock,
             string Hdid,
-            Guid InviteKey,
-            bool Expected,
-            VerifyMock Verify);
+            Guid InviteKey);
 
-        private sealed record VerifyEmailAddressThrowsExceptionMock(
+        private sealed record VerifyEmailAddressInvalidInviteMock(
+            IUserEmailServiceV2 Service,
+            Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
+            string Hdid,
+            Guid InviteKey);
+
+        private sealed record VerifyEmailAddressExceptionMock(
             IUserEmailServiceV2 Service,
             string Hdid,
-            Guid InviteKey,
-            Type Expected);
+            Guid InviteKey);
 
         private sealed record GenerateMessagingVerificationMock(
             IUserEmailServiceV2 Service,
             string Hdid,
             Guid InviteKey,
-            string EmailAddress,
-            MessagingVerification Expected);
+            string EmailAddress);
 
         private sealed record UpdateEmailAddressMock(
             IUserEmailServiceV2 Service,
+            Mock<IEmailQueueService> EmailQueueServiceMock,
+            Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
+            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
+            Mock<IUserProfileDelegate> UserProfileDelegateMock,
             string Hdid,
-            string EmailAddress,
-            VerifyMock Verify);
+            string EmailAddress);
 
-        private sealed record UpdateEmailAddressThrowsExceptionMock(
+        private sealed record UpdateEmailAddressExceptionMock(
             IUserEmailServiceV2 Service,
             string Hdid,
-            string EmailAddress,
-            Type Expected);
-
-        private sealed record VerifyMock(
-            Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
-            Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
-            Mock<IEmailQueueService> EmailQueueServiceMock,
-            Mock<IMessageSender> MessageSenderMock,
-            Times ExpectedValidVerificationUpdateTimes,
-            Times ExpectedInvalidVerificationUpdateTimes,
-            Times ExpectedVerificationExpireTimes,
-            Times ExpectedVerificationInsertTimes,
-            Times ExpectedUserProfileUpdateTimes,
-            Times ExpectedQueueNotificationSettingsTimes,
-            Times ExpectedQueueNewEmailTimes,
-            Times ExpectedMessageSenderSendTimes);
+            string EmailAddress);
     }
 }
