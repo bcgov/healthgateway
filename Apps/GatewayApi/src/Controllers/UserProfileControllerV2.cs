@@ -250,7 +250,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Route("termsofservice")]
         [AllowAnonymous]
         [Produces("application/json")]
-        [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+        [ProducesResponseType<TermsOfServiceModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<TermsOfServiceModel> GetLastTermsOfService(CancellationToken ct)
