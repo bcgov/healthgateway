@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldVerifyEmailAddressAsync(bool changeFeedEnabled)
         {
             // Arrange
-            Times expectedNotificationChannelVerifiedEventTimes = changeFeedEnabled ? Times.Once() : Times.Never();
+            Times expectedNotificationChannelVerifiedEventTimes = ConvertToTimes(changeFeedEnabled);
 
             VerifyEmailAddressMock mock = SetupVerifyEmailAddressMock(changeFeedEnabled);
 
