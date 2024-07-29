@@ -14,4 +14,5 @@ export enum Path {
     Services = "/services",
     Timeline = "/timeline",
     ValidateEmail = "/validateEmail",
+    VaccineCard = "/vaccinecard",
 }
