@@ -51,16 +51,18 @@
 }
 else
 {
-    <MudChipSet @bind-SelectedChips="@SelectedTagChips"
+    <MudChipSet T="Guid"
+                @bind-SelectedValues="@SelectedTagIds"
                 Class="my-3"
-                MultiSelection="true"
-                Filter="true"
+                SelectionMode="@SelectionMode.MultiSelection"
+                CheckMark="@true"
                 data-testid="tag-collection">
         @foreach (AdminTagView tag in Tags)
         {
-            <MudChip Text="@tag.Name"
+            <MudChip T="Guid"
+                     Text="@tag.Name"
                      Value="@tag.Id"
-                     Default="@TagIdFilter.Any(tagId => tagId == tag.Id)"
+                     Default="@SelectedTagIds.Any(tagId => tagId == tag.Id)"
                      Class="my-2"
                      Variant="@Variant.Text"
                      Size="@Size.Small"

@@ -26,7 +26,7 @@ describe("Provision", () => {
         cy.get("[data-testid=identity-provider]").contains("IDIR").click();
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
-        cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
+        cy.get("[data-testid=save-btn]").parents(".mud-dialog").click(0, 0);
 
         cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
         cy.get("[data-testid=save-btn]").click();
@@ -61,7 +61,7 @@ describe("Provision", () => {
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
         cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
-        cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
+        cy.get("[data-testid=save-btn]").parents(".mud-dialog").click(0, 0);
         cy.get("[data-testid=save-btn]").click();
         cy.wait("@postAgentAccess", { timeout: defaultTimeout });
 
@@ -97,7 +97,7 @@ describe("Provision", () => {
         cy.get("[data-testid=role]").contains("AdminAnalyst").click();
 
         cy.intercept("PUT", "**/AgentAccess/").as("putAgentAccess");
-        cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
+        cy.get("[data-testid=save-btn]").parents(".mud-dialog").click(0, 0);
         cy.get("[data-testid=save-btn]").click();
         cy.wait("@putAgentAccess", { timeout: defaultTimeout });
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");

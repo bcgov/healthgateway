@@ -115,7 +115,7 @@ namespace HealthGateway.Admin.Client.Components.Support
             const string title = "Confirm Update";
             DialogOptions options = new()
             {
-                DisableBackdropClick = true,
+                BackdropClick = false,
                 FullWidth = true,
                 MaxWidth = MaxWidth.ExtraSmall,
             };
@@ -132,8 +132,8 @@ namespace HealthGateway.Admin.Client.Components.Support
                     parameters,
                     options);
 
-            DialogResult result = await dialog.Result;
-            if (!result.Canceled)
+            DialogResult? result = await dialog.Result;
+            if (result?.Canceled == false)
             {
                 this.Snackbar.Add("Patient's dataset access has been updated.", Severity.Success);
             }

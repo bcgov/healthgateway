@@ -168,7 +168,7 @@ public partial class AgentAccessPage : FluxorComponent
 
     private async Task DeleteAsync(Guid id)
     {
-        bool? delete = await this.DeleteConfirmation.Show();
+        bool? delete = await this.DeleteConfirmation.ShowAsync();
         if (delete is true)
         {
             this.Dispatcher.Dispatch(new AgentAccessActions.DeleteAction { Id = id });
@@ -185,7 +185,7 @@ public partial class AgentAccessPage : FluxorComponent
         this.IsModalShown = true;
 
         DialogParameters parameters = new() { ["Agent"] = agent };
-        DialogOptions options = new() { DisableBackdropClick = true };
+        DialogOptions options = new() { BackdropClick = false };
 
         IDialogReference dialog = await this.Dialog.ShowAsync<AgentAccessDialog>(title, parameters, options);
 

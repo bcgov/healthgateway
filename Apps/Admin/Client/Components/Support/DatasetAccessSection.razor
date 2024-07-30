@@ -5,7 +5,7 @@
     Dataset Access
 </MudText>
 
-<MudGrid Spacing="2">
+<MudGrid Spacing="4">
     <MudItem xs="12">
         <MudPaper>
             <MudProgressLinear
@@ -27,8 +27,8 @@
                             <MudSwitch
                                 T="bool"
                                 Label="@FormattingUtility.FormatDataSource(dataSource)"
-                                UnCheckedColor="Color.Tertiary"
-                                Color="Color.Success"
+                                UncheckedColor="@Color.Tertiary"
+                                Color="@Color.Success"
                                 Value="@IsBlocked(dataSource)"
                                 ValueChanged="@(_ => ToggleDataSource(dataSource))"
                                 ReadOnly="@(!CanEdit)"

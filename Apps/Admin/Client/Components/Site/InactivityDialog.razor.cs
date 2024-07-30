@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Client.Components.Site
     /// <summary>
     /// Backing logic for the InactivityDialog component.
     /// If the button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
-    /// Otherwise, the dialog's Result will have the Cancelled property set to true.
+    /// Otherwise, the dialog's Result will have the Canceled property set to true.
     /// </summary>
     public partial class InactivityDialog : FluxorComponent
     {

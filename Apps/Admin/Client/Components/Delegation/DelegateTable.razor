@@ -35,7 +35,8 @@
         <MudTd data-testid="delegate-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
         <MudTd data-testid="delegate-address" DataLabel="Address">@context.Address</MudTd>
         <MudTd data-testid="delegate-status" DataLabel="Status">
-            <MudChip Text="@EnumUtility.ToEnumString(context.DelegationStatus)"
+            <MudChip T="string"
+                     Value="@EnumUtility.ToEnumString(context.DelegationStatus)"
                      Variant="@Variant.Text"
                      Size="@Size.Small"
                      Color="GetStatusColor(context.DelegationStatus)" />

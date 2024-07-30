@@ -19,8 +19,8 @@
           Dense="true"
           data-testid="agent-audit-history-table">
     <RowTemplate>
-        <MudTd data-testid="agent-action-history-item" DataLabel="Agent-History">
-            <MudListItem Class="background-secondary">
+        <MudTd data-testid="agent-action-history-item" DataLabel="Agent-History" Class="background-secondary">
+            <div class="pa-4">
                 <MudText Typo="Typo.body1" Color="@Color.Primary" data-testid="agent">
                     @context.AgentUsername
                 </MudText>
@@ -32,7 +32,7 @@
                         @DateFormatter.ToShortDateAndTime(ConvertDateTime(context.TransactionDateTime))
                     </MudText>
                 </div>
-            </MudListItem>
+            </div>
         </MudTd>
     </RowTemplate>
     <PagerContent>

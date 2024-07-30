@@ -38,7 +38,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 
 /// <summary>
-/// Backing logic for the communications page.
+/// Backing logic for the feedback page.
 /// </summary>
 public partial class FeedbackPage : FluxorComponent
 {
@@ -91,15 +91,13 @@ public partial class FeedbackPage : FluxorComponent
     private IEnumerable<ExtendedUserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? [];
 
     private IEnumerable<ExtendedUserFeedbackView> FilteredFeedback => this.Feedback
-        .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)));
+        .Where(f => this.SelectedTagIds.All(t => f.Tags.Any(ft => ft.TagId == t)));
 
     private IEnumerable<FeedbackRow> FeedbackRows => this.FilteredFeedback.Select(f => new FeedbackRow(f));
 
     private bool AnyUnsavedFeedbackChanges => this.FeedbackRows.Any(f => f.IsDirty);
 
-    private MudChip[] SelectedTagChips { get; set; } = [];
-
-    private IEnumerable<Guid> TagIdFilter => this.SelectedTagChips.Select(c => c.Value).OfType<Guid>();
+    private IReadOnlyCollection<Guid> SelectedTagIds { get; set; } = [];
 
     private bool TagsUpdating => this.TagState.Value.Load.IsLoading ||
                                  this.TagState.Value.Add.IsLoading ||
@@ -178,14 +176,14 @@ public partial class FeedbackPage : FluxorComponent
         this.Dispatcher.Dispatch(new TagActions.AddAction { TagName = tagName });
     }
 
-    private void RemoveTag(MudChip chip)
+    private void RemoveTag(MudChip<Guid> chip)
     {
         if (this.TagState.Value.Delete.IsLoading || this.UserFeedbackState.Value.Load.IsLoading || this.UserFeedbackState.Value.AssociateTags.IsLoading)
         {
             return;
         }
 
-        Guid tagId = (Guid)chip.Value;
+        Guid tagId = chip.Value;
 
         if (this.Feedback.Any(f => f.Tags.Any(t => t.TagId == tagId)))
         {

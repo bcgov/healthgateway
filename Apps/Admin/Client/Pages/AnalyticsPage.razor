@@ -35,9 +35,9 @@
         <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="fas fa-download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" OnClick="GetYearOfBirthCountsData" data-testid="year-of-birth-download-btn">Year of Birth</HgButton>
         <MudDateRangePicker MinDate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
             <PickerActions>
-                <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
-                <MudButton OnClick="@(() => SelectedDateRangePicker.Close(false))">Cancel</MudButton>
-                <MudButton Color="Color.Primary" OnClick="@(() => SelectedDateRangePicker.Close())">Ok</MudButton>
+                <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.ClearAsync())">Clear</MudButton>
+                <MudButton OnClick="@(() => SelectedDateRangePicker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="@(() => SelectedDateRangePicker.CloseAsync())">Ok</MudButton>
             </PickerActions>
         </MudDateRangePicker>
     </MudItem>

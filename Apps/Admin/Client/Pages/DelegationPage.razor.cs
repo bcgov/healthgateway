@@ -170,7 +170,7 @@ namespace HealthGateway.Admin.Client.Pages
             };
             DialogOptions options = new()
             {
-                DisableBackdropClick = true,
+                BackdropClick = false,
                 FullWidth = true,
                 MaxWidth = MaxWidth.ExtraSmall,
             };
@@ -183,8 +183,8 @@ namespace HealthGateway.Admin.Client.Pages
                     parameters,
                     options);
 
-            DialogResult result = await dialog.Result;
-            if (!result.Canceled)
+            DialogResult? result = await dialog.Result;
+            if (result?.Canceled == false)
             {
                 this.SetEditMode(false);
             }
@@ -194,7 +194,7 @@ namespace HealthGateway.Admin.Client.Pages
         {
             const string title = "Add to Guardian List";
             DialogParameters parameters = [];
-            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.Small };
+            DialogOptions options = new() { BackdropClick = false, FullWidth = true, MaxWidth = MaxWidth.Small };
             IDialogReference dialog = await this.Dialog.ShowAsync<DelegateDialog>(title, parameters, options);
 
             await dialog.Result;
