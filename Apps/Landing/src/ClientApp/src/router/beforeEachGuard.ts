@@ -15,7 +15,7 @@ export const beforeEachGuard: NavigationGuard = async (
     if (meta?.redirectPath && webClientConfig.betaUrl) {
         let url = webClientConfig.betaUrl + meta.redirectPath;
         if (to.params.inviteKey) {
-            url += "/" + to.params.inviteKey;
+            url += "?verificationKey=" + to.params.inviteKey;
         }
 
         window.location.assign(url);
