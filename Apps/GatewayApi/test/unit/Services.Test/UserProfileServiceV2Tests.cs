@@ -339,29 +339,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// IsPhoneNumberValidAsync returns false for invalid phone number.
-        /// </summary>
-        /// <param name="phoneNumber">The phone number to validate.</param>
-        /// <param name="expected">The expected value of the validation result.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [InlineData("3345678901", true)]
-        [InlineData("2507001000", true)]
-        [InlineData("xxx3277465", false)]
-        [InlineData("abc", false)]
-        [Theory]
-        public async Task PhoneNumberIsNotValid(string phoneNumber, bool expected)
-        {
-            // Arrange
-            PhoneNumberValidMock mock = SetupPhoneNumberValidMock(phoneNumber);
-
-            // Act
-            bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        /// <summary>
         /// RecoverUserProfile - Happy Path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -488,30 +465,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Assert.Fail("Expected UpdateAcceptedTermsThrowsExceptionMock but got a different type.");
             }
-        }
-
-        /// <summary>
-        /// ValidateEligibilityAsync.
-        /// </summary>
-        /// <param name="minPatientAge">The minimum patient age to validate against.</param>
-        /// <param name="patientAge">The patient age to validate.</param>
-        /// <param name="expected">The expected eligibility result.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [InlineData(0, 0, true)]
-        [InlineData(19, 19, true)]
-        [InlineData(19, 20, true)]
-        [InlineData(19, 18, false)]
-        [Theory]
-        public async Task ShouldValidateEligibilityAsync(int minPatientAge, int patientAge, bool expected)
-        {
-            // Arrange
-            ValidateEligibilityMock mock = SetupValidateEligibilityMock(minPatientAge, patientAge);
-
-            // Act
-            bool actual = await mock.Service.ValidateEligibilityAsync(mock.Hdid);
-
-            // Assert
-            Assert.Equal(expected, actual);
         }
 
         private static void VerifyNotificationChannelVerifiedEvent(Mock<IMessageSender> messageSenderMock, Times? times = null)
@@ -1142,12 +1095,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, createUserRequest, DateTime.Today, EmailAddress);
         }
 
-        private static PhoneNumberValidMock SetupPhoneNumberValidMock(string phoneNumber)
-        {
-            IUserProfileServiceV2 service = GetUserProfileService(configurationRoot: GetIConfiguration());
-            return new(service, phoneNumber);
-        }
-
         private static BaseUserProfileServiceMock SetupRecoverUserProfileMock(
             bool userProfileExists = true,
             DateTime? profileClosedDateTime = null,
@@ -1265,24 +1212,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 jwtAuthTime);
         }
 
-        private static ValidateEligibilityMock SetupValidateEligibilityMock(
-            int minPatientAge = 0,
-            int patientAge = 0)
-        {
-            IConfigurationRoot configuration = GetIConfiguration(
-                minPatientAge: minPatientAge);
-
-            DateTime birthDate = GenerateBirthDate(patientAge);
-            PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(birthDate));
-            Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
-
-            IUserProfileServiceV2 service = GetUserProfileService(
-                patientDetailsServiceMock,
-                configurationRoot: configuration);
-
-            return new(service, Hdid);
-        }
-
         private abstract record BaseUserProfileServiceMock;
 
         private sealed record UserProfileMock(
@@ -1328,10 +1257,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserProfileServiceV2 Service,
             string Hdid) : BaseUserProfileServiceMock;
 
-        private sealed record PhoneNumberValidMock(
-            IUserProfileServiceV2 Service,
-            string PhoneNumber);
-
         private sealed record RecoverUserProfileMock(
             IUserProfileServiceV2 Service,
             Mock<IUserProfileDelegate> UserProfileDelegateMock,
@@ -1341,9 +1266,5 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private sealed record RecoverUserProfileExceptionMock(
             IUserProfileServiceV2 Service,
             string Hdid) : BaseUserProfileServiceMock;
-
-        private sealed record ValidateEligibilityMock(
-            IUserProfileServiceV2 Service,
-            string Hdid);
     }
 }

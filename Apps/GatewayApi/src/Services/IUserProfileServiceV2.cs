@@ -61,14 +61,6 @@ namespace HealthGateway.GatewayApi.Services
         Task RecoverUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
-        /// Determines whether a user is eligible to create a Health Gateway account.
-        /// </summary>
-        /// <param name="hdid">The requested user HDID.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A boolean result.</returns>
-        Task<bool> ValidateEligibilityAsync(string hdid, CancellationToken ct = default);
-
-        /// <summary>
         /// Updates a user's profile to capture approval of the terms of service.
         /// </summary>
         /// <param name="hdid">The user HDID.</param>
@@ -76,13 +68,5 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default);
-
-        /// <summary>
-        /// Determines whether a phone number is valid.
-        /// </summary>
-        /// <param name="phoneNumber">Phone number stripped of any mask characters.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A boolean value indicating whether the phone number is valid.</returns>
-        Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default);
     }
 }

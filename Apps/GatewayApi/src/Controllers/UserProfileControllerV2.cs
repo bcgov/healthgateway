@@ -48,6 +48,7 @@ namespace HealthGateway.GatewayApi.Controllers
         private readonly IUserSmsServiceV2 userSmsService;
         private readonly IUserPreferenceServiceV2 userPreferenceService;
         private readonly ILegalAgreementServiceV2 legalAgreementService;
+        private readonly IUserValidationService userValidationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileControllerV2"/> class.
@@ -58,13 +59,15 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userSmsService">The injected user sms service.</param>
         /// <param name="userPreferenceService">The injected user preference service.</param>
         /// <param name="legalAgreementService">The injected legal agreement service.</param>
+        /// <param name="userValidationService">The injected user validation service.</param>
         public UserProfileControllerV2(
             IUserProfileServiceV2 userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailServiceV2 userEmailService,
             IUserSmsServiceV2 userSmsService,
             IUserPreferenceServiceV2 userPreferenceService,
-            ILegalAgreementServiceV2 legalAgreementService)
+            ILegalAgreementServiceV2 legalAgreementService,
+            IUserValidationService userValidationService)
         {
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
@@ -72,6 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
             this.userSmsService = userSmsService;
             this.userPreferenceService = userPreferenceService;
             this.legalAgreementService = legalAgreementService;
+            this.userValidationService = userValidationService;
         }
 
         /// <summary>
@@ -178,7 +182,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<bool> Validate(string hdid, CancellationToken ct)
         {
-            return await this.userProfileService.ValidateEligibilityAsync(hdid, ct);
+            return await this.userValidationService.ValidateEligibilityAsync(hdid, ct);
         }
 
         /// <summary>
@@ -486,7 +490,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<bool> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
-            return await this.userProfileService.IsPhoneNumberValidAsync(phoneNumber, ct);
+            return await this.userValidationService.IsPhoneNumberValidAsync(phoneNumber, ct);
         }
     }
 }

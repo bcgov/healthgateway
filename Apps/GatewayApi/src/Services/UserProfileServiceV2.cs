@@ -288,18 +288,6 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> ValidateEligibilityAsync(string hdid, CancellationToken ct = default)
-        {
-            if (this.minPatientAge == 0)
-            {
-                return true;
-            }
-
-            PatientDetails patient = await this.patientDetailsService.GetPatientAsync(hdid, ct: ct);
-            return (await new AgeRangeValidator(this.minPatientAge).ValidateAsync(patient.Birthdate.ToDateTime(TimeOnly.MinValue), ct)).IsValid;
-        }
-
-        /// <inheritdoc/>
         public async Task UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default)
         {
             UserProfile userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
@@ -310,12 +298,6 @@ namespace HealthGateway.GatewayApi.Services
             {
                 throw new DatabaseException(result.Message);
             }
-        }
-
-        /// <inheritdoc/>
-        public async Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default)
-        {
-            return (await new SmsNumberValidator().ValidateAsync(phoneNumber, ct)).IsValid;
         }
 
         private async Task<UserProfileModel> BuildUserProfileModelAsync(
