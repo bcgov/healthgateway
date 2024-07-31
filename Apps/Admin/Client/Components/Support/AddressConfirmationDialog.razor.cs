@@ -17,7 +17,9 @@ namespace HealthGateway.Admin.Client.Components.Support;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -32,7 +34,7 @@ using MudBlazor;
 /// <summary>
 /// Backing logic for the AddressConfirmationDialog component.
 /// If the Confirmation button is pressed, the dialog's Result will have the Data property populated with an Address.
-/// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
+/// If the Cancel button is pressed, the dialog's Result will have the Canceled property set to true.
 /// </summary>
 /// <typeparam name="TErrorAction">
 /// An action that indicates an error was encountered while performing the action on
@@ -159,7 +161,8 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
         await base.DisposeAsyncCore(disposing);
     }
 
-    private static Task<IEnumerable<string>> SearchCountriesAsync(string value)
+    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "CancellationToken required for MudAutocomplete.SearchFunc")]
+    private static Task<IEnumerable<string>> SearchCountriesAsync(string value, CancellationToken ct)
     {
         return Task.FromResult(
             string.IsNullOrWhiteSpace(value)

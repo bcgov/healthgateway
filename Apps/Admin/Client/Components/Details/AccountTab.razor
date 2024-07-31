@@ -6,7 +6,7 @@
     <MudText Class="mb-4 mt-6" Typo="Typo.h6">
         Account Details
     </MudText>
-    <MudGrid Spacing="2">
+    <MudGrid Spacing="4">
         <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
             @if (!string.IsNullOrWhiteSpace(Patient.Hdid))
             {

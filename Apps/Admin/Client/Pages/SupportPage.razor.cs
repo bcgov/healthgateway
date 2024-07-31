@@ -228,8 +228,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RowClickEvent(TableRowClickEventArgs<PatientRow> tableRowClickEventArgs)
         {
-            string phn = tableRowClickEventArgs.Item.PersonalHealthNumber;
-            if (!string.IsNullOrEmpty(phn))
+            if (!string.IsNullOrEmpty(tableRowClickEventArgs.Item?.PersonalHealthNumber))
             {
                 this.NavigateToPatientDetails(tableRowClickEventArgs.Item.PersonalHealthNumber);
             }

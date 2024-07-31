@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Client.Components.Support
             };
             DialogOptions options = new()
             {
-                DisableBackdropClick = true,
+                BackdropClick = false,
                 FullWidth = true,
                 MaxWidth = MaxWidth.Small,
             };

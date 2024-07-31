@@ -1,7 +1,8 @@
 @using HealthGateway.Admin.Client.Components.Site
 @inherits LayoutComponentBase
 
-<MudThemeProvider Theme="@CurrentTheme" />
+<MudThemeProvider Theme="@CurrentTheme" @bind-IsDarkMode="@DarkMode" />
+<MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -20,7 +21,7 @@
                         <MudIconButton Icon="fas fa-user" Color="Color.Inherit" Edge="@Edge.End" data-testid="user-account-icon" />
                     </ActivatorContent>
                     <ChildContent>
-                        <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled" data-testid="user-info-link">
+                        <MudNavLink href="user-info" Disabled="@UserInfoDisabled" data-testid="user-info-link">
                             @(context.User.Identity?.Name ?? "Unknown")
                         </MudNavLink>
                         <MudNavLink Icon="fas fa-right-from-bracket" OnClick="@LogOut" data-testid="logout-text-link">Log Out</MudNavLink>

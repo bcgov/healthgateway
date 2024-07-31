@@ -75,7 +75,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
 
         private async Task DeleteCommunicationAsync(Guid id)
         {
-            bool? delete = await this.DeleteConfirmation.Show();
+            bool? delete = await this.DeleteConfirmation.ShowAsync();
             if (delete is true)
             {
                 ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);

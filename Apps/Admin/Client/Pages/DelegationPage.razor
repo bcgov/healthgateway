@@ -54,7 +54,7 @@
         Dependent
     </MudText>
     <DependentTable Data="@Dependent" />
-    <MudExpansionPanels Class="rounded-t-0" DisableGutters="true">
+    <MudExpansionPanels Class="rounded-t-0" Gutters="@false">
         <MudExpansionPanel>
             <TitleContent>
                 <MudText Typo="Typo.subtitle1" Class="mx-n2" data-testid="delegation-changes-header">
@@ -63,7 +63,7 @@
             </TitleContent>
             <ChildContent>
                 <MudPaper Class="mud-background mx-4 pa-4 overflow-auto" MaxHeight="400px">
-                    <MudGrid Spacing="4">
+                    <MudGrid Spacing="8">
                         @foreach ((AgentAction change, int index) in AgentActions.Select((c, i) => (c, i)))
                         {
                             <MudItem xs="12" data-testid=@($"delegation-change-{index}")>

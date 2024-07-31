@@ -30,7 +30,7 @@ using MudBlazor;
 /// <summary>
 /// Backing logic for the DelegateDialog component.
 /// If the Save button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
-/// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
+/// If the Cancel button is pressed, the dialog's Result will have the Canceled property set to true.
 /// </summary>
 public partial class DelegateDialog : FluxorComponent
 {

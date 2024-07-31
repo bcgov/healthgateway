@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -78,21 +79,11 @@ public partial class ReportsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessAction());
     }
 
-    private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableDataAsync(TableState tableState)
+    private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableDataAsync(TableState tableState, CancellationToken ct)
     {
         SortDirection sortDirection = tableState.SortDirection == MudBlazor.SortDirection.Descending ? SortDirection.Descending : SortDirection.Ascending;
-        ProtectedDependentReport report;
-        try
-        {
-            report = await this.AdminReportApi.GetProtectedDependentsReportAsync(tableState.Page, tableState.PageSize, sortDirection);
-        }
-        catch (Exception e) when (e is ApiException or HttpRequestException)
-        {
-            RequestError error = StoreUtility.FormatRequestError(e);
-            this.ProtectedDependentsErrorMessage = error.Message;
 
-            report = new([], new ReportMetadata(0, tableState.Page, tableState.PageSize));
-        }
+        ProtectedDependentReport report = await this.GetProtectedDependentsReportAsync(tableState.Page, tableState.PageSize, sortDirection, ct);
 
         return new TableData<ProtectedDependentRecord>
         {
@@ -101,15 +92,33 @@ public partial class ReportsPage : FluxorComponent
         };
     }
 
+    private async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int pageIndex, int pageSize, SortDirection sortDirection, CancellationToken ct)
+    {
+        try
+        {
+            return await this.AdminReportApi.GetProtectedDependentsReportAsync(pageIndex, pageSize, sortDirection, ct);
+        }
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.ProtectedDependentsErrorMessage = error.Message;
+
+            return new([], new ReportMetadata(0, pageIndex, pageSize));
+        }
+    }
+
     private async Task HandleBlockedAccessRowClickAsync(TableRowClickEventArgs<BlockedAccessRecord> args)
     {
-        await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, args.Item.Hdid);
-        this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
+        if (args.Item?.Hdid != null)
+        {
+            await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, args.Item.Hdid);
+            this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
+        }
     }
 
     private void HandleProtectedDependentsRowClick(TableRowClickEventArgs<ProtectedDependentRecord> args)
     {
-        if (args.Item.Phn != null)
+        if (args.Item?.Phn != null)
         {
             this.NavigationManager.NavigateTo("/delegation?Phn=" + args.Item.Phn);
         }
