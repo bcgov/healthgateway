@@ -45,6 +45,8 @@ export interface WebClientConfiguration {
     timeouts: TimeOutsConfiguration;
     // Gets or sets the URL for the beta application.
     betaUrl?: string;
+    // Gets or sets the URL for the classic application.
+    classicUrl?: string;
     // Gets or sets the ExternalURLs used by the Webclient.
     externalURLs: Dictionary<string>;
     // Gets or sets the FeatureToggleConfiguration state.

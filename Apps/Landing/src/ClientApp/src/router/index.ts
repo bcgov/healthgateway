@@ -106,6 +106,13 @@ const routes = [
         },
     },
     {
+        path: Path.VaccineCard,
+        component: NotFoundView,
+        meta: {
+            classicRedirectPath: "vaccinecard",
+        },
+    },
+    {
         path: "/:pathMatch(.*)*", // will catch all other paths not covered previously
         redirect: Path.NotFound,
     },

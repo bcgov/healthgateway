@@ -45,6 +45,11 @@ namespace HealthGateway.WebClient.Server.Models
         public Uri? BetaUrl { get; set; }
 
         /// <summary>
+        /// Gets or sets the URL for the classic application.
+        /// </summary>
+        public Uri? ClassicUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         [JsonPropertyName("externalURLs")]
