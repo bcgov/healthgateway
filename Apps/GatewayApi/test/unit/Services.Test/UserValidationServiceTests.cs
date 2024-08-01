@@ -69,7 +69,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(19, 20, true)]
         [InlineData(19, 18, false)]
         [Theory]
-        public async Task ShouldValidateEligibilityAsync(int minPatientAge, int patientAge, bool expected)
+        public async Task ShouldValidateEligibility(int minPatientAge, int patientAge, bool expected)
         {
             // Arrange
             ValidateEligibilityMock mock = SetupValidateEligibilityMock(minPatientAge, patientAge);
