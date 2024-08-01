@@ -35,9 +35,6 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserProfileServiceV2"/> class.
-    /// </summary>
     /// <param name="logger">The injected logger.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
     /// <param name="emailQueueService">The injected service to queue emails.</param>
