@@ -35,7 +35,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string Hdid = "hdid-mock";
 
         /// <summary>
-        /// IsPhoneNumberValidAsync returns false for invalid phone number.
+        /// IsPhoneNumberValidAsync.
         /// </summary>
         /// <param name="phoneNumber">The phone number to validate.</param>
         /// <param name="expected">The expected value of the validation result.</param>
@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData("xxx3277465", false)]
         [InlineData("abc", false)]
         [Theory]
-        public async Task PhoneNumberIsNotValid(string phoneNumber, bool expected)
+        public async Task ShouldValidatePhoneNumber(string phoneNumber, bool expected)
         {
             // Arrange
             PhoneNumberValidMock mock = SetupPhoneNumberValidMock(phoneNumber);
