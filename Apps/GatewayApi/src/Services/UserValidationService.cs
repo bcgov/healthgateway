@@ -24,9 +24,6 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserValidationService"/> class.
-    /// </summary>
     /// <param name="configuration">The injected configuration.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
     public class UserValidationService(IConfiguration configuration, IPatientDetailsService patientDetailsService) : IUserValidationService
