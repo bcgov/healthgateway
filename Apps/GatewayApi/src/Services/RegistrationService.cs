@@ -38,9 +38,6 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RegistrationService"/> class.
-    /// </summary>
     /// <param name="configuration">The injected configuration.</param>
     /// <param name="logger">The injected logger.</param>
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
