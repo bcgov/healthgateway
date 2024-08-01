@@ -82,7 +82,7 @@ function setupFeedbackAliases() {
 function setupBetaAccessAliases() {
     cy.log("Setting up beta access aliases.");
 
-    cy.intercept("GET", "**/BetaFeature/AllUserAccess").as("getAllUserAccess");
+    cy.intercept("GET", "**/BetaFeature/AllUserAccess*").as("getAllUserAccess");
 }
 
 function setupReportAliases() {

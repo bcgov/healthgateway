@@ -20,18 +20,7 @@
                 @SetUserAccessState.ErrorMessage
             </HgBannerFeedback>
 
-            <HgBannerFeedback
-                Class="mt-3"
-                Severity="Severity.Error"
-                IsEnabled="GetAllUserAccessState.HasError"
-                TResetAction="BetaAccessActions.GetAllUserAccessAction"
-                DataTestId="get-all-user-access-error-message">
-                @GetAllUserAccessState.ErrorMessage
-            </HgBannerFeedback>
-
-            <BetaAccessTable
-                Data="@AllUserBetaAccess"
-                IsLoading="@(GetAllUserAccessState.IsLoading || SetUserAccessState.IsLoading)" />
+            <AllBetaAccessTable />
         </MudTabPanel>
         <MudTabPanel Text="Search" data-testid="search-tab">
             <HgBannerFeedback
