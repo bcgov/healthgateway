@@ -64,13 +64,24 @@ namespace HealthGateway.Database.Delegates
             ArgumentOutOfRangeException.ThrowIfNegative(pageIndex);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageSize);
 
-            IOrderedQueryable<BetaFeatureAccess> query = dbContext.BetaFeatureAccess
+            IQueryable<string> emailQuery = dbContext.BetaFeatureAccess
+                .Where(p => p.UserProfile.Email != null)
+                .Select(p => p.UserProfile.Email!)
+                .Distinct();
+
+            int totalCount = await emailQuery.CountAsync(ct);
+
+            IList<string> emailAddresses = await emailQuery
+                .OrderBy(p => p)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            List<BetaFeatureAccess> data = await dbContext.BetaFeatureAccess
                 .Include(p => p.UserProfile)
                 .Where(p => p.UserProfile.Email != null)
-                .OrderBy(p => p.UserProfile.Email);
-
-            int totalCount = await query.CountAsync(ct);
-            List<BetaFeatureAccess> data = await query.Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(ct);
+                .Where(p => emailAddresses.Contains(p.UserProfile.Email))
+                .ToListAsync(ct);
 
             return new() { Data = data.GroupBy(p => p.UserProfile.Email!).ToList(), PageIndex = pageIndex, PageSize = pageSize, TotalCount = totalCount };
         }
