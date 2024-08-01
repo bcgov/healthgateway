@@ -15,12 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -75,12 +75,18 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a collection containing the emails of all users with beta access and the beta features associated with them.
+        /// Retrieves a paginated result containing the emails of all users with beta access and the beta features associated with
+        /// them.
         /// </summary>
+        /// <param name="pageIndex">Current page index, starting from 0.</param>
+        /// <param name="pageSize">Number of items per page.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A collection containing the emails of all users with beta access and the beta features associated with them.</returns>
+        /// <returns>
+        /// A paginated result containing the emails of all users with beta access and the beta features associated with
+        /// them.
+        /// </returns>
         /// <response code="200">
-        /// Returns a collection containing the emails of all users with beta access and the beta features
+        /// Returns a paginated result containing the emails of all users with beta access and the beta features
         /// associated with them.
         /// </response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
@@ -88,9 +94,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("AllUserAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IEnumerable<UserBetaAccess>> GetAllUserAccess(CancellationToken ct)
+        public async Task<PaginatedResult<UserBetaAccess>> GetAllUserAccess([FromQuery] int pageIndex, [FromQuery] int pageSize, CancellationToken ct)
         {
-            return await betaFeatureService.GetAllUserAccessAsync(ct);
+            return await betaFeatureService.GetAllUserAccessAsync(pageIndex, pageSize, ct);
         }
     }
 }

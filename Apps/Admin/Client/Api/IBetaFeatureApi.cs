@@ -15,9 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Api
 {
-    using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using Refit;
 
     /// <summary>
@@ -42,10 +43,13 @@ namespace HealthGateway.Admin.Client.Api
         Task<UserBetaAccess> GetUserAccessAsync(string email);
 
         /// <summary>
-        /// Retrieves the emails of all users with beta access and the beta features associated with them.
+        /// Retrieves the emails of all users with beta access and the beta features associated with them, using pagination.
         /// </summary>
+        /// <param name="pageIndex">Current page index, starting from 0.</param>
+        /// <param name="pageSize">Number of items per page.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A collection containing the emails of all users with beta access and the beta features associated with them.</returns>
         [Get("/AllUserAccess")]
-        Task<IEnumerable<UserBetaAccess>> GetAllUserAccessAsync();
+        Task<PaginatedResult<UserBetaAccess>> GetAllUserAccessAsync(int pageIndex, int pageSize, CancellationToken ct = default);
     }
 }

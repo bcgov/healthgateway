@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -87,14 +88,10 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<UserBetaAccess>> GetAllUserAccessAsync(CancellationToken ct = default)
+        public async Task<PaginatedResult<UserBetaAccess>> GetAllUserAccessAsync(int pageIndex, int pageSize, CancellationToken ct = default)
         {
-            IList<BetaFeatureAccess> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(true, ct);
-
-            return betaFeatures
-                .GroupBy(x => x.UserProfile.Email)
-                .Select(g => mappingService.MapToUserBetaAccess(g.Key!, g.Select(x => x.BetaFeatureCode)))
-                .ToList();
+            PaginatedResult<IGrouping<string, BetaFeatureAccess>> betaFeatures = await betaFeatureAccessDelegate.GetAllAsync(pageIndex, pageSize, ct);
+            return betaFeatures.Transform(g => mappingService.MapToUserBetaAccess(g.Key, g.Select(x => x.BetaFeatureCode)));
         }
     }
 }

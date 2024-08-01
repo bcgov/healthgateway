@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Pages
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
@@ -63,8 +62,6 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string QueryParameter { get; set; } = string.Empty;
 
-        private BaseRequestState<IEnumerable<UserBetaAccess>> GetAllUserAccessState => this.BetaAccessState.Value.GetAllUserAccess;
-
         private BaseRequestState<UserBetaAccess> GetUserAccessState => this.BetaAccessState.Value.GetUserAccess;
 
         private BaseRequestState SetUserAccessState => this.BetaAccessState.Value.SetUserAccess;
@@ -72,16 +69,11 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<UserBetaAccess> SearchResultBetaAccess =>
             this.BetaAccessState.Value.SearchResult == null ? [] : [this.BetaAccessState.Value.SearchResult];
 
-        private IEnumerable<UserBetaAccess> AllUserBetaAccess =>
-            this.BetaAccessState.Value.AllUserAccess?.OrderBy(d => d.Key).Select(d => d.Value) ?? [];
-
         /// <inheritdoc/>
         protected override void OnInitialized()
         {
             base.OnInitialized();
             this.ResetBetaFeatureState();
-
-            this.Dispatcher.Dispatch(new BetaAccessActions.GetAllUserAccessAction());
         }
 
         /// <inheritdoc/>
