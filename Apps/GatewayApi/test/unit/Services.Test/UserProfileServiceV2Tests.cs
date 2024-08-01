@@ -18,11 +18,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
@@ -30,9 +28,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Common.Messaging;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -57,7 +52,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string EmailAddress = "user@HealthGateway.ca";
         private const string SmsNumber = "2505556000";
         private const string SmsVerificationCode = "12345";
-        private const string InvalidSmsNumber = "xxx000xxxx";
 
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
         private static readonly Guid TermsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
@@ -138,131 +132,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Assert.Fail("Expected CloseUserProfileThrowsExceptionMock but got a different type.");
             }
-        }
-
-        /// <summary>
-        /// CreateUserProfileAsync.
-        /// </summary>
-        /// <param name="requestedSmsNumber">The value representing the requested sms number.</param>
-        /// <param name="requestedEmailAddress">The value representing the requested email address.</param>
-        /// <param name="jwtEmailAddress">The value representing the jwt email address.</param>
-        /// <param name="minPatientAge">The value representing the valid minimum age to create a profile.</param>
-        /// <param name="patientAge">The value representing the patient's age.</param>
-        /// <param name="accountsChangeFeedEnabled">The value indicates whether accounts change feed has been enabled or not.</param>
-        /// <param name="notificationsChangeFeedEnabled">
-        /// The value indicates whether notification change feed has been enabled or
-        /// not.
-        /// </param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(SmsNumber, EmailAddress, EmailAddress, 18, 18, true, true)] // Happy path
-        [InlineData(SmsNumber, EmailAddress, EmailAddress, 18, 19, false, false)] // Happy path
-        [InlineData(null, null, EmailAddress, 18, 18, true, true)] // Both sms and email are null in request
-        [InlineData("", "", EmailAddress, 18, 18, true, true)] // Both sms and email are empty string in request
-        [InlineData(SmsNumber, EmailAddress, null, 18, 18, true, true)] // Jwt email address is null
-        [InlineData(SmsNumber, EmailAddress, "", 18, 18, true, true)] // Jwt email address is empty string
-        public async Task ShouldCreateUserProfileAsync(
-            string? requestedSmsNumber,
-            string? requestedEmailAddress,
-            string? jwtEmailAddress,
-            int minPatientAge,
-            int patientAge,
-            bool accountsChangeFeedEnabled,
-            bool notificationsChangeFeedEnabled)
-        {
-            // Arrange
-            DateTime currentUtcDate = DateTime.UtcNow.Date;
-
-            bool isEmailVerified =
-                !string.IsNullOrWhiteSpace(requestedEmailAddress)
-                && string.Equals(requestedEmailAddress, jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-
-            Times expectedVerificationSmsInsertTimes = ConvertToTimes(!string.IsNullOrWhiteSpace(requestedSmsNumber));
-            Times expectedVerificationEmailInsertTimes = ConvertToTimes(!string.IsNullOrWhiteSpace(requestedEmailAddress));
-            Times expectedQueueNewEmailByEntityTimes = ConvertToTimes(!isEmailVerified && !string.IsNullOrWhiteSpace(requestedEmailAddress));
-            Times expectedMessageAccountCreatedEventTimes = ConvertToTimes(accountsChangeFeedEnabled);
-            Times expectedNotificationChannelVerifiedEventTimes = ConvertToTimes(isEmailVerified && notificationsChangeFeedEnabled);
-
-            UserProfileModel expected = new()
-            {
-                HdId = Hdid,
-                TermsOfServiceId = TermsOfServiceGuid,
-                Email = requestedEmailAddress,
-                IsEmailVerified = !string.IsNullOrWhiteSpace(requestedEmailAddress),
-                AcceptedTermsOfService = true,
-                SmsNumber = requestedSmsNumber,
-                IsSmsNumberVerified = !string.IsNullOrWhiteSpace(requestedSmsNumber),
-                HasTermsOfServiceUpdated = true,
-                HasTourUpdated = false,
-                LastLoginDateTime = currentUtcDate,
-                LastLoginDateTimes = [currentUtcDate],
-                BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
-            };
-
-            CreateUserProfileMock mock = SetupCreateUserProfileMock(
-                currentUtcDate,
-                requestedSmsNumber,
-                requestedEmailAddress,
-                jwtEmailAddress,
-                minPatientAge,
-                patientAge,
-                accountsChangeFeedEnabled,
-                notificationsChangeFeedEnabled);
-
-            // Act
-            UserProfileModel actual = await mock.Service.CreateUserProfileAsync(
-                mock.CreateProfileRequest,
-                mock.JwtAuthTime,
-                mock.JwtEmailAddress);
-
-            // Assert and Verify
-            actual.ShouldDeepEqual(expected);
-
-            VerifyVerificationSmsInsert(mock.MessagingVerificationDelegateMock, expectedVerificationSmsInsertTimes);
-            VerifyVerificationEmailInsert(mock.MessagingVerificationDelegateMock, expectedVerificationEmailInsertTimes);
-            VerifyQueueNotificationSettingsRequest(mock.NotificationSettingsServiceMock);
-            VerifyQueueNewEmailByEntity(mock.EmailQueueServiceMock, expectedQueueNewEmailByEntityTimes);
-            VerifyMessageAccountCreatedEvent(mock.MessageSenderMock, expectedMessageAccountCreatedEventTimes);
-            VerifyNotificationChannelVerifiedEvent(mock.MessageSenderMock, expectedNotificationChannelVerifiedEventTimes);
-        }
-
-        /// <summary>
-        /// CreateUserProfileAsync throws Exception.
-        /// </summary>
-        /// <param name="requestedSmsNumber">The value representing the requested sms number.</param>
-        /// <param name="minPatientAge">The value representing the valid minimum age to create a profile.</param>
-        /// <param name="patientAge">The value representing the patient's age.</param>
-        /// <param name="profileInsertStatus">The db status returned when user profile is inserted in the database </param>
-        /// <param name="expectedException">The expected exception type to be thrown.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(InvalidSmsNumber, 18, 18, null, typeof(ValidationException))]
-        [InlineData(SmsNumber, 18, 17, null, typeof(ValidationException))]
-        [InlineData(SmsNumber, 18, 18, DbStatusCode.Error, typeof(DatabaseException))]
-        public async Task CreateUserProfileAsyncThrowsException(
-            string? requestedSmsNumber,
-            int minPatientAge,
-            int patientAge,
-            DbStatusCode? profileInsertStatus,
-            Type expectedException)
-        {
-            // Arrange
-            CreateUserProfileExceptionMock mock = SetupCreateUserProfileThrowsExceptionMock(
-                requestedSmsNumber,
-                minPatientAge,
-                patientAge,
-                profileInsertStatus);
-
-            // Act and assert
-            await Assert.ThrowsAsync(
-                expectedException,
-                async () =>
-                {
-                    await mock.Service.CreateUserProfileAsync(
-                        mock.CreateProfileRequest,
-                        mock.JwtAuthTime,
-                        mock.JwtEmailAddress);
-                });
         }
 
         /// <summary>
@@ -467,26 +336,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
         }
 
-        private static void VerifyNotificationChannelVerifiedEvent(Mock<IMessageSender> messageSenderMock, Times? times = null)
-        {
-            messageSenderMock.Verify(
-                v => v.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
-        private static void VerifyQueueNewEmailByEntity(Mock<IEmailQueueService> emailQueueServiceMock, Times? times = null)
-        {
-            emailQueueServiceMock.Verify(
-                v => v.QueueNewEmailAsync(
-                    It.IsAny<Email>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
         private static void VerifyQueueNewEmailByTemplate(Mock<IEmailQueueService> emailQueueServiceMock, Times? times = null)
         {
             emailQueueServiceMock.Verify(
@@ -499,56 +348,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 times ?? Times.Once());
         }
 
-        private static void VerifyQueueNotificationSettingsRequest(Mock<INotificationSettingsService> notificationSettingsServiceMock, Times? times = null)
-        {
-            notificationSettingsServiceMock.Verify(
-                v => v.QueueNotificationSettingsAsync(
-                    It.IsAny<NotificationSettingsRequest>(),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
         private static void VerifyUserProfileUpdate(Mock<IUserProfileDelegate> userProfileDelegateMock, Times? times = null)
         {
             userProfileDelegateMock.Verify(
                 v => v.UpdateAsync(
                     It.IsAny<UserProfile>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
-        private static void VerifyMessageAccountCreatedEvent(Mock<IMessageSender> messageSenderMock, Times? times = null)
-        {
-            messageSenderMock.Verify(
-                v => v.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is AccountCreatedEvent),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
-        private static void VerifyVerificationEmailInsert(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
-        {
-            messagingVerificationDelegateMock.Verify(
-                v => v.InsertAsync(
-                    It.Is<MessagingVerification>(
-                        x => string.IsNullOrWhiteSpace(x.SmsNumber)
-                             && x.Email != null
-                             && !string.IsNullOrWhiteSpace(x.EmailAddress)),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
-        private static void VerifyVerificationSmsInsert(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
-        {
-            messagingVerificationDelegateMock.Verify(
-                v => v.InsertAsync(
-                    It.Is<MessagingVerification>(
-                        x => !string.IsNullOrWhiteSpace(x.SmsNumber)
-                             && x.Email == null
-                             && string.IsNullOrWhiteSpace(x.EmailAddress)),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
@@ -676,10 +480,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static IUserProfileServiceV2 GetUserProfileService(
             Mock<IPatientDetailsService>? patientDetailsServiceMock = null,
-            Mock<IUserEmailServiceV2>? userEmailServiceMock = null,
-            Mock<IUserSmsServiceV2>? userSmsServiceMock = null,
             Mock<IEmailQueueService>? emailQueueServiceMock = null,
-            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<IUserPreferenceServiceV2>? userPreferenceServiceMock = null,
             Mock<ILegalAgreementServiceV2>? legalAgreementServiceMock = null,
@@ -687,14 +488,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IApplicationSettingsService>? applicationSettingsServiceMock = null,
             Mock<IPatientRepository>? patientRepositoryMock = null,
-            Mock<IMessageSender>? messageSenderMock = null,
             IConfigurationRoot? configurationRoot = null)
         {
             patientDetailsServiceMock ??= new();
-            userEmailServiceMock ??= new();
-            userSmsServiceMock ??= new();
             emailQueueServiceMock ??= new();
-            notificationSettingsServiceMock ??= new();
             userProfileDelegateMock ??= new();
             userPreferenceServiceMock ??= new();
             legalAgreementServiceMock ??= new();
@@ -702,27 +499,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             authenticationDelegateMock ??= new();
             applicationSettingsServiceMock ??= new();
             patientRepositoryMock ??= new();
-            messageSenderMock ??= new();
             configurationRoot ??= GetIConfiguration();
 
             return new UserProfileServiceV2(
                 new Mock<ILogger<UserProfileServiceV2>>().Object,
                 patientDetailsServiceMock.Object,
-                userEmailServiceMock.Object,
-                userSmsServiceMock.Object,
                 emailQueueServiceMock.Object,
-                notificationSettingsServiceMock.Object,
                 userProfileDelegateMock.Object,
                 userPreferenceServiceMock.Object,
                 legalAgreementServiceMock.Object,
                 messagingVerificationDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
                 configurationRoot,
                 MappingService,
                 authenticationDelegateMock.Object,
                 applicationSettingsServiceMock.Object,
-                patientRepositoryMock.Object,
-                messageSenderMock.Object);
+                patientRepositoryMock.Object);
         }
 
         private static Mock<IApplicationSettingsService> SetupApplicationSettingsServiceMock(DateTime latestTourChangeDateTime)
@@ -815,48 +606,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userPreferenceServiceMock;
         }
 
-        private static Mock<IUserEmailServiceV2> SetupUserEmailServiceMock(MessagingVerification messagingVerification)
-        {
-            Mock<IUserEmailServiceV2> userEmailServiceMock = new();
-
-            userEmailServiceMock.Setup(
-                    s => s.GenerateMessagingVerificationAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Guid>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(messagingVerification);
-
-            return userEmailServiceMock;
-        }
-
-        private static Mock<IUserSmsServiceV2> SetupUserSmsServiceMock(MessagingVerification messagingVerification)
-        {
-            Mock<IUserSmsServiceV2> userSmsServiceMock = new();
-
-            userSmsServiceMock.Setup(
-                    s => s.GenerateMessagingVerification(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>()))
-                .Returns(messagingVerification);
-
-            return userSmsServiceMock;
-        }
-
-        private static Mock<IUserPreferenceServiceV2> SetupUserPreferencesServiceMock()
-        {
-            Mock<IUserPreferenceServiceV2> userPreferenceServiceMock = new();
-            userPreferenceServiceMock.Setup(
-                    s => s.GetUserPreferencesAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync([]);
-
-            return userPreferenceServiceMock;
-        }
-
         private static Mock<IUserProfileDelegate> SetupUserProfileDelegateMock(
             UserProfile? userProfile,
             IList<UserProfileHistory>? userProfileHistoryList = null)
@@ -888,13 +637,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static Mock<IUserProfileDelegate> SetupUserProfileDelegateMock(
-            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+        private static void SetupUserProfileDelegateMock(
+            Mock<IUserProfileDelegate> userProfileDelegateMock,
             DbResult<UserProfile>? insertProfileResult = null,
             DbResult<UserProfile>? updateProfileResult = null)
         {
-            userProfileDelegateMock ??= new();
-
             if (insertProfileResult != null)
             {
                 userProfileDelegateMock.Setup(
@@ -914,8 +661,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             It.IsAny<CancellationToken>()))
                     .ReturnsAsync(updateProfileResult);
             }
-
-            return userProfileDelegateMock;
         }
 
         private static BaseUserProfileServiceMock SetupUpdateAcceptedTermsMock(DbStatusCode profileUpdateStatus)
@@ -974,125 +719,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
 
             return new CloseUserProfileExceptionMock(service, Hdid);
-        }
-
-        private static CreateUserProfileMock SetupCreateUserProfileMock(
-            DateTime currentDateTime,
-            string? requestedSmsNumber,
-            string? requestedEmailAddress,
-            string? jwtEmailAddress,
-            int minPatientAge,
-            int patientAge,
-            bool accountsChangeFeedEnabled,
-            bool notificationsChangeFeedEnabled)
-        {
-            CreateUserRequest createUserRequest = new()
-            {
-                Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, requestedEmailAddress),
-            };
-
-            PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(GenerateBirthDate(patientAge)));
-            Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
-
-            MessagingVerification emailVerification = GenerateMessagingVerification(emailAddress: requestedEmailAddress);
-            Mock<IUserEmailServiceV2> userEmailServiceMock = SetupUserEmailServiceMock(emailVerification);
-
-            MessagingVerification smsVerification = GenerateMessagingVerification(smsNumber: requestedSmsNumber);
-            Mock<IUserSmsServiceV2> userSmsServiceMock = SetupUserSmsServiceMock(smsVerification);
-
-            Mock<IEmailQueueService> emailQueueServiceMock = new();
-
-            UserProfile insertUserProfile = GenerateUserProfile(
-                loginDate: currentDateTime,
-                email: requestedEmailAddress,
-                smsNumber: requestedSmsNumber);
-            DbResult<UserProfile> insertProfileResult = GenerateUserProfileDbResult(DbStatusCode.Created, insertUserProfile);
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(insertProfileResult: insertProfileResult);
-
-            Mock<IUserPreferenceServiceV2> userPreferenceServiceMock = SetupUserPreferencesServiceMock();
-
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
-
-            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
-
-            IConfigurationRoot configuration = GetIConfiguration(
-                minPatientAge,
-                accountsChangeFeedEnabled: accountsChangeFeedEnabled,
-                notificationsChangeFeedEnabled: notificationsChangeFeedEnabled);
-
-            IUserProfileServiceV2 service = GetUserProfileService(
-                patientDetailsServiceMock,
-                userSmsServiceMock: userSmsServiceMock,
-                userEmailServiceMock: userEmailServiceMock,
-                emailQueueServiceMock: emailQueueServiceMock,
-                notificationSettingsServiceMock: notificationSettingsServiceMock,
-                userProfileDelegateMock: userProfileDelegateMock,
-                userPreferenceServiceMock: userPreferenceServiceMock,
-                messagingVerificationDelegateMock: messagingVerificationDelegateMock,
-                messageSenderMock: messageSenderMock,
-                configurationRoot: configuration);
-
-            return new(
-                service,
-                messagingVerificationDelegateMock,
-                notificationSettingsServiceMock,
-                emailQueueServiceMock,
-                messageSenderMock,
-                createUserRequest,
-                DateTime.UtcNow,
-                jwtEmailAddress);
-        }
-
-        private static CreateUserProfileExceptionMock SetupCreateUserProfileThrowsExceptionMock(
-            string? requestedSmsNumber,
-            int minPatientAge,
-            int patientAge,
-            DbStatusCode? profileInsertStatus)
-        {
-            CreateUserRequest createUserRequest = new()
-            {
-                Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, EmailAddress),
-            };
-
-            PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(GenerateBirthDate(patientAge)));
-            Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
-
-            MessagingVerification emailVerification = GenerateMessagingVerification(emailAddress: EmailAddress);
-            Mock<IUserEmailServiceV2> userEmailServiceMock = SetupUserEmailServiceMock(emailVerification);
-
-            MessagingVerification smsVerification = GenerateMessagingVerification(smsNumber: requestedSmsNumber);
-            Mock<IUserSmsServiceV2> userSmsServiceMock = SetupUserSmsServiceMock(smsVerification);
-
-            Mock<IEmailQueueService> emailQueueServiceMock = new();
-
-            DbResult<UserProfile>? insertProfileResult =
-                profileInsertStatus != null ? GenerateUserProfileDbResult(profileInsertStatus.Value) : null;
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(insertProfileResult: insertProfileResult);
-
-            Mock<IUserPreferenceServiceV2> userPreferenceServiceMock = SetupUserPreferencesServiceMock();
-
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
-
-            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
-
-            IConfigurationRoot configuration = GetIConfiguration(
-                minPatientAge: minPatientAge);
-
-            IUserProfileServiceV2 service = GetUserProfileService(
-                patientDetailsServiceMock,
-                userSmsServiceMock: userSmsServiceMock,
-                userEmailServiceMock: userEmailServiceMock,
-                emailQueueServiceMock: emailQueueServiceMock,
-                notificationSettingsServiceMock: notificationSettingsServiceMock,
-                userProfileDelegateMock: userProfileDelegateMock,
-                userPreferenceServiceMock: userPreferenceServiceMock,
-                messagingVerificationDelegateMock: messagingVerificationDelegateMock,
-                messageSenderMock: messageSenderMock,
-                configurationRoot: configuration);
-
-            return new(service, createUserRequest, DateTime.Today, EmailAddress);
         }
 
         private static BaseUserProfileServiceMock SetupRecoverUserProfileMock(
@@ -1188,22 +814,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             IConfigurationRoot configuration = GetIConfiguration();
 
-            Mock<IUserEmailServiceV2> userEmailServiceMock = new();
-            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
-
             IUserProfileServiceV2 service = GetUserProfileService(
                 patientDetailsServiceMock,
-                userEmailServiceMock,
-                notificationSettingsServiceMock: notificationSettingsServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock,
                 legalAgreementServiceMock: legalAgreementServiceMock,
                 messagingVerificationDelegateMock: messagingVerificationDelegateMock,
                 userPreferenceServiceMock: userPreferenceServiceMock,
                 configurationRoot: configuration,
                 authenticationDelegateMock: authenticationDelegateMock,
-                applicationSettingsServiceMock: applicationSettingsServiceMock,
-                messageSenderMock: messageSenderMock);
+                applicationSettingsServiceMock: applicationSettingsServiceMock);
 
             return new(
                 service,
@@ -1219,22 +838,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate> UserProfileDelegateMock,
             string Hdid,
             DateTime JwtAuthTime);
-
-        private sealed record CreateUserProfileMock(
-            IUserProfileServiceV2 Service,
-            Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
-            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
-            Mock<IEmailQueueService> EmailQueueServiceMock,
-            Mock<IMessageSender> MessageSenderMock,
-            CreateUserRequest CreateProfileRequest,
-            DateTime JwtAuthTime,
-            string? JwtEmailAddress);
-
-        private sealed record CreateUserProfileExceptionMock(
-            IUserProfileServiceV2 Service,
-            CreateUserRequest CreateProfileRequest,
-            DateTime JwtAuthTime,
-            string? JwtEmailAddress);
 
         private sealed record UpdateAcceptedTermsMock(
             IUserProfileServiceV2 Service,

@@ -35,16 +35,6 @@ namespace HealthGateway.GatewayApi.Services
         Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default);
 
         /// <summary>
-        /// Creates a user profile.
-        /// </summary>
-        /// <param name="createProfileRequest">The request to create a user profile model.</param>
-        /// <param name="jwtAuthTime">The authenticated login time from the JWT.</param>
-        /// <param name="jwtEmailAddress">The email address contained in the JWT.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The user profile.</returns>
-        Task<UserProfileModel> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default);
-
-        /// <summary>
         /// Closes a user profile.
         /// </summary>
         /// <param name="hdid">The requested user HDID.</param>
