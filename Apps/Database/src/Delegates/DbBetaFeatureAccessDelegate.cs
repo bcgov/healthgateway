@@ -83,7 +83,13 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => emailAddresses.Contains(p.UserProfile.Email))
                 .ToListAsync(ct);
 
-            return new() { Data = data.GroupBy(p => p.UserProfile.Email!).ToList(), PageIndex = pageIndex, PageSize = pageSize, TotalCount = totalCount };
+            return new()
+            {
+                Data = [.. data.GroupBy(p => p.UserProfile.Email!).OrderBy(g => g.Key)],
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+            };
         }
     }
 }
