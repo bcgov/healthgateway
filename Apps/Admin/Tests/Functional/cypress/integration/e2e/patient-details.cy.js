@@ -80,7 +80,7 @@ function validateMailAddressFormRequiredInputs() {
         });
     cy.get("[data-testid=address-confirmation-button]")
         .parents(".mud-dialog")
-        .click();
+        .click(0, 0);
     cy.get("[data-testid=address-confirmation-button]").click();
 
     validateCovid19InputContainsError("[data-testid=address-lines-input]");
