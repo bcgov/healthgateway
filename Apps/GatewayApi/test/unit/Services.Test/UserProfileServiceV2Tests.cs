@@ -21,12 +21,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -35,7 +32,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApiTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -51,9 +47,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string Hdid = "hdid-mock";
         private const string EmailAddress = "user@HealthGateway.ca";
         private const string SmsNumber = "2505556000";
-        private const string SmsVerificationCode = "12345";
 
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
         private static readonly Guid TermsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
         /// <summary>
@@ -139,22 +133,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <param name="userProfileExists">The value indicating whether user profile exists or not.</param>
         /// <param name="jwtAuthTimeIsDifferent">The value indicating whether jwt auth time is different from last login or not.</param>
-        /// <param name="emailAddressExists">The value indicating whether email address exists or not.</param>
-        /// <param name="smsNumberExists">The value indicating whether sms number exists or not.</param>
-        /// <param name="tourChangeDateIsLatest">The value indicating whether tour change date is latest or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, true, true, true, true)] // Happy path
-        [InlineData(true, false, true, true, true)] // jwt auth time is not different
-        [InlineData(true, true, true, true, false)] // Tour change is not latest
-        [InlineData(true, false, false, false, true)] // Profile email and sms do not exist; look at messaging verification
-        [InlineData(false, false, false, false, false)] // Cannot get profile because user profile does not exist
+        [InlineData(true, true)] // User profile exists and jwt auth time is different
+        [InlineData(true, false)] // User profile exists and jwt auth time is not different
+        [InlineData(false, false)] // Cannot get profile because user profile does not exist
         public async Task ShouldGetUserProfileAsync(
             bool userProfileExists,
-            bool jwtAuthTimeIsDifferent,
-            bool emailAddressExists,
-            bool smsNumberExists,
-            bool tourChangeDateIsLatest)
+            bool jwtAuthTimeIsDifferent)
         {
             // Arrange
             Times expectedUserProfileUpdate = ConvertToTimes(jwtAuthTimeIsDifferent);
@@ -164,39 +150,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ? currentDateTime.AddHours(1)
                 : currentDateTime;
 
-            UserProfileHistory historyMinus1 = GenerateUserProfileHistory(loginDate: currentDateTime, daysFromLoginDate: 1);
-            UserProfileHistory historyMinus2 = GenerateUserProfileHistory(loginDate: currentDateTime, daysFromLoginDate: 2);
-
             UserProfileModel expected = userProfileExists
-                ? new UserProfileModel
-                {
-                    HdId = Hdid,
-                    TermsOfServiceId = TermsOfServiceGuid,
-                    Email = EmailAddress,
-                    AcceptedTermsOfService = true,
-                    IsEmailVerified = userProfileExists && emailAddressExists,
-                    IsSmsNumberVerified = userProfileExists && smsNumberExists,
-                    SmsNumber = SmsNumber,
-                    HasTermsOfServiceUpdated = true,
-                    HasTourUpdated = tourChangeDateIsLatest,
-                    LastLoginDateTime = jwtAuthTime,
-                    LastLoginDateTimes =
-                    [
-                        jwtAuthTime,
-                        historyMinus1.LastLoginDateTime,
-                        historyMinus2.LastLoginDateTime,
-                    ],
-                    BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
-                }
+                ? GenerateUserProfileModel(currentDateTime)
                 : new();
 
             UserProfileMock mock = SetupUserProfileMock(
                 currentDateTime,
                 jwtAuthTime,
-                userProfileExists,
-                emailAddressExists,
-                smsNumberExists,
-                tourChangeDateIsLatest);
+                userProfileExists);
 
             // Act
             UserProfileModel actual = await mock.Service.GetUserProfileAsync(mock.Hdid, mock.JwtAuthTime);
@@ -369,34 +330,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return currentUtcDate.AddYears(-patientAge);
         }
 
-        private static Email GenerateEmail(Guid? emailId = null, string toEmailAddress = EmailAddress)
-        {
-            return new()
-            {
-                Id = emailId ?? Guid.NewGuid(),
-                To = toEmailAddress,
-            };
-        }
-
-        private static MessagingVerification GenerateMessagingVerification(
-            string smsVerificationCode = SmsVerificationCode,
-            bool validated = true,
-            Guid? inviteKey = null,
-            string? emailAddress = null,
-            string? smsNumber = null)
-        {
-            return new()
-            {
-                Id = Guid.NewGuid(),
-                InviteKey = inviteKey ?? Guid.NewGuid(),
-                SmsNumber = smsNumber,
-                SmsValidationCode = smsVerificationCode,
-                EmailAddress = emailAddress,
-                Validated = validated,
-                Email = emailAddress != null ? GenerateEmail(toEmailAddress: emailAddress) : null,
-            };
-        }
-
         private static UserProfile GenerateUserProfile(
             string hdid = Hdid,
             DateTime? loginDate = null,
@@ -459,6 +392,29 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
         }
 
+        private static UserProfileModel GenerateUserProfileModel(DateTime lastLoginDateTime)
+        {
+            return new()
+            {
+                HdId = Hdid,
+                TermsOfServiceId = TermsOfServiceGuid,
+                Email = EmailAddress,
+                AcceptedTermsOfService = true,
+                IsEmailVerified = true,
+                IsSmsNumberVerified = true,
+                SmsNumber = SmsNumber,
+                HasTermsOfServiceUpdated = true,
+                HasTourUpdated = true,
+                LastLoginDateTime = lastLoginDateTime,
+                LastLoginDateTimes =
+                [
+                    lastLoginDateTime,
+                ],
+                BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
+                BlockedDataSources = [DataSource.Immunization],
+            };
+        }
+
         private static IConfigurationRoot GetIConfiguration(
             int minPatientAge = 12,
             int profileHistoryRecordLimit = 2,
@@ -482,23 +438,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IPatientDetailsService>? patientDetailsServiceMock = null,
             Mock<IEmailQueueService>? emailQueueServiceMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
-            Mock<IUserPreferenceServiceV2>? userPreferenceServiceMock = null,
-            Mock<ILegalAgreementServiceV2>? legalAgreementServiceMock = null,
-            Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
-            Mock<IApplicationSettingsService>? applicationSettingsServiceMock = null,
-            Mock<IPatientRepository>? patientRepositoryMock = null,
+            Mock<IUserProfileModelService>? userProfileModelServiceMock = null,
             IConfigurationRoot? configurationRoot = null)
         {
             patientDetailsServiceMock ??= new();
             emailQueueServiceMock ??= new();
             userProfileDelegateMock ??= new();
-            userPreferenceServiceMock ??= new();
-            legalAgreementServiceMock ??= new();
-            messagingVerificationDelegateMock ??= new();
             authenticationDelegateMock ??= new();
-            applicationSettingsServiceMock ??= new();
-            patientRepositoryMock ??= new();
+            userProfileModelServiceMock ??= new();
             configurationRoot ??= GetIConfiguration();
 
             return new UserProfileServiceV2(
@@ -506,25 +454,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 patientDetailsServiceMock.Object,
                 emailQueueServiceMock.Object,
                 userProfileDelegateMock.Object,
-                userPreferenceServiceMock.Object,
-                legalAgreementServiceMock.Object,
-                messagingVerificationDelegateMock.Object,
                 configurationRoot,
-                MappingService,
                 authenticationDelegateMock.Object,
-                applicationSettingsServiceMock.Object,
-                patientRepositoryMock.Object);
-        }
-
-        private static Mock<IApplicationSettingsService> SetupApplicationSettingsServiceMock(DateTime latestTourChangeDateTime)
-        {
-            Mock<IApplicationSettingsService> applicationSettingsServiceMock = new();
-            applicationSettingsServiceMock.Setup(
-                    s => s.GetLatestTourChangeDateTimeAsync(
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(latestTourChangeDateTime);
-
-            return applicationSettingsServiceMock;
+                userProfileModelServiceMock.Object);
         }
 
         private static Mock<IAuthenticationDelegate> SetupAuthenticationDelegateMock(
@@ -544,41 +476,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return authenticationDelegateMock;
         }
 
-        private static Mock<ILegalAgreementServiceV2> SetupLegalAgreementServiceMock(Guid latestTermsOfServiceId)
-        {
-            Mock<ILegalAgreementServiceV2> legalAgreementServiceMock = new();
-            legalAgreementServiceMock.Setup(
-                    s => s.GetActiveLegalAgreementId(
-                        It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(latestTermsOfServiceId);
-
-            return legalAgreementServiceMock;
-        }
-
-        private static Mock<IMessagingVerificationDelegate> SetupMessagingVerificationDelegateMock(
-            MessagingVerification emailAddressInvite,
-            MessagingVerification smsNumberInvite)
-        {
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
-
-            messagingVerificationDelegateMock.Setup(
-                    s => s.GetLastForUserAsync(
-                        It.IsAny<string>(),
-                        It.Is<string>(x => x == MessagingVerificationType.Email),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(emailAddressInvite);
-
-            messagingVerificationDelegateMock.Setup(
-                    s => s.GetLastForUserAsync(
-                        It.IsAny<string>(),
-                        It.Is<string>(x => x == MessagingVerificationType.Sms),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(smsNumberInvite);
-
-            return messagingVerificationDelegateMock;
-        }
-
         private static Mock<IPatientDetailsService> SetupPatientDetailsServiceMock(PatientDetails patientDetails)
         {
             Mock<IPatientDetailsService> patientDetailsServiceMock = new();
@@ -593,22 +490,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return patientDetailsServiceMock;
         }
 
-        private static Mock<IUserPreferenceServiceV2> SetupUserPreferenceServiceMock(
-            Dictionary<string, UserPreferenceModel> userPreferences)
-        {
-            Mock<IUserPreferenceServiceV2> userPreferenceServiceMock = new();
-            userPreferenceServiceMock.Setup(
-                    s => s.GetUserPreferencesAsync(
-                        It.Is<string>(x => x == Hdid),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userPreferences);
-
-            return userPreferenceServiceMock;
-        }
-
         private static Mock<IUserProfileDelegate> SetupUserProfileDelegateMock(
-            UserProfile? userProfile,
-            IList<UserProfileHistory>? userProfileHistoryList = null)
+            UserProfile? userProfile)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(
@@ -617,22 +500,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<bool>(),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfile);
-
-            if (userProfile != null)
-            {
-                userProfileHistoryList ??=
-                [
-                    GenerateUserProfileHistory(loginDate: userProfile.LastLoginDateTime, daysFromLoginDate: 1),
-                    GenerateUserProfileHistory(loginDate: userProfile.LastLoginDateTime, daysFromLoginDate: 2),
-                ];
-
-                userProfileDelegateMock.Setup(
-                        s => s.GetUserProfileHistoryListAsync(
-                            It.IsAny<string>(),
-                            It.IsAny<int>(),
-                            It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(userProfileHistoryList);
-            }
 
             return userProfileDelegateMock;
         }
@@ -661,6 +528,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             It.IsAny<CancellationToken>()))
                     .ReturnsAsync(updateProfileResult);
             }
+        }
+
+        private static Mock<IUserProfileModelService> SetupUserProfileModelServiceMock(UserProfileModel userProfileModel, int profileHistoryRecordLimit)
+        {
+            Mock<IUserProfileModelService> userProfileModelServiceMock = new();
+            userProfileModelServiceMock.Setup(
+                    s => s.BuildUserProfileModelAsync(
+                        It.IsAny<UserProfile>(),
+                        It.Is<int>(x => x == profileHistoryRecordLimit),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfileModel);
+
+            return userProfileModelServiceMock;
         }
 
         private static BaseUserProfileServiceMock SetupUpdateAcceptedTermsMock(DbStatusCode profileUpdateStatus)
@@ -764,65 +644,30 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static UserProfileMock SetupUserProfileMock(
             DateTime currentDateTime,
             DateTime jwtAuthTime,
-            bool userProfileExists = true,
-            bool profileEmailAddressExists = true,
-            bool profileSmsNumberExists = true,
-            bool tourChangeDateIsLatest = true)
+            bool userProfileExists = true)
         {
-            string? smsNumber = profileSmsNumberExists ? SmsNumber : null;
-            string? emailAddress = profileEmailAddressExists ? EmailAddress : null;
-
-            Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime birthDate = GenerateBirthDate();
-
-            DateTime latestTourChangeDateTime = tourChangeDateIsLatest
-                ? currentDateTime
-                : currentDateTime.AddDays(-5);
+            const int profileHistoryRecordLimit = 2;
 
             UserProfile? userProfile = userProfileExists
-                ? GenerateUserProfile(loginDate: currentDateTime, email: emailAddress, smsNumber: smsNumber)
+                ? GenerateUserProfile(loginDate: currentDateTime, email: EmailAddress, smsNumber: SmsNumber)
                 : null;
 
-            IList<UserProfileHistory> userProfileHistoryList =
-            [
-                GenerateUserProfileHistory(loginDate: currentDateTime, daysFromLoginDate: 1),
-                GenerateUserProfileHistory(loginDate: currentDateTime, daysFromLoginDate: 2),
-            ];
-
-            Mock<IUserProfileDelegate> userProfileDelegateMock =
-                SetupUserProfileDelegateMock(
-                    userProfile,
-                    userProfileHistoryList);
-
+            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(userProfile);
             Mock<IAuthenticationDelegate> authenticationDelegateMock = SetupAuthenticationDelegateMock();
 
             PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(birthDate));
             Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
 
-            Mock<IUserPreferenceServiceV2> userPreferenceServiceMock = SetupUserPreferenceServiceMock([]);
-
-            Mock<IApplicationSettingsService> applicationSettingsServiceMock =
-                SetupApplicationSettingsServiceMock(latestTourChangeDateTime);
-
-            Mock<ILegalAgreementServiceV2> legalAgreementServiceMock =
-                SetupLegalAgreementServiceMock(latestTermsOfServiceId);
-
-            MessagingVerification emailAddressVerification = GenerateMessagingVerification(emailAddress: EmailAddress);
-            MessagingVerification smsNumberVerification = GenerateMessagingVerification(smsNumber: SmsNumber);
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock =
-                SetupMessagingVerificationDelegateMock(emailAddressVerification, smsNumberVerification);
-
-            IConfigurationRoot configuration = GetIConfiguration();
+            UserProfileModel userProfileModel = userProfileExists ? GenerateUserProfileModel(currentDateTime) : new();
+            Mock<IUserProfileModelService> userProfileModelServiceMock = SetupUserProfileModelServiceMock(userProfileModel, profileHistoryRecordLimit);
 
             IUserProfileServiceV2 service = GetUserProfileService(
                 patientDetailsServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock,
-                legalAgreementServiceMock: legalAgreementServiceMock,
-                messagingVerificationDelegateMock: messagingVerificationDelegateMock,
-                userPreferenceServiceMock: userPreferenceServiceMock,
-                configurationRoot: configuration,
                 authenticationDelegateMock: authenticationDelegateMock,
-                applicationSettingsServiceMock: applicationSettingsServiceMock);
+                userProfileModelServiceMock: userProfileModelServiceMock,
+                configurationRoot: GetIConfiguration(profileHistoryRecordLimit: profileHistoryRecordLimit));
 
             return new(
                 service,
