@@ -16,13 +16,11 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -34,23 +32,22 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     /// <param name="logger">The injected logger.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
-    /// <param name="emailQueueService">The injected service to queue emails.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
     /// <param name="configuration">The injected configuration.</param>
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
     /// <param name="userProfileModelService">The injected user profile model service.</param>
+    /// <param name="jobService">The injected job service.</param>
     public class UserProfileServiceV2(
         ILogger<UserProfileServiceV2> logger,
         IPatientDetailsService patientDetailsService,
-        IEmailQueueService emailQueueService,
         IUserProfileDelegate userProfileDelegate,
         IConfiguration configuration,
         IAuthenticationDelegate authenticationDelegate,
-        IUserProfileModelService userProfileModelService) : IUserProfileServiceV2
+        IUserProfileModelService userProfileModelService,
+        IJobService jobService) : IUserProfileServiceV2
     {
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private const string WebClientConfigSection = "WebClient";
-        private readonly EmailTemplateConfig emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
         private readonly int userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection).GetValue(UserProfileHistoryRecordLimitKey, 4);
 
         /// <inheritdoc/>
@@ -153,8 +150,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             if (!string.IsNullOrWhiteSpace(emailAddress))
             {
-                Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = this.emailTemplateConfig.Host };
-                await emailQueueService.QueueNewEmailAsync(emailAddress, emailTemplateName, keyValues, ct: ct);
+                await jobService.SendEmailAsync(emailAddress, emailTemplateName, ct: ct);
             }
         }
     }
