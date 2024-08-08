@@ -19,10 +19,8 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Validations;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -36,28 +34,27 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     /// <param name="configuration">The injected configuration.</param>
     /// <param name="logger">The injected logger.</param>
-    /// <param name="authenticationDelegate">The injected authentication delegate.</param>
-    /// <param name="cryptoDelegate">The injected crypto delegate.</param>
     /// <param name="messagingVerificationService">The injected message verification service.</param>
     /// <param name="jobService">The injected job service.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
-    /// <param name="userProfileService">The injected user profile service.</param>
+    /// <param name="userProfileModelService">The injected user profile model service.</param>
     public class RegistrationService(
         IConfiguration configuration,
         ILogger<RegistrationService> logger,
-        IAuthenticationDelegate authenticationDelegate,
-        ICryptoDelegate cryptoDelegate,
         IMessagingVerificationService messagingVerificationService,
         IJobService jobService,
         IPatientDetailsService patientDetailsService,
         IUserProfileDelegate userProfileDelegate,
-        IUserProfileServiceV2 userProfileService) : IRegistrationService
+        IUserProfileModelService userProfileModelService) : IRegistrationService
     {
         private const string MinPatientAgeKey = "MinPatientAge";
+        private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private const string WebClientConfigSection = "WebClient";
         private const int DefaultPatientAge = 12;
+        private const int DefaultUserProfileHistoryRecordLimit = 4;
         private readonly int minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, DefaultPatientAge);
+        private readonly int userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection).GetValue(UserProfileHistoryRecordLimitKey, DefaultUserProfileHistoryRecordLimit);
         private readonly bool accountsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Accounts.Enabled ?? false;
         private readonly bool notificationsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Notifications.Enabled ?? false;
 
@@ -83,20 +80,12 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? emailVerification = await this.AddEmailVerification(hdid, requestedEmail, isEmailVerified, ct);
 
             // initialize user profile
-            UserProfile profile = new()
-            {
-                HdId = hdid,
-                IdentityManagementId = null,
-                TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
-                Email = isEmailVerified ? requestedEmail : string.Empty,
-                SmsNumber = null,
-                CreatedBy = hdid,
-                UpdatedBy = hdid,
-                LastLoginDateTime = jwtAuthTime,
-                EncryptionKey = cryptoDelegate.GenerateKey(),
-                YearOfBirth = patient.Birthdate.Year,
-                LastLoginClientCode = authenticationDelegate.FetchAuthenticatedUserClientType(),
-            };
+            UserProfile profile = userProfileModelService.InitializeUserProfile(
+                hdid,
+                createProfileRequest.Profile.TermsOfServiceId,
+                jwtAuthTime,
+                isEmailVerified ? requestedEmail : string.Empty,
+                patient.Birthdate.Year);
 
             // add user profile to DB and commit changes
             DbResult<UserProfile> dbResult = await userProfileDelegate.InsertUserProfileAsync(profile, true, ct);
@@ -116,7 +105,7 @@ namespace HealthGateway.GatewayApi.Services
             await this.NotifyAccountCreated(profile, requestedEmail, requestedSmsNumber, isEmailVerified, smsVerification?.SmsValidationCode, ct);
 
             // build and return model
-            UserProfileModel userProfileModel = await userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
+            UserProfileModel userProfileModel = await userProfileModelService.BuildUserProfileModelAsync(profile, this.userProfileHistoryRecordLimit, ct);
             logger.LogTrace("Finished creating user profile... {Hdid}", dbResult.Payload.HdId);
             return userProfileModel;
         }

@@ -22,9 +22,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using FluentValidation;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -47,6 +46,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string SmsNumber = "2505556000";
         private const string SmsVerificationCode = "12345";
         private const string InvalidSmsNumber = "xxx000xxxx";
+        private const string EncryptionKey = "encryption-key";
 
         private static readonly Guid TermsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
@@ -253,6 +253,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             int daysFromLoginDate = 0,
             string? email = null,
             string? smsNumber = null,
+            Guid? termsOfServiceId = null,
+            string encryptionKey = EncryptionKey,
             BetaFeature? betaFeature = null)
         {
             DateTime lastLoginDateTime = loginDate?.Date ?? DateTime.UtcNow.Date;
@@ -260,16 +262,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new()
             {
                 HdId = hdid,
-                TermsOfServiceId = TermsOfServiceGuid,
+                TermsOfServiceId = termsOfServiceId ?? TermsOfServiceGuid,
                 Email = email,
                 SmsNumber = smsNumber,
                 ClosedDateTime = closedDateTime,
+                EncryptionKey = encryptionKey,
                 LastLoginDateTime = lastLoginDateTime.AddDays(-daysFromLoginDate),
-                BetaFeatureCodes =
-                [
-                    new BetaFeatureCode
-                        { Code = betaFeature ?? BetaFeature.Salesforce },
-                ],
+                LastLoginClientCode = UserLoginClientType.Ios,
+                CreatedBy = hdid,
+                UpdatedBy = Hdid,
+                BetaFeatureCodes = [],
             };
         }
 
@@ -299,7 +301,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HasTourUpdated = false,
                 LastLoginDateTime = currentUtcDate,
                 LastLoginDateTimes = [currentUtcDate],
-                BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
+                BetaFeatures = [],
+                BlockedDataSources = [],
             };
         }
 
@@ -322,31 +325,27 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static IRegistrationService GetRegistrationService(
             IConfigurationRoot? configurationRoot = null,
-            Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IMessagingVerificationService>? messagingVerificationServiceMock = null,
             Mock<IJobService>? jobServiceMock = null,
             Mock<IPatientDetailsService>? patientDetailsServiceMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
-            Mock<IUserProfileServiceV2>? userProfileServiceMock = null)
+            Mock<IUserProfileModelService>? userProfileModelServiceMock = null)
         {
             configurationRoot ??= GetIConfiguration();
-            authenticationDelegateMock ??= new();
             messagingVerificationServiceMock ??= new();
             jobServiceMock ??= new();
             patientDetailsServiceMock ??= new();
             userProfileDelegateMock ??= new();
-            userProfileServiceMock ??= new();
+            userProfileModelServiceMock ??= new();
 
             return new RegistrationService(
                 configurationRoot,
                 new Mock<ILogger<RegistrationService>>().Object,
-                authenticationDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
                 messagingVerificationServiceMock.Object,
                 jobServiceMock.Object,
                 patientDetailsServiceMock.Object,
                 userProfileDelegateMock.Object,
-                userProfileServiceMock.Object);
+                userProfileModelServiceMock.Object);
         }
 
         private static Mock<IMessagingVerificationService> SetupMessagingVerificationServiceMock(MessagingVerification emailVerification, MessagingVerification smsVerification)
@@ -417,18 +416,33 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static Mock<IUserProfileServiceV2> SetupUserProfileServiceMock(UserProfileModel userProfileModel)
+        private static Mock<IUserProfileModelService> SetupUserProfileModelServiceMock(
+            UserProfile userProfile,
+            UserProfileModel userProfileModel,
+            string? requestedEmailAddress,
+            string? jwtEmailAddress)
         {
-            Mock<IUserProfileServiceV2> userProfileServiceMock = new();
+            bool isEmailVerified = !string.IsNullOrWhiteSpace(requestedEmailAddress) && string.Equals(requestedEmailAddress, jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
 
-            userProfileServiceMock.Setup(
-                    s => s.GetUserProfileAsync(
+            Mock<IUserProfileModelService> userProfileModelServiceMock = new();
+
+            userProfileModelServiceMock.Setup(
+                    s => s.InitializeUserProfile(
                         It.IsAny<string>(),
+                        It.IsAny<Guid>(),
                         It.IsAny<DateTime>(),
+                        It.Is<string?>(x => x == (isEmailVerified ? requestedEmailAddress : string.Empty)),
+                        It.IsAny<int?>()))
+                .Returns(userProfile);
+
+            userProfileModelServiceMock.Setup(
+                    s => s.BuildUserProfileModelAsync(
+                        It.IsAny<UserProfile>(),
+                        It.IsAny<int>(),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfileModel);
 
-            return userProfileServiceMock;
+            return userProfileModelServiceMock;
         }
 
         private static CreateUserProfileMock SetupCreateUserProfileMock(
@@ -459,7 +473,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(insertProfileResult: insertProfileResult);
 
             UserProfileModel userProfileModel = GenerateUserProfileModel(currentDateTime, requestedEmailAddress, requestedSmsNumber);
-            Mock<IUserProfileServiceV2> userProfileServiceMock = SetupUserProfileServiceMock(userProfileModel);
+            UserProfile userProfile = GenerateUserProfile();
+            Mock<IUserProfileModelService> userProfileModelServiceMock = SetupUserProfileModelServiceMock(userProfile, userProfileModel, requestedEmailAddress, jwtEmailAddress);
 
             MessagingVerification emailVerification = GenerateMessagingVerification(emailAddress: requestedEmailAddress);
             MessagingVerification smsVerification = GenerateMessagingVerification(smsNumber: requestedSmsNumber);
@@ -472,11 +487,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             IRegistrationService service = GetRegistrationService(
                 configuration,
-                messagingVerificationServiceMock: messagingVerificationServiceMock,
-                jobServiceMock: jobServiceMock,
-                patientDetailsServiceMock: patientDetailsServiceMock,
-                userProfileDelegateMock: userProfileDelegateMock,
-                userProfileServiceMock: userProfileServiceMock);
+                messagingVerificationServiceMock,
+                jobServiceMock,
+                patientDetailsServiceMock,
+                userProfileDelegateMock,
+                userProfileModelServiceMock);
 
             return new(
                 service,
@@ -513,10 +528,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             IRegistrationService service = GetRegistrationService(
                 configuration,
-                messagingVerificationServiceMock: messagingVerificationServiceMock,
+                messagingVerificationServiceMock,
                 patientDetailsServiceMock: patientDetailsServiceMock,
-                userProfileDelegateMock: userProfileDelegateMock,
-                userProfileServiceMock: new());
+                userProfileDelegateMock: userProfileDelegateMock);
 
             return new(service, createUserRequest, DateTime.Today, EmailAddress);
         }

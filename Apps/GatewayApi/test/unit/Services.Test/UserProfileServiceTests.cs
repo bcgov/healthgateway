@@ -55,7 +55,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     {
         private const string Email = "user@HealthGateway.ca";
 
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
+            MapperUtil.InitializeAutoMapper(),
+            new Mock<ICryptoDelegate>().Object,
+            new Mock<IAuthenticationDelegate>().Object);
         private static readonly string Hdid = Guid.NewGuid().ToString();
         private static readonly Guid TermsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 

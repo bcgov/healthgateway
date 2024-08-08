@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
@@ -38,7 +39,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string Phn = "mocked-phn";
         private const string GivenName = "given-name";
         private const string Surname = "family-name";
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
+            MapperUtil.InitializeAutoMapper(),
+            new Mock<ICryptoDelegate>().Object,
+            new Mock<IAuthenticationDelegate>().Object
+        );
 
         /// <summary>
         /// GetPatientAsync.

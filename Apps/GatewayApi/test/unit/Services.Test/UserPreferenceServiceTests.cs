@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -40,7 +41,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     public class UserPreferenceServiceTests
     {
         private const string Hdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
+            MapperUtil.InitializeAutoMapper(),
+            new Mock<ICryptoDelegate>().Object,
+            new Mock<IAuthenticationDelegate>().Object);
 
         /// <summary>
         /// CreateUserPreferenceAsync call.
