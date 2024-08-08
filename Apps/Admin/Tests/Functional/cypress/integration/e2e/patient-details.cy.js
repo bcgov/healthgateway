@@ -78,8 +78,9 @@ function validateMailAddressFormRequiredInputs() {
         .within(() => {
             cy.get('button[aria-label="Clear"]').click();
         });
-    cy.get("body").click(0, 0);
-
+    cy.get("[data-testid=address-confirmation-button]")
+        .parents(".mud-dialog")
+        .click(0, 0);
     cy.get("[data-testid=address-confirmation-button]").click();
 
     validateCovid19InputContainsError("[data-testid=address-lines-input]");

@@ -15,10 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -57,18 +59,37 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default)
+        public async Task<PaginatedResult<IGrouping<string, BetaFeatureAccess>>> GetAllAsync(int pageIndex, int pageSize, CancellationToken ct = default)
         {
-            IQueryable<BetaFeatureAccess> query = dbContext.BetaFeatureAccess;
-            query = query.OrderBy(x => x.Hdid);
+            ArgumentOutOfRangeException.ThrowIfNegative(pageIndex);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageSize);
 
-            if (includeUserProfile)
+            IQueryable<string> emailQuery = dbContext.BetaFeatureAccess
+                .Where(p => p.UserProfile.Email != null)
+                .Select(p => p.UserProfile.Email!)
+                .Distinct();
+
+            int totalCount = await emailQuery.CountAsync(ct);
+
+            IList<string> emailAddresses = await emailQuery
+                .OrderBy(p => p)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            List<BetaFeatureAccess> data = await dbContext.BetaFeatureAccess
+                .Include(p => p.UserProfile)
+                .Where(p => p.UserProfile.Email != null)
+                .Where(p => emailAddresses.Contains(p.UserProfile.Email))
+                .ToListAsync(ct);
+
+            return new()
             {
-                query = query.Include(p => p.UserProfile);
-                query = query.Where(p => p.UserProfile.Email != null);
-            }
-
-            return await query.ToListAsync(ct);
+                Data = [.. data.GroupBy(p => p.UserProfile.Email!).OrderBy(g => g.Key)],
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+            };
         }
     }
 }

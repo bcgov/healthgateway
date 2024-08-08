@@ -35,16 +35,6 @@ namespace HealthGateway.GatewayApi.Services
         Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default);
 
         /// <summary>
-        /// Creates a user profile.
-        /// </summary>
-        /// <param name="createProfileRequest">The request to create a user profile model.</param>
-        /// <param name="jwtAuthTime">The authenticated login time from the JWT.</param>
-        /// <param name="jwtEmailAddress">The email address contained in the JWT.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The user profile.</returns>
-        Task<UserProfileModel> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default);
-
-        /// <summary>
         /// Closes a user profile.
         /// </summary>
         /// <param name="hdid">The requested user HDID.</param>
@@ -61,14 +51,6 @@ namespace HealthGateway.GatewayApi.Services
         Task RecoverUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
-        /// Determines whether a user is eligible to create a Health Gateway account.
-        /// </summary>
-        /// <param name="hdid">The requested user HDID.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A boolean result.</returns>
-        Task<bool> ValidateEligibilityAsync(string hdid, CancellationToken ct = default);
-
-        /// <summary>
         /// Updates a user's profile to capture approval of the terms of service.
         /// </summary>
         /// <param name="hdid">The user HDID.</param>
@@ -76,13 +58,5 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default);
-
-        /// <summary>
-        /// Determines whether a phone number is valid.
-        /// </summary>
-        /// <param name="phoneNumber">Phone number stripped of any mask characters.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A boolean value indicating whether the phone number is valid.</returns>
-        Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default);
     }
 }

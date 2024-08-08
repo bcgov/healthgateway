@@ -155,7 +155,7 @@ public partial class CommunicationsPage : FluxorComponent
         this.IsModalShown = true;
 
         DialogParameters parameters = new() { [nameof(BroadcastDialog.Broadcast)] = broadcast };
-        DialogOptions options = new() { DisableBackdropClick = true };
+        DialogOptions options = new() { BackdropClick = false };
         IDialogReference dialog = await this.Dialog.ShowAsync<BroadcastDialog>(title, parameters, options);
 
         await dialog.Result;
@@ -204,7 +204,7 @@ public partial class CommunicationsPage : FluxorComponent
         this.IsModalShown = true;
 
         DialogParameters parameters = new() { [nameof(CommunicationDialog.Communication)] = communication };
-        DialogOptions options = new() { DisableBackdropClick = true };
+        DialogOptions options = new() { BackdropClick = false };
         IDialogReference dialog = await this.Dialog.ShowAsync<CommunicationDialog>(title, parameters, options);
 
         await dialog.Result;

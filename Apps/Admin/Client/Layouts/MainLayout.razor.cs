@@ -78,11 +78,7 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private bool IsInactivityModalShown { get; set; }
 
-        private MudTheme LightTheme { get; } = new LightTheme();
-
-        private MudTheme DarkTheme { get; } = new DarkTheme();
-
-        private MudTheme CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
+        private MudTheme CurrentTheme { get; } = new HgTheme();
 
         /// <inheritdoc/>
         public void Dispose()
@@ -113,8 +109,8 @@ namespace HealthGateway.Admin.Client.Layouts
             IDialogReference dialog = await this.Dialog.ShowAsync<InactivityDialog>();
             this.IsInactivityModalShown = true;
 
-            DialogResult result = await dialog.Result;
-            bool activityDetected = result.Data as bool? == true;
+            DialogResult? result = await dialog.Result;
+            bool activityDetected = result?.Data as bool? == true;
             await this.HandleInactivityAsync(activityDetected);
             this.IsInactivityModalShown = false;
         }

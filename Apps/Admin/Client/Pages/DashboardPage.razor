@@ -84,9 +84,9 @@
         {
             <MudDateRangePicker MinDate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="DemographicsDateRangePicker" Label="Select Date Range" @bind-DateRange="DemographicsDateRange" Color="Color.Success" Style="font-weight:bold">
                 <PickerActions>
-                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => DemographicsDateRangePicker.Clear())">Clear</MudButton>
-                    <MudButton OnClick="@(() => DemographicsDateRangePicker.Close(false))">Cancel</MudButton>
-                    <MudButton Color="Color.Primary" OnClick="@(() => DemographicsDateRangePicker.Close())">Ok</MudButton>
+                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => DemographicsDateRangePicker.ClearAsync())">Clear</MudButton>
+                    <MudButton OnClick="@(() => DemographicsDateRangePicker.CloseAsync(false))">Cancel</MudButton>
+                    <MudButton Color="Color.Primary" OnClick="@(() => DemographicsDateRangePicker.CloseAsync())">Ok</MudButton>
                 </PickerActions>
             </MudDateRangePicker>
         }
@@ -210,9 +210,9 @@
         {
             <MudDateRangePicker MinDate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="UsageDateRangePicker" Label="Select Date Range" @bind-DateRange="UsageDateRange" Color="Color.Success" Style="font-weight:bold">
                 <PickerActions>
-                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => UsageDateRangePicker.Clear())">Clear</MudButton>
-                    <MudButton OnClick="@(() => UsageDateRangePicker.Close(false))">Cancel</MudButton>
-                    <MudButton Color="Color.Primary" OnClick="@(() => UsageDateRangePicker.Close())">Ok</MudButton>
+                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => UsageDateRangePicker.ClearAsync())">Clear</MudButton>
+                    <MudButton OnClick="@(() => UsageDateRangePicker.CloseAsync(false))">Cancel</MudButton>
+                    <MudButton Color="Color.Primary" OnClick="@(() => UsageDateRangePicker.CloseAsync())">Ok</MudButton>
                 </PickerActions>
             </MudDateRangePicker>
         }

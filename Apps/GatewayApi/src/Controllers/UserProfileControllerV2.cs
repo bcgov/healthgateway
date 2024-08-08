@@ -48,6 +48,8 @@ namespace HealthGateway.GatewayApi.Controllers
         private readonly IUserSmsServiceV2 userSmsService;
         private readonly IUserPreferenceServiceV2 userPreferenceService;
         private readonly ILegalAgreementServiceV2 legalAgreementService;
+        private readonly IUserValidationService userValidationService;
+        private readonly IRegistrationService registrationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileControllerV2"/> class.
@@ -58,13 +60,17 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userSmsService">The injected user sms service.</param>
         /// <param name="userPreferenceService">The injected user preference service.</param>
         /// <param name="legalAgreementService">The injected legal agreement service.</param>
+        /// <param name="userValidationService">The injected user validation service.</param>
+        /// <param name="registrationService">The injected registration service.</param>
         public UserProfileControllerV2(
             IUserProfileServiceV2 userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailServiceV2 userEmailService,
             IUserSmsServiceV2 userSmsService,
             IUserPreferenceServiceV2 userPreferenceService,
-            ILegalAgreementServiceV2 legalAgreementService)
+            ILegalAgreementServiceV2 legalAgreementService,
+            IUserValidationService userValidationService,
+            IRegistrationService registrationService)
         {
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
@@ -72,6 +78,8 @@ namespace HealthGateway.GatewayApi.Controllers
             this.userSmsService = userSmsService;
             this.userPreferenceService = userPreferenceService;
             this.legalAgreementService = legalAgreementService;
+            this.userValidationService = userValidationService;
+            this.registrationService = registrationService;
         }
 
         /// <summary>
@@ -112,7 +120,7 @@ namespace HealthGateway.GatewayApi.Controllers
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
             string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
-            return await this.userProfileService.CreateUserProfileAsync(createUserRequest, jwtAuthTime, jwtEmailAddress, ct);
+            return await this.registrationService.CreateUserProfileAsync(createUserRequest, jwtAuthTime, jwtEmailAddress, ct);
         }
 
         /// <summary>
@@ -178,7 +186,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<bool> Validate(string hdid, CancellationToken ct)
         {
-            return await this.userProfileService.ValidateEligibilityAsync(hdid, ct);
+            return await this.userValidationService.ValidateEligibilityAsync(hdid, ct);
         }
 
         /// <summary>
@@ -250,7 +258,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Route("termsofservice")]
         [AllowAnonymous]
         [Produces("application/json")]
-        [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+        [ProducesResponseType<TermsOfServiceModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<TermsOfServiceModel> GetLastTermsOfService(CancellationToken ct)
@@ -486,7 +494,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<bool> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
-            return await this.userProfileService.IsPhoneNumberValidAsync(phoneNumber, ct);
+            return await this.userValidationService.IsPhoneNumberValidAsync(phoneNumber, ct);
         }
     }
 }

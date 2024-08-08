@@ -1,5 +1,5 @@
-@using HealthGateway.Admin.Client.Store.Communications
 @using System.Globalization
+@using HealthGateway.Admin.Client.Store.Communications
 @using HealthGateway.Common.Data.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -28,14 +28,14 @@
                                    Culture="@CultureInfo.InvariantCulture"
                                    DateFormat="yyyy-MM-dd"
                                    AutoClose="@true"
-                                   DisableToolbar="@true"
+                                   ShowToolbar="@false"
                                    Variant="@Variant.Filled"
                                    Margin="@Margin.Dense"
                                    Class="mt-3 mr-3"
                                    data-testid="effective-date-pkr">
                         <PickerActions>
                             <MudButton Class="mr-auto align-self-start"
-                                       OnClick="@(() => EffectiveDatePicker.Clear())">
+                                       OnClick="@(() => EffectiveDatePicker.ClearAsync())">
                                 Clear
                             </MudButton>
                         </PickerActions>
@@ -55,14 +55,14 @@
                                        data-testid="effective-time-pkr">
                             <PickerActions>
                                 <MudButton Class="mr-auto align-self-start"
-                                           OnClick="@(() => EffectiveTimePicker.Clear())">
+                                           OnClick="@(() => EffectiveTimePicker.ClearAsync())">
                                     Clear
                                 </MudButton>
-                                <MudButton OnClick="@(() => EffectiveTimePicker.Close(false))">
+                                <MudButton OnClick="@(() => EffectiveTimePicker.CloseAsync(false))">
                                     Cancel
                                 </MudButton>
                                 <MudButton Color="@Color.Primary"
-                                           OnClick="@(() => EffectiveTimePicker.Close())">
+                                           OnClick="@(() => EffectiveTimePicker.CloseAsync())">
                                     Ok
                                 </MudButton>
                             </PickerActions>
@@ -78,14 +78,14 @@
                                    Culture="@CultureInfo.InvariantCulture"
                                    DateFormat="yyyy-MM-dd"
                                    AutoClose="@true"
-                                   DisableToolbar="@true"
+                                   ShowToolbar="@false"
                                    Variant="@Variant.Filled"
                                    Margin="@Margin.Dense"
                                    Class="mt-3 mr-3"
                                    data-testid="expiry-date-pkr">
                         <PickerActions>
                             <MudButton Class="mr-auto align-self-start"
-                                       OnClick="@(() => ExpiryDatePicker.Clear())">
+                                       OnClick="@(() => ExpiryDatePicker.ClearAsync())">
                                 Clear
                             </MudButton>
                         </PickerActions>
@@ -105,14 +105,14 @@
                                        data-testid="expiry-time-pkr">
                             <PickerActions>
                                 <MudButton Class="mr-auto align-self-start"
-                                           OnClick="@(() => ExpiryTimePicker.Clear())">
+                                           OnClick="@(() => ExpiryTimePicker.ClearAsync())">
                                     Clear
                                 </MudButton>
-                                <MudButton OnClick="@(() => ExpiryTimePicker.Close(false))">
+                                <MudButton OnClick="@(() => ExpiryTimePicker.CloseAsync(false))">
                                     Cancel
                                 </MudButton>
                                 <MudButton Color="@Color.Primary"
-                                           OnClick="@(() => ExpiryTimePicker.Close())">
+                                           OnClick="@(() => ExpiryTimePicker.CloseAsync())">
                                     Ok
                                 </MudButton>
                             </PickerActions>

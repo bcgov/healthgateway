@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.BetaAccess;
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
@@ -40,16 +39,6 @@ public static class BetaAccessReducers
     [ReducerMethod]
     public static BetaAccessState ReduceSetUserAccessSuccessAction(BetaAccessState state, BetaAccessActions.SetUserAccessSuccessAction action)
     {
-        IImmutableDictionary<string, UserBetaAccess> allUserAccess = state.AllUserAccess ?? new Dictionary<string, UserBetaAccess>().ToImmutableDictionary();
-
-        string email = action.Request.Email;
-
-        allUserAccess = allUserAccess.Remove(email);
-        if (action.Request.BetaFeatures.Count > 0)
-        {
-            allUserAccess = allUserAccess.Add(email, action.Request);
-        }
-
         return state with
         {
             SetUserAccess = state.SetUserAccess with
@@ -57,7 +46,6 @@ public static class BetaAccessReducers
                 IsLoading = false,
                 Error = null,
             },
-            AllUserAccess = allUserAccess,
             SearchResult = state.SearchResult?.Email == action.Request.Email ? action.Request : state.SearchResult,
         };
     }
@@ -90,16 +78,6 @@ public static class BetaAccessReducers
     [ReducerMethod]
     public static BetaAccessState ReduceGetUserAccessSuccessAction(BetaAccessState state, BetaAccessActions.GetUserAccessSuccessAction action)
     {
-        IImmutableDictionary<string, UserBetaAccess> allUserAccess = state.AllUserAccess ?? new Dictionary<string, UserBetaAccess>().ToImmutableDictionary();
-
-        string email = action.Data.Email;
-
-        allUserAccess = allUserAccess.Remove(email);
-        if (action.Data.BetaFeatures.Count > 0)
-        {
-            allUserAccess = allUserAccess.Add(email, action.Data);
-        }
-
         return state with
         {
             GetUserAccess = state.GetUserAccess with
@@ -108,7 +86,6 @@ public static class BetaAccessReducers
                 Result = action.Data,
                 Error = null,
             },
-            AllUserAccess = allUserAccess,
             SearchResult = action.Data,
         };
     }

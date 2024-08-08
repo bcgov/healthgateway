@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Components.Common
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
@@ -56,7 +57,7 @@ namespace HealthGateway.Admin.Client.Components.Common
         /// Gets or sets the function used to narrow the results when text is typed.
         /// </summary>
         [Parameter]
-        public Func<string, Task<IEnumerable<T>>> SearchFunc { get; set; } = default!;
+        public Func<string, CancellationToken, Task<IEnumerable<T>>> SearchFunc { get; set; } = default!;
 
         /// <summary>
         /// Gets the underlying MudBlazor component.

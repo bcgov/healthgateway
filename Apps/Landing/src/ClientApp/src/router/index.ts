@@ -102,7 +102,14 @@ const routes = [
         path: Path.ValidateEmail + "/:inviteKey",
         component: NotFoundView,
         meta: {
-            redirectPath: "s/validateEmail",
+            redirectPath: "s/ValidateEmail",
+        },
+    },
+    {
+        path: Path.VaccineCard,
+        component: NotFoundView,
+        meta: {
+            classicRedirectPath: "vaccinecard",
         },
     },
     {

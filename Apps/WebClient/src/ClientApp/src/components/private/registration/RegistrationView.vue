@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { helpers, requiredIf, sameAs } from "@vuelidate/validators";
+import { helpers, required, sameAs } from "@vuelidate/validators";
 import { vMaska } from "maska";
 import { computed, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -20,6 +20,7 @@ import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import PhoneUtil from "@/utility/phoneUtil";
+import ValidationUtil from "@/utility/validationUtil";
 
 const smsMaskaOptions = {
     mask: "(###) ###-####",
@@ -85,23 +86,29 @@ const validateEmail = (value: string) => {
 
 const validations = computed(() => ({
     smsNumber: {
-        required: requiredIf(isSMSNumberChecked),
-        sms: helpers.withMessage(
-            "Invalid phone number",
-            helpers.withAsync(validPhoneNumberFormat)
-        ),
+        ...ValidationUtil.getConditionalValidators(isSMSNumberChecked.value, {
+            required: required,
+            sms: helpers.withMessage(
+                "Invalid phone number",
+                helpers.withAsync(validPhoneNumberFormat)
+            ),
+        }),
     },
     email: {
-        required: requiredIf(isEmailChecked),
-        email: helpers.withMessage("Invalid email", validateEmail),
+        ...ValidationUtil.getConditionalValidators(isEmailChecked.value, {
+            required: required,
+            email: helpers.withMessage("Invalid email", validateEmail),
+        }),
     },
     emailConfirmation: {
-        required: requiredIf(isEmailChecked),
-        sameAsEmail: helpers.withMessage(
-            "Both email addresses must match",
-            sameAs(email)
-        ),
-        email: helpers.withMessage("Invalid email", validateEmail),
+        ...ValidationUtil.getConditionalValidators(isEmailChecked.value, {
+            required: required,
+            sameAsEmail: helpers.withMessage(
+                "Both email addresses must match",
+                sameAs(email)
+            ),
+            email: helpers.withMessage("Invalid email", validateEmail),
+        }),
     },
     accepted: { isChecked: sameAs(true) },
 }));
@@ -219,9 +226,9 @@ async function onSubmit(): Promise<void> {
             hdid: userStore.oidcUserInfo.hdid,
             termsOfServiceId: termsOfService.value?.id ?? "",
             acceptedTermsOfService: accepted.value,
-            email: email.value ?? "",
+            email: isEmailChecked.value ? email.value ?? "" : "",
             isEmailVerified: false,
-            smsNumber: smsNumber.value ?? "",
+            smsNumber: isSMSNumberChecked.value ? smsNumber.value ?? "" : "",
             isSMSNumberVerified: false,
             preferences: {},
             lastLoginDateTimes: [],

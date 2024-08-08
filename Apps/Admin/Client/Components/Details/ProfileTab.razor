@@ -7,7 +7,7 @@
     <MudText Class="mb-4 mt-6" Typo="Typo.h6">
         Patient Details
     </MudText>
-    <MudGrid Spacing="2">
+    <MudGrid Spacing="4">
         <MudItem xs="12" lg="4">
             <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
         </MudItem>
@@ -27,8 +27,8 @@
 
     <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Support}")">
         <MudExpansionPanels Class="mt-6">
-            <MudProgressLinear Class="rounding-t overlow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
-            <MudExpansionPanel IsInitiallyExpanded>
+            <MudProgressLinear Class="rounding-t overflow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
+            <MudExpansionPanel Expanded="@true">
                 <TitleContent>
                     <MudText Typo="Typo.h6" data-testid="profile-covid19-section-title">
                         COVID-19 Section
@@ -37,7 +37,7 @@
                 <ChildContent>
                     @if (ImmunizationsAreBlocked)
                     {
-                        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
+                        <MudAlert data-testid="blocked-immunization-alert" Severity="@Severity.Error" Dense="@true" Class="alert-background-color mt-4">
                             Unable to retrieve vaccine records for this individual.
                         </MudAlert>
                     }

@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Client.Store.BetaAccess;
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -68,24 +67,6 @@ public class BetaAccessEffects(ILogger<BetaAccessEffects> logger, IBetaFeatureAp
             RequestError error = StoreUtility.FormatRequestError(e);
             logger.LogError(e, "Error retrieving user access, reason: {Message}", e.Message);
             dispatcher.Dispatch(new BetaAccessActions.GetUserAccessFailureAction { Error = error });
-        }
-    }
-
-    [EffectMethod(typeof(BetaAccessActions.GetAllUserAccessAction))]
-    public async Task HandleGetAllUserAccessAction(IDispatcher dispatcher)
-    {
-        logger.LogInformation("Retrieving all user access");
-        try
-        {
-            IEnumerable<UserBetaAccess> response = await api.GetAllUserAccessAsync();
-            logger.LogInformation("All user access retrieved successfully");
-            dispatcher.Dispatch(new BetaAccessActions.GetAllUserAccessSuccessAction { Data = response });
-        }
-        catch (Exception e) when (e is ApiException or HttpRequestException)
-        {
-            RequestError error = StoreUtility.FormatRequestError(e);
-            logger.LogError(e, "Error retrieving all user access, reason: {Message}", e.Message);
-            dispatcher.Dispatch(new BetaAccessActions.GetAllUserAccessFailureAction { Error = error });
         }
     }
 }

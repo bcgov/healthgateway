@@ -27,7 +27,7 @@ using MudBlazor;
 /// Backing logic for the AuditReasonDialog component.
 /// If the Confirm button is pressed, the dialog's Result will have the Data property populated with a string representing
 /// the audit reason.
-/// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
+/// If the Cancel button is pressed, the dialog's Result will have the Canceled property set to true.
 /// </summary>
 /// <typeparam name="TErrorAction">
 /// An action that indicates an error was encountered while performing the action on

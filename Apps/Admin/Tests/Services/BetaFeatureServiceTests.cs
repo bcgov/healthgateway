@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -87,25 +88,32 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// GetBetaFeatureAccessAsync.
+        /// GetAllUserAccessAsync.
         /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous unit test.
-        /// </returns>
-        [Fact]
-        public async Task ShouldGetBetaFeatureAccess()
+        /// <param name="pageIndex">Current page index, starting from 0.</param>
+        /// <param name="pageSize">Number of items per page.</param>
+        /// <param name="expectedCount">Expected number of results.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [InlineData(0, 1, 1)]
+        [InlineData(1, 1, 1)]
+        [InlineData(0, 50, 2)] // SetupGetBetaFeatureAccessMock only generates 2 results in total
+        [Theory]
+        public async Task ShouldGetAllUserAccess(int pageIndex, int pageSize, int expectedCount)
         {
             // Arrange
             GetBetaFeatureAccessMock mock = SetupGetBetaFeatureAccessMock();
 
             // Act
-            IEnumerable<UserBetaAccess> enumerable = await mock.Service.GetAllUserAccessAsync();
-            IList<UserBetaAccess> actual = enumerable.ToList();
+            PaginatedResult<UserBetaAccess> actual = await mock.Service.GetAllUserAccessAsync(pageIndex, pageSize);
 
             // Assert
-            Assert.Equal(mock.ExpectedEmails.Count, actual.Count);
-            Assert.Equal(mock.ExpectedEmails[0], actual.ElementAt(0).Email);
-            Assert.Equal(mock.ExpectedEmails[1], actual.ElementAt(1).Email);
+            Assert.Equal(pageIndex, actual.PageIndex);
+            Assert.Equal(pageSize, actual.PageSize);
+            Assert.Equal(expectedCount, actual.Data.Count);
+
+            List<string> expectedEmailAddresses = mock.ExpectedEmailAddresses.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            Assert.Equal(expectedEmailAddresses.Count, actual.Data.Count);
+            Assert.Equal(expectedEmailAddresses, actual.Data.Select(a => a.Email));
         }
 
         /// <summary>
@@ -200,6 +208,20 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
+        private static PaginatedResult<IGrouping<string, BetaFeatureAccess>> GeneratePaginatedResult(
+            IList<IGrouping<string, BetaFeatureAccess>> data,
+            int pageIndex,
+            int pageSize)
+        {
+            return new()
+            {
+                Data = data.Skip(pageIndex * pageSize).Take(pageSize).ToList(),
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                TotalCount = data.Count,
+            };
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             Dictionary<string, string?> myConfiguration = new()
@@ -243,22 +265,22 @@ namespace HealthGateway.Admin.Tests.Services
 
         private static GetBetaFeatureAccessMock SetupGetBetaFeatureAccessMock()
         {
-            IList<BetaFeatureAccess> betaFeatureAssociations =
+            IList<BetaFeatureAccess> associations =
             [
                 GenerateBetaFeatureAccess(Hdid1Email1, Email1),
                 GenerateBetaFeatureAccess(Hdid2Email1, Email1),
                 GenerateBetaFeatureAccess(Hdid3Email2, Email2),
             ];
 
-            IList<string> expectedEmails =
-            [
-                Email1, Email2,
-            ];
+            IGrouping<string, BetaFeatureAccess>[] groupedAssociations = [..associations.GroupBy(a => a.UserProfile.Email!).OrderBy(a => a.Key)];
 
             Mock<IBetaFeatureAccessDelegate> betaFeatureAccessDelegateMock = new();
-            betaFeatureAccessDelegateMock.Setup(s => s.GetAllAsync(true, It.IsAny<CancellationToken>())).ReturnsAsync(betaFeatureAssociations);
+            betaFeatureAccessDelegateMock
+                .Setup(s => s.GetAllAsync(It.Is<int>(i => i >= 0), It.Is<int>(i => i >= 1), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((int pageIndex, int pageSize, CancellationToken _) => GeneratePaginatedResult(groupedAssociations, pageIndex, pageSize));
             IBetaFeatureService service = GetBetaFeatureService(betaFeatureAccessDelegateMock: betaFeatureAccessDelegateMock);
 
+            IList<string> expectedEmails = groupedAssociations.Select(i => i.Key).ToList();
             return new(service, expectedEmails);
         }
 
@@ -357,7 +379,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<ILogger<BetaFeatureService>>().Object);
         }
 
-        private sealed record GetBetaFeatureAccessMock(IBetaFeatureService Service, IList<string> ExpectedEmails);
+        private sealed record GetBetaFeatureAccessMock(IBetaFeatureService Service, IList<string> ExpectedEmailAddresses);
 
         private sealed record GetUserAccessMock(
             IBetaFeatureService Service,

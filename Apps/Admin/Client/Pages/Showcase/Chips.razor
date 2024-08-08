@@ -10,13 +10,13 @@
         <div>
             @foreach (Color colour in Colours)
             {
-                <MudChip Class="my-2" Variant="@variant" Size="Size.Small" Color="@colour">@colour</MudChip>
+                <MudChip T="string" Class="my-2" Variant="@variant" Size="Size.Small" Color="@colour">@colour</MudChip>
             }
         </div>
         <div>
             @foreach (Color colour in Colours)
             {
-                <MudChip Class="my-2" Variant="@variant" Size="Size.Small" Color="@colour" OnClose="Close">@colour</MudChip>
+                <MudChip T="string" Class="my-2" Variant="@variant" Size="Size.Small" Color="@colour" OnClose="Close">@colour</MudChip>
             }
         </div>
     </article>
@@ -47,7 +47,7 @@
         Color.Error,
     ];
 
-    void Close(MudChip chip)
+    void Close(MudChip<string> chip)
     {
         // this is a showcase method and does not require implementation
     }

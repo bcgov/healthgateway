@@ -16,8 +16,10 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -52,11 +54,12 @@ namespace HealthGateway.Database.Delegates
         Task<IList<BetaFeatureAccess>> GetAsync(IEnumerable<string> hdids, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets a list of all beta feature associations from the DB.
+        /// Gets a list of all beta feature associations from the DB, using pagination.
         /// </summary>
-        /// <param name="includeUserProfile">Value to determine whether user profile is included or not.</param>
+        /// <param name="pageIndex">Current page index, starting from 0.</param>
+        /// <param name="pageSize">Number of items per page.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<IList<BetaFeatureAccess>> GetAllAsync(bool includeUserProfile = false, CancellationToken ct = default);
+        Task<PaginatedResult<IGrouping<string, BetaFeatureAccess>>> GetAllAsync(int pageIndex, int pageSize, CancellationToken ct = default);
     }
 }
