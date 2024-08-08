@@ -118,7 +118,7 @@ export interface ServicesSettings {
 
 export interface ServiceSettings {
     name: string;
-    enabled: string;
+    enabled: boolean;
 }
 
 // Various timeout values used by the VUE WebClient application.
