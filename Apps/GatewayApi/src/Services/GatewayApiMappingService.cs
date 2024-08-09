@@ -143,7 +143,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public UserProfile MapToUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email, int? yearOfBirth)
+        public UserProfile MapToUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email = null, int? yearOfBirth = null)
         {
             return new()
             {

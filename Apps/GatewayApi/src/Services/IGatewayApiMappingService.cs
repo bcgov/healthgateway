@@ -114,7 +114,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="email">The email associated with the user profile.</param>
         /// <param name="yearOfBirth">The year of birth associated with the user profile.</param>
         /// <returns>The destination object</returns>
-        UserProfile MapToUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email, int? yearOfBirth);
+        UserProfile MapToUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email = null, int? yearOfBirth = null);
 
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
