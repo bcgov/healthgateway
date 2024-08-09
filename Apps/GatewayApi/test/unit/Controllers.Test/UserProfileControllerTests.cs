@@ -42,7 +42,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     /// </summary>
     public class UserProfileControllerTests
     {
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
+            MapperUtil.InitializeAutoMapper(),
+            new Mock<ICryptoDelegate>().Object,
+            new Mock<IAuthenticationDelegate>().Object);
 
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
         private readonly string token = "Fake Access Token";

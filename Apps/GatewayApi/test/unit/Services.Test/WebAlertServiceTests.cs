@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.PHSA;
@@ -42,7 +43,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string CategoryName = "mock category name";
         private const string DisplayText = "mock display text";
 
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
+            MapperUtil.InitializeAutoMapper(),
+            new Mock<ICryptoDelegate>().Object,
+            new Mock<IAuthenticationDelegate>().Object);
 
         private static readonly Guid AccountId = Guid.NewGuid();
         private static readonly Guid Pid = Guid.NewGuid();
