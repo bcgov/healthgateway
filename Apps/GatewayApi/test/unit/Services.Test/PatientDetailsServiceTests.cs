@@ -42,8 +42,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
             MapperUtil.InitializeAutoMapper(),
             new Mock<ICryptoDelegate>().Object,
-            new Mock<IAuthenticationDelegate>().Object
-        );
+            new Mock<IAuthenticationDelegate>().Object);
 
         /// <summary>
         /// GetPatientAsync.

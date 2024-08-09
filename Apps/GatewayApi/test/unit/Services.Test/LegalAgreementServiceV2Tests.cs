@@ -40,6 +40,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             MapperUtil.InitializeAutoMapper(),
             new Mock<ICryptoDelegate>().Object,
             new Mock<IAuthenticationDelegate>().Object);
+
         private static readonly Guid LegalAgreementId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
         /// <summary>

@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Client.Theme
     /// </summary>
     public class HgTheme : MudTheme
     {
+        private const string CyanBlue = "#001E30";
         private const string TranslucentWhite = "rgba(255,255,255, 0.12)";
         private const string White = "#FFFFFF";
 
@@ -103,10 +104,10 @@ namespace HealthGateway.Admin.Client.Theme
                 BackgroundGray = Colors.Gray.Lighten2,
                 Surface = "#E4EBF5",
                 DrawerBackground = "#EBEFF8",
-                DrawerText = "#001E30",
-                DrawerIcon = "#001E30",
+                DrawerText = CyanBlue,
+                DrawerIcon = CyanBlue,
                 AppbarBackground = "#EBEFF8",
-                AppbarText = "#001E30",
+                AppbarText = CyanBlue,
                 LinesDefault = new MudColor(Colors.Shades.Black).SetAlpha(0.12).ToString(MudColorOutputFormats.RGBA),
                 LinesInputs = Colors.Gray.Lighten1,
                 TableLines = new MudColor(Colors.Gray.Lighten2).SetAlpha(1.0).ToString(MudColorOutputFormats.RGBA),
@@ -153,7 +154,7 @@ namespace HealthGateway.Admin.Client.Theme
                 ActionDefault = "#91A3BF",
                 ActionDisabled = "rgba(255,255,255, 0.26)",
                 ActionDisabledBackground = TranslucentWhite,
-                Background = "#001E30",
+                Background = CyanBlue,
                 BackgroundGray = "#FDBB1B",
                 Surface = "#123147",
                 DrawerBackground = "#0D2C41",
