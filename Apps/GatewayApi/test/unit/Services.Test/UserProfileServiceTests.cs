@@ -905,6 +905,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         HasTermsOfServiceUpdated = true,
                         LastLoginDateTime = lastLoginDateTime,
                         HasTourUpdated = false,
+                        BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
                     }
                     : null,
                 ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists
@@ -1024,6 +1025,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         IsEmailVerified = true,
                         Email = updatedUserProfile.Email,
                         ClosedDateTime = updatedUserProfile.ClosedDateTime,
+                        BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
                     }
                     : null,
                 ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists
@@ -1146,6 +1148,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         IsEmailVerified = true,
                         Email = updatedUserProfile.Email,
                         ClosedDateTime = updatedUserProfile.ClosedDateTime,
+                        BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
                     }
                     : null,
                 ResultStatus = updateResult.Status != DbStatusCode.Updated || !userProfileExists
