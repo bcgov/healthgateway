@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.MapProfiles
                 .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.Email)))
                 .ForMember(dest => dest.IsSmsNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SmsNumber)))
                 .ForMember(dest => dest.AcceptedTermsOfService, opt => opt.MapFrom(src => src.TermsOfServiceId != Guid.Empty))
-                .ForMember(dest => dest.BetaFeatures, opt => opt.MapFrom(src => GetBetaFeaturesFromCodes(src.BetaFeatureCodes)))
+                .ForMember(dest => dest.BetaFeatures, opt => opt.MapFrom(src => GetBetaFeaturesFromCodes(src.BetaFeatureCodes).Append(Database.Constants.BetaFeature.Salesforce).Distinct()))
                 .ReverseMap();
 
             this.CreateMap<Database.Constants.BetaFeature, BetaFeature>()
