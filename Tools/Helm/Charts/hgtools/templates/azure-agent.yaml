@@ -66,7 +66,9 @@ spec:
           [{"from": {"kind": "ImageStreamTag","name": {{ $.Values.azureagent.baseImage | base }}:{{ $imageTag }},"namespace": {{ $.Values.licensePlate }}-tools},"fieldPath": "spec.template.spec.containers[?(@.name==\"{{ $name }}\")].image","paused": "false"}]
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/agent-inject-token: 'true'
-        vault.hashicorp.com/agent-pre-populate-only: 'true'
+        vault.hashicorp.com/agent-inject-auto-auth: 'true'
+        vault.hashicorp.com/agent-cache-use-auto-auth-token: 'true'
+        vault.hashicorp.com/agent-pre-populate-only: 'false'
         vault.hashicorp.com/auth-path: {{ $.Values.vault.authPath }}{{ lower $dr }}
         vault.hashicorp.com/namespace: {{ $.Values.vault.namespace }}
         vault.hashicorp.com/role: {{ $.Values.licensePlate }}-{{ $vaultEngine }}
