@@ -10,6 +10,13 @@ azureagent:
     test:
     prod:
       imageTag: production
+      vaultEngine: prod
+
+vault:
+  namespace: platform-services
+  authPath: auth/k8s-gold
+  engine: nonprod
+
 
 images:
   webclient:
