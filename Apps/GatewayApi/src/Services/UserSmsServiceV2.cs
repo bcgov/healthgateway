@@ -16,8 +16,6 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using System.Globalization;
-    using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
@@ -43,9 +41,9 @@ namespace HealthGateway.GatewayApi.Services
         /// The maximum verification attempts.
         /// </summary>
         public const int MaxVerificationAttempts = 5;
-        private const int VerificationExpiryDays = 5;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly IMessagingVerificationService messagingVerificationService;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly IMessageSender messageSender;
@@ -56,6 +54,7 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
+        /// <param name="messagingVerificationService">The messaging verification service.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
         /// <param name="messageSender">The change feed message sender.</param>
@@ -63,6 +62,7 @@ namespace HealthGateway.GatewayApi.Services
         public UserSmsServiceV2(
             ILogger<UserSmsServiceV2> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
+            IMessagingVerificationService messagingVerificationService,
             IUserProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService,
             IMessageSender messageSender,
@@ -70,6 +70,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
+            this.messagingVerificationService = messagingVerificationService;
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.messageSender = messageSender;
@@ -124,27 +125,6 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public MessagingVerification GenerateMessagingVerification(string hdid, string sms, bool sanitize = true)
-        {
-            this.logger.LogInformation("Generating new sms verification for user {Hdid}", hdid);
-            if (sanitize)
-            {
-                sms = SanitizeSms(sms);
-            }
-
-            MessagingVerification messagingVerification = new()
-            {
-                UserProfileId = hdid,
-                SmsNumber = sms,
-                SmsValidationCode = CreateVerificationCode(),
-                VerificationType = MessagingVerificationType.Sms,
-                ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
-            };
-
-            return messagingVerification;
-        }
-
-        /// <inheritdoc/>
         public async Task UpdateSmsNumberAsync(string hdid, string sms, CancellationToken ct = default)
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
@@ -173,7 +153,7 @@ namespace HealthGateway.GatewayApi.Services
             if (!isDeleted)
             {
                 this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
-                MessagingVerification messagingVerification = this.GenerateMessagingVerification(hdid, sanitizedSms, false);
+                MessagingVerification messagingVerification = this.messagingVerificationService.GenerateMessagingVerification(hdid, sanitizedSms, false);
                 await this.messageVerificationDelegate.InsertAsync(messagingVerification, true, ct);
                 notificationRequest.SmsVerificationCode = messagingVerification.SmsValidationCode;
             }
@@ -182,22 +162,6 @@ namespace HealthGateway.GatewayApi.Services
             await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
 
             this.logger.LogDebug("Finished updating user sms");
-        }
-
-        /// <summary>
-        /// Creates a new 6 digit verification code.
-        /// </summary>
-        /// <returns>The verification code.</returns>
-        private static string CreateVerificationCode()
-        {
-            using RandomNumberGenerator generator = RandomNumberGenerator.Create();
-            byte[] data = new byte[4];
-            generator.GetBytes(data);
-            return
-                BitConverter
-                    .ToUInt32(data)
-                    .ToString("D6", CultureInfo.InvariantCulture)
-                    .Substring(0, 6);
         }
 
         private static string SanitizeSms(string smsNumber)

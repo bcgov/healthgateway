@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
@@ -44,5 +45,28 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A messaging verificaiton model.</returns>
         Task<MessagingVerification> AddSmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default);
+
+        /// <summary>
+        /// Generates a messaging verification using the provided HDID and SMS number.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="sms">SMS number to verify.</param>
+        /// <param name="sanitize">If set to true, the provided SMS number will be sanitized before being used.</param>
+        /// <returns>The generated messaging verification.</returns>
+        MessagingVerification GenerateMessagingVerification(string hdid, string sms, bool sanitize = true);
+
+        /// <summary>
+        /// Generates a messaging verification and email template using the provided HDID, email address, and invite key.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="emailAddress">Email address to verify.</param>
+        /// <param name="inviteKey">The email invite key.</param>
+        /// <param name="isVerified">
+        /// If the address is already verified, the verification will be marked as already validated
+        /// and the generated email will be marked as already sent.
+        /// </param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The generated messaging verification.</returns>
+        Task<MessagingVerification> GenerateMessagingVerificationAsync(string hdid, string emailAddress, Guid inviteKey, bool isVerified, CancellationToken ct = default);
     }
 }

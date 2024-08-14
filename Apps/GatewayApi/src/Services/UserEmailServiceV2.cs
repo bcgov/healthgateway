@@ -16,8 +16,6 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
@@ -32,7 +30,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -41,25 +38,22 @@ namespace HealthGateway.GatewayApi.Services
     public class UserEmailServiceV2 : IUserEmailServiceV2
     {
         private const int MaxVerificationAttempts = 5;
-        private const string EmailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
-        private const string WebClientConfigSection = "WebClient";
 
         private readonly IEmailQueueService emailQueueService;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly IMessagingVerificationService messagingVerificationService;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly IMessageSender messageSender;
-
-        private readonly int emailVerificationExpirySeconds;
         private readonly bool notificationsChangeFeedEnabled;
-        private readonly EmailTemplateConfig emailTemplateConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserEmailServiceV2"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
+        /// <param name="messagingVerificationService">The messaging verification service.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
@@ -68,6 +62,7 @@ namespace HealthGateway.GatewayApi.Services
         public UserEmailServiceV2(
             ILogger<UserEmailServiceV2> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
+            IMessagingVerificationService messagingVerificationService,
             IUserProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
@@ -76,14 +71,12 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
+            this.messagingVerificationService = messagingVerificationService;
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
             this.messageSender = messageSender;
-
-            this.emailVerificationExpirySeconds = configuration.GetSection(WebClientConfigSection).GetValue(EmailConfigExpirySecondsKey, 5);
             this.notificationsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Notifications.Enabled ?? false;
-            this.emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
         }
 
         /// <inheritdoc/>
@@ -148,7 +141,7 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? messagingVerification = null;
             if (!isEmpty)
             {
-                messagingVerification = await this.GenerateMessagingVerificationAsync(hdid, emailAddress, inviteKey, false, ct);
+                messagingVerification = await this.messagingVerificationService.GenerateMessagingVerificationAsync(hdid, emailAddress, inviteKey, false, ct);
                 await this.messageVerificationDelegate.InsertAsync(messagingVerification, false, ct);
             }
 
@@ -172,40 +165,6 @@ namespace HealthGateway.GatewayApi.Services
             await this.QueueNotificationSettingsRequest(userProfile, ct);
 
             this.logger.LogDebug("Finished updating user email");
-        }
-
-        /// <inheritdoc/>
-        public async Task<MessagingVerification> GenerateMessagingVerificationAsync(string hdid, string emailAddress, Guid inviteKey, bool isVerified, CancellationToken ct = default)
-        {
-            float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
-
-            Dictionary<string, string> keyValues = new()
-            {
-                [EmailTemplateVariable.InviteKey] = inviteKey.ToString(),
-                [EmailTemplateVariable.ActivationHost] = this.emailTemplateConfig.Host,
-                [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
-            };
-
-            EmailTemplate emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ??
-                                          throw new DatabaseException(ErrorMessages.EmailTemplateNotFound);
-
-            MessagingVerification messagingVerification = new()
-            {
-                InviteKey = inviteKey,
-                UserProfileId = hdid,
-                ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
-                Email = this.emailQueueService.ProcessTemplate(emailAddress, emailTemplate, keyValues),
-                EmailAddress = emailAddress,
-                Validated = isVerified,
-            };
-
-            if (isVerified)
-            {
-                // for verified email addresses, mark verification email as already sent
-                messagingVerification.Email.EmailStatusCode = EmailStatus.Processed;
-            }
-
-            return messagingVerification;
         }
 
         private async Task IncrementEmailVerificationAttempts(string hdid, CancellationToken ct)
