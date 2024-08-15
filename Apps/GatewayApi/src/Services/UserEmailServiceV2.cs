@@ -22,10 +22,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Common.Messaging;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -39,13 +35,11 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const int MaxVerificationAttempts = 5;
 
-        private readonly IEmailQueueService emailQueueService;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IMessagingVerificationService messagingVerificationService;
-        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IMessageSender messageSender;
+        private readonly IJobService jobService;
         private readonly bool notificationsChangeFeedEnabled;
 
         /// <summary>
@@ -55,27 +49,21 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="messagingVerificationService">The messaging verification service.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="emailQueueService">The email service to queue emails.</param>
-        /// <param name="notificationSettingsService">Notification settings delegate.</param>
+        /// <param name="jobService">The injected job service.</param>
         /// <param name="configuration">Configuration settings.</param>
-        /// <param name="messageSender">The message sender.</param>
         public UserEmailServiceV2(
             ILogger<UserEmailServiceV2> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IMessagingVerificationService messagingVerificationService,
             IUserProfileDelegate profileDelegate,
-            IEmailQueueService emailQueueService,
-            INotificationSettingsService notificationSettingsService,
-            IConfiguration configuration,
-            IMessageSender messageSender)
+            IJobService jobService,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.messagingVerificationService = messagingVerificationService;
             this.profileDelegate = profileDelegate;
-            this.emailQueueService = emailQueueService;
-            this.notificationSettingsService = notificationSettingsService;
-            this.messageSender = messageSender;
+            this.jobService = jobService;
             this.notificationsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Notifications.Enabled ?? false;
         }
 
@@ -159,7 +147,7 @@ namespace HealthGateway.GatewayApi.Services
             if (messagingVerification != null)
             {
                 this.logger.LogInformation("Sending new email verification for user {Hdid}", hdid);
-                await this.emailQueueService.QueueNewEmailAsync(messagingVerification.Email, true, ct);
+                await this.jobService.SendEmailAsync(messagingVerification.Email, true, ct);
             }
 
             await this.QueueNotificationSettingsRequest(userProfile, ct);
@@ -196,14 +184,13 @@ namespace HealthGateway.GatewayApi.Services
         {
             if (this.notificationsChangeFeedEnabled)
             {
-                MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, emailAddress), hdid)];
-                await this.messageSender.SendAsync(events, ct);
+                await this.jobService.NotifyEmailVerificationAsync(hdid, emailAddress, ct);
             }
         }
 
         private async Task QueueNotificationSettingsRequest(UserProfile userProfile, CancellationToken ct)
         {
-            await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
+            await this.jobService.PushNotificationSettingsToPhsaAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
         }
     }
 }

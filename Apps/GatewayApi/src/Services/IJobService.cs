@@ -69,6 +69,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="smsVerificationCode">The code used to validate the ownership of the number.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task PushNotificationSettingsToPhsaAsync(UserProfile userProfile, string email, string smsNumber, string smsVerificationCode, CancellationToken ct = default);
+        Task PushNotificationSettingsToPhsaAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default);
     }
 }

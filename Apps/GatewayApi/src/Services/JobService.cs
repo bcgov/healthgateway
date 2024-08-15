@@ -65,7 +65,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task PushNotificationSettingsToPhsaAsync(UserProfile userProfile, string email, string smsNumber, string smsVerificationCode, CancellationToken ct = default)
+        public async Task PushNotificationSettingsToPhsaAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default)
         {
             NotificationSettingsRequest notificationSettingsRequest = new(userProfile, email, smsNumber) { SmsVerificationCode = smsVerificationCode };
             await notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
