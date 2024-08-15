@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -50,10 +49,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class DependentServiceTests
     {
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
-            MapperUtil.InitializeAutoMapper(),
-            new Mock<ICryptoDelegate>().Object,
-            new Mock<IAuthenticationDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
         private readonly string ineligibleError = "'Age' must be less than '12'.";
@@ -335,9 +331,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Times expectedQueueEmailCalls = isHdidMonitored && isAdminEmailAddressPopulated ? Times.Once() : Times.Never();
             mockEmailQueueService
-                .Verify(
-                    m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
-                    expectedQueueEmailCalls);
+                .Verify(m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), expectedQueueEmailCalls);
         }
 
         /// <summary>

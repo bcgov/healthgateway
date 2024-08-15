@@ -19,8 +19,10 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Validations;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -34,14 +36,19 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     /// <param name="configuration">The injected configuration.</param>
     /// <param name="logger">The injected logger.</param>
+    /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+    /// <param name="cryptoDelegate">The injected crypto delegate.</param>
     /// <param name="messagingVerificationService">The injected message verification service.</param>
     /// <param name="jobService">The injected job service.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
     /// <param name="userProfileModelService">The injected user profile model service.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
     public class RegistrationService(
         IConfiguration configuration,
         ILogger<RegistrationService> logger,
+        IAuthenticationDelegate authenticationDelegate,
+        ICryptoDelegate cryptoDelegate,
         IMessagingVerificationService messagingVerificationService,
         IJobService jobService,
         IPatientDetailsService patientDetailsService,
@@ -80,12 +87,20 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? emailVerification = await this.AddEmailVerification(hdid, requestedEmail, isEmailVerified, ct);
 
             // initialize user profile
-            UserProfile profile = userProfileModelService.InitializeUserProfile(
-                hdid,
-                createProfileRequest.Profile.TermsOfServiceId,
-                jwtAuthTime,
-                isEmailVerified ? requestedEmail : string.Empty,
-                patient.Birthdate.Year);
+            UserProfile profile = new()
+            {
+                HdId = hdid,
+                IdentityManagementId = null,
+                TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
+                Email = isEmailVerified ? requestedEmail : string.Empty,
+                SmsNumber = null,
+                CreatedBy = hdid,
+                UpdatedBy = hdid,
+                LastLoginDateTime = jwtAuthTime,
+                EncryptionKey = cryptoDelegate.GenerateKey(),
+                YearOfBirth = patient.Birthdate.Year,
+                LastLoginClientCode = authenticationDelegate.FetchAuthenticatedUserClientType(),
+            };
 
             // add user profile to DB and commit changes
             DbResult<UserProfile> dbResult = await userProfileDelegate.InsertUserProfileAsync(profile, true, ct);

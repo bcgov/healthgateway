@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
@@ -34,16 +33,5 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A user profile model.</returns>
         Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, int userProfileHistoryRecordLimit, CancellationToken ct = default);
-
-        /// <summary>
-        /// Initializes a user profile.
-        /// </summary>
-        /// <param name="hdid">The hdid associated with the <see cref="UserProfile"/>.</param>
-        /// <param name="termsOfServiceId">The terms of service id associated with the <see cref="UserProfile"/>.</param>
-        /// <param name="lastLoginDateTime">The last login date tine associated with the <see cref="UserProfile"/>.</param>
-        /// <param name="email">The email address associated with the <see cref="UserProfile"/>.</param>
-        /// <param name="yearOfBirth">The year of birth associated with the <see cref="UserProfile"/>.</param>
-        /// <returns>A user profile</returns>
-        UserProfile InitializeUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email = null, int? yearOfBirth = null);
     }
 }

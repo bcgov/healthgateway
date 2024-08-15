@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -40,18 +39,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class UserProfileModelServiceTests
     {
-        private const int DefaultUserProfileHistoryRecordLimit = 4;
-        private const string EmailAddress = "user@HealthGateway.ca";
-        private const string EncryptionKey = "encyption-keu";
         private const string Hdid = "hdid-mock";
+        private const string EmailAddress = "user@HealthGateway.ca";
         private const string SmsNumber = "2505556000";
         private const string SmsVerificationCode = "12345";
 
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
-            MapperUtil.InitializeAutoMapper(),
-            SetupCryptoDelegateMock().Object,
-            SetupAuthenticationDelegateMock(UserLoginClientType.Ios).Object);
-
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
         private static readonly Guid TermsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
         /// <summary>
@@ -66,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(true, true, false)] // Email and sms exist and app tour changes are not latest
         [InlineData(false, false, true)] // Profile email and sms do not exist; look at messaging verification
         [InlineData(false, false, false)] // Profile email and sms do not exist and tour changes are not latest
-        public async Task ShouldBuildUserProfileModel(
+        public async Task ShouldGetUserProfileAsync(
             bool emailAddressExists,
             bool smsNumberExists,
             bool tourChangeDateIsLatest)
@@ -100,7 +93,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 BlockedDataSources = blockedDataSources,
             };
 
-            UserProfileModelMock mock = SetupBuildUserProfileModelMock(
+            UserProfileModelMock mock = SetupUserProfileModelMock(
                 currentDateTime,
                 BetaFeature.Salesforce,
                 blockedDataSources,
@@ -109,36 +102,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 tourChangeDateIsLatest);
 
             // Act
-            UserProfileModel actual = await mock.Service.BuildUserProfileModelAsync(mock.UserProfile, DefaultUserProfileHistoryRecordLimit);
+            UserProfileModel actual = await mock.Service.BuildUserProfileModelAsync(mock.UserProfile, mock.UserProfileHistoryRecordLimit);
 
-            // Assert
-            actual.ShouldDeepEqual(expected);
-        }
-
-        /// <summary>
-        /// InitializeUserProfile.
-        /// </summary>
-        [Fact]
-        public void ShouldInitializeUserProfile()
-        {
-            // Arrange
-            DateTime lastLoginDateTime = DateTime.UtcNow.Date;
-            const int yearOfBirth = 2000;
-
-            UserProfile expected = GenerateUserProfile(
-                Hdid,
-                lastLoginDateTime,
-                email: EmailAddress,
-                yearOfBirth: yearOfBirth,
-                encryptionKey: EncryptionKey,
-                lastLoginClientType: UserLoginClientType.Ios);
-
-            IUserProfileModelService service = GetUserProfileModelService();
-
-            // Act
-            UserProfile actual = service.InitializeUserProfile(Hdid, TermsOfServiceGuid, lastLoginDateTime, EmailAddress, yearOfBirth);
-
-            // Assert
+            // Assert and Verify
             actual.ShouldDeepEqual(expected);
         }
 
@@ -177,10 +143,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             int daysFromLoginDate = 0,
             string? email = null,
             string? smsNumber = null,
-            string? encryptionKey = null,
-            int? yearOfBirth = null,
-            UserLoginClientType? lastLoginClientType = null,
-            Guid? termsOfServiceId = null,
             BetaFeature? betaFeature = null)
         {
             DateTime lastLoginDateTime = loginDate?.Date ?? DateTime.UtcNow.Date;
@@ -188,23 +150,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new()
             {
                 HdId = hdid,
-                TermsOfServiceId = termsOfServiceId ?? TermsOfServiceGuid,
-                LastLoginDateTime = lastLoginDateTime.AddDays(-daysFromLoginDate),
-                CreatedBy = hdid,
-                UpdatedBy = hdid,
-                EncryptionKey = encryptionKey ?? EncryptionKey,
+                TermsOfServiceId = TermsOfServiceGuid,
                 Email = email,
                 SmsNumber = smsNumber,
                 ClosedDateTime = closedDateTime,
-                YearOfBirth = yearOfBirth,
-                LastLoginClientCode = lastLoginClientType,
-                BetaFeatureCodes = betaFeature != null
-                    ?
-                    [
-                        new BetaFeatureCode
-                            { Code = betaFeature.Value },
-                    ]
-                    : null,
+                LastLoginDateTime = lastLoginDateTime.AddDays(-daysFromLoginDate),
+                BetaFeatureCodes =
+                [
+                    new BetaFeatureCode
+                        { Code = betaFeature ?? BetaFeature.Salesforce },
+                ],
             };
         }
 
@@ -257,20 +212,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(latestTourChangeDateTime);
 
             return applicationSettingsServiceMock;
-        }
-
-        private static Mock<IAuthenticationDelegate> SetupAuthenticationDelegateMock(UserLoginClientType userLoginClientType)
-        {
-            Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
-            authenticationDelegateMock.Setup(s => s.FetchAuthenticatedUserClientType()).Returns(userLoginClientType);
-            return authenticationDelegateMock;
-        }
-
-        private static Mock<ICryptoDelegate> SetupCryptoDelegateMock()
-        {
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns(EncryptionKey);
-            return cryptoDelegateMock;
         }
 
         private static Mock<ILegalAgreementServiceV2> SetupLegalAgreementServiceMock(Guid latestTermsOfServiceId)
@@ -347,7 +288,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static UserProfileModelMock SetupBuildUserProfileModelMock(
+        private static UserProfileModelMock SetupUserProfileModelMock(
             DateTime currentDateTime,
             BetaFeature betaFeature,
             IEnumerable<DataSource> blockedDataSources,
@@ -400,11 +341,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             return new(
                 service,
-                userProfile);
+                userProfile,
+                2);
         }
 
         private sealed record UserProfileModelMock(
             IUserProfileModelService Service,
-            UserProfile UserProfile);
+            UserProfile UserProfile,
+            int UserProfileHistoryRecordLimit);
     }
 }

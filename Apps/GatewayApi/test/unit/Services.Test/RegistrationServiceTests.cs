@@ -22,8 +22,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using FluentValidation;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -254,8 +256,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             string? email = null,
             string? smsNumber = null,
             Guid? termsOfServiceId = null,
-            string encryptionKey = EncryptionKey,
-            BetaFeature? betaFeature = null)
+            string encryptionKey = EncryptionKey)
         {
             DateTime lastLoginDateTime = loginDate?.Date ?? DateTime.UtcNow.Date;
 
@@ -341,6 +342,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new RegistrationService(
                 configurationRoot,
                 new Mock<ILogger<RegistrationService>>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
                 messagingVerificationServiceMock.Object,
                 jobServiceMock.Object,
                 patientDetailsServiceMock.Object,
@@ -416,24 +419,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static Mock<IUserProfileModelService> SetupUserProfileModelServiceMock(
-            UserProfile userProfile,
-            UserProfileModel userProfileModel,
-            string? requestedEmailAddress,
-            string? jwtEmailAddress)
+        private static Mock<IUserProfileModelService> SetupUserProfileModelServiceMock(UserProfileModel userProfileModel)
         {
-            bool isEmailVerified = !string.IsNullOrWhiteSpace(requestedEmailAddress) && string.Equals(requestedEmailAddress, jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-
             Mock<IUserProfileModelService> userProfileModelServiceMock = new();
-
-            userProfileModelServiceMock.Setup(
-                    s => s.InitializeUserProfile(
-                        It.IsAny<string>(),
-                        It.IsAny<Guid>(),
-                        It.IsAny<DateTime>(),
-                        It.Is<string?>(x => x == (isEmailVerified ? requestedEmailAddress : string.Empty)),
-                        It.IsAny<int?>()))
-                .Returns(userProfile);
 
             userProfileModelServiceMock.Setup(
                     s => s.BuildUserProfileModelAsync(
@@ -473,8 +461,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(insertProfileResult: insertProfileResult);
 
             UserProfileModel userProfileModel = GenerateUserProfileModel(currentDateTime, requestedEmailAddress, requestedSmsNumber);
-            UserProfile userProfile = GenerateUserProfile();
-            Mock<IUserProfileModelService> userProfileModelServiceMock = SetupUserProfileModelServiceMock(userProfile, userProfileModel, requestedEmailAddress, jwtEmailAddress);
+            Mock<IUserProfileModelService> userProfileModelServiceMock = SetupUserProfileModelServiceMock(userProfileModel);
 
             MessagingVerification emailVerification = GenerateMessagingVerification(emailAddress: requestedEmailAddress);
             MessagingVerification smsVerification = GenerateMessagingVerification(smsNumber: requestedSmsNumber);

@@ -105,17 +105,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <returns>The destination object.</returns>
         UserPreferenceModel MapToUserPreferenceModel(UserPreference source);
 
-        /// <summary>
-        /// Maps model.
-        /// </summary>
-        /// <param name="hdid">The hdid associated with the user profile.</param>
-        /// <param name="termsOfServiceId">The terms of service id associated with the user profile.</param>
-        /// <param name="lastLoginDateTime">The last login date time associated with the user profile.</param>
-        /// <param name="email">The email associated with the user profile.</param>
-        /// <param name="yearOfBirth">The year of birth associated with the user profile.</param>
-        /// <returns>The destination object</returns>
-        UserProfile MapToUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email = null, int? yearOfBirth = null);
-
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <param name="latestTermsOfServiceId">The ID of the latest terms of service, used to check if the terms have updated.</param>

@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
@@ -36,11 +35,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class LegalAgreementServiceV2Tests
     {
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
-            MapperUtil.InitializeAutoMapper(),
-            new Mock<ICryptoDelegate>().Object,
-            new Mock<IAuthenticationDelegate>().Object);
-
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
         private static readonly Guid LegalAgreementId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
         /// <summary>

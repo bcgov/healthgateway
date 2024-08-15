@@ -43,7 +43,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     public class UserFeedbackServiceTests
     {
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object, new Mock<IAuthenticationDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object);
 
         /// <summary>
         /// CreateRating - Happy Path.

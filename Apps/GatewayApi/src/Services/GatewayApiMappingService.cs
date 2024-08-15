@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using AutoMapper;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -27,7 +26,7 @@ namespace HealthGateway.GatewayApi.Services
     using CommunicationType = HealthGateway.GatewayApi.Constants.CommunicationType;
 
     /// <inheritdoc/>
-    public class GatewayApiMappingService(IMapper mapper, ICryptoDelegate cryptoDelegate, IAuthenticationDelegate authenticationDelegate) : IGatewayApiMappingService
+    public class GatewayApiMappingService(IMapper mapper, ICryptoDelegate cryptoDelegate) : IGatewayApiMappingService
     {
         /// <inheritdoc/>
         public Comment MapToComment(UserComment source, string encryptionKey)
@@ -140,25 +139,6 @@ namespace HealthGateway.GatewayApi.Services
         public UserPreferenceModel MapToUserPreferenceModel(UserPreference source)
         {
             return mapper.Map<UserPreference, UserPreferenceModel>(source);
-        }
-
-        /// <inheritdoc/>
-        public UserProfile MapToUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email = null, int? yearOfBirth = null)
-        {
-            return new()
-            {
-                HdId = hdid,
-                IdentityManagementId = null,
-                TermsOfServiceId = termsOfServiceId,
-                Email = email,
-                SmsNumber = null,
-                CreatedBy = hdid,
-                UpdatedBy = hdid,
-                LastLoginDateTime = lastLoginDateTime,
-                EncryptionKey = cryptoDelegate.GenerateKey(),
-                YearOfBirth = yearOfBirth,
-                LastLoginClientCode = authenticationDelegate.FetchAuthenticatedUserClientType(),
-            };
         }
 
         /// <inheritdoc/>

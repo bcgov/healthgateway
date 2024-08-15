@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -47,7 +46,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string ParentEntryId = "123456789";
 
         private static readonly IGatewayApiMappingService MappingService =
-            new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), GetCryptoDelegateMock().Object, new Mock<IAuthenticationDelegate>().Object);
+            new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), GetCryptoDelegateMock().Object);
 
         /// <summary>
         /// GetEntryComments.

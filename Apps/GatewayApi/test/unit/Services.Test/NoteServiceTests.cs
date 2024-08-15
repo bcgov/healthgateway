@@ -24,7 +24,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -49,7 +48,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string Hdid = "1234567890123456789012345678901234567890123456789012";
 
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object, new Mock<IAuthenticationDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object);
 
         /// <summary>
         /// GetNotes - Happy Path.

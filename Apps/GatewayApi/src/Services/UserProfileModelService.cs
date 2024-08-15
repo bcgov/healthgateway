@@ -72,11 +72,5 @@ namespace HealthGateway.GatewayApi.Services
 
             return userProfileModel;
         }
-
-        /// <inheritdoc/>
-        public UserProfile InitializeUserProfile(string hdid, Guid termsOfServiceId, DateTime lastLoginDateTime, string? email = null, int? yearOfBirth = null)
-        {
-            return mappingService.MapToUserProfile(hdid, termsOfServiceId, lastLoginDateTime, email, yearOfBirth);
-        }
     }
 }

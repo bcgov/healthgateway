@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -38,10 +37,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class GatewayApiCommunicationServiceTests
     {
-        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(
-            MapperUtil.InitializeAutoMapper(),
-            new Mock<ICryptoDelegate>().Object,
-            new Mock<IAuthenticationDelegate>().Object);
+        private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
         /// <summary>
         /// Should GetActiveCommunication.
