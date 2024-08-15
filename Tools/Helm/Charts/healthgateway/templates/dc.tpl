@@ -42,10 +42,10 @@ spec:
         name: {{ $name }}
         role: {{ $role }}
       annotations:
-        checksum/config: {{ (lookup "v1" "ConfigMap" $top.Release.Namespace (print $top.Release.Name "-common-config")) | toYaml | sha256sum }}
-        checksum/secret: {{ (lookup "v1" "Secret" $top.Release.Namespace (print $top.Release.Name "-common-secrets")) | toYaml | sha256sum }}
+        checksum/config: {{ $top.Values.commonConfig | toYaml | sha256sum }}
+        checksum/secret: {{ $top.Values.commonSecrets | toYaml | sha256sum }}
         {{- if $context.files }}
-        checksum/files: {{ (lookup "v1" "ConfigMap" $top.Release.Namespace (print $top.Release.Name "-files")) | toYaml | sha256sum }}
+        checksum/files: {{ $top.Values.files | toYaml | sha256sum }}
         {{- end }}
         {{- range $key, $value := $context.secrets }}
         {{ print "checksum/" $value.name  "-secrets"}}: {{ $top.Files.Get $value.file | toYaml | sha256sum }}
