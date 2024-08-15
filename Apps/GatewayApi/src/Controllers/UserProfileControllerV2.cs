@@ -62,6 +62,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="legalAgreementService">The injected legal agreement service.</param>
         /// <param name="userValidationService">The injected user validation service.</param>
         /// <param name="registrationService">The injected registration service.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public UserProfileControllerV2(
             IUserProfileServiceV2 userProfileService,
             IHttpContextAccessor httpContextAccessor,

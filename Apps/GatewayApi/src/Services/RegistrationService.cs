@@ -24,10 +24,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Common.Messaging;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -42,34 +38,30 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="logger">The injected logger.</param>
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
     /// <param name="cryptoDelegate">The injected crypto delegate.</param>
-    /// <param name="emailQueueService">The injected service to queue emails.</param>
-    /// <param name="messageSender">The injected message sender.</param>
-    /// <param name="messageVerificationDelegate">The injected message verification delegate.</param>
-    /// <param name="notificationSettingsService">The injected notifications settings service.</param>
+    /// <param name="messagingVerificationService">The injected message verification service.</param>
+    /// <param name="jobService">The injected job service.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
-    /// <param name="userEmailService">The injected user email service.</param>
-    /// <param name="userSmsService">The injected user SMS service.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
-    /// <param name="userProfileService">The injected user profile service.</param>
+    /// <param name="userProfileModelService">The injected user profile model service.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
     public class RegistrationService(
         IConfiguration configuration,
         ILogger<RegistrationService> logger,
         IAuthenticationDelegate authenticationDelegate,
         ICryptoDelegate cryptoDelegate,
-        IEmailQueueService emailQueueService,
-        IMessageSender messageSender,
-        IMessagingVerificationDelegate messageVerificationDelegate,
-        INotificationSettingsService notificationSettingsService,
+        IMessagingVerificationService messagingVerificationService,
+        IJobService jobService,
         IPatientDetailsService patientDetailsService,
-        IUserEmailServiceV2 userEmailService,
-        IUserSmsServiceV2 userSmsService,
         IUserProfileDelegate userProfileDelegate,
-        IUserProfileServiceV2 userProfileService) : IRegistrationService
+        IUserProfileModelService userProfileModelService) : IRegistrationService
     {
         private const string MinPatientAgeKey = "MinPatientAge";
+        private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private const string WebClientConfigSection = "WebClient";
         private const int DefaultPatientAge = 12;
+        private const int DefaultUserProfileHistoryRecordLimit = 4;
         private readonly int minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, DefaultPatientAge);
+        private readonly int userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection).GetValue(UserProfileHistoryRecordLimitKey, DefaultUserProfileHistoryRecordLimit);
         private readonly bool accountsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Accounts.Enabled ?? false;
         private readonly bool notificationsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Notifications.Enabled ?? false;
 
@@ -121,14 +113,14 @@ namespace HealthGateway.GatewayApi.Services
             // queue verification email
             if (emailVerification != null && !isEmailVerified)
             {
-                await emailQueueService.QueueNewEmailAsync(emailVerification.Email, true, ct);
+                await jobService.SendEmailAsync(emailVerification.Email, true, ct);
             }
 
             // notify partners about new account
             await this.NotifyAccountCreated(profile, requestedEmail, requestedSmsNumber, isEmailVerified, smsVerification?.SmsValidationCode, ct);
 
             // build and return model
-            UserProfileModel userProfileModel = await userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
+            UserProfileModel userProfileModel = await userProfileModelService.BuildUserProfileModelAsync(profile, this.userProfileHistoryRecordLimit, ct);
             logger.LogTrace("Finished creating user profile... {Hdid}", dbResult.Payload.HdId);
             return userProfileModel;
         }
@@ -138,8 +130,8 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? smsVerification = null;
             if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
             {
-                smsVerification = userSmsService.GenerateMessagingVerification(hdid, requestedSmsNumber);
-                await messageVerificationDelegate.InsertAsync(smsVerification, false, ct);
+                // Generate amd add SMS messaging verification to DB without committing changes
+                smsVerification = await messagingVerificationService.AddSmsVerificationAsync(hdid, requestedSmsNumber, false, ct);
             }
 
             return smsVerification;
@@ -150,8 +142,8 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? emailVerification = null;
             if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
-                emailVerification = await userEmailService.GenerateMessagingVerificationAsync(hdid, requestedEmail, Guid.NewGuid(), isEmailVerified, ct);
-                await messageVerificationDelegate.InsertAsync(emailVerification, false, ct);
+                // Generate amd add email messaging verification to DB without committing changes
+                emailVerification = await messagingVerificationService.AddEmailVerificationAsync(hdid, requestedEmail, isEmailVerified, false, ct);
             }
 
             return emailVerification;
@@ -162,18 +154,17 @@ namespace HealthGateway.GatewayApi.Services
             // notify account was created
             if (this.accountsChangeFeedEnabled)
             {
-                await messageSender.SendAsync([new MessageEnvelope(new AccountCreatedEvent(profile.HdId, DateTime.UtcNow), profile.HdId)], ct);
+                await jobService.NotifyAccountCreationAsync(profile.HdId, ct);
             }
 
             // notify email verification was successful
             if (isEmailVerified && this.notificationsChangeFeedEnabled)
             {
-                await messageSender.SendAsync([new(new NotificationChannelVerifiedEvent(profile.HdId, NotificationChannel.Email, requestedEmail), profile.HdId)], ct);
+                await jobService.NotifyEmailVerificationAsync(profile.HdId, requestedEmail, ct);
             }
 
             // queue notification settings job
-            NotificationSettingsRequest notificationSettingsRequest = new(profile, profile.Email, requestedSmsNumber) { SmsVerificationCode = smsVerificationCode };
-            await notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
+            await jobService.PushNotificationSettingsToPhsaAsync(profile, profile.Email, requestedSmsNumber, smsVerificationCode, ct);
         }
     }
 }

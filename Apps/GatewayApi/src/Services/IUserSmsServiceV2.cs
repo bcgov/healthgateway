@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The user SMS service.
@@ -41,14 +40,5 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task UpdateSmsNumberAsync(string hdid, string sms, CancellationToken ct = default);
-
-        /// <summary>
-        /// Generates a messaging verification using the provided HDID and SMS number.
-        /// </summary>
-        /// <param name="hdid">The user hdid.</param>
-        /// <param name="sms">SMS number to verify.</param>
-        /// <param name="sanitize">If set to true, the provided SMS number will be sanitized before being used.</param>
-        /// <returns>The generated messaging verification.</returns>
-        MessagingVerification GenerateMessagingVerification(string hdid, string sms, bool sanitize = true);
     }
 }
