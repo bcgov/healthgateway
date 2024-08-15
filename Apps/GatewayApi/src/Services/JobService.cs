@@ -52,6 +52,13 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
+        public async Task NotifySmsVerificationAsync(string hdid, string smsNumber, CancellationToken ct = default)
+        {
+            IEnumerable<MessageEnvelope> messages = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsNumber), hdid)];
+            await messageSender.SendAsync(messages, ct);
+        }
+
+        /// <inheritdoc/>
         public async Task SendEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default)
         {
             await emailQueueService.QueueNewEmailAsync(email, shouldCommit, ct);

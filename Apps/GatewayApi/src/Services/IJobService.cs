@@ -42,6 +42,15 @@ namespace HealthGateway.GatewayApi.Services
         Task NotifyEmailVerificationAsync(string hdid, string email, CancellationToken ct = default);
 
         /// <summary>
+        /// Notifies sms verification was successful.
+        /// </summary>
+        /// <param name="hdid">The hdid associated with the email.</param>
+        /// <param name="smsNumber">The sms associated with the verification.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task NotifySmsVerificationAsync(string hdid, string smsNumber, CancellationToken ct = default);
+
+        /// <summary>
         /// Queues email to be sent.
         /// </summary>
         /// <param name="email">The email to queue.</param>

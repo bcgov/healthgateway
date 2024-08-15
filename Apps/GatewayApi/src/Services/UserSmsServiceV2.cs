@@ -22,10 +22,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Common.Messaging;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -44,9 +40,8 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IMessagingVerificationService messagingVerificationService;
-        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IMessageSender messageSender;
+        private readonly IJobService jobService;
         private readonly bool notificationsChangeFeedEnabled;
 
         /// <summary>
@@ -56,24 +51,21 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="messagingVerificationService">The messaging verification service.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        /// <param name="messageSender">The change feed message sender.</param>
+        /// <param name="jobService">The job service.</param>
         /// <param name="configuration">The application's configuration.</param>
         public UserSmsServiceV2(
             ILogger<UserSmsServiceV2> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IMessagingVerificationService messagingVerificationService,
             IUserProfileDelegate profileDelegate,
-            INotificationSettingsService notificationSettingsService,
-            IMessageSender messageSender,
+            IJobService jobService,
             IConfiguration configuration)
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.messagingVerificationService = messagingVerificationService;
             this.profileDelegate = profileDelegate;
-            this.notificationSettingsService = notificationSettingsService;
-            this.messageSender = messageSender;
+            this.jobService = jobService;
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed)
                 .Get<ChangeFeedOptions>();
             this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
@@ -113,12 +105,11 @@ namespace HealthGateway.GatewayApi.Services
 
             if (this.notificationsChangeFeedEnabled)
             {
-                MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber), hdid)];
-                await this.messageSender.SendAsync(events, ct);
+                await this.jobService.NotifySmsVerificationAsync(hdid, smsVerification.SmsNumber, ct);
             }
 
             // Update the notification settings
-            await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
+            await this.jobService.PushNotificationSettingsToPhsaAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
 
             this.logger.LogDebug("Finished verifying sms");
             return true;
@@ -149,17 +140,20 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageVerificationDelegate.ExpireAsync(lastSmsVerification, isDeleted, ct: ct);
             }
 
-            NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms);
             if (!isDeleted)
             {
                 this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
                 MessagingVerification messagingVerification = this.messagingVerificationService.GenerateMessagingVerification(hdid, sanitizedSms, false);
                 await this.messageVerificationDelegate.InsertAsync(messagingVerification, true, ct);
-                notificationRequest.SmsVerificationCode = messagingVerification.SmsValidationCode;
-            }
 
-            // Update the notification settings
-            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
+                // Update the notification settings
+                await this.jobService.PushNotificationSettingsToPhsaAsync(userProfile, userProfile.Email, sanitizedSms, messagingVerification.SmsValidationCode, ct);
+            }
+            else
+            {
+                // Update the notification settings
+                await this.jobService.PushNotificationSettingsToPhsaAsync(userProfile, userProfile.Email, sanitizedSms, ct: ct);
+            }
 
             this.logger.LogDebug("Finished updating user sms");
         }
