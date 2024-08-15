@@ -15,104 +15,56 @@ import {
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
-function buildObjectsMap(objects, keyProperty, valueProperty) {
-    const map = {};
-    objects.forEach((obj) => {
-        const key = obj[keyProperty];
-        const value = obj[valueProperty];
-        map[key] = value;
-    });
-    return map;
-}
-
-function configureObjectArray(
-    objectArray,
-    deltaObjectArray,
-    keyProperty = "name",
-    valueProperty = "enabled"
-) {
-    let newDatasets = [];
-    if (deltaObjectArray !== undefined && Array.isArray(deltaObjectArray)) {
-        objectArray = !objectArray ? [] : objectArray;
-        const objectMap = buildObjectsMap(
-            objectArray,
-            keyProperty,
-            valueProperty
-        );
-        const deltaMap = buildObjectsMap(
-            deltaObjectArray,
-            keyProperty,
-            valueProperty
-        );
-        const setTable = { ...objectMap, ...deltaMap };
-        for (const key in setTable) {
-            newDatasets.push({ name: key, enabled: setTable[key] });
-        }
-    }
-    return newDatasets;
-}
-
-function disablePropertyOfObjectArray(objectArray, property = "enabled") {
-    if (!objectArray) {
-        return [];
-    }
-    return objectArray.map((s) => {
-        s[property] = false;
-        return s;
-    });
-}
-
-function configureObject(baseObj, delta) {
-    const deltaKeys = Object.keys(delta);
-    if (deltaKeys && deltaKeys.length > 0) {
-        for (const key of deltaKeys) {
-            const baseValue = baseObj[key];
-            if (baseValue === undefined || baseValue === null) {
-                throw new Error(
-                    `Configuring Object - Unknown property: ${key}`
-                );
-            }
-            const baseValueKeys = Object.keys(baseValue);
-            if (
-                baseValueKeys &&
-                baseValueKeys.length > 0 &&
-                !Array.isArray(baseValue)
-            ) {
-                configureObject(baseObj[key], delta[key]);
-            } else if (!Array.isArray(baseValue)) {
-                baseObj[key] = delta[key];
-            }
+function setBooleanProperties(object, enabled) {
+    const properties = Object.keys(object);
+    for (const property of properties) {
+        const value = object[property];
+        if (typeof value === "object" && value !== null) {
+            setBooleanProperties(value, enabled);
+        } else if (typeof value === "boolean") {
+            object[property] = enabled;
         }
     }
 }
 
-function disableObject(config) {
-    const configKeys = Object.keys(config);
-    if (configKeys && configKeys.length > 0) {
-        for (const key of configKeys) {
-            const configValue = config[key];
-            if (configValue === undefined || configValue === null) {
-                throw new Error(`Disabling Object - Unknown property: ${key}`);
-            }
-            const configValueKeys = Object.keys(configValue);
-            if (
-                configValueKeys &&
-                configValueKeys.length > 0 &&
-                !Array.isArray(configValue)
-            ) {
-                disableObject(config[key]);
-            } else if (!Array.isArray(configValue)) {
-                config[key] = false;
-            }
+function populateFallbackValues(baseArray, fallbackArray, idProperty = "name") {
+    if (!baseArray) {
+        return;
+    }
+
+    for (const f of fallbackArray) {
+        if (!baseArray.some((b) => b[idProperty] === f[idProperty])) {
+            baseArray.push(f);
+        }
+    }
+}
+
+function overrideProperties(baseObject, overrideObject) {
+    const properties = Object.keys(overrideObject ?? {});
+    for (const property of properties) {
+        const value = baseObject[property];
+
+        if (value === undefined) {
+            throw new Error(`Can't override unknown property '${property}'`);
+        }
+
+        if (
+            typeof value === "object" &&
+            value !== null &&
+            !Array.isArray(value)
+        ) {
+            overrideProperties(value, overrideObject[property]);
+        } else {
+            baseObject[property] = overrideObject[property];
         }
     }
 }
 
 function generateRandomString(length) {
-    var text = "";
-    var possible =
+    let text = "";
+    const possible =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
@@ -393,51 +345,41 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     });
 });
 
-Cypress.Commands.add("configureSettings", (settings) => {
+Cypress.Commands.add("configureSettings", (overriddenFeatures) => {
     return cy
         .readConfig()
         .as("config")
         .then((config) => {
-            // Create new configuration object to be configured and mutated
-            const featureToggleConfiguration = {
-                ...config.webClient.featureToggleConfiguration,
-            };
+            const features = config.webClient.featureToggleConfiguration;
 
-            // Disable non dataset object properties
-            disableObject(featureToggleConfiguration);
+            // default all boolean settings to false (except dependent datasets)
+            setBooleanProperties(features, false);
+            setBooleanProperties(features.dependents.datasets, true);
 
-            // Configure overrides to non dataset object properties
-            configureObject(featureToggleConfiguration, settings);
-
-            // Apply dataset overrides to configuration object
-            featureToggleConfiguration.datasets = configureObjectArray(
-                disablePropertyOfObjectArray(
-                    config.webClient.featureToggleConfiguration.datasets
-                ),
-                settings.datasets
+            // ensure non-overridden datasets and services are populated with default values
+            populateFallbackValues(
+                overriddenFeatures.datasets,
+                features.datasets
             );
-            featureToggleConfiguration.dependents.datasets =
-                settings.dependents?.datasets ?? [];
-
-            // Apply services.services overrides to configuration object
-            featureToggleConfiguration.services.services = configureObjectArray(
-                disablePropertyOfObjectArray(
-                    config.webClient.featureToggleConfiguration.services
-                        ?.services
-                ),
-                settings.services?.services
+            populateFallbackValues(
+                overriddenFeatures.dependents?.datasets,
+                features.dependents.datasets
+            );
+            populateFallbackValues(
+                overriddenFeatures.services?.services,
+                features.services.services
             );
 
-            // Apply configured configuration object to configuration to be returned in intercept
-            config.webClient.featureToggleConfiguration =
-                featureToggleConfiguration;
+            // apply overrides
+            overrideProperties(features, overriddenFeatures);
 
+            // intercept configuration calls to return the modified configuration
             cy.intercept("GET", "**/configuration", {
                 statusCode: 200,
                 body: config,
             });
 
-            // Set copy of config in session to be accessed by login for handling wait on busy endpoint calls
+            // set copy of config in session to be accessed by login for handling wait on busy endpoint calls
             cy.window().then((window) => {
                 window.sessionStorage.setItem(
                     "configSettingsKey",

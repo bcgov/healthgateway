@@ -2,7 +2,12 @@
     "compilerOptions": {
         "allowJs": true,
         "baseUrl": "../node_modules",
-        "types": ["cypress", "cy-verify-downloads"],
+        "types": [
+            "cypress",
+            "cy-verify-downloads",
+            "node",
+            "cypress-real-events"
+        ],
         "noEmit": true
     },
     "include": ["**/*.*"]

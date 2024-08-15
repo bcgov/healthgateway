@@ -1,7 +1,9 @@
-FROM ubuntu:22.04
-ARG NODE_VERSION=v18.17.1
-ARG DOTNET_VERSION=7.0
-ARG SONARSCANNER_VERSION=5.13.1
+FROM ubuntu:24.04
+ARG NODE_VERSION=v20.9.0
+ARG DOTNET_VERSION=8.0
+ARG SONARSCANNER_VERSION=8.0.0
+ARG VAULT_VERSION=1.17.3
+ARG HELM_VERSION=v3.15.3
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI"
@@ -10,8 +12,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
-    ca-certificates lsb-release git tzdata iputils-ping netcat traceroute curl \
-    apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils  software-properties-common zip unzip \
+    ca-certificates lsb-release git tzdata iputils-ping netcat-openbsd traceroute curl \
+    apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils zip unzip \
     dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential \
     redis-tools
 
@@ -33,8 +35,11 @@ RUN mkdir -p /opt/bin && \
     rm -f oc.tar
 
 # Install Hashicorp Vault
-RUN curl -sL https://releases.hashicorp.com/vault/1.16.2/vault_1.16.2_linux_amd64.zip -o - | funzip > /opt/bin/vault && \
+RUN curl -sL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip -o - | funzip > /opt/bin/vault && \
 chmod +x /opt/bin/vault 
+
+# Install Helm
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # Update environment variables
 ENV TARGETARCH=linux-x64
@@ -52,8 +57,7 @@ RUN npm i -g npm@latest && \
     npm -v
 
 # Install .Net tooling for SonarQube and Test Results
-RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARSCANNER_VERSION}&& \
-    dotnet tool install -g dotnet-reportgenerator-globaltool && \
+RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARSCANNER_VERSION} && \
     chmod -R 777 $HOME && \
     rm -rf /tmp/NuGetScratch/lock/* && \
     chmod 777 /tmp/.nuget
@@ -61,9 +65,13 @@ RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARSCANNER_VE
 RUN mkdir -p /opt/az &&\
     chmod -R 777 /opt/az
 
-ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh
-ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/stop.sh?raw=true /opt/az/stop.sh
-RUN chmod +rx /opt/az/*.sh
+COPY scripts/start.sh /opt/az/start.sh
+COPY scripts/stop.sh /opt/az/stop.sh
+COPY scripts/getSecrets.sh /opt/bin/getSecrets 
+COPY scripts/pushSecrets.sh /opt/bin/pushSecrets
+RUN chmod +rx /opt/az/*.sh && \
+    chmod +rx /opt/bin/getSecrets && \
+    chmod +rx /opt/bin/pushSecrets
 
 WORKDIR /opt/az
 

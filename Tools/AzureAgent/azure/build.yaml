@@ -34,7 +34,7 @@ stages:
               containerRegistry: "docker-health"
               command: "buildAndPush"
               repository: "$(DockerRepo)/azure-agent"
-              buildContext: "$(Build.SourcesDirectory)/Tools/AzureAgent"
+              buildContext: "$(Build.SourcesDirectory)/Tools/AzureAgent/docker"
               dockerfile: "$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile"
               tags: |
                 $(tag)

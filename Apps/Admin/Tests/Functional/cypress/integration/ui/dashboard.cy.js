@@ -3,6 +3,9 @@ import "cypress-real-events/support";
 // midnight on 2022-07-02, the middle of the year
 const utcDate = new Date(Date.UTC(2022, 7 - 1, 2));
 const localDate = new Date(2022, 7 - 1, 2);
+const defaultMobileCount = 3;
+const salesForceCount = 2;
+const webCount = 4;
 
 function getPastDate(daysAgo) {
     // initialize date to utcDate minus a number of days
@@ -20,7 +23,7 @@ function getPastDate(daysAgo) {
 }
 
 function setupAppLoginCountsFixtures(
-    mobileCount = 3,
+    mobileCount = defaultMobileCount,
     androidCount = 1,
     iosCount = 1
 ) {
@@ -29,8 +32,8 @@ function setupAppLoginCountsFixtures(
             mobile: mobileCount,
             android: androidCount,
             ios: iosCount,
-            web: 4,
-            salesforce: 2,
+            web: webCount,
+            salesforce: salesForceCount,
         },
     });
 }
@@ -60,6 +63,10 @@ describe("Dashboard", () => {
                     [getPastDate(0)]: 2,
                 },
             },
+        });
+
+        cy.intercept("GET", "**/Dashboard/AgeCounts*", {
+            fixture: "DashboardService/age-count.json",
         });
 
         // used to calculate [data-testid=average-rating]
@@ -93,9 +100,11 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-dependents]").contains(2);
         cy.get("[data-testid=average-rating]").contains("4.00");
         cy.get("[data-testid=recurring-user-count]").contains(2);
-        cy.get("[data-testid=total-mobile-users]").contains(3);
-        cy.get("[data-testid=total-web-users]").contains(4);
-        cy.get("[data-testid=total-salesforce-users]").contains(2);
+        cy.get("[data-testid=total-mobile-users]").contains(defaultMobileCount);
+        cy.get("[data-testid=total-web-users]").contains(webCount);
+        cy.get("[data-testid=total-salesforce-users]").contains(
+            salesForceCount
+        );
 
         cy.get("[data-testid=daily-data-table]")
             .find("tbody tr.mud-table-row")
@@ -138,7 +147,17 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
         });
 
         cy.intercept("GET", "**/Dashboard/DailyUsageCounts*", {
-            fixture: "DashboardService/daily-usage-counts.json",
+            body: {
+                userRegistrations: {
+                    [getPastDate(0)]: 2,
+                },
+                userLogins: {
+                    [getPastDate(0)]: 6,
+                },
+                dependentRegistrations: {
+                    [getPastDate(0)]: 2,
+                },
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/Ratings/Summary*", {
@@ -147,6 +166,10 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         cy.intercept("GET", "**/Dashboard/RecurringUserCount?days=3*", {
             body: 2,
+        });
+
+        cy.intercept("GET", "**/Dashboard/AgeCounts*", {
+            fixture: "DashboardService/age-count.json",
         });
     });
 

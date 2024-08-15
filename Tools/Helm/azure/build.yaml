@@ -1,0 +1,38 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+pr: none
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Tools/Helm
+variables:
+  Charts.Path: $(Build.SourcesDirectory)/Tools/Helm/Charts
+
+jobs:
+  - job: "PackageCharts"
+    pool:
+      vmImage: "ubuntu-latest"
+    displayName: "Packaging Helm Charts"
+    steps:
+      - script: |
+          set -e
+          echo Creating Artifact
+          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+        displayName: "Create Trigger Build Artifact"
+
+      - task: CopyFiles@2
+        displayName: "Copying Helm Charts to Staging"
+        inputs:
+          SourceFolder: "$(Charts.Path)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+      - task: PublishPipelineArtifact@0
+        displayName: "Publishing Helm Charts"
+        inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)"

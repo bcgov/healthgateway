@@ -5,6 +5,7 @@
 {{- $azurePoolPrefix := print (($.Values.azureagent).poolPrefix | required "azureagent.poolPrefix is required") $dr -}}
 {{- $azureDevopsUrl := ($.Values.azureagent).devopsUrl | required "azureagent.devopsUrl is required" -}}
 {{- $imageTag := ($vars).imageTag | default $env -}}
+{{- $vaultEngine := ($vars).vaultEngine | default $.Values.vault.engine -}}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -13,6 +14,34 @@ metadata:
 type: Opaque
 data:
   AZP_TOKEN: {{ $token | toString | b64enc }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $name }}-vault-rb
+  namespace: {{ $.Values.licensePlate }}-{{  $env  }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: {{ $.Values.licensePlate }}-vault
+  namespace: {{ $.Values.licensePlate }}-{{  $env  }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vaull-pull-{{ $env }}-rb
+  namespace: {{ $.Values.licensePlate }}-tools
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:image-puller
+subjects:
+- kind: ServiceAccount
+  name: {{ $.Values.licensePlate }}-vault
+  namespace: {{ $.Values.licensePlate }}-{{  $env  }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -35,7 +64,16 @@ spec:
       annotations:
         image.openshift.io/triggers: >-
           [{"from": {"kind": "ImageStreamTag","name": {{ $.Values.azureagent.baseImage | base }}:{{ $imageTag }},"namespace": {{ $.Values.licensePlate }}-tools},"fieldPath": "spec.template.spec.containers[?(@.name==\"{{ $name }}\")].image","paused": "false"}]
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-token: 'true'
+        vault.hashicorp.com/agent-inject-auto-auth: 'true'
+        vault.hashicorp.com/agent-cache-use-auto-auth-token: 'true'
+        vault.hashicorp.com/agent-pre-populate-only: 'false'
+        vault.hashicorp.com/auth-path: {{ $.Values.vault.authPath }}{{ lower $dr }}
+        vault.hashicorp.com/namespace: {{ $.Values.vault.namespace }}
+        vault.hashicorp.com/role: {{ $.Values.licensePlate }}-{{ $vaultEngine }}
     spec:
+      serviceAccountName: {{ $.Values.licensePlate }}-vault
       containers:
         - name:  {{ $name }}
           image: {{ $.Values.azureagent.baseImage }}:{{ $imageTag }}
