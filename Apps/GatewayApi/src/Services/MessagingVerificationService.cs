@@ -33,6 +33,7 @@ namespace HealthGateway.GatewayApi.Services
 
     /// <inheritdoc/>
     /// <param name="configuration">Configuration settings.</param>
+    /// <param name="emailQueueService">The injected email queue service.</param>
     /// <param name="messageVerificationDelegate">The injected message verification delegate.</param>
     public partial class MessagingVerificationService(
         IConfiguration configuration,
