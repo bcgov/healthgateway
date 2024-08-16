@@ -43,9 +43,10 @@ spec:
         role: {{ $role }}
       annotations:
         checksum/config: {{ $top.Values.commonConfig | toYaml | sha256sum }}
-        checksum/secret: {{ $top.Values.commonSecrets | toYaml | sha256sum }}
-        {{- if $context.files }}
+        checksum/secret: {{ $top.Values.commonSecrets.file | sha256sum }}-{{ $top.Files.Get $top.Values.commonSecrets.file | sha256sum }}
         checksum/files: {{ $top.Values.files | toYaml | sha256sum }}
+        {{- range $file := $top.Values.files }}
+        checksum/{{ $file.name }}: {{ $top.Files.Get $file.file | sha256sum }}
         {{- end }}
         {{- range $key, $value := $context.secrets }}
         {{ print "checksum/" $value.name  "-secrets"}}: {{ $top.Files.Get $value.file | toYaml | sha256sum }}
