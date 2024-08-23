@@ -62,6 +62,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldAssociateFeedbackTags(DbStatusCode feedbackDbStatusCode, DbStatusCode updateFeedbackDbStatusCode, ResultType resultType)
         {
             // Arrange
+            const string comment = "Great";
             const string tagName1 = "Poor";
             const string tagName2 = "Average";
             Guid userFeedbackId = Guid.NewGuid();
@@ -74,18 +75,51 @@ namespace HealthGateway.Admin.Tests.Services
                 new(adminTagId2, tagName2),
             ];
 
-            AssociateFeedbackTagMock mock = SetupAssociateFeedbackMock(
+            IList<FeedbackTag> feedbackTags =
+            [
+                new(userFeedbackId, adminTags[0].AdminTagId),
+                new(userFeedbackId, adminTags[1].AdminTagId),
+            ];
+
+            RequestResult<UserFeedbackView> expected = new()
+            {
+                ResultStatus = resultType,
+                ResourcePayload = resultType == ResultType.Success
+                    ? new()
+                    {
+                        Id = userFeedbackId,
+                        UserProfileId = Hdid1,
+                        Comment = comment,
+                        ClientType = UserLoginClientType.Web,
+                        Email = Email1,
+                        Tags =
+                        [
+                            GenerateUserFeedbackTagView(userFeedbackId, feedbackTags[0].AdminTagId),
+                            GenerateUserFeedbackTagView(userFeedbackId, feedbackTags[1].AdminTagId),
+                        ],
+                    }
+                    : null,
+                ResultError = resultType == ResultType.Error
+                    ? new()
+                    {
+                        ResultMessage = DbErrorMessage,
+                    }
+                    : null,
+            };
+
+            IUserFeedbackService service = SetupAssociateFeedbackMock(
                 userFeedbackId,
                 adminTags,
+                feedbackTags,
                 feedbackDbStatusCode,
                 updateFeedbackDbStatusCode,
-                resultType);
+                comment);
 
             // Act
-            RequestResult<UserFeedbackView> actual = await mock.Service.AssociateFeedbackTagsAsync(userFeedbackId, adminTags.Select(x => x.AdminTagId).ToList());
+            RequestResult<UserFeedbackView> actual = await service.AssociateFeedbackTagsAsync(userFeedbackId, adminTags.Select(x => x.AdminTagId).ToList());
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -96,13 +130,21 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldCreateTag()
         {
             // Arrange
-            CreateUserFeedbackMock mock = SetupCreateUserFeedbackMock(false);
+            const string tagName = "Great";
+
+            RequestResult<AdminTagView> expected = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new() { Name = tagName },
+            };
+
+            IUserFeedbackService service = SetupCreateUserFeedbackMock(tagName, false);
 
             // Act
-            RequestResult<AdminTagView> actual = await mock.Service.CreateTagAsync(mock.TagName);
+            RequestResult<AdminTagView> actual = await service.CreateTagAsync(tagName);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -113,13 +155,21 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task CreateTagHandlesDbError()
         {
             // Arrange
-            CreateUserFeedbackMock mock = SetupCreateUserFeedbackMock(true);
+            const string tagName = "Great";
+
+            RequestResult<AdminTagView> expected = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResultError = new() { ResultMessage = DbErrorMessage },
+            };
+
+            IUserFeedbackService service = SetupCreateUserFeedbackMock(tagName, true);
 
             // Act
-            RequestResult<AdminTagView> actual = await mock.Service.CreateTagAsync(mock.TagName);
+            RequestResult<AdminTagView> actual = await service.CreateTagAsync(tagName);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -130,13 +180,26 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldDeleteTag()
         {
             // Arrange
-            DeleteUserFeedbackMock mock = SetupDeleteUserFeedbackMock(false);
+            Guid adminTagId = Guid.NewGuid();
+            const string tagName = "Great";
+
+            RequestResult<AdminTagView> expected = new()
+            {
+                ResourcePayload = new()
+                {
+                    Id = adminTagId,
+                    Name = tagName,
+                },
+                ResultStatus = ResultType.Success,
+            };
+
+            IUserFeedbackService service = SetupDeleteUserFeedbackMock(adminTagId, tagName, false);
 
             // Act
-            RequestResult<AdminTagView> actual = await mock.Service.DeleteTagAsync(new() { Id = mock.AdminTagId, Name = mock.TagName });
+            RequestResult<AdminTagView> actual = await service.DeleteTagAsync(new() { Id = adminTagId, Name = tagName });
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -147,13 +210,25 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task DeleteTagHandlesDbError()
         {
             // Arrange
-            DeleteUserFeedbackMock mock = SetupDeleteUserFeedbackMock(true);
+            Guid adminTagId = Guid.NewGuid();
+            const string tagName = "Great";
+
+            RequestResult<AdminTagView> expected = new()
+            {
+                ResultError = new()
+                {
+                    ResultMessage = DbErrorMessage,
+                },
+                ResultStatus = ResultType.Error,
+            };
+
+            IUserFeedbackService service = SetupDeleteUserFeedbackMock(adminTagId, tagName, true);
 
             // Act
-            RequestResult<AdminTagView> actual = await mock.Service.DeleteTagAsync(new() { Id = mock.AdminTagId, Name = mock.TagName });
+            RequestResult<AdminTagView> actual = await service.DeleteTagAsync(new() { Id = adminTagId, Name = tagName });
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -164,13 +239,41 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetAllTags()
         {
             // Arrange
-            GetAllFeedbackMock mock = SetupGetAllFeedbackMock();
+            Guid adminTagId1 = Guid.NewGuid();
+            Guid adminTagId2 = Guid.NewGuid();
+            const string tagName1 = "Test1";
+            const string tagName2 = "Test2";
+
+            IList<Dictionary<Guid, string>> tags =
+            [
+                new()
+                {
+                    { adminTagId1, tagName1 },
+                },
+                new()
+                {
+                    { adminTagId2, tagName2 },
+                },
+            ];
+
+            RequestResult<IList<AdminTagView>> expected = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload =
+                [
+                    GenerateAdminTagView(adminTagId1, tagName1),
+                    GenerateAdminTagView(adminTagId2, tagName2),
+                ],
+                TotalResultCount = tags.Count,
+            };
+
+            IUserFeedbackService service = SetupGetAllFeedbackMock(tags);
 
             // Act
-            RequestResult<IList<AdminTagView>> actual = await mock.Service.GetAllTagsAsync();
+            RequestResult<IList<AdminTagView>> actual = await service.GetAllTagsAsync();
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -181,13 +284,38 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetUserFeedback()
         {
             // Arrange
-            GetUserFeedbackMock mock = SetupGetUserFeedbackMock();
+            const string comment1 = "ABC";
+            const string comment2 = "123";
+            Guid feedbackId1 = Guid.NewGuid();
+            Guid feedbackId2 = Guid.NewGuid();
+            Guid feedbackId3 = Guid.NewGuid();
+
+            IList<Feedback> feedbacks =
+            [
+                new(feedbackId1, Hdid1, comment1),
+                new(feedbackId2, Hdid1, comment2),
+                new(feedbackId3, Hdid2, comment1),
+            ];
+
+            RequestResult<IList<UserFeedbackView>> expected = new()
+            {
+                ResourcePayload =
+                [
+                    GenerateUserFeedbackView(feedbackId1, Hdid1, comment1, Email1),
+                    GenerateUserFeedbackView(feedbackId2, Hdid1, comment2, Email1),
+                    GenerateUserFeedbackView(feedbackId3, Hdid2, comment1, Email2),
+                ],
+                ResultStatus = ResultType.Success,
+                TotalResultCount = feedbacks.Count,
+            };
+
+            IUserFeedbackService service = SetupGetUserFeedbackMock(feedbacks);
 
             // Act
-            RequestResult<IList<UserFeedbackView>> actual = await mock.Service.GetUserFeedbackAsync();
+            RequestResult<IList<UserFeedbackView>> actual = await service.GetUserFeedbackAsync();
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -198,18 +326,26 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldUpdateFeedbackReview()
         {
             // Arrange
-            Mock<IFeedbackDelegate> feedbackDelegateMock = new();
-            UpdateFeedbackMock mock = SetupUpdateFeedbackMock(feedbackDelegateMock);
+            const string comment = "ABC";
+            Guid feedbackId = Guid.NewGuid();
+            UserFeedbackView update = GenerateUserFeedbackView(feedbackId, Hdid1, comment);
+            RequestResult<UserFeedbackView> expected = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = GenerateUserFeedbackView(feedbackId, Hdid1, comment, Email1),
+            };
+
+            UpdateFeedbackMock mock = SetupUpdateFeedbackMock(Hdid1, comment, Email1, feedbackId);
 
             // Act
-            RequestResult<UserFeedbackView> actual = await mock.Service.UpdateFeedbackReviewAsync(mock.Update);
+            RequestResult<UserFeedbackView> actual = await mock.Service.UpdateFeedbackReviewAsync(update);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
 
-            feedbackDelegateMock.Verify(
+            mock.FeedbackDelegateMock.Verify(
                 v => v.UpdateUserFeedbackAsync(
-                    It.Is<UserFeedback>(x => x.UserProfileId == mock.Update.UserProfileId && x.Id == mock.Update.Id && x.Comment == mock.Update.Comment),
+                    It.Is<UserFeedback>(x => x.UserProfileId == update.UserProfileId && x.Id == update.Id && x.Comment == update.Comment),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
@@ -314,47 +450,14 @@ namespace HealthGateway.Admin.Tests.Services
                 MappingService);
         }
 
-        private static AssociateFeedbackTagMock SetupAssociateFeedbackMock(
+        private static IUserFeedbackService SetupAssociateFeedbackMock(
             Guid userFeedbackId,
             IList<Tag> tags,
+            IList<FeedbackTag> feedbackTags,
             DbStatusCode feedbackDbStatusCode,
             DbStatusCode updateFeedbackDbStatusCode,
-            ResultType resultType)
+            string comment)
         {
-            const string comment = "Great";
-
-            IList<FeedbackTag> feedbackTags =
-            [
-                new(userFeedbackId, tags[0].AdminTagId),
-                new(userFeedbackId, tags[1].AdminTagId),
-            ];
-
-            RequestResult<UserFeedbackView> expected = new()
-            {
-                ResultStatus = resultType,
-                ResourcePayload = resultType == ResultType.Success
-                    ? new()
-                    {
-                        Id = userFeedbackId,
-                        UserProfileId = Hdid1,
-                        Comment = comment,
-                        ClientType = UserLoginClientType.Web,
-                        Email = Email1,
-                        Tags =
-                        [
-                            GenerateUserFeedbackTagView(userFeedbackId, feedbackTags[0].AdminTagId),
-                            GenerateUserFeedbackTagView(userFeedbackId, feedbackTags[1].AdminTagId),
-                        ],
-                    }
-                    : null,
-                ResultError = resultType == ResultType.Error
-                    ? new()
-                    {
-                        ResultMessage = DbErrorMessage,
-                    }
-                    : null,
-            };
-
             IList<Guid> adminTagIds = tags.Select(x => x.AdminTagId).ToList();
 
             ICollection<UserFeedbackTag> userFeedbackTags =
@@ -403,30 +506,14 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid1, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
-            IUserFeedbackService service = GetUserFeedbackService(
+            return GetUserFeedbackService(
                 adminTagDelegateMock: adminTagDelegateMock,
                 userProfileDelegateMock: userProfileDelegateMock,
                 feedbackDelegateMock: feedbackDelegateMock);
-
-            return new(service, expected);
         }
 
-        private static CreateUserFeedbackMock SetupCreateUserFeedbackMock(bool dbErrorExists)
+        private static IUserFeedbackService SetupCreateUserFeedbackMock(string tagName, bool dbErrorExists)
         {
-            const string tagName = "Great";
-
-            RequestResult<AdminTagView> expected = new()
-            {
-                ResultStatus = dbErrorExists ? ResultType.Error : ResultType.Success,
-                ResultError = dbErrorExists
-                    ? new()
-                    {
-                        ResultMessage = DbErrorMessage,
-                    }
-                    : null,
-                ResourcePayload = dbErrorExists ? null : new() { Name = tagName },
-            };
-
             DbResult<AdminTag?> adminTagDbResult = new()
             {
                 Status = dbErrorExists ? DbStatusCode.Error : DbStatusCode.Created,
@@ -438,33 +525,11 @@ namespace HealthGateway.Admin.Tests.Services
             adminTagDelegateMock.Setup(s => s.AddAsync(It.Is<AdminTag>(x => x.Name == tagName), true, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(adminTagDbResult!);
 
-            IUserFeedbackService service = GetUserFeedbackService(adminTagDelegateMock: adminTagDelegateMock);
-            return new(service, expected, tagName);
+            return GetUserFeedbackService(adminTagDelegateMock: adminTagDelegateMock);
         }
 
-        private static DeleteUserFeedbackMock SetupDeleteUserFeedbackMock(bool dbErrorExists)
+        private static IUserFeedbackService SetupDeleteUserFeedbackMock(Guid adminTagId, string tagName, bool dbErrorExists)
         {
-            Guid adminTagId = Guid.NewGuid();
-            const string tagName = "Great";
-
-            RequestResult<AdminTagView> expected = new()
-            {
-                ResourcePayload = dbErrorExists
-                    ? null
-                    : new()
-                    {
-                        Id = adminTagId,
-                        Name = tagName,
-                    },
-                ResultError = dbErrorExists
-                    ? new()
-                    {
-                        ResultMessage = DbErrorMessage,
-                    }
-                    : null,
-                ResultStatus = dbErrorExists ? ResultType.Error : ResultType.Success,
-            };
-
             DbResult<AdminTag?> adminTagDbResult = new()
             {
                 Status = dbErrorExists ? DbStatusCode.Error : DbStatusCode.Deleted,
@@ -483,42 +548,16 @@ namespace HealthGateway.Admin.Tests.Services
                     s => s.DeleteAsync(It.Is<AdminTag>(x => x.AdminTagId == adminTagId && x.Name == tagName), true, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(adminTagDbResult!);
 
-            IUserFeedbackService service = GetUserFeedbackService(adminTagDelegateMock: adminTagDelegateMock);
-            return new(service, expected, adminTagId, tagName);
+            return GetUserFeedbackService(adminTagDelegateMock: adminTagDelegateMock);
         }
 
-        private static GetUserFeedbackMock SetupGetUserFeedbackMock()
+        private static IUserFeedbackService SetupGetUserFeedbackMock(IList<Feedback> feedbacks)
         {
-            const string comment1 = "ABC";
-            const string comment2 = "123";
-            Guid feedbackId1 = Guid.NewGuid();
-            Guid feedbackId2 = Guid.NewGuid();
-            Guid feedbackId3 = Guid.NewGuid();
-
             IList<Profile> profiles =
             [
                 new(Hdid1, Email1),
                 new(Hdid2, Email2),
             ];
-
-            IList<Feedback> feedbacks =
-            [
-                new(feedbackId1, Hdid1, comment1),
-                new(feedbackId2, Hdid1, comment2),
-                new(feedbackId3, Hdid2, comment1),
-            ];
-
-            RequestResult<IList<UserFeedbackView>> expected = new()
-            {
-                ResourcePayload =
-                [
-                    GenerateUserFeedbackView(feedbackId1, Hdid1, comment1, Email1),
-                    GenerateUserFeedbackView(feedbackId2, Hdid1, comment2, Email1),
-                    GenerateUserFeedbackView(feedbackId3, Hdid2, comment1, Email2),
-                ],
-                ResultStatus = ResultType.Success,
-                TotalResultCount = feedbacks.Count,
-            };
 
             IList<string> userProfileIds = profiles.Select(x => x.Hdid).ToList();
 
@@ -541,79 +580,38 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetUserProfilesAsync(userProfileIds, It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
 
-            IUserFeedbackService service = GetUserFeedbackService(feedbackDelegateMock, userProfileDelegateMock: userProfileDelegateMock);
-
-            return new(service, expected);
+            return GetUserFeedbackService(feedbackDelegateMock, userProfileDelegateMock: userProfileDelegateMock);
         }
 
-        private static UpdateFeedbackMock SetupUpdateFeedbackMock(Mock<IFeedbackDelegate> feedbackDelegateMock)
+        private static UpdateFeedbackMock SetupUpdateFeedbackMock(string hdid, string comment, string email, Guid feedbackId)
         {
-            const string comment = "ABC";
-            Guid feedbackId = Guid.NewGuid();
-
-            UserFeedbackView update = GenerateUserFeedbackView(feedbackId, Hdid1, comment);
-
-            RequestResult<UserFeedbackView> expected = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = GenerateUserFeedbackView(feedbackId, Hdid1, comment, Email1),
-            };
             DbResult<UserFeedback> dbResult = new()
             {
                 Status = DbStatusCode.Read,
-                Payload = GenerateUserFeedback(feedbackId, Hdid1, comment),
+                Payload = GenerateUserFeedback(feedbackId, hdid, comment),
             };
 
-            UserProfile userProfile = GenerateUserProfile(Hdid1, Email1);
-
+            UserProfile userProfile = GenerateUserProfile(hdid, email);
+            Mock<IFeedbackDelegate> feedbackDelegateMock = new();
             feedbackDelegateMock.Setup(s => s.GetUserFeedbackWithFeedbackTagsAsync(feedbackId, It.IsAny<CancellationToken>())).ReturnsAsync(dbResult);
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid1, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             IUserFeedbackService service = GetUserFeedbackService(feedbackDelegateMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            return new(service, expected, update);
+            return new(service, feedbackDelegateMock);
         }
 
-        private static GetAllFeedbackMock SetupGetAllFeedbackMock()
+        private static IUserFeedbackService SetupGetAllFeedbackMock(IList<Dictionary<Guid, string>> tags)
         {
-            Guid adminTagId1 = Guid.NewGuid();
-            Guid adminTagId2 = Guid.NewGuid();
-            const string tagName1 = "Test1";
-            const string tagName2 = "Test2";
-
-            IList<Dictionary<Guid, string>> tags =
-            [
-                new()
-                {
-                    { adminTagId1, tagName1 },
-                },
-                new()
-                {
-                    { adminTagId2, tagName2 },
-                },
-            ];
-
-            RequestResult<IList<AdminTagView>> expected = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload =
-                [
-                    GenerateAdminTagView(adminTagId1, tagName1),
-                    GenerateAdminTagView(adminTagId2, tagName2),
-                ],
-                TotalResultCount = tags.Count,
-            };
-
             IEnumerable<AdminTag> adminTags = tags
                 .SelectMany(dict => dict.Select(kv => GenerateAdminTag(kv.Key, kv.Value)));
 
             Mock<IAdminTagDelegate> adminTagDelegateMock = new();
             adminTagDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(adminTags);
 
-            IUserFeedbackService service = GetUserFeedbackService(adminTagDelegateMock: adminTagDelegateMock);
-            return new(service, expected);
+            return GetUserFeedbackService(adminTagDelegateMock: adminTagDelegateMock);
         }
 
         private sealed record Tag(Guid AdminTagId, string TagName);
@@ -624,16 +622,6 @@ namespace HealthGateway.Admin.Tests.Services
 
         private sealed record FeedbackTag(Guid UserFeedbackId, Guid AdminTagId);
 
-        private sealed record AssociateFeedbackTagMock(IUserFeedbackService Service, RequestResult<UserFeedbackView> Expected);
-
-        private sealed record CreateUserFeedbackMock(IUserFeedbackService Service, RequestResult<AdminTagView> Expected, string TagName);
-
-        private sealed record DeleteUserFeedbackMock(IUserFeedbackService Service, RequestResult<AdminTagView> Expected, Guid AdminTagId, string TagName);
-
-        private sealed record GetAllFeedbackMock(IUserFeedbackService Service, RequestResult<IList<AdminTagView>> Expected);
-
-        private sealed record GetUserFeedbackMock(IUserFeedbackService Service, RequestResult<IList<UserFeedbackView>> Expected);
-
-        private sealed record UpdateFeedbackMock(IUserFeedbackService Service, RequestResult<UserFeedbackView> Expected, UserFeedbackView Update);
+        private sealed record UpdateFeedbackMock(IUserFeedbackService Service, Mock<IFeedbackDelegate> FeedbackDelegateMock);
     }
 }
