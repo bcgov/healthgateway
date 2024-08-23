@@ -58,15 +58,20 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetAgents()
         {
             // Arrange
-            GetAgentsMock mock = SetupGetAgentsMock();
+            const string searchString = "admin";
+            Guid agentId1 = Guid.NewGuid();
+            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminUser };
+            AdminAgent expected = GenerateAdminAgent(agentId1, searchString, roles);
+
+            IAgentAccessService service = SetupGetAgentsMock(agentId1);
 
             // Act
-            IEnumerable<AdminAgent> adminAgents = await mock.Service.GetAgentsAsync(mock.SearchString);
+            IEnumerable<AdminAgent> adminAgents = await service.GetAgentsAsync(searchString);
             IEnumerable<AdminAgent> actual = adminAgents.ToList();
 
             // Assert
             Assert.Single(actual);
-            actual.First().ShouldDeepEqual(mock.Expected);
+            actual.First().ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -77,24 +82,32 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldProvisionAgentAccess()
         {
             // Arrange
-            ProvisionAgentAccessMock mock = SetupProvisionAgentAccessMock();
+            const string agentUsername = "admin";
+            string username = agentUsername + "@" + EnumUtility.ToEnumString(IdentityProvider, true);
+            Guid agentId = Guid.NewGuid();
+            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminReviewer };
+            JwtModel jwt = GenerateJwt();
+
+            AdminAgent expected = GenerateAdminAgent(agentId, agentUsername, roles);
+            AdminAgent adminAgent = GenerateAdminAgent(agentId, agentUsername, roles);
+            ProvisionAgentAccessMock mock = SetupProvisionAgentAccessMock(agentId, jwt, username);
 
             // Act
-            AdminAgent actual = await mock.Service.ProvisionAgentAccessAsync(mock.AdminAgent);
+            AdminAgent actual = await mock.Service.ProvisionAgentAccessAsync(adminAgent);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
             mock.KeycloakAdminApiMock.Verify(
                 v => v.AddUserAsync(
-                    It.Is<UserRepresentation>(x => x.Username == mock.Username),
-                    mock.Jwt.AccessToken,
+                    It.Is<UserRepresentation>(x => x.Username == username),
+                    jwt.AccessToken,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
             mock.KeycloakAdminApiMock.Verify(
                 v => v.AddUserRolesAsync(
-                    It.Is<Guid>(x => x == mock.AgentId),
+                    It.Is<Guid>(x => x == agentId),
                     It.Is<IEnumerable<RoleRepresentation>>(x => x.Any(y => y.Name == IdentityAccessRole.AdminReviewer.ToString())),
-                    mock.Jwt.AccessToken,
+                    jwt.AccessToken,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
@@ -113,15 +126,20 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ProvisionAgentAccessThrowsException(Type expectedExceptionType, string expectedErrorMessage, HttpStatusCode httpStatusCode)
         {
             // Arrange
-            ProvisionAgentAccessThrowsExceptionMock mock = await SetupProvisionAgentAccessThrowsExceptionMock(httpStatusCode, expectedErrorMessage);
+            const string agentUsername = "admin";
+            Guid agentId = Guid.NewGuid();
+            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminReviewer };
+            AdminAgent adminAgent = GenerateAdminAgent(agentId, agentUsername, roles);
+
+            AgentAccessMock mock = await SetupProvisionAgentAccessThrowsExceptionMock(agentId, agentUsername, httpStatusCode, expectedErrorMessage);
 
             // Act & Verify
             Exception exception = await Assert.ThrowsAsync(
                 expectedExceptionType,
-                async () => { await mock.Service.ProvisionAgentAccessAsync(mock.AdminAgent); });
+                async () => { await mock.Service.ProvisionAgentAccessAsync(adminAgent); });
 
             // Assert
-            Assert.Equal(mock.ExpectedErrorMessage, exception.Message);
+            Assert.Equal(expectedErrorMessage, exception.Message);
         }
 
         /// <summary>
@@ -161,13 +179,18 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldUpdateAgentAccess()
         {
             // Arrange
-            UpdateAgentAccessMock mock = SetupUpdateAgentAccessMock();
+            const string agentUsername = "admin";
+            Guid agentId = Guid.NewGuid();
+            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminReviewer, IdentityAccessRole.AdminAnalyst };
+            AdminAgent adminAgent = GenerateAdminAgent(agentId, agentUsername, roles);
+            AdminAgent expected = GenerateAdminAgent(agentId, agentUsername, roles);
+            AgentAccessMock mock = SetupUpdateAgentAccessMock(agentId);
 
             // Act
-            AdminAgent actual = await mock.Service.UpdateAgentAccessAsync(mock.AdminAgent);
+            AdminAgent actual = await mock.Service.UpdateAgentAccessAsync(adminAgent);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static AdminAgent GenerateAdminAgent(Guid id, string username, ISet<IdentityAccessRole> roles)
@@ -222,15 +245,12 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<ILogger<AgentAccessService>>().Object);
         }
 
-        private static GetAgentsMock SetupGetAgentsMock()
+        private static IAgentAccessService SetupGetAgentsMock(Guid agentId1)
         {
             const string searchString = "admin";
             const string agentName1 = "admin@idir";
             const string agentName2 = "admin";
-            Guid agentId1 = Guid.NewGuid();
             Guid agentId2 = Guid.NewGuid();
-            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminUser };
-            AdminAgent expected = GenerateAdminAgent(agentId1, searchString, roles);
 
             List<UserRepresentation> users =
             [
@@ -254,18 +274,11 @@ namespace HealthGateway.Admin.Tests.Services
             keycloakAdminApiMock.Setup(s => s.GetUserRolesAsync(agentId1, jwt.AccessToken, It.IsAny<CancellationToken>())).ReturnsAsync(userRoles);
 
             IAgentAccessService service = GetAgentAccessService(authenticationDelegateMock, keycloakAdminApiMock);
-            return new(service, expected, searchString);
+            return service;
         }
 
-        private static ProvisionAgentAccessMock SetupProvisionAgentAccessMock()
+        private static ProvisionAgentAccessMock SetupProvisionAgentAccessMock(Guid agentId, JwtModel jwt, string username)
         {
-            const string agentUsername = "admin";
-            string username = agentUsername + "@" + EnumUtility.ToEnumString(IdentityProvider, true);
-            Guid agentId = Guid.NewGuid();
-            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminReviewer };
-            AdminAgent adminAgent = GenerateAdminAgent(agentId, agentUsername, roles);
-            AdminAgent expected = GenerateAdminAgent(agentId, agentUsername, roles);
-
             List<RoleRepresentation> realmRoles =
             [
                 GenerateRoleRepresentation(AdminUserRoleId, IdentityAccessRole.AdminUser.ToString()),
@@ -277,8 +290,6 @@ namespace HealthGateway.Admin.Tests.Services
                 GenerateUserRepresentation(agentId, username),
             ];
 
-            JwtModel jwt = GenerateJwt();
-
             Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
             authenticationDelegateMock.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
 
@@ -287,16 +298,16 @@ namespace HealthGateway.Admin.Tests.Services
             keycloakAdminApiMock.Setup(s => s.GetUsersByUsernameAsync(username, jwt.AccessToken, It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             IAgentAccessService service = GetAgentAccessService(authenticationDelegateMock, keycloakAdminApiMock);
-            return new(service, keycloakAdminApiMock, expected, adminAgent, jwt, agentId, username);
+            return new(service, keycloakAdminApiMock);
         }
 
-        private static async Task<ProvisionAgentAccessThrowsExceptionMock> SetupProvisionAgentAccessThrowsExceptionMock(HttpStatusCode httpStatusCode, string expectedErrorMessage)
+        private static async Task<AgentAccessMock> SetupProvisionAgentAccessThrowsExceptionMock(
+            Guid agentId,
+            string agentUsername,
+            HttpStatusCode httpStatusCode,
+            string expectedErrorMessage)
         {
-            const string agentUsername = "admin";
             string username = agentUsername + "@" + EnumUtility.ToEnumString(IdentityProvider, true);
-            Guid agentId = Guid.NewGuid();
-            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminReviewer };
-            AdminAgent adminAgent = GenerateAdminAgent(agentId, agentUsername, roles);
 
             List<RoleRepresentation> realmRoles =
             [
@@ -332,17 +343,11 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             IAgentAccessService service = GetAgentAccessService(authenticationDelegateMock, keycloakAdminApiMock);
-            return new(service, expectedErrorMessage, adminAgent);
+            return new(service);
         }
 
-        private static UpdateAgentAccessMock SetupUpdateAgentAccessMock()
+        private static AgentAccessMock SetupUpdateAgentAccessMock(Guid agentId)
         {
-            const string agentUsername1 = "admin";
-            Guid agentId1 = Guid.NewGuid();
-            ISet<IdentityAccessRole> roles = new HashSet<IdentityAccessRole> { IdentityAccessRole.AdminReviewer, IdentityAccessRole.AdminAnalyst };
-            AdminAgent adminAgent = GenerateAdminAgent(agentId1, agentUsername1, roles);
-            AdminAgent expected = GenerateAdminAgent(agentId1, agentUsername1, roles);
-
             List<RoleRepresentation> realmRoles =
             [
                 GenerateRoleRepresentation(AdminUserRoleId, IdentityAccessRole.AdminUser.ToString()),
@@ -362,31 +367,17 @@ namespace HealthGateway.Admin.Tests.Services
 
             Mock<IKeycloakAdminApi> keycloakAdminApiMock = new();
             keycloakAdminApiMock.Setup(s => s.GetRealmRolesAsync(jwt.AccessToken, It.IsAny<CancellationToken>())).ReturnsAsync(realmRoles);
-            keycloakAdminApiMock.Setup(s => s.GetUserRolesAsync(agentId1, jwt.AccessToken, It.IsAny<CancellationToken>())).ReturnsAsync(userRoles);
+            keycloakAdminApiMock.Setup(s => s.GetUserRolesAsync(agentId, jwt.AccessToken, It.IsAny<CancellationToken>())).ReturnsAsync(userRoles);
 
             IAgentAccessService service = GetAgentAccessService(authenticationDelegateMock, keycloakAdminApiMock);
-            return new(service, expected, adminAgent);
+            return new(service);
         }
-
-        private sealed record GetAgentsMock(IAgentAccessService Service, AdminAgent Expected, string SearchString);
 
         private sealed record ProvisionAgentAccessMock(
             IAgentAccessService Service,
-            Mock<IKeycloakAdminApi> KeycloakAdminApiMock,
-            AdminAgent Expected,
-            AdminAgent AdminAgent,
-            JwtModel Jwt,
-            Guid AgentId,
-            string Username);
+            Mock<IKeycloakAdminApi> KeycloakAdminApiMock);
 
-        private sealed record ProvisionAgentAccessThrowsExceptionMock(
-            IAgentAccessService Service,
-            string ExpectedErrorMessage,
-            AdminAgent AdminAgent);
-
-        private sealed record UpdateAgentAccessMock(
-            IAgentAccessService Service,
-            AdminAgent Expected,
-            AdminAgent AdminAgent);
+        private sealed record AgentAccessMock(
+            IAgentAccessService Service);
     }
 }
