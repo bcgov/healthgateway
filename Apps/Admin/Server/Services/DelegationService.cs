@@ -191,10 +191,11 @@ namespace HealthGateway.Admin.Server.Services
             if (this.changeFeedEnabled)
             {
                 await delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, false, ct);
-                IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
-                {
+                IEnumerable<MessageEnvelope> events =
+                [
                     new(new DependentProtectionAddedEvent(dependentHdid), dependentHdid),
-                }.Concat(resourceDelegatesToDelete.Select(rd => new MessageEnvelope(new DependentRemovedEvent(rd.ProfileHdid, dependentHdid), rd.ProfileHdid)));
+                    .. resourceDelegatesToDelete.Select(rd => new MessageEnvelope(new DependentRemovedEvent(rd.ProfileHdid, dependentHdid), rd.ProfileHdid)),
+                ];
 
                 await messageSender.SendAsync(events, ct);
             }
@@ -238,9 +239,9 @@ namespace HealthGateway.Admin.Server.Services
                 await delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit, false, ct);
 
                 MessageEnvelope[] events =
-                {
+                [
                     new(new DependentProtectionRemovedEvent(dependentHdid), dependentHdid),
-                };
+                ];
 
                 await messageSender.SendAsync(events, ct);
             }

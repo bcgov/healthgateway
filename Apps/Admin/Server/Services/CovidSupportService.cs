@@ -77,13 +77,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
-            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
-            if (accessToken == null)
-            {
-                throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
-            }
-
-            return accessToken;
+            return await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct) ?? throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
         }
 
         private async Task<PatientModel> GetPatientAsync(string phn, CancellationToken ct)
@@ -108,35 +102,21 @@ namespace HealthGateway.Admin.Server.Services
         {
             logger.LogDebug("Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
 
-            try
+            if (!Enum.TryParse(result.StatusIndicator, out VaccineState state))
             {
-                VaccineState state = Enum.Parse<VaccineState>(result.StatusIndicator);
-                if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
-                {
-                    throw new NotFoundException(ErrorMessages.VaccineStatusNotFound);
-                }
-
-                VaccinationStatus status = state switch
-                {
-                    VaccineState.AllDosesReceived => VaccinationStatus.Fully,
-                    VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
-                    VaccineState.Exempt => VaccinationStatus.Exempt,
-                    _ => VaccinationStatus.Unknown,
-                };
-                logger.LogDebug("Vaccination Status: {Status}", status);
-
-                if (status == VaccinationStatus.Unknown)
-                {
-                    throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown);
-                }
-
-                return status;
-            }
-            catch (ArgumentException ex)
-            {
-                logger.LogError(ex, "Failed to parse Vaccination Status Indicator: {Indicator}. Error: {ErrorMessage}", result.StatusIndicator, ex.Message);
+                logger.LogError("Failed to parse Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
                 throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown);
             }
+
+            return state switch
+            {
+                VaccineState.AllDosesReceived => VaccinationStatus.Fully,
+                VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
+                VaccineState.Exempt => VaccinationStatus.Exempt,
+                VaccineState.NotFound or VaccineState.DataMismatch or VaccineState.Threshold or VaccineState.Blocked
+                    => throw new NotFoundException(ErrorMessages.VaccineStatusNotFound),
+                _ => throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown),
+            };
         }
 
         private async Task<VaccineProofResponse> GetVaccineProofAsync(VaccinationStatus vaccinationStatus, string qrCode, CancellationToken ct)
