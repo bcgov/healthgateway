@@ -438,9 +438,8 @@ namespace HealthGateway.Admin.Tests.Services
             await Assert.ThrowsAsync<NotFoundException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
-
         /// <summary>
-        /// Tests get delegate information - happy path.
+        /// GetDelegationInformationAsync throws exception - see Theory for exception type and criteria.
         /// </summary>
         /// <param name="resultType">Value for the result type in the request result.</param>
         /// <param name="isActionTypeValidation">Value indicating if there is an action type validation error.</param>
@@ -455,16 +454,12 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetDelegateInformationShouldThrowException(ResultType resultType, bool isActionTypeValidation, string? resultMessage, Type expectedException)
         {
             // Arrange
-            PatientModel patientModel = GetPatientModel(DelegateHdid, DelegatePhn);
-
-            // Ensure actionCode is set to ActionType.Validation when isActionTypeValidation is true
             ActionType? actionCode = isActionTypeValidation ? ActionType.Validation : null;
 
             RequestResult<PatientModel> patientResult = GetPatientResult(
                 resultType: resultType,
                 actionCode: actionCode,
-                resultMessage: resultMessage
-            );
+                resultMessage: resultMessage);
 
             IDelegationService delegationService = GetDelegationService(patientResult);
 

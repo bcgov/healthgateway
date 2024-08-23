@@ -386,10 +386,9 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotFoundException()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
-
             PatientModel? patient = null;
             Mock<IPatientRepository> patientRepositoryMock = new();
+
             // Patient not found exception
             patientRepositoryMock.Setup(s => s.QueryAsync(It.IsAny<PatientQuery>(), It.IsAny<CancellationToken>())).Throws<NotFoundException>();
 
