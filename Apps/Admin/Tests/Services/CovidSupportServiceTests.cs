@@ -55,11 +55,33 @@ namespace HealthGateway.Admin.Tests.Services
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given BC Mail Plus returns empty payload for report.
+        /// RetrieveVaccineRecordAsync should throw UnauthorizedAccessException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsReportHasEmptyPayload()
+        public async Task RetrieveVaccineRecordShouldThrowUnauthorizedAccessException()
+        {
+            // Arrange
+            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
+            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
+
+            ICovidSupportService service = CreateCovidSupportService(
+                GetPatientRepositoryMock((query, patient)),
+                GetAuthenticationDelegateMock());
+
+            // Act
+            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
+            Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
+        }
+
+        /// <summary>
+        /// RetrieveVaccineRecordAsync should throw NotFoundException when fetching generated vaccine proof directly
+        /// from BC Mail Plus returns null payload for report.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task RetrieveVaccineRecordShouldThrowNotFoundExceptionWhenFetchingVaccineProofReturnsNullPayload()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -74,7 +96,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
-            // BC Mail Plus returns status success but empty payload - CannotGetVaccineProofPdf
+            // BC Mail Plus (VaccineProofDelegate.GetAssetAsync) returns status success but has null payload - CannotGetVaccineProofPdf
             RequestResult<ReportModel> expected = new()
             {
                 ResultStatus = ResultType.Success,
@@ -88,23 +110,18 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected));
 
             // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
             Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given BC Mail Plus returns report with result error.
-        /// payload.
+        /// RetrieveVaccineRecordAsync should throw UpstreamServiceException when fetching generated vaccine proof directly
+        /// from BC Mail Plus returns error for report.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsReportHasResultError()
+        public async Task RetrieveVaccineRecordShouldThrowUpstreamServiceExceptionWhenFetchingVaccineProofReturnsError()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -119,7 +136,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Result = vaccineStatus, LoadState = new PhsaLoadState { Queued = false, RefreshInProgress = false },
             };
 
-            // Report has result error
+            // BC Mail Plus (VaccineProofDelegate.GetAssetAsync) returns status error
             RequestResult<ReportModel> expected = new()
             {
                 ResultStatus = ResultType.Error,
@@ -136,30 +153,25 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResult, expected));
 
             // Act and Assert
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
             Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given vaccine proof response has empty payload from BC
-        /// Mail Plus.
-        /// payload.
+        /// RetrieveVaccineRecordAsync should throw NotFoundException when creating vaccine proof for later retrieval returns null
+        /// payload
+        /// from BC Mail Plus.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsVaccineProofHasEmptyPayload()
+        public async Task RetrieveVaccineRecordShouldThrowNotFoundExceptionWhenCreatingVaccineProofReturnNullPayload()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
 
-            // Vaccine proof response contains empty payload - CannotGetVaccineProof
+            // BC Mail Plus (VaccineProofDelegate.GenerateAsync) returns null payload - CannotGetVaccineProof
             RequestResult<VaccineProofResponse> vaccineProofResponse = new() { ResultStatus = ResultType.Success, ResourcePayload = null };
 
             VaccineStatusResult vaccineStatus = GenerateVaccineStatusResult();
@@ -175,23 +187,18 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(vaccineProofResponse));
 
             // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
             Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given vaccine proof response has error from BC Mail
-        /// Plus.
+        /// RetrieveVaccineRecordAsync should throw NotFoundException when creating vaccine proof for later retrieval returns error
+        /// from BC Mail Plus.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsVaccineProofHasError()
+        public async Task RetrieveVaccineRecordShouldThrowNotFoundExceptionWhenCreatingVaccineProofReturnsError()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -213,18 +220,14 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineProofDelegateMock(expected));
 
             // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
             Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given vaccine state not found or invalid data .
+        /// RetrieveVaccineRecordAsync should throw exception (see InLineData) when vaccine state not found or there is invalid
+        /// data .
         /// </summary>
         /// <param name="expectedExceptionType">The exception type to be thrown.</param>
         /// <param name="expectedErrorMessage">The associated error message for the exception.</param>
@@ -236,7 +239,7 @@ namespace HealthGateway.Admin.Tests.Services
         [InlineData(typeof(NotFoundException), ErrorMessages.VaccineStatusNotFound, "Threshold")]
         [InlineData(typeof(NotFoundException), ErrorMessages.VaccineStatusNotFound, "Blocked")]
         [InlineData(typeof(InvalidDataException), ErrorMessages.VaccinationStatusUnknown, "Unknown")]
-        public async Task RetrieveVaccineRecordAsyncThrowsVaccineStateException(Type expectedExceptionType, string expectedErrorMessage, string status)
+        public async Task RetrieveVaccineRecordShouldThrowException(Type expectedExceptionType, string expectedErrorMessage, string status)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -261,17 +264,17 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given vaccine status result payload is empty.
+        /// RetrieveVaccineRecordAsync should throw NotFoundException when getting vaccine status returns null result.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsVaccineStatusHasEmptyResult()
+        public async Task RetrieveVaccineRecordShouldThrowNotFoundExceptionWhenVaccineStatusReturnsNull()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
 
-            // Vaccine status result contains empty result
+            // RestVaccineStatusDelegate.GetVaccineStatusWithRetriesAsync returns null for vaccine status result
             PhsaResult<VaccineStatusResult> vaccineStatusResult = new()
             {
                 Result = null,
@@ -284,22 +287,18 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineStatusDelegateMock(vaccineStatusResult));
 
             // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
             Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws exception given maximum retry attempts reached for vaccine status.
+        /// RetrieveVaccineRecordAsync should throw UpstreamServiceException when maximum retry attempts reached for vaccine
+        /// status.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RetrieveVaccineRecordAsyncThrowsVaccineStatusMaximumRetryAttemptsReached()
+        public async Task RetrieveVaccineRecordShouldThrowUpstreamServiceExceptionWhenMaximumRetryAttemptsReached()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -311,22 +310,20 @@ namespace HealthGateway.Admin.Tests.Services
                 GetVaccineStatusDelegateMock()); // this will set up maximum retry attempts reached
 
             // Act and Assert
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(
+                async () => { await service.RetrieveVaccineRecordAsync(Phn); });
             Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.RetrieveVaccineRecordAsync(Phn);
-            }
         }
 
         /// <summary>
-        /// Mail vaccine card async throws exception given vaccine status result payload is empty.
+        /// MailVaccineCardAsync should throw NotFoundException when BC Mail Plus creates vaccine proof and mails output returns
+        /// null
+        /// payload
+        /// for vaccine proof response.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task MailVaccineCardAsyncThrowsVaccineStatusHasEmptyResult()
+        public async Task MailVaccineCardShouldThrowNotFoundExceptionWhenCreatingAndMailingVaccineProofReturnsNull()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -347,22 +344,19 @@ namespace HealthGateway.Admin.Tests.Services
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
             // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.MailVaccineCardAsync(request); });
             Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.MailVaccineCardAsync(request);
-            }
         }
 
         /// <summary>
-        /// Mail vaccine card async throws exception given vaccine proof response has error from BC Mail Plus.
+        /// MailVaccineCardAsync should throw UpstreamServiceException when BC Mail Plus creates vaccine proof and mails output
+        /// returns error for
+        /// vaccine proof response.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task MailVaccineCardAsyncThrowsVaccineProofHasError()
+        public async Task MailVaccineCardShouldThrowUpstreamServiceExceptionWhenCreatingAndMailingVaccineProofReturnsError()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -386,18 +380,13 @@ namespace HealthGateway.Admin.Tests.Services
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
             // Act and Assert
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(
+                async () => { await service.MailVaccineCardAsync(request); });
             Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.MailVaccineCardAsync(request);
-            }
         }
 
         /// <summary>
-        /// Mail vaccine card async throws exception given vaccine state not found.
+        /// MailVaccineCardAsync should throw NotFoundException when vaccine state not found.
         /// </summary>
         /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -406,7 +395,7 @@ namespace HealthGateway.Admin.Tests.Services
         [InlineData("DataMismatch")]
         [InlineData("Threshold")]
         [InlineData("Blocked")]
-        public async Task MailVaccineCardAsyncThrowsVaccineStateNotFound(string status)
+        public async Task MailVaccineCardShouldThrowNotFoundExceptionWhenVaccineStateNotFound(string status)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -426,22 +415,17 @@ namespace HealthGateway.Admin.Tests.Services
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
             // Act and Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.MailVaccineCardAsync(request); });
             Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.MailVaccineCardAsync(request);
-            }
         }
 
         /// <summary>
-        /// Mail vaccine card async throws exception given maximum retry attempts reached for vaccine status.
+        /// MailVaccineCardAsync should throw UpstreamServiceException when maximum retry attempts reached for vaccine status.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task MailVaccineCardAsyncThrowsVaccineStatusMaximumRetryAttemptsReached()
+        public async Task MailVaccineCardShouldThrowUpstreamServiceExceptionWhenMaximumRetryAttemptsReached()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -455,22 +439,17 @@ namespace HealthGateway.Admin.Tests.Services
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
             // Act and Assert
-            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(
+                async () => { await service.MailVaccineCardAsync(request); });
             Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
-            return;
-
-            async Task Actual()
-            {
-                await service.MailVaccineCardAsync(request);
-            }
         }
 
         /// <summary>
-        /// Should mail vaccine card async successfully.
+        /// Should MailVaccineCardAsync successfully.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldMailVaccineCardAsync()
+        public async Task ShouldMailVaccineCard()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -494,19 +473,14 @@ namespace HealthGateway.Admin.Tests.Services
             MailDocumentRequest request = GenerateMailDocumentRequest();
 
             // Act
-            async Task Action()
-            {
-                await service.MailVaccineCardAsync(request);
-            }
-
-            Exception? exception = await Record.ExceptionAsync(Action);
+            Exception? exception = await Record.ExceptionAsync(() => service.MailVaccineCardAsync(request));
 
             // Assert
             Assert.Null(exception);
         }
 
         /// <summary>
-        /// Should mail vaccine card async successfully.
+        /// Should RetrieveVaccineRecordAsync successfully.
         /// </summary>
         /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -514,7 +488,7 @@ namespace HealthGateway.Admin.Tests.Services
         [InlineData("Exempt")]
         [InlineData("AllDosesReceived")]
         [InlineData("PartialDosesReceived")]
-        public async Task ShouldRetrieveVaccineRecordAsync(string status)
+        public async Task ShouldRetrieveVaccineRecord(string status)
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = true };
@@ -625,7 +599,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken)
+        private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken = null)
         {
             Mock<IAuthenticationDelegate> mock = new();
             mock.Setup(d => d.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(accessToken);

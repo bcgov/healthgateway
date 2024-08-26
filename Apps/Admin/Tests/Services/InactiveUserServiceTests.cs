@@ -38,6 +38,7 @@ namespace HealthGateway.Admin.Tests.Services
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
+    using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
     /// <summary>
     /// Tests for the InactiveUserServiceTests class.
@@ -75,13 +76,34 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetInactiveUsers(bool adminUserErrorExists, bool supportUserErrorExists)
         {
             // Arrange
-            GetInactiveUsersMock mock = await SetupGetInactiveUsersMock(adminUserErrorExists, supportUserErrorExists);
+            const int inactiveDays = 3;
+            DateTime today = DateTime.UtcNow.Date;
+            IList<AdminUserProfile> inactiveUserProfiles = GenerateInactiveUserProfiles(today);
+            List<UserRepresentation> keycloakAdminUsers = GenerateKeycloakAdminUsers();
+            List<UserRepresentation> keycloakSupportUsers = GenerateKeycloakSupportUsers();
+            TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(Configuration, DateTime.UtcNow);
+            List<AdminUserProfileView> expectedInactiveUsers = GenerateExpectedInactiveUsers(keycloakAdminUsers, keycloakSupportUsers, inactiveUserProfiles, localTimeOffset);
+
+            RequestResult<List<AdminUserProfileView>> expected = new()
+            {
+                ResultStatus = adminUserErrorExists || supportUserErrorExists ? ResultType.Error : ResultType.Success,
+                ResourcePayload = adminUserErrorExists || supportUserErrorExists ? [] : expectedInactiveUsers,
+                TotalResultCount = adminUserErrorExists || supportUserErrorExists ? 0 : expectedInactiveUsers.Count,
+                ResultError = adminUserErrorExists || supportUserErrorExists
+                    ? new()
+                    {
+                        ResultMessage = "Error communicating with Keycloak",
+                    }
+                    : null,
+            };
+
+            IInactiveUserService service = await SetupGetInactiveUsersMock(today, adminUserErrorExists, supportUserErrorExists);
 
             // Act
-            RequestResult<List<AdminUserProfileView>> actual = await mock.Service.GetInactiveUsersAsync(mock.InactiveDays);
+            RequestResult<List<AdminUserProfileView>> actual = await service.GetInactiveUsersAsync(inactiveDays);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static JwtModel GenerateJwt()
@@ -124,66 +146,13 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static UserRepresentation GenerateUserRepresentation(Guid userId, string username, string firstName, string lastName, string email, string roles)
+        private static List<AdminUserProfileView> GenerateExpectedInactiveUsers(
+            List<UserRepresentation> keycloakAdminUsers,
+            List<UserRepresentation> keycloakSupportUsers,
+            IList<AdminUserProfile> inactiveUserProfiles,
+            TimeSpan localTimeOffset)
         {
-            return new()
-            {
-                UserId = userId,
-                Username = username,
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                RealmRoles = roles,
-            };
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
-                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
-        }
-
-        private static async Task<GetInactiveUsersMock> SetupGetInactiveUsersMock(bool adminUserErrorExists, bool supportUserErrorExists)
-        {
-            const int inactiveDays = 3;
-
-            JwtModel jwt = GenerateJwt();
-            DateTime today = DateTime.UtcNow;
-
-            IList<AdminUserProfile> activeUserProfiles =
-            [
-                GenerateAdminUserProfile(AdminUsername1, today.AddDays(-1)),
-                GenerateAdminUserProfile(SupportUsername1, today.AddDays(-2)),
-            ];
-
-            IList<AdminUserProfile> inactiveUserProfiles =
-            [
-                GenerateAdminUserProfile(AdminUsername2, today.AddDays(-3)),
-                GenerateAdminUserProfile(SupportUsername2, today.AddDays(-4)),
-            ];
-
-            List<UserRepresentation> keycloakAdminUsers =
-            [
-                GenerateUserRepresentation(AdminUserId1, AdminUsername1, "john", "Smith", Email1, "AdminUser"),
-                GenerateUserRepresentation(AdminUserId2, AdminUsername2, "Darwin", "Lewis", Email2, "AdminUser"),
-                GenerateUserRepresentation(NoProfileKeycloakUserId, NoProfileKeycloakUsername, "Turner", "Stevenson", "user@rocketmail.com", "AdminUser"),
-            ];
-
-            List<UserRepresentation> keycloakSupportUsers =
-            [
-                GenerateUserRepresentation(SupportUserId1, SupportUsername1, "Jill", "Paulus", Email3, "SupportUser"),
-                GenerateUserRepresentation(SupportUserId2, SupportUsername2, "Barry", "Alonso", Email4, "SupportUser"),
-            ];
-
-            TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(Configuration, DateTime.UtcNow);
-            List<AdminUserProfileView> expectedInactiveUsers =
+            return
             [
                 GenerateAdminUserProfileView(
                     AdminUserId2,
@@ -211,19 +180,79 @@ namespace HealthGateway.Admin.Tests.Services
                     keycloakAdminUsers[2].Email,
                     keycloakAdminUsers[2].RealmRoles),
             ];
+        }
 
-            RequestResult<List<AdminUserProfileView>> expected = new()
+        private static List<UserRepresentation> GenerateKeycloakAdminUsers()
+        {
+            return
+            [
+                GenerateUserRepresentation(AdminUserId1, AdminUsername1, "john", "Smith", Email1, "AdminUser"),
+                GenerateUserRepresentation(AdminUserId2, AdminUsername2, "Darwin", "Lewis", Email2, "AdminUser"),
+                GenerateUserRepresentation(NoProfileKeycloakUserId, NoProfileKeycloakUsername, "Turner", "Stevenson", "user@rocketmail.com", "AdminUser"),
+            ];
+        }
+
+        private static List<UserRepresentation> GenerateKeycloakSupportUsers()
+        {
+            return
+            [
+                GenerateUserRepresentation(SupportUserId1, SupportUsername1, "Jill", "Paulus", Email3, "SupportUser"),
+                GenerateUserRepresentation(SupportUserId2, SupportUsername2, "Barry", "Alonso", Email4, "SupportUser"),
+            ];
+        }
+
+        private static IList<AdminUserProfile> GenerateInactiveUserProfiles(DateTime today)
+        {
+            return
+            [
+                GenerateAdminUserProfile(AdminUsername2, today.AddDays(-3)),
+                GenerateAdminUserProfile(SupportUsername2, today.AddDays(-4)),
+            ];
+        }
+
+        private static UserRepresentation GenerateUserRepresentation(Guid userId, string username, string firstName, string lastName, string email, string roles)
+        {
+            return new()
             {
-                ResultStatus = adminUserErrorExists || supportUserErrorExists ? ResultType.Error : ResultType.Success,
-                ResourcePayload = adminUserErrorExists || supportUserErrorExists ? [] : expectedInactiveUsers,
-                TotalResultCount = adminUserErrorExists || supportUserErrorExists ? 0 : expectedInactiveUsers.Count,
-                ResultError = adminUserErrorExists || supportUserErrorExists
-                    ? new()
-                    {
-                        ResultMessage = "Error communicating with Keycloak",
-                    }
-                    : null,
+                UserId = userId,
+                Username = username,
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                RealmRoles = roles,
             };
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration.ToList())
+                .Build();
+        }
+
+        private static async Task<IInactiveUserService> SetupGetInactiveUsersMock(DateTime today, bool adminUserErrorExists, bool supportUserErrorExists)
+        {
+            const int inactiveDays = 3;
+
+            JwtModel jwt = GenerateJwt();
+
+            IList<AdminUserProfile> activeUserProfiles =
+            [
+                GenerateAdminUserProfile(AdminUsername1, today.AddDays(-1)),
+                GenerateAdminUserProfile(SupportUsername1, today.AddDays(-2)),
+            ];
+
+            IList<AdminUserProfile> inactiveUserProfiles = GenerateInactiveUserProfiles(today);
+
+            List<UserRepresentation> keycloakAdminUsers = GenerateKeycloakAdminUsers();
+
+            List<UserRepresentation> keycloakSupportUsers = GenerateKeycloakSupportUsers();
 
             Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
             authenticationDelegateMock.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
@@ -257,17 +286,13 @@ namespace HealthGateway.Admin.Tests.Services
                     .ReturnsAsync(keycloakSupportUsers);
             }
 
-            IInactiveUserService service = new InactiveUserService(
+            return new InactiveUserService(
                 authenticationDelegateMock.Object,
                 adminUserProfileDelegateMock.Object,
                 keycloakAdminApiMock.Object,
                 new Mock<ILogger<InactiveUserService>>().Object,
                 Configuration,
                 MappingService);
-
-            return new(service, expected, inactiveDays);
         }
-
-        private sealed record GetInactiveUsersMock(IInactiveUserService Service, RequestResult<List<AdminUserProfileView>> Expected, int InactiveDays);
     }
 }

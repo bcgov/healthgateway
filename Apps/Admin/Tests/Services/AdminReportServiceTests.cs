@@ -49,17 +49,28 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetProtectedDependentsReport()
         {
             // Arrange
-            GetProtectedDependentReportMock mock = SetupGetProtectedDependentReportMock();
+            IList<string> expectedHdids =
+            [
+                Hdid1,
+                Hdid2,
+            ];
+
+            IList<string> expectedPhns =
+            [
+                Phn1, Phn2,
+            ];
+
+            IAdminReportService service = SetupGetProtectedDependentReportMock();
 
             // Act
-            ProtectedDependentReport actual = await mock.Service.GetProtectedDependentsReportAsync(0, 25, SortDirection.Ascending);
+            ProtectedDependentReport actual = await service.GetProtectedDependentsReportAsync(0, 25, SortDirection.Ascending);
 
             // Assert
-            Assert.Equal(mock.ExpectedHdids.Count, actual.Records.Count);
-            Assert.Equal(mock.ExpectedHdids[0], actual.Records[0].Hdid);
-            Assert.Equal(mock.ExpectedPhns[0], actual.Records[0].Phn);
-            Assert.Equal(mock.ExpectedHdids[1], actual.Records[1].Hdid);
-            Assert.Equal(mock.ExpectedPhns[1], actual.Records[1].Phn);
+            Assert.Equal(expectedHdids.Count, actual.Records.Count);
+            Assert.Equal(expectedHdids[0], actual.Records[0].Hdid);
+            Assert.Equal(expectedPhns[0], actual.Records[0].Phn);
+            Assert.Equal(expectedHdids[1], actual.Records[1].Hdid);
+            Assert.Equal(expectedPhns[1], actual.Records[1].Phn);
         }
 
         /// <summary>
@@ -67,19 +78,25 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetProtectedDependentsReportHandlesException()
+        public async Task GetProtectedDependentsReportHandlesNotFoundException()
         {
             // Arrange
-            GetProtectedDependentReportHandlesExceptionMock mock = SetupGetProtectedDependentReportHandlesExceptionMock();
+            IList<string> expectedHdids =
+            [
+                Hdid1,
+                Hdid2,
+            ];
+
+            IAdminReportService service = SetupGetProtectedDependentReportHandlesNotFoundExceptionMock();
 
             // Act
-            ProtectedDependentReport actual = await mock.Service.GetProtectedDependentsReportAsync(0, 25, SortDirection.Ascending);
+            ProtectedDependentReport actual = await service.GetProtectedDependentsReportAsync(0, 25, SortDirection.Ascending);
 
             // Assert
-            Assert.Equal(mock.ExpectedHdids.Count, actual.Records.Count);
-            Assert.Equal(mock.ExpectedHdids[0], actual.Records[0].Hdid);
+            Assert.Equal(expectedHdids.Count, actual.Records.Count);
+            Assert.Equal(expectedHdids[0], actual.Records[0].Hdid);
             Assert.Null(actual.Records[0].Phn); // NotFoundException occurred so cannot get PHN
-            Assert.Equal(mock.ExpectedHdids[1], actual.Records[1].Hdid);
+            Assert.Equal(expectedHdids[1], actual.Records[1].Hdid);
             Assert.Null(actual.Records[1].Phn); // NotFoundException occurred so cannot get PHN
         }
 
@@ -91,16 +108,23 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetBlockedAccessReport()
         {
             // Arrange
-            GetBlockedAccessReportMock mock = SetupGetBlockedAccessReportMock();
+            HashSet<DataSource> expected =
+            [
+                DataSource.Immunization,
+                DataSource.Medication,
+                DataSource.Note,
+            ];
+
+            IAdminReportService service = SetupGetBlockedAccessReportMock();
 
             // Act
-            IEnumerable<BlockedAccessRecord> enumerable = await mock.Service.GetBlockedAccessReportAsync();
+            IEnumerable<BlockedAccessRecord> enumerable = await service.GetBlockedAccessReportAsync();
             IEnumerable<BlockedAccessRecord> actual = enumerable.ToList();
 
             // Assert
             Assert.Single(actual);
             Assert.Equal(Hdid1, actual.First().Hdid);
-            actual.First().BlockedSources.ShouldDeepEqual(mock.Expected);
+            actual.First().BlockedSources.ShouldDeepEqual(expected);
         }
 
         private static IAdminReportService GetAdminReportService(
@@ -119,7 +143,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<ILogger>().Object);
         }
 
-        private static GetProtectedDependentReportMock SetupGetProtectedDependentReportMock()
+        private static IAdminReportService SetupGetProtectedDependentReportMock()
         {
             IList<string> hdids =
             [
@@ -151,11 +175,6 @@ namespace HealthGateway.Admin.Tests.Services
                 Phn = Phn2,
             };
 
-            IList<string> expectedPhns =
-            [
-                Phn1, Phn2,
-            ];
-
             PatientQueryResult patientQueryResult1 = new(patient1);
             PatientQueryResult patientQueryResult2 = new(patient2);
 
@@ -164,10 +183,10 @@ namespace HealthGateway.Admin.Tests.Services
             patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query2), It.IsAny<CancellationToken>())).ReturnsAsync(patientQueryResult2);
 
             IAdminReportService service = GetAdminReportService(delegationDelegateMock, patientRepositoryMock: patientRepositoryMock);
-            return new(service, hdids, expectedPhns);
+            return service;
         }
 
-        private static GetProtectedDependentReportHandlesExceptionMock SetupGetProtectedDependentReportHandlesExceptionMock()
+        private static IAdminReportService SetupGetProtectedDependentReportHandlesNotFoundExceptionMock()
         {
             IList<string> hdids =
             [
@@ -192,10 +211,10 @@ namespace HealthGateway.Admin.Tests.Services
             patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query2), It.IsAny<CancellationToken>())).Throws<NotFoundException>();
 
             IAdminReportService service = GetAdminReportService(delegationDelegateMock, patientRepositoryMock: patientRepositoryMock);
-            return new(service, hdids);
+            return service;
         }
 
-        private static GetBlockedAccessReportMock SetupGetBlockedAccessReportMock()
+        private static IAdminReportService SetupGetBlockedAccessReportMock()
         {
             HashSet<DataSource> expected =
             [
@@ -217,13 +236,7 @@ namespace HealthGateway.Admin.Tests.Services
             blockedAccessDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(records);
 
             IAdminReportService service = GetAdminReportService(blockedAccessDelegateMock: blockedAccessDelegateMock);
-            return new(service, expected);
+            return service;
         }
-
-        private sealed record GetProtectedDependentReportMock(IAdminReportService Service, IList<string> ExpectedHdids, IList<string> ExpectedPhns);
-
-        private sealed record GetProtectedDependentReportHandlesExceptionMock(IAdminReportService Service, IList<string> ExpectedHdids);
-
-        private sealed record GetBlockedAccessReportMock(IAdminReportService Service, HashSet<DataSource> Expected);
     }
 }

@@ -72,6 +72,30 @@ namespace HealthGateway.Admin.Tests.Services
         private static readonly DateTime Birthdate2 = DateTime.Parse("1999-12-31", CultureInfo.InvariantCulture);
 
         /// <summary>
+        /// BlockAccessAsync - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldBlockAccess()
+        {
+            // Arrange
+            IEnumerable<DataSource> dataSources = [DataSource.Immunization];
+            const string reason = "test";
+            Mock<IPatientRepository> patientRepositoryMock = new();
+            ISupportService service = CreateSupportService(patientRepositoryMock: patientRepositoryMock);
+
+            // Act
+            await service.BlockAccessAsync(Hdid, dataSources, reason);
+
+            // Verify
+            patientRepositoryMock.Verify(
+                v => v.BlockAccessAsync(
+                    It.IsAny<BlockAccessCommand>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once());
+        }
+
+        /// <summary>
         /// GetPatientSupportDetailsAsync - Happy Path.
         /// </summary>
         /// <param name="includeMessagingVerifications">Value indicating whether messaging verifications are included.</param>
@@ -93,7 +117,7 @@ namespace HealthGateway.Admin.Tests.Services
         [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Hdid)]
         [InlineData(false, null, false, null, false, null, false, false, null, true, false, ClientRegistryType.Phn)]
         [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Phn)]
-        public async Task ShouldGetPatientSupportDetailsAsync(
+        public async Task ShouldGetPatientSupportDetails(
             bool includeMessagingVerifications,
             int? expectedMessagingVerificationCount,
             bool includeAgentActions,
@@ -173,11 +197,11 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Get patient support details async throws exception given null phn and invalid date of birth.
+        /// GetPatientSupportDetailsAsync throws InvalidDataException when null phn and invalid date of birth.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientSupportDetailsAsyncThrowsInvalidPhnDob()
+        public async Task GetPatientSupportDetailsShouldThrowInvalidDataException()
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
@@ -197,35 +221,32 @@ namespace HealthGateway.Admin.Tests.Services
                 null,
                 GetAuthenticationDelegateMock(AccessToken));
 
-            // Verify
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
+            // Act and Verify
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(
+                async () =>
+                {
+                    await supportService.GetPatientSupportDetailsAsync(
+                        new()
+                        {
+                            QueryType = ClientRegistryType.Phn,
+                            QueryParameter = Phn,
+                            IncludeMessagingVerifications = false,
+                            IncludeBlockedDataSources = false,
+                            IncludeAgentActions = false,
+                            IncludeDependents = false,
+                            IncludeCovidDetails = true,
+                            RefreshVaccineDetails = false,
+                        });
+                });
             Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
-            return;
-
-            // Act
-            async Task Actual()
-            {
-                await supportService.GetPatientSupportDetailsAsync(
-                    new()
-                    {
-                        QueryType = ClientRegistryType.Phn,
-                        QueryParameter = Phn,
-                        IncludeMessagingVerifications = false,
-                        IncludeBlockedDataSources = false,
-                        IncludeAgentActions = false,
-                        IncludeDependents = false,
-                        IncludeCovidDetails = true,
-                        RefreshVaccineDetails = false,
-                    });
-            }
         }
 
         /// <summary>
-        /// Get patient support details async throws exception given invalid phn.
+        /// GetPatientSupportDetailsAsync throws UnauthorizedAccessException when access token cannot be found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientSupportDetailsAsyncThrowsCannotFindAccessToken()
+        public async Task GetPatientSupportDetailsShouldThrowUnauthorizedAccessException()
         {
             // Arrange
             PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
@@ -243,25 +264,23 @@ namespace HealthGateway.Admin.Tests.Services
                 null,
                 GetAuthenticationDelegateMock(accessToken));
 
-            // Act
-            async Task Actual()
-            {
-                await supportService.GetPatientSupportDetailsAsync(
-                    new()
-                    {
-                        QueryType = ClientRegistryType.Hdid,
-                        QueryParameter = Hdid,
-                        IncludeMessagingVerifications = true,
-                        IncludeBlockedDataSources = true,
-                        IncludeAgentActions = true,
-                        IncludeDependents = false,
-                        IncludeCovidDetails = true,
-                        RefreshVaccineDetails = false,
-                    });
-            }
-
-            // Verify
-            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(Actual);
+            // Act and Verify
+            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () =>
+                {
+                    await supportService.GetPatientSupportDetailsAsync(
+                        new()
+                        {
+                            QueryType = ClientRegistryType.Hdid,
+                            QueryParameter = Hdid,
+                            IncludeMessagingVerifications = true,
+                            IncludeBlockedDataSources = true,
+                            IncludeAgentActions = true,
+                            IncludeDependents = false,
+                            IncludeCovidDetails = true,
+                            RefreshVaccineDetails = false,
+                        });
+                });
             Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
         }
 
@@ -339,6 +358,39 @@ namespace HealthGateway.Admin.Tests.Services
             // Patient not found
             PatientModel? patient = null;
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
+
+            UserProfile profile = new() { HdId = Hdid, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3)), LastLoginDateTime = DateTime.Now };
+            Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profile);
+
+            ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
+
+            IEnumerable<PatientSupportResult> expectedResult =
+            [
+                GetExpectedPatientSupportDetails(patient, profile),
+            ];
+
+            // Act
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
+
+            // Assert
+            Assert.Single(actualResult);
+            Assert.Equal(PatientStatus.NotFound, actualResult.First().Status);
+            actualResult.ShouldDeepEqual(expectedResult);
+        }
+
+        /// <summary>
+        /// GetPatientsAsync - HDID - NotFoundException thrown by IPatientRepository.QueryAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetPatientByHdidNotFoundException()
+        {
+            // Arrange
+            PatientModel? patient = null;
+            Mock<IPatientRepository> patientRepositoryMock = new();
+
+            // Patient not found exception
+            patientRepositoryMock.Setup(s => s.QueryAsync(It.IsAny<PatientQuery>(), It.IsAny<CancellationToken>())).Throws<NotFoundException>();
 
             UserProfile profile = new() { HdId = Hdid, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3)), LastLoginDateTime = DateTime.Now };
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profile);
