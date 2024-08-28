@@ -44,13 +44,24 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetAllTimeCounts()
         {
             // Arrange
-            GetAllTimeCountsMock mock = SetupGetAllTimeCountsMock();
+            const int userProfileCount = 5;
+            const int dependentCount = 2;
+            const int closedUserProfileCount = 2;
+
+            AllTimeCounts expected = new()
+            {
+                RegisteredUsers = userProfileCount,
+                ClosedAccounts = closedUserProfileCount,
+                Dependents = dependentCount,
+            };
+
+            IDashboardService service = SetupGetAllTimeCountsMock(userProfileCount, closedUserProfileCount, dependentCount);
 
             // Act
-            AllTimeCounts actual = await mock.Service.GetAllTimeCountsAsync();
+            AllTimeCounts actual = await service.GetAllTimeCountsAsync();
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -61,138 +72,6 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetDailyUsageCounts()
         {
             // Arrange
-            GetDailyUsageCountsMock mock = SetupDailyUsageCountsMock();
-
-            // Act
-            DailyUsageCounts actual = await mock.Service.GetDailyUsageCountsAsync(mock.StartDate, mock.EndDate);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// GetRecurringUserCountAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetRecurringUserCount()
-        {
-            // Arrange
-            GetRecurringUserCountMock mock = SetupGetRecurringUserCountMock();
-
-            // Act
-            int actual = await mock.Service.GetRecurringUserCountAsync(mock.DayCount, mock.StartDate, mock.EndDate);
-
-            // Assert
-            Assert.Equal(mock.Expected, actual);
-        }
-
-        /// <summary>
-        /// GetAppLoginCountsAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetAppLoginCounts()
-        {
-            // Arrange
-            GetAppLoginCountsMock mock = SetupGetAppLoginCountsMock();
-
-            // Act
-            AppLoginCounts actual = await mock.Service.GetAppLoginCountsAsync(mock.StartDate, mock.EndDate);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// GetRatingsSummaryAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetRatingsSummary()
-        {
-            // Arrange
-            GetRatingsSummaryMock mock = SetupGetRatingsSummaryMock();
-
-            // Act
-            IDictionary<string, int> actual = await mock.Service.GetRatingsSummaryAsync(mock.StartDate, mock.EndDate);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// GetAgeCountsAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetAgeCounts()
-        {
-            // Arrange
-            GetAgeCountsMock mock = SetupGetAgeCountsMock();
-
-            // Act
-            IDictionary<int, int> actual = await mock.Service.GetAgeCountsAsync(mock.StartDate, mock.EndDate);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
-                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
-        }
-
-        private static IDashboardService GetDashboardService(
-            Mock<IResourceDelegateDelegate>? dependentDelegateMock = null,
-            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
-            Mock<IRatingDelegate>? ratingDelegateMock = null)
-        {
-            dependentDelegateMock ??= new();
-            userProfileDelegateMock ??= new();
-            ratingDelegateMock ??= new();
-
-            return new DashboardService(
-                Configuration,
-                dependentDelegateMock.Object,
-                userProfileDelegateMock.Object,
-                ratingDelegateMock.Object);
-        }
-
-        private static GetAllTimeCountsMock SetupGetAllTimeCountsMock()
-        {
-            const int userProfileCount = 5;
-            const int dependentCount = 2;
-            const int closedUserProfileCount = 2;
-
-            AllTimeCounts expected = new()
-            {
-                RegisteredUsers = userProfileCount,
-                Dependents = dependentCount,
-                ClosedAccounts = closedUserProfileCount,
-            };
-
-            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(userProfileCount);
-            userProfileDelegateMock.Setup(s => s.GetClosedUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(closedUserProfileCount);
-
-            Mock<IResourceDelegateDelegate> dependentDelegateMock = new();
-            dependentDelegateMock.Setup(s => s.GetDependentCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(dependentCount);
-
-            IDashboardService service = GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
-            return new(service, expected);
-        }
-
-        private static GetDailyUsageCountsMock SetupDailyUsageCountsMock()
-        {
             DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
             DateOnly startDate = endDate.AddDays(-1);
 
@@ -225,21 +104,23 @@ namespace HealthGateway.Admin.Tests.Services
                 DependentRegistrations = new SortedDictionary<DateOnly, int>(dependentRegistrationCounts),
             };
 
-            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetDailyUserRegistrationCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userRegistrationCounts);
-            userProfileDelegateMock.Setup(s => s.GetDailyUniqueLoginCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>())).ReturnsAsync(userLoginCounts);
+            IDashboardService service = SetupDailyUsageCountsMock(userRegistrationCounts, userLoginCounts, dependentRegistrationCounts);
 
-            Mock<IResourceDelegateDelegate> dependentDelegateMock = new();
-            dependentDelegateMock.Setup(s => s.GetDailyDependentRegistrationCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dependentRegistrationCounts);
+            // Act
+            DailyUsageCounts actual = await service.GetDailyUsageCountsAsync(startDate, endDate);
 
-            IDashboardService service = GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
-            return new(service, expected, startDate, endDate);
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static GetRecurringUserCountMock SetupGetRecurringUserCountMock()
+        /// <summary>
+        /// GetRecurringUserCountAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetRecurringUserCount()
         {
+            // Arrange
             DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
             DateOnly startDate = endDate.AddDays(-1);
 
@@ -247,16 +128,23 @@ namespace HealthGateway.Admin.Tests.Services
             const int userCount = 10;
             const int expected = 10;
 
-            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetRecurringUserCountAsync(dayCount, It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userCount);
+            IDashboardService service = SetupGetRecurringUserCountMock(dayCount, userCount);
 
-            IDashboardService service = GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
-            return new(service, expected, startDate, endDate, dayCount);
+            // Act
+            int actual = await service.GetRecurringUserCountAsync(dayCount, startDate, endDate);
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
 
-        private static GetAppLoginCountsMock SetupGetAppLoginCountsMock()
+        /// <summary>
+        /// GetAppLoginCountsAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetAppLoginCounts()
         {
+            // Arrange
             DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
             DateOnly startDate = endDate.AddDays(-1);
 
@@ -266,38 +154,30 @@ namespace HealthGateway.Admin.Tests.Services
             const int iosCount = 1;
             const int salesforceCount = 2;
 
-            IDictionary<UserLoginClientType, int> lastLoginClientCounts = new Dictionary<UserLoginClientType, int>
-            {
-                { UserLoginClientType.Web, webCount },
-                { UserLoginClientType.Mobile, mobileCount },
-                { UserLoginClientType.Android, androidCount },
-                { UserLoginClientType.Ios, iosCount },
-                { UserLoginClientType.Salesforce, salesforceCount },
-            };
-
             AppLoginCounts expected = new(webCount, mobileCount + androidCount + iosCount, androidCount, iosCount, salesforceCount);
 
-            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(s => s.GetLoginClientCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lastLoginClientCounts);
+            IDashboardService service = SetupGetAppLoginCountsMock(webCount, mobileCount, androidCount, iosCount, salesforceCount);
 
-            IDashboardService service = GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
-            return new(service, expected, startDate, endDate);
+            // Act
+            AppLoginCounts actual = await service.GetAppLoginCountsAsync(startDate, endDate);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static GetRatingsSummaryMock SetupGetRatingsSummaryMock()
+        /// <summary>
+        /// GetRatingsSummaryAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetRatingsSummary()
         {
+            // Arrange
             DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
             DateOnly startDate = endDate.AddDays(-1);
 
             const int fiveStarCount = 5;
             const int threeStarCount = 1;
-
-            IDictionary<string, int> summary = new Dictionary<string, int>
-            {
-                { "3", threeStarCount },
-                { "5", fiveStarCount },
-            };
 
             IDictionary<string, int> expected = new Dictionary<string, int>
             {
@@ -305,16 +185,23 @@ namespace HealthGateway.Admin.Tests.Services
                 { "5", fiveStarCount },
             };
 
-            Mock<IRatingDelegate> ratingsDelegateMock = new();
-            ratingsDelegateMock.Setup(s => s.GetRatingsSummaryAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(summary);
+            IDashboardService service = SetupGetRatingsSummaryMock(threeStarCount, fiveStarCount);
 
-            IDashboardService service = GetDashboardService(ratingDelegateMock: ratingsDelegateMock);
-            return new(service, expected, startDate, endDate);
+            // Act
+            IDictionary<string, int> actual = await service.GetRatingsSummaryAsync(startDate, endDate);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static GetAgeCountsMock SetupGetAgeCountsMock()
+        /// <summary>
+        /// GetAgeCountsAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetAgeCounts()
         {
+            // Arrange
             DateOnly startDate = new(2010, 1, 15);
             DateOnly startDatePlus5Years = startDate.AddYears(5);
             DateOnly endDate = new(2024, 1, 15);
@@ -324,36 +211,134 @@ namespace HealthGateway.Admin.Tests.Services
             const int startDateAgeCount = 5;
             const int startDatePlus5YearsAgeCount = 1;
 
-            IDictionary<int, int> yearOfBirthCounts = new Dictionary<int, int>
-            {
-                { startDate.Year, startDateAgeCount },
-                { startDatePlus5Years.Year, startDatePlus5YearsAgeCount },
-            };
-
             IDictionary<int, int> expected = new Dictionary<int, int>
             {
                 { startDateAge, startDateAgeCount },
                 { startDatePlus5YearsAge, startDatePlus5YearsAgeCount },
             };
 
+            IDashboardService service = SetupGetAgeCountsMock(startDate, startDatePlus5Years, startDateAgeCount, startDatePlus5YearsAgeCount);
+
+            // Act
+            IDictionary<int, int> actual = await service.GetAgeCountsAsync(startDate, endDate);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration.ToList())
+                .Build();
+        }
+
+        private static IDashboardService GetDashboardService(
+            Mock<IResourceDelegateDelegate>? dependentDelegateMock = null,
+            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<IRatingDelegate>? ratingDelegateMock = null)
+        {
+            dependentDelegateMock ??= new();
+            userProfileDelegateMock ??= new();
+            ratingDelegateMock ??= new();
+
+            return new DashboardService(
+                Configuration,
+                dependentDelegateMock.Object,
+                userProfileDelegateMock.Object,
+                ratingDelegateMock.Object);
+        }
+
+        private static IDashboardService SetupGetAllTimeCountsMock(int userProfileCount, int closedUserProfileCount, int dependentCount)
+        {
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+            userProfileDelegateMock.Setup(s => s.GetUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(userProfileCount);
+            userProfileDelegateMock.Setup(s => s.GetClosedUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(closedUserProfileCount);
+
+            Mock<IResourceDelegateDelegate> dependentDelegateMock = new();
+            dependentDelegateMock.Setup(s => s.GetDependentCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(dependentCount);
+
+            return GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
+        }
+
+        private static IDashboardService SetupDailyUsageCountsMock(
+            IDictionary<DateOnly, int> userRegistrationCounts,
+            IDictionary<DateOnly, int> userLoginCounts,
+            IDictionary<DateOnly, int> dependentRegistrationCounts)
+        {
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+            userProfileDelegateMock.Setup(s => s.GetDailyUserRegistrationCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userRegistrationCounts);
+            userProfileDelegateMock.Setup(s => s.GetDailyUniqueLoginCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>())).ReturnsAsync(userLoginCounts);
+
+            Mock<IResourceDelegateDelegate> dependentDelegateMock = new();
+            dependentDelegateMock.Setup(s => s.GetDailyDependentRegistrationCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dependentRegistrationCounts);
+
+            return GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
+        }
+
+        private static IDashboardService SetupGetRecurringUserCountMock(int dayCount, int userCount)
+        {
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+            userProfileDelegateMock.Setup(s => s.GetRecurringUserCountAsync(dayCount, It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userCount);
+
+            return GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
+        }
+
+        private static IDashboardService SetupGetAppLoginCountsMock(int webCount, int mobileCount, int androidCount, int iosCount, int salesforceCount)
+        {
+            IDictionary<UserLoginClientType, int> lastLoginClientCounts = new Dictionary<UserLoginClientType, int>
+            {
+                { UserLoginClientType.Web, webCount },
+                { UserLoginClientType.Mobile, mobileCount },
+                { UserLoginClientType.Android, androidCount },
+                { UserLoginClientType.Ios, iosCount },
+                { UserLoginClientType.Salesforce, salesforceCount },
+            };
+
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+            userProfileDelegateMock.Setup(s => s.GetLoginClientCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(lastLoginClientCounts);
+
+            return GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
+        }
+
+        private static IDashboardService SetupGetRatingsSummaryMock(int threeStarCount, int fiveStarCount)
+        {
+            IDictionary<string, int> summary = new Dictionary<string, int>
+            {
+                { "3", threeStarCount },
+                { "5", fiveStarCount },
+            };
+
+            Mock<IRatingDelegate> ratingsDelegateMock = new();
+            ratingsDelegateMock.Setup(s => s.GetRatingsSummaryAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(summary);
+
+            return GetDashboardService(ratingDelegateMock: ratingsDelegateMock);
+        }
+
+        private static IDashboardService SetupGetAgeCountsMock(DateOnly startDate, DateOnly startDatePlus5Years, int startDateAgeCount, int startDatePlus5YearsAgeCount)
+        {
+            IDictionary<int, int> yearOfBirthCounts = new Dictionary<int, int>
+            {
+                { startDate.Year, startDateAgeCount },
+                { startDatePlus5Years.Year, startDatePlus5YearsAgeCount },
+            };
+
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(yearOfBirthCounts);
 
-            IDashboardService service = GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
-            return new(service, expected, startDate, endDate);
+            return GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
         }
-
-        private sealed record GetAllTimeCountsMock(IDashboardService Service, AllTimeCounts Expected);
-
-        private sealed record GetDailyUsageCountsMock(IDashboardService Service, DailyUsageCounts Expected, DateOnly StartDate, DateOnly EndDate);
-
-        private sealed record GetRecurringUserCountMock(IDashboardService Service, int Expected, DateOnly StartDate, DateOnly EndDate, int DayCount);
-
-        private sealed record GetAgeCountsMock(IDashboardService Service, IDictionary<int, int> Expected, DateOnly StartDate, DateOnly EndDate);
-
-        private sealed record GetAppLoginCountsMock(IDashboardService Service, AppLoginCounts Expected, DateOnly StartDate, DateOnly EndDate);
-
-        private sealed record GetRatingsSummaryMock(IDashboardService Service, IDictionary<string, int> Expected, DateOnly StartDate, DateOnly EndDate);
     }
 }

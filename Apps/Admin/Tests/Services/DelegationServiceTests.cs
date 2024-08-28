@@ -152,7 +152,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDelegateInformationThrowBadRequestException()
+        public async Task GetDelegateInformationShouldThrowBadRequestException()
         {
             // Arrange
             DateTime invalidBirthDate = DateTime.UtcNow;
@@ -369,7 +369,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldUnprotectDependentThrowNotFoundException()
+        public async Task UnprotectDependentShouldThrowNotFoundException()
         {
             // Arrange
             string invalidDependentHdid = DelegateHdid;
@@ -393,7 +393,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDelegationInformationThrowsValidationException()
+        public async Task GetDelegationInformationShouldThrowValidationException()
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-14)); // Invalid age
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
@@ -413,7 +413,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDelegationInformationThrowsNotFoundException()
+        public async Task GetDelegationInformationShouldThrowsNotFoundException()
         {
             RequestResultError error = new() { ActionCode = ActionType.Invalid, ResultMessage = "Bad request" };
             RequestResult<PatientModel> patientResult = new()
@@ -436,6 +436,37 @@ namespace HealthGateway.Admin.Tests.Services
                 MappingService);
 
             await Assert.ThrowsAsync<NotFoundException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
+        }
+
+        /// <summary>
+        /// GetDelegationInformationAsync throws exception - see Theory for exception type and criteria.
+        /// </summary>
+        /// <param name="resultType">Value for the result type in the request result.</param>
+        /// <param name="isActionTypeValidation">Value indicating if there is an action type validation error.</param>
+        /// <param name="resultMessage">Value for the message value in the request result.</param>
+        /// <param name="expectedException">The expected exception to be thrown.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(ResultType.ActionRequired, true, null, typeof(System.ComponentModel.DataAnnotations.ValidationException))]
+        [InlineData(ResultType.Error, false, "Communication Exception", typeof(UpstreamServiceException))]
+        [InlineData(ResultType.Error, false, null, typeof(NotFoundException))]
+        [InlineData(ResultType.ActionRequired, false, null, typeof(NotFoundException))]
+        public async Task GetDelegateInformationShouldThrowException(ResultType resultType, bool isActionTypeValidation, string? resultMessage, Type expectedException)
+        {
+            // Arrange
+            ActionType? actionCode = isActionTypeValidation ? ActionType.Validation : null;
+
+            RequestResult<PatientModel> patientResult = GetPatientResult(
+                resultType: resultType,
+                actionCode: actionCode,
+                resultMessage: resultMessage);
+
+            IDelegationService delegationService = GetDelegationService(patientResult);
+
+            // Act and Assert
+            await Assert.ThrowsAsync(
+                expectedException,
+                async () => { await delegationService.GetDelegationInformationAsync(DependentPhn); });
         }
 
         /// <summary>
@@ -678,12 +709,13 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static RequestResult<PatientModel> GetPatientResult(PatientModel patientModel)
+        private static RequestResult<PatientModel> GetPatientResult(PatientModel? patientModel = null, ResultType? resultType = null, ActionType? actionCode = null, string? resultMessage = null)
         {
             return new()
             {
-                ResultStatus = ResultType.Success,
+                ResultStatus = resultType ?? ResultType.Success,
                 ResourcePayload = patientModel,
+                ResultError = actionCode != null || !string.IsNullOrEmpty(resultMessage) ? new() { ActionCode = actionCode, ResultMessage = resultMessage ?? string.Empty } : null,
             };
         }
 

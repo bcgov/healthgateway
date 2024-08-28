@@ -105,6 +105,9 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IWebAlertService, WebAlertService>();
             services.AddTransient<IUserValidationService, UserValidationService>();
             services.AddTransient<IRegistrationService, RegistrationService>();
+            services.AddTransient<IUserProfileModelService, UserProfileModelService>();
+            services.AddTransient<IMessagingVerificationService, MessagingVerificationService>();
+            services.AddTransient<IJobService, JobService>();
 
             // Add delegates
             services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();

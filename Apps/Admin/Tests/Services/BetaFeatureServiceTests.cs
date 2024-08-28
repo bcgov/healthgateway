@@ -58,14 +58,18 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetUserAccess()
         {
             // Arrange
-            GetUserAccessMock mock = SetupGetUserAccessMock(true);
+            HashSet<Common.Constants.BetaFeature> expectedBetaFeatures =
+            [
+                Common.Constants.BetaFeature.Salesforce,
+            ];
+            IBetaFeatureService service = SetupGetUserAccessMock();
 
             // Act
-            UserBetaAccess actual = await mock.Service.GetUserAccessAsync(mock.Email);
+            UserBetaAccess actual = await service.GetUserAccessAsync(Email1);
 
             // Assert
             Assert.Single(actual.BetaFeatures);
-            Assert.Equal(mock.ExpectedBetaFeatures, actual.BetaFeatures);
+            Assert.Equal(expectedBetaFeatures, actual.BetaFeatures);
         }
 
         /// <summary>
@@ -78,13 +82,12 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetUserAccessThrowsException()
         {
             // Arrange
-            GetUserAccessMock mock = SetupGetUserAccessMock(false);
+            IBetaFeatureService service = SetupGetUserAccessMock(false);
 
             // Act and Assert
-            Exception exception = await Assert.ThrowsAsync(
-                mock.ExpectedException,
-                async () => { await mock.Service.GetUserAccessAsync(mock.Email); });
-            Assert.Equal(mock.ExpectedErrorMessage, exception.Message);
+            Exception exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => { await service.GetUserAccessAsync(Email1); });
+            Assert.Equal(ErrorMessages.UserProfileNotFound, exception.Message);
         }
 
         /// <summary>
@@ -101,17 +104,26 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetAllUserAccess(int pageIndex, int pageSize, int expectedCount)
         {
             // Arrange
-            GetBetaFeatureAccessMock mock = SetupGetBetaFeatureAccessMock();
+            IList<BetaFeatureAccess> associations =
+            [
+                GenerateBetaFeatureAccess(Hdid1Email1, Email1),
+                GenerateBetaFeatureAccess(Hdid2Email1, Email1),
+                GenerateBetaFeatureAccess(Hdid3Email2, Email2),
+            ];
+
+            IGrouping<string, BetaFeatureAccess>[] groupedAssociations = [..associations.GroupBy(a => a.UserProfile.Email!).OrderBy(a => a.Key)];
+            IList<string> expectedEmails = groupedAssociations.Select(i => i.Key).ToList();
+            IBetaFeatureService service = SetupGetBetaFeatureAccessMock(groupedAssociations);
 
             // Act
-            PaginatedResult<UserBetaAccess> actual = await mock.Service.GetAllUserAccessAsync(pageIndex, pageSize);
+            PaginatedResult<UserBetaAccess> actual = await service.GetAllUserAccessAsync(pageIndex, pageSize);
 
             // Assert
             Assert.Equal(pageIndex, actual.PageIndex);
             Assert.Equal(pageSize, actual.PageSize);
             Assert.Equal(expectedCount, actual.Data.Count);
 
-            List<string> expectedEmailAddresses = mock.ExpectedEmailAddresses.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            List<string> expectedEmailAddresses = expectedEmails.Skip(pageIndex * pageSize).Take(pageSize).ToList();
             Assert.Equal(expectedEmailAddresses.Count, actual.Data.Count);
             Assert.Equal(expectedEmailAddresses, actual.Data.Select(a => a.Email));
         }
@@ -132,21 +144,57 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldSetUserAccess(BetaFeature? existingBetaFeature, Common.Constants.BetaFeature? betaFeature)
         {
             // Arrange
-            SetUserAccessMock mock = SetupSetUserAccessMock(existingBetaFeature, betaFeature);
+            HashSet<Common.Constants.BetaFeature> betaFeatures = betaFeature != null
+                ? [betaFeature.Value]
+                : [];
+
+            ICollection<BetaFeatureCode> betaFeatureCodes = existingBetaFeature != null
+                ? [GenerateBetaFeatureCode(existingBetaFeature.Value)]
+                : [];
+
+            IList<UserProfile> userProfiles =
+            [
+                GenerateUserProfile(Hdid1Email1, Email1, betaFeatureCodes),
+                GenerateUserProfile(Hdid2Email1, Email1, betaFeatureCodes),
+            ];
+
+            IList<BetaFeatureAccess> betaFeatureAssociations = existingBetaFeature != null
+                ?
+                [
+                    GenerateBetaFeatureAccess(Hdid1Email1, Email1),
+                    GenerateBetaFeatureAccess(Hdid2Email1, Email1),
+                ]
+                : [];
+
+            int expectedDeletedCount = 0;
+            if (existingBetaFeature != null && betaFeature == null)
+            {
+                // Right now there is only one Salesforce feature. When there are more features, this count can be different if test setup is changed.
+                expectedDeletedCount = betaFeatureAssociations.Count;
+            }
+
+            int expectedAddedCount = 0;
+            if (existingBetaFeature == null && betaFeature != null)
+            {
+                // Right now there is only one Salesforce feature. When there are more features, this count can be different if test setup is changed.
+                expectedAddedCount = userProfiles.Count;
+            }
+
+            BetaFeatureAccessMock mock = SetupBetaFeatureAccessMock(Hdid1Email1, Hdid2Email1, userProfiles, betaFeatureAssociations);
 
             // Act
-            await mock.Service.SetUserAccessAsync(new() { Email = mock.Email, BetaFeatures = mock.BetaFeatures });
+            await mock.Service.SetUserAccessAsync(new() { Email = Email1, BetaFeatures = betaFeatures });
 
             // Assert
             mock.BetaFeatureAccessDelegateMock.Verify(
                 v => v.DeleteRangeAsync(
-                    It.Is<IEnumerable<BetaFeatureAccess>>(x => x.Count() == mock.ExpectedDeletedCount),
+                    It.Is<IEnumerable<BetaFeatureAccess>>(x => x.Count() == expectedDeletedCount),
                     false,
                     It.IsAny<CancellationToken>()));
 
             mock.BetaFeatureAccessDelegateMock.Verify(
                 v => v.AddRangeAsync(
-                    It.Is<IEnumerable<BetaFeatureAccess>>(x => x.Count() == mock.ExpectedAddedCount),
+                    It.Is<IEnumerable<BetaFeatureAccess>>(x => x.Count() == expectedAddedCount),
                     true,
                     It.IsAny<CancellationToken>()));
         }
@@ -167,12 +215,17 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task SetUserAccessThrowsException(Type expectedExceptionType, string expectedErrorMessage, bool profileExists, Common.Constants.BetaFeature betaFeature)
         {
             // Arrange
-            SetUserAccessExceptionMock exceptionMock = SetupSetUserAccessExceptionMock(betaFeature, profileExists);
+            HashSet<Common.Constants.BetaFeature> betaFeatures =
+            [
+                betaFeature, // Unknown can cause a not implemented exception
+            ];
+
+            IBetaFeatureService service = SetupSetUserAccessExceptionMock(Hdid2Email1, Email1, profileExists);
 
             // Act and Assert
             Exception exception = await Assert.ThrowsAsync(
                 expectedExceptionType,
-                async () => { await exceptionMock.Service.SetUserAccessAsync(new() { Email = exceptionMock.Email, BetaFeatures = exceptionMock.BetaFeatures }); });
+                async () => { await service.SetUserAccessAsync(new() { Email = Email1, BetaFeatures = betaFeatures }); });
             Assert.Equal(expectedErrorMessage, exception.Message);
         }
 
@@ -236,13 +289,8 @@ namespace HealthGateway.Admin.Tests.Services
                 .Build();
         }
 
-        private static GetUserAccessMock SetupGetUserAccessMock(bool profileExists)
+        private static IBetaFeatureService SetupGetUserAccessMock(bool profileExists = true)
         {
-            HashSet<Common.Constants.BetaFeature> expectedBetaFeatures =
-            [
-                Common.Constants.BetaFeature.Salesforce,
-            ];
-
             ICollection<BetaFeatureCode> betaFeatureCodes =
             [
                 GenerateBetaFeatureCode(BetaFeature.Salesforce),
@@ -258,111 +306,52 @@ namespace HealthGateway.Admin.Tests.Services
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfilesAsync(Email1, true, It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
-            IBetaFeatureService service = GetBetaFeatureService(profileDelegateMock: profileDelegateMock);
-
-            return new(service, typeof(NotFoundException), expectedBetaFeatures, ErrorMessages.UserProfileNotFound, Email1);
+            return GetBetaFeatureService(profileDelegateMock: profileDelegateMock);
         }
 
-        private static GetBetaFeatureAccessMock SetupGetBetaFeatureAccessMock()
+        private static IBetaFeatureService SetupGetBetaFeatureAccessMock(IGrouping<string, BetaFeatureAccess>[] groupedAssociations)
         {
-            IList<BetaFeatureAccess> associations =
-            [
-                GenerateBetaFeatureAccess(Hdid1Email1, Email1),
-                GenerateBetaFeatureAccess(Hdid2Email1, Email1),
-                GenerateBetaFeatureAccess(Hdid3Email2, Email2),
-            ];
-
-            IGrouping<string, BetaFeatureAccess>[] groupedAssociations = [..associations.GroupBy(a => a.UserProfile.Email!).OrderBy(a => a.Key)];
-
             Mock<IBetaFeatureAccessDelegate> betaFeatureAccessDelegateMock = new();
             betaFeatureAccessDelegateMock
                 .Setup(s => s.GetAllAsync(It.Is<int>(i => i >= 0), It.Is<int>(i => i >= 1), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((int pageIndex, int pageSize, CancellationToken _) => GeneratePaginatedResult(groupedAssociations, pageIndex, pageSize));
-            IBetaFeatureService service = GetBetaFeatureService(betaFeatureAccessDelegateMock: betaFeatureAccessDelegateMock);
-
-            IList<string> expectedEmails = groupedAssociations.Select(i => i.Key).ToList();
-            return new(service, expectedEmails);
+            return GetBetaFeatureService(betaFeatureAccessDelegateMock: betaFeatureAccessDelegateMock);
         }
 
-        private static SetUserAccessMock SetupSetUserAccessMock(BetaFeature? existingBetaFeature, Common.Constants.BetaFeature? betaFeature)
+        private static BetaFeatureAccessMock SetupBetaFeatureAccessMock(string hdid1, string hdid2, IList<UserProfile> userProfiles, IList<BetaFeatureAccess> betaFeatureAssociations)
         {
-            // Arrange
-            HashSet<Common.Constants.BetaFeature> betaFeatures = betaFeature != null
-                ? [betaFeature.Value]
-                : [];
-
-            ICollection<BetaFeatureCode> betaFeatureCodes = existingBetaFeature != null
-                ? [GenerateBetaFeatureCode(existingBetaFeature.Value)]
-                : [];
-
-            IList<UserProfile> userProfiles =
-            [
-                GenerateUserProfile(Hdid1Email1, Email1, betaFeatureCodes),
-                GenerateUserProfile(Hdid2Email1, Email1, betaFeatureCodes),
-            ];
-
-            IEnumerable<string> hdids = [Hdid1Email1, Hdid2Email1];
-
-            IList<BetaFeatureAccess> betaFeatureAssociations = existingBetaFeature != null
-                ?
-                [
-                    GenerateBetaFeatureAccess(Hdid1Email1, Email1),
-                    GenerateBetaFeatureAccess(Hdid2Email1, Email1),
-                ]
-                : [];
-
+            IEnumerable<string> hdids = [hdid1, hdid2];
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfilesAsync(Email1, true, It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
             Mock<IBetaFeatureAccessDelegate> betaFeatureAccessDelegateMock = new();
             betaFeatureAccessDelegateMock.Setup(s => s.GetAsync(hdids, It.IsAny<CancellationToken>())).ReturnsAsync(betaFeatureAssociations);
             IBetaFeatureService service = GetBetaFeatureService(profileDelegateMock, betaFeatureAccessDelegateMock);
-
-            int expectedDeletedCount = 0;
-            if (existingBetaFeature != null && betaFeature == null)
-            {
-                // Right now there is only one Salesforce feature. When there are more features, this count can be different if test setup is changed.
-                expectedDeletedCount = betaFeatureAssociations.Count;
-            }
-
-            int expectedAddedCount = 0;
-            if (existingBetaFeature == null && betaFeature != null)
-            {
-                // Right now there is only one Salesforce feature. When there are more features, this count can be different if test setup is changed.
-                expectedAddedCount = userProfiles.Count;
-            }
-
-            return new(service, betaFeatureAccessDelegateMock, betaFeatures, Email1, expectedDeletedCount, expectedAddedCount);
+            return new(service, betaFeatureAccessDelegateMock);
         }
 
-        private static SetUserAccessExceptionMock SetupSetUserAccessExceptionMock(Common.Constants.BetaFeature betaFeature, bool profileExists)
+        private static IBetaFeatureService SetupSetUserAccessExceptionMock(string hdid, string email, bool profileExists)
         {
-            HashSet<Common.Constants.BetaFeature> betaFeatures =
-            [
-                betaFeature, // This can cause a not implemented exception
-            ];
-
             ICollection<BetaFeatureCode> betaFeatureCodes =
             [
                 GenerateBetaFeatureCode(BetaFeature.Salesforce),
             ];
 
             IList<UserProfile> userProfiles = profileExists
-                ? [GenerateUserProfile(Hdid1Email1, Email1, betaFeatureCodes)]
+                ? [GenerateUserProfile(hdid, email, betaFeatureCodes)]
                 : []; // This can cause not found exception
 
-            IEnumerable<string> hdids = [Hdid1Email1];
+            IEnumerable<string> hdids = [hdid];
 
             IList<BetaFeatureAccess> betaFeatureAssociations =
             [
-                GenerateBetaFeatureAccess(Hdid1Email1, Email1),
+                GenerateBetaFeatureAccess(hdid, email),
             ];
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfilesAsync(Email1, true, It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
+            profileDelegateMock.Setup(s => s.GetUserProfilesAsync(email, true, It.IsAny<CancellationToken>())).ReturnsAsync(userProfiles);
             Mock<IBetaFeatureAccessDelegate> betaFeatureAccessDelegateMock = new();
             betaFeatureAccessDelegateMock.Setup(s => s.GetAsync(hdids, It.IsAny<CancellationToken>())).ReturnsAsync(betaFeatureAssociations);
-            IBetaFeatureService service = GetBetaFeatureService(profileDelegateMock, betaFeatureAccessDelegateMock);
-            return new(service, betaFeatures, Email1);
+            return GetBetaFeatureService(profileDelegateMock, betaFeatureAccessDelegateMock);
         }
 
         private static IBetaFeatureService GetBetaFeatureService(
@@ -379,23 +368,8 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<ILogger<BetaFeatureService>>().Object);
         }
 
-        private sealed record GetBetaFeatureAccessMock(IBetaFeatureService Service, IList<string> ExpectedEmailAddresses);
-
-        private sealed record GetUserAccessMock(
+        private sealed record BetaFeatureAccessMock(
             IBetaFeatureService Service,
-            Type ExpectedException,
-            HashSet<Common.Constants.BetaFeature> ExpectedBetaFeatures,
-            string ExpectedErrorMessage,
-            string Email);
-
-        private sealed record SetUserAccessMock(
-            IBetaFeatureService Service,
-            Mock<IBetaFeatureAccessDelegate> BetaFeatureAccessDelegateMock,
-            HashSet<Common.Constants.BetaFeature> BetaFeatures,
-            string Email,
-            int ExpectedDeletedCount,
-            int ExpectedAddedCount);
-
-        private sealed record SetUserAccessExceptionMock(IBetaFeatureService Service, HashSet<Common.Constants.BetaFeature> BetaFeatures, string Email);
+            Mock<IBetaFeatureAccessDelegate> BetaFeatureAccessDelegateMock);
     }
 }

@@ -416,20 +416,20 @@ watch(vaccineRecordState, () => {
         closable
         type="info"
         class="d-print-none mb-4"
-        title="Health Gateway – Try Our New Look"
+        title="Health Gateway Classic Version"
         variant="outlined"
         border
     >
         <span class="text-body-1">
-            You are invited to try the
+            Return to
             <a
                 :href="betaUrl"
                 target="_self"
                 class="text-link"
                 @click.prevent="handleClickBetaLink()"
-                >new beta version of Health Gateway</a
+                >Health Gateway's New Look</a
             >
-            and provide your feedback.
+            version.
         </span>
     </v-alert>
     <v-alert
