@@ -15,8 +15,13 @@
       - name: post-function
         tags: [ ns.$KONG_NAMESPACE.$ENVIRONMENT ]
         config:
-          rewrite:
-          - "--"
+          header_filter:
+          - |
+            kong.response.clear_header("Content-Length")
+          body_filter:
+          - |
+            kong.response.set_raw_body("Hello, world!")
+
     routes:
       - name: $SERVICE-$KONG_NAMESPACE-get-post-put-delete
         methods:
