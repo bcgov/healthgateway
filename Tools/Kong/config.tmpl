@@ -20,7 +20,7 @@
             kong.response.clear_header("Content-Length")
           body_filter:
           - |
-            kong.response.set_raw_body("{}")
+            return kong.response.exit(kong.response.get_status(), "{}", kong.response.getHeaders())
 
     routes:
       - name: $SERVICE-$KONG_NAMESPACE-get-post-put-delete
