@@ -12,12 +12,15 @@
         protocols:
           - http
           - https
-      - name: post-function
+      - name: pre-function
         tags: [ ns.$KONG_NAMESPACE.$ENVIRONMENT ]
         config:
           header_filter:
           - |
-            kong.response.clear_header("Content-Encoding")
+            kong.response.clear_header("Content-Length")
+          body_filter:
+          - |
+            kong.response.set_raw_body("{}")
 
     routes:
       - name: $SERVICE-$KONG_NAMESPACE-get-post-put-delete
