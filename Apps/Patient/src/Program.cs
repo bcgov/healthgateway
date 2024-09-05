@@ -90,6 +90,7 @@ namespace HealthGateway.Patient
             SwaggerDoc.UseSwagger(app, logger);
             HttpWeb.UseHttp(app, logger, configuration, environment, false, false);
             Auth.UseAuth(app, logger);
+            Observability.EnrichTracing(app, configuration);
             HttpWeb.UseRest(app, logger);
 
             await app.RunAsync();

@@ -17,12 +17,15 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net;
     using System.Reflection;
     using Azure.Monitor.OpenTelemetry.Exporter;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -81,7 +84,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []);
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
-                        diagCtx.Set("User", httpCtx.User.Identity?.Name ?? string.Empty);
                         diagCtx.Set("Host", httpCtx.Request.Host.Value);
                         diagCtx.Set("ContentLength", httpCtx.Response.ContentLength?.ToString(CultureInfo.InvariantCulture) ?? string.Empty);
                         diagCtx.Set("Protocol", httpCtx.Request.Protocol);
@@ -190,6 +192,49 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             return services;
         }
 #pragma warning restore CA1506
+
+        /// <summary>
+        /// Adds middleware to enrich tracing telemetry with additional properties.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="configuration">The configuration to use.</param>
+        public static void EnrichTracing(IApplicationBuilder app, IConfiguration configuration)
+        {
+            OpenTelemetryConfig openTelemetryConfig = new();
+            configuration.GetSection("OpenTelemetry").Bind(openTelemetryConfig);
+
+            if (openTelemetryConfig.Enabled)
+            {
+                app.Use(
+                    async (context, next) =>
+                    {
+                        string subject = GetRequestHdid(context);
+                        EnrichActivityWithBaggage("Subject", subject, Activity.Current);
+
+                        string user = context.User.Identity?.Name ?? string.Empty;
+                        EnrichActivityWithBaggage("User", user, Activity.Current);
+
+                        await next();
+                    });
+            }
+        }
+
+        private static string GetRequestHdid(HttpContext context)
+        {
+            return HttpContextHelper.GetResourceHdid(context, FhirSubjectLookupMethod.Route)
+                   ?? HttpContextHelper.GetResourceHdid(context, FhirSubjectLookupMethod.Parameter)
+                   ?? string.Empty;
+        }
+
+        private static void EnrichActivityWithBaggage(string key, string value, Activity? activity)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
+            activity?.AddBaggage(key, value);
+        }
 
         private static void ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, string serviceName)
         {

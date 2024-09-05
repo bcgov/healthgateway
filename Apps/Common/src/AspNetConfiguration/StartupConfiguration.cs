@@ -256,6 +256,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures the app to use middleware to enrich tracing telemetry with additional properties.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void EnrichTracing(IApplicationBuilder app)
+        {
+            Observability.EnrichTracing(app, this.Configuration);
+        }
+
+        /// <summary>
         /// Configures the app to use messaging.
         /// </summary>
         /// <param name="services">The service collection provider.</param>
