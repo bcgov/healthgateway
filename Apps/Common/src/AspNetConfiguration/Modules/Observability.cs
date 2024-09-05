@@ -21,6 +21,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.Globalization;
     using System.Net;
     using System.Reflection;
+    using Azure.Monitor.OpenTelemetry.Exporter;
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
@@ -77,7 +78,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 opts =>
                 {
                     opts.IncludeQueryInRequestPath = true;
-                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? Array.Empty<string>());
+                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []);
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
                         diagCtx.Set("User", httpCtx.User.Identity?.Name ?? string.Empty);
@@ -139,6 +140,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             builder.AddConsoleExporter();
                         }
 
+                        if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                        {
+                            builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
+                        }
+
                         if (otlpConfig.Endpoint != null)
                         {
                             builder.AddOtlpExporter(
@@ -161,6 +167,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         if (otlpConfig.MetricsConsoleExporterEnabled)
                         {
                             builder.AddConsoleExporter();
+                        }
+
+                        if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                        {
+                            builder.AddAzureMonitorMetricExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
                         }
 
                         if (otlpConfig.Endpoint != null)
@@ -186,9 +197,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .Enrich.WithMachineName()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
-                .Enrich.WithProperty("service", serviceName)
+                .Enrich.WithProperty("Application", serviceName)
                 .Enrich.WithEnvironmentName()
-                .Enrich.WithEnvironmentUserName()
                 .Enrich.WithCorrelationId()
                 .Enrich.WithCorrelationIdHeader()
                 .Enrich.WithRequestHeader("User-Agent")

@@ -43,7 +43,12 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the path prefixes that tracing will ignore.
         /// </summary>
         [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
-        public string[] IgnorePathPrefixes { get; set; } = Array.Empty<string>();
+        public string[] IgnorePathPrefixes { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the connection string for exporting to Azure Monitor.
+        /// </summary>
+        public string AzureConnectionString { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets OpenTelemetry collector endpoint.
