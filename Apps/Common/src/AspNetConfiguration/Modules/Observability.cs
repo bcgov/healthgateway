@@ -137,6 +137,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             .AddNpgsql()
                             ;
 
+                        foreach (string source in otlpConfig.Sources)
+                        {
+                            builder.AddSource(source);
+                        }
+
                         if (otlpConfig.TraceConsoleExporterEnabled)
                         {
                             builder.AddConsoleExporter();

@@ -16,11 +16,12 @@
 namespace HealthGateway.Common.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using OpenTelemetry.Exporter;
 
     /// <summary>
-    /// Provides configuration data for the Notifications Settings PHSA API.
+    /// Provides configuration data for OpenTelemetry.
     /// </summary>
     public class OpenTelemetryConfig
     {
@@ -28,6 +29,11 @@ namespace HealthGateway.Common.Models
         /// Gets or sets a value indicating whether Open Telemetry is enabled.
         /// </summary>
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the names of activity sources to monitor.
+        /// </summary>
+        public IList<string> Sources { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the name to use for the service.
@@ -61,12 +67,12 @@ namespace HealthGateway.Common.Models
         public OtlpExportProtocol ExportProtocol { get; set; } = OtlpExportProtocol.HttpProtobuf;
 
         /// <summary>
-        /// Gets or sets a value indicating whether  OpenTelemetry console export for tracing, default to false.
+        /// Gets or sets a value indicating whether the console exporter for tracing is enabled, default to false.
         /// </summary>
         public bool TraceConsoleExporterEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether OpenTelemetry console export for metrics, default to false.
+        /// Gets or sets a value indicating whether the console exporter for metrics is enabled, default to false.
         /// </summary>
         public bool MetricsConsoleExporterEnabled { get; set; }
     }

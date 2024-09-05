@@ -26,7 +26,6 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Models;
@@ -72,7 +71,7 @@ namespace HealthGateway.Medication.Delegates
             this.clientCredentialsRequest = new() { TokenUri = config.TokenUri, Parameters = config.ClientAuthentication };
         }
 
-        private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
+        private static ActivitySource Source { get; } = new(nameof(SalesforceMedicationRequestDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn, CancellationToken ct = default)
