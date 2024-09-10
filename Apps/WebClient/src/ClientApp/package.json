@@ -22,7 +22,7 @@
         "luxon": "^3.4.4",
         "maska": "^2.1.11",
         "pinia": "^2.1.7",
-        "pinia-plugin-persistedstate": "^3.2.1",
+        "pinia-plugin-persistedstate": "^4.0.0",
         "roboto-fontface": "*",
         "throttle-debounce": "^5.0.0",
         "vue": "^3.4.27",
