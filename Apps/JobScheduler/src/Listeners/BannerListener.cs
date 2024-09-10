@@ -27,6 +27,7 @@ namespace HealthGateway.JobScheduler.Listeners
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -36,11 +37,16 @@ namespace HealthGateway.JobScheduler.Listeners
     /// Implements the abstract DB Listener and listens on the BannerChange channel.
     /// Actions that may come are DELETE, UPDATE, and INSERT.
     /// </summary>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="services">The set of application services available.</param>
+    /// <param name="configuration">The configuration to use.</param>
     [ExcludeFromCodeCoverage]
-    public class BannerListener : BackgroundService
+    public class BannerListener(ILogger<BannerListener> logger, IServiceProvider services, IConfiguration configuration) : BackgroundService
     {
         private const string Channel = "BannerChange";
-        private const int SleepDuration = 10000;
+        private const string ListenerKey = "BannerListener";
+        private const string MaxRetryAttemptsKey = "MaxRetryAttempts";
+        private const string SleepDurationKey = "SleepDuration";
 
         private static readonly JsonSerializerOptions EventSerializerOptions = new()
         {
@@ -48,21 +54,8 @@ namespace HealthGateway.JobScheduler.Listeners
             Converters = { new DateTimeConverter(), new JsonStringEnumConverter() },
         };
 
-        private readonly ILogger<BannerListener> logger;
-        private readonly IServiceProvider services;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BannerListener"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger.</param>
-        /// <param name="services">The set of application services available.</param>
-        public BannerListener(
-            ILogger<BannerListener> logger,
-            IServiceProvider services)
-        {
-            this.logger = logger;
-            this.services = services;
-        }
+        private readonly int maxRetryAttempts = configuration.GetValue($"{ListenerKey}:{MaxRetryAttemptsKey}", 5);
+        private readonly int sleepDuration = configuration.GetValue($"{ListenerKey}:{SleepDurationKey}", 10000);
 
         /// <summary>
         /// Creates a new DB Connection for push notifications from the DB for a specific channel.
@@ -71,29 +64,41 @@ namespace HealthGateway.JobScheduler.Listeners
         /// <returns>The task.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this.logger.LogInformation("Banner Listener is starting");
-            stoppingToken.Register(() => this.logger.LogInformation("Banner Listener Shutdown as cancellation requested"));
+            logger.LogInformation("Banner Listener is starting");
+            stoppingToken.Register(() => logger.LogInformation("Banner Listener Shutdown as cancellation requested"));
             this.ClearCache();
             int attempts = 0;
+            int retryCount = 0;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 attempts++;
-                this.logger.LogInformation("Registering Channel Notification on channel {Channel}, attempts = {Attempts}", Channel, attempts);
+                logger.LogInformation("Registering Channel Notification on channel {Channel}, attempts = {Attempts}", Channel, attempts);
                 try
                 {
-                    using IServiceScope scope = this.services.CreateScope();
-                    using GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
-                    using NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
+                    using IServiceScope scope = services.CreateScope();
+                    await using GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
+                    await using NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
                     await con.OpenAsync(stoppingToken);
                     con.Notification += this.ReceiveEvent;
-                    using NpgsqlCommand cmd = new();
-                    cmd.CommandText = @$"LISTEN ""{Channel}"";";
+
+                    await using NpgsqlCommand cmd = new();
+                    cmd.CommandText = $"""LISTEN "{Channel}";""";
                     cmd.CommandType = CommandType.Text;
                     cmd.Connection = con;
                     await cmd.ExecuteNonQueryAsync(stoppingToken);
 
+                    // Reset retry count on successful connection
+                    retryCount = 0;
+
                     while (!stoppingToken.IsCancellationRequested)
                     {
+                        // Ensure the connection is still open before waiting for events
+                        if (con.State != ConnectionState.Open)
+                        {
+                            throw new NpgsqlException("Database connection closed unexpectedly.");
+                        }
+
                         // Wait for the event
                         await con.WaitAsync(stoppingToken);
                     }
@@ -102,32 +107,46 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (NpgsqlException e)
                 {
-                    this.logger.LogError(e, "DB Error encountered in WaitChannelNotification: {Channel}\n{Message}", Channel, e.Message);
-                    if (!stoppingToken.IsCancellationRequested)
+                    retryCount++;
+                    logger.LogError(e, "DB Error encountered in WaitChannelNotification: {Channel}\n{Message}", Channel, e.Message);
+
+                    if (retryCount <= this.maxRetryAttempts)
                     {
-                        await Task.Delay(SleepDuration, stoppingToken);
+                        // Exponential backoff with max retry attempts
+                        int backoffDelay = this.sleepDuration * (int)Math.Pow(2, retryCount);
+                        logger.LogWarning("Retrying connection in {BackoffDelay}ms (Retry {RetryCount}/{MaxRetryAttempts})", backoffDelay, retryCount, this.maxRetryAttempts);
+
+                        if (!stoppingToken.IsCancellationRequested)
+                        {
+                            await Task.Delay(backoffDelay, stoppingToken);
+                        }
+                    }
+                    else
+                    {
+                        logger.LogError("Max retry attempts reached. Stopping Banner Listener for {Channel}", Channel);
+                        break;
                     }
                 }
 
-                this.logger.LogWarning("Banner Listener on {Channel} exiting...", Channel);
+                logger.LogWarning("Banner Listener on {Channel} exiting...", Channel);
             }
         }
 
         private void ClearCache()
         {
-            using IServiceScope scope = this.services.CreateScope();
+            using IServiceScope scope = services.CreateScope();
             ICommunicationService cs = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
-            this.logger.LogInformation("Clearing Banner and InApp Cache");
+            logger.LogInformation("Clearing Banner and InApp Cache");
             cs.ClearCache();
         }
 
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
-            this.logger.LogDebug("Banner Event received on channel {Channel}", Channel);
+            logger.LogDebug("Banner Event received on channel {Channel}", Channel);
             BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, EventSerializerOptions);
-            using IServiceScope scope = this.services.CreateScope();
+            using IServiceScope scope = services.CreateScope();
             ICommunicationService cs = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
-            this.logger.LogInformation("Banner Event received and being processed");
+            logger.LogInformation("Banner Event received and being processed");
             cs.ProcessChange(changeEvent);
         }
     }
