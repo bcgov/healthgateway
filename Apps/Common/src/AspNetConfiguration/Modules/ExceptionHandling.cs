@@ -45,6 +45,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public static void UseProblemDetails(IApplicationBuilder app)
         {
             app.UseExceptionHandler();
+            app.UseStatusCodePages(); // replaces empty HTTP error responses with problem details responses
         }
     }
 }
