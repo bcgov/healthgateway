@@ -162,6 +162,16 @@ variable "client_icarus" {
   description = "Health Gateway Salesforce client configuration"
 }
 
+variable "client_algea" {
+  type = object({
+    id              = optional(string, "algea")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+  })
+  description = "Health Gateway LRA client configuration"
+}
+
 variable "client_hg_phsa" {
   type = object({
     id              = optional(string, "hg-phsa")
