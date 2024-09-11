@@ -36,7 +36,6 @@ namespace HealthGateway.Laboratory.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     [ExcludeFromCodeCoverage]
     public class LaboratoryController : ControllerBase
     {

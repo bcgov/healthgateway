@@ -36,7 +36,6 @@ namespace HealthGateway.Encounter.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     public class EncounterController : ControllerBase
     {
         private readonly ILogger logger;
