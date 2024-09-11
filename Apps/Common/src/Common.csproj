@@ -17,7 +17,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.11" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc9.14" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc9.15" />
     <PackageReference Include="Refit" Version="7.1.2" />
     <PackageReference Include="Refit.HttpClientFactory" Version="7.1.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
