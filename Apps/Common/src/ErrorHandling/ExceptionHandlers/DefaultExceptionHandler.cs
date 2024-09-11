@@ -20,6 +20,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -27,14 +28,13 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     /// <summary>
     /// Transforms any exception into the appropriate problem details response.
     /// </summary>
-    internal sealed class DefaultExceptionHandler(IConfiguration configuration) : IExceptionHandler
+    internal sealed class DefaultExceptionHandler(IConfiguration configuration, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
-
-            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, includeException);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, problemDetailsFactory, includeException);
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
