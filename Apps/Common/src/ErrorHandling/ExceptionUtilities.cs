@@ -19,6 +19,7 @@ namespace HealthGateway.Common.ErrorHandling
     using System.ServiceModel;
     using FluentValidation;
     using FluentValidation.Results;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -63,7 +64,7 @@ namespace HealthGateway.Common.ErrorHandling
         {
             ValidationProblemDetails problemDetails = new()
             {
-                Type = ErrorCodes.InvalidInput,
+                Type = ConvertToTagUri(ProblemType.InvalidInput),
                 Title = "A validation error occurred.",
                 Status = StatusCodes.Status400BadRequest,
                 Instance = httpContext.Request.Path,
@@ -98,7 +99,7 @@ namespace HealthGateway.Common.ErrorHandling
         {
             ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext);
 
-            problemDetails.Type = healthGatewayException.ErrorCode;
+            problemDetails.Type = ConvertToTagUri(healthGatewayException.ProblemType);
             problemDetails.Title = healthGatewayException switch
             {
                 AlreadyExistsException => "Record already exists.",
@@ -117,7 +118,7 @@ namespace HealthGateway.Common.ErrorHandling
         {
             return new()
             {
-                Type = ErrorCodes.ServerError,
+                Type = ConvertToTagUri(ProblemType.ServerError),
                 Title = "An error occurred.",
                 Instance = httpContext.Request.Path,
                 Extensions =
@@ -146,6 +147,11 @@ namespace HealthGateway.Common.ErrorHandling
             }
 
             return new { e.Message, e.StackTrace, InnerException = FormatExceptionDetails(e.InnerException, maxDepth - 1) };
+        }
+
+        private static string ConvertToTagUri(ProblemType problemType)
+        {
+            return $"tag:healthgateway.gov.bc.ca,2024:{EnumUtility.ToEnumString(problemType, true)}";
         }
     }
 }

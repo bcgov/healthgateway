@@ -21,7 +21,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <summary>
     /// <see cref="DatabaseException"/> is used when an unexpected database error occurs.
-    /// The default error code is <see cref="ErrorCodes.DatabaseError"/>.
+    /// The default problem type is <see cref="ProblemType.DatabaseError"/>.
     /// The default status code is <see cref="HttpStatusCode.InternalServerError"/> (500).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
@@ -34,11 +34,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// Initializes a new instance of the <see cref="DatabaseException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public DatabaseException(string message, string errorCode = ErrorCodes.DatabaseError)
+        /// <param name="problemType">A concise coded reason for the failure.</param>
+        public DatabaseException(string message, ProblemType problemType = ProblemType.DatabaseError)
             : base(message)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, problemType);
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public DatabaseException(string message, Exception innerException, string? errorCode = ErrorCodes.DatabaseError)
+        /// <param name="problemType">A concise coded reason for the failure.</param>
+        public DatabaseException(string message, Exception innerException, ProblemType problemType = ProblemType.DatabaseError)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, problemType);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         public DatabaseException()
         {
-            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.DatabaseError);
+            this.SetErrorProperties(DefaultStatusCode, ProblemType.DatabaseError);
         }
     }
 }

@@ -641,7 +641,7 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .Throws(
-                        new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ErrorCodes.MaxRetriesReached));
+                        new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ProblemType.MaxRetriesReached));
             }
             else
             {

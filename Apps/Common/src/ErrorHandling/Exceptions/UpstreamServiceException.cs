@@ -21,7 +21,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <summary>
     /// <see cref="UpstreamServiceException"/> is used when a remote service fails to respond appropriately.
-    /// The default error code is <see cref="ErrorCodes.UpstreamError"/>.
+    /// The default problem type is <see cref="ProblemType.UpstreamError"/>.
     /// The default status code is <see cref="HttpStatusCode.BadGateway"/> (502).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
@@ -34,11 +34,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, string? errorCode = ErrorCodes.UpstreamError)
+        /// <param name="problemType">A concise coded reason for the failure.</param>
+        public UpstreamServiceException(string message, ProblemType problemType = ProblemType.UpstreamError)
             : base(message)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, problemType);
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, Exception innerException, string? errorCode = ErrorCodes.UpstreamError)
+        /// <param name="problemType">A concise coded reason for the failure.</param>
+        public UpstreamServiceException(string message, Exception innerException, ProblemType problemType = ProblemType.UpstreamError)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, problemType);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         public UpstreamServiceException()
         {
-            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.UpstreamError);
+            this.SetErrorProperties(DefaultStatusCode, ProblemType.UpstreamError);
         }
     }
 }

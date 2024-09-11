@@ -32,11 +32,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        protected HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
+        /// <param name="problemType">A concise coded reason for the failure.</param>
+        protected HealthGatewayException(string message, ProblemType problemType = ProblemType.ServerError)
             : base(message)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, problemType);
         }
 
         /// <summary>
@@ -44,11 +44,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        protected HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
+        /// <param name="problemType">A concise coded reason for the failure.</param>
+        protected HealthGatewayException(string message, Exception innerException, ProblemType problemType = ProblemType.ServerError)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
+            this.SetErrorProperties(DefaultStatusCode, problemType);
         }
 
         /// <summary>
@@ -56,13 +56,13 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         protected HealthGatewayException()
         {
-            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.ServerError);
+            this.SetErrorProperties(DefaultStatusCode, ProblemType.ServerError);
         }
 
         /// <summary>
-        /// Gets or sets the error code.
+        /// Gets or sets the problem type.
         /// </summary>
-        public string? ErrorCode { get; protected set; }
+        public ProblemType ProblemType { get; protected set; }
 
         /// <summary>
         /// Gets or sets the HTTP status code.
@@ -73,11 +73,11 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// Sets the error properties of the exception.
         /// </summary>
         /// <param name="statusCode">The HTTP status code to be reported in the API response.</param>
-        /// <param name="errorCode">Concise coded reason for the failure.</param>
-        protected void SetErrorProperties(HttpStatusCode statusCode, string errorCode)
+        /// <param name="problemType">Concise coded reason for the failure.</param>
+        protected void SetErrorProperties(HttpStatusCode statusCode, ProblemType problemType)
         {
             this.StatusCode = statusCode;
-            this.ErrorCode = errorCode;
+            this.ProblemType = problemType;
         }
     }
 }
