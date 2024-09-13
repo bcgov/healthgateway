@@ -24,6 +24,7 @@ namespace HealthGateway.JobScheduler.Listeners
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -33,93 +34,134 @@ namespace HealthGateway.JobScheduler.Listeners
     /// A background listener that monitors the Audit queue and writes them to the database.
     /// Actions that may come are DELETE, UPDATE, and INSERT.
     /// </summary>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="services">The set of application services available.</param>
+    /// <param name="connectionMultiplexer">The injected connection multiplexer.</param>
+    /// <param name="configuration">The configuration to use.</param>
     [ExcludeFromCodeCoverage]
-    public class AuditQueueListener : BackgroundService
+    public class AuditQueueListener(
+        ILogger<AuditQueueListener> logger,
+        IServiceProvider services,
+        IConnectionMultiplexer connectionMultiplexer,
+        IConfiguration configuration) : BackgroundService
     {
-        private const int SleepDuration = 1000;
-        private const int RedisRetryDelay = 10000;
-        private readonly ILogger<AuditQueueListener> logger;
-        private readonly IServiceProvider services;
-        private readonly IConnectionMultiplexer connectionMultiplexer;
+        private const string ExponentialBaseKey = "ExponentialBase";
+        private const string ListenerKey = "AuditQueueListener";
+        private const string MaxBackoffDelayKey = "MaxBackoffDelay";
+        private const string MaxRetryCountBeforeResetKey = "MaxRetryCountBeforeReset";
+        private const string RetryDelayKey = "RetryDelay";
+        private const string SleepDurationKey = "SleepDuration";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuditQueueListener"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger.</param>
-        /// <param name="services">The set of application services available.</param>
-        /// <param name="connectionMultiplexer">The injected connection multiplexer.</param>
-        public AuditQueueListener(
-            ILogger<AuditQueueListener> logger,
-            IServiceProvider services,
-            IConnectionMultiplexer connectionMultiplexer)
-        {
-            this.logger = logger;
-            this.services = services;
-            this.connectionMultiplexer = connectionMultiplexer;
-        }
+        private readonly int exponentialBase = configuration.GetValue($"{ListenerKey}:{ExponentialBaseKey}", 2);
+        private readonly int maxRetryDelay = configuration.GetValue($"{ListenerKey}:{MaxBackoffDelayKey}", 32000); // Set the default max backoff delay to 32 seconds
+        private readonly int maxRetryCountBeforeReset = configuration.GetValue($"{ListenerKey}:{MaxRetryCountBeforeResetKey}", 5); // Set the default max retry count before reset to 5 attempts
+        private readonly int retryDelay = configuration.GetValue($"{ListenerKey}:{RetryDelayKey}", 1000); // Used with exponentialBase and maxBackoffDelay to determine backoffDelay
+        private readonly int sleepDuration = configuration.GetValue($"{ListenerKey}:{SleepDurationKey}", 1000);
 
         /// <summary>
         /// Listens for Audit Events and writes them to the DB.
         /// </summary>
         /// <param name="stoppingToken">The cancellation token to use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this.logger.LogInformation("Audit Queue Listener is starting");
-            stoppingToken.Register(() => this.logger.LogInformation("AuditQueue Listener Shutdown as cancellation requested..."));
+            logger.LogInformation("Audit Queue Listener is starting");
+            stoppingToken.Register(() => logger.LogInformation("Audit Queue Listener Shutdown as cancellation requested"));
+
+            int retryCount = 0;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    IDatabase redisDb = this.connectionMultiplexer.GetDatabase();
+                    IDatabase redisDb = connectionMultiplexer.GetDatabase();
                     RedisValue auditValue = await redisDb.ListMoveAsync(
                         $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ActiveQueueName}",
                         $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}",
                         ListSide.Left,
                         ListSide.Right);
+
                     if (auditValue.HasValue)
                     {
                         await this.ProcessAuditEventAsync(redisDb, auditValue, stoppingToken);
+                        retryCount = 0; // Reset retry count on successful processing
                     }
                     else
                     {
-                        await Task.Delay(SleepDuration, stoppingToken);
+                        await Task.Delay(this.sleepDuration, stoppingToken);
                     }
                 }
                 catch (RedisConnectionException ex)
                 {
-                    this.logger.LogError(ex, "Redis connection error occurred. Retrying after delay...");
-
-                    if (!stoppingToken.IsCancellationRequested)
-                    {
-                        await Task.Delay(RedisRetryDelay, stoppingToken);
-                    }
+                    logger.LogError(ex, "Redis connection error occurred in Audit Queue Listener. Retrying after delay");
+                    retryCount = await this.HandleExceptionAsync(retryCount, stoppingToken);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Occurs when a stale object is unsuccessfully from the UI
+                    logger.LogError(ex, "Database error occurred in Audit Queue Listener. Retrying after delay");
+                    retryCount = await this.HandleExceptionAsync(retryCount, stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Unexpected error in Audit Queue Listener. Retrying after delay");
+                    retryCount = await this.HandleExceptionAsync(retryCount, stoppingToken);
                 }
             }
 
-            this.logger.LogInformation("Audit Queue Listener has stopped");
+            logger.LogInformation("Audit Queue Listener has stopped");
+        }
+
+        private async Task<int> HandleExceptionAsync(int retryCount, CancellationToken stoppingToken)
+        {
+            retryCount++;
+
+            // Exponential backoff with a cap where exponentialBase is 2, maxRetryDelay is 32000ms, retryDelay is 1000ms and maxRetryCountBeforeReset is 5.
+            // Retry 1: 2 seconds
+            // Retry 2: 4 seconds
+            // Retry 3: 8 seconds
+            // Retry 4: 16 seconds
+            // Retry 5: 32 seconds
+            // Retry 6: 32 seconds (maxRetryCountBeforeReset at 6 and maxRetryDelay at 32 seconds if applied)
+            int backoffDelay = Math.Min(this.retryDelay * (int)Math.Pow(this.exponentialBase, retryCount), this.maxRetryDelay);
+            logger.LogWarning("Retrying due to error in {BackoffDelay}ms (Retry {RetryCount})", backoffDelay, retryCount);
+
+            if (!stoppingToken.IsCancellationRequested)
+            {
+                await Task.Delay(backoffDelay, stoppingToken);
+            }
+
+            // Reset retry count after a certain number of retries
+            if (retryCount >= this.maxRetryCountBeforeReset)
+            {
+                retryCount = 0;
+                logger.LogInformation("Retry count reset after {MaxRetryCountBeforeReset} attempts", this.maxRetryCountBeforeReset);
+            }
+
+            return retryCount;
         }
 
         private async Task ProcessAuditEventAsync(IDatabase redisDb, RedisValue auditValue, CancellationToken ct)
         {
-            this.logger.LogTrace("Start Processing Audit Event...");
+            logger.LogTrace("Start Processing Audit Event...");
             AuditEvent? auditEvent = JsonSerializer.Deserialize<AuditEvent>(auditValue.ToString());
             if (auditEvent != null)
             {
                 try
                 {
-                    using IServiceScope scope = this.services.CreateScope();
+                    using IServiceScope scope = services.CreateScope();
                     IWriteAuditEventDelegate writeAuditEventDelegate = scope.ServiceProvider.GetRequiredService<IWriteAuditEventDelegate>();
                     await writeAuditEventDelegate.WriteAuditEventAsync(auditEvent, ct);
                     await redisDb.ListRemoveAsync($"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}", auditValue);
                 }
                 catch (DataException e)
                 {
-                    this.logger.LogError(e, "Error writing to DB:\n{Message}", e.Message);
+                    logger.LogError(e, "Error writing to DB:\n{Message}", e.Message);
                 }
             }
 
-            this.logger.LogTrace("Completed Audit Event Processing...");
+            logger.LogTrace("Completed Audit Event Processing...");
         }
     }
 }
