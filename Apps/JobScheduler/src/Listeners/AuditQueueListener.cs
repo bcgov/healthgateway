@@ -122,8 +122,8 @@ namespace HealthGateway.JobScheduler.Listeners
             // Retry 3: 8 seconds
             // Retry 4: 16 seconds
             // Retry 5: 16 seconds (maxRetryDelay at 16 seconds if applied)
-            int backoffDelay = Math.Min(this.retryDelay * (int)Math.Pow(this.exponentialBase, retryCount), this.maxBackoffDelay);
-            logger.LogWarning("Retrying due to error in {BackoffDelay}ms )", backoffDelay);
+            int backoffDelay = (int)Math.Min(this.retryDelay * Math.Pow(this.exponentialBase, retryCount), this.maxBackoffDelay);
+            logger.LogWarning("Retrying AuditQueueListener due to error in {BackoffDelay}ms )", backoffDelay);
 
             if (!stoppingToken.IsCancellationRequested)
             {
