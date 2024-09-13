@@ -48,13 +48,11 @@ namespace HealthGateway.JobScheduler.Listeners
         private const string ExponentialBaseKey = "ExponentialBase";
         private const string ListenerKey = "AuditQueueListener";
         private const string MaxBackoffDelayKey = "MaxBackoffDelay";
-        private const string MaxRetryCountBeforeResetKey = "MaxRetryCountBeforeReset";
         private const string RetryDelayKey = "RetryDelay";
         private const string SleepDurationKey = "SleepDuration";
 
         private readonly int exponentialBase = configuration.GetValue($"{ListenerKey}:{ExponentialBaseKey}", 2);
-        private readonly int maxRetryDelay = configuration.GetValue($"{ListenerKey}:{MaxBackoffDelayKey}", 32000); // Set the default max backoff delay to 32 seconds
-        private readonly int maxRetryCountBeforeReset = configuration.GetValue($"{ListenerKey}:{MaxRetryCountBeforeResetKey}", 5); // Set the default max retry count before reset to 5 attempts
+        private readonly int maxBackoffDelay = configuration.GetValue($"{ListenerKey}:{MaxBackoffDelayKey}", 16000); // Set the default max backoff delay to 16 seconds
         private readonly int retryDelay = configuration.GetValue($"{ListenerKey}:{RetryDelayKey}", 1000); // Used with exponentialBase and maxBackoffDelay to determine backoffDelay
         private readonly int sleepDuration = configuration.GetValue($"{ListenerKey}:{SleepDurationKey}", 1000);
 
@@ -95,51 +93,42 @@ namespace HealthGateway.JobScheduler.Listeners
                 catch (RedisConnectionException ex)
                 {
                     logger.LogError(ex, "Redis connection error occurred in Audit Queue Listener. Retrying after delay");
-                    retryCount = await this.HandleExceptionAsync(retryCount, stoppingToken);
+                    retryCount++;
+                    await this.HandleExceptionAsync(retryCount, stoppingToken);
                 }
                 catch (InvalidOperationException ex)
                 {
-                    // Occurs when a stale object is unsuccessfully from the UI
+                    // Occurs when a stale object is unsuccessfully saved from the UI
                     logger.LogError(ex, "Database error occurred in Audit Queue Listener. Retrying after delay");
-                    retryCount = await this.HandleExceptionAsync(retryCount, stoppingToken);
+                    retryCount++;
+                    await this.HandleExceptionAsync(retryCount, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Unexpected error in Audit Queue Listener. Retrying after delay");
-                    retryCount = await this.HandleExceptionAsync(retryCount, stoppingToken);
+                    retryCount++;
+                    await this.HandleExceptionAsync(retryCount, stoppingToken);
                 }
             }
 
             logger.LogInformation("Audit Queue Listener has stopped");
         }
 
-        private async Task<int> HandleExceptionAsync(int retryCount, CancellationToken stoppingToken)
+        private async Task HandleExceptionAsync(int retryCount, CancellationToken stoppingToken)
         {
-            retryCount++;
-
-            // Exponential backoff with a cap where exponentialBase is 2, maxRetryDelay is 32000ms, retryDelay is 1000ms and maxRetryCountBeforeReset is 5.
+            // Exponential backoff with a cap where exponentialBase is 2, maxBackoffDelay is 16000ms and retryDelay is 1000ms.
             // Retry 1: 2 seconds
             // Retry 2: 4 seconds
             // Retry 3: 8 seconds
             // Retry 4: 16 seconds
-            // Retry 5: 32 seconds
-            // Retry 6: 32 seconds (maxRetryCountBeforeReset at 6 and maxRetryDelay at 32 seconds if applied)
-            int backoffDelay = Math.Min(this.retryDelay * (int)Math.Pow(this.exponentialBase, retryCount), this.maxRetryDelay);
-            logger.LogWarning("Retrying due to error in {BackoffDelay}ms (Retry {RetryCount})", backoffDelay, retryCount);
+            // Retry 5: 16 seconds (maxRetryDelay at 16 seconds if applied)
+            int backoffDelay = Math.Min(this.retryDelay * (int)Math.Pow(this.exponentialBase, retryCount), this.maxBackoffDelay);
+            logger.LogWarning("Retrying due to error in {BackoffDelay}ms )", backoffDelay);
 
             if (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(backoffDelay, stoppingToken);
             }
-
-            // Reset retry count after a certain number of retries
-            if (retryCount >= this.maxRetryCountBeforeReset)
-            {
-                retryCount = 0;
-                logger.LogInformation("Retry count reset after {MaxRetryCountBeforeReset} attempts", this.maxRetryCountBeforeReset);
-            }
-
-            return retryCount;
         }
 
         private async Task ProcessAuditEventAsync(IDatabase redisDb, RedisValue auditValue, CancellationToken ct)
