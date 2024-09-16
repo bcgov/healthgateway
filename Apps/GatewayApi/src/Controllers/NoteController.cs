@@ -34,7 +34,6 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
 #pragma warning disable ASP0018 // hdid is a valid route parameter without being consumed in the method body
     public class NoteController
     {

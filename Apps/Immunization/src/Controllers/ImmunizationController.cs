@@ -34,7 +34,6 @@ namespace HealthGateway.Immunization.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     public class ImmunizationController : ControllerBase
     {
         private readonly ILogger logger;

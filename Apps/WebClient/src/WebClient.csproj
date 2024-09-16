@@ -47,9 +47,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\DumpHeaders\" />
-  </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
   </Target>
