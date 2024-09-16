@@ -107,11 +107,15 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetPatient - Valid ID.
         /// </summary>
+        /// <param name="identifierType">The identifier type used to query with.</param>
+        /// <param name="identifier">The identifier value used to query with.</param>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
-        [Fact]
-        public async Task ShouldSearchByValidIdentifier()
+        [InlineData(PatientIdentifierType.Phn, Phn)]
+        [InlineData(PatientIdentifierType.Hdid, Hdid)]
+        [Theory]
+        public async Task ShouldSearchByValidIdentifier(PatientIdentifierType identifierType, string identifier)
         {
             RequestResult<PatientModel> requestResult = new()
             {
@@ -123,6 +127,7 @@ namespace HealthGateway.CommonTests.Services
                     FirstName = "John",
                     LastName = "Doe",
                     PersonalHealthNumber = Phn,
+                    HdId = Hdid,
                 },
             };
 
@@ -130,7 +135,15 @@ namespace HealthGateway.CommonTests.Services
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByPhnAsync(It.IsAny<string>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+
+            if (identifierType == PatientIdentifierType.Hdid)
+            {
+                patientDelegateMock.Setup(p => p.GetDemographicsByHdidAsync(It.IsAny<string>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            }
+            else
+            {
+                patientDelegateMock.Setup(p => p.GetDemographicsByPhnAsync(It.IsAny<string>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            }
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -139,11 +152,12 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = await service.GetPatientAsync(Phn, PatientIdentifierType.Phn);
+            RequestResult<PatientModel> actual = await service.GetPatientAsync(identifier, identifierType);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
             Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
+            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
         }
 
         /// <summary>
@@ -188,7 +202,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetPatient - Invalid Id.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
         public async Task ShouldThrowIfInvalidIdentifierType()
         {
@@ -220,6 +236,59 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             await Assert.ThrowsAsync<NotImplementedException>(() => service.GetPatientAsync("abc123", (PatientIdentifierType)23));
+        }
+
+        /// <summary>
+        /// GetPatient - Returns action required when identifer is null.
+        /// </summary>
+        /// <param name="identifierType">The identifier type used to query with.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [InlineData(PatientIdentifierType.Phn)]
+        [InlineData(PatientIdentifierType.Hdid)]
+        [Theory]
+        public async Task GetPatientReturnsActionRequired(PatientIdentifierType identifierType)
+        {
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
+                .Build();
+
+            IPatientService service = new PatientService(
+                new Mock<ILogger<PatientService>>().Object,
+                configuration,
+                patientDelegateMock.Object,
+                new Mock<ICacheProvider>().Object);
+
+            RequestResult<PatientModel> actual = await service.GetPatientAsync(string.Empty, identifierType);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+        }
+
+        /// <summary>
+        /// GetPatient - throws not implemented exception for invalid patient identifier type.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task GetPatientFromCacheThrowsNotImplementedException()
+        {
+            const PatientIdentifierType identifierType = (PatientIdentifierType)999; // This will cause not implemented exception
+
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
+                .Build();
+
+            IPatientService service = new PatientService(
+                new Mock<ILogger<PatientService>>().Object,
+                configuration,
+                patientDelegateMock.Object,
+                new Mock<ICacheProvider>().Object);
+
+            // Act and Assert
+            await Assert.ThrowsAsync<NotImplementedException>(() => service.GetPatientAsync(Hdid, identifierType));
         }
 
         private static async Task<RequestResult<string>> GetPatientPhnAsync(Dictionary<string, string?> configDictionary, bool returnNullPatientResult)

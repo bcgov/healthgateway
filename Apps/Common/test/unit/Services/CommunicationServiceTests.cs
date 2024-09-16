@@ -201,6 +201,7 @@ namespace HealthGateway.CommonTests.Services
         [InlineData(Delete, Scenario.Deleted, true)]
         [InlineData(Insert, Scenario.Active, true, CommunicationType.Banner, true)]
         [InlineData(Insert, Scenario.Future, false)]
+        [InlineData(Insert, Scenario.DifferentCache, true)]
         public void ShouldProcessChangeEvent(string action, Scenario scenario, bool cached, CommunicationType communicationType = CommunicationType.Banner, bool cacheMiss = false)
         {
             Communication communication = new()
@@ -235,11 +236,25 @@ namespace HealthGateway.CommonTests.Services
             string cacheKey = CommunicationService.GetCacheKey(communicationType);
             if (cached)
             {
+                Communication? differentCache = null;
+
+                if (scenario == Scenario.DifferentCache)
+                {
+                    // Need to change so that UTC now will be before current effective date time and current effective date time is also before cached effective date time
+                    differentCache = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        CommunicationTypeCode = communicationType,
+                        EffectiveDateTime = DateTime.Now.AddDays(1),
+                        ExpiryDateTime = DateTime.Now.AddDays(5),
+                    };
+                }
+
                 RequestResult<Communication?> cacheEntry = new()
                 {
                     ResultStatus = ResultType.Success,
                     ResourcePayload = !cacheMiss
-                        ? communication
+                        ? scenario == Scenario.DifferentCache ? differentCache : communication
                         : new()
                         {
                             Id = Guid.NewGuid(),
@@ -284,6 +299,11 @@ namespace HealthGateway.CommonTests.Services
 
                 case Scenario.Future:
                     Assert.Equal(communication.Id, cacheResult!.ResourcePayload!.Id);
+                    break;
+
+                case Scenario.DifferentCache:
+                    Assert.Equal(ResultType.Success, cacheResult!.ResultStatus);
+                    Assert.Equal(1, cacheResult.TotalResultCount);
                     break;
             }
         }

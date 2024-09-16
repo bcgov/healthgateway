@@ -44,7 +44,7 @@ namespace HealthGateway.CommonTests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldQueue()
+        public async Task ShouldQueueNotificationSettingsAsync()
         {
             NotificationSettingsRequest nsr = new()
             {
@@ -54,13 +54,18 @@ namespace HealthGateway.CommonTests.Services
                 SmsNumber = "2505555555",
                 SubjectHdid = "hdid",
                 SmsVerificationCode = "123456",
-                SmsVerified = false,
+                SmsVerified = true,
+            };
+
+            ResourceDelegate resourceDelegate = new()
+            {
+                ResourceOwnerHdid = "resouce-ownder-hdid",
             };
 
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            List<ResourceDelegate> resourceDelegates = [];
+            List<ResourceDelegate> resourceDelegates = [resourceDelegate];
             mockResourceDelegateDelegate.Setup(s => s.GetAsync(nsr.SubjectHdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(resourceDelegates);
             INotificationSettingsService service = new NotificationSettingsService(
                 mockLogger.Object,
