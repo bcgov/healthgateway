@@ -30,7 +30,7 @@ describe("Support", () => {
         // PHN with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${phn}&queryType=Phn`,
+            `**/Support/Users?queryType=Phn&queryString=${phn}`,
             {
                 fixture: "SupportService/users.json",
             }
@@ -39,7 +39,7 @@ describe("Support", () => {
         // HDID with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdid}&queryType=Hdid`,
+            `**/Support/Users?queryType=Hdid&queryString=${hdid}`,
             {
                 fixture: "SupportService/users.json",
             }
@@ -48,7 +48,7 @@ describe("Support", () => {
         // SMS with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${sms}&queryType=Sms`,
+            `**/Support/Users?queryType=Sms&queryString=${sms}`,
             {
                 fixture: "SupportService/users-sms.json",
             }
@@ -57,7 +57,7 @@ describe("Support", () => {
         // Email with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${email}&queryType=Email`,
+            `**/Support/Users?queryType=Email&queryString=${email}`,
             {
                 fixture: "SupportService/users-email.json",
             }
@@ -66,7 +66,7 @@ describe("Support", () => {
         // PHN error
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${phnError}&queryType=Phn`,
+            `**/Support/Users?queryType=Phn&queryString=${phnError}`,
             {
                 statusCode: 502,
                 body: {
@@ -81,7 +81,7 @@ describe("Support", () => {
         // PHN duplicate
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${phnDuplicate}&queryType=Phn`,
+            `**/Support/Users?queryType=Phn&queryString=${phnDuplicate}`,
             {
                 fixture: "SupportService/users-phn-duplicate.json",
             }
