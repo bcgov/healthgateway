@@ -22,6 +22,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -29,7 +30,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     /// <summary>
     /// Transform Refit <see cref="Refit.ApiException"/> into a problem details response.
     /// </summary>
-    internal sealed class ApiExceptionHandler(IConfiguration configuration, ILogger<ApiExceptionHandler> logger) : IExceptionHandler
+    internal sealed class ApiExceptionHandler(IConfiguration configuration, ILogger<ApiExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -42,8 +43,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
             this.LogException(apiException);
 
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
-
-            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(WrapException(apiException), httpContext, includeException);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(WrapException(apiException), httpContext, problemDetailsFactory, includeException);
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status502BadGateway;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

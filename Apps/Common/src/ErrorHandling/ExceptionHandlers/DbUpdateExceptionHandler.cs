@@ -22,6 +22,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     /// <summary>
     /// Transform Entity Framework <see cref="DbUpdateException"/> into a problem details response.
     /// </summary>
-    internal sealed class DbUpdateExceptionHandler(IConfiguration configuration, ILogger<DbUpdateExceptionHandler> logger) : IExceptionHandler
+    internal sealed class DbUpdateExceptionHandler(IConfiguration configuration, ILogger<DbUpdateExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -43,8 +44,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
             this.LogException(dbUpdateException);
 
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
-
-            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(WrapException(dbUpdateException), httpContext, includeException);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(WrapException(dbUpdateException), httpContext, problemDetailsFactory, includeException);
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

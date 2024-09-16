@@ -25,6 +25,9 @@ namespace HealthGateway.CommonTests.ErrorHandling
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -245,24 +248,69 @@ namespace HealthGateway.CommonTests.ErrorHandling
             return new(GetValidationExceptionHandler(configuration));
         }
 
+        private static ProblemDetails GenerateProblemDetails(HttpContext httpContext, int? statusCode, string? title, string? type, string? detail, string? instance)
+        {
+            return new ProblemDetails
+            {
+                Status = statusCode,
+                Title = title,
+                Type = type,
+                Detail = detail,
+                Instance = instance,
+                Extensions =
+                {
+                    ["traceId"] = httpContext.TraceIdentifier,
+                },
+            };
+        }
+
+        private static ValidationProblemDetails GenerateValidationProblemDetails(HttpContext httpContext, ModelStateDictionary modelStateDictionary, int? statusCode, string? title, string? type, string? detail, string? instance)
+        {
+            return new ValidationProblemDetails(modelStateDictionary)
+            {
+                Status = statusCode,
+                Title = title,
+                Type = type,
+                Detail = detail,
+                Instance = instance,
+                Extensions =
+                {
+                    ["traceId"] = httpContext.TraceIdentifier,
+                },
+            };
+        }
+
+        private static ProblemDetailsFactory GetProblemDetailsFactory()
+        {
+            Mock<ProblemDetailsFactory> problemDetailsFactory = new();
+            problemDetailsFactory
+                .Setup(s => s.CreateProblemDetails(It.IsAny<HttpContext>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>()))
+                .Returns(GenerateProblemDetails);
+            problemDetailsFactory
+                .Setup(s => s.CreateValidationProblemDetails(It.IsAny<HttpContext>(), It.IsAny<ModelStateDictionary>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>()))
+                .Returns(GenerateValidationProblemDetails);
+
+            return problemDetailsFactory.Object;
+        }
+
         private static ApiExceptionHandler GetApiExceptionHandler(ApiExceptionHandlerMocks mocks, IConfiguration configuration)
         {
-            return new(configuration, mocks.Logger.Object);
+            return new(configuration, mocks.Logger.Object, GetProblemDetailsFactory());
         }
 
         private static DbUpdateExceptionHandler GetDbUpdateExceptionHandler(DbUpdateExceptionHandlerMocks mocks, IConfiguration configuration)
         {
-            return new(configuration, mocks.Logger.Object);
+            return new(configuration, mocks.Logger.Object, GetProblemDetailsFactory());
         }
 
         private static DefaultExceptionHandler GetDefaultExceptionHandler(IConfiguration configuration)
         {
-            return new(configuration);
+            return new(configuration, GetProblemDetailsFactory());
         }
 
         private static ValidationExceptionHandler GetValidationExceptionHandler(IConfiguration configuration)
         {
-            return new(configuration);
+            return new(configuration, GetProblemDetailsFactory());
         }
 
         private sealed record ApiExceptionHandlerSetup(ApiExceptionHandler ExceptionHandler);
