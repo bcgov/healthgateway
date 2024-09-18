@@ -34,27 +34,37 @@ namespace AccountDataAccessTest
     {
         private const string Hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private const string Phn = "0009735353315";
-        private const string FirstName = "John";
+        private const string FirstName = "Jane";
         private const string LastName = "Doe";
-        private const string ResponseCode = "BCHCIM.GD.1.0019";
+        private const string Gender = "Female";
+        private const string GenderCode = "F";
+        private const string InvalidBirthDate = "yyyyMMdd";
+        private const string ValidBirthDate = "20001231";
+        private static readonly string HdidOidType = OidType.Hdid.ToString();
+        private static readonly string PhnOidType = OidType.Phn.ToString();
 
         /// <summary>
         /// Client registry get demographics by hdid - Happy Path.
         /// </summary>
         /// <param name="addressExists">Value to determine whether address exists or not.</param>
+        /// <param name="genderCode">The gender value code for the identifier.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [InlineData(true)]
-        [InlineData(false)]
+        [InlineData(true, "F")]
+        [InlineData(true, "M")]
+        [InlineData(false, "NotSpecified")]
         [Theory]
-        public async Task ShouldGetDemographics(bool addressExists)
+        public async Task ShouldGetDemographics(bool addressExists, string genderCode)
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
+            const string firstName = "Alex";
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
-            const string expectedGender = "Female";
+            string expectedGender = genderCode switch
+            {
+                "M" => "Male",
+                "F" => "Female",
+                _ => "NotSpecified",
+            };
+
             Address? expectedPhysicalAddr = addressExists
                 ? new()
                 {
@@ -79,100 +89,38 @@ namespace AccountDataAccessTest
             IEnumerable<ClientRegistryAddress> clientRegistryAddresses = addressExists
                 ? [new ClientRegistryAddress(expectedPhysicalAddr, cs_PostalAddressUse.PHYS), new ClientRegistryAddress(expectedPostalAddr, cs_PostalAddressUse.PST)]
                 : [];
-            IEnumerable<AD> addresses = GenerateAddresses(clientRegistryAddresses);
 
-            DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
+            AD[] addresses = clientRegistryAddresses.Select(GenerateAddress).ToArray();
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                addr = addresses.ToArray(),
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
+            DateTime expectedBirthDate = DateTime.ParseExact(ValidBirthDate, "yyyyMMdd", CultureInfo.InvariantCulture);
 
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+            II[] id = GenerateId(
+                extension: Hdid,
+                oidType: HdidOidType);
+
+            IEnumerable<ENXP> itemNames = GenerateItems(
+                [new(firstName)],
+                [new(LastName)]);
+
+            PN[] names = [GeneratePn(itemNames, cs_EntityNameUse.C)];
+
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
+                birthDate: ValidBirthDate,
+                genderCode: genderCode,
+                extension: Phn,
+                oidType: PhnOidType,
+                names: names);
+
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode, id, identifiedPerson, addresses);
 
             // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
+            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, Hdid);
 
-            // Verify
-            Assert.Equal(expectedHdId, actual.Hdid);
-            Assert.Equal(expectedPhn, actual.Phn);
-            Assert.Equal(expectedFirstName, actual.PreferredName.GivenName);
-            Assert.Equal(expectedLastName, actual.PreferredName.Surname);
+            // Assert
+            Assert.Equal(Hdid, actual.Hdid);
+            Assert.Equal(Phn, actual.Phn);
+            Assert.Equal(firstName, actual.PreferredName.GivenName);
+            Assert.Equal(LastName, actual.PreferredName.Surname);
             Assert.Equal(expectedBirthDate, actual.Birthdate);
             Assert.Equal(expectedGender, actual.Gender);
             actual.PhysicalAddress.ShouldDeepEqual(expectedPhysicalAddr);
@@ -180,7 +128,7 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
-        /// Client registry get demographics - Happy Path (Validate Multiple Names).
+        /// Client registry get demographics returns correct names.
         /// </summary>
         /// <param name="nameExists">Value to determine whether name exists or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -189,98 +137,50 @@ namespace AccountDataAccessTest
         [Theory]
         public async Task ShouldGetDemographicsGivenCorrectNameSection(bool nameExists)
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string? firstName1 = "Jane";
-            const string? firstName2 = "Ann";
+            const string? firstName1 = "Jamie";
+            const string? firstName2 = "Janet";
             const string? lastName1 = "Lee";
             const string? lastName2 = "Curtis";
-            const string expectedGender = "Female";
+            const string wrongFirstName = "Wrong given name";
+            const string wrongLastName = "Wrong family name";
             string? expectedFirstName = nameExists ? $"{firstName1} {firstName2}" : null;
             string? expectedLastName = nameExists ? $"{lastName1} {lastName2}" : null;
-            IEnumerable<string> givenNames = [firstName1, firstName2];
-            IEnumerable<string> familyNames = [lastName1, lastName2];
-            IEnumerable<ClientRegistryName> clientRegistryNames =
-                nameExists ? [new ClientRegistryName(["Wrong given name"], ["Wrong family name"]), new ClientRegistryName(givenNames, familyNames, cs_EntityNameUse.C)] : [];
-            IEnumerable<PN> names = GenerateNames(clientRegistryNames);
-            DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
+            DateTime expectedBirthDate = DateTime.ParseExact(ValidBirthDate, "yyyyMMdd", CultureInfo.InvariantCulture);
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name = names.ToArray(),
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
+            II[] id = GenerateId(
+                extension: Hdid,
+                oidType: HdidOidType);
 
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+            IEnumerable<ENXP> itemNames1 = GenerateItems(
+                [GenerateEnName(wrongFirstName)],
+                [GenerateEnName(wrongLastName)]);
+
+            IEnumerable<ENXP> itemNames2 = GenerateItems(
+                [GenerateEnName(expectedFirstName)],
+                [GenerateEnName(expectedLastName)]);
+
+            PN[] names = nameExists ? [GeneratePn(itemNames1, cs_EntityNameUse.L), GeneratePn(itemNames2, cs_EntityNameUse.C)] : [];
+
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
+                birthDate: ValidBirthDate,
+                extension: Phn,
+                oidType: PhnOidType,
+                names: names);
+
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode, id, identifiedPerson);
 
             // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
+            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, Hdid);
 
-            // Verify
-            Assert.Equal(expectedHdId, actual.Hdid);
-            Assert.Equal(expectedPhn, actual.Phn);
+            // Assert
+            Assert.Equal(Hdid, actual.Hdid);
+            Assert.Equal(Phn, actual.Phn);
             Assert.Equal(expectedFirstName, actual.CommonName?.GivenName);
             Assert.Equal(expectedLastName, actual.CommonName?.Surname);
             Assert.Equal(expectedBirthDate, actual.Birthdate);
-            Assert.Equal(expectedGender, actual.Gender);
+            Assert.Equal(Gender, actual.Gender);
         }
 
         /// <summary>
@@ -290,571 +190,129 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task ShouldGetDemographicsGivenCorrectNameQualifier()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
-            const string expectedGender = "Female";
-            DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
+            const string wrongFirstName = "Wrong given name";
+            const string wrongLastName = "Wrong family name";
+            const string badFirstName = "Bad given name";
+            const string badLastName = "Bad family name";
+            DateTime expectedBirthDate = DateTime.ParseExact(ValidBirthDate, "yyyyMMdd", CultureInfo.InvariantCulture);
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = ["Wrong Given Name"],
-                                },
-                                new enfamily
-                                {
-                                    Text = ["Wrong Family Name"],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.L],
-                        },
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                    qualifier =
-                                    [
-                                        cs_EntityNamePartQualifier.AC,
-                                    ],
-                                },
-                                new engiven
-                                {
-                                    qualifier =
-                                    [
-                                        cs_EntityNamePartQualifier.CL,
-                                    ],
-                                    Text = ["Bad First Name"],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                    qualifier =
-                                    [
-                                        cs_EntityNamePartQualifier.IN,
-                                    ],
-                                },
-                                new enfamily
-                                {
-                                    qualifier =
-                                    [
-                                        cs_EntityNamePartQualifier.CL,
-                                    ],
-                                    Text = ["Bad Last Name"],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
+            II[] id = GenerateId(
+                extension: Hdid,
+                oidType: HdidOidType);
 
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+            IEnumerable<ENXP> itemNames1 = GenerateItems(
+                [GenerateEnName(wrongFirstName)],
+                [GenerateEnName(wrongLastName)]);
+
+            IEnumerable<ENXP> itemNames2 = GenerateItems(
+                [GenerateEnName(FirstName, cs_EntityNamePartQualifier.AC), GenerateEnName(badFirstName, cs_EntityNamePartQualifier.CL)],
+                [GenerateEnName(LastName, cs_EntityNamePartQualifier.AC), GenerateEnName(badLastName, cs_EntityNamePartQualifier.CL)]);
+
+            PN[] names = [GeneratePn(itemNames1, cs_EntityNameUse.L), GeneratePn(itemNames2, cs_EntityNameUse.C)];
+
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
+                extension: Phn,
+                oidType: PhnOidType,
+                names: names);
+
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode, id, identifiedPerson);
 
             // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
+            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, Hdid);
 
-            // Verify
-            Assert.Equal(expectedHdId, actual.Hdid);
-            Assert.Equal(expectedPhn, actual.Phn);
-            Assert.Equal(expectedFirstName, actual.PreferredName.GivenName);
-            Assert.Equal(expectedLastName, actual.PreferredName.Surname);
+            // Assert
+            Assert.Equal(Hdid, actual.Hdid);
+            Assert.Equal(Phn, actual.Phn);
+            Assert.Equal(FirstName, actual.PreferredName.GivenName);
+            Assert.Equal(LastName, actual.PreferredName.Surname);
             Assert.Equal(expectedBirthDate, actual.Birthdate);
-            Assert.Equal(expectedGender, actual.Gender);
-        }
-
-        /// <summary>
-        /// Client registry get demographics given subject of overlay returns response code.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographicsGivenSubjectOfOverlay()
-        {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
-            const string expectedResponseCode = "BCHCIM.GD.1.0019";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
-
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
-
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
-
-            // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
-
-            // Verify
-            Assert.Contains("BCHCIM.GD.1.0019", actual.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        /// <summary>
-        /// Client registry get demographics by phn is subject of potential duplicate returns response code.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographicsGivenSubjectOfPotentialDuplicate()
-        {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
-            const string expectedResponseCode = "BCHCIM.GD.1.0021";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
-
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
-
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
-
-            // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
-
-            // Verify
-            Assert.Contains("BCHCIM.GD.1.0021", actual.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        /// <summary>
-        /// Client registry get demographics by phn given subject of potential linkage returns response code.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographicsGivenSubjectOfPotentialLinkage()
-        {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
-            const string expectedResponseCode = "BCHCIM.GD.1.0022";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
-
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
-
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
-
-            // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
-
-            // Verify
-            Assert.Contains("BCHCIM.GD.1.0022", actual.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Equal(Gender, actual.Gender);
         }
 
         /// <summary>
         /// Client registry get demographics by phn is subject of review identifier returns response code.
         /// </summary>
+        /// <param name="responseCode">Response code value to determine warning to return.</param>
+        /// <param name="reason">The reason for the warning.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographicsGivenSubjectOfReviewIdentifier()
+        [Theory]
+        [InlineData("BCHCIM.GD.1.0019", "Overlay")]
+        [InlineData("BCHCIM.GD.1.0021", "Duplicate")]
+        [InlineData("BCHCIM.GD.1.0022", "Potential Linkage")]
+        [InlineData("BCHCIM.GD.1.0023", "Subject of Review")]
+        public async Task GetDemographicsReturnsWarning(string responseCode, string reason)
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
-            const string expectedResponseCode = "BCHCIM.GD.1.0023";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
+            // Arrange
+            II[] id = GenerateId(
+                extension: Hdid,
+                oidType: HdidOidType);
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = expectedHdId,
-                        displayable = true,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    id =
-                    [
-                        new II
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6.1",
-                            extension = expectedPhn,
-                        },
-                    ],
-                    name =
-                    [
-                        new PN
-                        {
-                            Items =
-                            [
-                                new engiven
-                                {
-                                    Text = [expectedFirstName],
-                                },
-                                new enfamily
-                                {
-                                    Text = [expectedLastName],
-                                },
-                            ],
-                            use = [cs_EntityNameUse.C],
-                        },
-                    ],
-                    birthTime = new TS
-                    {
-                        value = "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
+            IEnumerable<ENXP> itemNames = GenerateItems(
+                [new(FirstName)],
+                [new(LastName)]);
 
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                .ReturnsAsync(
-                    new HCIM_IN_GetDemographicsResponse1
-                    {
-                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                        {
-                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                            {
-                                queryAck = new HCIM_MT_QueryResponseQueryAck
-                                {
-                                    queryResponseCode = new CS
-                                    {
-                                        code = expectedResponseCode,
-                                    },
-                                },
-                                subject =
-                                [
-                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                                    {
-                                        target = subjectTarget,
-                                    },
-                                ],
-                            },
-                        },
-                    });
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
-                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+            PN[] names = [GeneratePn(itemNames, cs_EntityNameUse.C)];
+
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
+                extension: Phn,
+                oidType: PhnOidType,
+                names: names);
+
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(responseCode, id, identifiedPerson);
 
             // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
+            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn);
 
-            // Verify
-            Assert.Contains("BCHCIM.GD.1.0023", actual.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            // Assert
+            Assert.True(string.Equals(responseCode, actual.ResponseCode, StringComparison.OrdinalIgnoreCase), reason);
         }
 
         /// <summary>
         /// Client registry get demographics does not return warning for action type NoHdId given disabled id validation is set to
         /// false.
         /// </summary>
+        /// <param name="shouldReturnHdid">Value to determine whether ID displayable attribute should be enabled or not for Hdid.</param>
+        /// <param name="shouldReturnPhn">Value to determine whether an ID object should be retuned for PHN.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDemographicsGivenDisabledIdValidationIsTrue()
+        [Theory]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        public async Task GetDemographicsDoesNotReturnIdentifier(bool shouldReturnHdid, bool shouldReturnPhn)
         {
-            // Setup
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, true);
+            // Arrange
+            const string expectedResponseCode = "BCHCIM.GD.0.0013"; // Success person returned
+
+            II[] id = GenerateId(
+                extension: Hdid,
+                oidType: HdidOidType,
+                displayable: shouldReturnHdid);
+
+            IEnumerable<ENXP> itemNames = GenerateItems(
+                [new(FirstName)],
+                [new(LastName)]);
+
+            PN[] names = [GeneratePn(itemNames, cs_EntityNameUse.C)];
+
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
+                shouldReturnEmpty: !shouldReturnPhn,
+                extension: Phn,
+                oidType: PhnOidType,
+                names: names);
+
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode, id, identifiedPerson);
 
             // Act
-            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn, true);
+            PatientModel actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, Hdid);
 
-            // Verify
-            Assert.NotNull(actual);
+            // Assert
+            Assert.Equal(shouldReturnHdid ? Hdid : string.Empty, actual.Hdid);
+            Assert.Equal(shouldReturnPhn ? Phn : string.Empty, actual.Phn);
+            Assert.Equal(FirstName, actual.PreferredName.GivenName);
+            Assert.Equal(LastName, actual.PreferredName.Surname);
         }
 
         /// <summary>
@@ -864,9 +322,26 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task GetDemographicsThrowsNotFoundExceptionGivenInvalidBirthDate()
         {
-            // Setup
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode, invalidBirthdate: true);
+
+            II[] id = GenerateId(
+                extension: Hdid,
+                oidType: HdidOidType);
+
+            IEnumerable<ENXP> itemNames = GenerateItems(
+                [new(FirstName)],
+                [new(LastName)]);
+
+            PN[] names = [GeneratePn(itemNames, cs_EntityNameUse.C)];
+
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
+                birthDate: InvalidBirthDate, // This will cause NotFoundException
+                extension: Phn,
+                oidType: PhnOidType,
+                names: names);
+
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode, id, identifiedPerson);
 
             // Act and Assert
             NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
@@ -880,9 +355,9 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task GetDemographicsThrowsNotFoundExceptionGivenClientRegistryRecordNotFound()
         {
-            // Setup
-            const string expectedResponseCode = "BCHCIM.GD.2.0018";
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode);
+            // Arrange
+            const string expectedResponseCode = "BCHCIM.GD.2.0018"; // This will cause NotFoundException for ErrorMessages.ClientRegistryRecordsNotFound
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode);
 
             // Act and Assert
             NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
@@ -896,9 +371,9 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task GetDemographicsThrowsNotFoundExceptionGivenClientRegistryDoesNotReturnPerson()
         {
-            // Setup
-            const string expectedResponseCode = "BCHCIM.GD.0.0099";
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode);
+            // Arrange
+            const string expectedResponseCode = "BCHCIM.GD.0.0099"; // This will cause NotFoundException for ErrorMessages.ClientRegistryDoesNotReturnPerson
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode);
 
             // Act and Assert
             NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
@@ -912,133 +387,13 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task GetDemographicsThrowsValidationExceptionGivenClientRegistryPhnInvalid()
         {
-            // Setup
-            const string expectedResponseCode = "BCHCIM.GD.2.0006";
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
+            // Arrange
+            const string expectedResponseCode = "BCHCIM.GD.2.0006"; // This will cause ValidationException for ErrorMessages.PhnInvalid
+            IClientRegistriesDelegate clientRegistryDelegate = SetupClientRegistriesDelegate(expectedResponseCode);
 
             // Act and Assert
             ValidationException exception = await Assert.ThrowsAsync<ValidationException>(() => clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn));
             Assert.Equal(ErrorMessages.PhnInvalid, exception.Message);
-        }
-
-        private static IClientRegistriesDelegate GetClientRegistriesDelegate(
-            bool deceasedInd = false,
-            bool noIds = false,
-            bool throwsException = false)
-        {
-            return GetClientRegistriesDelegate(
-                ResponseCode,
-                deceasedInd,
-                noIds,
-                throwsException);
-        }
-
-        private static IClientRegistriesDelegate GetClientRegistriesDelegate(
-            string expectedResponseCode = ResponseCode,
-            bool deceasedInd = false,
-            bool noIds = false,
-            bool throwsException = false,
-            bool invalidBirthdate = false)
-        {
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(deceasedInd, noIds, invalidBirthdate);
-
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-
-            if (throwsException)
-            {
-                clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ThrowsAsync(new CommunicationException(string.Empty));
-            }
-            else
-            {
-                clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
-                    .ReturnsAsync(
-                        GetDemographics(subjectTarget, expectedResponseCode));
-            }
-
-            return new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
-        }
-
-        private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noIds = false, bool invalidBirthdate = false)
-        {
-            return new HCIM_IN_GetDemographicsResponseIdentifiedPerson
-            {
-                id =
-                [
-                    new II
-                    {
-                        root = "2.16.840.1.113883.3.51.1.1.6",
-                        extension = Hdid,
-                    },
-                ],
-                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson
-                {
-                    deceasedInd = new BL
-                        { value = deceasedInd },
-                    id = GetIds(noIds),
-                    name = GenerateNames([new ClientRegistryName([FirstName], [LastName], cs_EntityNameUse.C)]).ToArray(),
-                    birthTime = new TS
-                    {
-                        value = invalidBirthdate ? "yyyyMMdd" : "20001231",
-                    },
-                    administrativeGenderCode = new CE
-                    {
-                        code = "F",
-                    },
-                },
-            };
-        }
-
-        private static II[] GetIds(bool noIds = false)
-        {
-            if (noIds)
-            {
-                return Array.Empty<II>();
-            }
-
-            return
-            [
-                new II
-                {
-                    root = "01010101010",
-                    extension = Phn,
-                },
-            ];
-        }
-
-        private static HCIM_IN_GetDemographicsResponse1 GetDemographics(
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget,
-            string expectedResponseCode = ResponseCode)
-        {
-            return new HCIM_IN_GetDemographicsResponse1
-            {
-                HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
-                {
-                    controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
-                    {
-                        queryAck = new HCIM_MT_QueryResponseQueryAck
-                        {
-                            queryResponseCode = new CS
-                            {
-                                code = expectedResponseCode,
-                            },
-                        },
-                        subject =
-                        [
-                            new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
-                            {
-                                target = subjectTarget,
-                            },
-                        ],
-                    },
-                },
-            };
-        }
-
-        private static IEnumerable<AD> GenerateAddresses(IEnumerable<ClientRegistryAddress> addresses)
-        {
-            return addresses.Select(GenerateAddress);
         }
 
         private static AD GenerateAddress(ClientRegistryAddress address)
@@ -1087,28 +442,156 @@ namespace AccountDataAccessTest
             };
         }
 
-        private static IEnumerable<PN> GenerateNames(IEnumerable<ClientRegistryName>? names = null)
+        private static HCIM_IN_GetDemographicsResponse1 GenerateDemographicResponse(
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson? subjectTarget,
+            string expectedResponseCode)
         {
-            return names.Select(GenerateName);
-        }
-
-        private static PN GenerateName(ClientRegistryName name)
-        {
-            return new()
+            return new HCIM_IN_GetDemographicsResponse1
             {
-                Items = GenerateItemNames(name.GivenNames, name.FamilyNames).ToArray(),
-                use = [name.NameUse],
+                HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse
+                {
+                    controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess
+                    {
+                        queryAck = new HCIM_MT_QueryResponseQueryAck
+                        {
+                            queryResponseCode = new CS
+                            {
+                                code = expectedResponseCode,
+                            },
+                        },
+                        subject =
+                        [
+                            new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2
+                            {
+                                target = subjectTarget,
+                            },
+                        ],
+                    },
+                },
             };
         }
 
-        private static IEnumerable<ENXP> GenerateItemNames(IEnumerable<string> givenNames, IEnumerable<string> familyNames)
+        private static EnName GenerateEnName(string name, cs_EntityNamePartQualifier? qualifier = null)
         {
-            return givenNames.Select(x => new engiven { Text = [x] })
-                .Concat<ENXP>(familyNames.Select(x => new enfamily { Text = [x] }));
+            return new(name, qualifier);
+        }
+
+        private static II[] GenerateId(bool shouldReturnEmpty = false, string? extension = null, string? oidType = null, bool displayable = true)
+        {
+            if (shouldReturnEmpty)
+            {
+                return [];
+            }
+
+            return
+            [
+                new II
+                {
+                    root = oidType ?? HdidOidType,
+                    extension = oidType == null || (oidType == HdidOidType && extension == null) ? Hdid
+                        : oidType == PhnOidType && extension == null ? Phn : extension,
+                    displayable = displayable,
+                },
+            ];
+        }
+
+        private static HCIM_IN_GetDemographicsResponsePerson GenerateIdentifiedPerson(
+            bool deceasedInd = false,
+            bool shouldReturnEmpty = false,
+            string birthDate = ValidBirthDate,
+            string genderCode = GenderCode,
+            string extension = Phn,
+            string? oidType = null,
+            IEnumerable<PN>? names = null)
+        {
+            return new HCIM_IN_GetDemographicsResponsePerson
+            {
+                deceasedInd = new BL
+                    { value = deceasedInd },
+                id = GenerateId(shouldReturnEmpty, extension, oidType),
+                name = names.ToArray(),
+                birthTime = new TS
+                {
+                    value = birthDate,
+                },
+                administrativeGenderCode = new CE
+                {
+                    code = genderCode,
+                },
+            };
+        }
+
+        private static engiven GenerateEngiven(string[] name, cs_EntityNamePartQualifier[] qualifier)
+        {
+            return new()
+            {
+                Text = name,
+                qualifier = qualifier,
+            };
+        }
+
+        private static enfamily GenerateEnfamily(string[] name, cs_EntityNamePartQualifier[] qualifier)
+        {
+            return new()
+            {
+                Text = name,
+                qualifier = qualifier,
+            };
+        }
+
+        private static IEnumerable<ENXP> GenerateItems(IEnumerable<EnName> givenNames, IEnumerable<EnName> familyNames)
+        {
+            return givenNames.Select(x => GenerateEngiven([x.Name], x.Qualifier != null ? [x.Qualifier.Value] : []))
+                .Concat<ENXP>(familyNames.Select(x => GenerateEnfamily([x.Name], x.Qualifier != null ? [x.Qualifier.Value] : [])));
+        }
+
+        private static PN GeneratePn(IEnumerable<ENXP> items, cs_EntityNameUse? nameUse = null)
+        {
+            return new()
+            {
+                Items = items.ToArray(),
+                use = nameUse != null ? [nameUse.Value] : [],
+            };
+        }
+
+        private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GenerateSubjectTarget(
+            II[] id,
+            HCIM_IN_GetDemographicsResponsePerson identifiedPerson,
+            AD[]? addresses = null)
+        {
+            return new HCIM_IN_GetDemographicsResponseIdentifiedPerson
+            {
+                id = id,
+                addr = addresses ?? [],
+                identifiedPerson = identifiedPerson,
+            };
+        }
+
+        private static IClientRegistriesDelegate SetupClientRegistriesDelegate(
+            string expectedResponseCode,
+            II[]? id = null,
+            HCIM_IN_GetDemographicsResponsePerson? identifiedPerson = null,
+            AD[]? addresses = null,
+            bool throwsException = false)
+        {
+            Mock<QUPA_AR101102_PortType> clientMock = new();
+
+            if (throwsException)
+            {
+                clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ThrowsAsync(new CommunicationException(string.Empty));
+            }
+            else
+            {
+                HCIM_IN_GetDemographicsResponseIdentifiedPerson? subjectTarget = id != null && identifiedPerson != null ? GenerateSubjectTarget(id, identifiedPerson, addresses) : null;
+                HCIM_IN_GetDemographicsResponse1 response = GenerateDemographicResponse(subjectTarget, expectedResponseCode);
+                clientMock.Setup(s => s.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(response);
+            }
+
+            return new ClientRegistriesDelegate(new Mock<ILogger<ClientRegistriesDelegate>>().Object, clientMock.Object);
         }
 
         private sealed record ClientRegistryAddress(Address Address, cs_PostalAddressUse AddressUse);
 
-        private sealed record ClientRegistryName(IEnumerable<string> GivenNames, IEnumerable<string> FamilyNames, cs_EntityNameUse NameUse = cs_EntityNameUse.L);
+        private sealed record EnName(string Name, cs_EntityNamePartQualifier? Qualifier = null);
     }
 }
