@@ -45,8 +45,11 @@ namespace HealthGateway.CommonTests.Delegates
     {
         private const string Hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private const string Phn = "0009735353315";
-        private const string FirstName = "John";
+        private const string FirstName = "Jane";
         private const string LastName = "Doe";
+        private const string Gender = "Female";
+        private const string GenderCode = "F";
+        private const string ValidBirthDate = "20001231";
         private const string InvalidOidType = "01010101010";
         private static readonly string HdidOidType = OidType.Hdid.ToString();
         private static readonly string PhnOidType = OidType.Phn.ToString();
@@ -60,31 +63,28 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task GetDemographicsReturnsActionRequiredWhenIdRootForHdidIsInvalid()
         {
-            // Setup
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedPhn = "0009735353315";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
 
-            II[] id = GenerateId(extension: expectedPhn, oidType: PhnOidType);
+            II[] id = GenerateId(extension: Phn, oidType: PhnOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(expectedFirstName)],
-                [GenerateEnName(expectedLastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: InvalidOidType, // this will use an invalid root id
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync("9875023209");
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(Phn);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
         }
 
@@ -101,13 +101,15 @@ namespace HealthGateway.CommonTests.Delegates
         [Theory]
         public async Task ShouldGetDemographics(bool addressExists, cs_EntityNameUse nameUse)
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
-            const string expectedGender = "Female";
+            const string firstName1 = "Jamie";
+            const string firstName2 = "Janet";
+            const string lastName1 = "Lee";
+            const string lastName2 = "Curtis";
+            const string expectedFirstName = $"{firstName1} {firstName2}";
+            const string expectedLastName = $"{lastName1} {lastName2}";
+
             Address? expectedPhysicalAddr = addressExists
                 ? new()
                 {
@@ -138,30 +140,30 @@ namespace HealthGateway.CommonTests.Delegates
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             II[] id = GenerateId(
-                extension: expectedHdId,
+                extension: Hdid,
                 oidType: HdidOidType);
 
-            IEnumerable<ENXP> itemNames = GenerateItems([GenerateEnName(expectedFirstName)], [GenerateEnName(expectedLastName)]);
+            IEnumerable<ENXP> itemNames = GenerateItems([new(firstName1), new(firstName2)], [new(lastName1), new(lastName2)]);
             PN[] names = [GeneratePn(itemNames, nameUse)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode, addresses);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(expectedHdId);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(Hdid);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
-            Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
+            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
+            Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
             Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
             Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
-            Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
+            Assert.Equal(Gender, actual.ResourcePayload?.Gender);
             actual.ResourcePayload?.PhysicalAddress.ShouldDeepEqual(expectedPhysicalAddr);
             actual.ResourcePayload?.PostalAddress.ShouldDeepEqual(expectedPostalAddr);
         }
@@ -173,31 +175,27 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldErrorIfInvalidIdentifier()
         {
-            // Setup
-            const string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedFirstName = "John";
-            const string expectedLastName = "Doe";
 
             II[] id = GenerateId(
                 extension: Hdid,
                 oidType: HdidOidType);
 
-            IEnumerable<ENXP> itemNames = GenerateItems([GenerateEnName(expectedFirstName)], [GenerateEnName(expectedLastName)]);
+            IEnumerable<ENXP> itemNames = GenerateItems([new(FirstName)], [new(LastName)]);
             PN[] names = [GeneratePn(itemNames, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: InvalidOidType, // this will use an invalid root id
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(hdid);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(Hdid);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
             Assert.Equal(ErrorMessages.InvalidServicesCard, actual.ResultError?.ResultMessage);
         }
@@ -209,49 +207,44 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldUseCorrectNameSection()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
             const string wrongFirstName = "Wrong given name";
             const string wrongLastName = "Wrong family name";
-            const string expectedGender = "Female";
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             II[] id = GenerateId(
-                extension: expectedHdId,
+                extension: Hdid,
                 oidType: HdidOidType);
 
             IEnumerable<ENXP> items1 = GenerateItems(
-                [GenerateEnName(wrongFirstName)],
-                [GenerateEnName(wrongLastName)]);
+                [new(wrongFirstName)],
+                [new(wrongLastName)]);
 
             IEnumerable<ENXP> items2 = GenerateItems(
-                [GenerateEnName(expectedFirstName)],
-                [GenerateEnName(expectedLastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items1, cs_EntityNameUse.L), GeneratePn(items2, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(expectedHdId);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(Hdid);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
-            Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
+            Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
+            Assert.Equal(FirstName, actual.ResourcePayload?.FirstName);
+            Assert.Equal(LastName, actual.ResourcePayload?.LastName);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
-            Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
+            Assert.Equal(Gender, actual.ResourcePayload?.Gender);
         }
 
         /// <summary>
@@ -261,51 +254,46 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldUseCorrectNameQualifier()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.0.0013";
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
             const string wrongFirstName = "Wrong given name";
             const string wrongLastName = "Wrong family name";
             const string badFirstName = "Bad given name";
             const string badLastName = "Bad family name";
-            const string expectedGender = "Female";
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             II[] id = GenerateId(
-                extension: expectedHdId,
+                extension: Hdid,
                 oidType: HdidOidType);
 
             IEnumerable<ENXP> itemNames1 = GenerateItems(
-                [GenerateEnName(wrongFirstName)],
-                [GenerateEnName(wrongLastName)]);
+                [new(wrongFirstName)],
+                [new(wrongLastName)]);
 
             IEnumerable<ENXP> itemNames2 = GenerateItems(
-                [GenerateEnName(expectedFirstName, cs_EntityNamePartQualifier.AC), GenerateEnName(badFirstName, cs_EntityNamePartQualifier.CL)],
-                [GenerateEnName(expectedLastName, cs_EntityNamePartQualifier.AC), GenerateEnName(badLastName, cs_EntityNamePartQualifier.CL)]);
+                [new(FirstName, cs_EntityNamePartQualifier.AC), new(badFirstName, cs_EntityNamePartQualifier.CL)],
+                [new(LastName, cs_EntityNamePartQualifier.AC), new(badLastName, cs_EntityNamePartQualifier.CL)]);
 
             PN[] names = [GeneratePn(itemNames1, cs_EntityNameUse.L), GeneratePn(itemNames2, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(expectedHdId);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByHdidAsync(Hdid);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
-            Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
+            Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
+            Assert.Equal(FirstName, actual.ResourcePayload?.FirstName);
+            Assert.Equal(LastName, actual.ResourcePayload?.LastName);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
-            Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
+            Assert.Equal(Gender, actual.ResourcePayload?.Gender);
         }
 
         /// <summary>
@@ -315,34 +303,30 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldReturnSuccessForSubjectOfOverlay()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.1.0019"; // Overlay
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
 
-            II[] id = GenerateId(extension: expectedHdId, oidType: HdidOidType);
+            II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(expectedFirstName)],
-                [GenerateEnName(expectedLastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(expectedPhn);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(Phn);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.1.0019", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains(expectedResponseCode, actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -352,34 +336,30 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldReturnSuccessForSubjectOfPotentialDuplicate()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.1.0021"; // Duplicate
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
 
-            II[] id = GenerateId(extension: expectedHdId, oidType: HdidOidType);
+            II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(expectedFirstName)],
-                [GenerateEnName(expectedLastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(expectedPhn);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(Phn);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.1.0021", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains(expectedResponseCode, actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -389,34 +369,30 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldReturnSuccessForSubjectOfPotentialLinkage()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.1.0022"; // Potential Linkage
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
 
-            II[] id = GenerateId(extension: expectedHdId, oidType: HdidOidType);
+            II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(expectedFirstName)],
-                [GenerateEnName(expectedLastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(expectedPhn);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(Phn);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.1.0022", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains(expectedResponseCode, actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -426,34 +402,30 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task ShouldReturnSuccessForSubjectOfReviewIdentifier()
         {
-            // Setup
-            const string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            const string expectedPhn = "0009735353315";
+            // Arrange
             const string expectedResponseCode = "BCHCIM.GD.1.0023"; // Subject of Review
-            const string expectedFirstName = "Jane";
-            const string expectedLastName = "Doe";
 
-            II[] id = GenerateId(extension: expectedHdId, oidType: HdidOidType);
+            II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(expectedFirstName)],
-                [GenerateEnName(expectedLastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                extension: expectedPhn,
+                extension: Phn,
                 oidType: PhnOidType,
                 names: names);
 
             IClientRegistriesDelegate clientRegistriesDelegate = SetupClientRegistriesDelegate(id, identifiedPerson, expectedResponseCode);
 
             // Act
-            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(expectedPhn);
+            RequestResult<PatientModel> actual = await clientRegistriesDelegate.GetDemographicsByPhnAsync(Phn);
 
-            // Verify
+            // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.1.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains(expectedResponseCode, actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -515,8 +487,8 @@ namespace HealthGateway.CommonTests.Delegates
             II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(FirstName)],
-                [GenerateEnName(LastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
@@ -549,8 +521,8 @@ namespace HealthGateway.CommonTests.Delegates
             II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(FirstName)],
-                [GenerateEnName(LastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
@@ -581,8 +553,8 @@ namespace HealthGateway.CommonTests.Delegates
             II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(FirstName)],
-                [GenerateEnName(LastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
@@ -615,13 +587,13 @@ namespace HealthGateway.CommonTests.Delegates
             II[] id = GenerateId(extension: Hdid, oidType: HdidOidType);
 
             IEnumerable<ENXP> items = GenerateItems(
-                [GenerateEnName(FirstName)],
-                [GenerateEnName(LastName)]);
+                [new(FirstName)],
+                [new(LastName)]);
 
             PN[] names = [GeneratePn(items, cs_EntityNameUse.C)];
 
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson = GenerateIdentifiedPerson(
-                true,
+                true, // deceased indicator
                 oidType: PhnOidType,
                 names: names); // deceasedInd set to true
 
@@ -851,11 +823,6 @@ namespace HealthGateway.CommonTests.Delegates
             };
         }
 
-        private static EnName GenerateEnName(string name, cs_EntityNamePartQualifier? qualifier = null)
-        {
-            return new(name, qualifier);
-        }
-
         private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GenerateSubjectTarget(
             II[] id,
             HCIM_IN_GetDemographicsResponsePerson identifiedPerson,
@@ -871,8 +838,9 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static HCIM_IN_GetDemographicsResponsePerson GenerateIdentifiedPerson(
             bool deceasedInd = false,
-            bool invalidBirthdate = false,
             bool shouldReturnEmpty = false,
+            string birthDate = ValidBirthDate,
+            string genderCode = GenderCode,
             string extension = Phn,
             string? oidType = null,
             IEnumerable<PN>? names = null)
@@ -885,11 +853,11 @@ namespace HealthGateway.CommonTests.Delegates
                 name = names.ToArray(),
                 birthTime = new TS
                 {
-                    value = invalidBirthdate ? "yyyyMMdd" : "20001231",
+                    value = birthDate,
                 },
                 administrativeGenderCode = new CE
                 {
-                    code = "F",
+                    code = genderCode,
                 },
             };
         }
