@@ -82,7 +82,7 @@ namespace HealthGateway.JobScheduler.Listeners
                 {
                     if (con is not { State: ConnectionState.Open })
                     {
-                        con?.Dispose(); // Dispose the old connection if it exists
+                        await DisposeConnectionAsync(con); // Dispose the old connection if it exists
                         con = new NpgsqlConnection(configuration.GetConnectionString("GatewayConnection"));
 
                         await con.OpenAsync(stoppingToken);
@@ -127,8 +127,16 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
             }
 
-            con?.Dispose(); // Dispose of the connection when done
+            await DisposeConnectionAsync(con); // Dispose of the connection when done
             logger.LogWarning("Banner Listener on {Channel} exiting...", Channel);
+        }
+
+        private static async Task DisposeConnectionAsync(NpgsqlConnection? connection)
+        {
+            if (connection != null)
+            {
+                await connection.DisposeAsync();
+            }
         }
 
         private void ClearCache()
