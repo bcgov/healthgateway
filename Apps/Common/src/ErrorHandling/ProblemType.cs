@@ -23,22 +23,22 @@ using System.Runtime.Serialization;
 public enum ProblemType
 {
     /// <summary>
-    /// Generic server error.
+    /// Invalid input provided.
     /// </summary>
-    [EnumMember(Value = "server-error")]
-    ServerError,
+    [EnumMember(Value = "invalid-input")]
+    InvalidInput,
 
     /// <summary>
-    /// Dataset is in the process of being refreshed.
+    /// User is not authorized to access data.
     /// </summary>
-    [EnumMember(Value = "refresh-in-progress")]
-    RefreshInProgress,
+    [EnumMember(Value = "forbidden")]
+    Forbidden,
 
     /// <summary>
-    /// Maximum number of retries has been reached.
+    /// Record was not found.
     /// </summary>
-    [EnumMember(Value = "max-retries-reached")]
-    MaxRetriesReached,
+    [EnumMember(Value = "record-not-found")]
+    RecordNotFound,
 
     /// <summary>
     /// Record already exists.
@@ -47,10 +47,16 @@ public enum ProblemType
     RecordAlreadyExists,
 
     /// <summary>
-    /// Record was not found.
+    /// Generic server error.
     /// </summary>
-    [EnumMember(Value = "record-not-found")]
-    RecordNotFound,
+    [EnumMember(Value = "server-error")]
+    ServerError,
+
+    /// <summary>
+    /// Error when performing a database operation.
+    /// </summary>
+    [EnumMember(Value = "database-error")]
+    DatabaseError,
 
     /// <summary>
     /// Service or database did not return valid data.
@@ -65,14 +71,14 @@ public enum ProblemType
     UpstreamError,
 
     /// <summary>
-    /// Invalid input provided.
+    /// Maximum number of retries has been reached.
     /// </summary>
-    [EnumMember(Value = "invalid-input")]
-    InvalidInput,
+    [EnumMember(Value = "max-retries-reached")]
+    MaxRetriesReached,
 
     /// <summary>
-    /// Error when performing a database operation.
+    /// Dataset is in the process of being refreshed.
     /// </summary>
-    [EnumMember(Value = "database-error")]
-    DatabaseError,
+    [EnumMember(Value = "refresh-in-progress")]
+    RefreshInProgress,
 }

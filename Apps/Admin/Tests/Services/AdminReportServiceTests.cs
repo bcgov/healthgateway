@@ -207,8 +207,8 @@ namespace HealthGateway.Admin.Tests.Services
             PatientQuery query2 = new PatientDetailsQuery(Hdid: Hdid2, Source: PatientDetailSource.All);
 
             Mock<IPatientRepository> patientRepositoryMock = new();
-            patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query1), It.IsAny<CancellationToken>())).Throws<NotFoundException>();
-            patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query2), It.IsAny<CancellationToken>())).Throws<NotFoundException>();
+            patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query1), It.IsAny<CancellationToken>())).Throws(() => new NotFoundException());
+            patientRepositoryMock.Setup(s => s.QueryAsync(It.Is<PatientQuery>(x => x == query2), It.IsAny<CancellationToken>())).Throws(() => new NotFoundException());
 
             IAdminReportService service = GetAdminReportService(delegationDelegateMock, patientRepositoryMock: patientRepositoryMock);
             return service;

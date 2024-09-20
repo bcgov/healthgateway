@@ -21,44 +21,21 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <summary>
     /// <see cref="NotFoundException"/> is used when a desired record is not found.
-    /// The default problem type is <see cref="ProblemType.RecordNotFound"/>.
-    /// The default status code is <see cref="HttpStatusCode.NotFound"/> (404).
+    /// The default problem type is <see cref="ProblemType.RecordNotFound"/>. The associated status code is <see cref="HttpStatusCode.NotFound"/> (404).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     [ExcludeFromCodeCoverage]
     public class NotFoundException : HealthGatewayException
     {
-        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.NotFound;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="problemType">A concise coded reason for the failure.</param>
-        public NotFoundException(string message, ProblemType problemType = ProblemType.RecordNotFound)
-            : base(message)
-        {
-            this.SetErrorProperties(DefaultStatusCode, problemType);
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="problemType">A concise coded reason for the failure.</param>
-        public NotFoundException(string message, Exception innerException, ProblemType problemType = ProblemType.RecordNotFound)
+        public NotFoundException(string? message = null, Exception? innerException = null)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, problemType);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"/> class.
-        /// </summary>
-        public NotFoundException()
-        {
-            this.SetErrorProperties(DefaultStatusCode, ProblemType.RecordNotFound);
+            this.ProblemType = ProblemType.RecordNotFound;
         }
     }
 }

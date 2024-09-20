@@ -390,7 +390,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IPatientRepository> patientRepositoryMock = new();
 
             // Patient not found exception
-            patientRepositoryMock.Setup(s => s.QueryAsync(It.IsAny<PatientQuery>(), It.IsAny<CancellationToken>())).Throws<NotFoundException>();
+            patientRepositoryMock.Setup(s => s.QueryAsync(It.IsAny<PatientQuery>(), It.IsAny<CancellationToken>())).Throws(() => new NotFoundException());
 
             UserProfile profile = new() { HdId = Hdid, CreatedDateTime = DateTime.Now.Subtract(TimeSpan.FromDays(3)), LastLoginDateTime = DateTime.Now };
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profile);

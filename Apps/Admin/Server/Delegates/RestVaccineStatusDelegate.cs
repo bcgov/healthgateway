@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Server.Delegates
 
             if (refreshInProgress)
             {
-                throw new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ProblemType.MaxRetriesReached);
+                throw new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached) { ProblemType = ProblemType.MaxRetriesReached };
             }
 
             return response;

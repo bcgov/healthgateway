@@ -21,44 +21,21 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <summary>
     /// <see cref="UpstreamServiceException"/> is used when a remote service fails to respond appropriately.
-    /// The default problem type is <see cref="ProblemType.UpstreamError"/>.
-    /// The default status code is <see cref="HttpStatusCode.BadGateway"/> (502).
+    /// The default problem type is <see cref="ProblemType.UpstreamError"/>. The associated status code is <see cref="HttpStatusCode.BadGateway"/> (502).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     [ExcludeFromCodeCoverage]
     public class UpstreamServiceException : HealthGatewayException
     {
-        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.BadGateway;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="problemType">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, ProblemType problemType = ProblemType.UpstreamError)
-            : base(message)
-        {
-            this.SetErrorProperties(DefaultStatusCode, problemType);
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="problemType">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, Exception innerException, ProblemType problemType = ProblemType.UpstreamError)
+        public UpstreamServiceException(string? message = null, Exception? innerException = null)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, problemType);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
-        /// </summary>
-        public UpstreamServiceException()
-        {
-            this.SetErrorProperties(DefaultStatusCode, ProblemType.UpstreamError);
+            this.ProblemType = ProblemType.UpstreamError;
         }
     }
 }
