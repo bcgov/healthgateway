@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.ErrorHandling
 {
     using System;
+    using System.Collections.Generic;
     using System.ServiceModel;
     using FluentValidation;
     using FluentValidation.Results;
@@ -44,9 +45,8 @@ namespace HealthGateway.Common.ErrorHandling
         {
             ProblemDetails problemDetails = exception switch
             {
-                HealthGatewayException healthGatewayException => TransformHealthGatewayException(healthGatewayException, httpContext, factory),
-                ValidationException validationException => TransformValidationException(validationException, httpContext, factory),
-                _ => TransformGenericException(exception, httpContext, factory),
+                ValidationException validationException => GenerateValidationProblemDetails(validationException.Errors, httpContext, factory),
+                _ => GenerateProblemDetails(GetProblemType(exception), httpContext, factory),
             };
 
             if (includeException)
@@ -57,63 +57,81 @@ namespace HealthGateway.Common.ErrorHandling
             return problemDetails;
         }
 
-        /// <summary>
-        /// Transforms a FluentValidation validation exception to a problem details response with a 400 "Bad Request" status.
-        /// </summary>
-        private static ValidationProblemDetails TransformValidationException(ValidationException exception, HttpContext httpContext, ProblemDetailsFactory factory)
+        private static ValidationProblemDetails GenerateValidationProblemDetails(IEnumerable<ValidationFailure> errors, HttpContext httpContext, ProblemDetailsFactory factory)
         {
             ModelStateDictionary modelState = new();
-            foreach (ValidationFailure error in exception.Errors)
+            foreach (ValidationFailure error in errors)
             {
                 modelState.AddModelError(error.PropertyName, error.ErrorMessage);
             }
 
-            const int statusCode = StatusCodes.Status400BadRequest;
-            const string title = "Invalid input provided.";
-            string type = ConvertToTagUri(ProblemType.InvalidInput);
+            int statusCode = GetStatusCode(ProblemType.InvalidInput);
+            string title = GetTitle(ProblemType.InvalidInput);
+            string type = GetTagUri(ProblemType.InvalidInput);
             const string detail = "A validation error occurred.";
 
             return factory.CreateValidationProblemDetails(httpContext, modelState, statusCode, title, type, detail);
         }
 
-        /// <summary>
-        /// Transforms a Health Gateway exception to a problem details response with an appropriate status.
-        /// </summary>
-        private static ProblemDetails TransformHealthGatewayException(HealthGatewayException exception, HttpContext httpContext, ProblemDetailsFactory factory)
+        private static ProblemDetails GenerateProblemDetails(ProblemType problemType, HttpContext httpContext, ProblemDetailsFactory factory)
         {
-            int statusCode = (int)exception.StatusCode;
-            string title = exception.ProblemType switch
-            {
-                ProblemType.RecordAlreadyExists => "Record already exists.",
-                ProblemType.DatabaseError => "A database error occurred.",
-                ProblemType.InvalidData => "Data does not match.",
-                ProblemType.RecordNotFound => "Record was not found.",
-                ProblemType.UpstreamError => "An error occurred with an upstream service.",
-                ProblemType.RefreshInProgress => "Data is in the process of being refreshed.",
-                ProblemType.MaxRetriesReached => "Maximum retry attempts reached.",
-                ProblemType.InvalidInput => "Invalid input provided.",
-                _ => "An error occurred.",
-            };
-            string type = ConvertToTagUri(exception.ProblemType);
+            int statusCode = GetStatusCode(problemType);
+            string title = GetTitle(problemType);
+            string type = GetTagUri(problemType);
 
             return factory.CreateProblemDetails(httpContext, statusCode, title, type);
         }
 
-        /// <summary>
-        /// Transforms a generic exception to a problem details response with an appropriate status.
-        /// </summary>
-        private static ProblemDetails TransformGenericException(Exception exception, HttpContext httpContext, ProblemDetailsFactory factory)
+        private static ProblemType GetProblemType(Exception exception)
         {
-            int statusCode = exception switch
+            return exception switch
             {
-                CommunicationException => StatusCodes.Status502BadGateway,
-                UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-                _ => StatusCodes.Status500InternalServerError,
+                HealthGatewayException healthGatewayException => healthGatewayException.ProblemType,
+                CommunicationException => ProblemType.UpstreamError,
+                UnauthorizedAccessException => ProblemType.Forbidden,
+                _ => ProblemType.ServerError,
             };
-            const string title = "An error occurred.";
-            string type = ConvertToTagUri(ProblemType.ServerError);
+        }
 
-            return factory.CreateProblemDetails(httpContext, statusCode, title, type);
+        private static int GetStatusCode(ProblemType problemType)
+        {
+            return problemType switch
+            {
+                ProblemType.InvalidInput => StatusCodes.Status400BadRequest,
+                ProblemType.Forbidden => StatusCodes.Status403Forbidden,
+                ProblemType.RecordNotFound => StatusCodes.Status404NotFound,
+                ProblemType.RecordAlreadyExists => StatusCodes.Status409Conflict,
+                ProblemType.ServerError => StatusCodes.Status500InternalServerError,
+                ProblemType.DatabaseError => StatusCodes.Status500InternalServerError,
+                ProblemType.InvalidData => StatusCodes.Status500InternalServerError,
+                ProblemType.UpstreamError => StatusCodes.Status502BadGateway,
+                ProblemType.MaxRetriesReached => StatusCodes.Status502BadGateway,
+                ProblemType.RefreshInProgress => StatusCodes.Status502BadGateway,
+                _ => throw new ArgumentOutOfRangeException(nameof(problemType), problemType, "Unknown problem type"),
+            };
+        }
+
+        private static string GetTitle(ProblemType problemType)
+        {
+            return problemType switch
+            {
+                ProblemType.InvalidInput => "Invalid input provided.",
+                ProblemType.Forbidden => "Not authorized to perform this operation.",
+                ProblemType.RecordNotFound => "Record was not found.",
+                ProblemType.RecordAlreadyExists => "Record already exists.",
+                ProblemType.ServerError => "An error occurred.",
+                ProblemType.DatabaseError => "A database error occurred.",
+                ProblemType.InvalidData => "Invalid data was returned.",
+                ProblemType.UpstreamError => "An error occurred with an upstream service.",
+                ProblemType.MaxRetriesReached => "Maximum retry attempts reached.",
+                ProblemType.RefreshInProgress => "Data is in the process of being refreshed.",
+                _ => throw new ArgumentOutOfRangeException(nameof(problemType), problemType, "Unknown problem type"),
+            };
+        }
+
+        private static string GetTagUri(ProblemType problemType)
+        {
+            return $"tag:healthgateway.gov.bc.ca,2024:{EnumUtility.ToEnumString(problemType, true)}";
         }
 
         private static object? FormatExceptionDetails(Exception? e, int maxDepth = 9)
@@ -129,11 +147,6 @@ namespace HealthGateway.Common.ErrorHandling
             }
 
             return new { e.Message, e.StackTrace, InnerException = FormatExceptionDetails(e.InnerException, maxDepth - 1) };
-        }
-
-        private static string ConvertToTagUri(ProblemType problemType)
-        {
-            return $"tag:healthgateway.gov.bc.ca,2024:{EnumUtility.ToEnumString(problemType, true)}";
         }
     }
 }

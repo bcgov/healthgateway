@@ -21,44 +21,21 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <summary>
     /// <see cref="DatabaseException"/> is used when an unexpected database error occurs.
-    /// The default problem type is <see cref="ProblemType.DatabaseError"/>.
-    /// The default status code is <see cref="HttpStatusCode.InternalServerError"/> (500).
+    /// The default problem type is <see cref="ProblemType.DatabaseError"/>. The associated status code is <see cref="HttpStatusCode.InternalServerError"/> (500).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     [ExcludeFromCodeCoverage]
     public class DatabaseException : HealthGatewayException
     {
-        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.InternalServerError;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DatabaseException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="problemType">A concise coded reason for the failure.</param>
-        public DatabaseException(string message, ProblemType problemType = ProblemType.DatabaseError)
-            : base(message)
-        {
-            this.SetErrorProperties(DefaultStatusCode, problemType);
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="problemType">A concise coded reason for the failure.</param>
-        public DatabaseException(string message, Exception innerException, ProblemType problemType = ProblemType.DatabaseError)
+        public DatabaseException(string? message = null, Exception? innerException = null)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, problemType);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DatabaseException"/> class.
-        /// </summary>
-        public DatabaseException()
-        {
-            this.SetErrorProperties(DefaultStatusCode, ProblemType.DatabaseError);
+            this.ProblemType = ProblemType.DatabaseError;
         }
     }
 }
