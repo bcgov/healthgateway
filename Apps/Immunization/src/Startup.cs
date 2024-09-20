@@ -103,6 +103,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
+            this.startupConfig.EnrichTracing(app);
             this.startupConfig.UseRest(app);
         }
     }

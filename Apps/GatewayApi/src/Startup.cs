@@ -165,6 +165,7 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app, false);
             this.startupConfig.UseAuth(app);
+            this.startupConfig.EnrichTracing(app);
             this.startupConfig.UseRest(app);
 
             DisableTraceMethod(app);

@@ -163,6 +163,7 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
+            this.startupConfig.EnrichTracing(app);
 
             app.UseEndpoints(
                 endpoints =>
