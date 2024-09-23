@@ -211,10 +211,15 @@ describe("Filters", () => {
 
     it("No Records on Linear Timeline", () => {
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterTextInput]").type("xxxx");
+        cy.get("[data-testid=filterTextInput]").type(
+            "no-data-should-match-this-unique-string"
+        );
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
-        cy.contains("[data-testid=filter-label]", '"xxxx"')
+        cy.contains(
+            "[data-testid=filter-label]",
+            '"no-data-should-match-this-unique-string"'
+        )
             .children(".v-chip__close")
             .click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
