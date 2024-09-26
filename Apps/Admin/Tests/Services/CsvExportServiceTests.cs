@@ -49,7 +49,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCommentsAsync()
+        public async Task ShouldGetComments()
         {
             // Arrange
             Comment comment = new()
@@ -78,7 +78,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetNotesAsync()
+        public async Task ShouldGetNotes()
         {
             // Arrange
             Note note = new()
@@ -105,7 +105,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetUserProfilesAsync()
+        public async Task ShouldGetUserProfiles()
         {
             // Arrange
             UserProfile userProfile = new()
@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetRatingsAsync()
+        public async Task ShouldGetRatings()
         {
             // Arrange
             Rating rating = new()
@@ -162,7 +162,7 @@ namespace HealthGateway.Admin.Tests.Services
         [Theory]
         [InlineData(ResultType.Success)]
         [InlineData(ResultType.Error)]
-        public async Task ShouldGetInactiveUsersAsync(ResultType inactiveUsersResultType)
+        public async Task ShouldGetInactiveUsers(ResultType inactiveUsersResultType)
         {
             // Arrange
             RequestResult<List<AdminUserProfileView>> result = new()
@@ -198,9 +198,19 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// Get user feedback download.
         /// </summary>
+        /// <param name="yearOfBirth">The year of birth of the user associated with the feedback.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetUserFeedbackAsync()
+        [Theory]
+        [InlineData(0)] // yearOfBirth maps to values defined in UserFeedbackCsvMap.GetAgeCohort
+        [InlineData(1927)]
+        [InlineData(1945)]
+        [InlineData(1954)]
+        [InlineData(1964)]
+        [InlineData(1980)]
+        [InlineData(1996)]
+        [InlineData(2012)]
+        [InlineData(2018)]
+        public async Task ShouldGetUserFeedback(int yearOfBirth)
         {
             // Arrange
             Guid adminTagId = Guid.NewGuid();
@@ -221,6 +231,10 @@ namespace HealthGateway.Admin.Tests.Services
                         },
                     },
                 ],
+                UserProfile = new()
+                {
+                    YearOfBirth = yearOfBirth,
+                },
             };
 
             IList<UserFeedback> userFeedbacks = [userFeedback];
@@ -240,7 +254,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetYearOfBirthCountsAsync()
+        public async Task ShouldGetYearOfBirthCounts()
         {
             // Arrange
             Dictionary<int, int> getResult = [];
