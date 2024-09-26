@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
-    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
@@ -40,21 +39,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(true)]
         [InlineData(false)]
         [Theory]
-        public async Task ShouldGetLatestTourChangeDateTimeAsync(bool useCache)
+        public async Task ShouldGetLatestTourChangeDateTime(bool useCache)
         {
             // Arrange
-            GetLatestTourChangeDateTimeMock mock = SetupGetLatestTourChangeDateTimeMock(useCache);
+            DateTime expected = new(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
+            IApplicationSettingsService service = SetupGetLatestTourChangeDateTimeMock(useCache, expected);
 
             // Act
-            DateTime? actual = await mock.ApplicationSettingsService.GetLatestTourChangeDateTimeAsync();
+            DateTime? actual = await service.GetLatestTourChangeDateTimeAsync();
 
             // Assert
-            Assert.Equal(mock.Expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        private static GetLatestTourChangeDateTimeMock SetupGetLatestTourChangeDateTimeMock(bool useCache)
+        private static IApplicationSettingsService SetupGetLatestTourChangeDateTimeMock(bool useCache, DateTime latestTourDate)
         {
-            DateTime latestTourDate = new(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
             string cacheKey = $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}:{TourApplicationSettings.LatestChangeDateTime}";
 
             ApplicationSetting applicationSetting = new()
@@ -102,13 +101,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         });
             }
 
-            IApplicationSettingsService applicationSettingsService = new ApplicationSettingsService(
+            return new ApplicationSettingsService(
                 applicationSettingsDelegateMock.Object,
                 cacheProviderMock.Object);
-
-            return new(applicationSettingsService, DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime());
         }
-
-        private sealed record GetLatestTourChangeDateTimeMock(IApplicationSettingsService ApplicationSettingsService, DateTime? Expected);
     }
 }

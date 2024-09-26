@@ -48,7 +48,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static readonly Guid TermsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
         /// <summary>
-        /// GetUserProfileAsync.
+        /// BuildUserProfileModelAsync.
         /// </summary>
         /// <param name="emailAddressExists">The value indicating whether email address exists or not.</param>
         /// <param name="smsNumberExists">The value indicating whether sms number exists or not.</param>
@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(true, true, false)] // Email and sms exist and app tour changes are not latest
         [InlineData(false, false, true)] // Profile email and sms do not exist; look at messaging verification
         [InlineData(false, false, false)] // Profile email and sms do not exist and tour changes are not latest
-        public async Task ShouldGetUserProfileAsync(
+        public async Task ShouldBuildUserProfileModel(
             bool emailAddressExists,
             bool smsNumberExists,
             bool tourChangeDateIsLatest)
@@ -93,18 +93,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 BlockedDataSources = blockedDataSources,
             };
 
-            UserProfileModelMock mock = SetupUserProfileModelMock(
+            IUserProfileModelService service = SetupBuildUserProfileModelMock(
                 currentDateTime,
-                BetaFeature.Salesforce,
                 blockedDataSources,
-                emailAddressExists,
-                smsNumberExists,
                 tourChangeDateIsLatest);
 
-            // Act
-            UserProfileModel actual = await mock.Service.BuildUserProfileModelAsync(mock.UserProfile, mock.UserProfileHistoryRecordLimit);
+            string? smsNumber = emailAddressExists ? SmsNumber : null;
+            string? emailAddress = smsNumberExists ? EmailAddress : null;
+            UserProfile userProfile = GenerateUserProfile(loginDate: currentDateTime, email: emailAddress, smsNumber: smsNumber, betaFeature: BetaFeature.Salesforce);
 
-            // Assert and Verify
+            // Act
+            UserProfileModel actual = await service.BuildUserProfileModelAsync(userProfile, 2);
+
+            // Assert
             actual.ShouldDeepEqual(expected);
         }
 
@@ -288,17 +289,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static UserProfileModelMock SetupUserProfileModelMock(
+        private static IUserProfileModelService SetupBuildUserProfileModelMock(
             DateTime currentDateTime,
-            BetaFeature betaFeature,
             IEnumerable<DataSource> blockedDataSources,
-            bool profileEmailAddressExists = true,
-            bool profileSmsNumberExists = true,
             bool tourChangeDateIsLatest = true)
         {
-            string? smsNumber = profileSmsNumberExists ? SmsNumber : null;
-            string? emailAddress = profileEmailAddressExists ? EmailAddress : null;
-
             Guid latestTermsOfServiceId = Guid.NewGuid();
 
             DateTime latestTourChangeDateTime = tourChangeDateIsLatest
@@ -329,25 +324,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 SetupMessagingVerificationDelegateMock(emailAddressVerification, smsNumberVerification);
             Mock<IPatientRepository> patientRepositoryMock = SetupPatientRepositoryMock(blockedDataSources);
 
-            IUserProfileModelService service = GetUserProfileModelService(
+            return GetUserProfileModelService(
                 applicationSettingsServiceMock,
                 legalAgreementServiceMock,
                 messagingVerificationDelegateMock,
                 patientRepositoryMock,
                 userPreferenceServiceMock,
                 userProfileDelegateMock);
-
-            UserProfile userProfile = GenerateUserProfile(loginDate: currentDateTime, email: emailAddress, smsNumber: smsNumber, betaFeature: betaFeature);
-
-            return new(
-                service,
-                userProfile,
-                2);
         }
-
-        private sealed record UserProfileModelMock(
-            IUserProfileModelService Service,
-            UserProfile UserProfile,
-            int UserProfileHistoryRecordLimit);
     }
 }

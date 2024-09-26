@@ -18,7 +18,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -331,7 +330,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Times expectedQueueEmailCalls = isHdidMonitored && isAdminEmailAddressPopulated ? Times.Once() : Times.Never();
             mockEmailQueueService
-                .Verify(m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), expectedQueueEmailCalls);
+                .Verify(
+                    m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                    expectedQueueEmailCalls);
         }
 
         /// <summary>

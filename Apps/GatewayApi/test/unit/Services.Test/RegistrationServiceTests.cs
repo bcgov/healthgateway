@@ -73,7 +73,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData("", "", EmailAddress, 18, 18, true, true)] // Both sms and email are empty string in request
         [InlineData(SmsNumber, EmailAddress, null, 18, 18, true, true)] // Jwt email address is null
         [InlineData(SmsNumber, EmailAddress, "", 18, 18, true, true)] // Jwt email address is empty string
-        public async Task ShouldCreateUserProfileAsync(
+        public async Task ShouldCreateUserProfile(
             string? requestedSmsNumber,
             string? requestedEmailAddress,
             string? jwtEmailAddress,
@@ -83,6 +83,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool notificationsChangeFeedEnabled)
         {
             // Arrange
+            CreateUserRequest createUserRequest = new()
+            {
+                Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, requestedEmailAddress),
+            };
+
             DateTime currentUtcDate = DateTime.UtcNow.Date;
 
             bool isEmailVerified =
@@ -95,29 +100,28 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             UserProfileModel expected = GenerateUserProfileModel(currentUtcDate, requestedEmailAddress, requestedSmsNumber);
 
-            CreateUserProfileMock mock = SetupCreateUserProfileMock(
+            (IRegistrationService service, Mock<IJobService> jobServiceMock) = SetupCreateUserProfileMock(
                 currentUtcDate,
                 requestedSmsNumber,
                 requestedEmailAddress,
-                jwtEmailAddress,
                 minPatientAge,
                 patientAge,
                 accountsChangeFeedEnabled,
                 notificationsChangeFeedEnabled);
 
             // Act
-            UserProfileModel actual = await mock.Service.CreateUserProfileAsync(
-                mock.CreateProfileRequest,
-                mock.JwtAuthTime,
-                mock.JwtEmailAddress);
+            UserProfileModel actual = await service.CreateUserProfileAsync(
+                createUserRequest,
+                DateTime.UtcNow,
+                jwtEmailAddress);
 
             // Assert and Verify
             actual.ShouldDeepEqual(expected);
 
-            VerifyPushNotificationSettings(mock.JobServiceMock);
-            VerifyNotifyEmailVerification(mock.JobServiceMock, expectedNotifyEmailVerificationTimes);
-            VerifyNotifyAccountCreation(mock.JobServiceMock, expectedNotifyAccountCreationTimes);
-            VerifySendEmail(mock.JobServiceMock, expectedSendEmailTimes);
+            VerifyPushNotificationSettings(jobServiceMock);
+            VerifyNotifyEmailVerification(jobServiceMock, expectedNotifyEmailVerificationTimes);
+            VerifyNotifyAccountCreation(jobServiceMock, expectedNotifyAccountCreationTimes);
+            VerifySendEmail(jobServiceMock, expectedSendEmailTimes);
         }
 
         /// <summary>
@@ -133,7 +137,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(InvalidSmsNumber, 18, 18, null, typeof(ValidationException))]
         [InlineData(SmsNumber, 18, 17, null, typeof(ValidationException))]
         [InlineData(SmsNumber, 18, 18, DbStatusCode.Error, typeof(DatabaseException))]
-        public async Task CreateUserProfileAsyncThrowsException(
+        public async Task CreateUserProfileThrowsException(
             string? requestedSmsNumber,
             int minPatientAge,
             int patientAge,
@@ -141,7 +145,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Type expectedException)
         {
             // Arrange
-            CreateUserProfileExceptionMock mock = SetupCreateUserProfileThrowsExceptionMock(
+            CreateUserRequest createUserRequest = new()
+            {
+                Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, EmailAddress),
+            };
+
+            IRegistrationService service = SetupCreateUserProfileThrowsExceptionMock(
                 requestedSmsNumber,
                 minPatientAge,
                 patientAge,
@@ -152,10 +161,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 expectedException,
                 async () =>
                 {
-                    await mock.Service.CreateUserProfileAsync(
-                        mock.CreateProfileRequest,
-                        mock.JwtAuthTime,
-                        mock.JwtEmailAddress);
+                    await service.CreateUserProfileAsync(
+                        createUserRequest,
+                        DateTime.Today,
+                        EmailAddress);
                 });
         }
 
@@ -433,21 +442,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileModelServiceMock;
         }
 
-        private static CreateUserProfileMock SetupCreateUserProfileMock(
+        private static UserProfileMock SetupCreateUserProfileMock(
             DateTime currentDateTime,
             string? requestedSmsNumber,
             string? requestedEmailAddress,
-            string? jwtEmailAddress,
             int minPatientAge,
             int patientAge,
             bool accountsChangeFeedEnabled,
             bool notificationsChangeFeedEnabled)
         {
-            CreateUserRequest createUserRequest = new()
-            {
-                Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, requestedEmailAddress),
-            };
-
             Mock<IJobService> jobServiceMock = new();
 
             PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(GenerateBirthDate(patientAge)));
@@ -482,23 +485,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             return new(
                 service,
-                jobServiceMock,
-                createUserRequest,
-                DateTime.UtcNow,
-                jwtEmailAddress);
+                jobServiceMock);
         }
 
-        private static CreateUserProfileExceptionMock SetupCreateUserProfileThrowsExceptionMock(
+        private static IRegistrationService SetupCreateUserProfileThrowsExceptionMock(
             string? requestedSmsNumber,
             int minPatientAge,
             int patientAge,
             DbStatusCode? profileInsertStatus)
         {
-            CreateUserRequest createUserRequest = new()
-            {
-                Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, EmailAddress),
-            };
-
             PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(GenerateBirthDate(patientAge)));
             Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
 
@@ -513,26 +508,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IConfigurationRoot configuration = GetIConfiguration(
                 minPatientAge: minPatientAge);
 
-            IRegistrationService service = GetRegistrationService(
+            return GetRegistrationService(
                 configuration,
                 messagingVerificationServiceMock,
                 patientDetailsServiceMock: patientDetailsServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock);
-
-            return new(service, createUserRequest, DateTime.Today, EmailAddress);
         }
 
-        private sealed record CreateUserProfileMock(
+        private sealed record UserProfileMock(
             IRegistrationService Service,
-            Mock<IJobService> JobServiceMock,
-            CreateUserRequest CreateProfileRequest,
-            DateTime JwtAuthTime,
-            string? JwtEmailAddress);
-
-        private sealed record CreateUserProfileExceptionMock(
-            IRegistrationService Service,
-            CreateUserRequest CreateProfileRequest,
-            DateTime JwtAuthTime,
-            string? JwtEmailAddress);
+            Mock<IJobService> JobServiceMock);
     }
 }

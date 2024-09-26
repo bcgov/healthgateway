@@ -44,39 +44,53 @@ namespace AccountDataAccessTest.Strategy
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task ShouldGetPatientByPhn(bool useCache)
+        public async Task ShouldGetPatient(bool useCache)
         {
             // Arrange
-            GetPatientMock mock = SetupGetPatientMock(useCache);
+            PatientRequest patientRequest = new(Phn, useCache);
+            PatientModel expected = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            (PhnEmpiStrategy strategy, Mock<ICacheProvider> cacheProvider) = SetupGetPatientMock(useCache, expected);
 
             // Act
-            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+            PatientModel actual = await strategy.GetPatientAsync(patientRequest);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
 
             // Verify
-            mock.CacheProvider.Verify(
+            cacheProvider.Verify(
                 v => v.GetItemAsync<PatientModel>(
-                    It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{mock.PatientRequest.Identifier}"),
+                    It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{patientRequest.Identifier}"),
                     It.IsAny<CancellationToken>()),
                 useCache ? Times.AtLeastOnce : Times.Never);
         }
 
         /// <summary>
-        /// Get patient by phn  throws not found due to invalid phn.
+        /// Get patient by phn throws not found due to invalid phn.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientThrowsException()
         {
             // Arrange
-            GetPatientThrowsExceptionMock mock = SetupGetPatientThrowsExceptionMock();
+            PatientRequest patientRequest = new(InvalidPhn, false); // Invalid PHN will cause an exception to be thrown.
+            Type expected = typeof(ValidationException);
+
+            PhnEmpiStrategy strategy = new(
+                GetConfiguration(),
+                new Mock<ICacheProvider>().Object,
+                new Mock<IClientRegistriesDelegate>().Object,
+                new Mock<ILogger<PhnEmpiStrategy>>().Object);
 
             // Act and Verify
             Exception exception = await Assert.ThrowsAsync(
-                mock.Expected,
-                async () => { await mock.Strategy.GetPatientAsync(mock.PatientRequest); });
+                expected,
+                async () => { await strategy.GetPatientAsync(patientRequest); });
 
             // Assert
             Assert.Contains(ErrorMessages.PhnInvalid, exception.Message, StringComparison.OrdinalIgnoreCase);
@@ -94,80 +108,41 @@ namespace AccountDataAccessTest.Strategy
                 .Build();
         }
 
-        private static PhnEmpiStrategy GetPhnEmpiStrategy(IMock<ICacheProvider> cacheProvider, IMock<IClientRegistriesDelegate> clientRegistriesDelegate)
+        private static PatientMock SetupGetPatientMock(bool useCache, PatientModel patient)
         {
-            return new PhnEmpiStrategy(
+            Mock<ICacheProvider> cacheProvider = new();
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
+
+            if (useCache)
+            {
+                cacheProvider.Setup(
+                        s => s.GetItemAsync<PatientModel>(
+                            It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{Phn}"),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(patient);
+            }
+            else
+            {
+                clientRegistriesDelegate.Setup(
+                        s => s.GetDemographicsAsync(
+                            It.Is<OidType>(x => x == OidType.Phn),
+                            It.Is<string>(x => x == Phn),
+                            It.Is<bool>(x => x == false),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(patient);
+            }
+
+            PhnEmpiStrategy phnEmpiStrategy = new(
                 GetConfiguration(),
                 cacheProvider.Object,
                 clientRegistriesDelegate.Object,
                 new Mock<ILogger<PhnEmpiStrategy>>().Object);
+
+            return new(phnEmpiStrategy, cacheProvider);
         }
 
-        private static GetPatientMock SetupGetPatientMock(bool useCache)
-        {
-            PatientRequest patientRequest = new(Phn, useCache);
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-            PatientModel? cachedPatient = useCache ? patient : null;
-
-            Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(
-                    s => s.GetItemAsync<PatientModel>(
-                        It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{Phn}"),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(cachedPatient);
-
-            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(
-                    s => s.GetDemographicsAsync(
-                        It.Is<OidType>(x => x == OidType.Phn),
-                        It.Is<string>(x => x == Phn),
-                        It.Is<bool>(x => x == false),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(patient);
-
-            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(cacheProvider, clientRegistriesDelegate);
-            return new(phnEmpiStrategy, cacheProvider, patient, patientRequest);
-        }
-
-        private static GetPatientThrowsExceptionMock SetupGetPatientThrowsExceptionMock()
-        {
-            PatientRequest patientRequest = new(InvalidPhn, true);
-            PatientModel? cachedPatient = null;
-            PatientModel patient = new();
-
-            Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(
-                    s => s.GetItemAsync<PatientModel>(
-                        It.Is<string>(x => x == $"{PatientCacheDomain}:PHN:{Phn}"),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(cachedPatient);
-
-            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(
-                    s => s.GetDemographicsAsync(
-                        It.Is<OidType>(x => x == OidType.Phn),
-                        It.Is<string>(x => x == Phn),
-                        It.Is<bool>(x => x == false),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(patient);
-
-            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(cacheProvider, clientRegistriesDelegate);
-            return new(phnEmpiStrategy, typeof(ValidationException), patientRequest);
-        }
-
-        private sealed record GetPatientMock(
+        private sealed record PatientMock(
             PhnEmpiStrategy Strategy,
-            Mock<ICacheProvider> CacheProvider,
-            PatientModel Expected,
-            PatientRequest PatientRequest);
-
-        private sealed record GetPatientThrowsExceptionMock(
-            PhnEmpiStrategy Strategy,
-            Type Expected,
-            PatientRequest PatientRequest);
+            Mock<ICacheProvider> CacheProvider);
     }
 }

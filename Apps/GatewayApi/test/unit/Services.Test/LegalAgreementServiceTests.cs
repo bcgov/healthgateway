@@ -40,47 +40,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
         /// <summary>
-        /// GetActiveTermsOfServiceAsync call.
+        /// GetActiveTermsOfServiceAsync.
         /// </summary>
         /// <param name="legalAgreementFound">The value indicating whether legal agreement was found or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldGetActiveTermsOfServiceAsync(bool legalAgreementFound)
+        public async Task ShouldGetActiveTermsOfService(bool legalAgreementFound)
         {
             // Arrange
-            GetActiveTermsOfServiceMock mock = SetupGetActiveTermsOfServiceMock(legalAgreementFound);
-
-            // Act
-            RequestResult<TermsOfServiceModel> actual = await mock.LegalAgreementService.GetActiveTermsOfServiceAsync();
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// GetActiveTermsOfServiceAsync call.
-        /// </summary>
-        /// <param name="legalAgreementFound">The value indicating whether legal agreement was found or not.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldGetActiveLegalAgreementIdAsync(bool legalAgreementFound)
-        {
-            // Arrange
-            GetActiveLegalAgreementIdMock mock = SetupGetActiveLegalAgreementIdMock(legalAgreementFound);
-
-            // Act
-            Guid? actual = await mock.LegalAgreementService.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        private static ActiveTermsOfServiceMock SetupActiveTermsOfServiceMock(bool legalAgreementFound)
-        {
             LegalAgreement? legalAgreement = legalAgreementFound
                 ? new()
                 {
@@ -91,26 +60,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 }
                 : null;
 
-            Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new();
-            legalAgreementDelegateMock.Setup(
-                    s => s.GetActiveByAgreementTypeAsync(
-                        It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(legalAgreement);
-
-            ILegalAgreementService legalAgreementService = new LegalAgreementService(legalAgreementDelegateMock.Object, MappingService);
-
-            return new(legalAgreementService, legalAgreement);
-        }
-
-        private static GetActiveTermsOfServiceMock SetupGetActiveTermsOfServiceMock(bool legalAgreementFound)
-        {
-            ActiveTermsOfServiceMock mock = SetupActiveTermsOfServiceMock(legalAgreementFound);
-
             RequestResult<TermsOfServiceModel> expected = new()
             {
                 ResultStatus = legalAgreementFound ? ResultType.Success : ResultType.Error,
-                ResourcePayload = legalAgreementFound ? MappingService.MapToTermsOfServiceModel(mock.LegalAgreement) : null,
+                ResourcePayload = legalAgreementFound ? MappingService.MapToTermsOfServiceModel(legalAgreement) : null,
                 ResultError = legalAgreementFound
                     ? null
                     : new()
@@ -120,19 +73,57 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     },
             };
 
-            return new(mock.LegalAgreementService, expected);
+            ILegalAgreementService service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+
+            // Act
+            RequestResult<TermsOfServiceModel> actual = await service.GetActiveTermsOfServiceAsync();
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static GetActiveLegalAgreementIdMock SetupGetActiveLegalAgreementIdMock(bool legalAgreementFound)
+        /// <summary>
+        /// GetActiveLegalAgreementId.
+        /// </summary>
+        /// <param name="legalAgreementFound">The value indicating whether legal agreement was found or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetActiveLegalAgreementId(bool legalAgreementFound)
         {
-            ActiveTermsOfServiceMock mock = SetupActiveTermsOfServiceMock(legalAgreementFound);
-            return new(mock.LegalAgreementService, mock.LegalAgreement?.Id);
+            // Arrange
+            Guid? expected = legalAgreementFound ? Guid.NewGuid() : null;
+
+            LegalAgreement? legalAgreement = legalAgreementFound
+                ? new()
+                {
+                    Id = expected!.Value,
+                    LegalText = "Test",
+                    LegalAgreementCode = LegalAgreementType.TermsOfService,
+                    EffectiveDate = DateTime.UtcNow,
+                }
+                : null;
+
+            ILegalAgreementService service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+
+            // Act
+            Guid? actual = await service.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private sealed record ActiveTermsOfServiceMock(ILegalAgreementService LegalAgreementService, LegalAgreement? LegalAgreement);
+        private static ILegalAgreementService SetupGetActiveTermsOfServiceMock(LegalAgreement legalAgreement)
+        {
+            Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new();
+            legalAgreementDelegateMock.Setup(
+                    s => s.GetActiveByAgreementTypeAsync(
+                        It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(legalAgreement);
 
-        private sealed record GetActiveTermsOfServiceMock(ILegalAgreementService LegalAgreementService, RequestResult<TermsOfServiceModel> Expected);
-
-        private sealed record GetActiveLegalAgreementIdMock(ILegalAgreementService LegalAgreementService, Guid? Expected);
+            return new LegalAgreementService(legalAgreementDelegateMock.Object, MappingService);
+        }
     }
 }

@@ -61,57 +61,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             CommunicationStatus communicationStatus)
         {
             // Arrange
-            GetActiveCommunicationMock mock = SetupGetActiveCommunicationMock(sourceCommunicationType, communicationType, sourceCommunicationStatus, communicationStatus);
-
-            // Act
-            RequestResult<CommunicationModel> actual = await mock.Service.GetActiveCommunicationAsync(mock.CommunicationType);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// Should GetActiveCommunication returns error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetActiveCommunicationReturnsError()
-        {
-            // Arrange
-            GetActiveCommunicationReturnsErrorMock mock = SetupGetActiveCommunicationReturnsErrorMock();
-
-            // Act
-            RequestResult<CommunicationModel> actual = await mock.Service.GetActiveCommunicationAsync(mock.CommunicationType);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        private static IGatewayApiCommunicationService GetGatewayCommunicationService(IMock<ICommunicationService> communicationServiceMock)
-        {
-            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
-        }
-
-        private static GetActiveCommunicationMock SetupGetActiveCommunicationMock(
-            Common.Data.Constants.CommunicationType sourceCommunicationType,
-            CommunicationType communicationType,
-            Common.Data.Constants.CommunicationStatus sourceCommunicationStatus,
-            CommunicationStatus communicationStatus)
-        {
             Guid id = Guid.NewGuid();
             const string text = "Communication";
-
-            RequestResult<Communication?> requestResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new()
-                {
-                    Id = id,
-                    Text = text,
-                    CommunicationTypeCode = sourceCommunicationType,
-                    CommunicationStatusCode = sourceCommunicationStatus,
-                },
-            };
 
             RequestResult<CommunicationModel> expected = new()
             {
@@ -125,34 +76,75 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             };
 
-            Mock<ICommunicationService> communicationServiceMock = new();
-            communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.Is<Common.Data.Constants.CommunicationType>(x => x == sourceCommunicationType), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(requestResult);
+            IGatewayApiCommunicationService service = SetupGetActiveCommunicationMock(id, text, sourceCommunicationType, sourceCommunicationStatus);
 
-            IGatewayApiCommunicationService service = GetGatewayCommunicationService(communicationServiceMock);
+            // Act
+            RequestResult<CommunicationModel> actual = await service.GetActiveCommunicationAsync(communicationType);
 
-            return new(service, expected, communicationType);
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static GetActiveCommunicationReturnsErrorMock SetupGetActiveCommunicationReturnsErrorMock()
+        /// <summary>
+        /// Should GetActiveCommunication returns error.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetActiveCommunicationReturnsError()
         {
-            const string error = "DB Error";
-
-            RequestResult<Communication?> requestResult = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = new()
-                {
-                    ResultMessage = error,
-                },
-            };
+            // Arrange
+            const string errorMessage = "DB Error";
 
             RequestResult<CommunicationModel> expected = new()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new()
                 {
-                    ResultMessage = error,
+                    ResultMessage = errorMessage,
+                },
+            };
+            IGatewayApiCommunicationService service = SetupGetActiveCommunicationReturnsErrorMock(errorMessage);
+
+            // Act
+            RequestResult<CommunicationModel> actual = await service.GetActiveCommunicationAsync(CommunicationType.Banner);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
+        }
+
+        private static IGatewayApiCommunicationService SetupGetActiveCommunicationMock(
+            Guid id,
+            string text,
+            Common.Data.Constants.CommunicationType sourceCommunicationType,
+            Common.Data.Constants.CommunicationStatus sourceCommunicationStatus)
+        {
+            RequestResult<Communication?> requestResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new()
+                {
+                    Id = id,
+                    Text = text,
+                    CommunicationTypeCode = sourceCommunicationType,
+                    CommunicationStatusCode = sourceCommunicationStatus,
+                },
+            };
+
+            Mock<ICommunicationService> communicationServiceMock = new();
+            communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.Is<Common.Data.Constants.CommunicationType>(x => x == sourceCommunicationType), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(requestResult);
+
+            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
+        }
+
+        private static IGatewayApiCommunicationService SetupGetActiveCommunicationReturnsErrorMock(string errorMessage)
+        {
+            RequestResult<Communication?> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResultError = new()
+                {
+                    ResultMessage = errorMessage,
                 },
             };
 
@@ -160,13 +152,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.IsAny<Common.Data.Constants.CommunicationType>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requestResult);
 
-            IGatewayApiCommunicationService service = GetGatewayCommunicationService(communicationServiceMock);
-
-            return new(service, expected, CommunicationType.Banner);
+            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
         }
-
-        private sealed record GetActiveCommunicationMock(IGatewayApiCommunicationService Service, RequestResult<CommunicationModel> Expected, CommunicationType CommunicationType);
-
-        private sealed record GetActiveCommunicationReturnsErrorMock(IGatewayApiCommunicationService Service, RequestResult<CommunicationModel> Expected, CommunicationType CommunicationType);
     }
 }

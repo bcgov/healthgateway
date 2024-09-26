@@ -48,10 +48,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldValidatePhoneNumber(string phoneNumber, bool expected)
         {
             // Arrange
-            PhoneNumberValidMock mock = SetupPhoneNumberValidMock(phoneNumber);
+            IUserValidationService service = GetUserValidationService(configurationRoot: GetIConfiguration());
 
             // Act
-            bool actual = await mock.Service.IsPhoneNumberValidAsync(mock.PhoneNumber);
+            bool actual = await service.IsPhoneNumberValidAsync(phoneNumber);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -72,10 +72,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldValidateEligibility(int minPatientAge, int patientAge, bool expected)
         {
             // Arrange
-            ValidateEligibilityMock mock = SetupValidateEligibilityMock(minPatientAge, patientAge);
+            IUserValidationService service = SetupValidateEligibilityMock(minPatientAge, patientAge);
 
             // Act
-            bool actual = await mock.Service.ValidateEligibilityAsync(mock.Hdid);
+            bool actual = await service.ValidateEligibilityAsync(Hdid);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -135,13 +135,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return patientDetailsServiceMock;
         }
 
-        private static PhoneNumberValidMock SetupPhoneNumberValidMock(string phoneNumber)
-        {
-            IUserValidationService service = GetUserValidationService(configurationRoot: GetIConfiguration());
-            return new(service, phoneNumber);
-        }
-
-        private static ValidateEligibilityMock SetupValidateEligibilityMock(
+        private static IUserValidationService SetupValidateEligibilityMock(
             int minPatientAge = 0,
             int patientAge = 0)
         {
@@ -152,19 +146,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(birthDate));
             Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
 
-            IUserValidationService service = GetUserValidationService(
+            return GetUserValidationService(
                 configuration,
                 patientDetailsServiceMock);
-
-            return new(service, Hdid);
         }
-
-        private sealed record PhoneNumberValidMock(
-            IUserValidationService Service,
-            string PhoneNumber);
-
-        private sealed record ValidateEligibilityMock(
-            IUserValidationService Service,
-            string Hdid);
     }
 }

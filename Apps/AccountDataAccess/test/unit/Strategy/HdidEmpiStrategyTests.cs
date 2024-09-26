@@ -42,21 +42,29 @@ namespace AccountDataAccessTest.Strategy
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task ShouldGetPatientByHdid(bool useCache)
+        public async Task ShouldGetPatient(bool useCache)
         {
             // Arrange
-            GetPatientMock mock = SetupGetPatientMock(useCache);
+            PatientRequest patientRequest = new(Hdid, useCache);
+
+            PatientModel expected = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            (HdidEmpiStrategy strategy, Mock<ICacheProvider> cacheProvider) = SetupGetPatientMock(useCache, expected);
 
             // Act
-            PatientModel actual = await mock.Strategy.GetPatientAsync(mock.PatientRequest);
+            PatientModel actual = await strategy.GetPatientAsync(patientRequest);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
 
             // Verify
-            mock.CacheProvider.Verify(
+            cacheProvider.Verify(
                 v => v.GetItemAsync<PatientModel>(
-                    It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{mock.PatientRequest.Identifier}"),
+                    It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{patientRequest.Identifier}"),
                     It.IsAny<CancellationToken>()),
                 useCache ? Times.AtLeastOnce : Times.Never);
         }
@@ -73,33 +81,29 @@ namespace AccountDataAccessTest.Strategy
                 .Build();
         }
 
-        private static GetPatientMock SetupGetPatientMock(bool useCache)
+        private static PatientMock SetupGetPatientMock(bool useCache, PatientModel patient)
         {
-            PatientRequest patientRequest = new(Hdid, useCache);
-
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            PatientModel? cachedPatient = useCache ? patient : null;
-
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(
-                    s => s.GetItemAsync<PatientModel>(
-                        It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{Hdid}"),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(cachedPatient);
-
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(
-                    s => s.GetDemographicsAsync(
-                        It.Is<OidType>(x => x == OidType.Hdid),
-                        It.Is<string>(x => x == Hdid),
-                        It.Is<bool>(x => x == false),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(patient);
+
+            if (useCache)
+            {
+                cacheProvider.Setup(
+                        s => s.GetItemAsync<PatientModel>(
+                            It.Is<string>(x => x == $"{PatientCacheDomain}:HDID:{Hdid}"),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(patient);
+            }
+            else
+            {
+                clientRegistriesDelegate.Setup(
+                        s => s.GetDemographicsAsync(
+                            It.Is<OidType>(x => x == OidType.Hdid),
+                            It.Is<string>(x => x == Hdid),
+                            It.Is<bool>(x => x == false),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(patient);
+            }
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
                 GetConfiguration(),
@@ -107,13 +111,11 @@ namespace AccountDataAccessTest.Strategy
                 clientRegistriesDelegate.Object,
                 new Mock<ILogger<HdidEmpiStrategy>>().Object);
 
-            return new(hdidEmpiStrategy, cacheProvider, patient, patientRequest);
+            return new(hdidEmpiStrategy, cacheProvider);
         }
 
-        private sealed record GetPatientMock(
+        private sealed record PatientMock(
             HdidEmpiStrategy Strategy,
-            Mock<ICacheProvider> CacheProvider,
-            PatientModel Expected,
-            PatientRequest PatientRequest);
+            Mock<ICacheProvider> CacheProvider);
     }
 }

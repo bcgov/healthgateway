@@ -31,11 +31,11 @@ namespace AccountDataAccessTest
         private const string Hdid = "abc123";
 
         /// <summary>
-        /// GetDemographics by PHN - happy path.
+        /// GetDemographics - happy path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsByPhn()
+        public async Task ShouldGetDemographics()
         {
             // Arrange
             AgentAudit audit = new()
@@ -53,7 +53,7 @@ namespace AccountDataAccessTest
             // Act
             IEnumerable<AgentAudit> actual = await auditRepository.HandleAsync(query);
 
-            // Verify
+            // Assert
             IEnumerable<AgentAudit> collection = actual.ToList();
             Assert.Single(collection);
             collection.Single().ShouldDeepEqual(agentAudits.Single());
