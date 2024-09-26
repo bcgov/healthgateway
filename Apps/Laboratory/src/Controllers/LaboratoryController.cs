@@ -21,7 +21,6 @@ namespace HealthGateway.Laboratory.Controllers
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;

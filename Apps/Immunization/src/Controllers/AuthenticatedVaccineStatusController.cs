@@ -20,7 +20,6 @@ namespace HealthGateway.Immunization.Controllers
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Filters;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
