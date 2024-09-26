@@ -167,6 +167,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             actual.ShouldDeepEqual(expected);
         }
 
+        private static IUserPreferenceService GetUserPreferenceService(IMock<IUserPreferenceDelegate> userPreferenceDelegateMock)
+        {
+            return new UserPreferenceService(
+                userPreferenceDelegateMock.Object,
+                MappingService,
+                new Mock<ILogger<UserPreferenceService>>().Object);
+        }
+
         private static IUserPreferenceService SetupCreateUserPreferenceMock(DbResult<UserPreference> dbResult, UserPreference userPreference)
         {
             Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
@@ -177,7 +185,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
-            return new UserPreferenceService(userPreferenceDelegateMock.Object, MappingService, new Mock<ILogger<UserPreferenceService>>().Object);
+            return GetUserPreferenceService(userPreferenceDelegateMock);
         }
 
         private static IUserPreferenceService SetupUpdateUserPreferenceMock(DbResult<UserPreference> dbResult, UserPreference userPreference)
@@ -190,7 +198,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
-            return new UserPreferenceService(userPreferenceDelegateMock.Object, MappingService, new Mock<ILogger<UserPreferenceService>>().Object);
+            return GetUserPreferenceService(userPreferenceDelegateMock);
         }
 
         private static IUserPreferenceService SetupGetUserPreferenceMock(List<UserPreference> preferences)
@@ -200,7 +208,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     s => s.GetUserPreferencesAsync(It.Is<string>(x => x == Hdid), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(preferences);
 
-            return new UserPreferenceService(userPreferenceDelegateMock.Object, MappingService, new Mock<ILogger<UserPreferenceService>>().Object);
+            return GetUserPreferenceService(userPreferenceDelegateMock);
         }
     }
 }

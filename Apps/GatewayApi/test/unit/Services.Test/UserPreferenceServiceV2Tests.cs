@@ -211,10 +211,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
-            return new UserPreferenceServiceV2(
-                userPreferenceDelegateMock.Object,
-                MappingService,
-                new Mock<ILogger<UserPreferenceServiceV2>>().Object);
+            return GetUserPreferenceService(userPreferenceDelegateMock);
         }
 
         private static IUserPreferenceServiceV2 SetupUpdateUserPreferenceMock(DbResult<UserPreference> dbResult, UserPreference updateUserPreference)
@@ -228,10 +225,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
-            return new UserPreferenceServiceV2(
-                userPreferenceDelegateMock.Object,
-                MappingService,
-                new Mock<ILogger<UserPreferenceServiceV2>>().Object);
+            return GetUserPreferenceService(userPreferenceDelegateMock);
         }
 
         private static IUserPreferenceServiceV2 SetupGetUserPreferencesMock(List<UserPreference> preferences)

@@ -141,6 +141,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
         }
 
+        private static IPatientDetailsService GetPatientDetailsService(Mock<IPatientRepository> patientRepositoryMock)
+        {
+            return new PatientDetailsService(
+                MappingService,
+                new Mock<ILogger<PatientDetailsService>>().Object,
+                patientRepositoryMock.Object);
+        }
+
         private static IPatientDetailsService SetupGetPatientMock(PatientModel patientModel, string identifier, PatientIdentifierType identifierType)
         {
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
@@ -156,10 +164,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientQueryResult);
 
-            return new PatientDetailsService(
-                MappingService,
-                new Mock<ILogger<PatientDetailsService>>().Object,
-                patientRepositoryMock.Object);
+            return GetPatientDetailsService(patientRepositoryMock);
         }
 
         private static IPatientDetailsService SetupGetPatientThrowsInvalidDataExceptionMock(
@@ -179,10 +184,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientQueryResult);
 
-            return new PatientDetailsService(
-                MappingService,
-                new Mock<ILogger<PatientDetailsService>>().Object,
-                patientRepositoryMock.Object);
+            return GetPatientDetailsService(patientRepositoryMock);
         }
     }
 }

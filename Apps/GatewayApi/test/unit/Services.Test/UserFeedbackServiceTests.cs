@@ -178,6 +178,29 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return cryptoDelegateMock;
         }
 
+        private static IUserFeedbackService GetUserFeedbackService(
+            Mock<IFeedbackDelegate>? feedbackDelegateMock = null,
+            Mock<IRatingDelegate>? ratingDelegateMock = null,
+            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
+            Mock<IAuthenticationDelegate>? authenticationDelegateMock = null)
+        {
+            feedbackDelegateMock ??= new();
+            ratingDelegateMock ??= new();
+            userProfileDelegateMock ??= new();
+            backgroundJobClientMock ??= new();
+            authenticationDelegateMock ??= new();
+
+            return new UserFeedbackService(
+                new Mock<ILogger<UserFeedbackService>>().Object,
+                feedbackDelegateMock.Object,
+                ratingDelegateMock.Object,
+                userProfileDelegateMock.Object,
+                backgroundJobClientMock.Object,
+                MappingService,
+                authenticationDelegateMock.Object);
+        }
+
         private static IUserFeedbackService SetupCreateRatingMock(DbResult<Rating> dbResult, SubmitRating createRating)
         {
             Mock<IRatingDelegate> ratingDelegateMock = new();
@@ -187,14 +210,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
-            return new UserFeedbackService(
-                new Mock<ILogger<UserFeedbackService>>().Object,
-                new Mock<IFeedbackDelegate>().Object,
-                ratingDelegateMock.Object,
-                new Mock<IUserProfileDelegate>().Object,
-                new Mock<IBackgroundJobClient>().Object,
-                MappingService,
-                new Mock<IAuthenticationDelegate>().Object);
+            return GetUserFeedbackService(ratingDelegateMock: ratingDelegateMock);
         }
 
         private static IUserFeedbackService SetupCreateUserFeedbackMock(DbResult<UserFeedback> dbResult, UserFeedback createUserFeedback)
@@ -226,14 +242,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     s => s.FetchAuthenticatedUserClientType())
                 .Returns(DefaultClientType);
 
-            return new UserFeedbackService(
-                new Mock<ILogger<UserFeedbackService>>().Object,
-                userFeedbackDelegateMock.Object,
-                new Mock<IRatingDelegate>().Object,
-                userProfileDelegateMock.Object,
-                new Mock<IBackgroundJobClient>().Object,
-                MappingService,
-                authenticationDelegateMock.Object);
+            return GetUserFeedbackService(
+                userFeedbackDelegateMock,
+                userProfileDelegateMock: userProfileDelegateMock,
+                authenticationDelegateMock: authenticationDelegateMock);
         }
     }
 }

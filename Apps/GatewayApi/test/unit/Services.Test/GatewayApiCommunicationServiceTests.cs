@@ -112,6 +112,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             actual.ShouldDeepEqual(expected);
         }
 
+        private static IGatewayApiCommunicationService GetGatewayApiCommunicationService(Mock<ICommunicationService> communicationServiceMock)
+        {
+            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
+        }
+
         private static IGatewayApiCommunicationService SetupGetActiveCommunicationMock(
             Guid id,
             string text,
@@ -134,7 +139,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.Is<Common.Data.Constants.CommunicationType>(x => x == sourceCommunicationType), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requestResult);
 
-            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
+            return GetGatewayApiCommunicationService(communicationServiceMock);
         }
 
         private static IGatewayApiCommunicationService SetupGetActiveCommunicationReturnsErrorMock(string errorMessage)
@@ -152,7 +157,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(It.IsAny<Common.Data.Constants.CommunicationType>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(requestResult);
 
-            return new GatewayApiCommunicationService(communicationServiceMock.Object, MappingService);
+            return GetGatewayApiCommunicationService(communicationServiceMock);
         }
     }
 }
