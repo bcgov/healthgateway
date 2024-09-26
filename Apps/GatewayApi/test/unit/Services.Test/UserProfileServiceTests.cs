@@ -812,7 +812,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HasTourUpdated = tourChangeDateIsLatest,
                 LastLoginDateTime = lastLoginDateTimes[0],
                 LastLoginDateTimes = [.. lastLoginDateTimes],
-                BetaFeatures = new List<GatewayApi.Constants.BetaFeature> { GatewayApi.Constants.BetaFeature.Salesforce },
+                BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
             };
         }
 
@@ -929,7 +929,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             string? smsNumber = null,
             IList<UserProfileHistory>? userProfileHistoryList = null)
         {
-            userProfileHistoryList ??= new List<UserProfileHistory>();
+            userProfileHistoryList ??= [];
 
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime currentUtcDate = DateTime.UtcNow.Date;
