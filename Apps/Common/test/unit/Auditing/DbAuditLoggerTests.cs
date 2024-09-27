@@ -56,14 +56,51 @@ namespace HealthGateway.CommonTests.Auditing
         public void ShouldPopulateWithHttpContext(bool useRouteValues, bool useQueryParamValues)
         {
             // Arrange
-            AuditEvent actual = new();
-            PopulateWithHttpContextMock mock = SetupPopulateWithHttpContextMock(useRouteValues, useQueryParamValues);
+            DefaultHttpContext ctx = new()
+            {
+                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
+                User = new(new ClaimsIdentity([new Claim("hdid", Hdid), new Claim("preferred_username", Idir)])),
+            };
+
+            if (useRouteValues)
+            {
+                ctx.Request.RouteValues = new RouteValueDictionary
+                {
+                    { "Hdid", RouteHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
+                };
+            }
+
+            if (useQueryParamValues)
+            {
+                ctx.Request.Query = new QueryCollection(
+                    new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        { "Hdid", QueryParamHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
+                    });
+            }
+
+            AuditEvent expected = new()
+            {
+                ApplicationSubject = useRouteValues ? RouteHdid : useQueryParamValues ? QueryParamHdid : Hdid,
+                ApplicationType = ApplicationType.Configuration,
+                ClientIp = "127.0.0.1",
+                CreatedBy = Hdid,
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.Success,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<DbAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
             // Act
-            mock.DbAuditLogger.PopulateWithHttpContext(mock.DefaultHttpContext, actual);
+            AuditEvent actual = new();
+            dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -234,51 +271,5 @@ namespace HealthGateway.CommonTests.Auditing
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
         }
-
-        private static PopulateWithHttpContextMock SetupPopulateWithHttpContextMock(bool useRouteValues, bool useQueryParamValues)
-        {
-            DefaultHttpContext ctx = new()
-            {
-                Connection = { RemoteIpAddress = new IPAddress(new byte[] { 127, 0, 0, 1 }) },
-                User = new(new ClaimsIdentity([new Claim("hdid", Hdid), new Claim("preferred_username", Idir)])),
-            };
-
-            if (useRouteValues)
-            {
-                ctx.Request.RouteValues = new RouteValueDictionary
-                {
-                    { "Hdid", RouteHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
-                };
-            }
-
-            if (useQueryParamValues)
-            {
-                ctx.Request.Query = new QueryCollection(
-                    new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase)
-                    {
-                        { "Hdid", QueryParamHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
-                    });
-            }
-
-            AuditEvent expected = new()
-            {
-                ApplicationSubject = useRouteValues ? RouteHdid : useQueryParamValues ? QueryParamHdid : Hdid,
-                ApplicationType = ApplicationType.Configuration,
-                ClientIp = "127.0.0.1",
-                CreatedBy = Hdid,
-                Trace = ctx.TraceIdentifier,
-                TransactionName = @"\",
-                TransactionResultCode = AuditTransactionResult.Success,
-                TransactionVersion = string.Empty,
-            };
-
-            Mock<ILogger<DbAuditLogger>> logger = new();
-            Mock<IWriteAuditEventDelegate> dbContext = new();
-            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
-
-            return new(dbAuditLogger, ctx, expected);
-        }
-
-        private sealed record PopulateWithHttpContextMock(DbAuditLogger DbAuditLogger, DefaultHttpContext DefaultHttpContext, AuditEvent Expected);
     }
 }

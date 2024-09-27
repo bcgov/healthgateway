@@ -65,8 +65,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(
                 expectedPhsaHealthDataResponse,
-                false,
-                canAccessDataSource,
+                canAccessDataSource: canAccessDataSource,
                 personalAccountResultType: personalAccountResultType);
 
             // Act
@@ -102,10 +101,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         public async Task ShouldGetClinicalDocumentRecordsThrowsException()
         {
             // Arrange
-            Guid id = Guid.NewGuid();
-            PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
-
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, true);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(throwException: true);
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult = await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>());
@@ -136,7 +132,11 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             Guid id = Guid.NewGuid();
             PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
 
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false, canAccessDatasource, personalAccountExists, personalAccountResultType);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(
+                expectedPhsaHealthDataResponse,
+                canAccessDataSource: canAccessDatasource,
+                personalAccountExists: personalAccountExists,
+                personalAccountResultType: personalAccountResultType);
 
             if (canAccessDatasource)
             {
@@ -182,10 +182,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         public async Task ShouldGetClinicalDocumentFileThrowsException()
         {
             // Arrange
-            Guid id = Guid.NewGuid();
-            PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
-
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, true);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(throwException: true);
 
             // Act
             RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>());
@@ -215,14 +212,14 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         }
 
         private static IClinicalDocumentService GetClinicalDocumentService(
-            PhsaHealthDataResponse content,
-            bool throwException,
+            PhsaHealthDataResponse? content = null,
+            bool throwException = false,
             bool canAccessDataSource = true,
             bool personalAccountExists = true,
             ResultType? personalAccountResultType = ResultType.Success)
         {
             Mock<IClinicalDocumentsApi> clinicalDocumentApiMock = new();
-            if (!throwException)
+            if (!throwException && content != null)
             {
                 clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecordsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(content);
                 clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new EncodedMedia());

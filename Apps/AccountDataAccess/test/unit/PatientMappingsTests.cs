@@ -73,11 +73,9 @@ namespace AccountDataAccessTest
             const string delimiter = " ";
 
             // Arrange
-            string expectedCommonGivenName = $"{PhsaPreferredFirstName}{delimiter}{PhsaPreferredThirdName}";
-            string expectedCommonSurname = PhsaPreferredLastName;
+            const string expectedCommonGivenName = $"{PhsaPreferredFirstName}{delimiter}{PhsaPreferredThirdName}";
 
-            string expectedLegalGivenName = $"{PhsaLegalFirstName}{delimiter}{PhsaLegalSecondName}{delimiter}{PhsaLegalThirdName}";
-            string expectedLegalSurname = PhsaLegalLastName;
+            const string expectedLegalGivenName = $"{PhsaLegalFirstName}{delimiter}{PhsaLegalSecondName}{delimiter}{PhsaLegalThirdName}";
 
             PatientModel expectedPatient = new()
             {
@@ -88,9 +86,9 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                    { GivenName = expectedCommonGivenName, Surname = PhsaPreferredLastName },
                 LegalName = new Name
-                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                    { GivenName = expectedLegalGivenName, Surname = PhsaLegalLastName },
                 PhysicalAddress = new Address
                 {
                     StreetLines =
@@ -149,7 +147,7 @@ namespace AccountDataAccessTest
             // Act
             PatientModel actual = Mapper.Map<PatientModel>(patientIdentity);
 
-            // Verify
+            // Assert
             actual.ShouldDeepEqual(expectedPatient);
         }
 
@@ -194,7 +192,7 @@ namespace AccountDataAccessTest
             // Act
             PatientModel actual = Mapper.Map<PatientModel>(patientIdentity);
 
-            // Verify
+            // Assert
             actual.ShouldDeepEqual(expectedPatient);
         }
     }

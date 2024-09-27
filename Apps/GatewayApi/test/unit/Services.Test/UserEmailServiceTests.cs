@@ -173,6 +173,41 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
+        /// ValidateEmailAsync returns error when updating user profile to the database.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateEmailReturnsError()
+        {
+            // Arrange
+            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.Error }; // Should cause error to be returned.
+
+            Guid inviteKey = Guid.NewGuid();
+            MessagingVerification verificationByInviteKey = new()
+            {
+                UserProfileId = HdIdMock,
+                VerificationAttempts = 0,
+                InviteKey = inviteKey,
+                ExpireDate = DateTime.Now.AddDays(1),
+                Validated = false,
+                Email = new Email
+                {
+                    To = "fakeemail@healthgateway.gov.bc.ca",
+                },
+            };
+
+            UserProfile userProfile = new();
+            IUserEmailService service = GetUserEmailService(userProfile, verificationByInviteKey, updateUserProfileResult: dbResult);
+
+            // Act
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
+
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            Assert.Equal(ErrorMessages.CannotPerformAction, actual.ResultError?.ResultMessage);
+        }
+
+        /// <summary>
         /// ValidateEmailAsync - invalid invite.
         /// </summary>
         /// <param name="hdid">The hdid associated with the verification by invite key..</param>
@@ -246,8 +281,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
             Mock<IMessageSender>? messageSenderMock = null,
-            bool changeFeedEnabled = false)
+            bool changeFeedEnabled = false,
+            DbResult<UserProfile>? updateUserProfileResult = null)
         {
+            updateUserProfileResult ??= new DbResult<UserProfile> { Status = DbStatusCode.Updated };
             messagingVerificationDelegateMock ??= new();
             messagingVerificationDelegateMock.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(verificationByInviteKey);
             messagingVerificationDelegateMock.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -256,7 +293,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock ??= new();
             userProfileDelegateMock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
             userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DbResult<UserProfile> { Status = DbStatusCode.Updated });
+                .ReturnsAsync(updateUserProfileResult);
 
             notificationSettingsServiceMock ??= new();
             messageSenderMock ??= new();

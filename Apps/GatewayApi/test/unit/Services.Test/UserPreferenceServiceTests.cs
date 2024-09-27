@@ -43,69 +43,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
         /// <summary>
-        /// CreateUserPreferenceAsync call.
+        /// CreateUserPreferenceAsync.
         /// </summary>
-        /// <param name="dBStatusCode">dBStatusCode.</param>
+        /// <param name="dbStatusCode">dBStatusCode.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(DbStatusCode.Created)]
         [InlineData(DbStatusCode.Error)]
-        public async Task ShouldCreateUserPreferenceAsync(DbStatusCode dBStatusCode)
+        public async Task ShouldCreateUserPreference(DbStatusCode dbStatusCode)
         {
             // Arrange
-            CreateUserPreferenceMock mock = SetupCreateUserPreferenceMock(dBStatusCode);
-
-            // Act
-            RequestResult<UserPreferenceModel> actual = await mock.Service.CreateUserPreferenceAsync(mock.UserPreferenceModel);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// UpdateUserPreferenceAsync call.
-        /// </summary>
-        /// <param name="dBStatusCode">dBStatusCode.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(DbStatusCode.Updated)]
-        [InlineData(DbStatusCode.Error)]
-        public async Task ShouldUpdateUserPreferenceAsync(DbStatusCode dBStatusCode)
-        {
-            // Arrange
-            UpdateUserPreferenceMock mock = SetupUpdateUserPreferenceMock(dBStatusCode);
-
-            // Act
-            RequestResult<UserPreferenceModel> actual = await mock.Service.UpdateUserPreferenceAsync(mock.UserPreferenceModel);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        /// <summary>
-        /// GetUserPreferenceAsync call.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetUserPreferencesAsync()
-        {
-            // Arrange
-            GetUserPreferenceMock mock = SetupGetUserPreferenceMock();
-
-            // Act
-            Dictionary<string, UserPreferenceModel> actual = await mock.Service.GetUserPreferencesAsync(mock.Hdid);
-
-            // Assert
-            actual.ShouldDeepEqual(mock.Expected);
-        }
-
-        private static IUserPreferenceService GetUserPreferenceService(IMock<IUserPreferenceDelegate> userPreferenceDelegateMock)
-        {
-            return new UserPreferenceService(userPreferenceDelegateMock.Object, MappingService, new Mock<ILogger<UserPreferenceService>>().Object);
-        }
-
-        private static UserPreferenceMock SetupUserPreferenceMock(DbStatusCode action, DbStatusCode dbStatusCode)
-        {
             UserPreferenceModel userPreferenceModel = new()
             {
                 HdId = Hdid,
@@ -115,7 +62,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             UserPreference userPreference = MappingService.MapToUserPreference(userPreferenceModel);
 
-            DbResult<UserPreference> dbResult = new()
+            DbResult<UserPreference> createUserPreferenceResult = new()
             {
                 Payload = userPreference,
                 Status = dbStatusCode,
@@ -124,8 +71,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             RequestResult<UserPreferenceModel> expected = new()
             {
-                ResultStatus = dbStatusCode == action ? ResultType.Success : ResultType.Error,
-                ResourcePayload = dbStatusCode == action ? userPreferenceModel : null,
+                ResultStatus = dbStatusCode == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResourcePayload = dbStatusCode == DbStatusCode.Created ? userPreferenceModel : null,
                 ResultError = dbStatusCode == DbStatusCode.Error
                     ? new()
                     {
@@ -135,35 +82,72 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     : null,
             };
 
-            return new(expected, userPreference, dbResult, userPreferenceModel);
+            IUserPreferenceService service = SetupUserPreferenceServiceForCreateUserPreference(createUserPreferenceResult, userPreference);
+
+            // Act
+            RequestResult<UserPreferenceModel> actual = await service.CreateUserPreferenceAsync(userPreferenceModel);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static CreateUserPreferenceMock SetupCreateUserPreferenceMock(DbStatusCode dbStatusCode)
+        /// <summary>
+        /// UpdateUserPreferenceAsync.
+        /// </summary>
+        /// <param name="dbStatusCode">dBStatusCode.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Updated)]
+        [InlineData(DbStatusCode.Error)]
+        public async Task ShouldUpdateUserPreference(DbStatusCode dbStatusCode)
         {
-            UserPreferenceMock mock = SetupUserPreferenceMock(DbStatusCode.Created, dbStatusCode);
-            Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
-            userPreferenceDelegateMock.Setup(
-                    s => s.CreateUserPreferenceAsync(It.Is<UserPreference>(x => x.Preference == mock.UserPreference.Preference), It.Is<bool>(x => x == true), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(mock.DbResult);
+            // Arrange
+            UserPreferenceModel userPreferenceModel = new()
+            {
+                HdId = Hdid,
+                Preference = "TutorialPopover",
+                Value = "mocked value",
+            };
 
-            IUserPreferenceService service = GetUserPreferenceService(userPreferenceDelegateMock);
-            return new(service, mock.Expected, mock.UserPreferenceModel);
+            UserPreference userPreference = MappingService.MapToUserPreference(userPreferenceModel);
+
+            DbResult<UserPreference> updateUserPreferenceResult = new()
+            {
+                Payload = userPreference,
+                Status = dbStatusCode,
+                Message = dbStatusCode == DbStatusCode.Error ? "DB Error" : string.Empty,
+            };
+
+            RequestResult<UserPreferenceModel> expected = new()
+            {
+                ResultStatus = dbStatusCode == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResourcePayload = dbStatusCode == DbStatusCode.Updated ? userPreferenceModel : null,
+                ResultError = dbStatusCode == DbStatusCode.Error
+                    ? new()
+                    {
+                        ResultMessage = "DB Error",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
+            };
+
+            IUserPreferenceService service = SetupUserPreferenceServiceForUpdateUserPreference(updateUserPreferenceResult, userPreference);
+
+            // Act
+            RequestResult<UserPreferenceModel> actual = await service.UpdateUserPreferenceAsync(userPreferenceModel);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
         }
 
-        private static UpdateUserPreferenceMock SetupUpdateUserPreferenceMock(DbStatusCode dbStatusCode)
+        /// <summary>
+        /// GetUserPreferenceAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetUserPreferences()
         {
-            UserPreferenceMock mock = SetupUserPreferenceMock(DbStatusCode.Updated, dbStatusCode);
-            Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
-            userPreferenceDelegateMock.Setup(
-                    s => s.UpdateUserPreferenceAsync(It.Is<UserPreference>(x => x.Preference == mock.UserPreference.Preference), It.Is<bool>(x => x == true), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(mock.DbResult);
-
-            IUserPreferenceService service = GetUserPreferenceService(userPreferenceDelegateMock);
-            return new(service, mock.Expected, mock.UserPreferenceModel);
-        }
-
-        private static GetUserPreferenceMock SetupGetUserPreferenceMock()
-        {
+            // Arrange
             UserPreference userPreference = new()
             {
                 HdId = Hdid,
@@ -174,25 +158,57 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             List<UserPreference> preferences = [userPreference];
             Dictionary<string, UserPreferenceModel> expected = preferences.Select(MappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x);
 
+            IUserPreferenceService service = SetupUserPreferenceServiceForGetUserPreference(preferences);
+
+            // Act
+            Dictionary<string, UserPreferenceModel> actual = await service.GetUserPreferencesAsync(Hdid);
+
+            // Assert
+            actual.ShouldDeepEqual(expected);
+        }
+
+        private static IUserPreferenceService GetUserPreferenceService(IMock<IUserPreferenceDelegate> userPreferenceDelegateMock)
+        {
+            return new UserPreferenceService(
+                userPreferenceDelegateMock.Object,
+                MappingService,
+                new Mock<ILogger<UserPreferenceService>>().Object);
+        }
+
+        private static IUserPreferenceService SetupUserPreferenceServiceForCreateUserPreference(DbResult<UserPreference> dbResult, UserPreference userPreference)
+        {
+            Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
+            userPreferenceDelegateMock.Setup(
+                    s => s.CreateUserPreferenceAsync(
+                        It.Is<UserPreference>(x => x.Preference == userPreference.Preference),
+                        It.Is<bool>(x => x == true),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dbResult);
+
+            return GetUserPreferenceService(userPreferenceDelegateMock);
+        }
+
+        private static IUserPreferenceService SetupUserPreferenceServiceForUpdateUserPreference(DbResult<UserPreference> dbResult, UserPreference userPreference)
+        {
+            Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
+            userPreferenceDelegateMock.Setup(
+                    s => s.UpdateUserPreferenceAsync(
+                        It.Is<UserPreference>(x => x.Preference == userPreference.Preference),
+                        It.Is<bool>(x => x == true),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dbResult);
+
+            return GetUserPreferenceService(userPreferenceDelegateMock);
+        }
+
+        private static IUserPreferenceService SetupUserPreferenceServiceForGetUserPreference(List<UserPreference> preferences)
+        {
             Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
             userPreferenceDelegateMock.Setup(
                     s => s.GetUserPreferencesAsync(It.Is<string>(x => x == Hdid), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(preferences);
 
-            IUserPreferenceService service = GetUserPreferenceService(userPreferenceDelegateMock);
-            return new(service, expected, Hdid);
+            return GetUserPreferenceService(userPreferenceDelegateMock);
         }
-
-        private sealed record UserPreferenceMock(
-            RequestResult<UserPreferenceModel> Expected,
-            UserPreference UserPreference,
-            DbResult<UserPreference> DbResult,
-            UserPreferenceModel UserPreferenceModel);
-
-        private sealed record CreateUserPreferenceMock(IUserPreferenceService Service, RequestResult<UserPreferenceModel> Expected, UserPreferenceModel UserPreferenceModel);
-
-        private sealed record UpdateUserPreferenceMock(IUserPreferenceService Service, RequestResult<UserPreferenceModel> Expected, UserPreferenceModel UserPreferenceModel);
-
-        private sealed record GetUserPreferenceMock(IUserPreferenceService Service, Dictionary<string, UserPreferenceModel> Expected, string Hdid);
     }
 }

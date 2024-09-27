@@ -45,17 +45,24 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldGetResourceHdid(FhirSubjectLookupMethod lookupMethod)
         {
             // Arrange
-            GetResourceHdidMock mock = SetupGetResourceHdidMock(lookupMethod);
+            string? expected = lookupMethod switch
+            {
+                FhirSubjectLookupMethod.Parameter => QueryParamHdid,
+                FhirSubjectLookupMethod.Route => RouteHdid,
+                _ => null,
+            };
+
+            Mock<HttpContext> httpContextMock = SetupHttpContextForGetResourceHdid(lookupMethod);
 
             // Act
-            string? actual = HttpContextHelper.GetResourceHdid(mock.HttpContext, lookupMethod);
+            string? actual = HttpContextHelper.GetResourceHdid(httpContextMock.Object, lookupMethod);
 
             // Assert
-            Assert.Equal(mock.Expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault", Justification = "Unknown enum value expected and is handled in mock setup.")]
-        private static GetResourceHdidMock SetupGetResourceHdidMock(FhirSubjectLookupMethod lookupMethod)
+        private static Mock<HttpContext> SetupHttpContextForGetResourceHdid(FhirSubjectLookupMethod lookupMethod)
         {
             Mock<HttpRequest> httpRequestMock = new();
 
@@ -87,17 +94,7 @@ namespace HealthGateway.CommonTests.Utils
 
             Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-
-            string? expected = lookupMethod switch
-            {
-                FhirSubjectLookupMethod.Parameter => QueryParamHdid,
-                FhirSubjectLookupMethod.Route => RouteHdid,
-                _ => null,
-            };
-
-            return new(httpContextMock.Object, expected);
+            return httpContextMock;
         }
-
-        private sealed record GetResourceHdidMock(HttpContext HttpContext, string Expected);
     }
 }
