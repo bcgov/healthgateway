@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     ResultMessage = errorMessage,
                 },
             };
-            IGatewayApiCommunicationService service = SetupGetActiveCommunicationReturnsErrorMock(errorMessage);
+            IGatewayApiCommunicationService service = SetupGatewayApiCommunicationServiceForGetActiveCommunicationReturnsError(errorMessage);
 
             // Act
             RequestResult<CommunicationModel> actual = await service.GetActiveCommunicationAsync(CommunicationType.Banner);
@@ -142,7 +142,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return GetGatewayApiCommunicationService(communicationServiceMock);
         }
 
-        private static IGatewayApiCommunicationService SetupGetActiveCommunicationReturnsErrorMock(string errorMessage)
+        private static IGatewayApiCommunicationService SetupGatewayApiCommunicationServiceForGetActiveCommunicationReturnsError(string errorMessage)
         {
             RequestResult<Communication?> requestResult = new()
             {

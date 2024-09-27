@@ -43,7 +43,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             // Arrange
             DateTime expected = new(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
-            IApplicationSettingsService service = SetupGetLatestTourChangeDateTimeMock(useCache, expected);
+            IApplicationSettingsService service = SetupApplicationSettingsServiceForGetLatestTourChangeDateTime(useCache, expected);
 
             // Act
             DateTime? actual = await service.GetLatestTourChangeDateTimeAsync();
@@ -52,7 +52,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(expected, actual);
         }
 
-        private static IApplicationSettingsService SetupGetLatestTourChangeDateTimeMock(bool useCache, DateTime latestTourDate)
+        private static IApplicationSettingsService SetupApplicationSettingsServiceForGetLatestTourChangeDateTime(bool useCache, DateTime latestTourDate)
         {
             string cacheKey = $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}:{TourApplicationSettings.LatestChangeDateTime}";
 

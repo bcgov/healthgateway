@@ -82,7 +82,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     : null,
             };
 
-            IUserPreferenceService service = SetupCreateUserPreferenceMock(createUserPreferenceResult, userPreference);
+            IUserPreferenceService service = SetupUserPreferenceServiceForCreateUserPreference(createUserPreferenceResult, userPreference);
 
             // Act
             RequestResult<UserPreferenceModel> actual = await service.CreateUserPreferenceAsync(userPreferenceModel);
@@ -131,7 +131,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     : null,
             };
 
-            IUserPreferenceService service = SetupUpdateUserPreferenceMock(updateUserPreferenceResult, userPreference);
+            IUserPreferenceService service = SetupUserPreferenceServiceForUpdateUserPreference(updateUserPreferenceResult, userPreference);
 
             // Act
             RequestResult<UserPreferenceModel> actual = await service.UpdateUserPreferenceAsync(userPreferenceModel);
@@ -158,7 +158,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             List<UserPreference> preferences = [userPreference];
             Dictionary<string, UserPreferenceModel> expected = preferences.Select(MappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x);
 
-            IUserPreferenceService service = SetupGetUserPreferenceMock(preferences);
+            IUserPreferenceService service = SetupUserPreferenceServiceForGetUserPreference(preferences);
 
             // Act
             Dictionary<string, UserPreferenceModel> actual = await service.GetUserPreferencesAsync(Hdid);
@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ILogger<UserPreferenceService>>().Object);
         }
 
-        private static IUserPreferenceService SetupCreateUserPreferenceMock(DbResult<UserPreference> dbResult, UserPreference userPreference)
+        private static IUserPreferenceService SetupUserPreferenceServiceForCreateUserPreference(DbResult<UserPreference> dbResult, UserPreference userPreference)
         {
             Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
             userPreferenceDelegateMock.Setup(
@@ -188,7 +188,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return GetUserPreferenceService(userPreferenceDelegateMock);
         }
 
-        private static IUserPreferenceService SetupUpdateUserPreferenceMock(DbResult<UserPreference> dbResult, UserPreference userPreference)
+        private static IUserPreferenceService SetupUserPreferenceServiceForUpdateUserPreference(DbResult<UserPreference> dbResult, UserPreference userPreference)
         {
             Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
             userPreferenceDelegateMock.Setup(
@@ -201,7 +201,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return GetUserPreferenceService(userPreferenceDelegateMock);
         }
 
-        private static IUserPreferenceService SetupGetUserPreferenceMock(List<UserPreference> preferences)
+        private static IUserPreferenceService SetupUserPreferenceServiceForGetUserPreference(List<UserPreference> preferences)
         {
             Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
             userPreferenceDelegateMock.Setup(

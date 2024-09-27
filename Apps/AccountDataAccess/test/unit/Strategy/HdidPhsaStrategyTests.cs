@@ -68,7 +68,7 @@ namespace AccountDataAccessTest.Strategy
                     { GivenName = string.Empty, Surname = string.Empty },
             };
 
-            (HdidPhsaStrategy strategy, Mock<ICacheProvider> cacheProvider) = SetupGetPatientMock(useCache, expected);
+            (HdidPhsaStrategy strategy, Mock<ICacheProvider> cacheProvider) = SetupPatientMockForGetPatient(useCache, expected);
 
             // Act
             PatientModel actual = await strategy.GetPatientAsync(patientRequest);
@@ -94,7 +94,7 @@ namespace AccountDataAccessTest.Strategy
             // Arrange
             PatientRequest patientRequest = new(PhsaHdidNotFound, false);
             Type expected = typeof(NotFoundException);
-            HdidPhsaStrategy strategy = SetupGetPatientHandlesPhsaApiExceptionMock();
+            HdidPhsaStrategy strategy = SetupHdidPhsaStrategyForGetPatientIdentityHandlesPhsaApiException();
 
             // Act and Assert
             await Assert.ThrowsAsync(
@@ -114,7 +114,7 @@ namespace AccountDataAccessTest.Strategy
                 .Build();
         }
 
-        private static PatientMock SetupGetPatientMock(bool useCache, PatientModel patient)
+        private static PatientMock SetupPatientMockForGetPatient(bool useCache, PatientModel patient)
         {
             Mock<ICacheProvider> cacheProvider = new();
             Mock<IPatientIdentityApi> patientIdentityApi = new();
@@ -154,7 +154,7 @@ namespace AccountDataAccessTest.Strategy
             return new(hdidPhsaStrategy, cacheProvider);
         }
 
-        private static HdidPhsaStrategy SetupGetPatientHandlesPhsaApiExceptionMock()
+        private static HdidPhsaStrategy SetupHdidPhsaStrategyForGetPatientIdentityHandlesPhsaApiException()
         {
             PatientModel? cachedPatient = null;
             Mock<ICacheProvider> cacheProvider = new();

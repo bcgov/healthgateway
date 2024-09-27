@@ -202,7 +202,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Message = updatedStatus != DbStatusCode.Updated ? "DB ERROR" : string.Empty,
             };
 
-            IUserProfileService service = SetupUpdateAcceptedTermsMock(updateResult, userProfile);
+            IUserProfileService service = SetupUserProfileServiceForUpdateAcceptedTerms(updateResult, userProfile);
 
             RequestResult<UserProfileModel> expected = new()
             {
@@ -501,7 +501,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ? Times.Once()
                 : Times.Never();
 
-            (IUserProfileService service, Mock<IEmailQueueService> emailQueueServiceMock) = SetupCloseUerProfileMock(updateUserProfileResult, readUserProfile);
+            (IUserProfileService service, Mock<IEmailQueueService> emailQueueServiceMock) = SetupCloseUserProfileMock(updateUserProfileResult, readUserProfile);
 
             // Act
             RequestResult<UserProfileModel> actual = await service.CloseUserProfileAsync(Hdid, userId);
@@ -686,7 +686,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ResultError = patientResult.ResultError,
             };
 
-            IUserProfileService service = SetupValidateMinimumAgeMock(minAge, patientResult);
+            IUserProfileService service = SetupUserProfileServiceForValidateMinimumAge(minAge, patientResult);
 
             // Act
             RequestResult<bool> actual = await service.ValidateMinimumAgeAsync(Hdid);
@@ -722,7 +722,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ResultError = patientResult.ResultError,
             };
 
-            IUserProfileService service = SetupValidateMinimumAgeMock(minAge, patientResult);
+            IUserProfileService service = SetupUserProfileServiceForValidateMinimumAge(minAge, patientResult);
 
             // Act
             RequestResult<bool> actual = await service.ValidateMinimumAgeAsync(Hdid);
@@ -1044,7 +1044,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, userProfileDelegateMock);
         }
 
-        private static IUserProfileService SetupUpdateAcceptedTermsMock(DbResult<UserProfile?> updateResult, UserProfile? userProfile)
+        private static IUserProfileService SetupUserProfileServiceForUpdateAcceptedTerms(DbResult<UserProfile?> updateResult, UserProfile? userProfile)
         {
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime latestTourDate = new(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -1099,7 +1099,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 patientRepositoryMock: patientRepositoryMock);
         }
 
-        private static CloseUserProfileMock SetupCloseUerProfileMock(
+        private static CloseUserProfileMock SetupCloseUserProfileMock(
             DbResult<UserProfile> updateResult,
             UserProfile? readUserProfile)
         {
@@ -1221,7 +1221,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, emailQueueServiceMock);
         }
 
-        private static IUserProfileService SetupValidateMinimumAgeMock(int minAge, RequestResult<PatientModel> patientResult)
+        private static IUserProfileService SetupUserProfileServiceForValidateMinimumAge(int minAge, RequestResult<PatientModel> patientResult)
         {
             Mock<IPatientService> patientServiceMock = new();
             patientServiceMock.Setup(

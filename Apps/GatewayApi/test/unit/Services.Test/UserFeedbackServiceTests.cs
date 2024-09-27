@@ -83,7 +83,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ResourcePayload = new() { Id = ratingId, RatingValue = rating.RatingValue, Skip = rating.Skip },
             };
 
-            IUserFeedbackService service = SetupCreateRatingMock(createRatingResult, createRating);
+            IUserFeedbackService service = SetupUserFeedbackServiceForCreateRating(createRatingResult, createRating);
 
             // Act
             RequestResult<RatingModel> actual = await service.CreateRatingAsync(createRating);
@@ -124,7 +124,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             };
 
-            IUserFeedbackService service = SetupCreateRatingMock(createRatingResult, createRating);
+            IUserFeedbackService service = SetupUserFeedbackServiceForCreateRating(createRatingResult, createRating);
 
             // Act
             RequestResult<RatingModel> actual = await service.CreateRatingAsync(createRating);
@@ -160,7 +160,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Created,
             };
 
-            IUserFeedbackService service = SetupCreateUserFeedbackMock(expected, createUserFeedback);
+            IUserFeedbackService service = SetupUserFeedbackServiceForCreateUserFeedback(expected, createUserFeedback);
 
             // Act
             DbResult<UserFeedback> actual = await service.CreateUserFeedbackAsync(feedback, Hdid);
@@ -201,7 +201,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 authenticationDelegateMock.Object);
         }
 
-        private static IUserFeedbackService SetupCreateRatingMock(DbResult<Rating> dbResult, SubmitRating createRating)
+        private static IUserFeedbackService SetupUserFeedbackServiceForCreateRating(DbResult<Rating> dbResult, SubmitRating createRating)
         {
             Mock<IRatingDelegate> ratingDelegateMock = new();
             ratingDelegateMock.Setup(
@@ -213,7 +213,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return GetUserFeedbackService(ratingDelegateMock: ratingDelegateMock);
         }
 
-        private static IUserFeedbackService SetupCreateUserFeedbackMock(DbResult<UserFeedback> dbResult, UserFeedback createUserFeedback)
+        private static IUserFeedbackService SetupUserFeedbackServiceForCreateUserFeedback(DbResult<UserFeedback> dbResult, UserFeedback createUserFeedback)
         {
             UserProfile profile = new()
             {

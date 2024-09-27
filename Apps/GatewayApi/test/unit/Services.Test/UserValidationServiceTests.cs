@@ -72,7 +72,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldValidateEligibility(int minPatientAge, int patientAge, bool expected)
         {
             // Arrange
-            IUserValidationService service = SetupValidateEligibilityMock(minPatientAge, patientAge);
+            IUserValidationService service = SetupUserValidationServiceForValidateEligibility(minPatientAge, patientAge);
 
             // Act
             bool actual = await service.ValidateEligibilityAsync(Hdid);
@@ -135,7 +135,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return patientDetailsServiceMock;
         }
 
-        private static IUserValidationService SetupValidateEligibilityMock(
+        private static IUserValidationService SetupUserValidationServiceForValidateEligibility(
             int minPatientAge = 0,
             int patientAge = 0)
         {

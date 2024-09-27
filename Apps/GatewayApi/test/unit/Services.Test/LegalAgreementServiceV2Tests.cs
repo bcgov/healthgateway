@@ -48,7 +48,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             LegalAgreement? legalAgreement = GenerateLegalAgreement();
             TermsOfServiceModel expected = MappingService.MapToTermsOfServiceModel(legalAgreement);
-            ILegalAgreementServiceV2 service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+            ILegalAgreementServiceV2 service = SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(legalAgreement);
 
             // Act
             TermsOfServiceModel actual = await service.GetActiveTermsOfServiceAsync();
@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             // Arrange
             LegalAgreement? legalAgreement = null; // This will cause a DatabaseException to be thrown.
-            ILegalAgreementServiceV2 service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+            ILegalAgreementServiceV2 service = SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(legalAgreement);
             Type expected = typeof(DatabaseException);
 
             // Act and Assert
@@ -88,7 +88,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             LegalAgreement? legalAgreement = GenerateLegalAgreement(legalAgreementFound);
             Guid? expected = legalAgreement?.Id;
-            ILegalAgreementServiceV2 service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+            ILegalAgreementServiceV2 service = SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(legalAgreement);
 
             // Act
             Guid? actual = await service.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService);
@@ -110,7 +110,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 : null;
         }
 
-        private static ILegalAgreementServiceV2 SetupGetActiveTermsOfServiceMock(LegalAgreement? legalAgreement)
+        private static ILegalAgreementServiceV2 SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(LegalAgreement? legalAgreement)
         {
             Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new();
             legalAgreementDelegateMock.Setup(

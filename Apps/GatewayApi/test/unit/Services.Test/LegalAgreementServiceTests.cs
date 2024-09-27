@@ -73,7 +73,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     },
             };
 
-            ILegalAgreementService service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+            ILegalAgreementService service = SetupLegalAgreementServiceForGetActiveLegalAgreementId(legalAgreement);
 
             // Act
             RequestResult<TermsOfServiceModel> actual = await service.GetActiveTermsOfServiceAsync();
@@ -105,7 +105,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 }
                 : null;
 
-            ILegalAgreementService service = SetupGetActiveTermsOfServiceMock(legalAgreement);
+            ILegalAgreementService service = SetupLegalAgreementServiceForGetActiveLegalAgreementId(legalAgreement);
 
             // Act
             Guid? actual = await service.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService);
@@ -114,7 +114,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             actual.ShouldDeepEqual(expected);
         }
 
-        private static ILegalAgreementService SetupGetActiveTermsOfServiceMock(LegalAgreement legalAgreement)
+        private static ILegalAgreementService SetupLegalAgreementServiceForGetActiveLegalAgreementId(LegalAgreement legalAgreement)
         {
             Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new();
             legalAgreementDelegateMock.Setup(

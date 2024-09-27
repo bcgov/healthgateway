@@ -150,7 +150,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Profile = new(Hdid, Guid.NewGuid(), requestedSmsNumber, EmailAddress),
             };
 
-            IRegistrationService service = SetupCreateUserProfileThrowsExceptionMock(
+            IRegistrationService service = SetupRegistrationServiceForCreateUserProfileThrowsException(
                 requestedSmsNumber,
                 minPatientAge,
                 patientAge,
@@ -488,7 +488,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 jobServiceMock);
         }
 
-        private static IRegistrationService SetupCreateUserProfileThrowsExceptionMock(
+        private static IRegistrationService SetupRegistrationServiceForCreateUserProfileThrowsException(
             string? requestedSmsNumber,
             int minPatientAge,
             int patientAge,

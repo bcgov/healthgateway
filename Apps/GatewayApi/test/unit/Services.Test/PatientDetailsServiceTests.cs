@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 CommonName = patient.CommonName,
                 LegalName = patient.LegalName,
             };
-            IPatientDetailsService service = SetupGetPatientMock(patient, identifier, identifierType);
+            IPatientDetailsService service = SetupPatientDetailsServiceForGetPatient(patient, identifier, identifierType);
 
             // Act
             PatientDetails actual = await service.GetPatientAsync(identifier, identifierType);
@@ -91,7 +91,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool legalNameExists)
         {
             // Arrange
-            IPatientDetailsService service = SetupGetPatientThrowsInvalidDataExceptionMock(hdidExists, phnExists, commonNameExists, legalNameExists);
+            IPatientDetailsService service = SetupPatientDetailsServiceForGetPatientThrowsInvalidDataException(hdidExists, phnExists, commonNameExists, legalNameExists);
             bool shouldThrowException = (!hdidExists && !phnExists) || (!commonNameExists && !legalNameExists);
 
             // Act and Assert
@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 patientRepositoryMock.Object);
         }
 
-        private static IPatientDetailsService SetupGetPatientMock(PatientModel patientModel, string identifier, PatientIdentifierType identifierType)
+        private static IPatientDetailsService SetupPatientDetailsServiceForGetPatient(PatientModel patientModel, string identifier, PatientIdentifierType identifierType)
         {
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
                 ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.Empi, UseCache: true)
@@ -167,7 +167,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return GetPatientDetailsService(patientRepositoryMock);
         }
 
-        private static IPatientDetailsService SetupGetPatientThrowsInvalidDataExceptionMock(
+        private static IPatientDetailsService SetupPatientDetailsServiceForGetPatientThrowsInvalidDataException(
             bool hdidExists,
             bool phnExists,
             bool commonNameExists,

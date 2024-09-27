@@ -111,7 +111,7 @@ namespace AccountDataAccessTest.Strategy
                 HasDeathIndicator = false,
             };
 
-            HdidAllStrategy strategy = SetupGetPatientFromPhsaMock(patientIdentity);
+            HdidAllStrategy strategy = SetupHdidAllStrategyForGetPatientFromPhsa(patientIdentity);
 
             // Act
             PatientModel actual = await strategy.GetPatientAsync(patientRequest);
@@ -130,7 +130,7 @@ namespace AccountDataAccessTest.Strategy
             // Arrange
             PatientRequest patientRequest = new(PhsaHdidNotFound, false);
             Type expected = typeof(NotFoundException);
-            HdidAllStrategy strategy = SetupGetPatientHandlesPatientIdentityExceptionMock();
+            HdidAllStrategy strategy = SetupHdidAllStrategyForGetPatientHandlesPatientIdentityException();
 
             // Act and Assert
             await Assert.ThrowsAsync(
@@ -185,7 +185,7 @@ namespace AccountDataAccessTest.Strategy
             return new(hdidAllStrategy, cacheProvider);
         }
 
-        private static HdidAllStrategy SetupGetPatientFromPhsaMock(PatientIdentity patientIdentity)
+        private static HdidAllStrategy SetupHdidAllStrategyForGetPatientFromPhsa(PatientIdentity patientIdentity)
         {
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
             clientRegistriesDelegate.Setup(
@@ -212,7 +212,7 @@ namespace AccountDataAccessTest.Strategy
                 Mapper);
         }
 
-        private static HdidAllStrategy SetupGetPatientHandlesPatientIdentityExceptionMock()
+        private static HdidAllStrategy SetupHdidAllStrategyForGetPatientHandlesPatientIdentityException()
         {
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
             clientRegistriesDelegate.Setup(

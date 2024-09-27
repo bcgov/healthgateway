@@ -93,7 +93,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 BlockedDataSources = blockedDataSources,
             };
 
-            IUserProfileModelService service = SetupBuildUserProfileModelMock(
+            IUserProfileModelService service = SetupUserProfileModelServiceForBuildUserProfileModel(
                 currentDateTime,
                 blockedDataSources,
                 tourChangeDateIsLatest);
@@ -289,7 +289,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return userProfileDelegateMock;
         }
 
-        private static IUserProfileModelService SetupBuildUserProfileModelMock(
+        private static IUserProfileModelService SetupUserProfileModelServiceForBuildUserProfileModel(
             DateTime currentDateTime,
             IEnumerable<DataSource> blockedDataSources,
             bool tourChangeDateIsLatest = true)

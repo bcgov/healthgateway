@@ -52,7 +52,7 @@ namespace HealthGateway.CommonTests.Utils
                 _ => null,
             };
 
-            Mock<HttpContext> httpContextMock = SetupGetResourceHdidMock(lookupMethod);
+            Mock<HttpContext> httpContextMock = SetupHttpContextForGetResourceHdid(lookupMethod);
 
             // Act
             string? actual = HttpContextHelper.GetResourceHdid(httpContextMock.Object, lookupMethod);
@@ -62,7 +62,7 @@ namespace HealthGateway.CommonTests.Utils
         }
 
         [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault", Justification = "Unknown enum value expected and is handled in mock setup.")]
-        private static Mock<HttpContext> SetupGetResourceHdidMock(FhirSubjectLookupMethod lookupMethod)
+        private static Mock<HttpContext> SetupHttpContextForGetResourceHdid(FhirSubjectLookupMethod lookupMethod)
         {
             Mock<HttpRequest> httpRequestMock = new();
 
