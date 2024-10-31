@@ -121,12 +121,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     builder =>
                     {
                         builder
-                            .AddSource(otlpConfig.ServiceName)
                             .SetSampler(new AlwaysOnSampler())
-                            .SetResourceBuilder(
-                                ResourceBuilder
-                                    .CreateDefault()
-                                    .AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
+                            .ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation(
                                 options =>
