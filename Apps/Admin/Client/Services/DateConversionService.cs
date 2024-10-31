@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Client.Services
     using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
-    /// <param name="configuration">Injected application settings</param>
+    /// <param name="configuration">The injected configuration.</param>
     public class DateConversionService(IConfiguration configuration) : IDateConversionService
     {
         /// <inheritdoc/>

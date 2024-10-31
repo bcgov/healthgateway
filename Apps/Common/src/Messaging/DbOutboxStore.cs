@@ -39,10 +39,10 @@ public class DbOutboxStore : IOutboxStore
     private readonly ILogger<DbOutboxStore> logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DbOutboxStore"/> class
+    /// Initializes a new instance of the <see cref="DbOutboxStore"/> class.
     /// </summary>
     /// <param name="outboxDelegate">The outbox db delegate.</param>
-    /// <param name="backgroundJobClient">Hangfire background job client</param>
+    /// <param name="backgroundJobClient">Hangfire background job client.</param>
     /// <param name="messageSender">The destination message sender to forward messages to.</param>
     /// <param name="logger">A logger.</param>
     public DbOutboxStore(IOutboxQueueDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)

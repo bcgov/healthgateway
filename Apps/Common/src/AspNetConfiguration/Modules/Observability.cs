@@ -44,13 +44,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Serilog.Exceptions.Refit.Destructurers;
 
     /// <summary>
-    /// Methods to configure observability dependencies and settings
+    /// Methods to configure observability dependencies and settings.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public static class Observability
     {
         /// <summary>
-        /// Log output format template
+        /// Log output format template.
         /// </summary>
         public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}";
 
@@ -73,11 +73,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 
         /// <summary>
-        /// Configures http request logging
+        /// Configures http request logging.
         /// </summary>
-        /// <param name="app">An app builder</param>
-        /// <param name="excludePaths">Path to exclude - can use wildcards * for prefix or postfix</param>
-        /// <returns>The app builder</returns>
+        /// <param name="app">An app builder.</param>
+        /// <param name="excludePaths">Path to exclude - can use wildcards * for prefix or postfix.</param>
+        /// <returns>The app builder.</returns>
         public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app, string[]? excludePaths = null)
         {
             app.UseSerilogRequestLogging(

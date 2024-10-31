@@ -19,8 +19,8 @@ using System.Collections.Generic;
 using HealthGateway.Common.Messaging;
 
 /// <summary>
-/// Represents a data source(s) blocked event
+/// Represents a data source(s) blocked event.
 /// </summary>
-/// <param name="Hdid">The hdid associated with the blocked data source(s)</param>
+/// <param name="Hdid">The hdid associated with the blocked data source(s).</param>
 /// <param name="DataSources">The data sources to block.</param>
 public record DataSourcesBlockedEvent(string Hdid, IEnumerable<string> DataSources) : MessageBase;

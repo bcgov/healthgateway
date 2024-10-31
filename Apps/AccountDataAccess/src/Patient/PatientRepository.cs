@@ -65,7 +65,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientQueryFactory">The injected patient query factory.</param>
-        /// <param name="messageSender">The change feed message sender</param>
+        /// <param name="messageSender">The change feed message sender.</param>
         public PatientRepository(
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,

@@ -69,7 +69,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// GetPatientAsync throws InvalidDataException
+        /// GetPatientAsync throws InvalidDataException.
         /// </summary>
         /// <param name="hdidExists">The value indicating whether an hdid exists or not.</param>
         /// <param name="phnExists">The value indicating whether a phn exists or not.</param>

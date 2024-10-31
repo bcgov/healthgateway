@@ -22,7 +22,7 @@ namespace HealthGateway.Common.Data.Validations
     /// <summary>
     /// Abstract validator that returns a validation failure instead of throwing an exception when the model is null.
     /// </summary>
-    /// <typeparam name="T">The type of the object being validated</typeparam>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
     public abstract class AbstractNotNullValidator<T> : AbstractValidator<T?>
     {
         /// <inheritdoc/>

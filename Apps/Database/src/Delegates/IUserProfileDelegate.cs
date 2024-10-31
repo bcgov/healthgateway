@@ -161,7 +161,7 @@ namespace HealthGateway.Database.Delegates
         /// Retrieves the number of user profiles that have been closed and not re-opened.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The number of user profiles that have been closed and not re-opened</returns>
+        /// <returns>The number of user profiles that have been closed and not re-opened.</returns>
         Task<int> GetClosedUserProfileCountAsync(CancellationToken ct = default);
 
         /// <summary>

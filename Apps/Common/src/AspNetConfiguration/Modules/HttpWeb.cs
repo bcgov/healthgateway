@@ -304,10 +304,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     }
 
     /// <summary>
-    /// Settings to control request logging
+    /// Settings to control request logging.
     /// </summary>
-    /// <param name="Enabled">Enable or disable request logging</param>
-    /// <param name="ExcludedPaths">Optional request paths to exclude, can handle * wildcard in prefix or postfix</param>
+    /// <param name="Enabled">Enable or disable request logging.</param>
+    /// <param name="ExcludedPaths">Optional request paths to exclude, can handle * wildcard in prefix or postfix.</param>
     [ExcludeFromCodeCoverage]
     public record RequestLoggingSettings(bool Enabled = true, IEnumerable<string>? ExcludedPaths = null);
 }

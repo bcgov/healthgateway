@@ -26,8 +26,8 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.Models;
 
     /// <inheritdoc/>
-    /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
-    /// <param name="mappingService">The injected automapper provider.</param>
+    /// <param name="legalAgreementDelegate">The injected legal agreement delegate.</param>
+    /// <param name="mappingService">The injected mapping service.</param>
     public class LegalAgreementServiceV2(ILegalAgreementDelegate legalAgreementDelegate, IGatewayApiMappingService mappingService) : ILegalAgreementServiceV2
     {
         /// <inheritdoc/>

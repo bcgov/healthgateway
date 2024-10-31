@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
         /// Builds a user profile model.
         /// </summary>
         /// <param name="userProfile">The <see cref="UserProfile"/> to map to <see cref="UserProfileModel"/>.</param>
-        /// <param name="userProfileHistoryRecordLimit">The number of <see cref="UserProfileHistory"/> to return./></param>
+        /// <param name="userProfileHistoryRecordLimit">The number of <see cref="UserProfileHistory"/> to return.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A user profile model.</returns>
         Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, int userProfileHistoryRecordLimit, CancellationToken ct = default);

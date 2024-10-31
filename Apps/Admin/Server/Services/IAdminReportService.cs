@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
         /// <param name="ct">Cancellation token to manage async request.</param>
-        /// <returns>A collection of <see cref="BlockedAccess"/></returns>
+        /// <returns>A collection of <see cref="BlockedAccess"/>.</returns>
         Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct = default);
     }
 }
