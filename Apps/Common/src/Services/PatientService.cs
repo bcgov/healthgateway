@@ -26,7 +26,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
@@ -68,31 +67,6 @@ namespace HealthGateway.Common.Services
         }
 
         private static ActivitySource ActivitySource { get; } = new(typeof(PatientService).FullName);
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetPatientPhnAsync(string hdid, CancellationToken ct = default)
-        {
-            using Activity? activity = Source.StartActivity();
-            RequestResult<string> retVal = new()
-            {
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = "Error during PHN retrieval",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
-                },
-                ResultStatus = ResultType.Error,
-            };
-            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(hdid, ct: ct);
-            retVal.ResultError = patientResult.ResultError;
-            retVal.ResultStatus = patientResult.ResultStatus;
-            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-            {
-                retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
-            }
-
-            activity?.Stop();
-            return retVal;
-        }
 
         /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetPatientAsync(
