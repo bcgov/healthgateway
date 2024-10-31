@@ -28,8 +28,7 @@ namespace HealthGateway.Common.ErrorHandling
     using Microsoft.AspNetCore.Mvc.ModelBinding;
 
     /// <summary>
-    /// Utility methods for <see cref="Exception"/>.
-    /// Used to transform exceptions into problem details responses.
+    /// Utility methods for problem details and problem types, used to transform exceptions into problem details responses.
     /// </summary>
     public static class ExceptionUtilities
     {
@@ -65,9 +64,10 @@ namespace HealthGateway.Common.ErrorHandling
                 modelState.AddModelError(error.PropertyName, error.ErrorMessage);
             }
 
-            int statusCode = GetStatusCode(ProblemType.InvalidInput);
-            string title = GetTitle(ProblemType.InvalidInput);
-            string type = GetTagUri(ProblemType.InvalidInput);
+            Problem problem = Problem.Get(ProblemType.InvalidInput);
+            int statusCode = problem.StatusCode;
+            string title = FormatTitle(problem.Title);
+            string type = problem.TagUri.ToString();
             const string detail = "A validation error occurred.";
 
             return factory.CreateValidationProblemDetails(httpContext, modelState, statusCode, title, type, detail);
@@ -75,9 +75,10 @@ namespace HealthGateway.Common.ErrorHandling
 
         private static ProblemDetails GenerateProblemDetails(ProblemType problemType, HttpContext httpContext, ProblemDetailsFactory factory)
         {
-            int statusCode = GetStatusCode(problemType);
-            string title = GetTitle(problemType);
-            string type = GetTagUri(problemType);
+            Problem problem = Problem.Get(problemType);
+            int statusCode = problem.StatusCode;
+            string title = FormatTitle(problem.Title);
+            string type = problem.TagUri.ToString();
 
             return factory.CreateProblemDetails(httpContext, statusCode, title, type);
         }
@@ -93,45 +94,9 @@ namespace HealthGateway.Common.ErrorHandling
             };
         }
 
-        private static int GetStatusCode(ProblemType problemType)
+        private static string FormatTitle(string title)
         {
-            return problemType switch
-            {
-                ProblemType.InvalidInput => StatusCodes.Status400BadRequest,
-                ProblemType.Forbidden => StatusCodes.Status403Forbidden,
-                ProblemType.RecordNotFound => StatusCodes.Status404NotFound,
-                ProblemType.RecordAlreadyExists => StatusCodes.Status409Conflict,
-                ProblemType.ServerError => StatusCodes.Status500InternalServerError,
-                ProblemType.DatabaseError => StatusCodes.Status500InternalServerError,
-                ProblemType.InvalidData => StatusCodes.Status500InternalServerError,
-                ProblemType.UpstreamError => StatusCodes.Status502BadGateway,
-                ProblemType.MaxRetriesReached => StatusCodes.Status502BadGateway,
-                ProblemType.RefreshInProgress => StatusCodes.Status502BadGateway,
-                _ => throw new ArgumentOutOfRangeException(nameof(problemType), problemType, "Unknown problem type"),
-            };
-        }
-
-        private static string GetTitle(ProblemType problemType)
-        {
-            return problemType switch
-            {
-                ProblemType.InvalidInput => "Invalid input provided.",
-                ProblemType.Forbidden => "Not authorized to perform this operation.",
-                ProblemType.RecordNotFound => "Record was not found.",
-                ProblemType.RecordAlreadyExists => "Record already exists.",
-                ProblemType.ServerError => "An error occurred.",
-                ProblemType.DatabaseError => "A database error occurred.",
-                ProblemType.InvalidData => "Invalid data was returned.",
-                ProblemType.UpstreamError => "An error occurred with an upstream service.",
-                ProblemType.MaxRetriesReached => "Maximum retry attempts reached.",
-                ProblemType.RefreshInProgress => "Data is in the process of being refreshed.",
-                _ => throw new ArgumentOutOfRangeException(nameof(problemType), problemType, "Unknown problem type"),
-            };
-        }
-
-        private static string GetTagUri(ProblemType problemType)
-        {
-            return $"tag:healthgateway.gov.bc.ca,2024:{EnumUtility.ToEnumString(problemType, true)}";
+            return $"{title}.";
         }
 
         private static object? FormatExceptionDetails(Exception? e, int maxDepth = 9)

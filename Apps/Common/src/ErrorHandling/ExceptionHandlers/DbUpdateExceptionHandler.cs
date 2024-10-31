@@ -29,7 +29,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
 
     /// <inheritdoc/>
     /// <summary>
-    /// Transform Entity Framework <see cref="DbUpdateException"/> into a problem details response.
+    /// Logs and transforms an Entity Framework <see cref="DbUpdateException"/> into a problem details response.
     /// </summary>
     internal sealed class DbUpdateExceptionHandler(IConfiguration configuration, ILogger<DbUpdateExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
@@ -59,7 +59,7 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
 
         private void LogException(DbUpdateException dbUpdateException)
         {
-            logger.LogError(dbUpdateException, "Database error: {Message}", dbUpdateException.Message);
+            logger.LogError(dbUpdateException, "Database error");
         }
     }
 }

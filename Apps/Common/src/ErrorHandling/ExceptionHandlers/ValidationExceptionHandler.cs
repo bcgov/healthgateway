@@ -24,12 +24,13 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     /// <summary>
-    /// Transform validation exceptions into a problem details response.
+    /// Logs and transforms a FluentValidation <see cref="ValidationException"/> into a problem details response.
     /// </summary>
-    internal sealed class ValidationExceptionHandler(IConfiguration configuration, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
+    internal sealed class ValidationExceptionHandler(IConfiguration configuration, ILogger<ValidationExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -39,12 +40,15 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
                 return false;
             }
 
+            this.LogException(validationException);
+
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
             ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(validationException, httpContext, problemDetailsFactory, includeException);
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
             if (problemDetails is ValidationProblemDetails validationProblemDetails)
             {
+                // calling the method with a ValidationProblemDetails type parameter ensures the Errors property will be included in the response
                 await httpContext.Response.WriteAsJsonAsync(validationProblemDetails, cancellationToken);
             }
             else
@@ -53,6 +57,11 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
             }
 
             return true;
+        }
+
+        private void LogException(ValidationException validationException)
+        {
+            logger.LogInformation(validationException, "Validation error");
         }
     }
 }

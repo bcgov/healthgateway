@@ -43,17 +43,16 @@ namespace HealthGateway.CommonTests.ErrorHandling
         /// Gets parameters for DefaultExceptionHandler unit test(s).
         /// </summary>
         public static TheoryData<Exception> DefaultExceptionHandlerTheoryData =>
-            new()
-            {
-                new UnauthorizedAccessException(),
-                new CommunicationException(),
-                new AlreadyExistsException(),
-                new DatabaseException(),
-                new InvalidDataException(),
-                new NotFoundException(),
-                new UpstreamServiceException(),
-                new Exception("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e")))))))))),
-            };
+        [
+            new UnauthorizedAccessException(),
+            new CommunicationException(),
+            new AlreadyExistsException(),
+            new DatabaseException(),
+            new InvalidDataException(),
+            new NotFoundException(),
+            new UpstreamServiceException(),
+            new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e")))))))))),
+        ];
 
         /// <summary>
         /// DefaultExceptionHandler TryHandleAsync - Happy Path.
@@ -226,6 +225,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
 
         private static DefaultExceptionHandlerSetup GetDefaultExceptionHandlerSetup(bool includeExceptionDetailsInResponse)
         {
+            DefaultExceptionHandlerMocks mocks = new(new());
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(
                 [
@@ -233,11 +233,12 @@ namespace HealthGateway.CommonTests.ErrorHandling
                 ])
                 .Build();
 
-            return new(GetDefaultExceptionHandler(configuration));
+            return new(GetDefaultExceptionHandler(mocks, configuration));
         }
 
         private static ValidationExceptionHandlerSetup GetValidationExceptionHandlerSetup(bool includeExceptionDetailsInResponse)
         {
+            ValidationExceptionHandlerMocks mocks = new(new());
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(
                 [
@@ -245,7 +246,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
                 ])
                 .Build();
 
-            return new(GetValidationExceptionHandler(configuration));
+            return new(GetValidationExceptionHandler(mocks, configuration));
         }
 
         private static ProblemDetails GenerateProblemDetails(HttpContext httpContext, int? statusCode, string? title, string? type, string? detail, string? instance)
@@ -303,14 +304,14 @@ namespace HealthGateway.CommonTests.ErrorHandling
             return new(configuration, mocks.Logger.Object, GetProblemDetailsFactory());
         }
 
-        private static DefaultExceptionHandler GetDefaultExceptionHandler(IConfiguration configuration)
+        private static DefaultExceptionHandler GetDefaultExceptionHandler(DefaultExceptionHandlerMocks mocks, IConfiguration configuration)
         {
-            return new(configuration, GetProblemDetailsFactory());
+            return new(configuration, mocks.Logger.Object, GetProblemDetailsFactory());
         }
 
-        private static ValidationExceptionHandler GetValidationExceptionHandler(IConfiguration configuration)
+        private static ValidationExceptionHandler GetValidationExceptionHandler(ValidationExceptionHandlerMocks mocks, IConfiguration configuration)
         {
-            return new(configuration, GetProblemDetailsFactory());
+            return new(configuration, mocks.Logger.Object, GetProblemDetailsFactory());
         }
 
         private sealed record ApiExceptionHandlerSetup(ApiExceptionHandler ExceptionHandler);
@@ -324,5 +325,9 @@ namespace HealthGateway.CommonTests.ErrorHandling
         private sealed record ApiExceptionHandlerMocks(Mock<ILogger<ApiExceptionHandler>> Logger);
 
         private sealed record DbUpdateExceptionHandlerMocks(Mock<ILogger<DbUpdateExceptionHandler>> Logger);
+
+        private sealed record DefaultExceptionHandlerMocks(Mock<ILogger<DefaultExceptionHandler>> Logger);
+
+        private sealed record ValidationExceptionHandlerMocks(Mock<ILogger<ValidationExceptionHandler>> Logger);
     }
 }
