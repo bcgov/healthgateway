@@ -32,7 +32,7 @@ namespace HealthGateway.AccountDataAccess.Audit
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="ct">The cancellation token.</param>
-        /// <returns>The list of agent audits..</returns>
+        /// <returns>The list of agent audits.</returns>
         Task<IEnumerable<AgentAudit>> HandleAsync(AgentAuditQuery query, CancellationToken ct = default);
     }
 

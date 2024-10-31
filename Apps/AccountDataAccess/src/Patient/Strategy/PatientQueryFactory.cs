@@ -41,13 +41,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <returns>Requested instance of <see cref="PatientQueryStrategy"/> class.</returns>
         public PatientQueryStrategy GetPatientQueryStrategy(string strategy)
         {
-            Type? type = Type.GetType(strategy);
-
-            if (type == null)
-            {
-                throw new ArgumentException($"Invalid strategy type: {strategy}");
-            }
-
+            Type type = Type.GetType(strategy) ?? throw new ArgumentException($"Invalid strategy type {strategy}");
             return (PatientQueryStrategy)this.serviceProvider.GetRequiredService(type);
         }
     }

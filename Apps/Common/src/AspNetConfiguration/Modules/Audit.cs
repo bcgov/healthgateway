@@ -37,7 +37,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use.</param>
         public static void ConfigureAuditServices(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            logger.LogDebug("Configuring Audit Services...");
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
 
             bool redisAuditing = configuration.GetValue("RedisAuditing", false);
@@ -49,7 +48,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             }
             else
             {
-                logger.LogInformation("Configuring Auditing to use Database");
+                logger.LogInformation("Configuring Auditing to use database");
                 services.AddScoped<IAuditLogger, DbAuditLogger>();
                 services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
             }

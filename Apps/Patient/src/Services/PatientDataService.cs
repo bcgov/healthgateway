@@ -88,7 +88,7 @@ namespace HealthGateway.Patient.Services
 
         private async Task<Guid> ResolvePidFromHdidAsync(string patientHdid, CancellationToken ct)
         {
-            return (await this.personalAccountsService.GetPatientAccountAsync(patientHdid, ct)).PatientIdentity.Pid;
+            return (await this.personalAccountsService.GetPersonalAccountAsync(patientHdid, ct)).PatientIdentity.Pid;
         }
     }
 #pragma warning restore SA1600

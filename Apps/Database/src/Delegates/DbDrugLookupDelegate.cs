@@ -29,63 +29,47 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
     /// </summary>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbDrugLookupDelegate : IDrugLookupDelegate
+    public class DbDrugLookupDelegate(ILogger<DbDrugLookupDelegate> logger, GatewayDbContext dbContext) : IDrugLookupDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbDrugLookupDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected logger provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbDrugLookupDelegate(ILogger<DbDrugLookupDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<IList<DrugProduct>> GetDrugProductsByDinAsync(IList<string> drugIdentifiers, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Getting list of drug products from DB");
+            logger.LogDebug("Retrieving drug products from DB");
+
             List<string> uniqueDrugIdentifiers = drugIdentifiers.Distinct().ToList();
 
-            IList<DrugProduct> drugProducts = await this.dbContext.DrugProduct
+            IList<DrugProduct> drugProducts = await dbContext.DrugProduct
                 .Include(c => c.Company)
                 .Include(a => a.ActiveIngredient)
                 .Include(f => f.Form)
                 .Where(dp => uniqueDrugIdentifiers.Contains(dp.DrugIdentificationNumber))
                 .ToListAsync(ct);
 
-            IList<DrugProduct> retVal = drugProducts
+            return drugProducts
                 .GroupBy(dp => dp.DrugIdentificationNumber)
                 .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
                 .ToList();
-
-            this.logger.LogDebug("Finished getting list of drug products from DB");
-            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<IList<PharmaCareDrug>> GetPharmaCareDrugsByDinAsync(IList<string> drugIdentifiers, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Getting list of PharmaCare drug products from DB");
+            logger.LogDebug("Retrieving PharmaCare drug products from DB");
+
             List<string> uniqueDrugIdentifiers = drugIdentifiers.Distinct().ToList();
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
 
-            IList<PharmaCareDrug> pharmaCareDrugs = await this.dbContext.PharmaCareDrug
+            IList<PharmaCareDrug> pharmaCareDrugs = await dbContext.PharmaCareDrug
                 .Where(dp => uniqueDrugIdentifiers.Contains(dp.DinPin) && today > dp.EffectiveDate && today <= dp.EndDate)
                 .ToListAsync(ct);
 
-            IList<PharmaCareDrug> retVal = pharmaCareDrugs
+            return pharmaCareDrugs
                 .GroupBy(pcd => pcd.DinPin)
                 .Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
-
-            this.logger.LogDebug("Finished getting list of PharmaCare drug products from DB");
-            return retVal;
         }
     }
 }

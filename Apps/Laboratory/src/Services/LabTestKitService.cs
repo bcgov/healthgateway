@@ -36,8 +36,6 @@ namespace HealthGateway.Laboratory.Services
     /// <inheritdoc/>
     public class LabTestKitService : ILabTestKitService
     {
-        private const string AuthConfigSectionName = "PublicAuthentication";
-
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILabTestKitApi labTestKitApi;
         private readonly ILogger<LabTestKitService> logger;
@@ -61,7 +59,7 @@ namespace HealthGateway.Laboratory.Services
             this.authenticationDelegate = authenticationDelegate;
             this.labTestKitApi = labTestKitApi;
             this.httpContextAccessor = httpContextAccessor;
-            this.clientCredentialsRequest = this.authenticationDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
+            this.clientCredentialsRequest = authenticationDelegate.GetClientCredentialsRequestFromConfig("PublicAuthentication");
         }
 
         /// <inheritdoc/>
@@ -72,6 +70,7 @@ namespace HealthGateway.Laboratory.Services
 
             if (!(await new PublicLabTestKitValidator().ValidateAsync(testKit, ct)).IsValid)
             {
+                this.logger.LogDebug("Test kit did not pass validation");
                 return RequestResultFactory.ActionRequired<PublicLabTestKit>(ActionType.Validation, "Form data did not pass validation");
             }
 
@@ -86,12 +85,14 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
+
+                this.logger.LogDebug("Registering lab test kit (public)");
                 HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, jwtModel.AccessToken, ipAddress, ct);
                 return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical(e, "HTTP Request Exception {Message}", e.Message);
+                this.logger.LogWarning(e, "Error registering lab test kit (public)");
                 return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
         }
@@ -103,12 +104,13 @@ namespace HealthGateway.Laboratory.Services
 
             try
             {
+                this.logger.LogDebug("Registering lab test kit (authenticated)");
                 HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken, ct);
                 return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical(e, "HTTP Request Exception {Message}", e.Message);
+                this.logger.LogWarning(e, "Error registering lab test kit (authenticated)");
                 return RequestResultFactory.ServiceError<LabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
         }

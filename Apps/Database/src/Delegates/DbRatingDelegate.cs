@@ -22,6 +22,7 @@ namespace HealthGateway.Database.Delegates
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -30,59 +31,51 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbRatingDelegate : IRatingDelegate
+    public class DbRatingDelegate(ILogger<DbRatingDelegate> logger, GatewayDbContext dbContext) : IRatingDelegate
     {
-        private readonly ILogger<DbRatingDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbRatingDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbRatingDelegate(
-            ILogger<DbRatingDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<Rating>> InsertRatingAsync(Rating rating, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Inserting rating to DB");
+            logger.LogDebug("Adding rating to DB");
+            dbContext.Add(rating);
+
             DbResult<Rating> result = new();
-            this.dbContext.Add(rating);
+
             try
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
                 result.Payload = rating;
             }
             catch (DbUpdateException e)
             {
+                logger.LogError(e, "Error adding rating to DB");
                 result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug("Finished inserting rating {Rating} to DB..", rating.Id);
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<IList<Rating>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Retrieving all the ratings for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Rating.OrderBy(rating => rating.CreatedDateTime), page, pageSize, ct);
+            logger.LogDebug("Retrieving ratings from DB, page #{PageNumber} with page size {PageSize}", page, pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(dbContext.Rating.OrderBy(rating => rating.CreatedDateTime), page, pageSize, ct);
         }
 
         /// <inheritdoc/>
         public async Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Retrieving the ratings summary between {StartDate} and {EndDate}...", startDateTimeOffset, endDateTimeOffset);
-            return await this.dbContext.Rating
+            logger.LogDebug(
+                "Retrieving and summarizing ratings from DB created between {StartDate} and {EndDate}",
+                DateFormatter.ToShortDateAndTime(startDateTimeOffset.UtcDateTime),
+                DateFormatter.ToShortDateAndTime(endDateTimeOffset.UtcDateTime));
+
+            return await dbContext.Rating
                 .Where(r => r.CreatedDateTime >= startDateTimeOffset.UtcDateTime && r.CreatedDateTime <= endDateTimeOffset.UtcDateTime && !r.Skip)
                 .GroupBy(x => x.RatingValue)
                 .Select(r => new { Value = r.Key, Count = r.Count() })

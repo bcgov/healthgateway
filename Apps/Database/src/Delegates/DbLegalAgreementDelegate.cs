@@ -27,32 +27,18 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbLegalAgreementDelegate : ILegalAgreementDelegate
+    public class DbLegalAgreementDelegate(ILogger<DbLegalAgreementDelegate> logger, GatewayDbContext dbContext) : ILegalAgreementDelegate
     {
-        private readonly GatewayDbContext dbContext;
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbLegalAgreementDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbLegalAgreementDelegate(
-            ILogger<DbLegalAgreementDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         [SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
         [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
         public async Task<LegalAgreement?> GetActiveByAgreementTypeAsync(LegalAgreementType agreementTypeCode, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Getting active legal agreement by type {AgreementTypeCode}", agreementTypeCode);
-            return await this.dbContext.LegalAgreement
+            logger.LogDebug("Retrieving active legal agreement from DB of type {LegalAgreementType}", agreementTypeCode);
+            return await dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)

@@ -133,7 +133,7 @@ namespace HealthGateway.JobScheduler.Listeners
 
         private async Task ProcessAuditEventAsync(IDatabase redisDb, RedisValue auditValue, CancellationToken ct)
         {
-            logger.LogTrace("Start Processing Audit Event...");
+            logger.LogDebug("Processing audit event");
             AuditEvent? auditEvent = JsonSerializer.Deserialize<AuditEvent>(auditValue.ToString());
             if (auditEvent != null)
             {
@@ -146,11 +146,9 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (DataException e)
                 {
-                    logger.LogError(e, "Error writing to DB:\n{Message}", e.Message);
+                    logger.LogError(e, "Error processing audit event");
                 }
             }
-
-            logger.LogTrace("Completed Audit Event Processing...");
         }
     }
 }

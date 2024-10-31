@@ -220,7 +220,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
                 ])
                 .Build();
 
-            return new(GetDbUpdateExceptionHandler(mocks, configuration), mocks);
+            return new(GetDbUpdateExceptionHandler(mocks, configuration));
         }
 
         private static DefaultExceptionHandlerSetup GetDefaultExceptionHandlerSetup(bool includeExceptionDetailsInResponse)
@@ -265,7 +265,14 @@ namespace HealthGateway.CommonTests.ErrorHandling
             };
         }
 
-        private static ValidationProblemDetails GenerateValidationProblemDetails(HttpContext httpContext, ModelStateDictionary modelStateDictionary, int? statusCode, string? title, string? type, string? detail, string? instance)
+        private static ValidationProblemDetails GenerateValidationProblemDetails(
+            HttpContext httpContext,
+            ModelStateDictionary modelStateDictionary,
+            int? statusCode,
+            string? title,
+            string? type,
+            string? detail,
+            string? instance)
         {
             return new ValidationProblemDetails(modelStateDictionary)
             {
@@ -288,7 +295,15 @@ namespace HealthGateway.CommonTests.ErrorHandling
                 .Setup(s => s.CreateProblemDetails(It.IsAny<HttpContext>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>()))
                 .Returns(GenerateProblemDetails);
             problemDetailsFactory
-                .Setup(s => s.CreateValidationProblemDetails(It.IsAny<HttpContext>(), It.IsAny<ModelStateDictionary>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>()))
+                .Setup(
+                    s => s.CreateValidationProblemDetails(
+                        It.IsAny<HttpContext>(),
+                        It.IsAny<ModelStateDictionary>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<string?>(),
+                        It.IsAny<string?>(),
+                        It.IsAny<string?>(),
+                        It.IsAny<string?>()))
                 .Returns(GenerateValidationProblemDetails);
 
             return problemDetailsFactory.Object;
@@ -316,7 +331,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
 
         private sealed record ApiExceptionHandlerSetup(ApiExceptionHandler ExceptionHandler);
 
-        private sealed record DbUpdateExceptionHandlerSetup(DbUpdateExceptionHandler ExceptionHandler, DbUpdateExceptionHandlerMocks Mocks);
+        private sealed record DbUpdateExceptionHandlerSetup(DbUpdateExceptionHandler ExceptionHandler);
 
         private sealed record DefaultExceptionHandlerSetup(DefaultExceptionHandler ExceptionHandler);
 

@@ -29,78 +29,66 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbFeedbackDelegate : IFeedbackDelegate
+    public class DbFeedbackDelegate(ILogger<DbFeedbackDelegate> logger, GatewayDbContext dbContext) : IFeedbackDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbFeedbackDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbFeedbackDelegate(
-            ILogger<DbFeedbackDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<UserFeedback>> InsertUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Inserting user feedback to DB...");
+            logger.LogDebug("Adding user feedback to DB");
+            dbContext.Add(feedback);
+
             DbResult<UserFeedback> result = new();
-            this.dbContext.Add(feedback);
+
             try
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
             {
+                logger.LogError(e, "Error adding user feedback to DB");
                 result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug("Finished inserting user feedback to DB...");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task UpdateUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating the user feedback in DB...");
-            this.dbContext.Update(feedback);
+            logger.LogDebug("Updating user feedback in DB with ID {FeedbackId}", feedback.Id);
+            dbContext.Update(feedback);
 
             // Disallow updates to UserProfileId
-            this.dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
+            dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
 
-            await this.dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
 
             // Reload the entry after saving to retrieve the actual UserProfileId value
-            await this.dbContext.Entry(feedback).ReloadAsync(ct);
-
-            this.logger.LogDebug("Finished updating feedback in DB...");
+            await dbContext.Entry(feedback).ReloadAsync(ct);
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<UserFeedback>> UpdateUserFeedbackWithTagAssociationsAsync(UserFeedback feedback, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
-            this.dbContext.Update(feedback);
+            logger.LogDebug("Updating tag associations for user feedback in DB with ID {UserFeedbackId}", feedback.Id);
+            dbContext.Update(feedback);
+
             DbResult<UserFeedback> result = new();
 
             try
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Updated;
                 result.Payload = feedback;
             }
             catch (DbUpdateException e)
             {
+                logger.LogError(e, "Error updating tag associations for user feedback in DB");
                 result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
@@ -111,15 +99,15 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<UserFeedback?> GetUserFeedbackAsync(Guid feedbackId, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting user feedback from DB... {FeedbackId}", feedbackId);
-            return await this.dbContext.UserFeedback.FindAsync([feedbackId], ct);
+            logger.LogDebug("Retrieving user feedback from DB with ID {FeedbackId}", feedbackId);
+            return await dbContext.UserFeedback.FindAsync([feedbackId], ct);
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<UserFeedback>> GetUserFeedbackWithFeedbackTagsAsync(Guid feedbackId, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
-            UserFeedback? feedback = await this.dbContext.UserFeedback
+            logger.LogDebug("Retrieving user feedback and tags from DB with ID {FeedbackId}", feedbackId);
+            UserFeedback? feedback = await dbContext.UserFeedback
                 .Where(f => f.Id == feedbackId)
                 .Include(f => f.Tags)
                 .ThenInclude(t => t.AdminTag)
@@ -133,7 +121,6 @@ namespace HealthGateway.Database.Delegates
             }
             else
             {
-                this.logger.LogInformation("Unable to find user feedback using ID: {FeedbackId}", feedbackId);
                 result.Message = $"Unable to find user feedback using ID: {feedbackId}";
                 result.Status = DbStatusCode.NotFound;
             }
@@ -144,9 +131,9 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<UserFeedback>> GetAllUserFeedbackEntriesAsync(bool includeUserProfile = false, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting all user feedback entries - includeUserProfile: {IncludeUserProfile}", includeUserProfile);
+            logger.LogDebug("Retrieving all user feedback from DB");
 
-            IQueryable<UserFeedback> query = this.dbContext.UserFeedback;
+            IQueryable<UserFeedback> query = dbContext.UserFeedback;
             if (includeUserProfile)
             {
                 query = query.Include(f => f.UserProfile);

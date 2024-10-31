@@ -53,10 +53,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
-            logger.LogTrace("Getting user profile... {Hdid}", hdid);
             UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
-            logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
-
             if (userProfile == null)
             {
                 return new UserProfileModel();
@@ -65,35 +62,28 @@ namespace HealthGateway.GatewayApi.Services
             DateTime previousLastLogin = userProfile.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
-                logger.LogTrace("Updating user last login and year of birth... {Hdid}", hdid);
+                PatientDetails patient = await patientDetailsService.GetPatientAsync(hdid, ct: ct);
+
                 userProfile.LastLoginDateTime = jwtAuthTime;
                 userProfile.LastLoginClientCode = authenticationDelegate.FetchAuthenticatedUserClientType();
-
-                // Update user year of birth.
-                PatientDetails patient = await patientDetailsService.GetPatientAsync(hdid, ct: ct);
                 userProfile.YearOfBirth = patient.Birthdate.Year;
 
-                // Try to update user profile with last login time; ignore any failures
+                // ignore any failures when saving changes
+                logger.LogDebug("Updating last login date and year of birth");
                 await userProfileDelegate.UpdateAsync(userProfile, ct: ct);
-
-                logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
 
-            UserProfileModel userProfileModel = await userProfileModelService.BuildUserProfileModelAsync(userProfile, this.userProfileHistoryRecordLimit, ct);
-
-            return userProfileModel;
+            return await userProfileModelService.BuildUserProfileModelAsync(userProfile, this.userProfileHistoryRecordLimit, ct);
         }
 
         /// <inheritdoc/>
         public async Task CloseUserProfileAsync(string hdid, CancellationToken ct = default)
         {
-            logger.LogTrace("Closing user profile... {Hdid}", hdid);
-
             UserProfile userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
             if (userProfile.ClosedDateTime != null)
             {
-                logger.LogTrace("Profile already closed");
+                logger.LogDebug("User profile is already closed");
                 return;
             }
 
@@ -112,12 +102,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task RecoverUserProfileAsync(string hdid, CancellationToken ct = default)
         {
-            logger.LogTrace("Recovering user profile... {Hdid}", hdid);
             UserProfile userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
             if (userProfile.ClosedDateTime == null)
             {
-                logger.LogTrace("Profile already is active, recover not needed");
+                logger.LogDebug("User profile is not closed");
                 return;
             }
 

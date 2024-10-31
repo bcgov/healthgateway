@@ -28,30 +28,17 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbMessagingVerificationDelegate : IMessagingVerificationDelegate
+    public class DbMessagingVerificationDelegate(ILogger<DbMessagingVerificationDelegate> logger, GatewayDbContext dbContext) : IMessagingVerificationDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbMessagingVerificationDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbMessagingVerificationDelegate(
-            ILogger<DbMessagingVerificationDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<Guid> InsertAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Inserting message verification to DB...");
-            if (messageVerification.VerificationType == MessagingVerificationType.Email && messageVerification.Email == null)
+            logger.LogDebug("Adding messaging verification to DB");
+
+            if (messageVerification is { VerificationType: MessagingVerificationType.Email, Email: null })
             {
                 throw new ArgumentException("Email cannot be null when verification type is Email");
             }
@@ -62,62 +49,53 @@ namespace HealthGateway.Database.Delegates
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }
 
-            this.dbContext.Add(messageVerification);
+            dbContext.Add(messageVerification);
             if (commit)
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
             }
 
-            this.logger.LogDebug("Finished inserting message verification to DB");
             return messageVerification.Id;
         }
 
         /// <inheritdoc/>
         public async Task<MessagingVerification?> GetLastByInviteKeyAsync(Guid inviteKey, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting email message verification from DB... {InviteKey}", inviteKey);
-            MessagingVerification? retVal = await this.dbContext
+            logger.LogDebug("Retrieving email messaging verification from DB with invite key {InviteKey}", inviteKey);
+            MessagingVerification? retVal = await dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.InviteKey == inviteKey && p.VerificationType == MessagingVerificationType.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .FirstOrDefaultAsync(ct);
 
-            this.logger.LogDebug("Finished getting email message verification from DB");
             return retVal;
         }
 
         /// <inheritdoc/>
         public async Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating email message verification in DB...");
-            this.dbContext.Update(messageVerification);
+            logger.LogDebug("Updating messaging verification in DB with ID {MessagingVerificationId}", messageVerification.Id);
+            dbContext.Update(messageVerification);
+
             if (commit)
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
             }
-
-            this.logger.LogDebug("Finished updating email message verification {Id} in DB", messageVerification.Id);
         }
 
         /// <inheritdoc/>
         public async Task<MessagingVerification?> GetLastForUserAsync(string hdid, string messagingVerificationType, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting last messaging verification from DB for user... {HdId}", hdid);
-            MessagingVerification? retVal = await this.dbContext
+            logger.LogDebug("Retrieving most recent messaging verification from DB of type {MessagingVerificationType} for {Hdid}", messagingVerificationType, hdid);
+            MessagingVerification? verification = await dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.UserProfileId == hdid && p.VerificationType == messagingVerificationType)
                 .OrderByDescending(p => p.UpdatedDateTime)
                 .FirstOrDefaultAsync(ct);
 
-            if (retVal is { Deleted: true })
-            {
-                return null;
-            }
-
-            this.logger.LogDebug("Finished getting messaging verification from DB");
-            return retVal;
+            return verification?.Deleted == true ? null : verification;
         }
 
         /// <inheritdoc/>
@@ -126,14 +104,14 @@ namespace HealthGateway.Database.Delegates
             messageVerification.ExpireDate = DateTime.UtcNow;
             messageVerification.Deleted = markDeleted;
             await this.UpdateAsync(messageVerification, commit, ct);
-
-            this.logger.LogDebug("Finished Expiring messaging verification from DB");
         }
 
         /// <inheritdoc/>
         public async Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
+            logger.LogDebug("Retrieving messaging verifications for {Hdid}", hdid);
+
+            return await dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
                 .Include(mv => mv.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .AsNoTracking()

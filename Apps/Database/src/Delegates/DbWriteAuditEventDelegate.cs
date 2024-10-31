@@ -23,30 +23,17 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database context.</param>
     [ExcludeFromCodeCoverage]
-    public class DbWriteAuditEventDelegate : IWriteAuditEventDelegate
+    public class DbWriteAuditEventDelegate(ILogger<DbWriteAuditEventDelegate> logger, GatewayDbContext dbContext) : IWriteAuditEventDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbWriteAuditEventDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DbWriteAuditEventDelegate(ILogger<DbWriteAuditEventDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Writing audit event to DB... {Id}", auditEvent.Id);
-            this.dbContext.Add(auditEvent);
-            await this.dbContext.SaveChangesAsync(ct);
-            this.logger.LogDebug("Finished writing audit event to DB... {Id}", auditEvent.Id);
+            logger.LogDebug("Adding audit event to DB");
+            dbContext.Add(auditEvent);
+            await dbContext.SaveChangesAsync(ct);
         }
     }
 }

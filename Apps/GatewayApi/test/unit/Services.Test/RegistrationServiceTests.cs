@@ -34,7 +34,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -350,7 +349,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             return new RegistrationService(
                 configurationRoot,
-                new Mock<ILogger<RegistrationService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 messagingVerificationServiceMock.Object,

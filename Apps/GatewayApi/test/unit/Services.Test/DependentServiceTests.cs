@@ -439,7 +439,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateRemoveDatabaseException()
         {
-            IList<ResourceDelegate> resourceDelegates = [new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId }];
+            IList<ResourceDelegate> resourceDelegates =
+            [
+                new() { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId },
+            ];
             DbResult<ResourceDelegate> dbResult = new()
             {
                 Status = DbStatusCode.Error,

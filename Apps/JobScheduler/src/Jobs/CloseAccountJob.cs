@@ -154,11 +154,7 @@ namespace HealthGateway.JobScheduler.Jobs
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError(
-                    e,
-                    "Error deleting {Id} from Keycloak with exception: {Message}",
-                    profile.IdentityManagementId,
-                    e.Message);
+                this.logger.LogError(e, "Error deleting {Id} from Keycloak with exception", profile.IdentityManagementId);
             }
         }
     }

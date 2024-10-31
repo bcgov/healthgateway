@@ -61,19 +61,19 @@ namespace HealthGateway.Common.Auditing
             this.connectionMultiplexer = connectionMultiplexer;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RedisAuditLogger));
+        private static ActivitySource ActivitySource { get; } = new(typeof(RedisAuditLogger).FullName);
 
         /// <inheritdoc/>
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team Decision")]
         public override async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Writing Audit Event to Redis)");
-            using Activity? activity = Source.StartActivity();
+            using Activity? activity = ActivitySource.StartActivity();
+
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditEvent.UpdatedDateTime = auditEvent.CreatedDateTime;
             string auditJson = JsonSerializer.Serialize(auditEvent);
+
+            this.logger.LogDebug("Writing audit event to Redis)");
             await this.connectionMultiplexer.GetDatabase().ListRightPushAsync($"{AuditQueuePrefix}:{ActiveQueueName}", auditJson, flags: CommandFlags.FireAndForget);
-            activity?.Stop();
         }
     }
 }

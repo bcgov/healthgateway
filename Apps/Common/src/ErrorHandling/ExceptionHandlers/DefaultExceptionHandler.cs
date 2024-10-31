@@ -16,10 +16,8 @@
 namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;

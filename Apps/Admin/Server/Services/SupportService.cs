@@ -172,8 +172,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             // Invalidate blocked data source cache and then get newest value(s) from database.
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
-            string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
-            logger.LogDebug("{Message}", message);
+            logger.LogDebug("Removing item from cache with key: {CacheKey}", blockedAccessCacheKey);
             await cacheProvider.RemoveItemAsync(blockedAccessCacheKey, ct);
 
             return await patientRepository.GetDataSourcesAsync(hdid, ct);
@@ -211,7 +210,6 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
             {
-                logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
                 throw new InvalidDataException(ErrorMessages.PhnOrDateOfBirthInvalid);
             }
 

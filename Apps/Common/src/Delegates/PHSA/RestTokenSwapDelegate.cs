@@ -35,10 +35,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     /// </summary>
     public class RestTokenSwapDelegate : ITokenSwapDelegate
     {
-        /// <summary>
-        /// Configuration section key for PHSA values.
-        /// </summary>
-        private readonly ILogger logger;
+        private readonly ILogger<RestTokenSwapDelegate> logger;
         private readonly PhsaConfigV2 phsaConfigV2;
         private readonly ITokenSwapApi tokenSwapApi;
 
@@ -57,16 +54,16 @@ namespace HealthGateway.Common.Delegates.PHSA
         {
             this.logger = logger;
             this.tokenSwapApi = tokenSwapApi;
-            this.phsaConfigV2 = new PhsaConfigV2();
-            configuration.Bind(configurationSectionKey, this.phsaConfigV2); // Initializes ClientId, ClientSecret, GrantType and Scope.
+            this.phsaConfigV2 = configuration.GetSection(configurationSectionKey).Get<PhsaConfigV2>() ?? new();
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RestTokenSwapDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(RestTokenSwapDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<TokenSwapResponse>> SwapTokenAsync(string accessToken, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
+            using Activity? activity = ActivitySource.StartActivity();
+
             RequestResult<TokenSwapResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -79,14 +76,17 @@ namespace HealthGateway.Common.Delegates.PHSA
                 using FormUrlEncodedContent content = new(formData);
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+
+                this.logger.LogDebug("Swapping access token");
                 TokenSwapResponse response = await this.tokenSwapApi.SwapTokenAsync(content, ct);
+
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = response;
                 requestResult.TotalResultCount = 1;
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "TokenSwap API Exception {Message}", e.Message);
+                this.logger.LogError(e, "Error swapping access token");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with Token Swap API",

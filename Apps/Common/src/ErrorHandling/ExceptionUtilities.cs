@@ -20,7 +20,6 @@ namespace HealthGateway.Common.ErrorHandling
     using System.ServiceModel;
     using FluentValidation;
     using FluentValidation.Results;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

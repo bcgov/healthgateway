@@ -30,7 +30,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Utils;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -171,8 +170,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             return new UserPreferenceService(
                 userPreferenceDelegateMock.Object,
-                MappingService,
-                new Mock<ILogger<UserPreferenceService>>().Object);
+                MappingService);
         }
 
         private static IUserPreferenceService SetupUserPreferenceServiceForCreateUserPreference(DbResult<UserPreference> dbResult, UserPreference userPreference)

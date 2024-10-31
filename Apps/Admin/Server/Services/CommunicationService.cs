@@ -37,11 +37,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<Communication>> AddAsync(Communication communication, CancellationToken ct = default)
         {
-            logger.LogTrace("Communication received: {Id}", communication.Id.ToString());
-
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                logger.LogTrace("Adding communication... {Id}", communication.Id.ToString());
                 DbResult<Database.Models.Communication> dbResult = await communicationDelegate.AddAsync(mappingService.MapToDatabaseCommunication(communication), ct: ct);
                 return new RequestResult<Communication>
                 {
@@ -57,6 +54,7 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
+            logger.LogDebug("Communication did not pass validation");
             return new RequestResult<Communication>
             {
                 ResourcePayload = null,
@@ -74,8 +72,6 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                logger.LogTrace("Updating communication... {Id}", communication.Id.ToString());
-
                 DbResult<Database.Models.Communication> dbResult = await communicationDelegate.UpdateAsync(mappingService.MapToDatabaseCommunication(communication), ct: ct);
                 return new RequestResult<Communication>
                 {
@@ -91,6 +87,7 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
+            logger.LogDebug("Communication did not pass validation");
             return new RequestResult<Communication>
             {
                 ResourcePayload = null,
@@ -106,7 +103,6 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<Communication>>> GetAllAsync(CancellationToken ct = default)
         {
-            logger.LogTrace("Getting communication entries...");
             IList<Database.Models.Communication> communications = await communicationDelegate.GetAllAsync(ct);
             return new()
             {
@@ -121,7 +117,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
             {
-                logger.LogError("Processed communication can't be deleted");
+                logger.LogDebug("Processed communications can't be deleted");
                 return new RequestResult<Communication>
                 {
                     ResultStatus = ResultType.Error,

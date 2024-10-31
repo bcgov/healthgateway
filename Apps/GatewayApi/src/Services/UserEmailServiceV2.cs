@@ -70,8 +70,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<bool> VerifyEmailAddressAsync(string hdid, Guid inviteKey, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Verifying email address... {InviteKey}", inviteKey);
-
             MessagingVerification? matchingVerification = await this.messageVerificationDelegate.GetLastByInviteKeyAsync(inviteKey, ct);
             UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
@@ -90,7 +88,6 @@ namespace HealthGateway.GatewayApi.Services
 
             if (matchingVerification.Validated)
             {
-                this.logger.LogDebug("Email already verified");
                 throw new AlreadyExistsException("Email already verified");
             }
 
@@ -98,14 +95,12 @@ namespace HealthGateway.GatewayApi.Services
             await this.NotifyVerificationSuccessful(hdid, matchingVerification.Email!.To, ct);
             await this.QueueNotificationSettingsRequest(userProfile, ct);
 
-            this.logger.LogDebug("Email verified");
             return true;
         }
 
         /// <inheritdoc/>
         public async Task UpdateEmailAddressAsync(string hdid, string emailAddress, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating user email...");
             bool isEmpty = string.IsNullOrEmpty(emailAddress);
             Guid inviteKey = Guid.NewGuid();
 
@@ -116,7 +111,7 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? lastEmailVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
             if (lastEmailVerification != null)
             {
-                this.logger.LogInformation("Expiring old email validation for user {Hdid}", hdid);
+                this.logger.LogDebug("Expiring old email verification");
                 await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isEmpty, false, ct);
                 if (string.Equals(emailAddress, lastEmailVerification.Email?.To, StringComparison.OrdinalIgnoreCase))
                 {
@@ -133,7 +128,7 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageVerificationDelegate.InsertAsync(messagingVerification, false, ct);
             }
 
-            this.logger.LogInformation("Removing email from user {Hdid}", hdid);
+            this.logger.LogDebug("Clearing user's email address");
             userProfile.Email = null;
             userProfile.BetaFeatureCodes = [];
 
@@ -146,13 +141,11 @@ namespace HealthGateway.GatewayApi.Services
 
             if (messagingVerification != null)
             {
-                this.logger.LogInformation("Sending new email verification for user {Hdid}", hdid);
+                this.logger.LogDebug("Sending new email verification");
                 await this.jobService.SendEmailAsync(messagingVerification.Email, true, ct);
             }
 
             await this.QueueNotificationSettingsRequest(userProfile, ct);
-
-            this.logger.LogDebug("Finished updating user email");
         }
 
         private async Task IncrementEmailVerificationAttempts(string hdid, CancellationToken ct)

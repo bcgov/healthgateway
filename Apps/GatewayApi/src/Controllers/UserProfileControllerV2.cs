@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading;
@@ -291,6 +292,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<bool> VerifyEmailAddress(string hdid, Guid verificationKey, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("VerificationKey", verificationKey.ToString());
             return await this.userEmailService.VerifyEmailAddressAsync(hdid, verificationKey, ct);
         }
 
@@ -318,6 +320,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<bool> VerifySmsNumber(string hdid, string verificationCode, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("VerificationCode", verificationCode);
             return await this.userSmsService.VerifySmsNumberAsync(hdid, verificationCode, ct);
         }
 

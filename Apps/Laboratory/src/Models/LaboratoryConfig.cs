@@ -23,6 +23,11 @@ namespace HealthGateway.Laboratory.Models
     public class LaboratoryConfig
     {
         /// <summary>
+        /// The name of the configuration section.
+        /// </summary>
+        public const string ConfigSectionKey = "Laboratory";
+
+        /// <summary>
         /// Gets or sets the laboratory base endpoint.
         /// </summary>
         public Uri BaseUrl { get; set; } = null!;

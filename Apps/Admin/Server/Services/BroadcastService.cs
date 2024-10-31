@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
@@ -37,8 +36,9 @@ namespace HealthGateway.Admin.Server.Services
     public class BroadcastService : IBroadcastService
     {
         private const string HttpRequestError = "Error with HTTP Request";
+
+        private readonly ILogger<BroadcastService> logger;
         private readonly ICommonMappingService commonMappingService;
-        private readonly ILogger logger;
         private readonly ISystemBroadcastApi systemBroadcastApi;
 
         /// <summary>
@@ -54,14 +54,9 @@ namespace HealthGateway.Admin.Server.Services
             this.commonMappingService = commonMappingService;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(BroadcastService));
-
         /// <inheritdoc/>
         public async Task<RequestResult<Broadcast>> CreateBroadcastAsync(Broadcast broadcast, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Creating broadcast");
-
             RequestResult<Broadcast> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -72,6 +67,7 @@ namespace HealthGateway.Admin.Server.Services
                 ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast, ct);
                 if (!validationResults.IsValid)
                 {
+                    this.logger.LogDebug("Broadcast failed validation");
                     requestResult.ResultError = new()
                     {
                         ResultMessage = "Effective Date should be before Expiry Date",
@@ -81,7 +77,10 @@ namespace HealthGateway.Admin.Server.Services
                 else
                 {
                     BroadcastRequest broadcastRequest = this.commonMappingService.MapToBroadcastRequest(broadcast);
+
+                    this.logger.LogDebug("Creating broadcast");
                     BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest, ct);
+
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = this.commonMappingService.MapToBroadcast(response);
                     requestResult.TotalResultCount = 1;
@@ -89,7 +88,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Unable to create broadcast due to HTTP Request Exception {Error}", e.Message);
+                this.logger.LogWarning(e, "Unable to create broadcast");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = HttpRequestError,
@@ -97,16 +96,12 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            this.logger.LogDebug("Finished creating broadcast");
             return requestResult;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcastsAsync(CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Retrieving broadcasts");
-
             RequestResult<IEnumerable<Broadcast>> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -114,14 +109,16 @@ namespace HealthGateway.Admin.Server.Services
 
             try
             {
+                this.logger.LogDebug("Retrieving broadcasts");
                 IEnumerable<BroadcastResponse> response = await this.systemBroadcastApi.GetBroadcastsAsync(ct);
+
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = response.Select(this.commonMappingService.MapToBroadcast).ToList();
                 requestResult.TotalResultCount = requestResult.ResourcePayload.Count();
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Unable to get broadcast due to HTTP Request Exception {Error}", e.Message);
+                this.logger.LogWarning(e, "Unable to retrieve broadcast");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = HttpRequestError,
@@ -129,16 +126,12 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            this.logger.LogDebug("Finished retrieving broadcasts");
             return requestResult;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Updating broadcast for id: {Id}", broadcast.Id.ToString());
-
             RequestResult<Broadcast> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -149,6 +142,7 @@ namespace HealthGateway.Admin.Server.Services
                 ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast, ct);
                 if (!validationResults.IsValid)
                 {
+                    this.logger.LogDebug("Broadcast failed validation");
                     requestResult.ResultError = new()
                     {
                         ResultMessage = "Effective Date should be before Expiry Date",
@@ -158,7 +152,10 @@ namespace HealthGateway.Admin.Server.Services
                 else
                 {
                     BroadcastRequest broadcastRequest = this.commonMappingService.MapToBroadcastRequest(broadcast);
+
+                    this.logger.LogDebug("Updating broadcast");
                     BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest, ct);
+
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = this.commonMappingService.MapToBroadcast(response);
                     requestResult.TotalResultCount = 1;
@@ -166,7 +163,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Unable to update broadcast due to HTTP Request Exception {Error}", e.Message);
+                this.logger.LogWarning(e, "Error updating broadcast");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = HttpRequestError,
@@ -174,16 +171,12 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            this.logger.LogDebug("Finished updating broadcast");
             return requestResult;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Deleting broadcast for id: {Id}", broadcast.Id.ToString());
-
             RequestResult<Broadcast> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -191,14 +184,16 @@ namespace HealthGateway.Admin.Server.Services
 
             try
             {
+                this.logger.LogDebug("Deleting broadcast");
                 await this.systemBroadcastApi.DeleteBroadcastAsync(broadcast.Id.ToString(), ct);
+
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = broadcast;
                 requestResult.TotalResultCount = 1;
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Unable to delete broadcast due to HTTP Request Exception {Error}", e.Message);
+                this.logger.LogWarning(e, "Error deleting broadcast");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = HttpRequestError,
@@ -206,7 +201,6 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            this.logger.LogDebug("Finished deleting broadcast");
             return requestResult;
         }
     }

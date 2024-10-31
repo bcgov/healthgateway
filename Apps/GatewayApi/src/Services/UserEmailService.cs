@@ -46,16 +46,16 @@ namespace HealthGateway.GatewayApi.Services
     public class UserEmailService : IUserEmailService
     {
         private const int MaxVerificationAttempts = 5;
+        private const string EmailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
+        private const string WebClientConfigSection = "WebClient";
 
-        private readonly string emailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
         private readonly IEmailQueueService emailQueueService;
         private readonly int emailVerificationExpirySeconds;
-        private readonly ILogger logger;
+        private readonly ILogger<UserEmailService> logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly string webClientConfigSection = "WebClient";
-        private readonly bool notificationsChangeFeedEnabled;
+        private readonly ChangeFeedOptions changeFeedConfiguration;
         private readonly IMessageSender messageSender;
         private readonly EmailTemplateConfig emailTemplateConfig;
 
@@ -83,19 +83,16 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
-            this.emailVerificationExpirySeconds = configuration.GetSection(this.webClientConfigSection).GetValue(this.emailConfigExpirySecondsKey, 5);
+            this.emailVerificationExpirySeconds = configuration.GetSection(WebClientConfigSection).GetValue(EmailConfigExpirySecondsKey, 5);
 
             this.messageSender = messageSender;
-            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed)
-                .Get<ChangeFeedOptions>();
-            this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
+            this.changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>() ?? new();
             this.emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<bool>> ValidateEmailAsync(string hdid, Guid inviteKey, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Validating email... {InviteKey}", inviteKey);
             MessagingVerification? matchingVerification = await this.messageVerificationDelegate.GetLastByInviteKeyAsync(inviteKey, ct);
             UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct);
             if (userProfile == null ||
@@ -166,7 +163,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<bool>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.CannotPerformAction);
             }
 
-            if (this.notificationsChangeFeedEnabled)
+            if (this.changeFeedConfiguration.Notifications.Enabled)
             {
                 MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid)];
                 await this.messageSender.SendAsync(events, ct);
@@ -174,8 +171,6 @@ namespace HealthGateway.GatewayApi.Services
 
             // Update the notification settings
             await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
-
-            this.logger.LogDebug("Email validated");
 
             // Verification verified
             return new RequestResult<bool>
@@ -189,9 +184,7 @@ namespace HealthGateway.GatewayApi.Services
         [ExcludeFromCodeCoverage]
         public async Task<bool> CreateUserEmailAsync(string hdid, string emailAddress, bool isVerified, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Creating user email...");
             await this.AddVerificationEmailAsync(hdid, emailAddress, Guid.NewGuid(), isVerified, ct);
-            this.logger.LogDebug("Finished creating user email");
             return true;
         }
 
@@ -200,8 +193,6 @@ namespace HealthGateway.GatewayApi.Services
         [SuppressMessage("ReSharper", "CognitiveComplexity", Justification = "Team decision")]
         public async Task<bool> UpdateUserEmailAsync(string hdid, string emailAddress, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating user email...");
-
             UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct) ??
                                       throw new NotFoundException($"User profile not found for hdid {hdid}");
 
@@ -209,10 +200,10 @@ namespace HealthGateway.GatewayApi.Services
                           || (await new OptionalEmailAddressValidator().ValidateAsync(emailAddress, ct))?.IsValid == true;
             if (!result)
             {
-                throw new ValidationException("Invalid email address {emailAddress}");
+                throw new ValidationException($"Invalid email address: {emailAddress}");
             }
 
-            this.logger.LogInformation("Removing email from user {Hdid}", hdid);
+            this.logger.LogDebug("Clearing user's email address");
             userProfile.Email = null;
             userProfile.BetaFeatureCodes = [];
             await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
@@ -223,12 +214,12 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? lastEmailVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
             if (lastEmailVerification != null)
             {
-                this.logger.LogInformation("Expiring old email validation for user {Hdid}", hdid);
+                this.logger.LogDebug("Expiring old email verification");
                 bool isDeleted = string.IsNullOrEmpty(emailAddress);
                 await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isDeleted, ct: ct);
                 if (!isDeleted)
                 {
-                    this.logger.LogInformation("Sending new email verification for user {Hdid}", hdid);
+                    this.logger.LogDebug("Sending new email verification");
 
                     if (lastEmailVerification.Email != null
                         && !string.IsNullOrEmpty(lastEmailVerification.Email.To)
@@ -247,13 +238,13 @@ namespace HealthGateway.GatewayApi.Services
                 await this.AddVerificationEmailAsync(hdid, emailAddress, Guid.NewGuid(), ct: ct);
             }
 
-            this.logger.LogDebug("Finished updating user email");
             return true;
         }
 
         [ExcludeFromCodeCoverage]
         private async Task AddVerificationEmailAsync(string hdid, string toEmail, Guid inviteKey, bool isVerified = false, CancellationToken ct = default)
         {
+            this.logger.LogDebug("Adding verification email");
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
             Dictionary<string, string> keyValues = new()

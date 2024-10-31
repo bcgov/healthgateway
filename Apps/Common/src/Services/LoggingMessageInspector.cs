@@ -24,7 +24,7 @@ namespace HealthGateway.Common.Services
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Implementation of IClientMessageInspector for loging purposes.
+    /// Implementation of IClientMessageInspector for logging purposes.
     /// </summary>
     public class LoggingMessageInspector : IClientMessageInspector
     {
@@ -41,58 +41,54 @@ namespace HealthGateway.Common.Services
 
         /// <summary>
         /// Implementation of IClientMessageInspector
-        /// Gets called AFTER receiving a reply from the Soap Call.
+        /// Gets called AFTER receiving a SOAP reply.
         /// </summary>
         /// <param name="reply">The reply message.</param>
         /// <param name="correlationState">Correlation State.</param>
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
-            this.logger.LogTrace("Getting the reply response... {State}", reply.State);
-            using (MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue))
-            {
-                XmlDocument document = GetDocument(buffer.CreateMessage());
-                this.logger.LogDebug("Finished getting the reply response. {OuterXml}", document.OuterXml);
-                reply = buffer.CreateMessage();
-            }
+            using MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue);
+            XmlDocument document = GetDocument(buffer.CreateMessage());
+
+            this.logger.LogDebug("Received SOAP reply with state {MessageState}: {OuterXml}", reply.State, document.OuterXml);
+
+            reply = buffer.CreateMessage();
         }
 
         /// <summary>
         /// Implementation of IClientMessageInspector
-        /// Gets called BEFORE receiving a reply from the Soap Call.
+        /// Gets called BEFORE sending a SOAP request.
         /// </summary>
-        /// <param name="request">The request message to be send.</param>
+        /// <param name="request">The request message to be sent.</param>
         /// <param name="channel">The client channel.</param>
         /// <returns>The object that is returned as the correlationState argument of the AfterReceiveReply(Message, Object) method.</returns>
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            this.logger.LogTrace("Getting the reply request... {State}", request.State);
+            using MessageBuffer buffer = request.CreateBufferedCopy(int.MaxValue);
+            XmlDocument document = GetDocument(buffer.CreateMessage());
 
-            using (MessageBuffer buffer = request.CreateBufferedCopy(int.MaxValue))
-            {
-                XmlDocument document = GetDocument(buffer.CreateMessage());
-                this.logger.LogDebug("Finished getting the reply request. {OuterXml}", document.OuterXml);
-                request = buffer.CreateMessage();
-                return null!;
-            }
+            this.logger.LogDebug("Sending SOAP request with state {MessageState}: {OuterXml}", request.State, document.OuterXml);
+
+            request = buffer.CreateMessage();
+            return null!;
         }
 
         private static XmlDocument GetDocument(Message request)
         {
             XmlDocument document = new();
-            using (MemoryStream memoryStream = new())
+            using MemoryStream memoryStream = new();
+
+            // write request to memory stream
+            using (XmlWriter writer = XmlWriter.Create(memoryStream))
             {
-                // write request to memory stream
-                using (XmlWriter writer = XmlWriter.Create(memoryStream))
-                {
-                    request.WriteMessage(writer);
-                    writer.Flush();
-                }
-
-                memoryStream.Position = 0;
-
-                // load memory stream into a document
-                document.Load(memoryStream);
+                request.WriteMessage(writer);
+                writer.Flush();
             }
+
+            memoryStream.Position = 0;
+
+            // load memory stream into a document
+            document.Load(memoryStream);
 
             return document;
         }

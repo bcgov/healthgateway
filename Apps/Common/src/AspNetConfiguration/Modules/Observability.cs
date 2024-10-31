@@ -39,6 +39,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Serilog.Enrichers.Span;
     using Serilog.Events;
     using Serilog.Exceptions;
+    using Serilog.Exceptions.Core;
+    using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
+    using Serilog.Exceptions.Refit.Destructurers;
 
     /// <summary>
     /// Methods to configure observability dependencies and settings
@@ -246,7 +249,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             loggerConfiguration
                 .Enrich.WithMachineName()
                 .Enrich.FromLogContext()
-                .Enrich.WithExceptionDetails()
+                .Enrich.WithExceptionDetails(
+                    new DestructuringOptionsBuilder()
+                        .WithDefaultDestructurers()
+                        .WithDestructurers(
+                        [
+                            new DbUpdateExceptionDestructurer(),
+                            new ApiExceptionDestructurer(destructureCommonExceptionProperties: false),
+                        ]))
                 .Enrich.WithProperty("Application", serviceName)
                 .Enrich.WithEnvironmentName()
                 .Enrich.WithCorrelationId()

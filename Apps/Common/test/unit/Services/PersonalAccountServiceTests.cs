@@ -59,7 +59,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsService = GetPersonalAccountsService(expectedPersonalAccount, useCache, false, cacheProviderMock, cacheToLive);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPatientAccountResultAsync(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPersonalAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -86,7 +86,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPatientAccountResultAsync(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPersonalAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

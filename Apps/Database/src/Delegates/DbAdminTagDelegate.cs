@@ -29,87 +29,79 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbAdminTagDelegate : IAdminTagDelegate
+    public class DbAdminTagDelegate(ILogger<DbAdminTagDelegate> logger, GatewayDbContext dbContext) : IAdminTagDelegate
     {
-        private readonly ILogger<DbAdminTagDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbAdminTagDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbAdminTagDelegate(
-            ILogger<DbAdminTagDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<AdminTag>> AddAsync(AdminTag tag, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Adding AdminTag to DB...");
+            logger.LogDebug("Adding admin tag to DB: {TagName}", tag.Name);
+
             DbResult<AdminTag> result = new()
             {
                 Payload = tag,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.AdminTag.Add(tag);
+
+            dbContext.AdminTag.Add(tag);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to save AdminTag to DB {Message}", e.Message);
+                    logger.LogError(e, "Error adding admin tag to DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished adding AdminTag to DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<AdminTag>> DeleteAsync(AdminTag tag, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Deleting AdminTag from DB...");
+            logger.LogDebug("Removing admin tag from DB: {TagName}", tag.Name);
+
             DbResult<AdminTag> result = new()
             {
                 Payload = tag,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.AdminTag.Remove(tag);
+
+            dbContext.AdminTag.Remove(tag);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error removing admin tag from DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished deleting AdminTag in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<IEnumerable<AdminTag>> GetAllAsync(CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting all AdminTag from DB...");
-            return await this.dbContext.AdminTag
+            logger.LogDebug("Retrieving admin tags from DB");
+
+            return await dbContext.AdminTag
                 .OrderBy(o => o.Name)
                 .ToListAsync(ct);
         }
@@ -117,10 +109,14 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<DbResult<IEnumerable<AdminTag>>> GetAdminTagsAsync(ICollection<Guid> adminTagIds, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting admin tags from DB for Admin Tag Ids: {AdminTagId}", adminTagIds.ToString());
-            DbResult<IEnumerable<AdminTag>> result = new();
-            result.Payload = await this.dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToListAsync(ct);
-            result.Status = DbStatusCode.Read;
+            logger.LogDebug("Retrieving admin tags from DB matching tag IDs {AdminTagIds}", adminTagIds);
+
+            DbResult<IEnumerable<AdminTag>> result = new()
+            {
+                Payload = await dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToListAsync(ct),
+                Status = DbStatusCode.Read,
+            };
+
             return result;
         }
     }

@@ -49,7 +49,7 @@ namespace HealthGateway.Common.Services
         private const string Update = "UPDATE";
         private const string Insert = "INSERT";
 
-        private readonly ILogger logger;
+        private readonly ILogger<CommunicationService> logger;
         private readonly ICommunicationDelegate communicationDelegate;
         private readonly ICacheProvider cacheProvider;
 
@@ -70,19 +70,18 @@ namespace HealthGateway.Common.Services
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
         public async Task<RequestResult<Communication?>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
-            RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communicationType);
-            if (cacheEntry == null)
+            RequestResult<Communication?>? result = this.GetCommunicationFromCache(communicationType);
+            if (result == null)
             {
-                this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
                 try
                 {
                     Communication? communication = await this.communicationDelegate.GetNextAsync(communicationType, ct);
-                    cacheEntry = this.AddCommunicationToCache(communication, communicationType);
+                    result = this.AddCommunicationToCache(communication, communicationType);
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogError(e, "Error getting Communication from DB {Message}", e.Message);
-                    cacheEntry = new()
+                    this.logger.LogError(e, "Error retrieving active communication");
+                    result = new()
                     {
                         ResultStatus = ResultType.Error,
                         ResultError = new()
@@ -94,17 +93,17 @@ namespace HealthGateway.Common.Services
                 }
             }
 
-            if (DateTime.UtcNow < cacheEntry.ResourcePayload?.EffectiveDateTime)
+            if (DateTime.UtcNow < result.ResourcePayload?.EffectiveDateTime)
             {
-                this.logger.LogDebug("Banner is future dated, returning empty RequestResult");
-                cacheEntry = new()
+                this.logger.LogDebug("There is no active communication for communication type {CommunicationType}", communicationType);
+                result = new()
                 {
                     ResultStatus = ResultType.Success,
                     TotalResultCount = 0,
                 };
             }
 
-            return cacheEntry;
+            return result;
         }
 
         /// <inheritdoc/>
@@ -149,13 +148,13 @@ namespace HealthGateway.Common.Services
                 CommunicationType.Banner => BannerCacheKey,
                 CommunicationType.InApp => InAppCacheKey,
                 CommunicationType.Mobile => MobileCacheKey,
-                _ => throw new NotImplementedException($"CommunicationType {communicationType} is not supported"),
+                _ => throw new NotImplementedException($"Communication type {communicationType} is not supported"),
             };
         }
 
         private void ProcessChangeUncached(BannerChangeEvent changeEvent, Communication communication)
         {
-            this.logger.LogInformation("No Communications in the Cache, processing {Action} for communication {Id}", changeEvent.Action, communication.Id);
+            this.logger.LogDebug("{Action} change event for communication {CommunicationId} with no communication cached", changeEvent.Action, communication.Id);
             if (changeEvent.Action is Insert or Update && communication.CommunicationStatusCode is CommunicationStatus.New)
             {
                 this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
@@ -164,44 +163,50 @@ namespace HealthGateway.Common.Services
 
         private void ProcessChangeSameCommunicationCached(BannerChangeEvent changeEvent, Communication communication)
         {
-            this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} found in Cache", changeEvent.Action, communication.Id);
+            this.logger.LogDebug("{Action} change event for communication {CommunicationId} found in cache", changeEvent.Action, communication.Id);
+
+            // in all cases, the old communication is removed from the cache
             this.RemoveCommunicationFromCache(communication.CommunicationTypeCode);
+
+            // for delete actions, an empty result is not cached in place of the old communication, because a future-dated communication may exist
+            // for insert and update actions, the updated communication is cached in place of the old communication
             if (changeEvent.Action is Insert or Update && communication.CommunicationStatusCode is CommunicationStatus.New)
             {
                 this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
-            }
-            else
-            {
-                // Delete: We don't cache the empty result as a future dated comm may exist and the next call to GetActiveBanner will find it.
-                this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} was processed and removed from Cache", changeEvent.Action, communication.Id);
             }
         }
 
         private void ProcessChangeDifferentCommunicationCached(BannerChangeEvent changeEvent, Communication newCommunication, Communication oldCommunication)
         {
-            // Check the new comm to see if it is effective earlier and not expired
+            // check the new communication to see if it is effective earlier and not expired
             if (DateTime.UtcNow < newCommunication.ExpiryDateTime && newCommunication.EffectiveDateTime < oldCommunication.EffectiveDateTime &&
                 newCommunication.CommunicationStatusCode is CommunicationStatus.New)
             {
-                this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} replacing {CachedId}", changeEvent.Action, newCommunication.Id, oldCommunication.Id);
+                this.logger.LogDebug("{Action} change event for communication {CommunicationId} is replacing {OldCommunicationId}", changeEvent.Action, newCommunication.Id, oldCommunication.Id);
                 this.AddCommunicationToCache(newCommunication, newCommunication.CommunicationTypeCode);
             }
             else
             {
-                this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} being ignored", changeEvent.Action, newCommunication.Id);
+                this.logger.LogDebug("{Action} change event for communication {CommunicationId} being ignored", changeEvent.Action, newCommunication.Id);
             }
         }
 
         private void RemoveCommunicationFromCache(CommunicationType communicationType)
         {
             string cacheKey = GetCacheKey(communicationType);
+            this.logger.LogDebug("Removing communication from cache for {CacheIdentifierType}", communicationType);
             this.cacheProvider.RemoveItem(cacheKey);
         }
 
         private RequestResult<Communication?>? GetCommunicationFromCache(CommunicationType communicationType)
         {
             string cacheKey = GetCacheKey(communicationType);
-            return this.cacheProvider.GetItem<RequestResult<Communication?>>(cacheKey);
+
+            this.logger.LogDebug("Accessing communication cache for {CacheIdentifierType}", communicationType);
+            RequestResult<Communication?>? result = this.cacheProvider.GetItem<RequestResult<Communication?>>(cacheKey);
+
+            this.logger.LogDebug("Communication cache access outcome: {CacheResult}", result == null ? "miss" : "hit");
+            return result;
         }
 
         private RequestResult<Communication?> AddCommunicationToCache(Communication? communication, CommunicationType communicationType)
@@ -212,29 +217,35 @@ namespace HealthGateway.Common.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
             };
+
             DateTime now = DateTime.UtcNow;
             TimeSpan? expiry = null;
+
             if (communication != null && now < communication.ExpiryDateTime)
             {
                 if (now < communication.EffectiveDateTime)
                 {
-                    this.logger.LogInformation("Communication {Id} is not effective, cached empty communication until {EffectiveDateTime}", communication.Id, communication.EffectiveDateTime);
+                    // communication is not yet active
+                    this.logger.LogDebug("Caching empty communication until {EffectiveDateTime}", communication.EffectiveDateTime);
                     expiry = communication.EffectiveDateTime - now;
                 }
                 else
                 {
-                    this.logger.LogInformation("Caching communication {Id} until {ExpiryDateTime}", communication.Id, communication.EffectiveDateTime);
+                    // communication is active
+                    this.logger.LogDebug("Caching communication {CommunicationId} until {ExpiryDateTime}", communication.Id, communication.ExpiryDateTime);
                     expiry = communication.ExpiryDateTime - now;
                     cacheEntry.TotalResultCount = 1;
                 }
             }
             else
             {
-                this.logger.LogInformation("Communication is expired or null, caching Empty RequestResult forever");
+                // communication is expired or null
+                this.logger.LogDebug("Caching empty communication with no expiration");
                 cacheEntry.ResourcePayload = null;
             }
 
             string cacheKey = GetCacheKey(communicationType);
+            this.logger.LogDebug("Storing communication in cache for {CacheIdentifierType}", communicationType);
             this.cacheProvider.AddItem(cacheKey, cacheEntry, expiry);
             return cacheEntry;
         }

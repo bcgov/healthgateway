@@ -17,7 +17,6 @@ namespace HealthGateway.Encounter.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
@@ -40,7 +39,7 @@ namespace HealthGateway.Encounter.Delegates
     {
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IHospitalVisitApi hospitalVisitApi;
-        private readonly ILogger logger;
+        private readonly ILogger<RestHospitalVisitDelegate> logger;
         private readonly PhsaConfig phsaConfig;
 
         /// <summary>
@@ -59,22 +58,17 @@ namespace HealthGateway.Encounter.Delegates
             this.authenticationDelegate = authenticationDelegate;
             this.hospitalVisitApi = hospitalVisitApi;
             this.logger = logger;
-            this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
+            this.phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
         }
-
-        private static ActivitySource Source { get; } = new(nameof(RestHospitalVisitDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
-
             string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             try
             {
+                this.logger.LogDebug("Retrieving hospital visits");
                 PhsaResult<IEnumerable<HospitalVisit>> response = await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken, ct);
 
                 return RequestResultFactory.Success(
@@ -88,7 +82,7 @@ namespace HealthGateway.Encounter.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError(e, "Error while retrieving Hospital Visits... {Message}", e.Message);
+                this.logger.LogWarning(e, "Error retrieving hospital visits");
                 return RequestResultFactory.ServiceError<PhsaResult<IEnumerable<HospitalVisit>>>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error while retrieving Hospital Visits");
             }
         }

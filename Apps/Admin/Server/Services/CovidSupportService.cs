@@ -100,11 +100,10 @@ namespace HealthGateway.Admin.Server.Services
 
         private VaccinationStatus GetVaccinationStatus(VaccineStatusResult result)
         {
-            logger.LogDebug("Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
+            logger.LogDebug("Vaccination Status Indicator: {VaccinationStatusIndicator}", result.StatusIndicator);
 
             if (!Enum.TryParse(result.StatusIndicator, out VaccineState state))
             {
-                logger.LogError("Failed to parse Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
                 throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown);
             }
 
@@ -144,7 +143,7 @@ namespace HealthGateway.Admin.Server.Services
 
             while (processing && retryCount++ <= this.bcmpConfig.MaxRetries)
             {
-                logger.LogInformation("Waiting to fetch Vaccine Proof Asset...");
+                logger.LogDebug("Retrieving vaccine proof");
                 await Task.Delay(this.bcmpConfig.BackOffMilliseconds, ct);
 
                 result = await vaccineProofDelegate.GetAssetAsync(assetUri, ct);
@@ -177,11 +176,6 @@ namespace HealthGateway.Admin.Server.Services
 
             if (response.ResultStatus != ResultType.Success)
             {
-                logger.LogError(
-                    "Error mailing via BCMailPlus - error code: {ResultErrorCode} and error message: {ResultErrorMessage}",
-                    response.ResultError?.ErrorCode,
-                    response.ResultError?.ResultMessage);
-
                 throw new UpstreamServiceException(response.ResultError?.ResultMessage);
             }
         }

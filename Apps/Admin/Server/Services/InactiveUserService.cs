@@ -122,7 +122,7 @@ public class InactiveUserService : IInactiveUserService
         }
         catch (ApiException e)
         {
-            this.logger.LogError(e, "Error communicating with Keycloak, exception: {Exception}", e.Message);
+            this.logger.LogError(e, "Error communicating with Keycloak");
             requestResult.ResultStatus = ResultType.Error;
             requestResult.ResultError = new RequestResultError
             {
@@ -136,9 +136,9 @@ public class InactiveUserService : IInactiveUserService
 
     private void PopulateUserDetails(List<AdminUserProfileView> inactiveUsers, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
     {
-        this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
+        this.logger.LogDebug("Keycloak {Role} count: {Count}...", role, identityAccessUsers.Count);
         List<UserRepresentation> users = identityAccessUsers.FindAll(x1 => inactiveUsers.Exists(x2 => x1.Username == x2.Username));
-        this.logger.LogDebug("Keycloak {Role} users that exist in inactiveUsers list - count: {Count}...", role.ToString(), users.Count);
+        this.logger.LogDebug("Keycloak {Role} users that exist in inactiveUsers list - count: {Count}...", role, users.Count);
 
         foreach (AdminUserProfileView inactiveUser in inactiveUsers)
         {
@@ -161,7 +161,7 @@ public class InactiveUserService : IInactiveUserService
         ICollection<UserRepresentation> identityAccessUsers,
         IdentityAccessRole role)
     {
-        this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
+        this.logger.LogDebug("Keycloak {Role} count: {Count}...", role, identityAccessUsers.Count);
 
         // Filter identities from keycloak where inactive (database) user's username does not match keycloak user's username
         // and active (database) user's username does not match keycloak users username

@@ -26,18 +26,15 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     /// <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
     /// <param name="mappingService">The injected automapper provider.</param>
-    /// <param name="logger">The injected logger provider.</param>
-    public class UserPreferenceService(IUserPreferenceDelegate userPreferenceDelegate, IGatewayApiMappingService mappingService, ILogger<UserPreferenceService> logger) : IUserPreferenceService
+    public class UserPreferenceService(IUserPreferenceDelegate userPreferenceDelegate, IGatewayApiMappingService mappingService) : IUserPreferenceService
     {
         /// <inheritdoc/>
         public async Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
-            logger.LogTrace("Updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
             UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
             DbResult<UserPreference> dbResult = await userPreferenceDelegate.UpdateUserPreferenceAsync(userPreference, ct: ct);
 
@@ -49,7 +46,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default)
         {
-            logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
             UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
             DbResult<UserPreference> dbResult = await userPreferenceDelegate.CreateUserPreferenceAsync(userPreference, ct: ct);
 
@@ -61,7 +57,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<Dictionary<string, UserPreferenceModel>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
         {
-            logger.LogTrace("Getting user preference... {Hdid}", hdid);
             IEnumerable<UserPreference> userPreferences = await userPreferenceDelegate.GetUserPreferencesAsync(hdid, ct);
             return userPreferences.Select(mappingService.MapToUserPreferenceModel).ToDictionary(x => x.Preference, x => x);
         }

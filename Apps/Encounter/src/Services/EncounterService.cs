@@ -17,9 +17,7 @@ namespace HealthGateway.Encounter.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
@@ -81,8 +79,7 @@ namespace HealthGateway.Encounter.Services
             this.hospitalVisitDelegate = hospitalVisitDelegate;
             this.patientRepository = patientRepository;
             this.mappingService = mappingService;
-            this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
+            this.phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
             this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions")
                 .Get<string>()
                 ?
@@ -91,54 +88,48 @@ namespace HealthGateway.Encounter.Services
                 .ToList() ?? [];
         }
 
-        private static ActivitySource Source { get; } = new(nameof(EncounterService));
-
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncountersAsync(string hdid, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-
-            this.logger.LogDebug("Getting encounters");
-            this.logger.LogTrace("User hdid: {Hdid}", hdid);
-
             RequestResult<IEnumerable<EncounterModel>> result = new();
-
             if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit, ct))
             {
                 result.ResultStatus = ResultType.Success;
-                result.ResourcePayload = Enumerable.Empty<EncounterModel>();
+                result.ResourcePayload = [];
                 result.TotalResultCount = 0;
                 return result;
             }
 
-            // Retrieve the phn
+            // to form the OdrHistoryQuery, the patient's PHN must be retrieved
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
             if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
             {
+                string ipv4Address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!.MapToIPv4().ToString();
                 PatientModel patient = patientResult.ResourcePayload;
-                OdrHistoryQuery mspHistoryQuery = new()
+                OdrHistoryQuery odrHistoryQuery = new()
                 {
                     StartDate = patient.Birthdate,
                     EndDate = DateTime.Now,
                     Phn = patient.PersonalHealthNumber,
                     PageSize = 20000,
                 };
-                IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
-                string ipv4Address = address.MapToIPv4().ToString();
-                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address, ct);
+
+                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(odrHistoryQuery, hdid, ipv4Address, ct);
+
                 result.ResultStatus = response.ResultStatus;
                 result.ResultError = response.ResultError;
+
                 if (response.ResultStatus == ResultType.Success)
                 {
-                    result.PageSize = mspHistoryQuery.PageSize;
-                    result.PageIndex = mspHistoryQuery.PageNumber;
+                    result.PageSize = odrHistoryQuery.PageSize;
+                    result.PageIndex = odrHistoryQuery.PageNumber;
+
                     if (response.ResourcePayload is { Claims: not null })
                     {
                         result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                        IEnumerable<Claim> filteredClaims = response.ResourcePayload.Claims.Where(
-                            c => !this.excludedFeeDescriptions
-                                .Exists(d => c.FeeDesc.StartsWith(d, StringComparison.OrdinalIgnoreCase)));
-                        result.ResourcePayload = filteredClaims.Select(this.mappingService.MapToEncounterModel)
+                        result.ResourcePayload = response.ResourcePayload.Claims
+                            .Where(c => !this.excludedFeeDescriptions.Exists(d => c.FeeDesc.StartsWith(d, StringComparison.OrdinalIgnoreCase)))
+                            .Select(this.mappingService.MapToEncounterModel)
                             .GroupBy(e => e.Id)
                             .Select(g => g.First());
                     }
@@ -153,61 +144,53 @@ namespace HealthGateway.Encounter.Services
                 result.ResultError = patientResult.ResultError;
             }
 
-            this.logger.LogDebug("Finished getting history of medication statements");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            RequestResult<HospitalVisitResult> result = new()
             {
-                this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
-                RequestResult<HospitalVisitResult> result = new()
-                {
-                    ResourcePayload = new(),
-                    TotalResultCount = 0,
-                };
+                ResourcePayload = new(),
+                TotalResultCount = 0,
+            };
 
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit, ct))
-                {
-                    result.ResultStatus = ResultType.Success;
-                    result.ResourcePayload.HospitalVisits = Enumerable.Empty<HospitalVisitModel>();
-                    result.ResourcePayload.Loaded = true;
-                    result.ResourcePayload.Queued = false;
-                    return result;
-                }
-
-                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid, ct);
-
-                if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
-                {
-                    result.ResultStatus = ResultType.Success;
-                    result.TotalResultCount = hospitalVisitResult.TotalResultCount;
-                    result.ResourcePayload.HospitalVisits = hospitalVisitResult.ResourcePayload.Result?.Select(this.mappingService.MapToHospitalVisitModel).ToList() ?? [];
-                    result.PageIndex = hospitalVisitResult.PageIndex;
-                    result.PageSize = hospitalVisitResult.PageSize;
-                }
-
-                PhsaLoadState? loadState = hospitalVisitResult.ResourcePayload?.LoadState;
-
-                if (loadState != null)
-                {
-                    result.ResourcePayload.Queued = loadState.Queued;
-                    result.ResourcePayload.Loaded = !loadState.RefreshInProgress;
-                    if (loadState.RefreshInProgress)
-                    {
-                        result.ResultStatus = ResultType.ActionRequired;
-                        result.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
-                        result.ResourcePayload.RetryIn = Math.Max(
-                            loadState.BackOffMilliseconds,
-                            this.phsaConfig.BackOffMilliseconds);
-                    }
-                }
-
-                this.logger.LogDebug("Finished getting hospital visits for hdid: {Hdid}", hdid);
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit, ct))
+            {
+                result.ResultStatus = ResultType.Success;
+                result.ResourcePayload.HospitalVisits = [];
+                result.ResourcePayload.Loaded = true;
+                result.ResourcePayload.Queued = false;
                 return result;
             }
+
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid, ct);
+            if (hospitalVisitResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
+            {
+                result.ResultStatus = ResultType.Success;
+                result.TotalResultCount = hospitalVisitResult.TotalResultCount;
+                result.ResourcePayload.HospitalVisits = hospitalVisitResult.ResourcePayload.Result?.Select(this.mappingService.MapToHospitalVisitModel).ToList() ?? [];
+                result.PageIndex = hospitalVisitResult.PageIndex;
+                result.PageSize = hospitalVisitResult.PageSize;
+            }
+
+            PhsaLoadState? loadState = hospitalVisitResult.ResourcePayload?.LoadState;
+            if (loadState != null)
+            {
+                result.ResourcePayload.Queued = loadState.Queued;
+                result.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+
+                if (loadState.RefreshInProgress)
+                {
+                    this.logger.LogDebug("Hospital visit refresh in progress");
+                    result.ResultStatus = ResultType.ActionRequired;
+                    result.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                    result.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
+                }
+            }
+
+            return result;
         }
     }
 }
