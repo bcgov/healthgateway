@@ -71,13 +71,13 @@ public enum ProblemType
     UpstreamError,
 
     /// <summary>
-    /// Maximum number of retries has been reached.
+    /// Maximum number of retry attempts has been reached.
     /// </summary>
     [EnumMember(Value = "max-retries-reached")]
     MaxRetriesReached,
 
     /// <summary>
-    /// Dataset is in the process of being refreshed.
+    /// Data is in the process of being refreshed.
     /// </summary>
     [EnumMember(Value = "refresh-in-progress")]
     RefreshInProgress,

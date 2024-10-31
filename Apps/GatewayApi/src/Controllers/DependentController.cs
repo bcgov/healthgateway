@@ -21,14 +21,12 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Web API to handle dependent interactions.
@@ -40,22 +38,16 @@ namespace HealthGateway.GatewayApi.Controllers
 #pragma warning disable ASP0018 // hdid is a valid route parameter without being consumed in the method body
     public class DependentController
     {
-        private readonly ILogger logger;
         private readonly IDependentService dependentService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentController"/> class.
         /// </summary>
-        /// <param name="logger">The service Logger.</param>
         /// <param name="dependentService">The injected user feedback service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        public DependentController(
-            ILogger<DependentController> logger,
-            IDependentService dependentService,
-            IHttpContextAccessor httpContextAccessor)
+        public DependentController(IDependentService dependentService, IHttpContextAccessor httpContextAccessor)
         {
-            this.logger = logger;
             this.dependentService = dependentService;
             this.httpContextAccessor = httpContextAccessor;
         }
@@ -101,14 +93,8 @@ namespace HealthGateway.GatewayApi.Controllers
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             string delegateHdId = user?.FindFirst("hdid")?.Value ?? string.Empty;
-            RequestResult<DependentModel> result = await this.dependentService.AddDependentAsync(delegateHdId, addDependentRequest, ct);
 
-            if (result.ResultStatus == ResultType.Error)
-            {
-                this.logger.LogError("Error adding a dependent: {Error}", result.ResultError);
-            }
-
-            return result;
+            return await this.dependentService.AddDependentAsync(delegateHdId, addDependentRequest, ct);
         }
 
         /// <summary>

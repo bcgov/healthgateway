@@ -28,7 +28,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to handle patient notes interactions.
+    /// Web API for notifications (web alerts).
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]

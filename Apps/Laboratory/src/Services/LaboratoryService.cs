@@ -38,11 +38,6 @@ namespace HealthGateway.Laboratory.Services
     /// <inheritdoc/>
     public class LaboratoryService : ILaboratoryService
     {
-        /// <summary>
-        /// The configuration section name for Laboratory.
-        /// </summary>
-        public const string LabConfigSectionKey = "Laboratory";
-
         private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly IAuthenticationDelegate authenticationDelegate;
@@ -74,9 +69,7 @@ namespace HealthGateway.Laboratory.Services
             this.authenticationDelegate = authenticationDelegate;
             this.patientRepository = patientRepository;
             this.mappingService = mappingService;
-
-            this.labConfig = new();
-            configuration.Bind(LabConfigSectionKey, this.labConfig);
+            this.labConfig = configuration.GetSection(LaboratoryConfig.ConfigSectionKey).Get<LaboratoryConfig>() ?? new();
         }
 
         /// <inheritdoc/>
@@ -95,14 +88,14 @@ namespace HealthGateway.Laboratory.Services
             string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (accessToken == null)
             {
-                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
+                this.logger.LogError(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<Covid19OrderResult>(UnauthorizedResultError());
             }
 
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19OrdersAsync(accessToken, hdid, pageIndex, ct);
 
             PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
-            if (loadState != null && loadState.RefreshInProgress)
+            if (loadState is { RefreshInProgress: true })
             {
                 return RequestResultFactory.ActionRequired(
                     new Covid19OrderResult
@@ -142,7 +135,7 @@ namespace HealthGateway.Laboratory.Services
                     {
                         Loaded = true,
                         Queued = false,
-                        LaboratoryOrders = Enumerable.Empty<LaboratoryOrder>(),
+                        LaboratoryOrders = [],
                     },
                 };
             }
@@ -150,14 +143,14 @@ namespace HealthGateway.Laboratory.Services
             string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (string.IsNullOrEmpty(accessToken))
             {
-                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
+                this.logger.LogError(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<LaboratoryOrderResult>(UnauthorizedResultError());
             }
 
             RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummaryAsync(hdid, accessToken, ct);
 
             PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
-            if (loadState != null && loadState.RefreshInProgress)
+            if (loadState is { RefreshInProgress: true })
             {
                 return RequestResultFactory.ActionRequired(
                     new LaboratoryOrderResult
@@ -193,7 +186,7 @@ namespace HealthGateway.Laboratory.Services
             string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             if (string.IsNullOrEmpty(accessToken))
             {
-                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
+                this.logger.LogError(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<LaboratoryReport>(UnauthorizedResultError());
             }
 

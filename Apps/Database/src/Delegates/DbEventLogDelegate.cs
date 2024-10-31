@@ -26,46 +26,35 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbEventLogDelegate : IEventLogDelegate
+    public class DbEventLogDelegate(ILogger<DbEventLogDelegate> logger, GatewayDbContext dbContext) : IEventLogDelegate
     {
-        private readonly ILogger<DbEventLogDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbEventLogDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbEventLogDelegate(
-            ILogger<DbEventLogDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<EventLog>> WriteEventLogAsync(EventLog eventLog, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Inserting event log to DB...");
+            logger.LogDebug("Adding event log to DB");
+
             DbResult<EventLog> result = new();
-            this.dbContext.Add(eventLog);
+
+            dbContext.Add(eventLog);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
+                    logger.LogError(e, "Error adding event log to DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished inserting event log to DB...");
             return result;
         }
     }

@@ -115,7 +115,7 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (NpgsqlException e)
                 {
-                    logger.LogError(e, "Database Error encountered in Banner Listener: {Channel}\n{Message}", Channel, e.Message);
+                    logger.LogError(e, "Database Error encountered in Banner Listener: {Channel}", Channel);
                     retryCount++;
                     await this.HandleExceptionAsync(con, retryCount, stoppingToken);
                 }

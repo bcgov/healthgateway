@@ -30,160 +30,156 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Note delegate.
     /// </summary>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbNoteDelegate : INoteDelegate
+    public class DbNoteDelegate(ILogger<DbNoteDelegate> logger, GatewayDbContext dbContext) : INoteDelegate
     {
-        private readonly ILogger<DbNoteDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbNoteDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbNoteDelegate(
-            ILogger<DbNoteDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<IList<Note>>> GetNotesAsync(string hdId, int offset = 0, int pageSize = 500, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting Notes for {HdId}...", hdId);
-            DbResult<IList<Note>> result = new();
-            result.Payload = await this.dbContext.Note
-                .Where(p => p.HdId == hdId)
-                .OrderBy(o => o.JournalDate)
-                .Skip(offset)
-                .Take(pageSize)
-                .ToListAsync(ct);
-            result.Status = DbStatusCode.Read;
-            return result;
+            logger.LogDebug("Retrieving notes for {Hdid}, offset {Offset} with page size {PageSize}", hdId, offset, pageSize);
+            return new()
+            {
+                Payload = await dbContext.Note
+                    .Where(p => p.HdId == hdId)
+                    .OrderBy(o => o.JournalDate)
+                    .Skip(offset)
+                    .Take(pageSize)
+                    .ToListAsync(ct),
+                Status = DbStatusCode.Read,
+            };
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Note>> AddNoteAsync(Note note, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Adding Note to DB...");
+            logger.LogDebug("Adding note to DB");
+            dbContext.Note.Add(note);
+
             DbResult<Note> result = new()
             {
                 Payload = note,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Note.Add(note);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to save note to DB {Message}", e.Message);
+                    logger.LogError(e, "Error adding note to DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished adding Note in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Note>> UpdateNoteAsync(Note note, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating Note request in DB...");
+            logger.LogDebug("Updating note in DB");
+            dbContext.Note.Update(note);
+            dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
+
             DbResult<Note> result = new()
             {
                 Payload = note,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Note.Update(note);
-            this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error updating note in DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished updating Note in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<IEnumerable<Note>>> BatchUpdateAsync(IEnumerable<Note> notes, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating Note request in DB...");
+            logger.LogDebug("Updating notes in DB");
+
             DbResult<IEnumerable<Note>> result = new()
             {
                 Payload = notes.ToList(),
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Note.UpdateRange(result.Payload);
+
+            dbContext.Note.UpdateRange(result.Payload);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error updating notes in DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished updating Note in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Note>> DeleteNoteAsync(Note note, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Deleting Note from DB...");
+            logger.LogDebug("Removing note from DB");
+
+            dbContext.Note.Remove(note);
+            dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
+
             DbResult<Note> result = new()
             {
                 Payload = note,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Note.Remove(note);
-            this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error removing note from DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished deleting Note in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<IList<Note>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Retrieving all the notes for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Note.OrderBy(note => note.CreatedDateTime), page, pageSize, ct);
+            logger.LogDebug("Retrieving notes from DB, page #{PageNumber} with page size {PageSize}", page, pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(dbContext.Note.OrderBy(note => note.CreatedDateTime), page, pageSize, ct);
         }
     }
 }

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -62,16 +63,18 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         protected bool IsSystemDelegated(AuthorizationHandlerContext context, GeneralFhirRequirement requirement)
         {
             bool retVal = false;
+
+            this.logger.LogDebug("Performing system delegation validation for resource type {ResourceType}", requirement.ResourceType);
+
             if (context.User.HasClaim(c => c.Type == GatewayClaims.Scope))
             {
                 string scopeClaim = context.User.FindFirstValue(GatewayClaims.Scope) ?? string.Empty;
-                string[] scopes = scopeClaim.Split(' ');
-                this.logger.LogDebug("Performing system delegation validation for resource type {ResourceType}", requirement.ResourceType);
-                this.logger.LogDebug("Caller has the following scopes: {ScopeClaim}", scopeClaim);
+                IEnumerable<string> scopes = scopeClaim.Split(' ');
+
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogDebug("Authorized caller as system to have {AccessType} access to resource type {ResourceType}", requirement.AccessType, requirement.ResourceType);
+                    this.logger.LogDebug("User has a valid scope");
                     retVal = true;
                 }
             }
@@ -88,14 +91,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>An array of acceptable scopes.</returns>
         private static string[] GetAcceptedScopes(string type, GeneralFhirRequirement requirement)
         {
-            string[] acceptedScopes =
-            {
+            return
+            [
                 $"{type}/{FhirResource.Wildcard}.{FhirAccessType.Wildcard}",
                 $"{type}/{FhirResource.Wildcard}.{requirement.AccessType}",
                 $"{type}/{requirement.ResourceType}.{FhirAccessType.Wildcard}",
                 $"{type}/{requirement.ResourceType}.{requirement.AccessType}",
-            };
-            return acceptedScopes;
+            ];
         }
     }
 }

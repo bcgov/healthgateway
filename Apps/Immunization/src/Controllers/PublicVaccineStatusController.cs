@@ -23,7 +23,6 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The public vaccine status controller.
@@ -34,19 +33,14 @@ namespace HealthGateway.Immunization.Controllers
     [ApiController]
     public class PublicVaccineStatusController : ControllerBase
     {
-        private readonly ILogger logger;
         private readonly IVaccineStatusService vaccineStatusService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PublicVaccineStatusController"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="vaccineStatusService">The injected vaccine status service.</param>
-        public PublicVaccineStatusController(
-            ILogger<PublicVaccineStatusController> logger,
-            IVaccineStatusService vaccineStatusService)
+        public PublicVaccineStatusController(IVaccineStatusService vaccineStatusService)
         {
-            this.logger = logger;
             this.vaccineStatusService = vaccineStatusService;
         }
 
@@ -69,11 +63,7 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, CancellationToken ct)
         {
-            this.logger.LogTrace("Getting vaccine status for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
-            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetPublicVaccineStatusAsync(phn, dateOfBirth, dateOfVaccine, ct);
-            this.logger.LogTrace("Finished getting vaccine status for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
-
-            return result;
+            return await this.vaccineStatusService.GetPublicVaccineStatusAsync(phn, dateOfBirth, dateOfVaccine, ct);
         }
 
         /// <summary>
@@ -96,11 +86,7 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, CancellationToken ct)
         {
-            this.logger.LogDebug("Getting Vaccine Proof for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
-            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetPublicVaccineProofAsync(phn, dateOfBirth, dateOfVaccine, ct);
-            this.logger.LogDebug("Finished getting Vaccine Proof for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
-
-            return result;
+            return await this.vaccineStatusService.GetPublicVaccineProofAsync(phn, dateOfBirth, dateOfVaccine, ct);
         }
     }
 }

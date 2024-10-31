@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -85,6 +86,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPut]
         public async Task<RequestResult<Broadcast>> UpdateBroadcast(Broadcast broadcast, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("BroadcastId", broadcast.Id.ToString());
             return await broadcastService.UpdateBroadcastAsync(broadcast, ct);
         }
 
@@ -103,6 +105,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpDelete]
         public async Task<RequestResult<Broadcast>> DeleteBroadcast(Broadcast broadcast, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("BroadcastId", broadcast.Id.ToString());
             return await broadcastService.DeleteBroadcastAsync(broadcast, ct);
         }
     }

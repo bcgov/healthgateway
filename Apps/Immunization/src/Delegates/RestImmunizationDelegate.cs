@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Delegates
 {
     using System;
-    using System.Diagnostics;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -35,22 +34,18 @@ namespace HealthGateway.Immunization.Delegates
     /// </summary>
     public class RestImmunizationDelegate : IImmunizationDelegate
     {
-        /// <summary>
-        /// Configuration section key for PHSA values.
-        /// </summary>
-        public const string PhsaConfigSectionKey = "PHSA";
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IImmunizationApi immunizationApi;
-        private readonly ILogger logger;
+        private readonly ILogger<RestImmunizationDelegate> logger;
         private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestImmunizationDelegate"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-        /// <param name="immunizationApi">The client to use for immunization api calls..</param>
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="configuration">The injected configuration.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate to fetch tokens.</param>
+        /// <param name="immunizationApi">The injected Refit API for immunizations.</param>
         public RestImmunizationDelegate(
             ILogger<RestImmunizationDelegate> logger,
             IConfiguration configuration,
@@ -60,32 +55,33 @@ namespace HealthGateway.Immunization.Delegates
             this.logger = logger;
             this.authenticationDelegate = authenticationDelegate;
             this.immunizationApi = immunizationApi;
-            this.phsaConfig = new();
-            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
+            this.phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
         }
-
-        private static ActivitySource Source { get; } = new(nameof(RestImmunizationDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting immunizations for hdid: {Hdid}", hdid);
+            RequestResult<PhsaResult<ImmunizationResponse>> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageSize = 0,
+                ResourcePayload = new PhsaResult<ImmunizationResponse>(),
+            };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> requestResult = InitializeResult<ImmunizationResponse>();
             string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             try
             {
-                PhsaResult<ImmunizationResponse> response =
-                    await this.immunizationApi.GetImmunizationsAsync(hdid, this.phsaConfig.FetchSize, accessToken, ct);
+                this.logger.LogDebug("Retrieving immunizations");
+                PhsaResult<ImmunizationResponse> response = await this.immunizationApi.GetImmunizationsAsync(hdid, this.phsaConfig.FetchSize, accessToken, ct);
+
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = response;
                 requestResult.TotalResultCount = 1;
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Get Immunizations unexpected Exception {Message}", e.Message);
+                this.logger.LogWarning(e, "Error retrieving immunizations");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with Get Immunization Request",
@@ -93,20 +89,7 @@ namespace HealthGateway.Immunization.Delegates
                 };
             }
 
-            this.logger.LogDebug("Finished getting Immunizations");
             return requestResult;
-        }
-
-        private static RequestResult<PhsaResult<T>> InitializeResult<T>()
-            where T : class
-        {
-            RequestResult<PhsaResult<T>> result = new()
-            {
-                ResultStatus = ResultType.Error,
-                PageSize = 0,
-                ResourcePayload = new PhsaResult<T>(),
-            };
-            return result;
         }
     }
 }

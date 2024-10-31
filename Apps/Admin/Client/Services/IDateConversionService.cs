@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Client.Services
         /// <summary>
         /// Converts a nullable UTC datetime values to the system configured timezone.
         /// </summary>
-        /// <param name="utcDateTime">Nullable utcDateTime</param>
+        /// <param name="utcDateTime">Nullable utcDateTime.</param>
         /// <param name="returnNowIfNull">If utcDateTime is null, this flag can be used to return now.</param>
         /// <returns>DateTime converted or null if returnNowIfNull is false else will return now.</returns>
         public DateTime? ConvertFromUtc(DateTime? utcDateTime, bool returnNowIfNull = false);

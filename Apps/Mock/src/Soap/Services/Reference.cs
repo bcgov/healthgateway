@@ -9909,8 +9909,8 @@ namespace HealthGateway.Mock.ServiceReference
         /// <summary>
         /// Implement this partial method to configure the service endpoint.
         /// </summary>
-        /// <param name="serviceEndpoint">The endpoint to configure</param>
-        /// <param name="clientCredentials">The client credentials</param>
+        /// <param name="serviceEndpoint">The endpoint to configure.</param>
+        /// <param name="clientCredentials">The client credentials.</param>
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials);
 
         public QUPA_AR101102_PortTypeClient() :

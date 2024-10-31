@@ -58,11 +58,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 }
                 else if (this.IsOwner(context, resourceHdid))
                 {
+                    this.logger.LogInformation("Personal access to {ResourceHdid} granted", resourceHdid);
                     context.Succeed(requirement);
                 }
                 else
                 {
-                    this.logger.LogDebug("Personal access to {ResourceHdid} rejected", resourceHdid);
+                    this.logger.LogDebug("Personal access to {ResourceHdid} not granted", resourceHdid);
                 }
             }
 
@@ -78,16 +79,15 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         private bool IsOwner(AuthorizationHandlerContext context, string resourceHdid)
         {
             bool retVal = false;
+
             string? userHdid = context.User.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
             if (userHdid != null)
             {
                 retVal = userHdid == resourceHdid;
-                string message = $"{userHdid} is {(!retVal ? "not " : string.Empty)}the resource owner";
-                this.logger.LogDebug("{Message}", message);
             }
             else
             {
-                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHdid);
+                this.logger.LogDebug("Unable to validate if user is resource owner as no HDID claims are present");
             }
 
             return retVal;

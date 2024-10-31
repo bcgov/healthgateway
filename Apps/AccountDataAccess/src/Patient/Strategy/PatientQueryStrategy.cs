@@ -57,7 +57,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
         }
 
-        private static ActivitySource Source { get; } = new(nameof(PatientQueryStrategy));
+        private static ActivitySource ActivitySource { get; } = new(typeof(PatientQueryStrategy).FullName);
 
         /// <summary>
         /// Returns patient model based on the implemented Strategy.
@@ -87,33 +87,28 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <returns>The found Patient model or null.</returns>
         protected async Task<PatientModel?> GetFromCacheAsync(string identifier, PatientIdentifierType identifierType, CancellationToken ct)
         {
-            using Activity? activity = Source.StartActivity();
-            PatientModel? retPatient = null;
-            if (this.cacheTtl > 0)
+            if (this.cacheTtl == 0)
             {
-                switch (identifierType)
-                {
-                    case PatientIdentifierType.Hdid:
-                        this.logger.LogDebug("Querying Patient Cache by HDID");
-                        retPatient = await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}", ct);
-                        break;
-
-                    case PatientIdentifierType.Phn:
-                        this.logger.LogDebug("Querying Patient Cache by PHN");
-                        retPatient = await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}", ct);
-                        break;
-                }
-
-                string message = $"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache";
-                this.logger.LogDebug("{Message}", message);
+                return null;
             }
 
-            activity?.Stop();
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("CacheIdentifier", identifier);
+            this.logger.LogDebug("Accessing patient cache via {CacheIdentifierType}", identifierType);
+
+            PatientModel? retPatient = identifierType switch
+            {
+                PatientIdentifierType.Hdid => await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}", ct),
+                PatientIdentifierType.Phn => await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}", ct),
+                _ => null,
+            };
+
+            this.logger.LogDebug("Patient cache access outcome: {CacheResult}", retPatient == null ? "miss" : "hit");
             return retPatient;
         }
 
         /// <summary>
-        /// Caches the Patient model if patient is not null and validation is enabled.
+        /// Caches a patient model if it's not null, validation is enabled, and the cache is enabled.
         /// </summary>
         /// <param name="patient">The patient to cache.</param>
         /// <param name="disabledValidation">bool indicating if disabledValidation was set.</param>
@@ -122,42 +117,37 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         protected async Task CachePatientAsync(PatientModel? patient, bool disabledValidation, CancellationToken ct)
         {
             // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
-            if (patient != null && !disabledValidation)
+            if (patient != null && !disabledValidation && this.cacheTtl > 0)
             {
                 await this.CachePatientAsync(patient, ct);
             }
         }
 
         /// <summary>
-        /// Caches the Patient model if enabled.
+        /// Caches a patient model.
         /// </summary>
         /// <param name="patientModel">The patient to cache.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         private async Task CachePatientAsync(PatientModel patientModel, CancellationToken ct)
         {
-            using Activity? activity = Source.StartActivity();
-            string hdid = patientModel.Hdid;
-            if (this.cacheTtl > 0)
-            {
-                this.logger.LogDebug("Attempting to cache patient: {Hdid}", hdid);
-                TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
-                if (!string.IsNullOrEmpty(patientModel.Hdid))
-                {
-                    await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:HDID:{patientModel.Hdid}", patientModel, expiry, ct);
-                }
+            using Activity? activity = ActivitySource.StartActivity();
 
-                if (!string.IsNullOrEmpty(patientModel.Phn))
-                {
-                    await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:PHN:{patientModel.Phn}", patientModel, expiry, ct);
-                }
-            }
-            else
+            TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
+
+            if (!string.IsNullOrEmpty(patientModel.Hdid))
             {
-                this.logger.LogDebug("Patient caching is disabled will not cache patient: {Hdid}", hdid);
+                activity?.AddBaggage("CacheIdentifier", patientModel.Hdid);
+                this.logger.LogDebug("Storing patient in cache via {CacheIdentifierType}", PatientIdentifierType.Hdid);
+                await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:HDID:{patientModel.Hdid}", patientModel, expiry, ct);
             }
 
-            activity?.Stop();
+            if (!string.IsNullOrEmpty(patientModel.Phn))
+            {
+                activity?.AddBaggage("CacheIdentifier", patientModel.Phn);
+                this.logger.LogDebug("Storing patient in cache via {CacheIdentifierType}", PatientIdentifierType.Phn);
+                await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:PHN:{patientModel.Phn}", patientModel, expiry, ct);
+            }
         }
     }
 

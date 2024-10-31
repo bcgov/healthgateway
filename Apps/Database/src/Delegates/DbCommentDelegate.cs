@@ -27,145 +27,140 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Entity framework based implementation of the Comment delegate.
-    /// </summary>
+    /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbCommentDelegate : ICommentDelegate
+    public class DbCommentDelegate(ILogger<DbCommentDelegate> logger, GatewayDbContext dbContext) : ICommentDelegate
     {
-        private readonly ILogger<DbCommentDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbCommentDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbCommentDelegate(
-            ILogger<DbCommentDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<IList<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting Comments for user {HdId} and entry id {ParentEntryId}...", hdId, parentEntryId);
-            DbResult<IList<Comment>> result = new();
-            result.Payload = await this.dbContext.Comment
-                .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
-                .OrderBy(o => o.CreatedDateTime)
-                .ToListAsync(ct);
-            result.Status = DbStatusCode.Read;
-            return result;
+            logger.LogDebug("Retrieving comments from DB for user for entry {ParentEntryId}", parentEntryId);
+            return new()
+            {
+                Payload = await dbContext.Comment
+                    .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToListAsync(ct),
+                Status = DbStatusCode.Read,
+            };
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Comment>> AddAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Adding Note to DB...");
+            logger.LogDebug("Adding comment to DB");
+
             DbResult<Comment> result = new()
             {
                 Payload = comment,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Comment.Add(comment);
+
+            dbContext.Comment.Add(comment);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to save Comment to DB {Message}", e.Message);
+                    logger.LogError(e, "Error adding comment to DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished adding Comment to DB");
+            logger.LogDebug("Finished adding Comment to DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Comment>> UpdateAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating Comment in DB...");
+            logger.LogDebug("Updating comment in DB");
+
             DbResult<Comment> result = new()
             {
                 Payload = comment,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Comment.Update(comment);
-            this.dbContext.Entry(comment).Property(p => p.UserProfileId).IsModified = false;
+
+            dbContext.Comment.Update(comment);
+            dbContext.Entry(comment).Property(p => p.UserProfileId).IsModified = false;
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error updating comment in DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished updating Comment in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Comment>> DeleteAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Deleting Comment from DB...");
+            logger.LogDebug("Removing comment from DB");
+
             DbResult<Comment> result = new()
             {
                 Payload = comment,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Comment.Remove(comment);
+
+            dbContext.Comment.Remove(comment);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error removing comment from DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished deleting Comment in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<IEnumerable<Comment>>> GetAllAsync(string hdId, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting Comments for user {HdId}...", hdId);
-            DbResult<IEnumerable<Comment>> result = new();
-            result.Payload = await this.dbContext.Comment
-                .Where(p => p.UserProfileId == hdId)
-                .OrderBy(o => o.CreatedDateTime)
-                .ToListAsync(ct);
-            result.Status = DbStatusCode.Read;
-            return result;
+            logger.LogDebug("Retrieving comments from DB for user");
+            return new()
+            {
+                Payload = await dbContext.Comment
+                    .Where(p => p.UserProfileId == hdId)
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToListAsync(ct),
+                Status = DbStatusCode.Read,
+            };
         }
 
         /// <inheritdoc/>
         public async Task<IList<Comment>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Retrieving all the comments for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Comment.OrderBy(comment => comment.CreatedDateTime), page, pageSize, ct);
+            logger.LogDebug("Retrieving comments from the DB, page #{PageNumber} with page size {PageSize}", page, pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(dbContext.Comment.OrderBy(comment => comment.CreatedDateTime), page, pageSize, ct);
         }
     }
 }

@@ -31,13 +31,10 @@ namespace HealthGateway.Common.Services
     using Refit;
 
     /// <summary>
-    /// Server to fetch Personal Account information from PHSA.
+    /// Service to fetch personal account information from PHSA.
     /// </summary>
     public class PersonalAccountsService : IPersonalAccountsService
     {
-        /// <summary>
-        /// The generic cache domain to store the Personal Account.
-        /// </summary>
         private const string CacheDomain = "PersonalAccount";
         private readonly ICacheProvider cacheProvider;
 
@@ -61,29 +58,32 @@ namespace HealthGateway.Common.Services
             this.logger = logger;
             this.cacheProvider = cacheProvider;
             this.personalAccountsApi = personalAccountsApi;
-
-            this.phsaConfig = new PhsaConfigV2();
-            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, this.phsaConfig); // Initializes ClientId, ClientSecret, GrantType and Scope.
+            this.phsaConfig = configuration.GetSection(PhsaConfigV2.ConfigurationSectionKey).Get<PhsaConfigV2>() ?? new();
         }
 
-        private static ActivitySource Source { get; } = new(nameof(PersonalAccountsService));
+        private static ActivitySource ActivitySource { get; } = new(typeof(PersonalAccountsService).FullName);
 
         /// <inheritdoc/>
-        public async Task<PersonalAccount> GetPatientAccountAsync(string hdid, CancellationToken ct = default)
+        public async Task<PersonalAccount> GetPersonalAccountAsync(string hdid, CancellationToken ct = default)
         {
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("PatientAccountHdid", hdid);
+
             PersonalAccount? account = await this.GetFromCacheAsync(hdid, ct);
             if (account is not null)
             {
                 return account;
             }
 
+            this.logger.LogDebug("Retrieving personal account");
             account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid, ct);
             await this.PutCacheAsync(hdid, account, ct);
+
             return account;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PersonalAccount>> GetPatientAccountResultAsync(string hdid, CancellationToken ct = default)
+        public async Task<RequestResult<PersonalAccount>> GetPersonalAccountResultAsync(string hdid, CancellationToken ct = default)
         {
             RequestResult<PersonalAccount> requestResult = new()
             {
@@ -93,13 +93,13 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                requestResult.ResourcePayload = await this.GetPatientAccountAsync(hdid, ct);
+                requestResult.ResourcePayload = await this.GetPersonalAccountAsync(hdid, ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.TotalResultCount = 1;
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Request Exception {Message}", e.Message);
+                this.logger.LogWarning(e, "Error retrieving personal account");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with request for Personal Accounts",
@@ -111,47 +111,45 @@ namespace HealthGateway.Common.Services
         }
 
         /// <summary>
-        /// Caches the Personal Account if enabled.
+        /// Caches a personal account (when cache is enabled).
         /// </summary>
-        /// <param name="hdid">The hdid to use to retrieve the Personal Account.</param>
-        /// <param name="personalAccount">The Personal Account to be cached.</param>
+        /// <param name="hdid">The HDID associated with the personal account.</param>
+        /// <param name="personalAccount">The personal account to be cached.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         private async Task PutCacheAsync(string hdid, PersonalAccount personalAccount, CancellationToken ct)
         {
-            using Activity? activity = Source.StartActivity();
-            string cacheKey = $"{CacheDomain}:HDID:{hdid}";
-            if (this.phsaConfig.PersonalAccountsCacheTtl > 0)
+            if (this.phsaConfig.PersonalAccountsCacheTtl == 0)
             {
-                this.logger.LogDebug("Attempting to cache Personal Account for cache key: {Key}", cacheKey);
-                await this.cacheProvider.AddItemAsync(cacheKey, personalAccount, TimeSpan.FromMinutes(this.phsaConfig.PersonalAccountsCacheTtl), ct);
-            }
-            else
-            {
-                this.logger.LogDebug("PersonalAccount caching is disabled; will not cache for cache key: {Key}", cacheKey);
+                return;
             }
 
-            activity?.Stop();
+            using Activity? activity = ActivitySource.StartActivity();
+            this.logger.LogDebug("Storing personal account in cache");
+
+            TimeSpan expiry = TimeSpan.FromMinutes(this.phsaConfig.PersonalAccountsCacheTtl);
+            await this.cacheProvider.AddItemAsync($"{CacheDomain}:HDID:{hdid}", personalAccount, expiry, ct);
         }
 
         /// <summary>
-        /// Attempts to get the Personal Account from the cache.
+        /// Attempts to retrieve a personal account from the cache.
         /// </summary>
-        /// <param name="hdid">The hdid used to create the key to retrieve.</param>
+        /// <param name="hdid">The associated HDID used to create the cache key.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The Personal Account or null.</returns>
+        /// <returns>The personal account, if it is found in the cache, or null, if it is not.</returns>
         private async Task<PersonalAccount?> GetFromCacheAsync(string hdid, CancellationToken ct)
         {
-            using Activity? activity = Source.StartActivity();
-            PersonalAccount? cacheItem = null;
-            if (this.phsaConfig.PersonalAccountsCacheTtl > 0)
+            if (this.phsaConfig.PersonalAccountsCacheTtl == 0)
             {
-                string cacheKey = $"{CacheDomain}:HDID:{hdid}";
-                cacheItem = await this.cacheProvider.GetItemAsync<PersonalAccount>(cacheKey, ct);
-                this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache", cacheKey, cacheItem == null ? "not" : string.Empty);
+                return null;
             }
 
-            activity?.Stop();
+            using Activity? activity = ActivitySource.StartActivity();
+            this.logger.LogDebug("Accessing personal account cache");
+
+            PersonalAccount? cacheItem = await this.cacheProvider.GetItemAsync<PersonalAccount>($"{CacheDomain}:HDID:{hdid}", ct);
+
+            this.logger.LogDebug("Personal account cache access outcome: {CacheResult}", cacheItem == null ? "miss" : "hit");
             return cacheItem;
         }
     }

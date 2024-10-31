@@ -298,7 +298,8 @@ namespace HealthGateway.CommonTests.Services
                     break;
 
                 case Scenario.Future:
-                    Assert.Equal(communication.Id, cacheResult!.ResourcePayload!.Id);
+                    Assert.Equal(ResultType.Success, cacheResult!.ResultStatus);
+                    Assert.Equal(0, cacheResult.TotalResultCount);
                     break;
 
                 case Scenario.DifferentCache:

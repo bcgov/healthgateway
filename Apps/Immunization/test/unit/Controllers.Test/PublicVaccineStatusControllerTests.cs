@@ -25,7 +25,6 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -62,7 +61,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             Mock<IVaccineStatusService> svcMock = new();
             svcMock.Setup(s => s.GetPublicVaccineStatusAsync(this.phn, this.dob, this.dov, It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
 
-            PublicVaccineStatusController controller = new(new Mock<ILogger<PublicVaccineStatusController>>().Object, svcMock.Object);
+            PublicVaccineStatusController controller = new(svcMock.Object);
 
             // Act
             RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov, default);

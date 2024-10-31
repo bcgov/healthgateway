@@ -89,7 +89,6 @@ namespace HealthGateway.Common.Services
                 throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
-            this.logger.LogTrace("Queueing email...");
             if (emailId == Guid.Empty)
             {
                 emailId = await this.emailDelegate.InsertEmailAsync(email, shouldCommit, ct);
@@ -97,28 +96,23 @@ namespace HealthGateway.Common.Services
 
             if (shouldCommit)
             {
+                this.logger.LogDebug("Queueing job to send email");
                 this.jobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(emailId, ct));
             }
-
-            this.logger.LogDebug("Finished queueing email. {Id}", email.Id);
         }
 
         /// <inheritdoc/>
         public async Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting email template... {TemplateName}", templateName);
-            EmailTemplate? retVal = await this.emailDelegate.GetEmailTemplateAsync(templateName, ct);
-            this.logger.LogDebug("Finished getting email template");
-            return retVal;
+            return await this.emailDelegate.GetEmailTemplateAsync(templateName, ct);
         }
 
         /// <inheritdoc/>
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            this.logger.LogTrace("Processing template... {Name}", emailTemplate.Name);
+            this.logger.LogDebug("Processing email template {EmailTemplateName}", emailTemplate.Name);
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
-            this.logger.LogDebug("Finished processing template");
             return email;
         }
 

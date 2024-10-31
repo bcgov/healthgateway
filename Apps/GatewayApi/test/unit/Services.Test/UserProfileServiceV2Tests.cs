@@ -105,7 +105,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// CloseUserProfileAsync throws NotFoundException
+        /// CloseUserProfileAsync throws NotFoundException.
         /// </summary>
         /// <param name="userProfileExists">The value indicating whether user profile exists or not.</param>
         /// <param name="profileUpdateStatus">The db status returned when user profile is updated in the database.</param>
@@ -285,7 +285,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// UpdateAcceptedTermsAsync throws DatabaseException
+        /// UpdateAcceptedTermsAsync throws DatabaseException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]

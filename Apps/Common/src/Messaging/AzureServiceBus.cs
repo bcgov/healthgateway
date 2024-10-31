@@ -57,6 +57,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     /// <inheritdoc/>
     public async Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
+        this.logger.LogDebug("Sending messages over Azure Service Bus");
         IEnumerable<ServiceBusMessage> sbMessages = messages.Select(
             m =>
                 new ServiceBusMessage
@@ -76,21 +77,22 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
         int batchId = 1;
         foreach (ServiceBusMessage message in sbMessages)
         {
-            this.logger.LogDebug("adding message {Type} to batch {BatchId}", message.ApplicationProperties["$type"], batchId);
             if (!batch.TryAddMessage(message))
             {
+                this.logger.LogDebug("Sending {Count} messages in batch {BatchId}", batch.Count, batchId);
                 await this.sender.SendMessagesAsync(batch, ct);
-                this.logger.LogDebug("sent {Count} messages in batch {BatchId}", batch.Count, batchId);
                 batchId++;
                 batch = await this.sender.CreateMessageBatchAsync(ct);
                 batch.TryAddMessage(message);
             }
+
+            this.logger.LogDebug("Added message {Type} to batch {BatchId}", message.ApplicationProperties["$type"], batchId);
         }
 
         if (batch.Count > 0)
         {
+            this.logger.LogDebug("Sending {Count} messages in batch {BatchId}", batch.Count, batchId);
             await this.sender.SendMessagesAsync(batch, ct);
-            this.logger.LogDebug("sent {Count} messages in batch {BatchId}", batch.Count, batchId);
         }
     }
 
@@ -98,6 +100,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     [ExcludeFromCodeCoverage(Justification = "Non-virtual events can't easily be mocked: https://github.com/Azure/azure-sdk-for-net/issues/35660")]
     public async Task SubscribeAsync(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
     {
+        this.logger.LogInformation("Subscribing to Azure Service Bus");
         this.sessionProcessor.ProcessMessageAsync += args => this.HandleProcessMessageAsync(args, receiveHandler, errorHandler, ct);
         this.sessionProcessor.ProcessErrorAsync += args => errorHandler(args.Exception);
 
@@ -135,7 +138,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
         Func<Exception, Task> errorHandler,
         CancellationToken ct = default)
     {
-        this.logger.LogDebug("received message {Session}:{SequenceNumber}", args.Message.SessionId, args.Message.SequenceNumber);
+        this.logger.LogDebug("Processing received Azure Service Bus message {Session}:{SequenceNumber}", args.Message.SessionId, args.Message.SequenceNumber);
 
         try
         {
@@ -149,13 +152,13 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
             string? typeName = (args.Message.ApplicationProperties["$aqn"] ?? args.Message.ApplicationProperties["$type"])?.ToString();
             if (string.IsNullOrEmpty(typeName))
             {
-                throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} is missing the type property");
+                throw new InvalidOperationException($"Message {args.Message.SessionId}:{args.Message.SequenceNumber} is missing the type property");
             }
 
             Type? type = Type.GetType(typeName, true);
 
             MessageBase message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type) ??
-                                  throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
+                                  throw new InvalidOperationException($"Message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
 
             bool receiveResult = await receiveHandler(args.SessionId, [new MessageEnvelope(message, args.Message.SessionId)]);
             if (!receiveResult)
@@ -173,7 +176,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
         catch (Exception e)
         {
             // send message to DLQ and set the state to fault
-            this.logger.LogError(e, "failed to receive message");
+            this.logger.LogError(e, "Error processing Azure Service Bus message");
             await args.DeadLetterMessageAsync(args.Message, e.Message, e.ToString(), ct);
             await args.SetSessionStateAsync(BinaryData.FromObjectAsJson(new SessionState(true)), ct);
             await errorHandler(e);

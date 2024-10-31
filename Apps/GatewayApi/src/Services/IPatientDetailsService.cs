@@ -26,7 +26,7 @@ namespace HealthGateway.GatewayApi.Services
     public interface IPatientDetailsService
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Gets a patient record.
         /// </summary>
         /// <param name="identifier">The patient identifier.</param>
         /// <param name="identifierType">The type of identifier being passed in.</param>

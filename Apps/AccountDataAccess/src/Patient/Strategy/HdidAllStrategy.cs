@@ -71,16 +71,16 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             }
             catch (CommunicationException ce)
             {
-                this.GetLogger().LogError(ce, "Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Message}", ce.Message);
+                this.GetLogger().LogWarning(ce, "Error retrieving patient data from the Client Registry");
 
                 try
                 {
+                    this.GetLogger().LogDebug("Retrieving patient from PHSA");
                     PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
                     patient = this.mapper.Map<PatientModel>(result);
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    this.GetLogger().LogInformation(e, "PHSA could not find patient identity for {Hdid}", request.Identifier);
                     throw new NotFoundException(ErrorMessages.PatientIdentityNotFound);
                 }
             }

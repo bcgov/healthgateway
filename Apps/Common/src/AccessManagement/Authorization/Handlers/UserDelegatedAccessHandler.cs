@@ -82,16 +82,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 
                 if (!requirement.SupportsUserDelegation)
                 {
-                    this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected as user delegation is disabled", resourceHdid);
+                    this.logger.LogDebug("User-delegated access to {ResourceHdid} not granted as user delegation is not supported", resourceHdid);
                     continue;
                 }
 
-                if (!await this.IsDelegatedAsync(context, resourceHdid, requirement))
+                if (!await this.IsDelegatedAsync(context, resourceHdid))
                 {
-                    this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHdid);
+                    this.logger.LogDebug("User-delegated access to {ResourceHdid} not granted", resourceHdid);
                     continue;
                 }
 
+                this.logger.LogInformation("User-delegated access to {ResourceHdid} granted", resourceHdid);
                 context.Succeed(requirement);
             }
         }
@@ -101,12 +102,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHdid">The health data resource subject identifier.</param>
-        /// <param name="requirement">The Fhir requirement to satisfy.</param>
         /// <returns>A boolean indicating if the user has delegated permission to access the resource.</returns>
-        private async Task<bool> IsDelegatedAsync(AuthorizationHandlerContext context, string resourceHdid, PersonalFhirRequirement requirement)
+        private async Task<bool> IsDelegatedAsync(AuthorizationHandlerContext context, string resourceHdid)
         {
             bool retVal = false;
-            this.logger.LogInformation("Performing user delegation validation for resource {ResourceHdid}", resourceHdid);
+
+            this.logger.LogDebug("Performing user delegation validation");
+
             string? userHdid = context.User.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
             if (userHdid != null)
             {
@@ -114,17 +116,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 {
                     if (await this.IsExpiredAsync(resourceHdid))
                     {
-                        this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired", resourceHdid);
+                        this.logger.LogDebug("Delegation relationship exists but is expired");
                     }
                     else
                     {
-                        this.logger.LogInformation("Authorized user {UserHdid} to have {AccessType} access to Observation resource {ResourceHdid}", userHdid, requirement.AccessType, resourceHdid);
+                        this.logger.LogDebug("Active delegation relationship exists");
                         retVal = true;
                     }
                 }
                 else
                 {
-                    this.logger.LogWarning("Delegation validation for User {UserHdid} on Observation resource {ResourceHdid} failed", userHdid, resourceHdid);
+                    this.logger.LogDebug("Delegation relationship does not exist");
                 }
             }
 
@@ -140,7 +142,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             if (!this.maxDependentAge.HasValue)
             {
-                this.logger.LogInformation("Delegate expired check on resource {ResourceHdid} skipped as max dependent age is null", resourceHdid);
+                this.logger.LogWarning("The maximum dependent age has not been configured");
                 return false;
             }
 

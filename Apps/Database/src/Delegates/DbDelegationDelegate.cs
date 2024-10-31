@@ -26,28 +26,16 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class DbDelegationDelegate : IDelegationDelegate
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
+    public class DbDelegationDelegate(ILogger<DbDelegationDelegate> logger, GatewayDbContext dbContext) : IDelegationDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbDelegationDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbDelegationDelegate(ILogger<DbDelegationDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation.ToString());
+            logger.LogDebug("Retrieving dependent from DB");
 
-            IQueryable<Dependent> query = this.dbContext.Dependent
+            IQueryable<Dependent> query = dbContext.Dependent
                 .Where(d => d.HdId == hdid);
 
             if (includeAllowedDelegation)
@@ -63,23 +51,27 @@ namespace HealthGateway.Database.Delegates
         {
             if (dependent.Version == 0)
             {
-                this.dbContext.Dependent.Add(dependent);
+                logger.LogDebug("Adding dependent to DB");
+                dbContext.Dependent.Add(dependent);
             }
             else
             {
-                this.dbContext.Dependent.Update(dependent);
+                logger.LogDebug("Updating dependent in DB");
+                dbContext.Dependent.Update(dependent);
             }
 
             foreach (ResourceDelegate resourceDelegate in resourceDelegatesToRemove)
             {
-                this.dbContext.ResourceDelegate.Remove(resourceDelegate);
+                logger.LogDebug("Removing resource delegate from DB for delegate {DelegateHdid}", resourceDelegate.ProfileHdid);
+                dbContext.ResourceDelegate.Remove(resourceDelegate);
             }
 
-            this.dbContext.AgentAudit.Add(agentAudit);
+            logger.LogDebug("Adding agent audit to DB");
+            dbContext.AgentAudit.Add(agentAudit);
 
             if (commit)
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
             }
         }
 
@@ -89,8 +81,10 @@ namespace HealthGateway.Database.Delegates
             int safePageSize = pageSize > 0 ? pageSize : 25;
             int recordsToSkip = int.Max(page, 0) * safePageSize;
 
+            logger.LogDebug("Retrieving protected dependent HDIDs from DB, page #{PageNumber} with page size {PageSize}, sorted {SortDirection}", page, safePageSize, sortDirection);
+
             // Begin query for protected dependents only
-            IQueryable<Dependent> query = this.dbContext.Dependent
+            IQueryable<Dependent> query = dbContext.Dependent
                 .Where(d => d.Protected);
 
             // Configure the sort direction
@@ -103,7 +97,9 @@ namespace HealthGateway.Database.Delegates
                 .Take(safePageSize)
                 .Select(d => d.HdId)
                 .ToListAsync(ct);
-            int totalCount = await this.dbContext.Dependent.CountAsync(d => d.Protected, ct);
+
+            int totalCount = await dbContext.Dependent.CountAsync(d => d.Protected, ct);
+
             return (records, totalCount);
         }
     }

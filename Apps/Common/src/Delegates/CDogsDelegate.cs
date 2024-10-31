@@ -48,58 +48,58 @@ namespace HealthGateway.Common.Delegates
             this.cdogsApi = cdogsApi;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(CDogsDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(CDogsDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            using Activity? activity = ActivitySource.StartActivity();
+
+            RequestResult<ReportModel> retVal = new()
             {
-                RequestResult<ReportModel> retVal = new()
-                {
-                    ResultStatus = ResultType.Error,
-                };
+                ResultStatus = ResultType.Error,
+            };
 
-                try
-                {
-                    HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request, ct);
-                    byte[] payload = await response.Content.ReadAsByteArrayAsync(ct);
-                    this.logger.LogTrace("CDogs Response status code: {ResponseStatusCode}", response.StatusCode);
+            try
+            {
+                this.logger.LogDebug("Generating report using CDOGS");
+                HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request, ct);
+                byte[] payload = await response.Content.ReadAsByteArrayAsync(ct);
+                activity?.AddBaggage("ResponseStatusCode", response.StatusCode.ToString());
 
-                    if (response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
+                {
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = new ReportModel
                     {
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new ReportModel
-                        {
-                            Data = Convert.ToBase64String(payload),
-                            FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}",
-                        };
-                        retVal.TotalResultCount = 1;
-                    }
-                    else
-                    {
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
-                        };
-                        this.logger.LogError("Unable to connect to CDogs API, HTTP Error {StatusCode}\n{Payload}", response.StatusCode, payload);
-                    }
+                        Data = Convert.ToBase64String(payload),
+                        FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}",
+                    };
+                    retVal.TotalResultCount = 1;
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+                else
                 {
+                    this.logger.LogWarning("Error generating report using CDOGS: {Payload}", payload);
                     retVal.ResultError = new RequestResultError
                     {
-                        ResultMessage = $"Exception generating report: {e}",
+                        ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                     };
-                    this.logger.LogError(e, "Unexpected exception in GenerateReport {Message}", e.Message);
                 }
-
-                return retVal;
             }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                this.logger.LogError(e, "Error generating report using CDOGS");
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception generating report: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
+                };
+            }
+
+            return retVal;
         }
     }
 }

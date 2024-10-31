@@ -139,10 +139,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
-            this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
-
             if (userProfile == null)
             {
                 return new RequestResult<UserProfileModel>
@@ -155,7 +152,6 @@ namespace HealthGateway.GatewayApi.Services
             DateTime previousLastLogin = userProfile.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
-                this.logger.LogTrace("Updating user last login and year of birth... {Hdid}", hdid);
                 userProfile.LastLoginDateTime = jwtAuthTime;
                 userProfile.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
@@ -165,9 +161,8 @@ namespace HealthGateway.GatewayApi.Services
                 userProfile.YearOfBirth = birthDate?.Year;
 
                 // Try to update user profile with last login time; ignore any failures
+                this.logger.LogDebug("Updating last login date and year of birth");
                 await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
-
-                this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
 
             IList<UserProfileHistory> userProfileHistoryList =
@@ -183,19 +178,15 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!userProfileModel.IsEmailVerified)
             {
-                this.logger.LogTrace("Retrieving last email invite... {Hdid}", hdid);
                 MessagingVerification? emailInvite =
                     await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
-                this.logger.LogDebug("Finished retrieving email invite... {Hdid}", hdid);
                 userProfileModel.Email = emailInvite?.Email?.To;
             }
 
             if (!userProfileModel.IsSmsNumberVerified)
             {
-                this.logger.LogTrace("Retrieving last sms invite... {Hdid}", hdid);
                 MessagingVerification? smsInvite =
                     await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
-                this.logger.LogDebug("Finished retrieving sms invite... {Hdid}", hdid);
                 userProfileModel.SmsNumber = smsInvite?.SmsNumber;
             }
 
@@ -210,8 +201,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
-
             RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfileAsync(createProfileRequest, ct);
             if (validationResult != null)
             {
@@ -242,17 +231,11 @@ namespace HealthGateway.GatewayApi.Services
 
             if (this.accountsChangeFeedEnabled)
             {
-                await this.messageSender.SendAsync(
-                    new[]
-                    {
-                        new MessageEnvelope(new AccountCreatedEvent(hdid, DateTime.UtcNow), hdid),
-                    },
-                    ct);
+                await this.messageSender.SendAsync([new MessageEnvelope(new AccountCreatedEvent(hdid, DateTime.UtcNow), hdid)], ct);
             }
 
             if (insertResult.Status != DbStatusCode.Created)
             {
-                this.logger.LogError("Error creating user profile... {Hdid}", insertResult.Payload.HdId);
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, insertResult.Message);
             }
 
@@ -274,9 +257,9 @@ namespace HealthGateway.GatewayApi.Services
                 if (isEmailVerified && this.notificationsChangeFeedEnabled)
                 {
                     MessageEnvelope[] events =
-                    {
+                    [
                         new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, requestedEmail), hdid),
-                    };
+                    ];
                     await this.messageSender.SendAsync(events, ct);
                 }
             }
@@ -291,18 +274,13 @@ namespace HealthGateway.GatewayApi.Services
 
             await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
 
-            this.logger.LogDebug("Finished creating user profile... {Hdid}", insertResult.Payload.HdId);
-
             return RequestResultFactory.Success(userProfileModel);
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> CloseUserProfileAsync(string hdid, Guid userId, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
-
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
-
             if (userProfile == null)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
@@ -310,7 +288,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (userProfile.ClosedDateTime != null)
             {
-                this.logger.LogTrace("Finished. Profile already Closed");
+                this.logger.LogDebug("User profile is already closed");
                 return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(userProfile, ct: ct));
             }
 
@@ -323,10 +301,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> RecoverUserProfileAsync(string hdid, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
-
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
-
             if (userProfile == null)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
@@ -334,7 +309,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (userProfile.ClosedDateTime == null)
             {
-                this.logger.LogTrace("Finished. Profile already is active, recover not needed");
+                this.logger.LogDebug("User profile is not closed");
                 return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(userProfile, ct: ct));
             }
 
@@ -354,10 +329,8 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
-
             if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
-                this.logger.LogWarning("Error retrieving patient age... {Hdid}", hdid);
                 return RequestResultFactory.Error(false, patientResult.ResultError);
             }
 
@@ -370,7 +343,6 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default)
         {
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
-
             if (userProfile == null)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to retrieve user profile");
@@ -384,7 +356,6 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             UserProfileModel userProfileModel = await this.BuildUserProfileModelAsync(result.Payload, ct: ct);
-
             return RequestResultFactory.Success(userProfileModel);
         }
 
@@ -406,14 +377,14 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!isMinimumAgeResult.ResourcePayload)
             {
-                this.logger.LogWarning("Patient under minimum age... {Hdid}", createProfileRequest.Profile.HdId);
+                this.logger.LogDebug("User profile did not pass age validation");
                 return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Patient under minimum age");
             }
 
             // Validate UserProfile inputs
             if (!await UserProfileValidator.ValidateUserProfileSmsNumberAsync(createProfileRequest.Profile.SmsNumber, ct))
             {
-                this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
+                this.logger.LogDebug("User profile did not pass SMS validation");
                 return RequestResultFactory.Error<UserProfileModel>(ErrorType.SmsInvalid, "Profile values entered are invalid");
             }
 

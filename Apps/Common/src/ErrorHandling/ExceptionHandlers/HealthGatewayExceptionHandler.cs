@@ -16,56 +16,48 @@
 namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
-    /// Logs and transforms a Refit <see cref="Refit.ApiException"/> into a problem details response.
+    /// Logs and transforms a <see cref="HealthGatewayException"/> into a problem details response.
     /// </summary>
-    internal sealed class ApiExceptionHandler(IConfiguration configuration, ILogger<ApiExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
+    internal sealed class HealthGatewayExceptionHandler(IConfiguration configuration, ILogger<HealthGatewayExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is not Refit.ApiException apiException)
+            if (exception is not HealthGatewayException healthGatewayException)
             {
                 return false;
             }
 
-            this.LogException(apiException);
+            this.LogException(healthGatewayException);
 
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
-            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(WrapException(apiException), httpContext, problemDetailsFactory, includeException);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(healthGatewayException, httpContext, problemDetailsFactory, includeException);
 
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status502BadGateway;
+            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
         }
 
-        private static UpstreamServiceException WrapException(Refit.ApiException apiException)
+        [SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Problem titles are constant for each problem type")]
+        [SuppressMessage("ReSharper", "TemplateIsNotCompileTimeConstantProblem", Justification = "Problem titles are constant for each problem type")]
+        private void LogException(HealthGatewayException exception)
         {
-            // include HTTP method, URI, and response content in message for easier debugging
-            string message = $"Unexpected response ({(int)apiException.StatusCode}) from API call {apiException.HttpMethod} {apiException.Uri}";
-            if (!string.IsNullOrEmpty(apiException.Content))
-            {
-                message += $"{Environment.NewLine}{Environment.NewLine}Content:{Environment.NewLine}{apiException.Content}";
-            }
-
-            return new(message, apiException);
-        }
-
-        private void LogException(Refit.ApiException apiException)
-        {
-            logger.LogError(apiException, "Unexpected response ({ResponseCode}) from API call {Method} {Uri}", (int)apiException.StatusCode, apiException.HttpMethod, apiException.Uri);
+            Problem problem = Problem.Get(exception.ProblemType);
+            logger.Log(problem.LogLevel, exception, problem.Title);
         }
     }
 }

@@ -65,14 +65,6 @@ namespace HealthGateway.MedicationTests.Services
         public async Task InvalidProtectiveWord()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = GetHttpContextAccessorMock();
-            Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatientPhnAsync(Hdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(
-                    new RequestResult<string>
-                    {
-                        ResourcePayload = Phn,
-                        ResultStatus = ResultType.Success,
-                    });
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
@@ -91,7 +83,7 @@ namespace HealthGateway.MedicationTests.Services
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
-                patientDelegateMock.Object,
+                new Mock<IPatientService>().Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
                 patientRepository.Object,
@@ -275,7 +267,7 @@ namespace HealthGateway.MedicationTests.Services
             // We need two tests, one for Fed data and one for Provincial data
             List<DrugProduct> drugList =
             [
-                new DrugProduct
+                new()
                 {
                     DrugIdentificationNumber = Din,
                     BrandName = "Brand Name",
@@ -370,7 +362,7 @@ namespace HealthGateway.MedicationTests.Services
             // We need two tests, one for Fed data and one for Provincial data
             List<DrugProduct> drugList =
             [
-                new DrugProduct
+                new()
                 {
                     DrugIdentificationNumber = Din,
                     BrandName = "Brand Name",
@@ -448,7 +440,7 @@ namespace HealthGateway.MedicationTests.Services
             // We need two tests, one for Fed data and one for Provincial data
             List<PharmaCareDrug> drugList =
             [
-                new PharmaCareDrug
+                new()
                 {
                     DinPin = Din,
                     BrandName = "Brand Name",

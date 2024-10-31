@@ -38,15 +38,15 @@ namespace HealthGateway.GatewayApi.Services
 
         private readonly IGatewayApiMappingService mappingService;
         private readonly ICommentDelegate commentDelegate;
-        private readonly ILogger logger;
+        private readonly ILogger<CommentService> logger;
         private readonly IUserProfileDelegate profileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="commentDelegate">Injected Comment delegate.</param>
-        /// <param name="profileDelegate">Injected Profile delegate.</param>
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="commentDelegate">The injected comment delegate.</param>
+        /// <param name="profileDelegate">The injected profile delegate.</param>
         /// <param name="mappingService">The injected mapping service.</param>
         public CommentService(
             ILogger<CommentService> logger,
@@ -67,6 +67,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!validationResult.IsValid)
             {
+                this.logger.LogDebug("Comment did not pass validation");
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
@@ -74,7 +75,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
@@ -98,7 +99,7 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {HdId}", hdId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
@@ -125,7 +126,7 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {HdId}", hdId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.ServiceError<IDictionary<string, IEnumerable<UserComment>>>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
@@ -152,6 +153,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!validationResult.IsValid)
             {
+                this.logger.LogDebug("Comment did not pass validation");
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
@@ -159,7 +161,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
@@ -181,6 +183,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!validationResult.IsValid)
             {
+                this.logger.LogDebug("Comment did not pass validation");
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
@@ -188,7 +191,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 

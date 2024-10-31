@@ -250,7 +250,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
                 ResultStatus = personalAccountResultType ?? ResultType.Success,
             };
             Mock<IPersonalAccountsService> personalAccountServiceMock = new();
-            personalAccountServiceMock.Setup(p => p.GetPatientAccountResultAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            personalAccountServiceMock.Setup(p => p.GetPersonalAccountResultAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IPatientRepository> patientRepositoryMock = new();
             patientRepositoryMock.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Controllers
 {
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
@@ -35,9 +36,6 @@ namespace HealthGateway.Laboratory.Controllers
     [ExcludeFromCodeCoverage]
     public class PublicLaboratoryController : ControllerBase
     {
-        /// <summary>
-        /// Gets or sets the laboratory data service.
-        /// </summary>
         private readonly ILabTestKitService labTestKitService;
 
         /// <summary>
@@ -67,6 +65,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Route("LabTestKit")]
         public async Task<RequestResult<PublicLabTestKit>> AddLabTestKit([FromBody] PublicLabTestKit labTestKit, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("TestKitId", labTestKit.TestKitId);
             return await this.labTestKitService.RegisterLabTestKitAsync(labTestKit, ct);
         }
     }

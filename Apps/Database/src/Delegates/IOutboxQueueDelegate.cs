@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using HealthGateway.Database.Models;
 
 /// <summary>
-/// Db delegate for outbox queue
+/// Database delegate for outbox queue.
 /// </summary>
 public interface IOutboxQueueDelegate
 {

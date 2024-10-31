@@ -125,7 +125,7 @@ namespace AccountDataAccessTest
                 Source: PatientDetailSource.Empi,
                 UseCache: true);
 
-            string expected = ct.IsCancellationRequested ? "cancellation was requested" : "Must specify either Hdid or Phn to query patient details";
+            string expected = ct.IsCancellationRequested ? "Cancellation was requested" : "Must specify either Hdid or Phn to query patient details";
 
             IPatientRepository patientRepository = SetupPatientRepositoryForQueryThrowsInvalidOperationException();
 

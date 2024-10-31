@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Service to interact with the the PHSA web alert API.
+    /// Service to interact with the PHSA web alert API.
     /// </summary>
     public class WebAlertService : IWebAlertService
     {
@@ -42,9 +41,13 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="personalAccountsService">The injected personal accounts service.</param>
-        /// <param name="webAlertApi">The injected Refit API.</param>
+        /// <param name="webAlertApi">The injected web alert Refit API.</param>
         /// <param name="mappingService">The injected mapping service.</param>
-        public WebAlertService(ILogger<WebAlertService> logger, IPersonalAccountsService personalAccountsService, IWebAlertApi webAlertApi, IGatewayApiMappingService mappingService)
+        public WebAlertService(
+            ILogger<WebAlertService> logger,
+            IPersonalAccountsService personalAccountsService,
+            IWebAlertApi webAlertApi,
+            IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
             this.personalAccountsService = personalAccountsService;
@@ -52,15 +55,12 @@ namespace HealthGateway.GatewayApi.Services
             this.mappingService = mappingService;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(WebAlertService));
-
         /// <inheritdoc/>
         public async Task<IList<WebAlert>> GetWebAlertsAsync(string hdid, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Retrieving web alerts from PHSA");
             Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
+            this.logger.LogDebug("Retrieving web alerts from PHSA");
             IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid, ct);
             IList<WebAlert> webAlerts = phsaWebAlerts
                 .Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
@@ -68,35 +68,30 @@ namespace HealthGateway.GatewayApi.Services
                 .Select(this.mappingService.MapToWebAlert)
                 .ToList();
 
-            this.logger.LogDebug("Finished retrieving web alerts from PHSA");
             return webAlerts;
         }
 
         /// <inheritdoc/>
         public async Task DismissWebAlertsAsync(string hdid, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Sending request to dismiss web alerts to PHSA");
             Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
+            this.logger.LogDebug("Sending request to PHSA to dismiss web alerts");
             await this.webAlertApi.DeleteWebAlertsAsync(pid, ct);
-            this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA");
         }
 
         /// <inheritdoc/>
         public async Task DismissWebAlertAsync(string hdid, Guid webAlertId, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Sending request to dismiss web alert to PHSA");
             Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
+            this.logger.LogDebug("Sending request to PHSA to dismiss web alert {WebAlertId}", webAlertId);
             await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId, ct);
-            this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA");
         }
 
         private async Task<Guid?> GetPersonalAccountPidByHdidAsync(string hdid, CancellationToken ct)
         {
-            return (await this.personalAccountsService.GetPatientAccountAsync(hdid, ct)).PatientIdentity.Pid;
+            return (await this.personalAccountsService.GetPersonalAccountAsync(hdid, ct)).PatientIdentity.Pid;
         }
     }
 }

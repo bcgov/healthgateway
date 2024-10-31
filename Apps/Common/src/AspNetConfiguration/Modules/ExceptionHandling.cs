@@ -34,6 +34,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             services.AddExceptionHandler<ApiExceptionHandler>();
             services.AddExceptionHandler<ValidationExceptionHandler>();
+            services.AddExceptionHandler<HealthGatewayExceptionHandler>();
             services.AddExceptionHandler<DefaultExceptionHandler>();
             services.AddProblemDetails();
         }

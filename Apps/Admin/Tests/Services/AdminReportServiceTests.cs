@@ -27,8 +27,8 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Logging;
     using Moq;
-    using Serilog;
     using Xunit;
 
     /// <summary>
@@ -140,7 +140,7 @@ namespace HealthGateway.Admin.Tests.Services
                 delegationDelegateMock.Object,
                 blockedAccessDelegateMock.Object,
                 patientRepositoryMock.Object,
-                new Mock<ILogger>().Object);
+                new Mock<ILogger<AdminReportService>>().Object);
         }
 
         private static IAdminReportService SetupGetProtectedDependentReportMock()

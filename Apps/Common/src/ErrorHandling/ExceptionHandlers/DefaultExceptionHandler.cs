@@ -22,17 +22,20 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
-    /// Transforms any exception into the appropriate problem details response.
+    /// Logs and transforms an unhandled exception into a problem details response.
     /// </summary>
-    internal sealed class DefaultExceptionHandler(IConfiguration configuration, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
+    internal sealed class DefaultExceptionHandler(IConfiguration configuration, ILogger<DefaultExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
+            this.LogException(exception);
+
             bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
             ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, problemDetailsFactory, includeException);
 
@@ -40,6 +43,11 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
+        }
+
+        private void LogException(Exception exception)
+        {
+            logger.LogError(exception, "Unexpected error");
         }
     }
 }

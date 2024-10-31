@@ -74,12 +74,8 @@ namespace HealthGateway.Immunization.Services
             this.authDelegate = authDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.mappingService = mappingService;
-
-            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
-
-            this.phsaConfig = new();
-            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
-
+            this.clientCredentialsRequest = authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
+            this.phsaConfig = configuration.GetSection(PhsaConfigSectionKey).Get<PhsaConfig>() ?? new();
             this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
         }
@@ -124,13 +120,13 @@ namespace HealthGateway.Immunization.Services
             {
                 if (payload.State == VaccineState.NotFound)
                 {
-                    this.logger.LogDebug("Vaccine Proof document is not available (not found)");
+                    this.logger.LogDebug("Vaccine proof document could not be found");
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired(VaccineProofDocumentNotAvailable, ActionType.Invalid);
                 }
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
-                    this.logger.LogDebug("Vaccine Proof document is not available (empty payload)");
+                    this.logger.LogWarning("Vaccine proof document is empty");
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
@@ -169,13 +165,13 @@ namespace HealthGateway.Immunization.Services
             {
                 if (payload.State == VaccineState.NotFound)
                 {
-                    this.logger.LogDebug(VaccineProofDocumentNotAvailable);
+                    this.logger.LogDebug("Vaccine proof document could not be found");
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired(VaccineProofDocumentNotAvailable, ActionType.Invalid);
                 }
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
-                    this.logger.LogDebug("Vaccine Proof document is not available (empty payload)");
+                    this.logger.LogWarning("Vaccine proof document is empty");
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {

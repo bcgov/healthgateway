@@ -31,7 +31,6 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -64,7 +63,6 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             DependentController dependentController = new(
-                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid, It.IsAny<CancellationToken>());
@@ -105,7 +103,6 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             dependentServiceMock.Setup(s => s.AddDependentAsync(this.hdid, It.IsAny<AddDependentRequest>(), CancellationToken.None)).ReturnsAsync(expectedResult);
 
             DependentController dependentController = new(
-                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             RequestResult<DependentModel> actualResult = await dependentController.AddDependent(new AddDependentRequest(), CancellationToken.None);
@@ -135,7 +132,6 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             DependentController dependentController = new(
-                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete(delegateId, dependentId, CancellationToken.None);
@@ -184,11 +180,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("hdid", hdid),
-                new Claim("auth_time", "123"),
-                new Claim("access_token", token),
+                new(ClaimTypes.Name, "username"),
+                new(ClaimTypes.NameIdentifier, userId),
+                new("hdid", hdid),
+                new("auth_time", "123"),
+                new("access_token", token),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);

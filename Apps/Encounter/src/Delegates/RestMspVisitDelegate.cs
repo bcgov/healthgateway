@@ -16,7 +16,6 @@
 namespace HealthGateway.Encounter.Delegates
 {
     using System;
-    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -36,65 +35,56 @@ namespace HealthGateway.Encounter.Delegates
     public class RestMspVisitDelegate : IMspVisitDelegate
     {
         private readonly IMspVisitApi mspVisitApi;
-        private readonly ILogger logger;
+        private readonly ILogger<RestMspVisitDelegate> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMspVisitDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="mspVisitApi">The injected client to use for msp visit api calls.</param>
-        public RestMspVisitDelegate(
-            ILogger<RestMspVisitDelegate> logger,
-            IMspVisitApi mspVisitApi)
+        public RestMspVisitDelegate(ILogger<RestMspVisitDelegate> logger, IMspVisitApi mspVisitApi)
         {
             this.logger = logger;
             this.mspVisitApi = mspVisitApi;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
-
         /// <inheritdoc/>
         public async Task<RequestResult<MspVisitHistoryResponse>> GetMspVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            RequestResult<MspVisitHistoryResponse> retVal = new()
             {
-                this.logger.LogTrace("Getting MSP visits... {Phn}", query.Phn[..3]);
+                ResultStatus = ResultType.Error,
+            };
 
-                RequestResult<MspVisitHistoryResponse> retVal = new()
-                {
-                    ResultStatus = ResultType.Error,
-                };
+            MspVisitHistory request = new()
+            {
+                Id = Guid.NewGuid(),
+                RequestorHdid = hdid,
+                RequestorIp = ipAddress,
+                Query = query,
+            };
 
-                MspVisitHistory request = new()
-                {
-                    Id = Guid.NewGuid(),
-                    RequestorHdid = hdid,
-                    RequestorIp = ipAddress,
-                    Query = query,
-                };
+            try
+            {
+                this.logger.LogDebug("Retrieving health visits");
+                MspVisitHistory visitHistory = await this.mspVisitApi.GetMspVisitsAsync(request, ct);
 
-                try
-                {
-                    MspVisitHistory visitHistory = await this.mspVisitApi.GetMspVisitsAsync(request, ct);
-                    retVal.ResultStatus = ResultType.Success;
-                    retVal.ResourcePayload = visitHistory.Response;
-                    retVal.TotalResultCount = visitHistory.Response?.TotalRecords;
-                }
-                catch (Exception e) when (e is ApiException or HttpRequestException)
-                {
-                    this.logger.LogError(e, "Error while retrieving Msp Visits... {Message}", e.Message);
-                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-                    retVal.ResultError = new()
-                    {
-                        ResultMessage = $"Status: {statusCode}. Error while retrieving Msp Visits",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                    };
-                }
-
-                this.logger.LogDebug("Finished getting MSP visits");
-
-                return retVal;
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = visitHistory.Response;
+                retVal.TotalResultCount = visitHistory.Response?.TotalRecords;
             }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogWarning(e, "Error retrieving health visits");
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+                retVal.ResultError = new()
+                {
+                    ResultMessage = $"Status: {statusCode}. Error while retrieving Msp Visits",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                };
+            }
+
+            return retVal;
         }
     }
 }

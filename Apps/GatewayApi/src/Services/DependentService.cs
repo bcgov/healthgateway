@@ -53,7 +53,7 @@ namespace HealthGateway.GatewayApi.Services
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IGatewayApiMappingService mappingService;
-        private readonly ILogger logger;
+        private readonly ILogger<DependentService> logger;
         private readonly int maxDependentAge;
         private readonly bool dependentsChangeFeedEnabled;
         private readonly string[] monitoredHdids;
@@ -69,13 +69,13 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
         /// </summary>
-        /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="patientService">The injected patient registry provider.</param>
+        /// <param name="configuration">The injected configuration.</param>
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="patientService">The injected patient service.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
-        /// <param name="delegationDelegate">The delegation delegate to interact with the DB.</param>
-        /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
-        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="delegationDelegate">The delegation delegate.</param>
+        /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate.</param>
+        /// <param name="userProfileDelegate">The user profile delegate.</param>
         /// <param name="messageSender">The message sender.</param>
         /// <param name="mappingService">The injected mapping service.</param>
         /// <param name="emailQueueService">The injected email queue service.</param>
@@ -100,8 +100,7 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileDelegate = userProfileDelegate;
             this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
-            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
-            this.dependentsChangeFeedEnabled = changeFeedConfiguration?.Dependents.Enabled ?? false;
+            this.dependentsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Dependents.Enabled ?? false;
             this.monitoredHdids = configuration.GetSection(MonitoredHdidsKey).Get<string[]>() ?? [];
             this.adminEmailAddress = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>()?.AdminEmail ?? string.Empty;
             this.mappingService = mappingService;
@@ -115,6 +114,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!validationResults.IsValid)
             {
+                this.logger.LogDebug("Dependent did not pass age validation");
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
@@ -147,7 +147,7 @@ namespace HealthGateway.GatewayApi.Services
             await this.UpdateNotificationSettingsAsync(dependentHdid, delegateHdid, false, ct);
             if (this.dependentsChangeFeedEnabled)
             {
-                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
+                await this.messageSender.SendAsync([new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid)], ct);
             }
 
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync([dependentHdid], ct);
@@ -164,17 +164,16 @@ namespace HealthGateway.GatewayApi.Services
                 ResultStatus = ResultType.Success,
             };
 
-            // Get Dependents from database
+            // get dependents from database
             IList<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(hdid, page, pageSize, ct);
 
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(resourceDelegates.Select(d => d.ResourceOwnerHdid), ct);
 
-            // Get Dependents Details from Patient service
+            // get dependent details from patient service
             List<DependentModel> dependentModels = [];
             StringBuilder resultErrorMessage = new();
             foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
-                this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(resourceDelegate.ResourceOwnerHdid, ct: ct);
 
                 if (patientResult.ResourcePayload != null)
@@ -317,6 +316,7 @@ namespace HealthGateway.GatewayApi.Services
                 ["responseBirthdate"] = FormatValue(response?.Birthdate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
             };
 
+            this.logger.LogDebug("Sending notification for add dependent mismatch");
             await this.emailQueueService.QueueNewEmailAsync(this.adminEmailAddress, "AdminAddDependentMismatch", keyValues, ct: ct);
             return;
 
@@ -347,6 +347,7 @@ namespace HealthGateway.GatewayApi.Services
                 default:
                     if (!IsMatch(addDependentRequest, dependentResult.ResourcePayload))
                     {
+                        this.logger.LogDebug("Dependent data does not match");
                         if (Array.Exists(this.monitoredHdids, hdid => string.Equals(hdid, delegateHdid, StringComparison.OrdinalIgnoreCase)))
                         {
                             await this.NotifyAddDependentMismatch(delegateHdid, addDependentRequest, dependentResult.ResourcePayload, ct);
@@ -365,6 +366,7 @@ namespace HealthGateway.GatewayApi.Services
                     Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true, ct);
                     if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
                     {
+                        this.logger.LogDebug("Dependent is protected");
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
                     }
 

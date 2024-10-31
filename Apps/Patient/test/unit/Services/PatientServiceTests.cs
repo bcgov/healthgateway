@@ -80,7 +80,7 @@ namespace HealthGateway.PatientTests.Services
         /// <param name="expectedErrorMessage">The associated error message for the exception.</param>
         /// <param name="commonNameExists">
         /// bool indicating whether common name should be included when patient is created. Default
-        /// is true and may not be applicable when patient is created in certain scenarios
+        /// is true and may not be applicable when patient is created in certain scenarios.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]

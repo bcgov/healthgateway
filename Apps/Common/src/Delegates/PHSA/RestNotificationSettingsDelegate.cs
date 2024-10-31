@@ -34,7 +34,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     /// </summary>
     public class RestNotificationSettingsDelegate : INotificationSettingsDelegate
     {
-        private readonly ILogger logger;
+        private readonly ILogger<RestNotificationSettingsDelegate> logger;
         private readonly INotificationSettingsApi notificationSettingsApi;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             this.notificationSettingsApi = notificationSettingsApi;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RestNotificationSettingsDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(RestNotificationSettingsDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(
@@ -58,17 +58,16 @@ namespace HealthGateway.Common.Delegates.PHSA
             string bearerToken,
             CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
+            using Activity? activity = ActivitySource.StartActivity();
+
             RequestResult<NotificationSettingsResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
-            this.logger.LogDebug("Sending notification settings to PHSA...");
-            this.logger.LogTrace("Bearer token: {BearerToken}", bearerToken);
-
             try
             {
+                this.logger.LogDebug("Sending notification settings update to PHSA");
                 NotificationSettingsResponse notificationSettingsResponse = await this.notificationSettingsApi
                     .SetNotificationSettingsAsync(notificationSettings, notificationSettings.SubjectHdid, bearerToken, ct);
 
@@ -78,6 +77,8 @@ namespace HealthGateway.Common.Delegates.PHSA
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
+                this.logger.LogError(e, "Error sending notification settings update to PHSA");
+
                 string errorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa);
                 if (e is ApiException { StatusCode: HttpStatusCode.UnprocessableEntity })
                 {
@@ -89,10 +90,8 @@ namespace HealthGateway.Common.Delegates.PHSA
                     ResultMessage = "Error while sending notification settings to PHSA",
                     ErrorCode = errorCode,
                 };
-                this.logger.LogError(e, "Unexpected exception in SetNotificationSettings {Message}", e.Message);
             }
 
-            this.logger.LogDebug("Finished sending notification settings to PHSA");
             return retVal;
         }
     }

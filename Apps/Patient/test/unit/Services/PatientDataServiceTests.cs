@@ -298,7 +298,7 @@ namespace HealthGateway.PatientTests.Services
         private Mock<IPersonalAccountsService> GetMockPersonalAccountService()
         {
             Mock<IPersonalAccountsService> personalAccountService = new();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid, It.IsAny<CancellationToken>()))
+            personalAccountService.Setup(o => o.GetPersonalAccountAsync(this.hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new PersonalAccount
                     {

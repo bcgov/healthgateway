@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
@@ -64,7 +65,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientQueryFactory">The injected patient query factory.</param>
-        /// <param name="messageSender">The change feed message sender</param>
+        /// <param name="messageSender">The change feed message sender.</param>
         public PatientRepository(
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,
@@ -85,12 +86,14 @@ namespace HealthGateway.AccountDataAccess.Patient
             this.blockedDataSourcesChangeFeedEnabled = changeFeedConfiguration?.BlockedDataSources.Enabled ?? false;
         }
 
+        private static ActivitySource ActivitySource { get; } = new(typeof(PatientRepository).FullName);
+
         /// <inheritdoc/>
         public async Task<PatientQueryResult> QueryAsync(PatientQuery query, CancellationToken ct = default)
         {
             return query switch
             {
-                PatientDetailsQuery q => await this.HandleAsync(q, ct),
+                PatientDetailsQuery q => await this.HandlePatientDetailsQueryAsync(q, ct),
 
                 _ => throw new NotImplementedException($"{query.GetType().FullName}"),
             };
@@ -99,9 +102,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default)
         {
+            this.logger.LogDebug("Checking if {DataSource} can be accessed by {Hdid}", dataSource, hdid);
             IEnumerable<DataSource> blockedDataSources = await this.GetDataSourcesAsync(hdid, ct);
-            this.logger.LogDebug("Blocked data sources for hdid: {Hdid} - {DataSources}", hdid, blockedDataSources);
-
             return !blockedDataSources.Contains(dataSource);
         }
 
@@ -148,8 +150,9 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (this.blockedDataSourcesChangeFeedEnabled)
             {
+                this.logger.LogDebug("Sending change feed notification for blocked data sources");
                 IEnumerable<string> dataSourceValues = blockedAccess.DataSources.Select(ds => EnumUtility.ToEnumString(ds));
-                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, dataSourceValues), command.Hdid) }, ct);
+                await this.messageSender.SendAsync([new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, dataSourceValues), command.Hdid)], ct);
             }
         }
 
@@ -163,12 +166,12 @@ namespace HealthGateway.AccountDataAccess.Patient
         [SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
         public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default)
         {
-            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
-            string message = $"Getting item from cache for key: {blockedAccessCacheKey}";
-            this.logger.LogDebug("{Message}", message);
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("CacheIdentifier", hdid);
+            this.logger.LogDebug("Accessing blocked access cache");
 
             IEnumerable<DataSource>? dataSources = await this.cacheProvider.GetOrSetAsync(
-                blockedAccessCacheKey,
+                string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid),
                 () => this.blockedAccessDelegate.GetDataSourcesAsync(hdid, ct),
                 TimeSpan.FromMinutes(this.blockedAccessCacheTtl),
                 ct);
@@ -178,19 +181,34 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static string GetStrategy(string? hdid, PatientDetailSource source)
         {
-            string prefix = "HealthGateway.AccountDataAccess.Patient.Strategy.";
+            const string prefix = "HealthGateway.AccountDataAccess.Patient.Strategy.";
             string type = hdid != null ? "Hdid" : "Phn";
             const string suffix = "Strategy";
             return $"{prefix}{type}{source}{suffix}";
         }
 
-        private async Task<PatientQueryResult> HandleAsync(PatientDetailsQuery query, CancellationToken ct)
+        private async Task<PatientQueryResult> HandlePatientDetailsQueryAsync(PatientDetailsQuery query, CancellationToken ct)
         {
-            this.logger.LogDebug("Patient details query source: {Source} - cache: {Cache}", query.Source, query.UseCache);
+            using Activity? activity = ActivitySource.StartActivity();
+
+            if (!string.IsNullOrEmpty(query.Hdid))
+            {
+                activity?.AddBaggage("PatientHdid", query.Hdid);
+            }
+
+            if (!string.IsNullOrEmpty(query.Phn))
+            {
+                activity?.AddBaggage("PatientPhn", query.Phn);
+            }
+
+            activity?.AddBaggage("UseCache", query.UseCache.ToString());
+            activity?.AddBaggage("Source", EnumUtility.ToEnumString(query.Source));
+
+            this.logger.LogDebug("Retrieving patient details");
 
             if (ct.IsCancellationRequested)
             {
-                throw new InvalidOperationException("cancellation was requested");
+                throw new InvalidOperationException("Cancellation was requested");
             }
 
             if (query.Hdid == null && query.Phn == null)
@@ -209,9 +227,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 disabledValidation);
 
             string strategy = GetStrategy(query.Hdid, query.Source);
-            this.logger.LogDebug("Strategy: {Strategy}", strategy);
 
-            // Get the appropriate strategy from factory to query patient
             PatientQueryStrategy patientQueryStrategy = this.patientQueryFactory.GetPatientQueryStrategy(strategy);
             PatientQueryContext context = new(patientQueryStrategy);
             PatientModel patient = await context.GetPatientAsync(patientRequest, ct);

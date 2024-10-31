@@ -51,11 +51,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             {
                 if (requirement.SupportsSystemDelegation && this.IsSystemDelegated(context, requirement))
                 {
+                    this.logger.LogInformation("System-delegated access granted");
                     context.Succeed(requirement);
+                }
+                else if (requirement.SupportsSystemDelegation)
+                {
+                    this.logger.LogDebug("System-delegated access not granted");
                 }
                 else
                 {
-                    this.logger.LogDebug("System-delegated access rejected; Supports delegation: {SupportsSystemDelegation}", requirement.SupportsSystemDelegation);
+                    this.logger.LogDebug("System-delegated access not granted as system delegation is not supported");
                 }
             }
 

@@ -27,14 +27,6 @@ namespace HealthGateway.Common.Services
     public interface IPatientService
     {
         /// <summary>
-        /// Gets the patient PHN.
-        /// </summary>
-        /// <param name="hdid">The patient HDID.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The patient PHN.</returns>
-        Task<RequestResult<string>> GetPatientPhnAsync(string hdid, CancellationToken ct = default);
-
-        /// <summary>
         /// Gets the patient record.
         /// </summary>
         /// <param name="identifier">The patient identifier.</param>

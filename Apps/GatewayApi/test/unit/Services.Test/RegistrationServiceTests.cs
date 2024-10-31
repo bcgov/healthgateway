@@ -34,7 +34,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -130,7 +129,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="requestedSmsNumber">The value representing the requested sms number.</param>
         /// <param name="minPatientAge">The value representing the valid minimum age to create a profile.</param>
         /// <param name="patientAge">The value representing the patient's age.</param>
-        /// <param name="profileInsertStatus">The db status returned when user profile is inserted in the database </param>
+        /// <param name="profileInsertStatus">The db status returned when user profile is inserted in the database.</param>
         /// <param name="expectedException">The expected exception type to be thrown.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
@@ -350,7 +349,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             return new RegistrationService(
                 configurationRoot,
-                new Mock<ILogger<RegistrationService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 messagingVerificationServiceMock.Object,

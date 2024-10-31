@@ -19,8 +19,8 @@ namespace HealthGateway.Common.Models.Events;
 using HealthGateway.Common.Messaging;
 
 /// <summary>
-/// Represents a dependent removed event
+/// Represents a dependent removed event.
 /// </summary>
-/// <param name="DelegateHdid">The delegate hdid adding the dependent</param>
-/// <param name="DependentHdid">The dependent hdid</param>
+/// <param name="DelegateHdid">The delegate hdid adding the dependent.</param>
+/// <param name="DependentHdid">The dependent hdid.</param>
 public record DependentRemovedEvent(string DelegateHdid, string DependentHdid) : MessageBase;

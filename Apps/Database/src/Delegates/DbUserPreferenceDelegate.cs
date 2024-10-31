@@ -28,51 +28,39 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbUserPreferenceDelegate : IUserPreferenceDelegate
+    public class DbUserPreferenceDelegate(ILogger<DbUserPreferenceDelegate> logger, GatewayDbContext dbContext) : IUserPreferenceDelegate
     {
-        private readonly ILogger<DbUserPreferenceDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbUserPreferenceDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbUserPreferenceDelegate(
-            ILogger<DbUserPreferenceDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<UserPreference>> CreateUserPreferenceAsync(UserPreference userPreference, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Creating new User Preference in DB...");
+            logger.LogDebug("Adding user preference to DB: {Preference}", userPreference.Preference);
+            dbContext.UserPreference.Add(userPreference);
+
             DbResult<UserPreference> result = new()
             {
                 Payload = userPreference,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.UserPreference.Add(userPreference);
 
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error adding user preference to DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to create UserPreference to DB {Message}", e.Message);
+                    logger.LogError(e, "Error adding user preference to DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
@@ -84,30 +72,33 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<DbResult<UserPreference>> UpdateUserPreferenceAsync(UserPreference userPreference, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating User Preference in DB...");
+            logger.LogDebug("Updating user preference in DB: {Preference}", userPreference.Preference);
+
+            dbContext.UserPreference.Update(userPreference);
+            dbContext.Entry(userPreference).Property(p => p.HdId).IsModified = false;
+
             DbResult<UserPreference> result = new()
             {
                 Payload = userPreference,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.UserPreference.Update(userPreference);
-            this.dbContext.Entry(userPreference).Property(p => p.HdId).IsModified = false;
 
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    logger.LogWarning(e, "Error updating user preference in DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to update UserPreference to DB {Message}", e.Message);
+                    logger.LogError(e, "Error updating user preference in DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
@@ -119,7 +110,8 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IEnumerable<UserPreference>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.dbContext.UserPreference
+            logger.LogDebug("Retrieving user preferences from DB for {Hdid}", hdid);
+            return await dbContext.UserPreference
                 .Where(p => p.HdId == hdid)
                 .ToListAsync(ct);
         }

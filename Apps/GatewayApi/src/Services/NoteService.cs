@@ -75,7 +75,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {HdId}", userNote.HdId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
             }
 
@@ -110,10 +110,9 @@ namespace HealthGateway.GatewayApi.Services
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct: ct);
             string? key = profile?.EncryptionKey;
 
-            // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
+            // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have an encryption key.
             if (key == null)
             {
-                this.logger.LogInformation("First time note retrieval with key for user {Hdid}", hdId);
                 key = await this.EncryptFirstTimeAsync(profile, dbNotes.Payload, ct);
                 dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
             }
@@ -137,7 +136,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {HdId}", userNote.HdId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
             }
 
@@ -159,7 +158,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("User does not have a key: {Hdid}", userNote.HdId);
+                this.logger.LogError("Profile does not have an encryption key");
                 return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
             }
 
@@ -176,6 +175,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private async Task<string> EncryptFirstTimeAsync(UserProfile profile, IList<Note> dbNotes, CancellationToken ct)
         {
+            this.logger.LogDebug("Generating encryption key for profile");
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
             DbResult<UserProfile> userProfileUpdateResult = await this.profileDelegate.UpdateAsync(profile, false, ct);

@@ -24,15 +24,20 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
     /// <param name="dbContext">The context to be used when accessing the database.</param>
-    public class DbBetaFeatureAccessDelegate(GatewayDbContext dbContext) : IBetaFeatureAccessDelegate
+    public class DbBetaFeatureAccessDelegate(ILogger<DbBetaFeatureAccessDelegate> logger, GatewayDbContext dbContext) : IBetaFeatureAccessDelegate
     {
         /// <inheritdoc/>
         public async Task AddRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessAssociations, bool commit = true, CancellationToken ct = default)
         {
+            logger.LogDebug("Adding beta feature access to DB");
+
             dbContext.BetaFeatureAccess.AddRange(betaFeatureAccessAssociations);
+
             if (commit)
             {
                 await dbContext.SaveChangesAsync(ct);
@@ -42,7 +47,10 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task DeleteRangeAsync(IEnumerable<BetaFeatureAccess> betaFeatureAccessAssociations, bool commit = true, CancellationToken ct = default)
         {
+            logger.LogDebug("Removing beta feature access from DB");
+
             dbContext.BetaFeatureAccess.RemoveRange(betaFeatureAccessAssociations);
+
             if (commit)
             {
                 await dbContext.SaveChangesAsync(ct);
@@ -52,6 +60,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<BetaFeatureAccess>> GetAsync(IEnumerable<string> hdids, CancellationToken ct = default)
         {
+            logger.LogDebug("Retrieving beta feature access from DB for {Hdids}", hdids);
             return await dbContext.BetaFeatureAccess
                 .Where(x => hdids.Contains(x.Hdid))
                 .OrderBy(x => x.Hdid)
@@ -61,6 +70,8 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<PaginatedResult<IGrouping<string, BetaFeatureAccess>>> GetAllAsync(int pageIndex, int pageSize, CancellationToken ct = default)
         {
+            logger.LogDebug("Retrieving beta feature access from DB");
+
             ArgumentOutOfRangeException.ThrowIfNegative(pageIndex);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageSize);
 

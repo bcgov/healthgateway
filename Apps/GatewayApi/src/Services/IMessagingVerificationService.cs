@@ -29,8 +29,8 @@ namespace HealthGateway.GatewayApi.Services
         /// Creates a messaging verification using the supplied hdid and email.
         /// </summary>
         /// <param name="hdid">The hdid associated with the email.</param>
-        /// <param name="email">The email for the messaging verification./></param>
-        /// <param name="isEmailVerified">The value determines whether email has been verified or not./></param>
+        /// <param name="email">The email for the messaging verification.</param>
+        /// <param name="isEmailVerified">The value determines whether email has been verified or not.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A messaging verification model.</returns>
@@ -40,7 +40,7 @@ namespace HealthGateway.GatewayApi.Services
         /// Creates a messaging verification using the supplied hdid and sms number.
         /// </summary>
         /// <param name="hdid">The hdid associated with the sms number.</param>
-        /// <param name="smsNumber">The sms number for the messaging verification./></param>
+        /// <param name="smsNumber">The sms number for the messaging verification.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A messaging verificaiton model.</returns>

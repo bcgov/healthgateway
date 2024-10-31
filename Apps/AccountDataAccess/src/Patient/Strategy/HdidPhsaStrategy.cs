@@ -64,12 +64,12 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             {
                 try
                 {
+                    this.GetLogger().LogDebug("Retrieving patient from PHSA");
                     PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
                     patient = this.mapper.Map<PatientModel>(result);
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    this.GetLogger().LogInformation(e, "PHSA could not find patient identity for {Hdid}", request.Identifier);
                     throw new NotFoundException(ErrorMessages.PatientIdentityNotFound);
                 }
             }

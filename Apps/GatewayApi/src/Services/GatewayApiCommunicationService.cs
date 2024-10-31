@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
@@ -34,6 +35,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<CommunicationModel>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
+            Activity.Current?.AddBaggage("CommunicationType", communicationType.ToString());
             RequestResult<Communication?> communication = await communicationService.GetActiveCommunicationAsync(mappingService.MapToCommunicationType(communicationType), ct);
             return mappingService.MapToRequestResult(communication);
         }

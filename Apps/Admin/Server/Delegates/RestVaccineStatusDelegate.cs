@@ -39,12 +39,13 @@ namespace HealthGateway.Admin.Server.Delegates
     {
         private readonly PhsaConfig phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
 
-        private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(RestVaccineStatusDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusWithRetriesAsync(string phn, DateTime dateOfBirth, string accessToken, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
+            using Activity? activity = ActivitySource.StartActivity();
+
             VaccineStatusQuery query = new()
             {
                 PersonalHealthNumber = phn,
@@ -53,22 +54,26 @@ namespace HealthGateway.Admin.Server.Delegates
 
             PhsaResult<VaccineStatusResult> response;
 
-            int attemptCount = 0;
+            int retryCount = 0;
             bool refreshInProgress;
             do
             {
+                logger.LogDebug("Retrieving vaccine status");
                 response = await immunizationAdminApi.GetVaccineStatusAsync(query, accessToken, ct);
 
                 refreshInProgress = response.LoadState.RefreshInProgress;
-
-                attemptCount++;
-                if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
+                if (refreshInProgress)
                 {
-                    logger.LogDebug("Refresh in progress, trying again....");
-                    await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds), ct);
+                    logger.LogDebug("Refresh is in progress");
+
+                    retryCount++;
+                    if (retryCount <= this.phsaConfig.MaxRetries)
+                    {
+                        await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds), ct);
+                    }
                 }
             }
-            while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
+            while (refreshInProgress && retryCount <= this.phsaConfig.MaxRetries);
 
             if (refreshInProgress)
             {

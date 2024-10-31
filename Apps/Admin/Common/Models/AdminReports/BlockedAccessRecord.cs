@@ -22,6 +22,6 @@ namespace HealthGateway.Admin.Common.Models.AdminReports
     /// Represents a patient with blocked access to data sources.
     /// </summary>
     /// <param name="Hdid">Patient's HDID.</param>
-    /// <param name="BlockedSources">List of <see cref="DataSource"/> that are blocked</param>
+    /// <param name="BlockedSources">List of <see cref="DataSource"/> that are blocked.</param>
     public record BlockedAccessRecord(string Hdid, IList<DataSource> BlockedSources);
 }

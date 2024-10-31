@@ -23,22 +23,20 @@ namespace HealthGateway.JobScheduler.Jobs
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Runs the Database migrations as needed.
+    /// Runs the database migrations as needed.
     /// </summary>
     public class DbMigrationsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
         private readonly GatewayDbContext dbContext;
-        private readonly ILogger logger;
+        private readonly ILogger<DbMigrationsJob> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbMigrationsJob"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
-        public DbMigrationsJob(
-            ILogger<DbMigrationsJob> logger,
-            GatewayDbContext dbContext)
+        public DbMigrationsJob(ILogger<DbMigrationsJob> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
@@ -52,9 +50,9 @@ namespace HealthGateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public async Task MigrateAsync(CancellationToken ct = default)
         {
-            this.logger.LogTrace("Migrating database... {ConcurrencyTimeout}", ConcurrencyTimeout);
+            this.logger.LogInformation("Applying database migrations");
             await this.dbContext.Database.MigrateAsync(ct);
-            this.logger.LogTrace("Finished migrating database. {ConcurrencyTimeout}", ConcurrencyTimeout);
+            this.logger.LogInformation("Applied database migrations");
         }
     }
 }

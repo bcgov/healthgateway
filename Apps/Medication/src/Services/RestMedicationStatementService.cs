@@ -48,7 +48,7 @@ namespace HealthGateway.Medication.Services
         private readonly IMedicationMappingService mappingService;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly ILogger logger;
+        private readonly ILogger<RestMedicationStatementService> logger;
         private readonly IMedicationStatementDelegate medicationStatementDelegate;
         private readonly IPatientService patientService;
         private readonly IPatientRepository patientRepository;
@@ -81,123 +81,110 @@ namespace HealthGateway.Medication.Services
             this.mappingService = mappingService;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
+        private static ActivitySource ActivitySource { get; } = new(typeof(RestMedicationStatementService).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatementsAsync(string hdid, string? protectiveWord, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Medication, ct))
             {
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Medication, ct))
+                return new RequestResult<IList<MedicationStatement>>
                 {
-                    return new RequestResult<IList<MedicationStatement>>
-                    {
-                        ResultStatus = ResultType.Success,
-                        ResourcePayload = [],
-                        TotalResultCount = 0,
-                    };
-                }
-
-                protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
-
-                if (protectiveWord != null)
-                {
-                    ValidationResult? protectiveWordValidation = await new ProtectiveWordValidator().ValidateAsync(protectiveWord, ct);
-                    if (!protectiveWordValidation.IsValid)
-                    {
-                        this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
-                        return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, protectiveWordValidation.Errors);
-                    }
-                }
-
-                // Retrieve the phn
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
-                if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
-                {
-                    return RequestResultFactory.Error<IList<MedicationStatement>>(patientResult.ResultError);
-                }
-
-                PatientModel patient = patientResult.ResourcePayload;
-                OdrHistoryQuery historyQuery = new()
-                {
-                    StartDate = patient.Birthdate,
-                    EndDate = DateTime.Now,
-                    Phn = patient.PersonalHealthNumber,
-                    PageSize = 20000,
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = [],
+                    TotalResultCount = 0,
                 };
-                string ipv4Address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
-                RequestResult<MedicationHistoryResponse> response =
-                    await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address, ct);
-
-                if (response.ResultStatus == ResultType.ActionRequired)
-                {
-                    return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, response.ResultError?.ResultMessage);
-                }
-
-                if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
-                {
-                    return RequestResultFactory.Error<IList<MedicationStatement>>(response.ResultError);
-                }
-
-                IList<MedicationStatement> payload = response.ResourcePayload.Results?.Select(this.mappingService.MapToMedicationStatement).ToList() ?? [];
-                await this.PopulateMedicationSummaryAsync(payload.Select(r => r.MedicationSummary).ToList(), ct);
-
-                return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
             }
+
+            protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
+
+            if (protectiveWord != null)
+            {
+                ValidationResult? protectiveWordValidation = await new ProtectiveWordValidator().ValidateAsync(protectiveWord, ct);
+                if (!protectiveWordValidation.IsValid)
+                {
+                    this.logger.LogDebug("Protective word did not pass validation");
+                    return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, protectiveWordValidation.Errors);
+                }
+            }
+
+            // to form the OdrHistoryQuery, the patient's PHN must be retrieved
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
+            if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
+            {
+                return RequestResultFactory.Error<IList<MedicationStatement>>(patientResult.ResultError);
+            }
+
+            PatientModel patient = patientResult.ResourcePayload;
+            OdrHistoryQuery historyQuery = new()
+            {
+                StartDate = patient.Birthdate,
+                EndDate = DateTime.Now,
+                Phn = patient.PersonalHealthNumber,
+                PageSize = 20000,
+            };
+            string ipv4Address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
+            RequestResult<MedicationHistoryResponse> response =
+                await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address, ct);
+
+            if (response.ResultStatus == ResultType.ActionRequired)
+            {
+                return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, response.ResultError?.ResultMessage);
+            }
+
+            if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
+            {
+                return RequestResultFactory.Error<IList<MedicationStatement>>(response.ResultError);
+            }
+
+            IList<MedicationStatement> payload = response.ResourcePayload.Results?.Select(this.mappingService.MapToMedicationStatement).ToList() ?? [];
+            await this.PopulateMedicationSummaryAsync(payload.Select(r => r.MedicationSummary).ToList(), ct);
+
+            return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
         }
 
         private async Task PopulateMedicationSummaryAsync(List<MedicationSummary> medSummaries, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            using Activity? activity = ActivitySource.StartActivity();
+
+            List<string> uniqueDrugIdentifiers = medSummaries.Select(s => s.Din.PadLeft(8, '0')).Distinct().ToList();
+
+            // retrieve drug information from federal data
+            IList<DrugProduct> drugProducts = await this.drugLookupDelegate.GetDrugProductsByDinAsync(uniqueDrugIdentifiers, ct);
+            Dictionary<string, DrugProduct> federalDrugInfo = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
+
+            Dictionary<string, PharmaCareDrug> provincialDrugInfo = [];
+            if (uniqueDrugIdentifiers.Count > federalDrugInfo.Count)
             {
-                List<string> medicationIdentifiers = medSummaries.Select(s => s.Din.PadLeft(8, '0')).ToList();
+                // determine which DINs were missing from federal data
+                List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !federalDrugInfo.ContainsKey(din)).ToList();
 
-                this.logger.LogTrace("Getting drugs from DB - Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
-                List<string> uniqueDrugIdentifiers = medicationIdentifiers.Distinct().ToList();
-                this.logger.LogDebug(
-                    "Total DrugIdentifiers: {MedicationIdentifiersCount} | Unique identifiers: {UniqueDrugIdentifiersCount}",
-                    medicationIdentifiers.Count,
-                    uniqueDrugIdentifiers.Count);
-
-                // Retrieve the brand names using the Federal data
-                IList<DrugProduct> drugProducts = await this.drugLookupDelegate.GetDrugProductsByDinAsync(uniqueDrugIdentifiers, ct);
-                Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
-                Dictionary<string, PharmaCareDrug> provincialDict = [];
-                if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
-                {
-                    // Get the DINs not found on the previous query
-                    List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
-
-                    // Retrieve the brand names using the provincial data
-                    IList<PharmaCareDrug> pharmaCareDrugs = await this.drugLookupDelegate.GetPharmaCareDrugsByDinAsync(notFoundDins, ct);
-                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
-                }
-
-                this.logger.LogTrace("Finished getting drugs from DB - Populating medication summary... {Count} records", medSummaries.Count);
-                foreach (MedicationSummary mdSummary in medSummaries)
-                {
-                    string din = mdSummary.Din.PadLeft(8, '0');
-                    if (drugProductsDict.TryGetValue(din, out DrugProduct? drug))
-                    {
-                        mdSummary.BrandName = drug.BrandName;
-                        mdSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
-                        mdSummary.Strength = drug.ActiveIngredient?.Strength ?? string.Empty;
-                        mdSummary.StrengthUnit = drug.ActiveIngredient?.StrengthUnit ?? string.Empty;
-                        mdSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
-                    }
-                    else if (provincialDict.TryGetValue(din, out PharmaCareDrug? provincialDrug))
-                    {
-                        mdSummary.IsPin = true;
-                        mdSummary.BrandName = provincialDrug.BrandName;
-                        mdSummary.Form = provincialDrug.DosageForm ?? string.Empty;
-                        mdSummary.PharmacyAssessmentTitle = provincialDrug.PharmacyAssessmentTitle ?? string.Empty;
-                        mdSummary.PrescriptionProvided = provincialDrug.PrescriptionProvided;
-                        mdSummary.RedirectedToHealthCareProvider = provincialDrug.RedirectedToHealthCareProvider;
-                    }
-                }
+                // retrieve remaining drug information from provincial data
+                IList<PharmaCareDrug> pharmaCareDrugs = await this.drugLookupDelegate.GetPharmaCareDrugsByDinAsync(notFoundDins, ct);
+                provincialDrugInfo = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
             }
 
-            this.logger.LogDebug("Finished populating medication summary. {Count} records", medSummaries.Count);
+            foreach (MedicationSummary mdSummary in medSummaries)
+            {
+                string din = mdSummary.Din.PadLeft(8, '0');
+                if (federalDrugInfo.TryGetValue(din, out DrugProduct? drug))
+                {
+                    mdSummary.BrandName = drug.BrandName;
+                    mdSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
+                    mdSummary.Strength = drug.ActiveIngredient?.Strength ?? string.Empty;
+                    mdSummary.StrengthUnit = drug.ActiveIngredient?.StrengthUnit ?? string.Empty;
+                    mdSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
+                }
+                else if (provincialDrugInfo.TryGetValue(din, out PharmaCareDrug? provincialDrug))
+                {
+                    mdSummary.IsPin = true;
+                    mdSummary.BrandName = provincialDrug.BrandName;
+                    mdSummary.Form = provincialDrug.DosageForm ?? string.Empty;
+                    mdSummary.PharmacyAssessmentTitle = provincialDrug.PharmacyAssessmentTitle ?? string.Empty;
+                    mdSummary.PrescriptionProvided = provincialDrug.PrescriptionProvided;
+                    mdSummary.RedirectedToHealthCareProvider = provincialDrug.RedirectedToHealthCareProvider;
+                }
+            }
         }
     }
 }

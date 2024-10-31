@@ -26,12 +26,10 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
     /// The Patient data service.
@@ -68,32 +66,7 @@ namespace HealthGateway.Common.Services
             this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
         }
 
-        private static ActivitySource Source { get; } = new(nameof(PatientService));
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetPatientPhnAsync(string hdid, CancellationToken ct = default)
-        {
-            using Activity? activity = Source.StartActivity();
-            RequestResult<string> retVal = new()
-            {
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = "Error during PHN retrieval",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
-                },
-                ResultStatus = ResultType.Error,
-            };
-            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(hdid, ct: ct);
-            retVal.ResultError = patientResult.ResultError;
-            retVal.ResultStatus = patientResult.ResultStatus;
-            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-            {
-                retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
-            }
-
-            activity?.Stop();
-            return retVal;
-        }
+        private static ActivitySource ActivitySource { get; } = new(typeof(PatientService).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetPatientAsync(
@@ -102,12 +75,12 @@ namespace HealthGateway.Common.Services
             bool disableIdValidation = false,
             CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage(identifierType == PatientIdentifierType.Hdid ? "PatientHdid" : "PatientPhn", identifier);
 
-            RequestResult<PatientModel> patient = await this.GetPatientInternalAsync(identifier, identifierType, disableIdValidation, ct);
+            this.logger.LogDebug("Retrieving patient details");
 
-            activity?.Stop();
-            return patient;
+            return await this.GetPatientInternalAsync(identifier, identifierType, disableIdValidation, ct);
         }
 
         private static string GetPatientPhnCacheKey(string phn)
@@ -135,9 +108,9 @@ namespace HealthGateway.Common.Services
                     PatientIdentifierType.Phn => await this.GetPatientByPhnAsync(identifier, disableIdValidation, ct),
                     _ => throw new NotImplementedException(),
                 };
+
                 if (patientResult.ResultStatus != ResultType.Success)
                 {
-                    this.logger.LogError("Failed to get patient information: {ErrorMessage}", patientResult.ResultError?.ResultMessage);
                     return patientResult;
                 }
 
@@ -153,6 +126,7 @@ namespace HealthGateway.Common.Services
         {
             if (!PhnValidator.IsValid(phn))
             {
+                this.logger.LogDebug(ErrorMessages.PhnInvalid);
                 return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"PHN' {phn}' is invalid");
             }
 
@@ -163,6 +137,7 @@ namespace HealthGateway.Common.Services
         {
             if (string.IsNullOrEmpty(hdid))
             {
+                this.logger.LogDebug("HDID is invalid");
                 return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"HDID '{hdid}' is invalid");
             }
 
@@ -178,11 +153,14 @@ namespace HealthGateway.Common.Services
         /// <returns>The found Patient model or null.</returns>
         private async Task<PatientModel?> GetFromCacheAsync(string identifier, PatientIdentifierType identifierType, CancellationToken ct)
         {
-            using Activity? activity = Source.StartActivity();
             if (this.cacheTtl == 0)
             {
                 return null;
             }
+
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("CacheIdentifier", identifier);
+            this.logger.LogDebug("Accessing patient cache via {CacheIdentifierType}", identifierType);
 
             PatientModel? patient = identifierType switch
             {
@@ -191,14 +169,7 @@ namespace HealthGateway.Common.Services
                 _ => throw new NotImplementedException(),
             };
 
-            if (patient == null)
-            {
-                this.logger.LogDebug("Patient with identifier {Identifier} was NOT found in cache", identifier);
-                return null;
-            }
-
-            this.logger.LogDebug("Patient with identifier {Identifier} was found in cache", identifier);
-            activity?.Stop();
+            this.logger.LogDebug("Patient cache access outcome: {CacheResult}", patient == null ? "miss" : "hit");
             return patient;
         }
 
@@ -210,28 +181,28 @@ namespace HealthGateway.Common.Services
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         private async Task CachePatientAsync(PatientModel patient, CancellationToken ct)
         {
-            using Activity? activity = Source.StartActivity();
-            string hdid = patient.HdId;
-            if (this.cacheTtl > 0)
+            if (this.cacheTtl == 0)
             {
-                this.logger.LogDebug("Attempting to cache patient: {Hdid}", hdid);
-                TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
-                if (!patient.HdId.IsNullOrEmpty())
-                {
-                    await this.cacheProvider.AddItemAsync(GetPatientHdidCacheKey(patient.HdId), patient, expiry, ct);
-                }
-
-                if (!patient.PersonalHealthNumber.IsNullOrEmpty())
-                {
-                    await this.cacheProvider.AddItemAsync(GetPatientPhnCacheKey(patient.PersonalHealthNumber), patient, expiry, ct);
-                }
-            }
-            else
-            {
-                this.logger.LogDebug("Patient caching is disabled will not cache patient: {Hdid}", hdid);
+                return;
             }
 
-            activity?.Stop();
+            using Activity? activity = ActivitySource.StartActivity();
+
+            TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
+
+            if (!string.IsNullOrEmpty(patient.HdId))
+            {
+                activity?.AddBaggage("CacheIdentifier", patient.HdId);
+                this.logger.LogDebug("Storing patient in cache by {CacheIdentifierType}", PatientIdentifierType.Hdid);
+                await this.cacheProvider.AddItemAsync(GetPatientHdidCacheKey(patient.HdId), patient, expiry, ct);
+            }
+
+            if (!string.IsNullOrEmpty(patient.PersonalHealthNumber))
+            {
+                activity?.AddBaggage("CacheIdentifier", patient.PersonalHealthNumber);
+                this.logger.LogDebug("Storing patient in cache by {CacheIdentifierType}", PatientIdentifierType.Phn);
+                await this.cacheProvider.AddItemAsync(GetPatientPhnCacheKey(patient.PersonalHealthNumber), patient, expiry, ct);
+            }
         }
     }
 }
