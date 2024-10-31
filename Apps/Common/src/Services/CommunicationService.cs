@@ -213,7 +213,6 @@ namespace HealthGateway.Common.Services
         {
             RequestResult<Communication?> cacheEntry = new()
             {
-                ResourcePayload = communication,
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
             };
@@ -235,13 +234,13 @@ namespace HealthGateway.Common.Services
                     this.logger.LogDebug("Caching communication {CommunicationId} until {ExpiryDateTime}", communication.Id, communication.ExpiryDateTime);
                     expiry = communication.ExpiryDateTime - now;
                     cacheEntry.TotalResultCount = 1;
+                    cacheEntry.ResourcePayload = communication;
                 }
             }
             else
             {
                 // communication is expired or null
                 this.logger.LogDebug("Caching empty communication with no expiration");
-                cacheEntry.ResourcePayload = null;
             }
 
             string cacheKey = GetCacheKey(communicationType);
