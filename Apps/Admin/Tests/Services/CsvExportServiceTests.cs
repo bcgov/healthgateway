@@ -277,6 +277,8 @@ namespace HealthGateway.Admin.Tests.Services
         [Fact]
         public void TestMapperAdminUserProfileViewFromAdminUserProfile()
         {
+            TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(Configuration, DateTime.UtcNow);
+
             AdminUserProfile adminUserProfile = new()
             {
                 AdminUserProfileId = Guid.NewGuid(),
@@ -288,7 +290,7 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 AdminUserProfileId = adminUserProfile.AdminUserProfileId,
                 UserId = null,
-                LastLoginDateTime = adminUserProfile.LastLoginDateTime,
+                LastLoginDateTime = adminUserProfile.LastLoginDateTime.AddMinutes(localTimeOffset.TotalMinutes),
                 Username = adminUserProfile.Username,
                 Email = null,
                 FirstName = null,
@@ -301,8 +303,8 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expected.AdminUserProfileId, actual.AdminUserProfileId);
             Assert.Equal(expected.UserId, actual.UserId);
             Assert.NotNull(actual.LastLoginDateTime);
-            Assert.Equal(DateTimeKind.Unspecified, actual.LastLoginDateTime.Value.Kind);
-            Assert.Equal(expected.LastLoginDateTime, DateFormatter.SpecifyLocal(actual.LastLoginDateTime.Value, Configuration));
+            Assert.Equal(DateTimeKind.Utc, actual.LastLoginDateTime.Value.Kind);
+            Assert.Equal(expected.LastLoginDateTime, actual.LastLoginDateTime.Value);
             Assert.Equal(expected.Username, actual.Username);
             Assert.Equal(expected.Email, actual.Email);
             Assert.Equal(expected.FirstName, actual.FirstName);
