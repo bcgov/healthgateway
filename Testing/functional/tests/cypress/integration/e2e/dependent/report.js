@@ -252,7 +252,8 @@ describe("Reports", () => {
         );
     });
 
-    it("Validate Special Authority Report", () => {
+    // test should be skipped until PHSA fixes test data for this dependent
+    it.skip("Validate Special Authority Report", () => {
         const hdid = specialAuthorityDependent.hdid;
 
         const cardSelector = getCardSelector(hdid);
