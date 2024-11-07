@@ -308,7 +308,9 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.DiagnosticImaging);
         disabledDependentDatasetShouldNotBePresent(Dataset.DiagnosticImaging);
     });
-    it("Validate Special Authority requests on dependent timeline", () => {
+
+    // test should be skipped until PHSA fixes test data for this dependent
+    it.skip("Validate Special Authority requests on dependent timeline", () => {
         enabledDatasetShouldBePresent(
             Dataset.SpecialAuthorityRequest,
             authorizedSpecialAuthorityDependentHdid
