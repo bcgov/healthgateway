@@ -40,16 +40,20 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
-echo "Running Cypress Functional Tests"
+echo "Running Cypress e2e Write Functional Tests"
+
+# Find all `-write.cy.js` files in the `e2e` folder
+write_files=$(find cypress/integration/e2e -name '*-write.cy.js' | tr '\n' ',')
+
+# Run Cypress with the `-write.cy.js` spec list
 TZ=America/Vancouver npx cypress run \
     --env "keycloak_password=$KEYCLOAK_PW,idir_password=$IDIR_PASSWORD,keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET" \
     --record \
     --key $CYPRESS_ADMIN_KEY \
-    --parallel \
-    --ci-build-id "$buildId" \
-    --group "$buildId" \
+    --ci-build-id "$buildId-AdminWrite" \
+    --group "$buildId-AdminWrite" \
     --tag "$tags" \
-    --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/!(unauthorized.cy.js|authentication.cy.js|agentaccess.cy.js)" \
+    --spec "${write_files%,}" \
     --headless \
     --browser chrome
 popd
