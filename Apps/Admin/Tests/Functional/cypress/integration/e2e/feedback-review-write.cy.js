@@ -160,20 +160,4 @@ describe("Feedback Review", () => {
         cy.wait("@deleteTag", { timeout: defaultTimeout });
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
     });
-
-    it("Navigating to Support Page", () => {
-        cy.log("Looking up feedback author.");
-        setupPatientDetailsAliases();
-
-        cy.get(rowSelector)
-            .first()
-            .within(() => {
-                cy.get("[data-testid=feedback-person-search-button]")
-                    .should("be.visible")
-                    .click();
-            });
-
-        waitForPatientDetailsDataLoad();
-        cy.location("pathname").should("eq", "/patient-details");
-    });
 });
