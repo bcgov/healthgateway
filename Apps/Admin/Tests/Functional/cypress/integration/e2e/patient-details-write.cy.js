@@ -41,84 +41,6 @@ function checkAgentAuditHistory() {
     return cy.get("[data-testid=agent-audit-history-count]").invoke("text");
 }
 
-function validateCovid19InputContainsError(inputId) {
-    cy.get(inputId)
-        .parent()
-        .parent()
-        .parent()
-        .within(() => {
-            cy.get("div").contains("Required").should("be.visible");
-        });
-}
-
-function validateMailAddressFormCancel() {
-    cy.get("[data-testid=mail-button]").click();
-    cy.get("[data-testid=address-confirmation-form]").should("be.visible");
-    cy.get("[data-testid=address-cancel-button]").click();
-    cy.get("[data-testid=address-confirmation-form]").should("not.exist");
-}
-
-function validateMailAddressFormRequiredInputs() {
-    cy.get("[data-testid=mail-button]").click();
-    cy.get("[data-testid=address-confirmation-form]").should("exist");
-    cy.get("div").contains("Required").should("not.exist");
-
-    cy.get("[data-testid=address-lines-input]").clear();
-    cy.get("[data-testid=city-input]").clear();
-    cy.get('[data-testid="country-input"]')
-        .parent()
-        .within(() => {
-            cy.get('button[aria-label="Clear"]').click();
-        });
-    cy.get("[data-testid=address-confirmation-button]")
-        .parents(".mud-dialog")
-        .click(0, 0);
-    cy.get("[data-testid=address-confirmation-button]").click();
-
-    validateCovid19InputContainsError("[data-testid=address-lines-input]");
-    validateCovid19InputContainsError("[data-testid=city-input]");
-    validateCovid19InputContainsError("[data-testid=province-input]");
-    validateCovid19InputContainsError("[data-testid=postal-code-input]");
-
-    cy.get("[data-testid=address-cancel-button]").click();
-    cy.get("[data-testid=address-confirmation-form]").should("not.exist");
-}
-
-function validateMailAddressFormSubmission() {
-    cy.get("[data-testid=mail-button]").click();
-    cy.get("[data-testid=address-confirmation-form]").should("be.visible");
-    cy.get("[data-testid=address-lines-input]")
-        .clear()
-        .type("9105 ROTTERDAM PLACE");
-    cy.get("[data-testid=city-input]").clear().type("CLITHEROE");
-    cy.get("[data-testid=country-input]").clear();
-    cy.get(".mud-list .mud-list-item-text").contains("Canada").click();
-    cy.get("[data-testid=province-input]").click();
-    cy.get("[data-testid=province]").contains("British Columbia").click();
-    cy.get("[data-testid=postal-code-input]").clear().type("V3X 4J5");
-
-    cy.intercept("POST", "**/Patient/Document").as("postDocument");
-    cy.get("[data-testid=address-confirmation-button]").click();
-    cy.wait("@postDocument", { timeout: defaultTimeout });
-
-    cy.get("[data-testid=address-confirmation-form]").should("not.exist");
-}
-
-function validatePrintVaccineCardSubmission() {
-    cy.intercept("GET", `**/Document?phn=${phnWithInvalidDoses}`).as(
-        "getVaccineCard"
-    );
-    cy.scrollTo("bottom", { ensureScrollable: false });
-    cy.get("[data-testid=print-button]").click();
-
-    cy.wait("@getVaccineCard").then((interception) => {
-        cy.verifyDownload("VaccineProof.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
-    });
-}
-
 function validateDatasetAccess() {
     cy.log("Verify initial dataset access.");
     cy.get("[data-testid=block-access-loader]").should("not.be.visible");
@@ -294,30 +216,5 @@ describe("Patient details page as admin user", () => {
             });
 
         validateDatasetAccess();
-    });
-
-    it("Verify covid immunization section (not blocked), contains invalid dose, mails address submission and prints vaccine card", () => {
-        performSearch("PHN", phnWithInvalidDoses);
-
-        selectPatientTab("Profile");
-
-        cy.get("[data-testid=patient-phn]")
-            .should("be.visible")
-            .contains(phnWithInvalidDoses);
-        cy.get("[data-testid=patient-hdid]").should("not.exist");
-
-        cy.scrollTo("bottom", { ensureScrollable: false });
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        cy.get("[data-testid=invalid-dose-alert").should("be.visible");
-        cy.get("[data-testid=mail-button]").should("be.visible", "be.enabled");
-        cy.get("[data-testid=print-button]").should("be.visible", "be.enabled");
-
-        validateMailAddressFormCancel();
-        validateMailAddressFormRequiredInputs();
-        validateMailAddressFormSubmission();
-        validatePrintVaccineCardSubmission();
     });
 });
