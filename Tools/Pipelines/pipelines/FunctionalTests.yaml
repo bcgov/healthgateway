@@ -86,28 +86,6 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
-  - job: "Admin_AgentAccess_Tests"
-    displayName: "Admin Agent Access Functional Tests"
-    pool:
-      vmImage: "ubuntu-latest"
-    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
-    dependsOn:
-      - "Admin_Seed"
-      - "Admin_Authentication_Tests"
-    timeoutInMinutes: 5
-    steps:
-      - task: Bash@3
-        displayName: "Run Admin Agent Access Functional Tests"
-        inputs:
-          targetType: filePath
-          filePath: "./Tools/Pipelines/scripts/azp_runAdminAgentAccessFunctionalTests.sh"
-          arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
-        env: # Required environment settings and secrets for admin tests
-          TERM: xterm
-          CYPRESS_ADMIN_KEY: $(cypress.admin.key)
-          KEYCLOAK_PW: $(keycloak.pw)
-          IDIR_PASSWORD: $(idir.password)
-          KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
   - job: "Admin_Read_Tests"
     displayName: "Admin Read Functional Tests"
     pool:
@@ -115,9 +93,9 @@ jobs:
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
-      - "Admin_AgentAccess_Tests"
+      - "Admin_Authentication_Tests"
     strategy:
-      parallel: 5
+      parallel: 9
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
@@ -140,7 +118,6 @@ jobs:
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
-      - "Admin_AgentAccess_Tests"
       - "Admin_Read_Tests"
     timeoutInMinutes: 15
     steps:

@@ -46,7 +46,7 @@ ui_files=$(find cypress/integration/ui -name '*.cy.js' | tr '\n' ',')
 
 # Gather only `-read.cy.js` and `.cy.js` files in the `e2e` folder, excluding specific files
 e2e_files=$(find cypress/integration/e2e -name '*.cy.js' \( -name '*-read.cy.js' -o ! -name '*-*' \) \
-    ! -name '*-write.cy.js' ! -name 'unauthorized.cy.js' ! -name 'authentication.cy.js' ! -name 'agentaccess.cy.js' | tr '\n' ',')
+    ! -name '*-write.cy.js' ! -name 'unauthorized.cy.js' ! -name 'authentication.cy.js' | tr '\n' ',')
 
 # Combine `ui_files` and `e2e_files` into a single spec list
 spec_files="${ui_files}${e2e_files}"
