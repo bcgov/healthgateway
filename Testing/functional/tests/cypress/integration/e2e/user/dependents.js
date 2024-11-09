@@ -351,12 +351,16 @@ describe("dependents", () => {
         // Click download dropdown under History tab
         cy.get(
             `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-        ).click();
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Click PDF
         cy.get(
             `[data-testid=download-immunization-history-report-pdf-btn-${validDependentHdid}]`
-        ).click();
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -370,12 +374,16 @@ describe("dependents", () => {
         // Click download dropdown under History tab
         cy.get(
             `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-        ).click();
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Click CSV
         cy.get(
             `[data-testid=download-immunization-history-report-csv-btn-${validDependentHdid}]`
-        ).click();
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -389,12 +397,16 @@ describe("dependents", () => {
         // Click download dropdown under History tab
         cy.get(
             `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-        ).click();
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Click XLSX
         cy.get(
             `[data-testid=download-immunization-history-report-xlsx-btn-${validDependentHdid}]`
-        ).click();
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -435,12 +447,16 @@ describe("dependents", () => {
         // Click download dropdown under Forecasts tab
         cy.get(
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
-        ).click({ force: true });
+        )
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Click PDF
         cy.get(
             `[data-testid=download-immunization-forecast-report-pdf-btn-${validDependentHdid}]`
-        ).click({ force: true });
+        )
+            .should("be.visible")
+            .click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -455,13 +471,15 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}`
         )
-            .should("be.enabled")
-            .click({ force: true });
+            .should("be.visible", "be.enabled")
+            .click();
 
         // Click CSV
         cy.get(
             `[data-testid=download-immunization-forecast-report-csv-btn-${validDependentHdid}]`
-        ).click({ force: true });
+        )
+            .should("be.visible")
+            .click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -476,13 +494,15 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
         )
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click({ force: true });
 
         // Click XLSX
         cy.get(
             `[data-testid=download-immunization-forecast-report-xlsx-btn-${validDependentHdid}]`
-        ).click({ force: true });
+        )
+            .should("be.visible")
+            .click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
