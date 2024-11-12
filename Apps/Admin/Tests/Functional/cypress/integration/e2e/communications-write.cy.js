@@ -11,7 +11,7 @@ describe("Communications", () => {
         );
     });
 
-    it("Verify notification CRUD functions.", () => {
+    it("Verify communication and notification CRUD functions.", () => {
         cy.log("Create notification.");
 
         cy.get("[data-testid=create-btn]").should("be.visible").click();
@@ -133,9 +133,7 @@ describe("Communications", () => {
                     "Edited Test Notification Subject"
                 );
             });
-    });
 
-    it("Verify communication CRUD functions.", () => {
         cy.log("Validating data initialized by seed script.");
 
         cy.get("[data-testid=banner-tabs]")
