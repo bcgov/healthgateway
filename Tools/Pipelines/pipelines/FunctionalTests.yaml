@@ -119,6 +119,8 @@ jobs:
     dependsOn:
       - "Admin_Seed"
       - "Admin_Read_Tests"
+    strategy:
+      parallel: 9
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
