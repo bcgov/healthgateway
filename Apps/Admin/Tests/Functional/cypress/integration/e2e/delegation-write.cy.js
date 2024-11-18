@@ -203,6 +203,7 @@ describe("Delegation Protect", () => {
         // Delegation Confirmation button
         cy.get("[data-testid=audit-reason-input]").type("test");
         cy.get("[data-testid=audit-confirm-button]").click({ force: true });
+        cy.wait("@protectDependent", { timeout: defaultTimeout });
 
         // Confirm delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 2);
