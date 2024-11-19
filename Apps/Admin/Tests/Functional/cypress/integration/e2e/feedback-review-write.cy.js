@@ -90,12 +90,12 @@ describe("Feedback Review", () => {
         cy.get(rowSelector)
             .first()
             .within(() => {
-                cy.get("[data-testid=feedback-tag-save-button]").should(
-                    "not.be.enabled"
-                );
                 cy.get("[data-testid=feedback-tag-select]").should(
                     "have.value",
                     suggestionTag
+                );
+                cy.get("[data-testid=feedback-tag-save-button]").should(
+                    "not.be.enabled"
                 );
             });
 
@@ -137,12 +137,12 @@ describe("Feedback Review", () => {
         cy.get(rowSelector)
             .first()
             .within(() => {
-                cy.get("[data-testid=feedback-tag-save-button]").should(
-                    "not.be.enabled"
-                );
                 cy.get("[data-testid=feedback-tag-select]").should(
                     "not.have.value",
                     suggestionTag
+                );
+                cy.get("[data-testid=feedback-tag-save-button]").should(
+                    "not.be.enabled"
                 );
             });
 
