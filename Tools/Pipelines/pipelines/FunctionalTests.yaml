@@ -95,7 +95,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Authentication_Tests"
     strategy:
-      parallel: 9
+      parallel: 5
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
@@ -119,6 +119,8 @@ jobs:
     dependsOn:
       - "Admin_Seed"
       - "Admin_Read_Tests"
+    strategy:
+      parallel: 5
     timeoutInMinutes: 15
     steps:
       - task: Bash@3

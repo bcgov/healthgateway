@@ -50,6 +50,7 @@ TZ=America/Vancouver npx cypress run \
     --env "keycloak_password=$KEYCLOAK_PW,idir_password=$IDIR_PASSWORD,keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET" \
     --record \
     --key $CYPRESS_ADMIN_KEY \
+    --parallel \
     --ci-build-id "$buildId-AdminWrite" \
     --group "$buildId-AdminWrite" \
     --tag "$tags" \

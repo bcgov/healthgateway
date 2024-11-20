@@ -46,6 +46,10 @@ Cypress.Commands.add("logout", () => {
 });
 
 Cypress.Commands.add("login", (username, password, path) => {
+    // Clear cookies and local storage before starting the login process
+    cy.clearCookies();
+    cy.clearLocalStorage();
+
     cy.session(username, () => {
         cy.log("Logging in using Keycloak.");
         cy.readConfig().then((config) => {
