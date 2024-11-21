@@ -1,5 +1,3 @@
-const suggestionTag = "suggestion";
-const questionTag = "question";
 const defaultTimeout = 60000;
 const rowSelector = "[data-testid=feedback-table] tbody tr.mud-table-row";
 

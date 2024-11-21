@@ -2,7 +2,6 @@ import { performSearch as search } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-const phnWithInvalidDoses = "9735352535";
 const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
