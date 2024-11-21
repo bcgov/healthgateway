@@ -455,7 +455,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-forecast-report-pdf-btn-${validDependentHdid}]`
         )
-            .should("be.visible")
+            .should("be.visible", "be.enabled")
             .click({ force: true });
 
         // Confirmation modal
