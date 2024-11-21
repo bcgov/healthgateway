@@ -95,7 +95,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Authentication_Tests"
     strategy:
-      parallel: 5
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
@@ -120,7 +120,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Read_Tests"
     strategy:
-      parallel: 5
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
@@ -190,7 +190,7 @@ jobs:
       - "HG_Auth_Functional_Tests"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
-      parallel: 9
+      parallel: 6
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
