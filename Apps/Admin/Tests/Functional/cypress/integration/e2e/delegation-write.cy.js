@@ -1,7 +1,5 @@
 const dependentWithAudit = "9872868128"; // Leroy Desmond Tobias
-const dependentWithoutGuardian = { phn: "9874307168" };
 const dependentWithGuardian = { phn: "9874307175", guardianPhn: "9735353315" };
-const dependentExceedingAgeCutoff = { phn: "9735353315" };
 const dependentToProtect = "9872868095"; // Jeffrey Lawrence Stallings
 const guardianToAdd = "9735352488"; // Turpentine Garlandry
 const guardianNotFound = "9735352489";
