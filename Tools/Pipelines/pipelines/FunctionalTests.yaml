@@ -190,7 +190,7 @@ jobs:
       - "HG_Auth_Functional_Tests"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
-      parallel: 6
+      parallel: 9
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
