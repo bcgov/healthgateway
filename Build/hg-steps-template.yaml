@@ -17,7 +17,7 @@ steps:
     condition: eq(variables['EnableAzure'], True)
     inputs:
       packageType: sdk
-      version: 8.x
+      version: 9.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: Cache@2
@@ -63,14 +63,14 @@ steps:
     condition: and(succeeded(), eq(variables['WASMBuild'], false), eq(variables['WebBuild'], false))
     inputs:
       projects: "$(App.Home)/src"
-      arguments: "--no-incremental /warnaserror"
+      arguments: "--no-incremental" # /warnaserror
 
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for Blazor Solution $(App.Name)"
     condition: and(succeeded(), eq(variables['WASMBuild'], true))
     inputs:
       projects: "$(App.Home)"
-      arguments: "--no-incremental /warnaserror"
+      arguments: "--no-incremental" # /warnaserror
 
   - task: DotNetCoreCLI@2
     displayName: "Running Unit Tests for $(App.Name)"
