@@ -103,8 +103,8 @@ variable "client_hg_admin" {
 
 variable "client_hg_admin_services" {
   type = object({
-    id              = optional(string, "hg-admin-services")
-    token_lifespan  = number
+    id             = optional(string, "hg-admin-services")
+    token_lifespan = number
   })
   description = "HealthGateway Admin services client configuration"
 }
@@ -130,14 +130,14 @@ variable "client_hg_mobile" {
 
 variable "client_hg_mobile_android" {
   type = object({
-    id              = optional(string, "hg-mobile-android")
+    id = optional(string, "hg-mobile-android")
   })
   description = "HealthGateway mobile android client configuration"
 }
 
 variable "client_hg_mobile_ios" {
   type = object({
-    id              = optional(string, "hg-mobile-ios")
+    id = optional(string, "hg-mobile-ios")
   })
   description = "HealthGateway mobile ios client configuration"
 }
@@ -160,16 +160,6 @@ variable "client_icarus" {
     token_lifespan  = number
   })
   description = "Health Gateway Salesforce client configuration"
-}
-
-variable "client_algea" {
-  type = object({
-    id              = optional(string, "algea")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-    token_lifespan  = number
-  })
-  description = "Health Gateway LRA client configuration"
 }
 
 variable "client_hg_phsa" {
