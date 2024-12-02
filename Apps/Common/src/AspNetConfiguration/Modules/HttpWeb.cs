@@ -121,7 +121,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 async (context, next) =>
                 {
                     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
-                    context.Response.Headers.Append("X-Xss-Protection", "1; mode=block");
+
+                    // context.Response.Headers.Append("X-Xss-Protection", "1; mode=block");
+                    context.Response.Headers["X-Xss-Protection"] = "1; mode=block"; // Set or replace the header
+
                     await next();
                 });
 
