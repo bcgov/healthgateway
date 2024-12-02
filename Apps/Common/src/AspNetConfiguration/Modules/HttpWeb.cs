@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -120,9 +121,22 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             app.Use(
                 async (context, next) =>
                 {
-                    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
-                    context.Response.Headers.Append("X-Xss-Protection", "1; mode=block");
-                    await next();
+                    // context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+                    // context.Response.Headers.Append("X-Xss-Protection", "1; mode=block");
+                    // await next();
+
+                    try
+                    {
+                        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                        context.Response.Headers["X-Xss-Protection"] = "1; mode=block";
+                        await next();
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Response.StatusCode = 500;
+                        logger.LogError(ex, "Unhandled exception in middleware pipeline");
+                        await context.Response.WriteAsync("An internal error occurred.");
+                    }
                 });
 
             // Enable Cache control and set defaults
