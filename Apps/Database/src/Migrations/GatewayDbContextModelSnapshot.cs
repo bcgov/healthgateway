@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -2049,7 +2049,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("EffectiveDate")
+                    b.Property<DateTime?>("EffectiveDate")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LegalAgreementCode")
