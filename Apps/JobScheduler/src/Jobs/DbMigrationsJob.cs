@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
@@ -50,9 +52,30 @@ namespace HealthGateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public async Task MigrateAsync(CancellationToken ct = default)
         {
-            this.logger.LogInformation("Applying database migrations");
-            await this.dbContext.Database.MigrateAsync(ct);
-            this.logger.LogInformation("Applied database migrations");
+            this.logger.LogInformation(
+                "Job '{JobName}' - Checking for pending database migrations",
+                nameof(this.MigrateAsync)
+            );
+
+            // Retrieve all migrations that are defined in the application's assembly
+            IEnumerable<string> pendingMigrations = await this.dbContext.Database.GetPendingMigrationsAsync(ct);
+
+            if (pendingMigrations.Any())
+            {
+                this.logger.LogInformation(
+                    "Job '{JobName}' - Pending migrations found. Applying database migrations...",
+                    nameof(this.MigrateAsync)
+                );
+                await this.dbContext.Database.MigrateAsync(ct);
+                this.logger.LogInformation("Applied database migrations successfully");
+            }
+            else
+            {
+                this.logger.LogInformation(
+                    "Job '{JobName}' - No pending migrations found. Skipping migration step",
+                    nameof(this.MigrateAsync)
+                );
+            }
         }
     }
 }
