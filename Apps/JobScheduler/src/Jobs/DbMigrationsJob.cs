@@ -15,12 +15,19 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
 
     /// <summary>
     /// Runs the database migrations as needed.
@@ -50,9 +57,45 @@ namespace HealthGateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public async Task MigrateAsync(CancellationToken ct = default)
         {
-            this.logger.LogInformation("Applying database migrations");
-            await this.dbContext.Database.MigrateAsync(ct);
-            this.logger.LogInformation("Applied database migrations");
+            const string jobName = nameof(this.MigrateAsync);
+
+            this.logger.LogInformation(
+                "Job '{JobName}' - Checking for pending database migrations",
+                jobName);
+
+            IEnumerable<string> pendingMigrations = await this.dbContext.Database.GetPendingMigrationsAsync(ct);
+
+            if (pendingMigrations.Any())
+            {
+                this.logger.LogInformation(
+                    "Job '{JobName}' - Pending migrations found. Applying database migrations",
+                    jobName);
+
+                IServiceProvider serviceProvider = this.dbContext.GetInfrastructure();
+                NpgsqlDataSource dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
+
+                // Create a new DbContextOptionsBuilder with the required configuration to ignore false positive EF Core 9.0 warning
+                DbContextOptionsBuilder<GatewayDbContext> optionsBuilder = new();
+                optionsBuilder
+                    .UseNpgsql(
+                        dataSource,
+                        builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"))
+                    .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+
+                // Use a temporary DbContext for applying migrations
+                await using (GatewayDbContext migrationDbContext = new(optionsBuilder.Options))
+                {
+                    await migrationDbContext.Database.MigrateAsync(ct);
+                }
+
+                this.logger.LogInformation("Applied database migrations successfully");
+            }
+            else
+            {
+                this.logger.LogInformation(
+                    "Job '{JobName}' - No pending migrations found. Skipping migration step",
+                    jobName);
+            }
         }
     }
 }
