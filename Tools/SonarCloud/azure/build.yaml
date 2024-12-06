@@ -12,7 +12,7 @@ pool:
 variables:
   - group: Secrets
   - name: SONARSCANNER_VERSION
-    value: 5.9.1
+    value: 9.0.2
 jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
@@ -24,11 +24,10 @@ jobs:
           jdkSourceOption: "PreInstalled"
 
       - task: UseDotNet@2
-        displayName: "Install .NET SDK"
-        condition: eq(variables['EnableAzure'], True)
+        displayName: "Install .NET SDK 9.0"
         inputs:
           packageType: sdk
-          version: 7.x
+          version: 9.0.100 # Match global.json version
           installationPath: $(Agent.ToolsDirectory)/dotnet
 
       - task: DownloadSecureFile@1
