@@ -27,7 +27,7 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the ClaimId.
         /// </summary>
         [JsonPropertyName("claimId")]
-        public int ClaimId { get; set; }
+        public long ClaimId { get; set; }
 
         /// <summary>
         /// Gets or sets the Service Date.
