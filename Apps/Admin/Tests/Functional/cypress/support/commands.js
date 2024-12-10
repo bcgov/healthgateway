@@ -115,6 +115,19 @@ Cypress.Commands.add("login", (username, password, path) => {
     cy.visit(path, { timeout: 60000 });
     waitForInitialDataLoad(path);
 
+    cy.log("Unregistering ServiceWorker.");
+    cy.window().then((win) => {
+        if ("serviceWorker" in win.navigator) {
+            win.navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) => {
+                    registrations.forEach((registration) =>
+                        registration.unregister()
+                    );
+                });
+        }
+    });
+
     // wait for log in to complete
     cy.get("[data-testid=user-account-icon]").should("exist");
 });
