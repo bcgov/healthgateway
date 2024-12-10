@@ -5,7 +5,7 @@ const dependentExceedingAgeCutoff = { phn: "9735353315" };
 const defaultTimeout = 60000;
 
 function performSearch(phn) {
-    cy.intercept("GET", "**/Delegation/").as("getDelegation");
+    cy.intercept("GET", "**/Delegation*").as("getDelegation");
     cy.get("[data-testid=query-input]").clear().type(phn);
     cy.get("[data-testid=search-button]").click();
     cy.wait("@getDelegation", { timeout: defaultTimeout });

@@ -9,16 +9,8 @@ function setupGetUserAccessAlias() {
     cy.intercept("GET", "**/BetaFeature/UserAccess*").as("getUserAccess");
 }
 
-function setupPutUserAccessAlias() {
-    cy.intercept("PUT", "**/UserAccess").as("putUserAccess");
-}
-
 function waitForGetUserAccess() {
     cy.wait("@getUserAccess", { timeout: defaultTimeout });
-}
-
-function waitForPutUserAccess() {
-    cy.wait("@putUserAccess", { timeout: defaultTimeout });
 }
 
 describe("Beta feature access", () => {
