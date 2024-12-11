@@ -20,26 +20,34 @@ namespace HealthGateway.Common.ErrorHandling.ExceptionHandlers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
-    /// Transforms any exception into the appropriate problem details response.
+    /// Logs and transforms an unhandled exception into a problem details response.
     /// </summary>
-    internal sealed class DefaultExceptionHandler(IConfiguration configuration) : IExceptionHandler
+    internal sealed class DefaultExceptionHandler(IConfiguration configuration, ILogger<DefaultExceptionHandler> logger, ProblemDetailsFactory problemDetailsFactory) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
+            this.LogException(exception);
 
-            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, includeException);
+            bool includeException = configuration.GetValue("IncludeExceptionDetailsInResponse", false);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, problemDetailsFactory, includeException);
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
+        }
+
+        private void LogException(Exception exception)
+        {
+            logger.LogError(exception, "Unexpected error");
         }
     }
 }

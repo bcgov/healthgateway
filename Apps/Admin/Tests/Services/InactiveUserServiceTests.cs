@@ -78,7 +78,18 @@ namespace HealthGateway.Admin.Tests.Services
             // Arrange
             const int inactiveDays = 3;
             DateTime today = DateTime.UtcNow.Date;
-            IList<AdminUserProfile> inactiveUserProfiles = GenerateInactiveUserProfiles(today);
+            IList<AdminUserProfile> activeUserProfiles =
+            [
+                GenerateAdminUserProfile(AdminUsername1, today.AddDays(-1)),
+                GenerateAdminUserProfile(SupportUsername1, today.AddDays(-2)),
+            ];
+
+            IList<AdminUserProfile> inactiveUserProfiles =
+            [
+                GenerateAdminUserProfile(AdminUsername2, today.AddDays(-3)),
+                GenerateAdminUserProfile(SupportUsername2, today.AddDays(-4)),
+            ];
+
             List<UserRepresentation> keycloakAdminUsers = GenerateKeycloakAdminUsers();
             List<UserRepresentation> keycloakSupportUsers = GenerateKeycloakSupportUsers();
             TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(Configuration, DateTime.UtcNow);
@@ -97,7 +108,7 @@ namespace HealthGateway.Admin.Tests.Services
                     : null,
             };
 
-            IInactiveUserService service = await SetupGetInactiveUsersMock(today, adminUserErrorExists, supportUserErrorExists);
+            IInactiveUserService service = await SetupInactiveUsersMock(inactiveDays, activeUserProfiles, inactiveUserProfiles, adminUserErrorExists, supportUserErrorExists);
 
             // Act
             RequestResult<List<AdminUserProfileView>> actual = await service.GetInactiveUsersAsync(inactiveDays);
@@ -201,15 +212,6 @@ namespace HealthGateway.Admin.Tests.Services
             ];
         }
 
-        private static IList<AdminUserProfile> GenerateInactiveUserProfiles(DateTime today)
-        {
-            return
-            [
-                GenerateAdminUserProfile(AdminUsername2, today.AddDays(-3)),
-                GenerateAdminUserProfile(SupportUsername2, today.AddDays(-4)),
-            ];
-        }
-
         private static UserRepresentation GenerateUserRepresentation(Guid userId, string username, string firstName, string lastName, string email, string roles)
         {
             return new()
@@ -236,19 +238,14 @@ namespace HealthGateway.Admin.Tests.Services
                 .Build();
         }
 
-        private static async Task<IInactiveUserService> SetupGetInactiveUsersMock(DateTime today, bool adminUserErrorExists, bool supportUserErrorExists)
+        private static async Task<IInactiveUserService> SetupInactiveUsersMock(
+            int inactiveDays,
+            IList<AdminUserProfile> activeUserProfiles,
+            IList<AdminUserProfile> inactiveUserProfiles,
+            bool adminUserErrorExists,
+            bool supportUserErrorExists)
         {
-            const int inactiveDays = 3;
-
             JwtModel jwt = GenerateJwt();
-
-            IList<AdminUserProfile> activeUserProfiles =
-            [
-                GenerateAdminUserProfile(AdminUsername1, today.AddDays(-1)),
-                GenerateAdminUserProfile(SupportUsername1, today.AddDays(-2)),
-            ];
-
-            IList<AdminUserProfile> inactiveUserProfiles = GenerateInactiveUserProfiles(today);
 
             List<UserRepresentation> keycloakAdminUsers = GenerateKeycloakAdminUsers();
 

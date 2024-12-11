@@ -26,7 +26,6 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Models;
@@ -44,9 +43,8 @@ namespace HealthGateway.Medication.Delegates
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IMedicationMappingService mappingService;
         private readonly ISpecialAuthorityApi specialAuthorityApi;
-
-        private readonly ILogger logger;
-        private readonly ClientCredentialsRequest clientCredentialsRequest;
+        private readonly ILogger<SalesforceMedicationRequestDelegate> logger;
+        private readonly Config config;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SalesforceMedicationRequestDelegate"/> class.
@@ -67,57 +65,66 @@ namespace HealthGateway.Medication.Delegates
             this.specialAuthorityApi = specialAuthorityApi;
             this.authDelegate = authDelegate;
             this.mappingService = mappingService;
-
-            Config config = configuration.GetSection(Config.SalesforceConfigSectionKey).Get<Config>() ?? new();
-            this.clientCredentialsRequest = new() { TokenUri = config.TokenUri, Parameters = config.ClientAuthentication };
+            this.config = configuration.GetSection(Config.SalesforceConfigSectionKey).Get<Config>() ?? new();
         }
 
-        private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(SalesforceMedicationRequestDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            using Activity? activity = ActivitySource.StartActivity();
+
+            RequestResult<IList<MedicationRequest>> retVal = new()
             {
-                RequestResult<IList<MedicationRequest>> retVal = new()
+                ResultStatus = ResultType.Error,
+            };
+
+            string? accessToken = await this.GetSpecialAuthorityAccessTokenAsync(ct);
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                this.logger.LogError("Special Authority access token is missing");
+
+                retVal.ResultError = new RequestResultError
                 {
-                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Unable to authenticate to retrieve Medication Requests",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                 };
-                string? accessToken = (await this.authDelegate.AuthenticateUserAsync(this.clientCredentialsRequest, true, ct)).AccessToken;
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
-                    retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Unable to authenticate to retrieve Medication Requests",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
-                    };
-                    return retVal;
-                }
 
-                try
-                {
-                    ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequestsAsync(phn, accessToken, ct);
-                    retVal.ResourcePayload = replyWrapper.Items.Select(this.mappingService.MapToMedicationRequest).ToList();
-                    retVal.TotalResultCount = retVal.ResourcePayload?.Count;
-                    retVal.PageSize = retVal.ResourcePayload?.Count;
-                    retVal.PageIndex = 0;
-                    retVal.ResultStatus = ResultType.Success;
-                }
-                catch (Exception e) when (e is ApiException or HttpRequestException)
-                {
-                    retVal.ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Error while retrieving Medication Requests",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
-                    };
-                    this.logger.LogError(e, "Unexpected exception in GetMedicationRequestsAsync {Message}", e.Message);
-                }
-
-                this.logger.LogDebug("Finished getting Medication Requests");
                 return retVal;
             }
+
+            try
+            {
+                this.logger.LogDebug("Retrieving Special Authority requests");
+                ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequestsAsync(phn, accessToken, ct);
+
+                retVal.ResourcePayload = replyWrapper.Items.Select(this.mappingService.MapToMedicationRequest).ToList();
+                retVal.TotalResultCount = retVal.ResourcePayload?.Count;
+                retVal.PageSize = retVal.ResourcePayload?.Count;
+                retVal.PageIndex = 0;
+                retVal.ResultStatus = ResultType.Success;
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogWarning(e, "Error retrieving Special Authority requests");
+
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Error while retrieving Medication Requests",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
+                };
+            }
+
+            return retVal;
+        }
+
+        private async Task<string?> GetSpecialAuthorityAccessTokenAsync(CancellationToken ct = default)
+        {
+            ClientCredentialsRequest request = new() { TokenUri = this.config.TokenUri, Parameters = this.config.ClientAuthentication };
+            JwtModel token = await this.authDelegate.AuthenticateUserAsync(request, true, ct);
+
+            return token.AccessToken;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace HealthGateway.Common.Services
         /// <param name="hdid">The HDID to look up.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The personal account model.</returns>
-        Task<PersonalAccount> GetPatientAccountAsync(string hdid, CancellationToken ct = default);
+        Task<PersonalAccount> GetPersonalAccountAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets personal account information from PHSA using the supplied HDID.
@@ -39,6 +39,6 @@ namespace HealthGateway.Common.Services
         /// <param name="hdid">The HDID to look up.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The personal account model wrapped in a RequestResult.</returns>
-        Task<RequestResult<PersonalAccount>> GetPatientAccountResultAsync(string hdid, CancellationToken ct = default);
+        Task<RequestResult<PersonalAccount>> GetPersonalAccountResultAsync(string hdid, CancellationToken ct = default);
     }
 }

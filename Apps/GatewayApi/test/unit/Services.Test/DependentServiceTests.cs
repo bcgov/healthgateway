@@ -18,7 +18,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -212,7 +211,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 (await Should.ThrowAsync<DatabaseException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
-            exception.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+            exception.ProblemType.ShouldBe(ProblemType.DatabaseError);
         }
 
         /// <summary>
@@ -331,7 +330,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Times expectedQueueEmailCalls = isHdidMonitored && isAdminEmailAddressPopulated ? Times.Once() : Times.Never();
             mockEmailQueueService
-                .Verify(m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), expectedQueueEmailCalls);
+                .Verify(
+                    m => m.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                    expectedQueueEmailCalls);
         }
 
         /// <summary>
@@ -438,7 +439,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateRemoveDatabaseException()
         {
-            IList<ResourceDelegate> resourceDelegates = [new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId }];
+            IList<ResourceDelegate> resourceDelegates =
+            [
+                new() { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId },
+            ];
             DbResult<ResourceDelegate> dbResult = new()
             {
                 Status = DbStatusCode.Error,
@@ -453,7 +457,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             await Assert.ThrowsAsync<DatabaseException>(Actual);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig = null)
         {
             Dictionary<string, string?> myConfiguration = localConfig ?? [];
 
@@ -463,6 +467,37 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
+        }
+
+        private static IDependentService GetDependentService(
+            IConfigurationRoot configuration,
+            Mock<IPatientService>? mockPatientService = null,
+            Mock<INotificationSettingsService>? mockNotificationSettingsService = null,
+            Mock<IDelegationDelegate>? mockDelegationDelegate = null,
+            Mock<IResourceDelegateDelegate>? mockDependentDelegate = null,
+            Mock<IUserProfileDelegate>? mockUserProfileDelegate = null,
+            Mock<IMessageSender>? mockMessageSender = null,
+            Mock<IEmailQueueService>? mockEmailQueueService = null)
+        {
+            mockPatientService ??= new();
+            mockNotificationSettingsService ??= new();
+            mockDelegationDelegate ??= new();
+            mockDependentDelegate ??= new();
+            mockUserProfileDelegate ??= new();
+            mockMessageSender ??= new();
+            mockEmailQueueService ??= new();
+
+            return new DependentService(
+                configuration,
+                new Mock<ILogger<DependentService>>().Object,
+                mockPatientService.Object,
+                mockNotificationSettingsService.Object,
+                mockDelegationDelegate.Object,
+                mockDependentDelegate.Object,
+                mockUserProfileDelegate.Object,
+                mockMessageSender.Object,
+                MappingService,
+                mockEmailQueueService.Object);
         }
 
         private static RequestResult<PatientModel> SetupPatientRequestResultForInvalidPatient(ResultType resultType, string message)
@@ -579,17 +614,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
 
-            return new DependentService(
-                GetIConfigurationRoot(null),
-                new Mock<ILogger<DependentService>>().Object,
-                mockPatientService.Object,
-                mockNotificationSettingsService.Object,
-                mockDelegationDelegate.Object,
-                mockResourceDelegateDelegate.Object,
-                mockUserProfileDelegate.Object,
-                mockMessageSender.Object,
-                MappingService,
-                new Mock<IEmailQueueService>().Object);
+            return GetDependentService(
+                GetIConfigurationRoot(),
+                mockPatientService,
+                mockNotificationSettingsService,
+                mockDelegationDelegate,
+                mockResourceDelegateDelegate,
+                mockUserProfileDelegate,
+                mockMessageSender);
         }
 
         private IDependentService SetupMockForRemoveDependent(IList<ResourceDelegate> resourceDelegates, DbResult<ResourceDelegate> dbResult)
@@ -609,17 +641,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
 
-            return new DependentService(
-                GetIConfigurationRoot(null),
-                new Mock<ILogger<DependentService>>().Object,
-                new Mock<IPatientService>().Object,
-                mockNotificationSettingsService.Object,
-                new Mock<IDelegationDelegate>().Object,
-                mockResourceDelegateDelegate.Object,
-                mockUserProfileDelegate.Object,
-                mockMessageSender.Object,
-                MappingService,
-                new Mock<IEmailQueueService>().Object);
+            return GetDependentService(
+                GetIConfigurationRoot(),
+                mockNotificationSettingsService: mockNotificationSettingsService,
+                mockDependentDelegate: mockResourceDelegateDelegate,
+                mockUserProfileDelegate: mockUserProfileDelegate);
         }
 
         private IDependentService SetupMockForAddDependent(
@@ -684,8 +710,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
             mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockDelegateCountsResult);
 
-            Mock<IDelegationDelegate> delegationDelegate = new();
-            delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, CancellationToken.None)).ReturnsAsync(dependent);
+            Mock<IDelegationDelegate> mockDelegationDelegate = new();
+            mockDelegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, CancellationToken.None)).ReturnsAsync(dependent);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
@@ -697,20 +723,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
 
-            configuration ??= GetIConfigurationRoot(null);
+            configuration ??= GetIConfigurationRoot();
             mockEmailQueueService ??= new();
 
-            return new DependentService(
+            return GetDependentService(
                 configuration,
-                new Mock<ILogger<DependentService>>().Object,
-                mockPatientService.Object,
-                mockNotificationSettingsService.Object,
-                delegationDelegate.Object,
-                mockDependentDelegate.Object,
-                mockUserProfileDelegate.Object,
-                mockMessageSender.Object,
-                MappingService,
-                mockEmailQueueService.Object);
+                mockPatientService,
+                mockNotificationSettingsService,
+                mockDelegationDelegate,
+                mockDependentDelegate,
+                mockUserProfileDelegate,
+                mockEmailQueueService: mockEmailQueueService);
         }
 
         private AddDependentRequest SetupMockInput()

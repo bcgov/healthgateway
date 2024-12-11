@@ -27,7 +27,7 @@ namespace AccountDataAccessTest.Utils
         /// Creates a Refit exception with the given status code and reason phrase.
         /// </summary>
         /// <param name="statusCode">The desired exception status code.</param>
-        /// <returns>Refit ApiException</returns>
+        /// <returns>Refit ApiException.</returns>
         public static async Task<ApiException> CreateApiException(HttpStatusCode statusCode)
         {
             RefitSettings rfSettings = new();

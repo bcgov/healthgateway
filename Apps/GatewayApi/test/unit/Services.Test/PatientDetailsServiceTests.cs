@@ -25,7 +25,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Utils;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -49,20 +48,28 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(Hdid, PatientIdentifierType.Hdid)]
         [InlineData(Phn, PatientIdentifierType.Phn)]
         [Theory]
-        public async Task ShouldGetPatientAsync(string identifier, PatientIdentifierType identifierType)
+        public async Task ShouldGetPatient(string identifier, PatientIdentifierType identifierType)
         {
             // Arrange
-            GetPatientMock mock = SetupGetPatientMock(identifier, identifierType);
+            PatientModel patient = GeneratePatientModel();
+            PatientDetails expected = new()
+            {
+                HdId = patient.Hdid,
+                Phn = patient.Phn,
+                CommonName = patient.CommonName,
+                LegalName = patient.LegalName,
+            };
+            IPatientDetailsService service = SetupPatientDetailsServiceForGetPatient(patient, identifier, identifierType);
 
             // Act
-            PatientDetails actual = await mock.Service.GetPatientAsync(mock.Identifier, mock.IdentifierType);
+            PatientDetails actual = await service.GetPatientAsync(identifier, identifierType);
 
             // Assert
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
-        /// GetPatientAsync throws InvalidDataException
+        /// GetPatientAsync throws InvalidDataException.
         /// </summary>
         /// <param name="hdidExists">The value indicating whether an hdid exists or not.</param>
         /// <param name="phnExists">The value indicating whether a phn exists or not.</param>
@@ -76,24 +83,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(true, true, true, false)]
         [InlineData(false, false, false, true)]
         [Theory]
-        public async Task GetPatientAsyncThrowsInvalidDataException(
+        public async Task GetPatientThrowsInvalidDataException(
             bool hdidExists,
             bool phnExists,
             bool commonNameExists,
             bool legalNameExists)
         {
             // Arrange
-            GetPatientThrowsInvalidDataExceptionMock mock = SetupGetPatientThrowsInvalidDataExceptionMock(hdidExists, phnExists, commonNameExists, legalNameExists);
+            IPatientDetailsService service = SetupPatientDetailsServiceForGetPatientThrowsInvalidDataException(hdidExists, phnExists, commonNameExists, legalNameExists);
+            bool shouldThrowException = (!hdidExists && !phnExists) || (!commonNameExists && !legalNameExists);
 
             // Act and Assert
-            if (mock.ShouldThrowException)
+            if (shouldThrowException)
             {
-                InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(() => mock.Service.GetPatientAsync(mock.Identifier, mock.IdentifierType));
-                Assert.Equal(mock.ExceptionMessage, exception.Message);
+                InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(() => service.GetPatientAsync(Hdid));
+                Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
             }
             else
             {
-                PatientDetails actual = await mock.Service.GetPatientAsync(mock.Identifier, mock.IdentifierType);
+                PatientDetails actual = await service.GetPatientAsync(Hdid);
                 Assert.NotNull(actual);
             }
         }
@@ -132,13 +140,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
         }
 
-        private static GetPatientMock SetupGetPatientMock(string identifier, PatientIdentifierType identifierType)
+        private static IPatientDetailsService GetPatientDetailsService(Mock<IPatientRepository> patientRepositoryMock)
+        {
+            return new PatientDetailsService(
+                MappingService,
+                patientRepositoryMock.Object);
+        }
+
+        private static IPatientDetailsService SetupPatientDetailsServiceForGetPatient(PatientModel patientModel, string identifier, PatientIdentifierType identifierType)
         {
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
                 ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.Empi, UseCache: true)
                 : new PatientDetailsQuery(identifier, Source: PatientDetailSource.Empi, UseCache: true);
-
-            PatientModel patientModel = GeneratePatientModel();
 
             PatientQueryResult patientQueryResult = new(patientModel);
 
@@ -149,23 +162,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientQueryResult);
 
-            IPatientDetailsService patientDetailsService = new PatientDetailsService(
-                MappingService,
-                new Mock<ILogger<PatientDetailsService>>().Object,
-                patientRepositoryMock.Object);
-
-            PatientDetails expected = new()
-            {
-                HdId = patientModel.Hdid,
-                Phn = patientModel.Phn,
-                CommonName = patientModel.CommonName,
-                LegalName = patientModel.LegalName,
-            };
-
-            return new(patientDetailsService, expected, identifierType, identifier);
+            return GetPatientDetailsService(patientRepositoryMock);
         }
 
-        private static GetPatientThrowsInvalidDataExceptionMock SetupGetPatientThrowsInvalidDataExceptionMock(
+        private static IPatientDetailsService SetupPatientDetailsServiceForGetPatientThrowsInvalidDataException(
             bool hdidExists,
             bool phnExists,
             bool commonNameExists,
@@ -182,27 +182,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientQueryResult);
 
-            IPatientDetailsService patientDetailsService = new PatientDetailsService(
-                MappingService,
-                new Mock<ILogger<PatientDetailsService>>().Object,
-                patientRepositoryMock.Object);
-
-            bool shouldThrowException = (!hdidExists && !phnExists) || (!commonNameExists && !legalNameExists);
-
-            return new(patientDetailsService, shouldThrowException, ErrorMessages.InvalidServicesCard, PatientIdentifierType.Hdid, query.Hdid);
+            return GetPatientDetailsService(patientRepositoryMock);
         }
-
-        private sealed record GetPatientMock(
-            IPatientDetailsService Service,
-            PatientDetails Expected,
-            PatientIdentifierType IdentifierType,
-            string Identifier);
-
-        private sealed record GetPatientThrowsInvalidDataExceptionMock(
-            IPatientDetailsService Service,
-            bool ShouldThrowException,
-            string ExceptionMessage,
-            PatientIdentifierType IdentifierType,
-            string Identifier);
     }
 }

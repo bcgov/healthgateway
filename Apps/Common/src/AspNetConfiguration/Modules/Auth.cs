@@ -329,10 +329,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             RequireAudience = true,
                         };
 
-                        configuration.GetSection(@"OpenIdConnect").Bind(options);
+                        configuration.GetSection("OpenIdConnect").Bind(options);
                         if (string.IsNullOrEmpty(options.Authority))
                         {
-                            logger.LogCritical(@"OpenIdConnect Authority is missing, bad things are going to occur");
+                            logger.LogError("OpenIdConnect Authority is missing");
                         }
 
                         options.Events = new OpenIdConnectEvents
@@ -342,7 +342,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                 JwtSecurityToken accessToken = ctx.SecurityToken;
                                 if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
                                 {
-                                    throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
+                                    throw new TypeAccessException("Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
                                 }
 
                                 claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
@@ -364,7 +364,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                 c.HandleResponse();
                                 c.Response.StatusCode = StatusCodes.Status401Unauthorized;
                                 c.Response.ContentType = "text/plain";
-                                logger.LogError("{Exception}", c.Exception.ToString());
+                                logger.LogError(c.Exception, "Authentication failed");
 
                                 return c.Response.WriteAsync(c.Exception.ToString());
                             },

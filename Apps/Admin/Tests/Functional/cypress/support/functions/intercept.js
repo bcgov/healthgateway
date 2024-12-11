@@ -1,6 +1,9 @@
 const defaultTimeout = 60000;
 
 export function setupStandardAliases(page) {
+    cy.log("Setting up configuration alias.");
+    cy.intercept("GET", "**/Configuration/").as("getConfiguration");
+
     switch (page) {
         case "/dashboard":
             setupDashboardAliases();
@@ -24,6 +27,9 @@ export function setupStandardAliases(page) {
 }
 
 export function waitForInitialDataLoad(page) {
+    cy.log("Wait on configuration");
+    cy.wait("@getConfiguration", { timeout: defaultTimeout });
+
     switch (page) {
         case "/dashboard":
             waitForDashboard();

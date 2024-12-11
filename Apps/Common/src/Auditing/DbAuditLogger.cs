@@ -43,25 +43,22 @@ namespace HealthGateway.Common.Auditing
             this.writeEventDelegate = writeEventDelegate;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(DbAuditLogger));
+        private static ActivitySource ActivitySource { get; } = new(typeof(DbAuditLogger).FullName);
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team Decision")]
         public override async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Begin WriteAuditEvent(auditEvent)");
-            using Activity? activity = Source.StartActivity();
+            using Activity? activity = ActivitySource.StartActivity();
+
             try
             {
                 await this.writeEventDelegate.WriteAuditEventAsync(auditEvent, ct);
-                this.logger.LogDebug("Saved AuditEvent");
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "In WriteAuditEvent");
+                this.logger.LogError(ex, "Failed to write audit event");
             }
-
-            activity?.Stop();
         }
     }
 }

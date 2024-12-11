@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading;
@@ -226,7 +227,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <summary>
         /// Validates a user email verification.
         /// </summary>
-        /// <returns>The an empty response.</returns>
+        /// <returns>A boolean response.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="verificationKey">The email verification key.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
@@ -238,6 +239,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult<RequestResult<bool>>> ValidateEmail(string hdid, Guid verificationKey, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("VerificationKey", verificationKey.ToString());
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
@@ -267,6 +269,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult<RequestResult<bool>>> ValidateSms(string hdid, string validationCode, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("VerificationCode", validationCode);
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {

@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Models.Events;
 using HealthGateway.Common.Messaging;
 
 /// <summary>
-/// Represents unprotect dependent event
+/// Represents unprotect dependent event.
 /// </summary>
-/// <param name="DependentHdid">The dependent hdid</param>
+/// <param name="DependentHdid">The dependent hdid.</param>
 public record DependentProtectionRemovedEvent(string DependentHdid) : MessageBase;

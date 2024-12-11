@@ -31,31 +31,20 @@ namespace HealthGateway.Database.Delegates
     using Npgsql;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbCommunicationDelegate : ICommunicationDelegate
+    public class DbCommunicationDelegate(ILogger<DbCommunicationDelegate> logger, GatewayDbContext dbContext) : ICommunicationDelegate
     {
         private const string BannerCommunicationOverlapMessage = "Banner post could not be added because there is an existing banner post.";
         private const string UniqueConstraintSqlStateError = "23P01";
         private const string UniqueConstraintDatetimeRange = "unique_date_range";
-        private readonly ILogger<DbCommunicationDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbCommunicationDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbCommunicationDelegate(ILogger<DbCommunicationDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
 
         /// <inheritdoc/>
         public async Task<Communication?> GetNextAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting next non-expired Communication from DB...");
-            return await this.dbContext.Communication
+            logger.LogDebug("Retrieving next non-expired communication from DB for communication type {CommunicationType}", communicationType);
+            return await dbContext.Communication
                 .Where(
                     c => c.CommunicationTypeCode == communicationType &&
                          c.CommunicationStatusCode == CommunicationStatus.New &&
@@ -67,38 +56,39 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<DbResult<Communication>> AddAsync(Communication communication, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Adding Communication to DB...");
+            logger.LogDebug("Adding communication to DB");
+
             DbResult<Communication> result = new()
             {
                 Payload = communication,
                 Status = DbStatusCode.Deferred,
             };
 
-            this.dbContext.Communication.Add(communication);
+            dbContext.Communication.Add(communication);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to save Communication to DB {Message}", e.Message);
+                    logger.LogError(e, "Error adding communication to DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished adding Communication in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<IList<Communication>> GetAllAsync(CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting all communication entries...");
-            return await this.dbContext.Communication
+            logger.LogDebug("Retrieving communications from DB");
+            return await dbContext.Communication
                 .OrderBy(o => o.CreatedDateTime)
                 .ToListAsync(ct);
         }
@@ -106,53 +96,58 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<DbResult<Communication>> UpdateAsync(Communication communication, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating Communication in DB...");
+            logger.LogDebug("Updating communication in DB");
+
             DbResult<Communication> result = new()
             {
                 Payload = communication,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Communication.Update(communication);
+
+            dbContext.Communication.Update(communication);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    this.logger.LogError(e, "Unable to update Communication to DB {Message}", e.Message);
+                    logger.LogWarning(e, "Error updating communication in DB");
                     result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError(e, "Unable to update Communication to DB {Message}", e.Message);
+                    logger.LogError(e, "Error updating communication in DB");
                     result.Status = DbStatusCode.Error;
                     result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
             }
 
-            this.logger.LogDebug("Finished updating Communication in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<Communication>> DeleteAsync(Communication communication, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Deleting Communication from DB...");
+            logger.LogDebug("Removing communication from DB");
+
             DbResult<Communication> result = new()
             {
                 Payload = communication,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Communication.Remove(communication);
+
+            dbContext.Communication.Remove(communication);
+
             if (commit)
             {
                 try
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateException e)
@@ -162,7 +157,6 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug("Finished deleting Communication in DB");
             return result;
         }
 

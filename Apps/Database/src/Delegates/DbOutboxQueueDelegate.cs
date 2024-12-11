@@ -24,35 +24,29 @@ using System.Threading.Tasks;
 using HealthGateway.Database.Context;
 using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// Implements IOutboxDelegate
+/// Implements IOutboxQueueDelegate.
 /// </summary>
+/// <param name="logger">The injected logger.</param>
+/// <param name="dbContext">The context to be used when accessing the database.</param>
 [ExcludeFromCodeCoverage]
-public class DbOutboxQueueDelegate : IOutboxQueueDelegate
+public class DbOutboxQueueDelegate(ILogger<DbOutboxQueueDelegate> logger, GatewayDbContext dbContext) : IOutboxQueueDelegate
 {
-    private readonly GatewayDbContext dbContext;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DbOutboxQueueDelegate"/> class
-    /// </summary>
-    /// <param name="dbContext">A Gateway DB Context instance</param>
-    public DbOutboxQueueDelegate(GatewayDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-
     /// <inheritdoc/>
     public async Task CommitAsync(CancellationToken ct = default)
     {
-        await this.dbContext.SaveChangesAsync(ct);
+        logger.LogDebug("Saving DB changes");
+        await dbContext.SaveChangesAsync(ct);
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<OutboxItem>> DequeueAsync(CancellationToken ct = default)
     {
-        List<OutboxItem> results = await this.dbContext.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
-        this.dbContext.RemoveRange(results);
+        logger.LogDebug("Dequeuing outbox items from DB");
+        List<OutboxItem> results = await dbContext.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
+        dbContext.RemoveRange(results);
 
         return results;
     }
@@ -60,6 +54,7 @@ public class DbOutboxQueueDelegate : IOutboxQueueDelegate
     /// <inheritdoc/>
     public void Enqueue(IEnumerable<OutboxItem> items)
     {
-        this.dbContext.AddRange(items);
+        logger.LogDebug("Enqueuing outbox items in DB");
+        dbContext.AddRange(items);
     }
 }

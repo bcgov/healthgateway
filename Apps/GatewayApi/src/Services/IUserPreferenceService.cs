@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets user preferences associated with the hdid.
         /// </summary>
         /// <param name="hdid">The hdid associated with the user preferences.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary mapping preference with its associated user preference model. </returns>
         Task<Dictionary<string, UserPreferenceModel>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default);
     }

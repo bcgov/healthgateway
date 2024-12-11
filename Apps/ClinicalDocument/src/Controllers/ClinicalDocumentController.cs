@@ -16,6 +16,7 @@
 namespace HealthGateway.ClinicalDocument.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
@@ -25,10 +26,8 @@ namespace HealthGateway.ClinicalDocument.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The clinical document controller.
@@ -37,21 +36,17 @@ namespace HealthGateway.ClinicalDocument.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     [ExcludeFromCodeCoverage]
     public class ClinicalDocumentController : ControllerBase
     {
-        private readonly ILogger<ClinicalDocumentController> logger;
         private readonly IClinicalDocumentService clinicalDocumentService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentController"/> class.
         /// </summary>
-        /// <param name="logger">Injected logger.</param>
-        /// <param name="clinicalDocumentService">Injected service.</param>
-        public ClinicalDocumentController(ILogger<ClinicalDocumentController> logger, IClinicalDocumentService clinicalDocumentService)
+        /// <param name="clinicalDocumentService">Injected clinical document service.</param>
+        public ClinicalDocumentController(IClinicalDocumentService clinicalDocumentService)
         {
-            this.logger = logger;
             this.clinicalDocumentService = clinicalDocumentService;
         }
 
@@ -74,10 +69,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [Authorize(Policy = ClinicalDocumentPolicy.Read)]
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecords(string hdid, CancellationToken ct)
         {
-            this.logger.LogDebug("Getting clinical document records for HDID: {Hdid}", hdid);
-            RequestResult<IEnumerable<ClinicalDocumentRecord>> result = await this.clinicalDocumentService.GetRecordsAsync(hdid, ct);
-            this.logger.LogDebug("Finished getting clinical document records for HDID: {Hdid}", hdid);
-            return result;
+            return await this.clinicalDocumentService.GetRecordsAsync(hdid, ct);
         }
 
         /// <summary>
@@ -100,10 +92,8 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [Authorize(Policy = ClinicalDocumentPolicy.Read)]
         public async Task<RequestResult<EncodedMedia>> GetFile(string hdid, string fileId, CancellationToken ct)
         {
-            this.logger.LogDebug("Getting clinical document file for Hdid: {Hdid} with file ID: {FileId}", hdid, fileId);
-            RequestResult<EncodedMedia> result = await this.clinicalDocumentService.GetFileAsync(hdid, fileId, ct);
-            this.logger.LogDebug("Finished getting clinical document file for Hdid: {Hdid} with file ID: {FileId}", hdid, fileId);
-            return result;
+            Activity.Current?.AddBaggage("FileId", fileId);
+            return await this.clinicalDocumentService.GetFileAsync(hdid, fileId, ct);
         }
     }
 }

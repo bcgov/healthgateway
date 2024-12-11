@@ -26,29 +26,16 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class DbAgentAuditDelegate : IAgentAuditDelegate
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
+    public class DbAgentAuditDelegate(ILogger<DbAgentAuditDelegate> logger, GatewayDbContext dbContext) : IAgentAuditDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbAgentAuditDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbAgentAuditDelegate(ILogger<DbAgentAuditDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", group, hdid);
+            logger.LogDebug("Retrieving agent audits from DB");
 
-            IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit
-                .Where(a => a.Hdid == hdid);
+            IQueryable<AgentAudit> dbQuery = dbContext.AgentAudit.Where(a => a.Hdid == hdid);
 
             if (group != null)
             {

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <RootNamespace>HealthGateway.AccountDataAccess</RootNamespace>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>

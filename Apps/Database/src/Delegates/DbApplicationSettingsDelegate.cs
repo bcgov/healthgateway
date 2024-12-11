@@ -24,39 +24,22 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Entity framework based implementation of the Application Settings delegate.
-    /// </summary>
+    /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database context.</param>
     [ExcludeFromCodeCoverage]
-    public class DbApplicationSettingsDelegate : IApplicationSettingsDelegate
+    public class DbApplicationSettingsDelegate(ILogger<DbApplicationSettingsDelegate> logger, GatewayDbContext dbContext) : IApplicationSettingsDelegate
     {
-        private readonly ILogger<DbApplicationSettingsDelegate> logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbApplicationSettingsDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DbApplicationSettingsDelegate(
-            ILogger<DbApplicationSettingsDelegate> logger,
-            GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<ApplicationSetting?> GetApplicationSettingAsync(string application, string component, string key, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting application setting for {Application}/{Component}/{Key} from DB...", application, component, key);
-            ApplicationSetting? retVal = await this.dbContext.ApplicationSetting
+            logger.LogDebug("Retrieving application setting from DB for {Application}/{Component}/{Key}", application, component, key);
+            ApplicationSetting? retVal = await dbContext.ApplicationSetting
                 .Where(
                     p => p.Application == application &&
                          p.Component == component &&
                          p.Key == key)
                 .FirstOrDefaultAsync(ct);
-            this.logger.LogDebug("Finished getting application setting for {Application}/{Component}/{Key} from DB...", application, component, key);
 
             return retVal;
         }
@@ -64,9 +47,13 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public void AddApplicationSetting(ApplicationSetting appSetting)
         {
-            this.logger.LogTrace("Adding {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
-            this.dbContext.ApplicationSetting.Add(appSetting);
-            this.logger.LogTrace("Finished Adding {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
+            logger.LogDebug(
+                "Adding application setting to DB, setting {Application}/{Component}/{Key} to {Value}",
+                appSetting.Application,
+                appSetting.Component,
+                appSetting.Key,
+                appSetting.Value);
+            dbContext.ApplicationSetting.Add(appSetting);
         }
     }
 }

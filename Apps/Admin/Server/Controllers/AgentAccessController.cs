@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -103,6 +104,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<AdminAgent> UpdateAgentAccess(AdminAgent agent, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("AgentId", agent.Id.ToString());
             return await agentAccessService.UpdateAgentAccessAsync(agent, ct);
         }
 
@@ -126,6 +128,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> RemoveAgentAccess(Guid id, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("AgentId", id.ToString());
             await agentAccessService.RemoveAgentAccessAsync(id, ct);
             return this.Ok();
         }

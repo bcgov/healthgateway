@@ -16,16 +16,18 @@
 namespace HealthGateway.Common.ErrorHandling
 {
     using System;
+    using System.Collections.Generic;
     using System.ServiceModel;
     using FluentValidation;
     using FluentValidation.Results;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
 
     /// <summary>
-    /// Utility methods for <see cref="Exception"/>.
-    /// Used to transform exceptions into problem details responses.
+    /// Utility methods for problem details and problem types, used to transform exceptions into problem details responses.
     /// </summary>
     public static class ExceptionUtilities
     {
@@ -34,15 +36,15 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         /// <param name="exception">An <see cref="Exception"/>.</param>
         /// <param name="httpContext">The HTTP context of the request.</param>
+        /// <param name="factory">A problem details factory.</param>
         /// <param name="includeException">Used to determine if the exception details are passed to the client.</param>
         /// <returns>A <see cref="ProblemDetails"/> model to return the consumer.</returns>
-        public static ProblemDetails ToProblemDetails(Exception exception, HttpContext httpContext, bool includeException)
+        public static ProblemDetails ToProblemDetails(Exception exception, HttpContext httpContext, ProblemDetailsFactory factory, bool includeException)
         {
             ProblemDetails problemDetails = exception switch
             {
-                HealthGatewayException healthGatewayException => TransformHealthGatewayException(healthGatewayException, httpContext),
-                ValidationException validationException => TransformValidationException(validationException, httpContext),
-                _ => TransformException(exception, httpContext),
+                ValidationException validationException => GenerateValidationProblemDetails(validationException.Errors, httpContext, factory),
+                _ => GenerateProblemDetails(GetProblemType(exception), httpContext, factory),
             };
 
             if (includeException)
@@ -53,84 +55,47 @@ namespace HealthGateway.Common.ErrorHandling
             return problemDetails;
         }
 
-        /// <summary>
-        /// Transforms a validation exception to a problem details response with 400 bad request status.
-        /// </summary>
-        /// <param name="validationException">A Fluent Validation <see cref="ValidationException"/>.</param>
-        /// <param name="httpContext">The HTTP context of the request.</param>
-        /// <returns>A <see cref="ProblemDetails"/> model to return the consumer.</returns>
-        private static ValidationProblemDetails TransformValidationException(ValidationException validationException, HttpContext httpContext)
+        private static ValidationProblemDetails GenerateValidationProblemDetails(IEnumerable<ValidationFailure> errors, HttpContext httpContext, ProblemDetailsFactory factory)
         {
-            ValidationProblemDetails problemDetails = new()
+            ModelStateDictionary modelState = new();
+            foreach (ValidationFailure error in errors)
             {
-                Type = ErrorCodes.InvalidInput,
-                Title = "A validation error occurred.",
-                Status = StatusCodes.Status400BadRequest,
-                Instance = httpContext.Request.Path,
-                Extensions =
-                {
-                    ["traceId"] = httpContext.TraceIdentifier,
-                },
-            };
-
-            foreach (ValidationFailure error in validationException.Errors)
-            {
-                if (problemDetails.Errors.TryGetValue(error.PropertyName, out string[]? value))
-                {
-                    problemDetails.Errors[error.PropertyName] = [.. value, error.ErrorMessage];
-                }
-                else
-                {
-                    problemDetails.Errors.Add(error.PropertyName, [error.ErrorMessage]);
-                }
+                modelState.AddModelError(error.PropertyName, error.ErrorMessage);
             }
 
-            return problemDetails;
+            Problem problem = Problem.Get(ProblemType.InvalidInput);
+            int statusCode = problem.StatusCode;
+            string title = FormatTitle(problem.Title);
+            string type = problem.TagUri.ToString();
+            const string detail = "A validation error occurred.";
+
+            return factory.CreateValidationProblemDetails(httpContext, modelState, statusCode, title, type, detail);
         }
 
-        /// <summary>
-        /// Transforms a Health Gateway exception to a problem details response with the appropriate status.
-        /// </summary>
-        /// <param name="healthGatewayException">A <see cref="HealthGatewayException"/> describing an error within Health Gateway.</param>
-        /// <param name="httpContext">The HTTP context of the request.</param>
-        /// <returns>A <see cref="ProblemDetails"/> model to return the consumer.</returns>
-        private static ProblemDetails TransformHealthGatewayException(HealthGatewayException healthGatewayException, HttpContext httpContext)
+        private static ProblemDetails GenerateProblemDetails(ProblemType problemType, HttpContext httpContext, ProblemDetailsFactory factory)
         {
-            ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext);
+            Problem problem = Problem.Get(problemType);
+            int statusCode = problem.StatusCode;
+            string title = FormatTitle(problem.Title);
+            string type = problem.TagUri.ToString();
 
-            problemDetails.Type = healthGatewayException.ErrorCode;
-            problemDetails.Title = healthGatewayException switch
-            {
-                AlreadyExistsException => "Record already exists.",
-                DatabaseException => "A database error occurred.",
-                InvalidDataException => "Data does not match.",
-                NotFoundException => "Record was not found",
-                UpstreamServiceException => "An error occurred with an upstream service.",
-                _ => "An error occurred.",
-            };
-            problemDetails.Status = (int?)healthGatewayException.StatusCode;
-
-            return problemDetails;
+            return factory.CreateProblemDetails(httpContext, statusCode, title, type);
         }
 
-        private static ProblemDetails TransformException(Exception exception, HttpContext httpContext)
+        private static ProblemType GetProblemType(Exception exception)
         {
-            return new()
+            return exception switch
             {
-                Type = ErrorCodes.ServerError,
-                Title = "An error occurred.",
-                Instance = httpContext.Request.Path,
-                Extensions =
-                {
-                    ["traceId"] = httpContext.TraceIdentifier,
-                },
-                Status = exception switch
-                {
-                    CommunicationException => StatusCodes.Status502BadGateway,
-                    UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-                    _ => StatusCodes.Status500InternalServerError,
-                },
+                HealthGatewayException healthGatewayException => healthGatewayException.ProblemType,
+                CommunicationException => ProblemType.UpstreamError,
+                UnauthorizedAccessException => ProblemType.Forbidden,
+                _ => ProblemType.ServerError,
             };
+        }
+
+        private static string FormatTitle(string title)
+        {
+            return $"{title}.";
         }
 
         private static object? FormatExceptionDetails(Exception? e, int maxDepth = 9)

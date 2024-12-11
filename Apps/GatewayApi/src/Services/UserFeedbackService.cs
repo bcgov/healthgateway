@@ -73,7 +73,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(Feedback feedback, string hdid, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Creating user feedback...");
             UserFeedback userFeedback = this.mappingService.MapToUserFeedback(feedback, hdid);
             userFeedback.ClientCode ??= this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
@@ -83,27 +82,24 @@ namespace HealthGateway.GatewayApi.Services
             string? clientEmail = userProfile?.Email;
             if (!string.IsNullOrWhiteSpace(clientEmail))
             {
-                this.logger.LogTrace("Queueing Admin Feedback job");
                 ClientFeedback clientFeedback = new()
                 {
                     UserFeedbackId = userFeedback.Id,
                     Email = clientEmail,
                 };
+                this.logger.LogDebug("Queueing job to send feedback to Health Gateway support email address");
                 this.jobClient.Enqueue<IAdminFeedbackJob>(j => j.SendEmailAsync(clientFeedback, ct));
             }
 
-            this.logger.LogDebug("Finished creating user feedback");
             return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<RatingModel>> CreateRatingAsync(SubmitRating rating, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Creating rating...");
             DbResult<Rating> dbRating = await this.ratingDelegate.InsertRatingAsync(this.mappingService.MapToRating(rating), ct);
-            this.logger.LogDebug("Finished creating user feedback");
 
-            RequestResult<RatingModel> result = new()
+            return new()
             {
                 ResourcePayload = dbRating.Status == DbStatusCode.Created ? this.mappingService.MapToRatingModel(dbRating.Payload) : null,
                 ResultStatus = dbRating.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
@@ -115,7 +111,6 @@ namespace HealthGateway.GatewayApi.Services
                     }
                     : null,
             };
-            return result;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldCloseUserProfileAsync()
+        public async Task ShouldCloseUserProfile()
         {
             // Arrange
             const string expectedEmailTemplateName = EmailTemplateName.AccountClosedTemplate;
@@ -64,7 +64,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (baseMock is CloseUserProfileMock mock)
             {
                 // Act
-                await mock.Service.CloseUserProfileAsync(mock.Hdid);
+                await mock.Service.CloseUserProfileAsync(Hdid);
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
@@ -81,7 +81,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task CloseUserProfileAsyncAlreadyClosed()
+        public async Task CloseUserProfileAlreadyClosed()
         {
             // Arrange
             const string expectedEmailTemplateName = EmailTemplateName.AccountClosedTemplate;
@@ -92,7 +92,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (baseMock is CloseUserProfileMock mock)
             {
                 // Act
-                await mock.Service.CloseUserProfileAsync(mock.Hdid);
+                await mock.Service.CloseUserProfileAsync(Hdid);
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock, Times.Never());
@@ -105,7 +105,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// CloseUserProfileAsync throws NotFoundException
+        /// CloseUserProfileAsync throws NotFoundException.
         /// </summary>
         /// <param name="userProfileExists">The value indicating whether user profile exists or not.</param>
         /// <param name="profileUpdateStatus">The db status returned when user profile is updated in the database.</param>
@@ -114,7 +114,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(false, null, typeof(NotFoundException))]
         [InlineData(true, DbStatusCode.Error, typeof(DatabaseException))]
-        public async Task CloseUserProfileAsyncThrowsException(bool userProfileExists, DbStatusCode? profileUpdateStatus, Type expectedException)
+        public async Task CloseUserProfileThrowsException(bool userProfileExists, DbStatusCode? profileUpdateStatus, Type expectedException)
         {
             // Arrange
             BaseUserProfileServiceMock baseMock = SetupCloseUserProfileMock(userProfileExists, profileUpdateStatus: profileUpdateStatus);
@@ -124,7 +124,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 // Act and Assert
                 await Assert.ThrowsAsync(
                     expectedException,
-                    async () => { await mock.Service.CloseUserProfileAsync(mock.Hdid); });
+                    async () => { await mock.Service.CloseUserProfileAsync(Hdid); });
             }
             else
             {
@@ -142,7 +142,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(true, true)] // User profile exists and jwt auth time is different
         [InlineData(true, false)] // User profile exists and jwt auth time is not different
         [InlineData(false, false)] // Cannot get profile because user profile does not exist
-        public async Task ShouldGetUserProfileAsync(
+        public async Task ShouldGetUserProfile(
             bool userProfileExists,
             bool jwtAuthTimeIsDifferent)
         {
@@ -160,11 +160,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             UserProfileMock mock = SetupUserProfileMock(
                 currentDateTime,
-                jwtAuthTime,
                 userProfileExists);
 
             // Act
-            UserProfileModel actual = await mock.Service.GetUserProfileAsync(mock.Hdid, mock.JwtAuthTime);
+            UserProfileModel actual = await mock.Service.GetUserProfileAsync(Hdid, jwtAuthTime);
 
             // Assert and Verify
             actual.ShouldDeepEqual(expected);
@@ -177,7 +176,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldRecoverUserProfileAsync()
+        public async Task ShouldRecoverUserProfile()
         {
             // Arrange
             const string expectedEmailTemplateName = EmailTemplateName.AccountRecoveredTemplate;
@@ -190,7 +189,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (baseMock is RecoverUserProfileMock mock)
             {
                 // Act
-                await mock.Service.RecoverUserProfileAsync(mock.Hdid);
+                await mock.Service.RecoverUserProfileAsync(Hdid);
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
@@ -207,7 +206,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task RecoverUserProfileAsyncAlreadyRecovered()
+        public async Task RecoverUserProfileAlreadyRecovered()
         {
             // Arrange
             const string expectedEmailTemplateName = EmailTemplateName.AccountRecoveredTemplate;
@@ -218,7 +217,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (baseMock is RecoverUserProfileMock mock)
             {
                 // Act
-                await mock.Service.RecoverUserProfileAsync(mock.Hdid);
+                await mock.Service.RecoverUserProfileAsync(Hdid);
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock, Times.Never());
@@ -240,7 +239,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(false, null, typeof(NotFoundException))]
         [InlineData(true, DbStatusCode.Error, typeof(DatabaseException))]
         [Theory]
-        public async Task RecoverUserProfileAsyncThrowsException(bool userProfileExists, DbStatusCode? profileUpdateStatus, Type expected)
+        public async Task RecoverUserProfileThrowsException(bool userProfileExists, DbStatusCode? profileUpdateStatus, Type expected)
         {
             // Arrange
             BaseUserProfileServiceMock baseMock = SetupRecoverUserProfileMock(
@@ -253,7 +252,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 // Act and Assert
                 await Assert.ThrowsAsync(
                     expected,
-                    async () => { await mock.Service.RecoverUserProfileAsync(mock.Hdid); });
+                    async () => { await mock.Service.RecoverUserProfileAsync(Hdid); });
             }
             else
             {
@@ -266,7 +265,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldUpdateAcceptedTermsAsync()
+        public async Task ShouldUpdateAcceptedTerms()
         {
             // Arrange
             BaseUserProfileServiceMock baseMock = SetupUpdateAcceptedTermsMock(DbStatusCode.Updated);
@@ -274,7 +273,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (baseMock is UpdateAcceptedTermsMock mock)
             {
                 // Act
-                await mock.Service.UpdateAcceptedTermsAsync(mock.Hdid, mock.TermsOfServiceId);
+                await mock.Service.UpdateAcceptedTermsAsync(Hdid, TermsOfServiceGuid);
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
@@ -286,11 +285,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// UpdateAcceptedTermsAsync throws DatabaseException
+        /// UpdateAcceptedTermsAsync throws DatabaseException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task UpdateAcceptedTermsAsyncThrowsDatabaseException()
+        public async Task UpdateAcceptedTermsThrowsDatabaseException()
         {
             // Arrange
             BaseUserProfileServiceMock baseMock = SetupUpdateAcceptedTermsMock(DbStatusCode.Error);
@@ -299,7 +298,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 // Act and Assert
                 await Assert.ThrowsAsync<DatabaseException>(
-                    async () => { await mock.Service.UpdateAcceptedTermsAsync(mock.Hdid, mock.TermsOfServiceId); });
+                    async () => { await mock.Service.UpdateAcceptedTermsAsync(Hdid, TermsOfServiceGuid); });
             }
             else
             {
@@ -552,12 +551,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 return new UpdateAcceptedTermsMock(
                     service,
-                    userProfileDelegateMock,
-                    Hdid,
-                    TermsOfServiceGuid);
+                    userProfileDelegateMock);
             }
 
-            return new UpdateAcceptedTermsExceptionMock(service, Hdid, TermsOfServiceGuid);
+            return new UpdateAcceptedTermsExceptionMock(service);
         }
 
         private static BaseUserProfileServiceMock SetupCloseUserProfileMock(
@@ -588,11 +585,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 return new CloseUserProfileMock(
                     service,
                     userProfileDelegateMock,
-                    jobServiceMock,
-                    Hdid);
+                    jobServiceMock);
             }
 
-            return new CloseUserProfileExceptionMock(service, Hdid);
+            return new CloseUserProfileExceptionMock(service);
         }
 
         private static BaseUserProfileServiceMock SetupRecoverUserProfileMock(
@@ -622,22 +618,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 if (profileUpdateStatus == DbStatusCode.Error)
                 {
-                    return new RecoverUserProfileExceptionMock(service, Hdid);
+                    return new RecoverUserProfileExceptionMock(service);
                 }
 
                 return new RecoverUserProfileMock(
                     service,
                     userProfileDelegateMock,
-                    jobServiceMock,
-                    Hdid);
+                    jobServiceMock);
             }
 
-            return new RecoverUserProfileExceptionMock(service, Hdid);
+            return new RecoverUserProfileExceptionMock(service);
         }
 
         private static UserProfileMock SetupUserProfileMock(
             DateTime currentDateTime,
-            DateTime jwtAuthTime,
             bool userProfileExists = true)
         {
             DateTime birthDate = GenerateBirthDate();
@@ -665,48 +659,36 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             return new(
                 service,
-                userProfileDelegateMock,
-                Hdid,
-                jwtAuthTime);
+                userProfileDelegateMock);
         }
 
         private abstract record BaseUserProfileServiceMock;
 
         private sealed record UserProfileMock(
             IUserProfileServiceV2 Service,
-            Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            string Hdid,
-            DateTime JwtAuthTime);
+            Mock<IUserProfileDelegate> UserProfileDelegateMock);
 
         private sealed record UpdateAcceptedTermsMock(
             IUserProfileServiceV2 Service,
-            Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            string Hdid,
-            Guid TermsOfServiceId) : BaseUserProfileServiceMock;
+            Mock<IUserProfileDelegate> UserProfileDelegateMock) : BaseUserProfileServiceMock;
 
         private sealed record UpdateAcceptedTermsExceptionMock(
-            IUserProfileServiceV2 Service,
-            string Hdid,
-            Guid TermsOfServiceId) : BaseUserProfileServiceMock;
+            IUserProfileServiceV2 Service) : BaseUserProfileServiceMock;
 
         private sealed record CloseUserProfileMock(
             IUserProfileServiceV2 Service,
             Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            Mock<IJobService> JobServiceMock,
-            string Hdid) : BaseUserProfileServiceMock;
+            Mock<IJobService> JobServiceMock) : BaseUserProfileServiceMock;
 
         private sealed record CloseUserProfileExceptionMock(
-            IUserProfileServiceV2 Service,
-            string Hdid) : BaseUserProfileServiceMock;
+            IUserProfileServiceV2 Service) : BaseUserProfileServiceMock;
 
         private sealed record RecoverUserProfileMock(
             IUserProfileServiceV2 Service,
             Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            Mock<IJobService> JobServiceMock,
-            string Hdid) : BaseUserProfileServiceMock;
+            Mock<IJobService> JobServiceMock) : BaseUserProfileServiceMock;
 
         private sealed record RecoverUserProfileExceptionMock(
-            IUserProfileServiceV2 Service,
-            string Hdid) : BaseUserProfileServiceMock;
+            IUserProfileServiceV2 Service) : BaseUserProfileServiceMock;
     }
 }

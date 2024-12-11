@@ -21,44 +21,21 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <summary>
     /// <see cref="AlreadyExistsException"/> is used when a desired action conflicts with a record that already exists.
-    /// The default error code is <see cref="ErrorCodes.RecordAlreadyExists"/>.
-    /// The default status code is <see cref="HttpStatusCode.Conflict"/> (409).
+    /// The default problem type is <see cref="ProblemType.RecordAlreadyExists"/>. The associated status code is <see cref="HttpStatusCode.Conflict"/> (409).
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     [ExcludeFromCodeCoverage]
     public class AlreadyExistsException : HealthGatewayException
     {
-        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.Conflict;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AlreadyExistsException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public AlreadyExistsException(string message, string? errorCode = ErrorCodes.RecordAlreadyExists)
-            : base(message)
-        {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AlreadyExistsException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public AlreadyExistsException(string message, Exception innerException, string errorCode = ErrorCodes.RecordAlreadyExists)
+        public AlreadyExistsException(string? message = null, Exception? innerException = null)
             : base(message, innerException)
         {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AlreadyExistsException"/> class.
-        /// </summary>
-        public AlreadyExistsException()
-        {
-            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.RecordAlreadyExists);
+            this.ProblemType = ProblemType.RecordAlreadyExists;
         }
     }
 }

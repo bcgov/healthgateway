@@ -17,11 +17,15 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net;
     using System.Reflection;
+    using Azure.Monitor.OpenTelemetry.Exporter;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -35,15 +39,18 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Serilog.Enrichers.Span;
     using Serilog.Events;
     using Serilog.Exceptions;
+    using Serilog.Exceptions.Core;
+    using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
+    using Serilog.Exceptions.Refit.Destructurers;
 
     /// <summary>
-    /// Methods to configure observability dependencies and settings
+    /// Methods to configure observability dependencies and settings.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public static class Observability
     {
         /// <summary>
-        /// Log output format template
+        /// Log output format template.
         /// </summary>
         public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}";
 
@@ -66,21 +73,20 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 
         /// <summary>
-        /// Configures http request logging
+        /// Configures http request logging.
         /// </summary>
-        /// <param name="app">An app builder</param>
-        /// <param name="excludePaths">Path to exclude - can use wildcards * for prefix or postfix</param>
-        /// <returns>The app builder</returns>
+        /// <param name="app">An app builder.</param>
+        /// <param name="excludePaths">Path to exclude - can use wildcards * for prefix or postfix.</param>
+        /// <returns>The app builder.</returns>
         public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app, string[]? excludePaths = null)
         {
             app.UseSerilogRequestLogging(
                 opts =>
                 {
                     opts.IncludeQueryInRequestPath = true;
-                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? Array.Empty<string>());
+                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []);
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
-                        diagCtx.Set("User", httpCtx.User.Identity?.Name ?? string.Empty);
                         diagCtx.Set("Host", httpCtx.Request.Host.Value);
                         diagCtx.Set("ContentLength", httpCtx.Response.ContentLength?.ToString(CultureInfo.InvariantCulture) ?? string.Empty);
                         diagCtx.Set("Protocol", httpCtx.Request.Protocol);
@@ -115,12 +121,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     builder =>
                     {
                         builder
-                            .AddSource(otlpConfig.ServiceName)
                             .SetSampler(new AlwaysOnSampler())
-                            .SetResourceBuilder(
-                                ResourceBuilder
-                                    .CreateDefault()
-                                    .AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
+                            .ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation(
                                 options =>
@@ -134,9 +136,19 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             .AddNpgsql()
                             ;
 
+                        foreach (string source in otlpConfig.Sources)
+                        {
+                            builder.AddSource(source);
+                        }
+
                         if (otlpConfig.TraceConsoleExporterEnabled)
                         {
                             builder.AddConsoleExporter();
+                        }
+
+                        if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                        {
+                            builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
                         }
 
                         if (otlpConfig.Endpoint != null)
@@ -163,6 +175,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             builder.AddConsoleExporter();
                         }
 
+                        if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                        {
+                            builder.AddAzureMonitorMetricExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
+                        }
+
                         if (otlpConfig.Endpoint != null)
                         {
                             builder.AddOtlpExporter(
@@ -180,15 +197,64 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 #pragma warning restore CA1506
 
+        /// <summary>
+        /// Adds middleware to enrich tracing telemetry with additional properties.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="configuration">The configuration to use.</param>
+        public static void EnrichTracing(IApplicationBuilder app, IConfiguration configuration)
+        {
+            OpenTelemetryConfig openTelemetryConfig = new();
+            configuration.GetSection("OpenTelemetry").Bind(openTelemetryConfig);
+
+            if (openTelemetryConfig.Enabled)
+            {
+                app.Use(
+                    async (context, next) =>
+                    {
+                        string subject = GetRequestHdid(context);
+                        EnrichActivityWithBaggage("Subject", subject, Activity.Current);
+
+                        string user = context.User.Identity?.Name ?? string.Empty;
+                        EnrichActivityWithBaggage("User", user, Activity.Current);
+
+                        await next();
+                    });
+            }
+        }
+
+        private static string GetRequestHdid(HttpContext context)
+        {
+            return HttpContextHelper.GetResourceHdid(context, FhirSubjectLookupMethod.Route)
+                   ?? HttpContextHelper.GetResourceHdid(context, FhirSubjectLookupMethod.Parameter)
+                   ?? string.Empty;
+        }
+
+        private static void EnrichActivityWithBaggage(string key, string value, Activity? activity)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
+            activity?.AddBaggage(key, value);
+        }
+
         private static void ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, string serviceName)
         {
             loggerConfiguration
                 .Enrich.WithMachineName()
                 .Enrich.FromLogContext()
-                .Enrich.WithExceptionDetails()
-                .Enrich.WithProperty("service", serviceName)
+                .Enrich.WithExceptionDetails(
+                    new DestructuringOptionsBuilder()
+                        .WithDefaultDestructurers()
+                        .WithDestructurers(
+                        [
+                            new DbUpdateExceptionDestructurer(),
+                            new ApiExceptionDestructurer(destructureCommonExceptionProperties: false),
+                        ]))
+                .Enrich.WithProperty("Application", serviceName)
                 .Enrich.WithEnvironmentName()
-                .Enrich.WithEnvironmentUserName()
                 .Enrich.WithCorrelationId()
                 .Enrich.WithCorrelationIdHeader()
                 .Enrich.WithRequestHeader("User-Agent")

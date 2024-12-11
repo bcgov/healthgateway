@@ -45,10 +45,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IList<UserFeedbackView>>> GetUserFeedbackAsync(CancellationToken ct = default)
         {
-            logger.LogTrace("Retrieving user feedback...");
             IList<UserFeedback> userFeedback = await feedbackDelegate.GetAllUserFeedbackEntriesAsync(ct: ct);
 
-            logger.LogTrace("Retrieving user emails...");
             List<string> hdids = userFeedback
                 .Where(f => f.UserProfileId != null)
                 .Select(f => f.UserProfileId!)
@@ -82,8 +80,6 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserFeedbackView>> UpdateFeedbackReviewAsync(UserFeedbackView feedback, CancellationToken ct = default)
         {
-            logger.LogTrace("Updating user feedback...");
-
             RequestResult<UserFeedbackView> result = new()
             {
                 ResultStatus = ResultType.Error,
@@ -105,11 +101,10 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IList<AdminTagView>>> GetAllTagsAsync(CancellationToken ct = default)
         {
-            logger.LogTrace("Retrieving admin tags");
             IEnumerable<AdminTag> adminTags = await adminTagDelegate.GetAllAsync(ct);
 
-            logger.LogDebug("Finished retrieving admin tags");
             IList<AdminTagView> adminTagViews = adminTags.Select(mappingService.MapToAdminTagView).ToList();
+
             return new RequestResult<IList<AdminTagView>>
             {
                 ResourcePayload = adminTagViews,
@@ -126,7 +121,6 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            logger.LogTrace("Creating new admin tag... {TagName}", tagName);
             DbResult<AdminTag> tagResult = await adminTagDelegate.AddAsync(new() { Name = tagName }, true, ct);
             if (tagResult.Status == DbStatusCode.Created)
             {
@@ -149,7 +143,6 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
             DbResult<AdminTag> tagResult = await adminTagDelegate.DeleteAsync(mappingService.MapToAdminTag(tag), true, ct);
             if (tagResult.Status == DbStatusCode.Deleted)
             {
@@ -167,7 +160,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserFeedbackView>> AssociateFeedbackTagsAsync(Guid userFeedbackId, IList<Guid> adminTagIds, CancellationToken ct = default)
         {
-            logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
+            logger.LogDebug("Associating feedback with admin tag IDs {AdminTagIds}", adminTagIds);
 
             RequestResult<UserFeedbackView> result = new()
             {

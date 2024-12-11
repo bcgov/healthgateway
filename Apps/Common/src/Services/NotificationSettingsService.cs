@@ -40,8 +40,8 @@ namespace HealthGateway.Common.Services
         /// Initializes a new instance of the <see cref="NotificationSettingsService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="jobClient">The JobScheduler queue client.</param>
-        /// <param name="resourceDelegateDelegate">The injected db user delegate delegate.</param>
+        /// <param name="jobClient">The injected background job client.</param>
+        /// <param name="resourceDelegateDelegate">The injected resource delegate delegate.</param>
         public NotificationSettingsService(
             ILogger<NotificationSettingsService> logger,
             IBackgroundJobClient jobClient,
@@ -60,7 +60,7 @@ namespace HealthGateway.Common.Services
                 throw new InvalidOperationException();
             }
 
-            this.logger.LogTrace("Queueing Notification Settings push to PHSA...");
+            this.logger.LogDebug("Queueing notification settings push");
             string json = JsonSerializer.Serialize(notificationSettings);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettingsAsync(json, ct));
 
@@ -68,7 +68,6 @@ namespace HealthGateway.Common.Services
             IEnumerable<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(notificationSettings.SubjectHdid, 0, 500, ct);
             foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
-                this.logger.LogDebug("Queueing Dependent Notification Settings");
                 NotificationSettingsRequest dependentNotificationSettings = new()
                 {
                     SubjectHdid = resourceDelegate.ResourceOwnerHdid,
@@ -86,11 +85,10 @@ namespace HealthGateway.Common.Services
                     dependentNotificationSettings.SmsVerified = notificationSettings.SmsVerified;
                 }
 
+                this.logger.LogDebug("Queueing notification settings push for dependent {Hdid}", resourceDelegate.ResourceOwnerHdid);
                 string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings);
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettingsAsync(delegateJson, ct));
             }
-
-            this.logger.LogDebug("Finished queueing Notification Settings push");
         }
     }
 }

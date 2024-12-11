@@ -21,7 +21,6 @@ namespace HealthGateway.Encounter.Controllers
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Filters;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.PHSA;
     using HealthGateway.Encounter.Services;
@@ -36,7 +35,6 @@ namespace HealthGateway.Encounter.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     public class EncounterController : ControllerBase
     {
         private readonly ILogger logger;

@@ -140,6 +140,7 @@ namespace HealthGateway.WebClient.Server
                 });
 
             this.startupConfig.UseHttp(app);
+            this.startupConfig.EnrichTracing(app);
 
             app.UseEndpoints(
                 endpoints =>
@@ -148,11 +149,7 @@ namespace HealthGateway.WebClient.Server
                     endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
                 });
 
-            app.UseSpa(
-                spa =>
-                {
-                    spa.Options.SourcePath = "ClientApp";
-                });
+            app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
         }
 
         private static void DisableTraceMethod(IApplicationBuilder app)

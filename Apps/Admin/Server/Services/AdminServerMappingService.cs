@@ -35,8 +35,6 @@ namespace HealthGateway.Admin.Server.Services
     /// <inheritdoc/>
     public class AdminServerMappingService(IMapper mapper, IConfiguration configuration) : IAdminServerMappingService
     {
-        private TimeZoneInfo LocalTimeZone => DateFormatter.GetLocalTimeZone(configuration);
-
         /// <inheritdoc/>
         public AdminTag MapToAdminTag(AdminTagView source)
         {
@@ -54,9 +52,10 @@ namespace HealthGateway.Admin.Server.Services
         {
             AdminUserProfileView dest = mapper.Map<AdminUserProfile, AdminUserProfileView>(source);
 
-            // change from UTC to local time, potentially resulting in Kind = DateTimeKind.Unspecified
+            // change from UTC to local time using local time offset to ensure daylight savings time is applied correctly.
             // note that this model is not returned in any API calls; it is used to populate a CSV with values in local time
-            dest.LastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(source.LastLoginDateTime, this.LocalTimeZone);
+            TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(configuration, DateTime.UtcNow);
+            dest.LastLoginDateTime = source.LastLoginDateTime.AddMinutes(localTimeOffset.TotalMinutes);
 
             return dest;
         }

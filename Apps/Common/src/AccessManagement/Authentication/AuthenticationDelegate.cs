@@ -17,6 +17,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
     using System.Net.Http.Json;
@@ -37,13 +38,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        private const string CacheConfigSectionName = "AuthCache";
         private readonly ICacheProvider cacheProvider;
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IHttpContextAccessor? httpContextAccessor;
 
-        private readonly ILogger<IAuthenticationDelegate> logger;
+        private readonly ILogger<AuthenticationDelegate> logger;
         private readonly int tokenCacheMinutes;
 
         /// <summary>
@@ -66,77 +66,82 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.configuration = configuration;
             this.cacheProvider = cacheProvider;
             this.httpContextAccessor = httpContextAccessor;
-
-            IConfigurationSection configSection = configuration.GetSection(CacheConfigSectionName);
-            this.tokenCacheMinutes = configSection.GetValue("TokenCacheExpireMinutes", 0);
+            this.tokenCacheMinutes = configuration.GetSection("AuthCache").GetValue("TokenCacheExpireMinutes", 0);
         }
+
+        private static ActivitySource ActivitySource { get; } = new(typeof(AuthenticationDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<JwtModel> AuthenticateAsSystemAsync(ClientCredentialsRequest request, bool cacheEnabled = true, CancellationToken ct = default)
         {
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("ClientId", request.Parameters.ClientId);
+
             JwtModel? jwtModel;
 
+            this.logger.LogInformation("Retrieving system authentication token");
             if (cacheEnabled)
             {
                 string cacheKey = $"{request.TokenUri}:{request.Parameters.Audience}:{request.Parameters.ClientId}";
+
+                this.logger.LogDebug("Accessing JWT cache");
                 jwtModel = await this.cacheProvider.GetItemAsync<JwtModel>(cacheKey, ct);
+                this.logger.LogDebug("JWT cache access outcome: {CacheResult}", jwtModel == null ? "miss" : "hit");
+
                 if (jwtModel is null)
                 {
+                    this.logger.LogDebug("Authenticating as system");
                     jwtModel = await this.GetSystemTokenAsync(request, ct);
                     if (jwtModel.ExpiresIn is not null)
                     {
                         int expiry = jwtModel.ExpiresIn.Value - 10;
+
+                        this.logger.LogDebug("Storing JWT in cache");
                         await this.cacheProvider.AddItemAsync(cacheKey, jwtModel, TimeSpan.FromSeconds(expiry), ct);
                     }
                 }
             }
             else
             {
+                this.logger.LogDebug("Authenticating as system");
                 jwtModel = await this.GetSystemTokenAsync(request, ct);
             }
 
-            this.logger.LogDebug("Authenticating Service... {ClientId}", request.Parameters.ClientId);
             return jwtModel;
         }
 
         /// <inheritdoc/>
         public async Task<JwtModel> AuthenticateUserAsync(ClientCredentialsRequest request, bool cacheEnabled = false, CancellationToken ct = default)
         {
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("Username", request.Parameters.Username);
+
             JwtModel? jwtModel = null;
 
+            this.logger.LogInformation("Retrieving user authentication token for {Username}", request.Parameters.Username);
             string cacheKey = $"{request.TokenUri}:{request.Parameters.Audience}:{request.Parameters.ClientId}:{request.Parameters.Username}";
             if (cacheEnabled && this.tokenCacheMinutes > 0)
             {
-                this.logger.LogDebug("Attempting to fetch token from cache");
+                this.logger.LogDebug("Accessing JWT cache");
                 jwtModel = await this.cacheProvider.GetItemAsync<JwtModel>(cacheKey, ct);
+                this.logger.LogDebug("JWT cache access outcome: {CacheResult}", jwtModel == null ? "miss" : "hit");
             }
 
             if (jwtModel == null)
             {
-                this.logger.LogInformation("JWT Model not found in cache - Authenticating Direct Grant as User: {Username}", request.Parameters.Username);
+                this.logger.LogDebug("Authenticating as user");
                 jwtModel = await this.ResourceOwnerPasswordGrantAsync(request, ct);
 
                 if (jwtModel == null)
                 {
-                    this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", request.Parameters.Username, request.TokenUri);
                     throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
                 }
 
                 if (cacheEnabled && this.tokenCacheMinutes > 0)
                 {
-                    this.logger.LogDebug("Attempting to store Access token in cache");
+                    this.logger.LogDebug("Storing JWT in cache");
                     await this.cacheProvider.AddItemAsync(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes), ct);
                 }
-                else
-                {
-                    this.logger.LogDebug("Caching is not configured or has been disabled");
-                }
-
-                this.logger.LogInformation("Finished authenticating User: {Username}", request.Parameters.Username);
-            }
-            else
-            {
-                this.logger.LogDebug("Auth token found in cache");
             }
 
             return jwtModel;
@@ -148,8 +153,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             IConfigurationSection configSection = this.configuration.GetSection(section);
             Uri tokenUri = configSection.GetValue<Uri>("TokenUri") ??
                            throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
-            ClientCredentialsRequestParameters parameters = new();
-            configSection.Bind(parameters); // Client ID, Client Secret, Audience, Scope
+            ClientCredentialsRequestParameters parameters = configSection.Get<ClientCredentialsRequestParameters>() ?? new(); // Client ID, Client Secret, Audience, Scope
+
             return new() { TokenUri = tokenUri, Parameters = parameters };
         }
 
@@ -206,7 +211,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         private async Task<JwtModel> GetSystemTokenAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
             JwtModel? jwtModel = await this.ClientCredentialsGrantAsync(request, ct);
-            this.logger.LogDebug("Finished authenticating Service. {ClientId}", request.Parameters.ClientId);
             return jwtModel ?? throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
         }
 
@@ -227,16 +231,16 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         private async Task<JwtModel?> ResourceOwnerPasswordGrantAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
             ClientCredentialsRequestParameters parameters = request.Parameters;
-            IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
-            {
-                new KeyValuePair<string?, string?>("client_id", parameters.ClientId),
-                new KeyValuePair<string?, string?>("client_secret", parameters.ClientSecret),
-                new KeyValuePair<string?, string?>("grant_type", "password"),
-                new KeyValuePair<string?, string?>("audience", parameters.Audience),
-                new KeyValuePair<string?, string?>("scope", parameters.Scope),
-                new KeyValuePair<string?, string?>("username", parameters.Username),
-                new KeyValuePair<string?, string?>("password", parameters.Password),
-            };
+            IEnumerable<KeyValuePair<string?, string?>> oauthParams =
+            [
+                new("client_id", parameters.ClientId),
+                new("client_secret", parameters.ClientSecret),
+                new("grant_type", "password"),
+                new("audience", parameters.Audience),
+                new("scope", parameters.Scope),
+                new("username", parameters.Username),
+                new("password", parameters.Password),
+            ];
 
             using FormUrlEncodedContent content = new(oauthParams);
             return await this.AuthenticateAsync(request.TokenUri, content, ct);
@@ -256,7 +260,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
             catch (Exception e) when (e is HttpRequestException or InvalidOperationException or JsonException)
             {
-                this.logger.LogError(e, "Error Message {Message}", e.Message);
+                this.logger.LogError(e, "Unable to authenticate to {TokenUri}", tokenUri);
             }
 
             return authModel;

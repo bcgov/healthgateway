@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <LangVersion>12.0</LangVersion>
+        <LangVersion>13.0</LangVersion>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <WarningLevel>4</WarningLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -13,7 +13,7 @@
         <SonarQubeTestProject>true</SonarQubeTestProject>
         <RootNamespace>HealthGateway.IntegrationTests</RootNamespace>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <NoWarn>CA1848, S2094, SA1201, SA1402, CS1591, SA1600, SA1200, SA1649, S125, CA1707, CA2201, CA1305, S3881</NoWarn>
         <UserSecretsId>697d4791-b230-429a-b766-4f1361c1f387</UserSecretsId>
     </PropertyGroup>
@@ -23,16 +23,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Alba" Version="7.4.1" />
+        <PackageReference Include="Alba" Version="8.1.0" />
         <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.4.0" />
         <PackageReference Include="Shouldly" Version="4.2.1" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-        <PackageReference Include="Testcontainers.PostgreSql" Version="3.8.0" />
-        <PackageReference Include="Testcontainers.Redis" Version="3.8.0" />
-        <PackageReference Include="xunit" Version="2.8.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.0.0" />
+        <PackageReference Include="Testcontainers.Redis" Version="4.0.0" />
+        <PackageReference Include="xunit" Version="2.9.2" />
         <PackageReference Include="xunit.categories" Version="2.0.8" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>

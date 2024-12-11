@@ -39,5 +39,10 @@ namespace HealthGateway.CommonTests.Utils
         /// The communication should be future effective dated.
         /// </summary>
         Future,
+
+        /// <summary>
+        /// The communication is different from existing cache.
+        /// </summary>
+        DifferentCache,
     }
 }

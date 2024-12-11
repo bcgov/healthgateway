@@ -39,10 +39,10 @@ public class DbOutboxStore : IOutboxStore
     private readonly ILogger<DbOutboxStore> logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DbOutboxStore"/> class
+    /// Initializes a new instance of the <see cref="DbOutboxStore"/> class.
     /// </summary>
     /// <param name="outboxDelegate">The outbox db delegate.</param>
-    /// <param name="backgroundJobClient">Hangfire background job client</param>
+    /// <param name="backgroundJobClient">Hangfire background job client.</param>
     /// <param name="messageSender">The destination message sender to forward messages to.</param>
     /// <param name="logger">A logger.</param>
     public DbOutboxStore(IOutboxQueueDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
@@ -72,6 +72,7 @@ public class DbOutboxStore : IOutboxStore
         this.outboxDelegate.Enqueue(outboxItems);
         await this.outboxDelegate.CommitAsync(ct);
 
+        this.logger.LogDebug("Scheduling background job to dispatch messages");
         this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItemsAsync(CancellationToken.None));
     }
 
@@ -84,7 +85,7 @@ public class DbOutboxStore : IOutboxStore
     [DisableConcurrentExecution(timeoutInSeconds: 10 * 60)]
     public async Task DispatchOutboxItemsAsync(CancellationToken ct = default)
     {
-        this.logger.LogDebug("Forwarding messages to destination");
+        this.logger.LogDebug("Dispatching queued messages");
 
         try
         {
@@ -101,7 +102,7 @@ public class DbOutboxStore : IOutboxStore
         }
         catch (Exception e)
         {
-            this.logger.LogError(e, "Failed to dispatch outbox items");
+            this.logger.LogError(e, "Error dispatching queued messages");
             throw;
         }
     }

@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Models.Events;
 using HealthGateway.Common.Messaging;
 
 /// <summary>
-/// Represents and protect dependent event
+/// Represents and protect dependent event.
 /// </summary>
-/// <param name="DependentHdid">The dependent hdid</param>
+/// <param name="DependentHdid">The dependent hdid.</param>
 public record DependentProtectionAddedEvent(string DependentHdid) : MessageBase;

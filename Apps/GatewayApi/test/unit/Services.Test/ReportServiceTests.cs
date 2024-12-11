@@ -26,7 +26,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Models.CDogs;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -79,9 +78,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResult);
 
-            IReportService service = new ReportService(
-                new Mock<ILogger<ReportService>>().Object,
-                cdogsDelegateMock.Object);
+            IReportService service = new ReportService(cdogsDelegateMock.Object);
             RequestResult<ReportModel> actualResult = await service.GetReportAsync(reportRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -105,9 +102,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             string expected = $"Template HealthGateway.GatewayApi.Assets.Templates.{reportRequest.Template}Report. not found.";
 
-            IReportService service = new ReportService(
-                new Mock<ILogger<ReportService>>().Object,
-                new Mock<ICDogsDelegate>().Object);
+            IReportService service = new ReportService(new Mock<ICDogsDelegate>().Object);
 
             // Act and Assert
             FileNotFoundException exception = await Assert.ThrowsAsync<FileNotFoundException>(() => service.GetReportAsync(reportRequest));

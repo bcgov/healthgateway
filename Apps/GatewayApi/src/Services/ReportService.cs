@@ -25,30 +25,24 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.CDogs;
     using HealthGateway.GatewayApi.Models;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class ReportService : IReportService
     {
         private readonly ICDogsDelegate cdogsDelegate;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="cdogsDelegate">Injected CDOGS delegate.</param>
-        public ReportService(ILogger<ReportService> logger, ICDogsDelegate cdogsDelegate)
+        public ReportService(ICDogsDelegate cdogsDelegate)
         {
-            this.logger = logger;
             this.cdogsDelegate = cdogsDelegate;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<ReportModel>> GetReportAsync(ReportRequestModel reportRequest, CancellationToken ct = default)
         {
-            this.logger.LogTrace("New report request type: {Type} and template: {Template}", reportRequest.Type, reportRequest.Template);
-
             string reportName = $"HealthGateway{reportRequest.Template}Report";
             CDogsRequestModel cdogsRequest = new()
             {
@@ -66,37 +60,26 @@ namespace HealthGateway.GatewayApi.Services
                 },
             };
 
-            RequestResult<ReportModel> retVal = await this.cdogsDelegate.GenerateReportAsync(cdogsRequest, ct);
-            this.logger.LogTrace("Finished generating report: {ReportFileName}", retVal.ResourcePayload?.FileName);
-            return retVal;
+            return await this.cdogsDelegate.GenerateReportAsync(cdogsRequest, ct);
         }
 
         private static string GetTemplateExtension(ReportFormatType formatType)
         {
-            switch (formatType)
+            return formatType switch
             {
-                case ReportFormatType.Pdf:
-                    return "docx";
-                case ReportFormatType.Xlsx:
-                case ReportFormatType.Csv:
-                    return "xlsx";
-            }
-
-            return string.Empty;
+                ReportFormatType.Pdf => "docx",
+                ReportFormatType.Xlsx or ReportFormatType.Csv => "xlsx",
+                _ => string.Empty,
+            };
         }
 
         private static string ReadTemplate(TemplateType template, ReportFormatType formatType)
         {
             string extension = GetTemplateExtension(formatType);
             string resourceName = $"HealthGateway.GatewayApi.Assets.Templates.{template}Report.{extension}";
+
             Assembly? assembly = Assembly.GetAssembly(typeof(ReportService));
-            Stream? resourceStream = assembly!.GetManifestResourceStream(resourceName);
-
-            if (resourceStream == null)
-            {
-                throw new FileNotFoundException($"Template {resourceName} not found.");
-            }
-
+            Stream resourceStream = assembly!.GetManifestResourceStream(resourceName) ?? throw new FileNotFoundException($"Template {resourceName} not found.");
             using MemoryStream memoryStream = new();
             resourceStream.CopyTo(memoryStream);
             return Convert.ToBase64String(memoryStream.ToArray());

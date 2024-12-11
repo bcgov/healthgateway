@@ -67,116 +67,111 @@ namespace HealthGateway.Common.Delegates
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(ClientRegistriesDelegate).FullName);
 
         private string ClientIp => this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
 
         /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            using Activity? activity = ActivitySource.StartActivity();
+
+            // Create request object
+            HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Hdid, hdid, this.ClientIp);
+            try
             {
-                // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Hdid, hdid, this.ClientIp);
-                try
+                // Perform the request
+                HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
+                return this.ParseResponse(reply, disableIdValidation);
+            }
+            catch (CommunicationException e)
+            {
+                this.logger.LogWarning(e, "Error retrieving patient data from the Client Registry");
+                return new RequestResult<PatientModel>
                 {
-                    // Perform the request
-                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
-                    return this.ParseResponse(reply, disableIdValidation);
-                }
-                catch (CommunicationException e)
-                {
-                    this.logger.LogError(e, "{Message}", e.Message);
-                    return new RequestResult<PatientModel>
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError
                     {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError
-                        {
-                            ResultMessage = "Communication Exception when trying to retrieve the patient information from HDID",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
-                        },
-                    };
-                }
+                        ResultMessage = "Communication Exception when trying to retrieve the patient information from HDID",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
+                    },
+                };
             }
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetDemographicsByPhnAsync(string phn, bool disableIdValidation = false, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            using Activity? activity = ActivitySource.StartActivity();
+
+            // Create request object
+            HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Phn, phn, this.ClientIp);
+            try
             {
-                // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Phn, phn, this.ClientIp);
-                try
+                // Perform the request
+                HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
+                return this.ParseResponse(reply, disableIdValidation);
+            }
+            catch (CommunicationException e)
+            {
+                this.logger.LogWarning(e, "Error retrieving patient data from the Client Registry");
+                return new RequestResult<PatientModel>
                 {
-                    // Perform the request
-                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
-                    return this.ParseResponse(reply, disableIdValidation);
-                }
-                catch (CommunicationException e)
-                {
-                    this.logger.LogError(e, "{Message}", e.Message);
-                    return new RequestResult<PatientModel>
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError
                     {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError
-                        {
-                            ResultMessage = "Communication Exception when trying to retrieve the patient information from PHN",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
-                        },
-                    };
-                }
+                        ResultMessage = "Communication Exception when trying to retrieve the patient information from PHN",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
+                    },
+                };
             }
         }
 
         private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue, string clientIp)
         {
-            using (Source.StartActivity())
+            HCIM_IN_GetDemographics request = new();
+            request.id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) };
+            request.creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
+            request.versionCode = new CS { code = "V3PR1" };
+            request.interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
+            request.processingCode = new CS { code = "P" };
+            request.processingModeCode = new CS { code = "T" };
+            request.acceptAckCode = new CS { code = "NE" };
+
+            request.receiver = new MCCI_MT000100Receiver { typeCode = "RCV" };
+            request.receiver.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
+            request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = clientIp };
+            request.receiver.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
+            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
+            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
+            request.receiver.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
+
+            request.sender = new MCCI_MT000100Sender { typeCode = "SND" };
+            request.sender.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
+            request.sender.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" };
+            request.sender.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
+            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
+            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
+            request.sender.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
+
+            request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess { classCode = "ACCM", moodCode = "EVN" };
+            request.controlActProcess.effectiveTime = new IVL_TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
+            request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer { typeCode = "CST", time = null, typeId = null };
+            request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson { classCode = "ENT" };
+
+            request.controlActProcess.dataEnterer.assignedPerson.id = new II { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" };
+
+            request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
+            request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II
             {
-                HCIM_IN_GetDemographics request = new();
-                request.id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) };
-                request.creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
-                request.versionCode = new CS { code = "V3PR1" };
-                request.interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
-                request.processingCode = new CS { code = "P" };
-                request.processingModeCode = new CS { code = "T" };
-                request.acceptAckCode = new CS { code = "NE" };
+                root = oidType.ToString(),
+                extension = identifierValue,
+                assigningAuthorityName = "LCTZ_IAS",
+            };
 
-                request.receiver = new MCCI_MT000100Receiver { typeCode = "RCV" };
-                request.receiver.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
-                request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = clientIp };
-                request.receiver.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-                request.receiver.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
-
-                request.sender = new MCCI_MT000100Sender { typeCode = "SND" };
-                request.sender.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
-                request.sender.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" };
-                request.sender.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-                request.sender.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
-
-                request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess { classCode = "ACCM", moodCode = "EVN" };
-                request.controlActProcess.effectiveTime = new IVL_TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
-                request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer { typeCode = "CST", time = null, typeId = null };
-                request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson { classCode = "ENT" };
-
-                request.controlActProcess.dataEnterer.assignedPerson.id = new II { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" };
-
-                request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
-                request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
-                request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-                request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II
-                {
-                    root = oidType.ToString(),
-                    extension = identifierValue,
-                    assigningAuthorityName = "LCTZ_IAS",
-                };
-
-                return new HCIM_IN_GetDemographicsRequest(request);
-            }
+            return new HCIM_IN_GetDemographicsRequest(request);
         }
 
         private static Address? MapAddress(AD? address)
@@ -217,14 +212,13 @@ namespace HealthGateway.Common.Delegates
             if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
             {
                 // BCHCIM.GD.2.0018 Not found
-                this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                this.logger.LogDebug("Finished getting patient");
+                this.logger.LogWarning(ErrorMessages.ClientRegistryRecordsNotFound);
                 return new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = new RequestResultError
                     {
-                        ResultMessage = "Client Registry did not find any records",
+                        ResultMessage = ErrorMessages.ClientRegistryRecordsNotFound,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
                     },
                 };
@@ -233,14 +227,13 @@ namespace HealthGateway.Common.Delegates
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
-                this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                this.logger.LogDebug("Finished getting patient");
+                this.logger.LogWarning(ErrorMessages.PhnInvalid);
                 return new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = new RequestResultError
                     {
-                        ResultMessage = "Personal Health Number is invalid",
+                        ResultMessage = ErrorMessages.PhnInvalid,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
                     },
                 };
@@ -257,8 +250,7 @@ namespace HealthGateway.Common.Delegates
             // Verify that the reply contains a result
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
-                this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                this.logger.LogDebug("Finished getting patient");
+                this.logger.LogWarning(ErrorMessages.ClientRegistryDoesNotReturnPerson);
                 return new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.Error,
@@ -278,89 +270,86 @@ namespace HealthGateway.Common.Delegates
 
         private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
-            using (Source.StartActivity())
+            string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
+            Activity.Current?.AddBaggage("ResponseCode", responseCode);
+            Activity.Current?.AddBaggage("DisableIdValidation", disableIdValidation.ToString());
+
+            RequestResult<PatientModel> requestResult = this.CheckResponseCode(responseCode);
+            if (requestResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogDebug("Parsing patient response");
+                return requestResult;
+            }
 
-                string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
-                RequestResult<PatientModel> requestResult = this.CheckResponseCode(responseCode);
-                if (requestResult.ResultStatus != ResultType.Success)
-                {
-                    return requestResult;
-                }
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
 
-                HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
-
-                // If the deceased indicator is set and true, return an empty person.
-                bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
-                if (deceasedInd)
-                {
-                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated");
-                    return new RequestResult<PatientModel>
-                    {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError
-                        {
-                            ResultMessage = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
-                        },
-                    };
-                }
-
-                // Initialize model
-                string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
-                DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                PatientModel patient = new()
-                {
-                    Birthdate = dob,
-                    Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
-                    {
-                        "F" => "Female",
-                        "M" => "Male",
-                        _ => "NotSpecified",
-                    },
-                };
-
-                // Populate names
-                if (!this.PopulateNames(retrievedPerson, patient))
-                {
-                    return new RequestResult<PatientModel>
-                    {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
-                    };
-                }
-
-                // Populate the PHN and HDID
-                this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
-                if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
-                {
-                    return new RequestResult<PatientModel>
-                    {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
-                    };
-                }
-
-                // Populate addresses
-                AD[] addresses = retrievedPerson.addr;
-                if (addresses != null)
-                {
-                    patient.PhysicalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PHYS)));
-                    patient.PostalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PST)));
-                }
-
-                if (WarningResponseCodes.Exists(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
-                {
-                    patient.ResponseCode = responseCode;
-                }
-
+            // If the deceased indicator is set and true, return an empty person.
+            bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
+            if (deceasedInd)
+            {
+                this.logger.LogWarning(ErrorMessages.ClientRegistryReturnedDeceasedPerson);
                 return new RequestResult<PatientModel>
                 {
-                    ResultStatus = ResultType.Success,
-                    ResourcePayload = patient,
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
+                    },
                 };
             }
+
+            // Initialize model
+            string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
+            DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+            PatientModel patient = new()
+            {
+                Birthdate = dob,
+                Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
+                {
+                    "F" => "Female",
+                    "M" => "Male",
+                    _ => "NotSpecified",
+                },
+            };
+
+            // Populate names
+            if (!this.PopulateNames(retrievedPerson, patient))
+            {
+                return new RequestResult<PatientModel>
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
+                };
+            }
+
+            // Populate the PHN and HDID
+            if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
+            {
+                return new RequestResult<PatientModel>
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
+                };
+            }
+
+            // Populate addresses
+            AD[] addresses = retrievedPerson.addr;
+            if (addresses != null)
+            {
+                patient.PhysicalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PHYS)));
+                patient.PostalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PST)));
+            }
+
+            if (WarningResponseCodes.Exists(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
+            {
+                patient.ResponseCode = responseCode;
+            }
+
+            return new RequestResult<PatientModel>
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = patient,
+            };
         }
 
         private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
@@ -368,14 +357,15 @@ namespace HealthGateway.Common.Delegates
             PN? documentedName = Array.Find(retrievedPerson.identifiedPerson.name, x => Array.Exists(x.use, u => u == cs_EntityNameUse.C));
             PN? legalName = Array.Find(retrievedPerson.identifiedPerson.name, x => Array.Exists(x.use, u => u == cs_EntityNameUse.L));
 
+            if (documentedName == null && legalName == null)
+            {
+                this.logger.LogWarning("The Client Registry returned a person without a Documented Name or a Legal Name");
+                return false;
+            }
+
             if (documentedName == null)
             {
-                this.logger.LogWarning("Client Registry returned a person without a Documented Name, attempting Legal Name...");
-                if (legalName == null)
-                {
-                    this.logger.LogWarning("Client Registry returned a person without a Legal Name");
-                    return false;
-                }
+                this.logger.LogWarning("The Client Registry returned a person without a Documented Name");
             }
 
             PN nameSection = (documentedName ?? legalName)!;
@@ -412,7 +402,7 @@ namespace HealthGateway.Common.Delegates
             II? identifiedPersonId = Array.Find(retrievedPerson.identifiedPerson.id ?? Array.Empty<II>(), x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
             {
-                this.logger.LogWarning("Client Registry returned a person without a PHN");
+                this.logger.LogWarning("The Client Registry returned a person without a PHN");
             }
             else
             {
@@ -422,7 +412,7 @@ namespace HealthGateway.Common.Delegates
             II? subjectId = Array.Find(retrievedPerson.id ?? Array.Empty<II>(), x => x.displayable && x.root == OidType.Hdid.ToString());
             if (subjectId == null)
             {
-                this.logger.LogWarning("Client Registry returned a person without an HDID");
+                this.logger.LogWarning("The Client Registry returned a person without an HDID");
             }
             else
             {

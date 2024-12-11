@@ -16,6 +16,7 @@
 namespace HealthGateway.AccountDataAccess.Audit
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Delegates;
@@ -31,15 +32,24 @@ namespace HealthGateway.AccountDataAccess.Audit
         /// <summary>
         /// Initializes a new instance of the <see cref="AuditRepository"/> class.
         /// </summary>
-        /// <param name="agentAuditDelegate">The inject agent audit delegate.</param>
+        /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
         public AuditRepository(IAgentAuditDelegate agentAuditDelegate)
         {
             this.agentAuditDelegate = agentAuditDelegate;
         }
 
+        private static ActivitySource ActivitySource { get; } = new(typeof(AuditRepository).FullName);
+
         /// <inheritdoc/>
         public async Task<IEnumerable<AgentAudit>> HandleAsync(AgentAuditQuery query, CancellationToken ct = default)
         {
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("AuditHdid", query.Hdid);
+            if (query.Group != null)
+            {
+                activity?.AddBaggage("AuditGroup", query.Group.ToString());
+            }
+
             return await this.agentAuditDelegate.GetAgentAuditsAsync(query.Hdid, query.Group, ct);
         }
     }

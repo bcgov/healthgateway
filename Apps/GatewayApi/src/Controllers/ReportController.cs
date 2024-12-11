@@ -15,10 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Controllers
 {
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -39,8 +41,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Initializes a new instance of the <see cref="ReportController"/> class.
         /// </summary>
         /// <param name="reportService">The injected report service.</param>
-        public ReportController(
-            IReportService reportService)
+        public ReportController(IReportService reportService)
         {
             this.reportService = reportService;
         }
@@ -55,6 +56,8 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         public async Task<RequestResult<ReportModel>> GenerateReport([FromBody] ReportRequestModel reportRequest, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("ReportType", EnumUtility.ToEnumString(reportRequest.Type, true));
+            Activity.Current?.AddBaggage("TemplateType", EnumUtility.ToEnumString(reportRequest.Template, true));
             return await this.reportService.GetReportAsync(reportRequest, ct);
         }
     }

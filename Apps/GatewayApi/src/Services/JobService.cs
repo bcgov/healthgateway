@@ -40,7 +40,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task NotifyAccountCreationAsync(string hdid, CancellationToken ct = default)
         {
-            IEnumerable<MessageEnvelope> messages = [new MessageEnvelope(new AccountCreatedEvent(hdid, DateTime.UtcNow), hdid)];
+            IEnumerable<MessageEnvelope> messages = [new(new AccountCreatedEvent(hdid, DateTime.UtcNow), hdid)];
             await messageSender.SendAsync(messages, ct);
         }
 

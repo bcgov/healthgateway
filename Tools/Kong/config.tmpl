@@ -17,6 +17,12 @@
         config:
           rewrite:
           - "--"
+      # override existing post-function_200 plugin that rewrites HTTP error responses
+      - name: post-function_200
+        tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
+        enabled: true
+        config:
+          access: [ return ]
     routes:
       - name: $SERVICE-$KONG_NAMESPACE-get-post-put-delete
         methods:

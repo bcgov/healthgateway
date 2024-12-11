@@ -73,17 +73,16 @@ namespace HealthGateway.JobScheduler.Jobs
             UserFeedback? feedback = await this.feedBackDelegate.GetUserFeedbackAsync(clientFeedback.UserFeedbackId, ct);
             if (feedback != null)
             {
-                this.logger.LogDebug("Sending Email...");
+                this.logger.LogDebug("Sending feedback to Health Gateway support email address");
                 using SmtpClient smtpClient = new();
                 await smtpClient.ConnectAsync(this.host, this.port, SecureSocketOptions.None, ct);
                 using MimeMessage message = await this.PrepareMessageAsync(clientFeedback.Email, feedback, ct);
                 await smtpClient.SendAsync(message, ct);
                 await smtpClient.DisconnectAsync(true, ct);
-                this.logger.LogDebug("Finished Sending Email...");
             }
             else
             {
-                this.logger.LogCritical("Unable to read UserFeedback with id {UserFeedbackId}", clientFeedback.UserFeedbackId);
+                this.logger.LogError("Unable to retrieve user feedback with ID {UserFeedbackId}", clientFeedback.UserFeedbackId);
                 throw new InvalidOperationException($"Unable to read UserFeedback with id {clientFeedback.UserFeedbackId}");
             }
         }
@@ -93,7 +92,7 @@ namespace HealthGateway.JobScheduler.Jobs
             EmailTemplate? template = await this.emailService.GetEmailTemplateAsync(FeedbackTemplateName, ct);
             if (template == null)
             {
-                this.logger.LogCritical("Email template {FeedbackTemplateName} is null", FeedbackTemplateName);
+                this.logger.LogError("Email template {FeedbackTemplateName} is null", FeedbackTemplateName);
                 throw new InvalidOperationException($"Email template {FeedbackTemplateName} is null");
             }
 

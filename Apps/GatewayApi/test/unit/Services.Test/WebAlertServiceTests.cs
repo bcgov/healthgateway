@@ -188,7 +188,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IPersonalAccountsService> mockPersonalAccountsService = new();
 
             PersonalAccount mockPersonalAccount = new() { Id = AccountId, PatientIdentity = new PatientIdentity { Pid = Pid } };
-            mockPersonalAccountsService.Setup(s => s.GetPatientAccountAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(mockPersonalAccount);
+            mockPersonalAccountsService.Setup(s => s.GetPersonalAccountAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(mockPersonalAccount);
 
             return mockPersonalAccountsService.Object;
         }

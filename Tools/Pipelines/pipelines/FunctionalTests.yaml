@@ -5,7 +5,7 @@ trigger: none
 
 parameters:
   - name: appType
-    displayName: 'Application'
+    displayName: "Application"
     type: string
     values:
       - WebClient
@@ -33,10 +33,10 @@ jobs:
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
-        displayName: 'Re-seed DB and PHSA data for Admin'
+        displayName: "Re-seed DB and PHSA data for Admin"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_seedDb.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_seedDb.sh"
           arguments: Testing/functional/tests
         env: # Required secrets for seed db script
           DB_PASSWORD: $(db.password)
@@ -53,10 +53,10 @@ jobs:
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
-        displayName: 'Run Admin Unauthorized Functional Tests'
+        displayName: "Run Admin Unauthorized Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runAdminUnauthorizedFunctionalTests.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_runAdminUnauthorizedFunctionalTests.sh"
           arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for admin tests
           TERM: xterm
@@ -75,10 +75,10 @@ jobs:
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
-        displayName: 'Run Admin Authentication Functional Tests'
+        displayName: "Run Admin Authentication Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runAdminAuthenticationFunctionalTests.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_runAdminAuthenticationFunctionalTests.sh"
           arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for admin tests
           TERM: xterm
@@ -86,21 +86,23 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
-  - job: "Admin_AgentAccess_Tests"
-    displayName: "Admin Agent Access Functional Tests"
+  - job: "Admin_Read_Tests"
+    displayName: "Admin Read Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
       - "Admin_Authentication_Tests"
-    timeoutInMinutes: 5
+    strategy:
+      parallel: 3
+    timeoutInMinutes: 15
     steps:
       - task: Bash@3
-        displayName: 'Run Admin Agent Access Functional Tests'
+        displayName: "Run Admin Read Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runAdminAgentAccessFunctionalTests.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_runAdminReadFunctionalTests.sh"
           arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for admin tests
           TERM: xterm
@@ -108,23 +110,24 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
-  - job: "Admin_Tests"
-    displayName: "Admin Functional Tests"
+
+  - job: "Admin_Write_Tests"
+    displayName: "Admin Write Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
-      - "Admin_AgentAccess_Tests"
+      - "Admin_Read_Tests"
     strategy:
-      parallel: 9
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
-        displayName: 'Run Admin Functional Tests'
+        displayName: "Run Write Admin Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runAdminFunctionalTests.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_runAdminWriteFunctionalTests.sh"
           arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for admin tests
           TERM: xterm
@@ -138,14 +141,14 @@ jobs:
     pool:
       name: "HGGoldDev"
     condition: eq(variables['WebClient'], true)
-    dependsOn: "Admin_Tests"
+    dependsOn: "Admin_Write_Tests"
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
-        displayName: 'Re-seed DB and PHSA data for Functional Tests'
+        displayName: "Re-seed DB and PHSA data for Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_seedDb.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_seedDb.sh"
           arguments: Testing/functional/tests
         env: # Required secrets for seed db script
           DB_PASSWORD: $(db.password)
@@ -163,10 +166,10 @@ jobs:
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
-        displayName: 'Run HG Auth Functional Tests'
+        displayName: "Run HG Auth Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runAuthFunctionalTests.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_runAuthFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
           TERM: xterm
@@ -191,10 +194,10 @@ jobs:
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
-        displayName: 'Run HG Functional Tests'
+        displayName: "Run HG Functional Tests"
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runFunctionalTests.sh'
+          filePath: "./Tools/Pipelines/scripts/azp_runFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
           TERM: xterm

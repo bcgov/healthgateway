@@ -46,7 +46,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="resourceDelegateDelegate">The injected resource delegate delegate.</param>
     /// <param name="delegationDelegate">The injected delegation delegate.</param>
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
-    /// <param name="messageSender">The change feed message sender</param>
+    /// <param name="messageSender">The change feed message sender.</param>
     /// <param name="auditRepository">The injected agent audit repository.</param>
     /// <param name="mappingService">The injected mapping service.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored

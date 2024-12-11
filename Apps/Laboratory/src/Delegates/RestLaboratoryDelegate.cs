@@ -17,7 +17,6 @@ namespace HealthGateway.Laboratory.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
@@ -39,10 +38,9 @@ namespace HealthGateway.Laboratory.Delegates
     /// </summary>
     public class RestLaboratoryDelegate : ILaboratoryDelegate
     {
-        private const string LabConfigSectionKey = "Laboratory";
         private readonly ILaboratoryApi laboratoryApi;
         private readonly LaboratoryConfig labConfig;
-        private readonly ILogger logger;
+        private readonly ILogger<RestLaboratoryDelegate> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
@@ -57,111 +55,91 @@ namespace HealthGateway.Laboratory.Delegates
         {
             this.logger = logger;
             this.laboratoryApi = laboratoryApi;
-            this.labConfig = new LaboratoryConfig();
-            configuration.Bind(LabConfigSectionKey, this.labConfig);
+            this.labConfig = configuration.GetSection(LaboratoryConfig.ConfigSectionKey).Get<LaboratoryConfig>() ?? new();
         }
-
-        private static ActivitySource Source { get; } = new(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19OrdersAsync(string bearerToken, string hdid, int pageIndex = 0, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> retVal = new()
             {
-                this.logger.LogDebug("Getting covid19 orders...");
+                ResultStatus = ResultType.Error,
+                PageIndex = pageIndex,
+                PageSize = int.Parse(this.labConfig.FetchSize, CultureInfo.InvariantCulture),
+            };
 
-                RequestResult<PhsaResult<List<PhsaCovid19Order>>> retVal = new()
-                {
-                    ResultStatus = ResultType.Error,
-                    PageIndex = pageIndex,
-                    PageSize = int.Parse(this.labConfig.FetchSize, CultureInfo.InvariantCulture),
-                };
-
-                try
-                {
-                    PhsaResult<List<PhsaCovid19Order>> response =
-                        await this.laboratoryApi.GetCovid19OrdersAsync(hdid, this.labConfig.FetchSize, bearerToken, ct);
-                    retVal.ResultStatus = ResultType.Success;
-                    retVal.ResourcePayload = response;
-                    retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
-                }
-                catch (Exception e) when (e is ApiException or HttpRequestException)
-                {
-                    if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
-                    {
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new() { Result = [] };
-                        retVal.TotalResultCount = 0;
-                    }
-                    else
-                    {
-                        this.logger.LogError(e, "Error while retrieving Covid19 Orders... {Message}", e.Message);
-                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-
-                        retVal.ResultError = new()
-                        {
-                            ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Orders",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                    }
-                }
-
-                this.logger.LogDebug("Finished getting Covid19 Orders");
-                return retVal;
+            try
+            {
+                this.logger.LogDebug("Retrieving COVID-19 test results");
+                PhsaResult<List<PhsaCovid19Order>> response = await this.laboratoryApi.GetCovid19OrdersAsync(hdid, this.labConfig.FetchSize, bearerToken, ct);
+                retVal.ResourcePayload = response ?? new() { Result = [] };
+                retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
+                retVal.ResultStatus = ResultType.Success;
             }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogWarning(e, "Error retrieving COVID-19 test results");
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
+                retVal.ResultError = new()
+                {
+                    ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Orders",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                };
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryReport>> GetLabReportAsync(string id, string hdid, string bearerToken, bool isCovid19, CancellationToken ct = default)
         {
-            using (Source.StartActivity())
+            RequestResult<LaboratoryReport> retVal = new()
             {
-                this.logger.LogTrace("Getting laboratory report... {Id}", id);
+                ResultStatus = ResultType.Error,
+                TotalResultCount = 0,
+            };
 
-                RequestResult<LaboratoryReport> retVal = new()
+            try
+            {
+                this.logger.LogDebug("Retrieving {ReportType} laboratory report", isCovid19 ? "COVID-19" : string.Empty);
+
+                retVal.ResourcePayload = isCovid19
+                    ? await this.laboratoryApi.GetLaboratoryReportAsync(id, hdid, bearerToken, ct)
+                    : await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, hdid, bearerToken, ct);
+
+                if (retVal.ResourcePayload == null)
                 {
-                    ResultStatus = ResultType.Error,
-                    TotalResultCount = 0,
-                };
-
-                try
-                {
-                    if (isCovid19)
-                    {
-                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, hdid, bearerToken, ct);
-                    }
-                    else
-                    {
-                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, hdid, bearerToken, ct);
-                    }
-
-                    retVal.ResultStatus = ResultType.Success;
-                    retVal.TotalResultCount = 1;
-                }
-                catch (Exception e) when (e is ApiException or HttpRequestException)
-                {
-                    this.logger.LogError(e, "Error retrieving Laboratory Report...{Message}", e.Message);
-                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-
                     retVal.ResultError = new()
                     {
-                        ResultMessage = statusCode == HttpStatusCode.NoContent ? "Laboratory Report not found" : $"Status: {statusCode}. Error retrieving Laboratory Report",
+                        ResultMessage = "Status: 204. Error retrieving Laboratory Report.",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                 }
-
-                this.logger.LogDebug("Finished getting Laboratory Report");
-                return retVal;
+                else
+                {
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.TotalResultCount = 1;
+                }
             }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogWarning(e, "Error retrieving laboratory report");
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
+                retVal.ResultError = new()
+                {
+                    ResultMessage = $"Status: {statusCode}. Error retrieving Laboratory Report",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                };
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummaryAsync(string hdid, string bearerToken, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-
-            this.logger.LogDebug("Getting laboratory summary...");
-
             RequestResult<PhsaResult<PhsaLaboratorySummary>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
@@ -170,34 +148,25 @@ namespace HealthGateway.Laboratory.Delegates
 
             try
             {
-                PhsaResult<PhsaLaboratorySummary> response =
-                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(hdid, bearerToken, ct);
-                retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = response;
+                this.logger.LogDebug("Retrieving laboratory orders");
+                PhsaResult<PhsaLaboratorySummary> response = await this.laboratoryApi.GetPlisLaboratorySummaryAsync(hdid, bearerToken, ct);
+                retVal.ResourcePayload = response ?? new() { Result = new() };
                 retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;
+                retVal.ResultStatus = ResultType.Success;
+                return retVal;
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
-                {
-                    retVal.ResultStatus = ResultType.Success;
-                    retVal.ResourcePayload = new() { Result = new() };
-                    retVal.TotalResultCount = 0;
-                }
-                else
-                {
-                    this.logger.LogError(e, "Error while retrieving Laboratory Summary... {Message}", e.Message);
-                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+                this.logger.LogWarning(e, "Error retrieving laboratory orders");
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
 
-                    retVal.ResultError = new()
-                    {
-                        ResultMessage = $"Status: {statusCode}. Error while retrieving Laboratory Summary",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                    };
-                }
+                retVal.ResultError = new()
+                {
+                    ResultMessage = $"Status: {statusCode}. Error while retrieving Laboratory Summary",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                };
             }
 
-            this.logger.LogDebug("Finished getting laboratory summary");
             return retVal;
         }
     }

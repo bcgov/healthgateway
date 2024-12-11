@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Server.Services
         private const string AuthConfigSectionName = "KeycloakAdmin";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IKeycloakAdminApi keycloakAdminApi;
-        private readonly ILogger logger;
+        private readonly ILogger<AgentAccessService> logger;
         private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Server.Services
             this.authDelegate = authDelegate;
             this.keycloakAdminApi = keycloakAdminApi;
             this.logger = logger;
-            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
+            this.clientCredentialsRequest = authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -65,6 +65,7 @@ namespace HealthGateway.Admin.Server.Services
 
             agent.Roles.Remove(IdentityAccessRole.Unknown);
 
+            this.logger.LogDebug("Retrieving realm roles from KeyCloak");
             List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken, ct);
             IEnumerable<RoleRepresentation> roles = realmRoles.Where(r => agent.Roles.Contains(GetIdentityAccessRole(r)));
 
@@ -76,21 +77,24 @@ namespace HealthGateway.Admin.Server.Services
 
             try
             {
+                this.logger.LogDebug("Adding user to KeyCloak");
                 await this.keycloakAdminApi.AddUserAsync(user, jwtModel.AccessToken, ct);
             }
             catch (ApiException e)
             {
                 if (e.StatusCode == HttpStatusCode.Conflict)
                 {
-                    this.logger.LogWarning(e, ErrorMessages.KeycloakUserAlreadyExists);
-                    throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists);
+                    throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists, e);
                 }
 
                 throw;
             }
 
+            this.logger.LogDebug("Retrieving user from KeyCloak");
             List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUsersByUsernameAsync(user.Username, jwtModel.AccessToken, ct);
             UserRepresentation createdUser = getUserResponse[0];
+
+            this.logger.LogDebug("Adding roles to KeyCloak user");
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken, ct);
 
             string[] splitString = createdUser.Username.Split('@');
@@ -101,6 +105,7 @@ namespace HealthGateway.Admin.Server.Services
 
             string createdUserName = splitString[0];
             string createdIdentityProviderName = splitString[1];
+
             AdminAgent newAgent = new()
             {
                 Id = createdUser.UserId ?? Guid.Empty,
@@ -117,6 +122,8 @@ namespace HealthGateway.Admin.Server.Services
         {
             const int firstRecord = 0;
             JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+
+            this.logger.LogDebug("Retrieving users from KeyCloak");
             List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken, ct);
 
             List<AdminAgent> adminAgents = [];
@@ -134,6 +141,7 @@ namespace HealthGateway.Admin.Server.Services
                 KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
                 if (identityProvider != KeycloakIdentityProvider.Unknown)
                 {
+                    this.logger.LogDebug("Retrieving roles for KeyCloak user");
                     List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.GetValueOrDefault(), jwtModel.AccessToken, ct);
 
                     adminAgents.Add(
@@ -157,7 +165,10 @@ namespace HealthGateway.Admin.Server.Services
 
             agent.Roles.Remove(IdentityAccessRole.Unknown);
 
+            this.logger.LogDebug("Retrieving realm roles from KeyCloak");
             List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken, ct);
+
+            this.logger.LogDebug("Retrieving user roles from KeyCloak");
             List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(agent.Id, jwtModel.AccessToken, ct);
 
             List<RoleRepresentation> rolesToDelete = userRoles
@@ -172,11 +183,13 @@ namespace HealthGateway.Admin.Server.Services
 
             if (rolesToDelete.Count > 0)
             {
+                this.logger.LogDebug("Removing user roles from KeyCloak");
                 await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id, rolesToDelete, jwtModel.AccessToken, ct);
             }
 
             if (rolesToAdd.Count > 0)
             {
+                this.logger.LogDebug("Adding user roles from KeyCloak");
                 await this.keycloakAdminApi.AddUserRolesAsync(agent.Id, rolesToAdd, jwtModel.AccessToken, ct);
             }
 
@@ -188,6 +201,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
+            this.logger.LogDebug("Removing user from KeyCloak");
             await this.keycloakAdminApi.DeleteUserAsync(agentId, jwtModel.AccessToken, ct);
         }
 

@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -151,11 +150,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             IConfigurationSection section = configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
-            logger.LogInformation("Forward Proxies enabled: {Enabled}", enabled);
+            logger.LogInformation("Forward proxies enabled: {ProxiesEnabled}", enabled);
             if (enabled)
             {
-                logger.LogDebug("Configuring Forward Headers");
-                IPAddress[] proxyIPs = section.GetSection("KnownProxies").Get<IPAddress[]>() ?? Array.Empty<IPAddress>();
+                logger.LogDebug("Configuring forwarded headers");
+                IPAddress[] proxyIPs = section.GetSection("KnownProxies").Get<IPAddress[]>() ?? [];
                 services.Configure<ForwardedHeadersOptions>(
                     options =>
                     {
@@ -182,14 +181,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             IConfigurationSection section = configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
-            logger.LogInformation("Forward Proxies enabled: {Enabled}", enabled);
+            logger.LogInformation("Forward proxies enabled: {ProxiesEnabled}", enabled);
             if (enabled)
             {
-                logger.LogDebug("Using Forward Headers");
                 string basePath = section.GetValue<string>("BasePath") ?? string.Empty;
                 if (!string.IsNullOrEmpty(basePath))
                 {
-                    logger.LogInformation("Forward BasePath is set to {BasePath}, setting PathBase for app", basePath);
+                    logger.LogInformation("Setting PathBase for app to {BasePath}", basePath);
                     app.UsePathBase(basePath);
                     app.Use(
                         async (context, next) =>
@@ -200,7 +198,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     app.UsePathBase(basePath);
                 }
 
-                logger.LogInformation("Enabling Use Forward Header");
+                logger.LogInformation("Enabling Use Forwarded Headers");
                 app.UseForwardedHeaders();
             }
         }
@@ -306,10 +304,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     }
 
     /// <summary>
-    /// Settings to control request logging
+    /// Settings to control request logging.
     /// </summary>
-    /// <param name="Enabled">Enable or disable request logging</param>
-    /// <param name="ExcludedPaths">Optional request paths to exclude, can handle * wildcard in prefix or postfix</param>
+    /// <param name="Enabled">Enable or disable request logging.</param>
+    /// <param name="ExcludedPaths">Optional request paths to exclude, can handle * wildcard in prefix or postfix.</param>
     [ExcludeFromCodeCoverage]
     public record RequestLoggingSettings(bool Enabled = true, IEnumerable<string>? ExcludedPaths = null);
 }

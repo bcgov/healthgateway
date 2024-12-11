@@ -17,67 +17,19 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Net;
 
     /// <summary>
     /// Abstract exception class for Health Gateway.
     /// </summary>
+    /// <param name="message">Error message detailing the failure in question.</param>
+    /// <param name="innerException">An internal exception that results in a higher order failure.</param>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     [ExcludeFromCodeCoverage]
-    public abstract class HealthGatewayException : Exception
+    public abstract class HealthGatewayException(string? message = null, Exception? innerException = null) : Exception(message, innerException)
     {
-        private const HttpStatusCode DefaultStatusCode = HttpStatusCode.InternalServerError;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// Gets the problem type.
         /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        protected HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
-            : base(message)
-        {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="errorCode">A concise coded reason for the failure.</param>
-        protected HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
-            : base(message, innerException)
-        {
-            this.SetErrorProperties(DefaultStatusCode, errorCode);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
-        /// </summary>
-        protected HealthGatewayException()
-        {
-            this.SetErrorProperties(DefaultStatusCode, ErrorCodes.ServerError);
-        }
-
-        /// <summary>
-        /// Gets or sets the error code.
-        /// </summary>
-        public string? ErrorCode { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the HTTP status code.
-        /// </summary>
-        public HttpStatusCode StatusCode { get; set; }
-
-        /// <summary>
-        /// Sets the error properties of the exception.
-        /// </summary>
-        /// <param name="statusCode">The HTTP status code to be reported in the API response.</param>
-        /// <param name="errorCode">Concise coded reason for the failure.</param>
-        protected void SetErrorProperties(HttpStatusCode statusCode, string errorCode)
-        {
-            this.StatusCode = statusCode;
-            this.ErrorCode = errorCode;
-        }
+        public ProblemType ProblemType { get; init; } = ProblemType.ServerError;
     }
 }

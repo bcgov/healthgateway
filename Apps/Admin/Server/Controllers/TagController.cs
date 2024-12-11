@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -52,8 +53,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("[controller]")]
         public async Task<RequestResult<IList<AdminTagView>>> GetAll(CancellationToken ct)
         {
-            RequestResult<IList<AdminTagView>> result = await feedbackService.GetAllTagsAsync(ct);
-            return result;
+            return await feedbackService.GetAllTagsAsync(ct);
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("[controller]")]
         public async Task<RequestResult<AdminTagView>> CreateTag([FromBody] string tagName, CancellationToken ct)
         {
-            RequestResult<AdminTagView> result = await feedbackService.CreateTagAsync(tagName, ct);
-            return result;
+            Activity.Current?.AddBaggage("TagName", tagName);
+            return await feedbackService.CreateTagAsync(tagName, ct);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("[controller]")]
         public async Task<RequestResult<AdminTagView>> DeleteTag([FromBody] AdminTagView tag, CancellationToken ct)
         {
-            RequestResult<AdminTagView> result = await feedbackService.DeleteTagAsync(tag, ct);
-            return result;
+            Activity.Current?.AddBaggage("TagName", tag.Name);
+            return await feedbackService.DeleteTagAsync(tag, ct);
         }
 
         /// <summary>
@@ -113,8 +113,8 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("UserFeedback/{feedbackId}/[controller]")]
         public async Task<RequestResult<UserFeedbackView>> AssociateTags(Guid feedbackId, [FromBody] IList<Guid> tagIds, CancellationToken ct)
         {
-            RequestResult<UserFeedbackView> result = await feedbackService.AssociateFeedbackTagsAsync(feedbackId, tagIds, ct);
-            return result;
+            Activity.Current?.AddBaggage("FeedbackId", feedbackId.ToString());
+            return await feedbackService.AssociateFeedbackTagsAsync(feedbackId, tagIds, ct);
         }
     }
 }

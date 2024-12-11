@@ -26,43 +26,32 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class DbBlockedAccessDelegate : IBlockedAccessDelegate
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
+    public class DbBlockedAccessDelegate(ILogger<DbBlockedAccessDelegate> logger, GatewayDbContext dbContext) : IBlockedAccessDelegate
     {
-        private readonly ILogger logger;
-        private readonly GatewayDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbBlockedAccessDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbBlockedAccessDelegate(ILogger<DbBlockedAccessDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Blocked access version: {Version} for hdid: {Hdid}", blockedAccess.Version, blockedAccess.Hdid);
+            logger.LogDebug("Removing blocked access from DB for {Hdid}", blockedAccess.Hdid);
 
-            // Only attempt to remove entity if version is not 0
+            // only attempt to remove entity if it exists in the DB
             if (blockedAccess.Version != 0)
             {
-                this.dbContext.BlockedAccess.Remove(blockedAccess);
-                this.logger.LogDebug("Blocked access removed for Hdid: {Hdid}", blockedAccess.Hdid);
+                dbContext.BlockedAccess.Remove(blockedAccess);
             }
 
-            this.dbContext.AgentAudit.Add(agentAudit);
+            logger.LogDebug("Adding audit record to DB");
+            dbContext.AgentAudit.Add(agentAudit);
 
-            await this.dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
         }
 
         /// <inheritdoc/>
         public async Task<BlockedAccess?> GetBlockedAccessAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.dbContext.BlockedAccess
+            logger.LogDebug("Retrieving blocked access from DB for {Hdid}", hdid);
+            return await dbContext.BlockedAccess
                 .Where(d => d.Hdid == hdid)
                 .SingleOrDefaultAsync(ct);
         }
@@ -79,25 +68,29 @@ namespace HealthGateway.Database.Delegates
         {
             if (blockedAccess.Version == 0)
             {
-                this.dbContext.BlockedAccess.Add(blockedAccess);
+                logger.LogDebug("Adding blocked access to DB for {Hdid}", blockedAccess.Hdid);
+                dbContext.BlockedAccess.Add(blockedAccess);
             }
             else
             {
-                this.dbContext.BlockedAccess.Update(blockedAccess);
+                logger.LogDebug("Updating blocked access in DB for {Hdid}", blockedAccess.Hdid);
+                dbContext.BlockedAccess.Update(blockedAccess);
             }
 
-            this.dbContext.AgentAudit.Add(agentAudit);
+            logger.LogDebug("Adding audit record to DB");
+            dbContext.AgentAudit.Add(agentAudit);
 
             if (commit)
             {
-                await this.dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
             }
         }
 
         /// <inheritdoc/>
         public async Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct = default)
         {
-            return await this.dbContext.BlockedAccess
+            logger.LogDebug("Retrieving blocked access from DB");
+            return await dbContext.BlockedAccess
                 .ToListAsync(ct);
         }
     }

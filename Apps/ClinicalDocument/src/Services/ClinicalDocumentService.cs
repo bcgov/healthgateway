@@ -17,7 +17,6 @@ namespace HealthGateway.ClinicalDocument.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
@@ -66,8 +65,6 @@ namespace HealthGateway.ClinicalDocument.Services
             this.mappingService = mappingService;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
-
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid, CancellationToken ct = default)
         {
@@ -76,7 +73,7 @@ namespace HealthGateway.ClinicalDocument.Services
                 return new()
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = Enumerable.Empty<ClinicalDocumentRecord>(),
+                    ResourcePayload = [],
                     PageSize = 0,
                 };
             }
@@ -86,17 +83,16 @@ namespace HealthGateway.ClinicalDocument.Services
                 ResultStatus = ResultType.Error,
                 PageSize = 0,
             };
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting clinical documents for hdid: {Hdid}", hdid);
+
             try
             {
-                RequestResult<PersonalAccount> patientAccountResponse = await this.personalAccountsService.GetPatientAccountResultAsync(hdid, ct);
+                RequestResult<PersonalAccount> patientAccountResponse = await this.personalAccountsService.GetPersonalAccountResultAsync(hdid, ct);
                 if (patientAccountResponse.ResultStatus == ResultType.Success)
                 {
                     string? pid = patientAccountResponse.ResourcePayload?.PatientIdentity.Pid.ToString();
-                    this.logger.LogDebug("PID Fetched: {Pid}", pid);
-                    PhsaHealthDataResponse apiResponse =
-                        await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid, ct);
+
+                    this.logger.LogDebug("Retrieving clinical documents");
+                    PhsaHealthDataResponse apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid, ct);
 
                     IList<ClinicalDocumentRecord> clinicalDocuments = apiResponse.Data.Select(this.mappingService.MapToClinicalDocumentRecord).ToList();
                     requestResult.ResultStatus = ResultType.Success;
@@ -110,7 +106,7 @@ namespace HealthGateway.ClinicalDocument.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Error while retrieving Clinical Documents ... {Message}", e.Message);
+                this.logger.LogWarning(e, "Error while retrieving Clinical Documents");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error while retrieving Clinical Documents",
@@ -118,8 +114,6 @@ namespace HealthGateway.ClinicalDocument.Services
                 };
             }
 
-            activity?.Stop();
-            this.logger.LogDebug("Finished getting clinical documents for hdid: {Hdid}", hdid);
             return requestResult;
         }
 
@@ -140,15 +134,15 @@ namespace HealthGateway.ClinicalDocument.Services
                 ResultStatus = ResultType.Error,
                 PageSize = 0,
             };
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting clinical document file for hdid: {Hdid}", hdid);
+
             try
             {
-                RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPatientAccountResultAsync(hdid, ct);
+                RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPersonalAccountResultAsync(hdid, ct);
                 if (response.ResultStatus == ResultType.Success)
                 {
                     Guid pid = response.ResourcePayload?.PatientIdentity.Pid ?? throw new InvalidOperationException($"Pid not found for hdid {hdid}");
-                    this.logger.LogDebug("PID Fetched: {Pid}", pid);
+
+                    this.logger.LogDebug("Retrieving clinical document file");
                     EncodedMedia apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId, ct);
 
                     requestResult.ResultStatus = ResultType.Success;
@@ -161,7 +155,7 @@ namespace HealthGateway.ClinicalDocument.Services
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical(e, "Error while retrieving Clinical Document file ... {Message}", e.Message);
+                this.logger.LogWarning(e, "Error while retrieving Clinical Document file");
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error while retrieving Clinical Document file",
@@ -169,8 +163,6 @@ namespace HealthGateway.ClinicalDocument.Services
                 };
             }
 
-            activity?.Stop();
-            this.logger.LogDebug("Finished getting clinical document file for hdid: {Hdid}", hdid);
             return requestResult;
         }
     }

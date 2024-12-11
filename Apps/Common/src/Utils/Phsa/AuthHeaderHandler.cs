@@ -24,7 +24,6 @@ namespace HealthGateway.Common.Utils.Phsa
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Delegating access handler that swaps the user token for a PHSA token and injects it.
@@ -32,17 +31,14 @@ namespace HealthGateway.Common.Utils.Phsa
     [ExcludeFromCodeCoverage]
     public class AuthHeaderHandler : DelegatingHandler
     {
-        private readonly ILogger<AuthHeaderHandler> logger;
         private readonly IAccessTokenService tokenService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthHeaderHandler"/> class.
         /// </summary>
-        /// <param name="logger">The injected logger to use.</param>
         /// <param name="tokenService">The Token Swap service to use.</param>
-        public AuthHeaderHandler(ILogger<AuthHeaderHandler> logger, IAccessTokenService tokenService)
+        public AuthHeaderHandler(IAccessTokenService tokenService)
         {
-            this.logger = logger;
             this.tokenService = tokenService;
         }
 
@@ -52,13 +48,11 @@ namespace HealthGateway.Common.Utils.Phsa
             RequestResult<TokenSwapResponse> phsaTokenResponse = await this.tokenService.GetPhsaAccessTokenAsync(cancellationToken);
             if (phsaTokenResponse.ResultStatus == ResultType.Success)
             {
-                this.logger.LogTrace("Fetched Token for hdid");
                 string? token = phsaTokenResponse.ResourcePayload?.AccessToken;
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             }
 
-            this.logger.LogError("Error while retrieving PHSA Token {ErrorMessage}", phsaTokenResponse.ResultError?.ResultMessage);
             throw new HttpRequestException(phsaTokenResponse.ResultError?.ResultMessage);
         }
     }

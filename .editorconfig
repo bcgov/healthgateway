@@ -816,7 +816,7 @@ resharper_web_config_type_not_resolved_highlighting = warning
 resharper_web_config_wrong_module_highlighting = warning
 
 # SA1629: Documentation text should end with a period
-dotnet_diagnostic.SA1629.severity = none
+dotnet_diagnostic.SA1629.severity = warning
 
 # IDE0058: Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = none

@@ -63,16 +63,38 @@ namespace AccountDataAccessTest
         [InlineData(PatientDetailSource.All, true, false)]
         [InlineData(PatientDetailSource.Empi, false, true)]
         [InlineData(PatientDetailSource.Empi, false, false)]
-        public async Task ShouldQueryAsync(PatientDetailSource source, bool useHdid, bool useCache)
+        public async Task ShouldQuery(PatientDetailSource source, bool useHdid, bool useCache)
         {
             // Arrange
-            QueryMock mock = SetupQueryMock(source, useHdid, useCache);
+            PatientModel patient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            PatientIdentity patientIdentity = new()
+            {
+                Phn = Phn,
+                HdId = Hdid,
+            };
+
+            PatientModel expected = source == PatientDetailSource.Phsa && !useCache
+                ? Mapper.Map<PatientIdentity, PatientModel>(patientIdentity)
+                : patient;
+
+            PatientDetailsQuery patientDetailsQuery = new(
+                Hdid: useHdid ? Hdid : null,
+                Phn: !useHdid ? Phn : null,
+                Source: source,
+                UseCache: useCache);
+
+            IPatientRepository patientRepository = SetupPatientRepositoryForQuery(patient, patientIdentity);
 
             // Act
-            PatientQueryResult actual = await mock.PatientRepository.QueryAsync(mock.PatientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Assert
-            actual.Item.ShouldDeepEqual(mock.Expected);
+            actual.Item.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -85,7 +107,7 @@ namespace AccountDataAccessTest
         [Theory]
         [InlineData(null, null, false)]
         [InlineData(Hdid, Phn, true)]
-        public async Task QueryAsyncThrowsInvalidOperationException(string? hdid, string? phn, bool cancellationRequested)
+        public async Task QueryThrowsInvalidOperationException(string? hdid, string? phn, bool cancellationRequested)
         {
             // Arrange
             using CancellationTokenSource cancellationTokenSource = new();
@@ -96,11 +118,20 @@ namespace AccountDataAccessTest
             }
 
             CancellationToken ct = cancellationTokenSource.Token;
-            QueryThrowsInvalidOperationExceptionMock mock = SetupQueryThrowsInvalidOperationExceptionMock(hdid, phn, ct);
+
+            PatientDetailsQuery patientDetailsQuery = new(
+                Hdid: hdid,
+                Phn: phn,
+                Source: PatientDetailSource.Empi,
+                UseCache: true);
+
+            string expected = ct.IsCancellationRequested ? "Cancellation was requested" : "Must specify either Hdid or Phn to query patient details";
+
+            IPatientRepository patientRepository = SetupPatientRepositoryForQueryThrowsInvalidOperationException();
 
             // Act and Assert
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => mock.PatientRepository.QueryAsync(mock.PatientDetailsQuery, ct));
-            Assert.Equal(mock.Expected, exception.Message);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => patientRepository.QueryAsync(patientDetailsQuery, ct));
+            Assert.Equal(expected, exception.Message);
         }
 
         /// <summary>
@@ -118,36 +149,55 @@ namespace AccountDataAccessTest
         [InlineData(true, true)]
         [InlineData(true, false)]
         [InlineData(false, true)]
-        public async Task ShouldBlockAccessAsync(bool changeFeedEnabled, bool datasourceExist)
+        public async Task ShouldBlockAccess(bool changeFeedEnabled, bool datasourceExist)
         {
             // Arrange
-            BlockAccessMock mock = SetupBlockAccessMock(changeFeedEnabled, datasourceExist);
+            const string reason = "Unit Test Block Access";
+            bool commit = !changeFeedEnabled;
+            HashSet<DataSource> dataSources = datasourceExist ? [DataSource.Immunization, DataSource.Medication] : [];
+
+            BlockedAccess blockedAccess = new()
+            {
+                Hdid = Hdid,
+                DataSources = dataSources,
+            };
+
+            AgentAudit audit = new()
+            {
+                Hdid = Hdid,
+                Reason = reason,
+                OperationCode = AuditOperation.ChangeDataSourceAccess,
+                GroupCode = AuditGroup.BlockedAccess,
+            };
+
+            BlockAccessCommand command = new(Hdid, dataSources, reason);
+            (IPatientRepository repository, Mock<IBlockedAccessDelegate> blockedAccessDelegateMock, Mock<IMessageSender> messageSenderMock) = SetupBlockAccessMock(blockedAccess, changeFeedEnabled);
 
             // Act
-            await mock.PatientRepository.BlockAccessAsync(mock.Command);
+            await repository.BlockAccessAsync(command);
 
             // Verify
-            mock.BlockedAccessDelegate.Verify(
+            blockedAccessDelegateMock.Verify(
                 d => d.UpdateBlockedAccessAsync(
-                    It.Is<BlockedAccess>(ba => AssertBlockedAccess(mock.BlockedAccess, ba)),
-                    It.Is<AgentAudit>(aa => AssertAgentAudit(mock.Audit, aa)),
-                    mock.Commit,
+                    It.Is<BlockedAccess>(ba => AssertBlockedAccess(blockedAccess, ba)),
+                    It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa)),
+                    commit,
                     It.IsAny<CancellationToken>()),
                 datasourceExist ? Times.Once : Times.Never);
 
-            mock.BlockedAccessDelegate.Verify(
+            blockedAccessDelegateMock.Verify(
                 d => d.DeleteBlockedAccessAsync(
-                    It.Is<BlockedAccess>(ba => AssertBlockedAccess(mock.BlockedAccess, ba)),
-                    It.Is<AgentAudit>(aa => AssertAgentAudit(mock.Audit, aa)),
-                    mock.Commit,
+                    It.Is<BlockedAccess>(ba => AssertBlockedAccess(blockedAccess, ba)),
+                    It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa)),
+                    commit,
                     It.IsAny<CancellationToken>()),
                 !datasourceExist ? Times.Once : Times.Never);
 
-            mock.MessageSender.Verify(
+            messageSenderMock.Verify(
                 s => s.SendAsync(
                     It.Is<IEnumerable<MessageEnvelope>>(
                         me => AssertDataSourcesBlockedEvent(
-                            mock.BlockedAccess,
+                            blockedAccess,
                             me.Select(envelope => envelope.Content as DataSourcesBlockedEvent).First())),
                     It.IsAny<CancellationToken>()),
                 changeFeedEnabled ? Times.Once : Times.Never);
@@ -157,20 +207,23 @@ namespace AccountDataAccessTest
         /// Can access data source.
         /// </summary>
         /// <param name="dataSource">The data source to check for access.</param>
+        /// <param name="useCache">The value indicating whether cache should be used or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(DataSource.Note)]
-        [InlineData(DataSource.Medication)]
-        public async Task CanAccessDataSourceAsync(DataSource dataSource)
+        [InlineData(DataSource.Note, false)]
+        [InlineData(DataSource.Medication, true)]
+        public async Task CanAccessDataSource(DataSource dataSource, bool useCache)
         {
             // Arrange
-            CanAccessDatasourceMock mock = SetupCanAccessDatasourceMock(dataSource);
+            HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
+            bool expected = !dataSources.Contains(dataSource);
+            IPatientRepository patientRepository = SetupPatientRepositoryForCanAccessDataSource(dataSources, useCache);
 
             // Act
-            bool actual = await mock.PatientRepository.CanAccessDataSourceAsync(Hdid, mock.DataSource);
+            bool actual = await patientRepository.CanAccessDataSourceAsync(Hdid, dataSource);
 
             // Assert
-            Assert.Equal(mock.Expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -178,33 +231,43 @@ namespace AccountDataAccessTest
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetBlockedAccessAsync()
+        public async Task ShouldGetBlockedAccess()
         {
             // Arrange
-            GetBlockedAccessMock mock = SetupGetBlockedAccessMock();
+            BlockedAccess expected = new()
+            {
+                Hdid = Hdid,
+                DataSources = [DataSource.Immunization, DataSource.Medication],
+            };
+
+            IPatientRepository patientRepository = SetupPatientRepositoryForGetBlockedAccess(expected);
 
             // Act
-            BlockedAccess? actual = await mock.PatientRepository.GetBlockedAccessRecordsAsync(mock.Hdid);
+            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecordsAsync(Hdid);
 
             // Verify
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
         /// Get data sources by hdid.
         /// </summary>
+        /// <param name="useCache">The value indicating whether cache should be used or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetDataSourcesAsync()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetDataSources(bool useCache)
         {
             // Arrange
-            GetDataSourcesMock mock = SetupGetDataSourcesMock();
+            HashSet<DataSource> expected = [DataSource.Immunization, DataSource.Medication];
+            IPatientRepository patientRepository = SetupPatientRepositoryForGetDataSources(expected, useCache);
 
             // Act
-            IEnumerable<DataSource> actual = await mock.PatientRepository.GetDataSourcesAsync(mock.Hdid);
+            IEnumerable<DataSource> actual = await patientRepository.GetDataSourcesAsync(Hdid);
 
             // Verify
-            actual.ShouldDeepEqual(mock.Expected);
+            actual.ShouldDeepEqual(expected);
         }
 
         private static bool AssertAgentAudit(AgentAudit expected, AgentAudit actual)
@@ -249,26 +312,8 @@ namespace AccountDataAccessTest
             return dataSources.Select(ds => EnumUtility.ToEnumString(ds));
         }
 
-        private static BlockAccessMock SetupBlockAccessMock(bool changeFeedEnabled, bool datasourceExist)
+        private static BlockAccessMock SetupBlockAccessMock(BlockedAccess blockedAccess, bool changeFeedEnabled)
         {
-            const string reason = "Unit Test Block Access";
-            bool commit = !changeFeedEnabled;
-            HashSet<DataSource> dataSources = datasourceExist ? [DataSource.Immunization, DataSource.Medication] : [];
-
-            BlockedAccess blockedAccess = new()
-            {
-                Hdid = Hdid,
-                DataSources = dataSources,
-            };
-
-            AgentAudit audit = new()
-            {
-                Hdid = Hdid,
-                Reason = reason,
-                OperationCode = AuditOperation.ChangeDataSourceAccess,
-                GroupCode = AuditGroup.BlockedAccess,
-            };
-
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
             blockedAccessDelegate.Setup(
                     s => s.GetBlockedAccessAsync(
@@ -281,7 +326,6 @@ namespace AccountDataAccessTest
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess.DataSources);
 
-            BlockAccessCommand command = new(Hdid, dataSources, reason);
             Mock<IMessageSender> messageSender = new();
 
             if (changeFeedEnabled)
@@ -302,41 +346,58 @@ namespace AccountDataAccessTest
                 new PatientQueryFactory(new Mock<IServiceProvider>().Object),
                 messageSender.Object);
 
-            return new(patientRepository, blockedAccessDelegate, messageSender, blockedAccess, audit, commit, command);
+            return new(patientRepository, blockedAccessDelegate, messageSender);
         }
 
-        private static CanAccessDatasourceMock SetupCanAccessDatasourceMock(DataSource dataSource)
+        private static IPatientRepository SetupPatientRepositoryForCanAccessDataSource(HashSet<DataSource> dataSources, bool useCache)
         {
-            HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
             Mock<ICacheProvider> cacheProviderMock = new();
-            cacheProviderMock.Setup(
-                    s => s.GetOrSetAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                        It.IsAny<TimeSpan>(),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dataSources);
+            Mock<IBlockedAccessDelegate> blockedAccessDelegateMock = new();
 
-            PatientRepository patientRepository = new(
+            if (useCache)
+            {
+                cacheProviderMock.Setup(
+                        s => s.GetOrSetAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                            It.IsAny<TimeSpan>(),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(dataSources);
+            }
+            else
+            {
+                blockedAccessDelegateMock.Setup(
+                        s => s.GetDataSourcesAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(dataSources);
+
+                cacheProviderMock.Setup(
+                        s => s.GetOrSetAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                            It.IsAny<TimeSpan?>(), // TimeSpan? for consistency
+                            It.IsAny<CancellationToken>()))
+                    .Returns(
+                        (string _, Func<Task<IEnumerable<DataSource>?>> valueFactory, TimeSpan? _, CancellationToken _) =>
+                        {
+                            Task<IEnumerable<DataSource>?> task = valueFactory.Invoke();
+                            return task;
+                        });
+            }
+
+            return new PatientRepository(
                 new Mock<ILogger<PatientRepository>>().Object,
-                new Mock<IBlockedAccessDelegate>().Object,
+                blockedAccessDelegateMock.Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 cacheProviderMock.Object,
                 GetIConfigurationRoot(),
                 new PatientQueryFactory(new Mock<IServiceProvider>().Object),
                 new Mock<IMessageSender>().Object);
-
-            return new(patientRepository, !dataSources.Contains(dataSource), dataSource);
         }
 
-        private static GetBlockedAccessMock SetupGetBlockedAccessMock()
+        private static IPatientRepository SetupPatientRepositoryForGetBlockedAccess(BlockedAccess blockedAccess)
         {
-            BlockedAccess blockedAccess = new()
-            {
-                Hdid = Hdid,
-                DataSources = [DataSource.Immunization, DataSource.Medication],
-            };
-
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
             blockedAccessDelegate.Setup(
                     s => s.GetBlockedAccessAsync(
@@ -344,7 +405,7 @@ namespace AccountDataAccessTest
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess);
 
-            PatientRepository patientRepository = new(
+            return new PatientRepository(
                 new Mock<ILogger<PatientRepository>>().Object,
                 blockedAccessDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
@@ -352,60 +413,58 @@ namespace AccountDataAccessTest
                 GetIConfigurationRoot(),
                 new PatientQueryFactory(new Mock<IServiceProvider>().Object),
                 new Mock<IMessageSender>().Object);
-
-            return new(patientRepository, blockedAccess, Hdid);
         }
 
-        private static GetDataSourcesMock SetupGetDataSourcesMock()
+        private static IPatientRepository SetupPatientRepositoryForGetDataSources(HashSet<DataSource> dataSources, bool useCache)
         {
             string cacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, Hdid);
-            HashSet<DataSource> dataSources = [DataSource.Immunization, DataSource.Medication];
             Mock<ICacheProvider> cacheProviderMock = new();
-            cacheProviderMock.Setup(
-                    s =>
-                        s.GetOrSetAsync(
+            Mock<IBlockedAccessDelegate> blockedAccessDelegateMock = new();
+
+            if (useCache)
+            {
+                cacheProviderMock.Setup(
+                        s => s.GetOrSetAsync(
                             It.Is<string>(x => x.Contains(cacheKey)),
                             It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
                             It.IsAny<TimeSpan>(),
                             It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dataSources);
+                    .ReturnsAsync(dataSources);
+            }
+            else
+            {
+                blockedAccessDelegateMock.Setup(
+                        s => s.GetDataSourcesAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(dataSources);
 
-            PatientRepository patientRepository = new(
+                cacheProviderMock.Setup(
+                        s => s.GetOrSetAsync(
+                            It.Is<string>(x => x.Contains(cacheKey)),
+                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                            It.IsAny<TimeSpan>(),
+                            It.IsAny<CancellationToken>()))
+                    .Returns(
+                        (string _, Func<Task<IEnumerable<DataSource>?>> valueFactory, TimeSpan? _, CancellationToken _) =>
+                        {
+                            Task<IEnumerable<DataSource>?> task = valueFactory.Invoke();
+                            return task;
+                        });
+            }
+
+            return new PatientRepository(
                 new Mock<ILogger<PatientRepository>>().Object,
-                new Mock<IBlockedAccessDelegate>().Object,
+                blockedAccessDelegateMock.Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 cacheProviderMock.Object,
                 GetIConfigurationRoot(),
                 new PatientQueryFactory(new Mock<IServiceProvider>().Object),
                 new Mock<IMessageSender>().Object);
-
-            return new(patientRepository, dataSources, Hdid);
         }
 
-        private static QueryMock SetupQueryMock(PatientDetailSource source, bool useHdid, bool useCache)
+        private static IPatientRepository SetupPatientRepositoryForQuery(PatientModel patient, PatientIdentity patientIdentity)
         {
-            PatientDetailsQuery patientDetailsQuery = new(
-                Hdid: useHdid ? Hdid : null,
-                Phn: !useHdid ? Phn : null,
-                Source: source,
-                UseCache: useCache);
-
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            PatientIdentity patientIdentity = new()
-            {
-                Phn = Phn,
-                HdId = Hdid,
-            };
-
-            PatientModel expected = source == PatientDetailSource.Phsa && !useCache
-                ? Mapper.Map<PatientIdentity, PatientModel>(patientIdentity)
-                : patient;
-
             ServiceCollection serviceCollection = [];
 
             Mock<ICacheProvider> cacheProviderMock = new();
@@ -464,7 +523,7 @@ namespace AccountDataAccessTest
             serviceCollection.AddScoped<HdidPhsaStrategy>(_ => hdidPhsaStrategy);
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
-            PatientRepository patientRepository = new(
+            return new PatientRepository(
                 new Mock<ILogger<PatientRepository>>().Object,
                 new Mock<IBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
@@ -472,38 +531,11 @@ namespace AccountDataAccessTest
                 GetIConfigurationRoot(),
                 new PatientQueryFactory(serviceProvider),
                 new Mock<IMessageSender>().Object);
-
-            return new(patientRepository, expected, patientDetailsQuery);
         }
 
-        private static QueryThrowsInvalidOperationExceptionMock SetupQueryThrowsInvalidOperationExceptionMock(
-            string? hdid,
-            string? phn,
-            CancellationToken ct)
+        private static IPatientRepository SetupPatientRepositoryForQueryThrowsInvalidOperationException()
         {
-            PatientDetailsQuery patientDetailsQuery = new(
-                Hdid: hdid,
-                Phn: phn,
-                Source: PatientDetailSource.Empi,
-                UseCache: true);
-            string expected = string.Empty;
-
-            if (string.IsNullOrEmpty(hdid))
-            {
-                expected = "Must specify either Hdid or Phn to query patient details";
-            }
-
-            if (string.IsNullOrEmpty(phn))
-            {
-                expected = "Must specify either Hdid or Phn to query patient details";
-            }
-
-            if (ct.IsCancellationRequested)
-            {
-                expected = "cancellation was requested";
-            }
-
-            PatientRepository patientRepository = new(
+            return new PatientRepository(
                 new Mock<ILogger<PatientRepository>>().Object,
                 new Mock<IBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
@@ -511,42 +543,11 @@ namespace AccountDataAccessTest
                 GetIConfigurationRoot(),
                 new PatientQueryFactory(new Mock<IServiceProvider>().Object),
                 new Mock<IMessageSender>().Object);
-
-            return new(patientRepository, expected, patientDetailsQuery);
         }
 
         private sealed record BlockAccessMock(
             PatientRepository PatientRepository,
             Mock<IBlockedAccessDelegate> BlockedAccessDelegate,
-            Mock<IMessageSender> MessageSender,
-            BlockedAccess BlockedAccess,
-            AgentAudit Audit,
-            bool Commit,
-            BlockAccessCommand Command);
-
-        private sealed record CanAccessDatasourceMock(
-            PatientRepository PatientRepository,
-            bool Expected,
-            DataSource DataSource);
-
-        private sealed record GetBlockedAccessMock(
-            PatientRepository PatientRepository,
-            BlockedAccess Expected,
-            string Hdid);
-
-        private sealed record GetDataSourcesMock(
-            PatientRepository PatientRepository,
-            IEnumerable<DataSource> Expected,
-            string Hdid);
-
-        private sealed record QueryMock(
-            PatientRepository PatientRepository,
-            PatientModel Expected,
-            PatientDetailsQuery PatientDetailsQuery);
-
-        private sealed record QueryThrowsInvalidOperationExceptionMock(
-            PatientRepository PatientRepository,
-            string Expected,
-            PatientDetailsQuery PatientDetailsQuery);
+            Mock<IMessageSender> MessageSender);
     }
 }

@@ -34,7 +34,7 @@ namespace HealthGateway.Immunization.Delegates
     /// </summary>
     public class RestVaccineStatusDelegate : IVaccineStatusDelegate
     {
-        private readonly ILogger logger;
+        private readonly ILogger<RestVaccineStatusDelegate> logger;
         private readonly IImmunizationApi immunizationApi;
         private readonly IImmunizationPublicApi immunizationPublicApi;
 
@@ -51,13 +51,14 @@ namespace HealthGateway.Immunization.Delegates
             this.immunizationPublicApi = immunizationPublicApi;
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
+        private static ActivitySource ActivitySource { get; } = new(typeof(RestVaccineStatusDelegate).FullName);
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusAsync(string hdid, bool includeFederalPvc, string accessToken, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting vaccine status for HDID {Hdid} with includeFederalPvc = {IncludeFederalPvc}", hdid, includeFederalPvc);
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("VaccineStatusHdid", hdid);
+            activity?.AddBaggage("VaccineStatusIncludeFederalPvc", includeFederalPvc.ToString());
 
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
@@ -66,8 +67,8 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                PhsaResult<VaccineStatusResult> phsaResult =
-                    await this.immunizationApi.GetVaccineStatusAsync(hdid, includeFederalPvc, accessToken, ct);
+                this.logger.LogDebug("Retrieving vaccine status (authenticated)");
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationApi.GetVaccineStatusAsync(hdid, includeFederalPvc, accessToken, ct);
 
                 if (phsaResult.Result != null)
                 {
@@ -78,7 +79,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError(e, "Unexpected exception in GetVaccineStatus {Message}", e.Message);
+                this.logger.LogWarning(e, "Error retrieving vaccine status (authenticated)");
             }
 
             if (retVal.ResourcePayload == null)
@@ -90,20 +91,15 @@ namespace HealthGateway.Immunization.Delegates
                 };
             }
 
-            this.logger.LogDebug("Finished getting vaccine status for HDID {Hdid}", hdid);
             return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublicAsync(VaccineStatusQuery query, string accessToken, string clientIp, CancellationToken ct = default)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug(
-                "Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}, DoV {DateOfVaccine} with IncludeFederalVaccineProof = {IncludeFederalVaccineProof}",
-                query.PersonalHealthNumber,
-                query.DateOfBirth,
-                query.DateOfVaccine,
-                query.IncludeFederalVaccineProof);
+            using Activity? activity = ActivitySource.StartActivity();
+            activity?.AddBaggage("VaccineStatusPhn", query.PersonalHealthNumber);
+            activity?.AddBaggage("VaccineStatusIncludeFederalVaccineProof", query.IncludeFederalVaccineProof.ToString());
 
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
@@ -112,6 +108,7 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
+                this.logger.LogDebug("Retrieving vaccine status (public)");
                 PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatusAsync(query, accessToken, clientIp, ct);
 
                 if (phsaResult.Result != null)
@@ -123,7 +120,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError(e, "Unexpected exception in GetVaccineStatusPublic {Message}", e.Message);
+                this.logger.LogWarning(e, "Error retrieving vaccine status (public)");
             }
 
             if (retVal.ResourcePayload == null)
@@ -135,7 +132,6 @@ namespace HealthGateway.Immunization.Delegates
                 };
             }
 
-            this.logger.LogDebug("Finished getting vaccine status for PHN {PersonalHealthNumber}", query.PersonalHealthNumber);
             return retVal;
         }
     }

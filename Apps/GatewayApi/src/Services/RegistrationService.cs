@@ -31,11 +31,9 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     /// <param name="configuration">The injected configuration.</param>
-    /// <param name="logger">The injected logger.</param>
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
     /// <param name="cryptoDelegate">The injected crypto delegate.</param>
     /// <param name="messagingVerificationService">The injected message verification service.</param>
@@ -46,7 +44,6 @@ namespace HealthGateway.GatewayApi.Services
 #pragma warning disable S107 // The number of DI parameters should be ignored
     public class RegistrationService(
         IConfiguration configuration,
-        ILogger<RegistrationService> logger,
         IAuthenticationDelegate authenticationDelegate,
         ICryptoDelegate cryptoDelegate,
         IMessagingVerificationService messagingVerificationService,
@@ -68,7 +65,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<UserProfileModel> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
-            logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
             string hdid = createProfileRequest.Profile.HdId;
             string? requestedEmail = createProfileRequest.Profile.Email;
             string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
@@ -106,7 +102,6 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<UserProfile> dbResult = await userProfileDelegate.InsertUserProfileAsync(profile, true, ct);
             if (dbResult.Status != DbStatusCode.Created)
             {
-                logger.LogError("Error creating user profile... {Hdid}", hdid);
                 throw new DatabaseException(dbResult.Message);
             }
 
@@ -120,9 +115,7 @@ namespace HealthGateway.GatewayApi.Services
             await this.NotifyAccountCreated(profile, requestedEmail, requestedSmsNumber, isEmailVerified, smsVerification?.SmsValidationCode, ct);
 
             // build and return model
-            UserProfileModel userProfileModel = await userProfileModelService.BuildUserProfileModelAsync(profile, this.userProfileHistoryRecordLimit, ct);
-            logger.LogTrace("Finished creating user profile... {Hdid}", dbResult.Payload.HdId);
-            return userProfileModel;
+            return await userProfileModelService.BuildUserProfileModelAsync(profile, this.userProfileHistoryRecordLimit, ct);
         }
 
         private async Task<MessagingVerification?> AddSmsVerification(string hdid, string? requestedSmsNumber, CancellationToken ct)

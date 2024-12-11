@@ -40,16 +40,26 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
-echo "Running Cypress Functional Tests"
+echo "Running Cypress e2e Read and UI Functional Tests"
+# Gather all test files in the `ui` folder
+ui_files=$(find cypress/integration/ui -name '*.cy.js' | tr '\n' ',')
+
+# Gather only `-read.cy.js` files in the `e2e` folder
+e2e_files=$(find cypress/integration/e2e -name '*-read.cy.js' | tr '\n' ',')
+
+# Combine `ui_files` and `e2e_files` into a single spec list
+spec_files="${ui_files}${e2e_files}"
+
+# Run Cypress with the combined spec list
 TZ=America/Vancouver npx cypress run \
     --env "keycloak_password=$KEYCLOAK_PW,idir_password=$IDIR_PASSWORD,keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET" \
     --record \
     --key $CYPRESS_ADMIN_KEY \
     --parallel \
-    --ci-build-id "$buildId" \
-    --group "$buildId" \
+    --ci-build-id "$buildId-AdminRead" \
+    --group "$buildId-AdminRead" \
     --tag "$tags" \
-    --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/!(unauthorized.cy.js|authentication.cy.js|agentaccess.cy.js)" \
+    --spec "${spec_files%,}" \
     --headless \
     --browser chrome
 popd

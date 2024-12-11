@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading;
@@ -109,8 +110,8 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<ActionResult<UserProfileModel>> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest, CancellationToken ct)
         {
             if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.OrdinalIgnoreCase))
@@ -147,8 +148,8 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<UserProfileModel> GetUserProfile(string hdid, CancellationToken ct)
         {
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(this.httpContextAccessor.HttpContext!.User);
@@ -183,8 +184,8 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<bool> Validate(string hdid, CancellationToken ct)
         {
             return await this.userValidationService.ValidateEligibilityAsync(hdid, ct);
@@ -212,7 +213,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> CloseUserProfile(string hdid, CancellationToken ct)
         {
             await this.userProfileService.CloseUserProfileAsync(hdid, ct);
@@ -241,7 +242,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> RecoverUserProfile(string hdid, CancellationToken ct)
         {
             await this.userProfileService.RecoverUserProfileAsync(hdid, ct);
@@ -260,7 +261,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [AllowAnonymous]
         [Produces("application/json")]
         [ProducesResponseType<TermsOfServiceModel>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<TermsOfServiceModel> GetLastTermsOfService(CancellationToken ct)
         {
@@ -288,9 +289,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<bool> VerifyEmailAddress(string hdid, Guid verificationKey, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("VerificationKey", verificationKey.ToString());
             return await this.userEmailService.VerifyEmailAddressAsync(hdid, verificationKey, ct);
         }
 
@@ -314,10 +316,11 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<bool> VerifySmsNumber(string hdid, string verificationCode, CancellationToken ct)
         {
+            Activity.Current?.AddBaggage("VerificationCode", verificationCode);
             return await this.userSmsService.VerifySmsNumberAsync(hdid, verificationCode, ct);
         }
 
@@ -346,7 +349,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> UpdateUserEmailAddress(string hdid, [FromBody] string emailAddress = "", CancellationToken ct = default)
         {
             await this.userEmailService.UpdateEmailAddressAsync(hdid, emailAddress, ct);
@@ -378,7 +381,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct)
         {
             await this.userSmsService.UpdateSmsNumberAsync(hdid, smsNumber, ct);
@@ -408,7 +411,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<ActionResult<UserPreferenceModel>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel, CancellationToken ct)
         {
             await new UserPreferenceModelValidator().ValidateAndThrowAsync(userPreferenceModel, ct);
@@ -443,7 +446,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<UserPreferenceModel> CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel, CancellationToken ct)
         {
             await new UserPreferenceModelValidator().ValidateAndThrowAsync(userPreferenceModel, ct);
@@ -473,7 +476,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> UpdateAcceptedTerms(string hdid, [FromBody] Guid termsOfServiceId, CancellationToken ct)
         {
             await this.userProfileService.UpdateAcceptedTermsAsync(hdid, termsOfServiceId, ct);

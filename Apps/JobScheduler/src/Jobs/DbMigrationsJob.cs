@@ -15,30 +15,35 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
 
     /// <summary>
-    /// Runs the Database migrations as needed.
+    /// Runs the database migrations as needed.
     /// </summary>
     public class DbMigrationsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
         private readonly GatewayDbContext dbContext;
-        private readonly ILogger logger;
+        private readonly ILogger<DbMigrationsJob> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbMigrationsJob"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
-        public DbMigrationsJob(
-            ILogger<DbMigrationsJob> logger,
-            GatewayDbContext dbContext)
+        public DbMigrationsJob(ILogger<DbMigrationsJob> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
@@ -52,9 +57,45 @@ namespace HealthGateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public async Task MigrateAsync(CancellationToken ct = default)
         {
-            this.logger.LogTrace("Migrating database... {ConcurrencyTimeout}", ConcurrencyTimeout);
-            await this.dbContext.Database.MigrateAsync(ct);
-            this.logger.LogTrace("Finished migrating database. {ConcurrencyTimeout}", ConcurrencyTimeout);
+            const string jobName = nameof(this.MigrateAsync);
+
+            this.logger.LogInformation(
+                "Job '{JobName}' - Checking for pending database migrations",
+                jobName);
+
+            IEnumerable<string> pendingMigrations = await this.dbContext.Database.GetPendingMigrationsAsync(ct);
+
+            if (pendingMigrations.Any())
+            {
+                this.logger.LogInformation(
+                    "Job '{JobName}' - Pending migrations found. Applying database migrations",
+                    jobName);
+
+                IServiceProvider serviceProvider = this.dbContext.GetInfrastructure();
+                NpgsqlDataSource dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
+
+                // Create a new DbContextOptionsBuilder with the required configuration to ignore false positive EF Core 9.0 warning
+                DbContextOptionsBuilder<GatewayDbContext> optionsBuilder = new();
+                optionsBuilder
+                    .UseNpgsql(
+                        dataSource,
+                        builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"))
+                    .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+
+                // Use a temporary DbContext for applying migrations
+                await using (GatewayDbContext migrationDbContext = new(optionsBuilder.Options))
+                {
+                    await migrationDbContext.Database.MigrateAsync(ct);
+                }
+
+                this.logger.LogInformation("Applied database migrations successfully");
+            }
+            else
+            {
+                this.logger.LogInformation(
+                    "Job '{JobName}' - No pending migrations found. Skipping migration step",
+                    jobName);
+            }
         }
     }
 }

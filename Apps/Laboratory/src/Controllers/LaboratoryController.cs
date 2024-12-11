@@ -15,19 +15,18 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Controllers
 {
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The authenticated laboratory controller.
@@ -36,26 +35,19 @@ namespace HealthGateway.Laboratory.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     [ExcludeFromCodeCoverage]
     public class LaboratoryController : ControllerBase
     {
         private readonly ILaboratoryService labService;
         private readonly ILabTestKitService labTestKitService;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="labService">The laboratory data service.</param>
         /// <param name="labTestKitService">The lab testkit service to use.</param>
-        public LaboratoryController(
-            ILogger<LaboratoryController> logger,
-            ILaboratoryService labService,
-            ILabTestKitService labTestKitService)
+        public LaboratoryController(ILaboratoryService labService, ILabTestKitService labTestKitService)
         {
-            this.logger = logger;
             this.labService = labService;
             this.labTestKitService = labTestKitService;
         }
@@ -82,10 +74,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Read)]
         public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders([FromQuery] string hdid, CancellationToken ct)
         {
-            this.logger.LogDebug("Getting COVID-19 laboratory orders...");
-            RequestResult<Covid19OrderResult> result = await this.labService.GetCovid19OrdersAsync(hdid, ct: ct);
-            this.logger.LogDebug("Finished getting COVID-19 laboratory orders from controller for HDID: {Hdid}", hdid);
-            return result;
+            return await this.labService.GetCovid19OrdersAsync(hdid, ct: ct);
         }
 
         /// <summary>
@@ -110,10 +99,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Read)]
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders([FromQuery] string hdid, CancellationToken ct)
         {
-            this.logger.LogDebug("Getting laboratory orders...");
-            RequestResult<LaboratoryOrderResult> result = await this.labService.GetLaboratoryOrdersAsync(hdid, ct);
-            this.logger.LogDebug("Finished getting laboratory orders from controller for HDID: {Hdid}", hdid);
-            return result;
+            return await this.labService.GetLaboratoryOrdersAsync(hdid, ct);
         }
 
         /// <summary>
@@ -137,10 +123,9 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Read)]
         public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(string reportId, [FromQuery] string hdid, bool isCovid19 = true, CancellationToken ct = default)
         {
-            this.logger.LogDebug("Getting PDF version of Laboratory Report for Hdid: {Hdid} and isCovid19: {IsCovid10}...", hdid, isCovid19.ToString());
-            RequestResult<LaboratoryReport> result = await this.labService.GetLabReportAsync(reportId, hdid, isCovid19, ct);
-            this.logger.LogDebug("Finished getting pdf report from controller for Hdid: {Hdid} and isCovid19: {IsCovid19}...", hdid, isCovid19.ToString());
-            return result;
+            Activity.Current?.AddBaggage("LaboratoryReportId", reportId);
+            Activity.Current?.AddBaggage("LaboratoryReportIsCovid19", isCovid19.ToString());
+            return await this.labService.GetLabReportAsync(reportId, hdid, isCovid19, ct);
         }
 
         /// <summary>
@@ -163,10 +148,8 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Write)]
         public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody] LabTestKit labTestKit, CancellationToken ct)
         {
-            this.logger.LogDebug("Post AddLabTestKit {Hdid}", hdid);
-            RequestResult<LabTestKit> result = await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit, ct);
-            this.logger.LogDebug("Finishing submitting lab test kit from controller ... {Hdid}", hdid);
-            return result;
+            Activity.Current?.AddBaggage("TestKitId", labTestKit.TestKitId);
+            return await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit, ct);
         }
     }
 }

@@ -25,14 +25,15 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using Serilog;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    /// <param name="delegationDelegate">The ResourceDelegate delegate to communicate with DB.</param>
-    /// <param name="blockedAccessDelegate">The BlockedAccess delegate to communicate with DB.</param>
+    /// <param name="delegationDelegate">The delegation delegate to communicate with the DB.</param>
+    /// <param name="blockedAccessDelegate">The blocked access delegate to communicate with the DB.</param>
     /// <param name="patientRepository">The patient repository used to retrieve patient details.</param>
-    /// <param name="logger">Injected Logger.</param>
-    public class AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger) : IAdminReportService
+    /// <param name="logger">Injected logger.</param>
+    public class AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger<AdminReportService> logger)
+        : IAdminReportService
     {
         /// <inheritdoc/>
         public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct = default)
@@ -51,7 +52,7 @@ namespace HealthGateway.Admin.Server.Services
                         }
                         catch (NotFoundException e)
                         {
-                            logger.Error(e, "Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
+                            logger.LogWarning(e, "Error retrieving patient details for dependent {DependentHdid}", hdid);
                         }
 
                         return new ProtectedDependentRecord(hdid, patient?.Phn);

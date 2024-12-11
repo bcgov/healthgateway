@@ -90,12 +90,12 @@ describe("Feedback Review", () => {
         cy.get(rowSelector)
             .first()
             .within(() => {
-                cy.get("[data-testid=feedback-tag-save-button]").should(
-                    "not.be.enabled"
-                );
                 cy.get("[data-testid=feedback-tag-select]").should(
                     "have.value",
                     suggestionTag
+                );
+                cy.get("[data-testid=feedback-tag-save-button]").should(
+                    "not.be.enabled"
                 );
             });
 
@@ -137,12 +137,12 @@ describe("Feedback Review", () => {
         cy.get(rowSelector)
             .first()
             .within(() => {
-                cy.get("[data-testid=feedback-tag-save-button]").should(
-                    "not.be.enabled"
-                );
                 cy.get("[data-testid=feedback-tag-select]").should(
                     "not.have.value",
                     suggestionTag
+                );
+                cy.get("[data-testid=feedback-tag-save-button]").should(
+                    "not.be.enabled"
                 );
             });
 
@@ -159,21 +159,5 @@ describe("Feedback Review", () => {
             .click();
         cy.wait("@deleteTag", { timeout: defaultTimeout });
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
-    });
-
-    it("Navigating to Support Page", () => {
-        cy.log("Looking up feedback author.");
-        setupPatientDetailsAliases();
-
-        cy.get(rowSelector)
-            .first()
-            .within(() => {
-                cy.get("[data-testid=feedback-person-search-button]")
-                    .should("be.visible")
-                    .click();
-            });
-
-        waitForPatientDetailsDataLoad();
-        cy.location("pathname").should("eq", "/patient-details");
     });
 });

@@ -102,20 +102,56 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// UpdateUserSmsAsync.
+        /// ValidateSmsAsync returns error when updating user profile to the database.
         /// </summary>
-        /// <param name="userProfileExists">The bool value indicating if the user profile to be updated exists.</param>
-        /// <param name="sms">The sms value to update.</param>
-        /// <param name="smsValid">The bool value indicating if sms is valid or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true, "2508801234", true)]
-        [InlineData(true, "0000000000", false)]
-        [InlineData(false, "2508801234", true)]
-        public async Task ShouldValidateUpdate(bool userProfileExists, string sms, bool smsValid)
+        [Fact]
+        public async Task ValidateSmsReturnsError()
         {
             // Arrange
-            UserProfile? userProfile = userProfileExists ? new UserProfile() : null;
+            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.Error }; // Should cause error to be returned.
+            UserProfile userProfile = new();
+            MessagingVerification messagingVerification = new()
+            {
+                UserProfileId = HdIdMock,
+                VerificationAttempts = 0,
+                SmsValidationCode = SmsValidationCode,
+                ExpireDate = DateTime.Now.AddDays(1),
+            };
+
+            Mock<IMessageSender> messageSenderMock = new();
+            IUserSmsService service = GetUserSmsService(
+                messagingVerification: messagingVerification,
+                userProfile: userProfile,
+                messageSenderMock: messageSenderMock,
+                updateUserProfileResult: dbResult);
+
+            // Act
+            RequestResult<bool> actual = await service.ValidateSmsAsync(HdIdMock, SmsValidationCode, CancellationToken.None);
+
+            // Assert
+            Assert.False(actual.ResourcePayload);
+            Assert.Equal(ErrorMessages.CannotPerformAction, actual.ResultError?.ResultMessage);
+
+            // Verify
+            messageSenderMock.Verify(
+                m => m.SendAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(
+                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                    CancellationToken.None),
+                Times.Never);
+        }
+
+        /// <summary>
+        /// UpdateUserSmsAsync.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldUpdateUserSms()
+        {
+            // Arrange
+            const string sms = "2508801234";
+            UserProfile userProfile = new();
 
             MessagingVerification expectedResult = new()
             {
@@ -136,44 +172,97 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfile,
                 notificationSettingsServiceMock: notificationSettingsServiceMock);
 
-            if (userProfileExists && smsValid)
+            // Act and Assert
+            Assert.True(await service.UpdateUserSmsAsync(HdIdMock, sms));
+
+            // Verify
+            userProfileDelegateMock
+                .Verify(
+                    s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.ExpireAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            notificationSettingsServiceMock
+                .Verify(
+                    s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateUserSmsAsync throws NotFoundException.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateUserSmsThrowsNotFoundException()
+        {
+            // Arrange
+            const string sms = "2508801234";
+            UserProfile? userProfile = null; // Should cause NotFoundException
+
+            MessagingVerification expectedResult = new()
             {
-                // Act and Assert
-                Assert.True(await service.UpdateUserSmsAsync(HdIdMock, sms));
+                UserProfileId = HdIdMock,
+                VerificationAttempts = 0,
+                SmsValidationCode = SmsValidationCode,
+                ExpireDate = DateTime.Now.AddDays(1),
+            };
 
-                // Verify
-                userProfileDelegateMock
-                    .Verify(
-                        s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
-                        Times.Once);
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
 
-                messagingVerificationDelegateMock
-                    .Verify(
-                        s => s.ExpireAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
-                        Times.Once);
+            IUserSmsService service = GetUserSmsService(
+                messagingVerificationDelegateMock,
+                expectedResult,
+                userProfileDelegateMock,
+                userProfile,
+                notificationSettingsServiceMock: notificationSettingsServiceMock);
 
-                messagingVerificationDelegateMock
-                    .Verify(
-                        s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, It.IsAny<CancellationToken>()),
-                        Times.Once);
+            // Act and Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
+        }
 
-                notificationSettingsServiceMock
-                    .Verify(
-                        s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()),
-                        Times.Once);
-            }
-            else
+        /// <summary>
+        /// UpdateUserSmsAsync throws ValidationException.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateUserSmsThrowsValidationException()
+        {
+            // Arrange
+            const string sms = "0000000000"; // Invalid sms should cause ValidationException
+            UserProfile userProfile = new();
+
+            MessagingVerification expectedResult = new()
             {
-                // Act and Assert
-                if (userProfileExists)
-                {
-                    await Assert.ThrowsAsync<ValidationException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
-                }
-                else
-                {
-                    await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
-                }
-            }
+                UserProfileId = HdIdMock,
+                VerificationAttempts = 0,
+                SmsValidationCode = SmsValidationCode,
+                ExpireDate = DateTime.Now.AddDays(1),
+            };
+
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+
+            IUserSmsService service = GetUserSmsService(
+                messagingVerificationDelegateMock,
+                expectedResult,
+                userProfileDelegateMock,
+                userProfile,
+                notificationSettingsServiceMock: notificationSettingsServiceMock);
+
+            // Act and Assert
+            await Assert.ThrowsAsync<ValidationException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
         }
 
         /// <summary>
@@ -185,7 +274,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData("(123)4561234")]
         [InlineData("123 456 1234")]
         [InlineData("+1 123-456-1234")]
-        public void ShouldSanitizeSms(string smsNumber)
+        public void ShouldCreateUserSms(string smsNumber)
         {
             // Arrange
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
@@ -207,8 +296,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfile? userProfile = null,
             Mock<IMessageSender>? messageSenderMock = null,
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
-            bool changeFeedEnabled = false)
+            bool changeFeedEnabled = false,
+            DbResult<UserProfile>? updateUserProfileResult = null)
         {
+            updateUserProfileResult ??= new DbResult<UserProfile> { Status = DbStatusCode.Updated };
             messagingVerificationDelegateMock ??= new();
             messagingVerificationDelegateMock
                 .Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -221,7 +312,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock ??= new();
             userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
             userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DbResult<UserProfile> { Status = DbStatusCode.Updated });
+                .ReturnsAsync(updateUserProfileResult);
 
             messageSenderMock ??= new();
             notificationSettingsServiceMock ??= new();

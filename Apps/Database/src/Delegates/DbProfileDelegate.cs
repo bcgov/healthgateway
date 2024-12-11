@@ -22,6 +22,7 @@ namespace HealthGateway.Database.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -30,34 +31,24 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     [ExcludeFromCodeCoverage]
-    public class DbProfileDelegate : IUserProfileDelegate
+    public class DbProfileDelegate(ILogger<DbProfileDelegate> logger, GatewayDbContext dbContext) : IUserProfileDelegate
     {
-        private readonly GatewayDbContext dbContext;
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbProfileDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbProfileDelegate(ILogger<DbProfileDelegate> logger, GatewayDbContext dbContext)
-        {
-            this.logger = logger;
-            this.dbContext = dbContext;
-        }
-
         /// <inheritdoc/>
         public async Task<DbResult<UserProfile>> InsertUserProfileAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Inserting user profile to DB...");
+            logger.LogDebug("Adding user profile to DB");
+            dbContext.Add(profile);
+
             DbResult<UserProfile> result = new();
-            this.dbContext.Add(profile);
+
             try
             {
                 if (commit)
                 {
-                    await this.dbContext.SaveChangesAsync(ct);
+                    await dbContext.SaveChangesAsync(ct);
                 }
 
                 result.Payload = profile;
@@ -65,18 +56,19 @@ namespace HealthGateway.Database.Delegates
             }
             catch (DbUpdateException e)
             {
+                logger.LogError(e, "Error adding user profile to DB");
                 result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug("Finished inserting user profile to DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Updating user profile in DB");
+            logger.LogDebug("Updating user profile in DB");
+
             UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, true, ct);
             DbResult<UserProfile> result = new();
 
@@ -92,23 +84,24 @@ namespace HealthGateway.Database.Delegates
                 userProfile.BetaFeatureCodes = profile.BetaFeatureCodes;
                 result.Status = DbStatusCode.Deferred;
                 result.Payload = userProfile;
-                this.dbContext.UserProfile.Update(userProfile);
+                dbContext.UserProfile.Update(userProfile);
 
                 if (commit)
                 {
                     try
                     {
-                        await this.dbContext.SaveChangesAsync(ct);
+                        await dbContext.SaveChangesAsync(ct);
                         result.Status = DbStatusCode.Updated;
                     }
                     catch (DbUpdateConcurrencyException e)
                     {
+                        logger.LogWarning(e, "Error updating user profile in DB");
                         result.Status = DbStatusCode.Concurrency;
                         result.Message = e.Message;
                     }
                     catch (DbUpdateException e)
                     {
-                        this.logger.LogError(e, "Unable to update UserProfile to DB {Message}", e.Message);
+                        logger.LogError(e, "Error updating user profile in DB");
                         result.Status = DbStatusCode.Error;
                         result.Message = e.Message;
                     }
@@ -116,18 +109,19 @@ namespace HealthGateway.Database.Delegates
             }
             else
             {
-                this.logger.LogInformation("Unable to find User to update for HDID {HdId}", profile.HdId);
+                logger.LogDebug("User profile does not exist in DB for {Hdid}", profile.HdId);
                 result.Status = DbStatusCode.NotFound;
             }
 
-            this.logger.LogDebug("Finished updating user profile in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public async Task<UserProfile?> GetUserProfileAsync(string hdid, bool includeBetaFeatureCodes = false, CancellationToken ct = default)
         {
-            IQueryable<UserProfile> query = this.dbContext.UserProfile;
+            logger.LogDebug("Retrieving user profile from DB for {Hdid}", hdid);
+
+            IQueryable<UserProfile> query = dbContext.UserProfile;
 
             if (includeBetaFeatureCodes)
             {
@@ -140,7 +134,9 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<UserProfile>> GetUserProfilesAsync(string email, bool includeBetaFeatureCodes = false, CancellationToken ct = default)
         {
-            IQueryable<UserProfile> query = this.dbContext.UserProfile;
+            logger.LogDebug("Retrieving user profiles from DB by email address");
+
+            IQueryable<UserProfile> query = dbContext.UserProfile;
             query = query.Where(p => EF.Functions.ILike(p.Email, email));
 
             if (includeBetaFeatureCodes)
@@ -154,8 +150,8 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<UserProfile>> GetUserProfilesAsync(IList<string> hdIds, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting user profiles from DB...");
-            return await this.dbContext.UserProfile
+            logger.LogDebug("Retrieving user profiles from DB for {Hdids}", hdIds);
+            return await dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
                 .ToListAsync(ct);
         }
@@ -163,7 +159,9 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString, CancellationToken ct = default)
         {
-            IQueryable<UserProfile> dbQuery = this.dbContext.UserProfile;
+            logger.LogDebug("Retrieving user profiles from DB by {QueryType}", queryType);
+
+            IQueryable<UserProfile> dbQuery = dbContext.UserProfile;
             dbQuery = queryType switch
             {
                 UserQueryType.Email => dbQuery.Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.EmailAddress, $"%{queryString}%"))),
@@ -178,8 +176,10 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<List<UserProfile>> GetClosedProfilesAsync(DateTime filterDateTime, int page = 0, int pageSize = 500, CancellationToken ct = default)
         {
+            logger.LogDebug("Retrieving user profiles from DB closed before {CloseProfileCutoffDate}, page #{PageNumber} with page size {PageSize}", filterDateTime, page, pageSize);
+
             int offset = page * pageSize;
-            return await this.dbContext.UserProfile
+            return await dbContext.UserProfile
                 .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
                 .OrderBy(o => o.ClosedDateTime)
                 .Skip(offset)
@@ -190,7 +190,12 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile
+            logger.LogDebug(
+                "Retrieving daily user registration counts from DB between {StartDate} and {EndDate}",
+                DateFormatter.ToShortDateAndTime(startDateTimeOffset.UtcDateTime),
+                DateFormatter.ToShortDateAndTime(endDateTimeOffset.UtcDateTime));
+
+            return await dbContext.UserProfile
                 .Where(u => u.CreatedDateTime >= startDateTimeOffset.UtcDateTime && u.CreatedDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(startDateTimeOffset.TotalOffsetMinutes).Date })
                 .GroupBy(x => x.createdDate)
@@ -201,8 +206,13 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IDictionary<DateOnly, int>> GetDailyUniqueLoginCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
+            logger.LogDebug(
+                "Retrieving daily unique login counts from DB between {StartDate} and {EndDate}",
+                DateFormatter.ToShortDateAndTime(startDateTimeOffset.UtcDateTime),
+                DateFormatter.ToShortDateAndTime(endDateTimeOffset.UtcDateTime));
+
             TimeSpan offset = startDateTimeOffset.Offset;
-            var userProfileQuery = this.dbContext.UserProfile
+            var userProfileQuery = dbContext.UserProfile
                 .Where(u => u.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && u.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(
                     u => new
@@ -211,7 +221,7 @@ namespace HealthGateway.Database.Delegates
                         u.LastLoginDateTime,
                     });
 
-            var userProfileHistoryQuery = this.dbContext.UserProfileHistory
+            var userProfileHistoryQuery = dbContext.UserProfileHistory
                 .Where(u => u.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && u.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(
                     u => new
@@ -241,19 +251,23 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<UserProfile>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Retrieving all the user profiles for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.UserProfile.OrderBy(userProfile => userProfile.CreatedDateTime), page, pageSize, ct);
+            logger.LogDebug("Retrieving all user profiles from DB, page #{PageNumber} with page size {PageSize}", page, pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(dbContext.UserProfile.OrderBy(userProfile => userProfile.CreatedDateTime), page, pageSize, ct);
         }
 
         /// <inheritdoc/>
         public async Task<int> GetRecurringUserCountAsync(int dayCount, DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Retrieving recurring user count for {DayCount} days between {StartDate} and {EndDate}...", dayCount, startDateTimeOffset, endDateTimeOffset);
+            logger.LogDebug(
+                "Retrieving recurring user counts from DB between {StartDate} and {EndDate}, where users have logged in on at least {RecurringUserDays} different days",
+                DateFormatter.ToShortDateAndTime(startDateTimeOffset.UtcDateTime),
+                DateFormatter.ToShortDateAndTime(endDateTimeOffset.UtcDateTime),
+                dayCount);
 
-            return await this.dbContext.UserProfile
+            return await dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
                 .Concat(
-                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                    dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Where(x => x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.Date })
                 .Distinct()
@@ -265,10 +279,15 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IDictionary<UserLoginClientType, int>> GetLoginClientCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile
+            logger.LogDebug(
+                "Retrieving login client counts from DB between {StartDate} and {EndDate}",
+                DateFormatter.ToShortDateAndTime(startDateTimeOffset.UtcDateTime),
+                DateFormatter.ToShortDateAndTime(endDateTimeOffset.UtcDateTime));
+
+            return await dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime })
                 .Concat(
-                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime }))
+                    dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime }))
                 .Where(
                     x =>
                         x.LastLoginClientCode != null &&
@@ -284,7 +303,9 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<IList<UserProfileHistory>> GetUserProfileHistoryListAsync(string hdid, int limit, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfileHistory
+            logger.LogDebug("Retrieving up to {ProfileHistoryLimit} user profile history entries from DB for {Hdid}", limit, hdid);
+
+            return await dbContext.UserProfileHistory
                 .Where(p => p.HdId == hdid)
                 .OrderByDescending(p => p.LastLoginDateTime)
                 .Take(limit)
@@ -294,24 +315,31 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<int> GetUserProfileCountAsync(CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile.CountAsync(ct);
+            logger.LogDebug("Retrieving user profile count from DB");
+            return await dbContext.UserProfile.CountAsync(ct);
         }
 
         /// <inheritdoc/>
         public async Task<int> GetClosedUserProfileCountAsync(CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfileHistory
-                .Where(h => h.Operation == "DELETE" && !this.dbContext.UserProfile.Any(p => p.HdId == h.HdId))
+            logger.LogDebug("Retrieving deleted user profile count from DB");
+            return await dbContext.UserProfileHistory
+                .Where(h => h.Operation == "DELETE" && !dbContext.UserProfile.Any(p => p.HdId == h.HdId))
                 .CountAsync(ct);
         }
 
         /// <inheritdoc/>
         public async Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
-            Dictionary<int, int> yobCounts = await this.dbContext.UserProfile
+            logger.LogDebug(
+                "Retrieving year of birth counts from DB between {StartDate} and {EndDate}",
+                DateFormatter.ToShortDateAndTime(startDateTimeOffset.UtcDateTime),
+                DateFormatter.ToShortDateAndTime(endDateTimeOffset.UtcDateTime));
+
+            Dictionary<int, int> yobCounts = await dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
                 .Concat(
-                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
+                    dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
                 .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(x => new { x.HdId, x.YearOfBirth })
                 .Distinct()

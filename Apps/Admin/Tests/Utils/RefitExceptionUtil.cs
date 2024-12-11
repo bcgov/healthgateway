@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Tests.Utils
         /// </summary>
         /// <param name="statusCode">The desired exception status code.</param>
         /// <param name="message">The message associated with the exception.</param>
-        /// <returns>Refit ApiException</returns>
+        /// <returns>Refit ApiException.</returns>
         public static async Task<ApiException> CreateApiException(HttpStatusCode statusCode, string? message = null)
         {
             RefitSettings rfSettings = new();
