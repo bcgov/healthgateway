@@ -3,7 +3,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
-import { vMaska } from "maska";
+import { vMaska } from "maska/vue";
 import { computed, ref, watch } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -393,7 +393,7 @@ watch(vaccineRecord, (value) => {
                             <v-text-field
                                 id="phn"
                                 v-model="phn"
-                                v-maska:[phnMaskaOptions]
+                                v-maska="phnMaskaOptions"
                                 label="Personal Health Number"
                                 autofocus
                                 clearable

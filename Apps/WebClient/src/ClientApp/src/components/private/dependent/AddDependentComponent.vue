@@ -2,7 +2,7 @@
 import { useVuelidate } from "@vuelidate/core";
 import { helpers, minLength, required, sameAs } from "@vuelidate/validators";
 import { Duration } from "luxon";
-import { vMaska } from "maska";
+import { vMaska } from "maska/vue";
 import { computed, nextTick, ref, watch } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -355,7 +355,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         <v-text-field
                             id="phn"
                             v-model="dependent.PHN"
-                            v-maska:[phnMaskaOptions]
+                            v-maska="phnMaskaOptions"
                             label="PHN"
                             clearable
                             type="text"

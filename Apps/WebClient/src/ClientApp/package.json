@@ -20,7 +20,7 @@
         "keycloak-js": "^22.0.5",
         "loglevel": "^1.9.2",
         "luxon": "^3.5.0",
-        "maska": "^2.1.11",
+        "maska": "^3.0.4",
         "pinia": "^2.3.0",
         "pinia-plugin-persistedstate": "^3.2.3",
         "roboto-fontface": "*",
