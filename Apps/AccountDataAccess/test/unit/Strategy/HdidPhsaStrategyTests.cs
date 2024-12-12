@@ -63,9 +63,15 @@ namespace AccountDataAccessTest.Strategy
                 ResponseCode = string.Empty,
                 IsDeceased = false,
                 CommonName = new Name
-                    { GivenName = string.Empty, Surname = string.Empty },
+                {
+                    GivenName = string.Empty,
+                    Surname = string.Empty,
+                },
                 LegalName = new Name
-                    { GivenName = string.Empty, Surname = string.Empty },
+                {
+                    GivenName = string.Empty,
+                    Surname = string.Empty,
+                },
             };
 
             (HdidPhsaStrategy strategy, Mock<ICacheProvider> cacheProvider) = SetupPatientMockForGetPatient(useCache, expected);
@@ -110,7 +116,7 @@ namespace AccountDataAccessTest.Strategy
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 

@@ -25,19 +25,9 @@ namespace HealthGateway.AccountDataAccess.Audit
     /// <summary>
     /// Handle audit data.
     /// </summary>
-    public class AuditRepository : IAuditRepository
+    /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
+    public class AuditRepository(IAgentAuditDelegate agentAuditDelegate) : IAuditRepository
     {
-        private readonly IAgentAuditDelegate agentAuditDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuditRepository"/> class.
-        /// </summary>
-        /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
-        public AuditRepository(IAgentAuditDelegate agentAuditDelegate)
-        {
-            this.agentAuditDelegate = agentAuditDelegate;
-        }
-
         private static ActivitySource ActivitySource { get; } = new(typeof(AuditRepository).FullName);
 
         /// <inheritdoc/>
@@ -50,7 +40,7 @@ namespace HealthGateway.AccountDataAccess.Audit
                 activity?.AddBaggage("AuditGroup", query.Group.ToString());
             }
 
-            return await this.agentAuditDelegate.GetAgentAuditsAsync(query.Hdid, query.Group, ct);
+            return await agentAuditDelegate.GetAgentAuditsAsync(query.Hdid, query.Group, ct);
         }
     }
 }

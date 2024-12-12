@@ -21,19 +21,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// Factory for <see cref="PatientQueryStrategy"/> instances.
     /// </summary>
-    internal class PatientQueryFactory
+    /// <param name="serviceProvider">The injected service provider.</param>
+    internal class PatientQueryFactory(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider serviceProvider;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PatientQueryFactory"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">The injected service provider.</param>
-        public PatientQueryFactory(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
-
         /// <summary>
         /// Returns an instance of the requested <see cref="PatientQueryStrategy"/> class.
         /// </summary>
@@ -42,7 +32,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         public PatientQueryStrategy GetPatientQueryStrategy(string strategy)
         {
             Type type = Type.GetType(strategy) ?? throw new ArgumentException($"Invalid strategy type {strategy}");
-            return (PatientQueryStrategy)this.serviceProvider.GetRequiredService(type);
+            return (PatientQueryStrategy)serviceProvider.GetRequiredService(type);
         }
     }
 }
