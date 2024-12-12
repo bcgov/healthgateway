@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { helpers, required, sameAs } from "@vuelidate/validators";
-import { vMaska } from "maska";
+import { vMaska } from "maska/vue";
 import { computed, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -320,7 +320,7 @@ loadTermsOfService();
                 <v-text-field
                     id="smsNumberInput"
                     v-model="v$.smsNumber.$model"
-                    v-maska:[smsMaskaOptions]
+                    v-maska="smsMaskaOptions"
                     :disabled="!isSMSNumberChecked"
                     data-testid="smsNumberInput"
                     placeholder="Your phone number"

@@ -4,7 +4,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
 import VueDatePicker from "@vuepic/vue-datepicker";
-import { vMaska } from "maska";
+import { vMaska } from "maska/vue";
 import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -118,7 +118,7 @@ watch(
 <template>
     <v-text-field
         v-model="textFieldValue"
-        v-maska:[maskOptions]
+        v-maska="maskOptions"
         clearable
         type="text"
         :label="label"

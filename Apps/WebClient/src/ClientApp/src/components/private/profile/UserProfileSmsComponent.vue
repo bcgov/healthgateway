@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import useVuelidate from "@vuelidate/core";
 import { helpers, not, sameAs } from "@vuelidate/validators";
-import { Mask, MaskaDetail, vMaska } from "maska";
+import { Mask, MaskaDetail } from "maska";
+import { vMaska } from "maska/vue";
 import { computed, ref, watch } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -177,7 +178,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
     <v-sheet :max-width="400">
         <v-text-field
             v-model="maskedValue"
-            v-maska:[maskOptions]
+            v-maska="maskOptions"
             data-testid="smsNumberInput"
             :class="{ 'mb-4': inputErrorMessages.length > 0 }"
             type="tel"
