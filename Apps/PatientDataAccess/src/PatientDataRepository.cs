@@ -17,6 +17,7 @@ namespace HealthGateway.PatientDataAccess
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -28,22 +29,11 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Provides internal data access for Patient.
     /// </summary>
-    internal class PatientDataRepository : IPatientDataRepository
+    /// <param name="patientApi">The patient API to use.</param>
+    /// <param name="mapper">The injected mapper.</param>
+    [SuppressMessage("Style", "IDE0072:Switch expression should be exhaustive", Justification = "Team decision")]
+    internal class PatientDataRepository(IPatientApi patientApi, IMapper mapper) : IPatientDataRepository
     {
-        private readonly IPatientApi patientApi;
-        private readonly IMapper mapper;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PatientDataRepository"/> class.
-        /// </summary>
-        /// <param name="patientApi">The patient API to use.</param>
-        /// <param name="mapper">The injected mapper.</param>
-        public PatientDataRepository(IPatientApi patientApi, IMapper mapper)
-        {
-            this.patientApi = patientApi;
-            this.mapper = mapper;
-        }
-
         /// <summary>
         /// Performs a query against the data repository.
         /// </summary>
@@ -101,7 +91,7 @@ namespace HealthGateway.PatientDataAccess
         {
             try
             {
-                FileResult? fileResult = await this.patientApi.GetFileAsync(query.Pid, query.FileId, ct);
+                FileResult? fileResult = await patientApi.GetFileAsync(query.Pid, query.FileId, ct);
                 IEnumerable<PatientFile> mappedFiles = new[] { fileResult }
                     .Where(f => f?.Data != null)
                     .Select(f => Map(query.FileId, f!));
@@ -110,7 +100,7 @@ namespace HealthGateway.PatientDataAccess
             catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
                 // file not found
-                return new PatientDataQueryResult(Array.Empty<HealthData>());
+                return new PatientDataQueryResult([]);
             }
         }
 
@@ -124,13 +114,13 @@ namespace HealthGateway.PatientDataAccess
 
             if (categories.Length != 0)
             {
-                HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ??
-                                              new(new HealthOptionsMetadata(), Array.Empty<HealthOptionsData>());
+                HealthOptionsResult results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ??
+                                              new(new HealthOptionsMetadata(), []);
 
                 return results.Data.Select(this.Map);
             }
 
-            return Array.Empty<HealthData>();
+            return [];
         }
 
         private async Task<IEnumerable<HealthData>> HandleDataQueryAsync(HealthQuery query, CancellationToken ct)
@@ -143,23 +133,23 @@ namespace HealthGateway.PatientDataAccess
 
             if (categories.Length != 0)
             {
-                HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct) ??
-                                           new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());
+                HealthDataResult results = await patientApi.GetHealthDataAsync(query.Pid, categories, ct) ??
+                                           new(new HealthDataMetadata(), []);
 
                 return results.Data.Select(this.Map);
             }
 
-            return Array.Empty<HealthData>();
+            return [];
         }
 
         private HealthData Map(HealthOptionsData healthOptionsData)
         {
-            return this.mapper.Map<HealthData>(healthOptionsData);
+            return mapper.Map<HealthData>(healthOptionsData);
         }
 
         private HealthData Map(HealthDataEntry healthDataEntry)
         {
-            return this.mapper.Map<HealthData>(healthDataEntry);
+            return mapper.Map<HealthData>(healthDataEntry);
         }
     }
 }
