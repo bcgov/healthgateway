@@ -17,7 +17,6 @@ namespace HealthGateway.Common.Data.Tests.Utils
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.Extensions.Configuration;
     using Xunit;
@@ -211,7 +210,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
     }
