@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Wrapper
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Database.Constants;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -27,26 +26,6 @@ namespace HealthGateway.Database.Wrapper
     /// </summary>
     public static class DbDelegateHelper
     {
-        /// <summary>
-        /// Gets a list of DBModel records for a specific page.
-        /// </summary>
-        /// <param name="query">A query that needs to be paged.</param>
-        /// <param name="page">The starting offset for the query.</param>
-        /// <param name="pageSize">The maximum amount of rows to return.</param>
-        /// <typeparam name="T">A DBModel type.</typeparam>
-        /// <returns>A list of DBModel records wrapped in a DBResult.</returns>
-        public static DbResult<IEnumerable<T>> GetPagedDbResult<T>(IQueryable<T> query, int page, int pageSize)
-            where T : class
-        {
-            int offset = page * pageSize;
-            DbResult<IEnumerable<T>> result = new()
-            {
-                Payload = query.Skip(offset).Take(pageSize).ToList(),
-            };
-            result.Status = DbStatusCode.Read;
-            return result;
-        }
-
         /// <summary>
         /// Gets a list of DBModel records for a specific page.
         /// </summary>
