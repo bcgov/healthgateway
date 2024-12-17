@@ -241,12 +241,7 @@ namespace HealthGateway.DBMaintainer.Parsers
         private static string GetFileMatching(string sourceFolder, string fileMatch)
         {
             string[] files = Directory.GetFiles(sourceFolder, fileMatch);
-            if (files.Length > 1 || files.Length == 0)
-            {
-                throw new FormatException($"The zip file contained {files.Length} CSV files, very confused.");
-            }
-
-            return files[0];
+            return files.Length is > 1 or 0 ? throw new FormatException($"The zip file contained {files.Length} CSV files, very confused.") : files[0];
         }
     }
 }
