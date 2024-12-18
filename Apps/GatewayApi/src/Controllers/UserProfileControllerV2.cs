@@ -41,6 +41,7 @@ namespace HealthGateway.GatewayApi.Controllers
     [Route("UserProfile")]
     [ApiController]
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("Major Code Smell", "S6960:Controllers should not have mixed responsibilities", Justification = "Team decision")]
     public class UserProfileControllerV2 : ControllerBase
     {
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -131,7 +132,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The requested user profile, or an empty profile if the requested profile doesn't exist.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <response code="200">Returns the requested user profile, or an empty profile if the requested profile doesn't exists.</response>
+        /// <response code="200">Returns the requested user profile, or an empty profile if the requested profile doesn't exist.</response>
         /// <response code="400">Validation error.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -415,12 +416,9 @@ namespace HealthGateway.GatewayApi.Controllers
         public async Task<ActionResult<UserPreferenceModel>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel, CancellationToken ct)
         {
             await new UserPreferenceModelValidator().ValidateAndThrowAsync(userPreferenceModel, ct);
-            if (!hdid.Equals(userPreferenceModel?.HdId, StringComparison.OrdinalIgnoreCase))
-            {
-                return new ForbidResult();
-            }
-
-            return await this.userPreferenceService.UpdateUserPreferenceAsync(hdid, userPreferenceModel, ct);
+            return !hdid.Equals(userPreferenceModel?.HdId, StringComparison.OrdinalIgnoreCase)
+                ? new ForbidResult()
+                : await this.userPreferenceService.UpdateUserPreferenceAsync(hdid, userPreferenceModel, ct);
         }
 
         /// <summary>

@@ -197,10 +197,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IAuthenticationService> authenticationMock = new();
             AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(
-                new[]
-                {
-                    new AuthenticationToken { Name = "access_token", Value = token },
-                });
+            [
+                new AuthenticationToken { Name = "access_token", Value = token },
+            ]);
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);

@@ -52,17 +52,10 @@ namespace HealthGateway.GatewayApi.Services
 
             PatientModel patientModel = (await this.patientRepository.QueryAsync(query, ct)).Item;
 
-            if (patientModel.LegalName == null && patientModel.CommonName == null)
-            {
-                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
-            }
-
-            if (string.IsNullOrEmpty(patientModel.Hdid) && string.IsNullOrEmpty(patientModel.Phn) && !disableIdValidation)
-            {
-                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
-            }
-
-            return this.mappingService.MapToPatientDetails(patientModel);
+            return (patientModel.LegalName == null && patientModel.CommonName == null) ||
+                   (string.IsNullOrEmpty(patientModel.Hdid) && string.IsNullOrEmpty(patientModel.Phn) && !disableIdValidation)
+                ? throw new InvalidDataException(ErrorMessages.InvalidServicesCard)
+                : this.mappingService.MapToPatientDetails(patientModel);
         }
     }
 }

@@ -178,8 +178,7 @@ namespace HealthGateway.GatewayApi.Services
             return
                 BitConverter
                     .ToUInt32(data)
-                    .ToString("D6", CultureInfo.InvariantCulture)
-                    .Substring(0, 6);
+                    .ToString("D6", CultureInfo.InvariantCulture)[..6];
         }
 
         private static string SanitizeSms(string smsNumber)

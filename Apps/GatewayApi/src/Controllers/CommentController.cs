@@ -130,12 +130,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult<RequestResult<UserComment>>> Delete(string hdid, [FromBody] UserComment comment, CancellationToken ct)
         {
-            if (comment.UserProfileId != hdid)
-            {
-                return new ForbidResult();
-            }
-
-            return await this.commentService.DeleteAsync(comment, ct);
+            return comment.UserProfileId != hdid
+                ? new ForbidResult()
+                : await this.commentService.DeleteAsync(comment, ct);
         }
 
         /// <summary>

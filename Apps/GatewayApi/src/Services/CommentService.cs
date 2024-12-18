@@ -35,6 +35,7 @@ namespace HealthGateway.GatewayApi.Services
     public class CommentService : ICommentService
     {
         private const string ProfileKeyNotSet = "Profile Key not set";
+        private const string ProfileEncryptionKeyMissing = "Profile does not have an encryption key";
 
         private readonly IGatewayApiMappingService mappingService;
         private readonly ICommentDelegate commentDelegate;
@@ -75,19 +76,16 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("Profile does not have an encryption key");
+                this.logger.LogError(ProfileEncryptionKeyMissing);
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             Comment comment = this.mappingService.MapToComment(userComment, key);
             DbResult<Comment> dbResult = await this.commentDelegate.AddAsync(comment, ct: ct);
 
-            if (dbResult.Status != DbStatusCode.Created)
-            {
-                return RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
-            }
-
-            return RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
+            return dbResult.Status != DbStatusCode.Created
+                ? RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
+                : RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -99,22 +97,19 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError("Profile does not have an encryption key");
+                this.logger.LogError(ProfileEncryptionKeyMissing);
                 return RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             DbResult<IList<Comment>> dbComments = await this.commentDelegate.GetByParentEntryAsync(hdId, parentEntryId, ct);
 
-            if (dbComments.Status != DbStatusCode.Read)
-            {
-                return RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.CommunicationInternal, ServiceType.Database, dbComments.Message);
-            }
-
-            return RequestResultFactory.Success(
-                dbComments.Payload.Select(c => this.mappingService.MapToUserComment(c, key)),
-                dbComments.Payload.Count,
-                0,
-                dbComments.Payload.Count);
+            return dbComments.Status != DbStatusCode.Read
+                ? RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.CommunicationInternal, ServiceType.Database, dbComments.Message)
+                : RequestResultFactory.Success(
+                    dbComments.Payload.Select(c => this.mappingService.MapToUserComment(c, key)),
+                    dbComments.Payload.Count,
+                    0,
+                    dbComments.Payload.Count);
         }
 
         /// <inheritdoc/>
@@ -126,24 +121,21 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError("Profile does not have an encryption key");
+                this.logger.LogError(ProfileEncryptionKeyMissing);
                 return RequestResultFactory.ServiceError<IDictionary<string, IEnumerable<UserComment>>>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             DbResult<IEnumerable<Comment>> dbComments = await this.commentDelegate.GetAllAsync(hdId, ct);
             IEnumerable<UserComment> comments = dbComments.Payload.Select(c => this.mappingService.MapToUserComment(c, key));
-            IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
+            Dictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
-            if (dbComments.Status != DbStatusCode.Read)
-            {
-                return RequestResultFactory.ServiceError<IDictionary<string, IEnumerable<UserComment>>>(ErrorType.CommunicationInternal, ServiceType.Database, dbComments.Message);
-            }
-
-            return RequestResultFactory.Success(
-                userCommentsByEntry,
-                userCommentsByEntry.Count,
-                0,
-                userCommentsByEntry.Count);
+            return dbComments.Status != DbStatusCode.Read
+                ? RequestResultFactory.ServiceError<IDictionary<string, IEnumerable<UserComment>>>(ErrorType.CommunicationInternal, ServiceType.Database, dbComments.Message)
+                : RequestResultFactory.Success<IDictionary<string, IEnumerable<UserComment>>>(
+                    userCommentsByEntry,
+                    userCommentsByEntry.Count,
+                    0,
+                    userCommentsByEntry.Count);
         }
 
         /// <inheritdoc/>
@@ -161,19 +153,16 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("Profile does not have an encryption key");
+                this.logger.LogError(ProfileEncryptionKeyMissing);
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             Comment comment = this.mappingService.MapToComment(userComment, key);
             DbResult<Comment> dbResult = await this.commentDelegate.UpdateAsync(comment, ct: ct);
 
-            if (dbResult.Status != DbStatusCode.Updated)
-            {
-                return RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
-            }
-
-            return RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
+            return dbResult.Status != DbStatusCode.Updated
+                ? RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
+                : RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -191,19 +180,16 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError("Profile does not have an encryption key");
+                this.logger.LogError(ProfileEncryptionKeyMissing);
                 return RequestResultFactory.ServiceError<UserComment>(ErrorType.InvalidState, ServiceType.Database, ProfileKeyNotSet);
             }
 
             Comment comment = this.mappingService.MapToComment(userComment, key);
             DbResult<Comment> dbResult = await this.commentDelegate.DeleteAsync(comment, ct: ct);
 
-            if (dbResult.Status != DbStatusCode.Deleted)
-            {
-                return RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
-            }
-
-            return RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
+            return dbResult.Status != DbStatusCode.Deleted
+                ? RequestResultFactory.ServiceError<UserComment>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
+                : RequestResultFactory.Success(this.mappingService.MapToUserComment(dbResult.Payload, key));
         }
     }
 }

@@ -75,12 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
             }
 
             DbResult<UserFeedback> result = await this.userFeedbackService.CreateUserFeedbackAsync(feedback, hdid, ct);
-            if (result.Status != DbStatusCode.Created)
-            {
-                return new ConflictResult();
-            }
-
-            return new OkResult();
+            return result.Status != DbStatusCode.Created ? new ConflictResult() : new OkResult();
         }
 
         /// <summary>

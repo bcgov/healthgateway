@@ -240,11 +240,8 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<DependentModel>> RemoveAsync(string delegateHdid, string dependentHdid, CancellationToken ct = default)
         {
-            ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(delegateHdid, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependentHdid);
-            if (resourceDelegate == null)
-            {
-                throw new NotFoundException($"Dependent {dependentHdid} not found for delegate {delegateHdid}");
-            }
+            ResourceDelegate resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(delegateHdid, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependentHdid) ??
+                                                throw new NotFoundException($"Dependent {dependentHdid} not found for delegate {delegateHdid}");
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
@@ -266,29 +263,13 @@ namespace HealthGateway.GatewayApi.Services
 
         private static bool IsMatch(AddDependentRequest? request, PatientModel? response)
         {
-            if (request == null || response == null)
-            {
-                return false;
-            }
-
-            if (!response.LastName.Equals(ReplaceSmartApostrophe(request.LastName), StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (!response.FirstName.Equals(ReplaceSmartApostrophe(request.FirstName), StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (response.Birthdate.Year != request.DateOfBirth.Year ||
-                response.Birthdate.Month != request.DateOfBirth.Month ||
-                response.Birthdate.Day != request.DateOfBirth.Day)
-            {
-                return false;
-            }
-
-            return true;
+            return request != null &&
+                   response != null &&
+                   response.LastName.Equals(ReplaceSmartApostrophe(request.LastName), StringComparison.OrdinalIgnoreCase) &&
+                   response.FirstName.Equals(ReplaceSmartApostrophe(request.FirstName), StringComparison.OrdinalIgnoreCase) &&
+                   response.Birthdate.Year == request.DateOfBirth.Year &&
+                   response.Birthdate.Month == request.DateOfBirth.Month &&
+                   response.Birthdate.Day == request.DateOfBirth.Day;
         }
 
         private static string? ReplaceSmartApostrophe(string? value)
@@ -327,6 +308,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         [SuppressMessage("ReSharper", "CognitiveComplexity", Justification = "Team decision")]
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         private async Task<RequestResult<DependentModel>?> ValidateDependentAsync(
             AddDependentRequest addDependentRequest,
             string delegateHdid,
