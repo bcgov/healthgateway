@@ -39,6 +39,7 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
+    [SuppressMessage("Major Code Smell", "S6960:Controllers should not have mixed responsibilities", Justification = "Team decision")]
     public class UserProfileController : ControllerBase
     {
         private readonly IAuthenticationDelegate authenticationDelegate;
