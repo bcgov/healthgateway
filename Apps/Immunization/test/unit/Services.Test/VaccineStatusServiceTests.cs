@@ -75,7 +75,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
                     LoadState = new PhsaLoadState
-                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    {
+                        RefreshInProgress = false,
+                        BackOffMilliseconds = 500,
+                    },
                     Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
@@ -159,7 +162,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
                     LoadState = new PhsaLoadState
-                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    {
+                        RefreshInProgress = false,
+                        BackOffMilliseconds = 500,
+                    },
                     Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
@@ -246,7 +252,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
                     LoadState = new PhsaLoadState
-                        { RefreshInProgress = true, BackOffMilliseconds = 500 },
+                    {
+                        RefreshInProgress = true,
+                        BackOffMilliseconds = 500,
+                    },
                     Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
@@ -339,7 +348,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
                     LoadState = new PhsaLoadState
-                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    {
+                        RefreshInProgress = false,
+                        BackOffMilliseconds = 500,
+                    },
                     Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
@@ -454,7 +466,10 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
                     LoadState = new PhsaLoadState
-                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    {
+                        RefreshInProgress = false,
+                        BackOffMilliseconds = 500,
+                    },
                     Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
