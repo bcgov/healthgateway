@@ -37,7 +37,20 @@ steps:
       containerRegistry: "docker-health"
       repository: "$(DockerRepo)/$(App.Name)"
       Dockerfile: Tools/BaseImage/docker/Dockerfile
-      buildContext: "$(Build.BinariesDirectory)"
+      buildContext: "$(Build.SourcesDirectory)/Tools/BaseImage"
       tags: |
         $(Build.BuildNumber)
         latest
+
+  # Debug: Verify certificates inside the image
+  - script: |
+      echo "Running debug validation on Docker image..."
+      docker run --rm "$(DockerRepo)/$(App.Name):latest" bash -c "
+        echo 'Listing files in /etc/ssl/certs/custom:' && \
+        ls -l /etc/ssl/certs/custom && \
+        echo 'Listing files in /usr/local/share/ca-certificates:' && \
+        ls -l /usr/local/share/ca-certificates && \
+        echo 'Validating certificates using openssl:' && \
+        openssl x509 -in /usr/local/share/ca-certificates/tls-root.crt -text -noout
+      "
+    displayName: "Debug: Verify Certificates in Image"
