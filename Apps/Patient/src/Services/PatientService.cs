@@ -57,7 +57,12 @@ namespace HealthGateway.Patient.Services
                 : new PatientDetailsQuery(identifier, Source: PatientDetailSource.All, UseCache: true);
 
             PatientModel patientDetails = (await this.patientRepository.QueryAsync(query, ct)).Item;
+            this.ValidatePatientDetails(patientDetails, disableIdValidation);
+            return this.mappingService.MapToPatientDetails(patientDetails);
+        }
 
+        private void ValidatePatientDetails(PatientModel patientDetails, bool disableIdValidation)
+        {
             if (patientDetails.IsDeceased == true)
             {
                 this.logger.LogWarning("Patient is deceased");
@@ -73,8 +78,6 @@ namespace HealthGateway.Patient.Services
             {
                 throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
-
-            return this.mappingService.MapToPatientDetails(patientDetails);
         }
     }
 }

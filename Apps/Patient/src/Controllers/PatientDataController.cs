@@ -64,17 +64,9 @@ namespace HealthGateway.Patient.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] PatientDataType[] patientDataTypes, CancellationToken ct)
         {
-            if (string.IsNullOrEmpty(hdid))
-            {
-                throw new ValidationException("Hdid is missing");
-            }
-
-            if (patientDataTypes == null || patientDataTypes.Length == 0)
-            {
-                throw new ValidationException("Must have at least one data type");
-            }
-
-            return await this.patientDataService.QueryAsync(new PatientDataQuery(hdid, patientDataTypes), ct);
+            ValidateGetRequest(hdid, patientDataTypes);
+            PatientDataQuery query = new(hdid, patientDataTypes);
+            return await this.patientDataService.QueryAsync(query, ct);
         }
 
         /// <summary>
@@ -94,6 +86,27 @@ namespace HealthGateway.Patient.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<ActionResult<PatientFileResponse>> GetFile(string hdid, string fileId, CancellationToken ct)
         {
+            ValidateGetFileRequest(hdid, fileId);
+            PatientFileQuery query = new(hdid, fileId);
+            return await this.patientDataService.QueryAsync(query, ct) ??
+                   throw new NotFoundException($"file {fileId} not found");
+        }
+
+        private static void ValidateGetRequest(string hdid, PatientDataType[] patientDataTypes)
+        {
+            if (string.IsNullOrEmpty(hdid))
+            {
+                throw new ValidationException("Hdid is missing");
+            }
+
+            if (patientDataTypes == null || patientDataTypes.Length == 0)
+            {
+                throw new ValidationException("Must have at least one data type");
+            }
+        }
+
+        private static void ValidateGetFileRequest(string hdid, string fileId)
+        {
             if (string.IsNullOrEmpty(hdid))
             {
                 throw new ValidationException("Hdid is missing");
@@ -103,9 +116,6 @@ namespace HealthGateway.Patient.Controllers
             {
                 throw new ValidationException("File id is missing");
             }
-
-            return await this.patientDataService.QueryAsync(new PatientFileQuery(hdid, fileId), ct) ??
-                   throw new NotFoundException($"file {fileId} not found");
         }
     }
 }

@@ -126,7 +126,8 @@ namespace HealthGateway.PatientTests.Services
             return errorMessage switch
             {
                 ErrorMessages.ClientRegistryReturnedDeceasedPerson => CreatePatient(deceased: true),
-                ErrorMessages.InvalidServicesCard => commonNameExists == false ? CreatePatient(commonNameExists: false, legalNameExists: false) : CreatePatient(string.Empty, string.Empty),
+                ErrorMessages.InvalidServicesCard =>
+                    commonNameExists ? CreatePatient(string.Empty, string.Empty) : CreatePatient(commonNameExists: false, legalNameExists: false),
                 ErrorMessages.PhnInvalid => CreatePatient(),
                 _ => CreatePatient(commonNameExists: commonNameExists, legalNameExists: legalNameExists),
             };
