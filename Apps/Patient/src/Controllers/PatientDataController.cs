@@ -69,12 +69,9 @@ namespace HealthGateway.Patient.Controllers
                 throw new ValidationException("Hdid is missing");
             }
 
-            if (patientDataTypes == null || patientDataTypes.Length == 0)
-            {
-                throw new ValidationException("Must have at least one data type");
-            }
-
-            return await this.patientDataService.QueryAsync(new PatientDataQuery(hdid, patientDataTypes), ct);
+            return patientDataTypes.Length == 0
+                ? throw new ValidationException("Must have at least one data type")
+                : await this.patientDataService.QueryAsync(new PatientDataQuery(hdid, patientDataTypes), ct);
         }
 
         /// <summary>
@@ -99,13 +96,10 @@ namespace HealthGateway.Patient.Controllers
                 throw new ValidationException("Hdid is missing");
             }
 
-            if (string.IsNullOrEmpty(fileId))
-            {
-                throw new ValidationException("File id is missing");
-            }
-
-            return await this.patientDataService.QueryAsync(new PatientFileQuery(hdid, fileId), ct) ??
-                   throw new NotFoundException($"file {fileId} not found");
+            return string.IsNullOrEmpty(fileId)
+                ? throw new ValidationException("File id is missing")
+                : await this.patientDataService.QueryAsync(new PatientFileQuery(hdid, fileId), ct) ??
+                  throw new NotFoundException($"file {fileId} not found");
         }
     }
 }

@@ -69,12 +69,9 @@ namespace HealthGateway.Patient.Services
                 throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
-            if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
-            {
-                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
-            }
-
-            return this.mappingService.MapToPatientDetails(patientDetails);
+            return string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation
+                ? throw new InvalidDataException(ErrorMessages.InvalidServicesCard)
+                : this.mappingService.MapToPatientDetails(patientDetails);
         }
     }
 }

@@ -51,7 +51,7 @@ namespace HealthGateway.Patient.Services
             IList<PatientDataType> unblockedPatientDataTypes = await this.GetUnblockedPatientDataTypesAsync(query.Hdid, query.PatientDataTypes, ct);
             if (!unblockedPatientDataTypes.Any())
             {
-                return new PatientDataResponse(Enumerable.Empty<PatientData>());
+                return new PatientDataResponse([]);
             }
 
             Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
