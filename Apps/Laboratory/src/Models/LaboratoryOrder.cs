@@ -17,7 +17,6 @@ namespace HealthGateway.Laboratory.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -89,5 +88,5 @@ public class LaboratoryOrder
     /// Gets or sets the collection of laboratory tests.
     /// </summary>
     [JsonPropertyName("laboratoryTests")]
-    public IEnumerable<LaboratoryTest> LaboratoryTests { get; set; } = Enumerable.Empty<LaboratoryTest>();
+    public IEnumerable<LaboratoryTest> LaboratoryTests { get; set; } = [];
 }

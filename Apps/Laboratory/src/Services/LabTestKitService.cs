@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
@@ -127,6 +128,7 @@ namespace HealthGateway.Laboratory.Services
             return result;
         }
 
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         private static RequestResult<T> ProcessResponse<T>(T payload, HttpStatusCode responseStatusCode)
         {
             RequestResult<T> requestResult = InitializeResult(payload);
