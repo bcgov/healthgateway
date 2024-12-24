@@ -204,7 +204,8 @@ describe("Patient details page as admin user", () => {
                 cy.get("[data-testid=dependent-dob]").contains("2005-01-01");
                 cy.get("[data-testid=dependent-phn]").contains("9874307215");
                 cy.get("[data-testid=dependent-address]").should(
-                    "not.be.empty"
+                    "not.have.text",
+                    ""
                 );
                 cy.get("[data-testid=dependent-expiry-date]")
                     .invoke("text")
