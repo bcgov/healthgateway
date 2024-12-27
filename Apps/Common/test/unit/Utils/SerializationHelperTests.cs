@@ -37,11 +37,11 @@ namespace HealthGateway.CommonTests.Utils
         [InlineData(typeof(string[]))]
         public void ShouldReturnDefaultOfGenericIfNoData(Type type)
         {
-            MethodInfo? deserializerRef = typeof(SerializationHelper).GetMethod(nameof(SerializationHelper.Deserialize), 2, new[] { typeof(byte[]), typeof(JsonSerializerOptions) })
+            MethodInfo? deserializerRef = typeof(SerializationHelper).GetMethod(nameof(SerializationHelper.Deserialize), 2, [typeof(byte[]), typeof(JsonSerializerOptions)])
                 ?.MakeGenericMethod(type);
             if (deserializerRef != null)
             {
-                byte[] data = Array.Empty<byte>();
+                byte[] data = [];
                 Assert.Equal(Activator.CreateInstance(type), deserializerRef.Invoke(data, null));
                 byte[]? dataNull = null;
                 Assert.Equal(Activator.CreateInstance(type), deserializerRef.Invoke(dataNull, null));
@@ -49,13 +49,13 @@ namespace HealthGateway.CommonTests.Utils
         }
 
         /// <summary>
-        /// Non generic deserialize should return default of Object? when data is or empty which is null.
+        /// Non-generic deserialize should return default of Object? when data is or empty which is null.
         /// </summary>
         [Fact]
         public void ShouldReturnNullIfNoData()
         {
             Type anyType = typeof(string);
-            byte[] data = Array.Empty<byte>();
+            byte[] data = [];
             byte[]? dataNull = null;
             Assert.Null(data.Deserialize(anyType));
             Assert.Null(dataNull.Deserialize(anyType));
@@ -89,7 +89,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldSerializeWhetherConcreteOrGeneric()
         {
-            string anyObj = "SomeValue";
+            const string anyObj = "SomeValue";
 
             // serialize and deserialize using concrete
             byte[] serialized = anyObj.Serialize();
@@ -98,7 +98,7 @@ namespace HealthGateway.CommonTests.Utils
 
             // serialize and deserialize using generic
             byte[] serialized2 = anyObj.Serialize(false);
-            string? deserialized2 = serialized2.Deserialize(typeof(string)) as string;
+            string? deserialized2 = serialized2.Deserialize<string>();
             Assert.Equal(anyObj, deserialized2);
 
             // serialize results should be equivalent.

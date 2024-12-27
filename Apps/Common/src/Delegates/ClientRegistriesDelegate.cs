@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.ServiceModel;
@@ -129,51 +130,91 @@ namespace HealthGateway.Common.Delegates
 
         private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue, string clientIp)
         {
-            HCIM_IN_GetDemographics request = new();
-            request.id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) };
-            request.creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
-            request.versionCode = new CS { code = "V3PR1" };
-            request.interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
-            request.processingCode = new CS { code = "P" };
-            request.processingModeCode = new CS { code = "T" };
-            request.acceptAckCode = new CS { code = "NE" };
-
-            request.receiver = new MCCI_MT000100Receiver { typeCode = "RCV" };
-            request.receiver.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
-            request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = clientIp };
-            request.receiver.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-            request.receiver.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
-
-            request.sender = new MCCI_MT000100Sender { typeCode = "SND" };
-            request.sender.device = new MCCI_MT000100Device { determinerCode = Instance, classCode = "DEV" };
-            request.sender.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" };
-            request.sender.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" };
-            request.sender.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
-
-            request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess { classCode = "ACCM", moodCode = "EVN" };
-            request.controlActProcess.effectiveTime = new IVL_TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
-            request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer { typeCode = "CST", time = null, typeId = null };
-            request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson { classCode = "ENT" };
-
-            request.controlActProcess.dataEnterer.assignedPerson.id = new II { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" };
-
-            request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
-            request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
-            request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II
+            HCIM_IN_GetDemographics request = new()
             {
-                root = oidType.ToString(),
-                extension = identifierValue,
-                assigningAuthorityName = "LCTZ_IAS",
+                id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) },
+                creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) },
+                versionCode = new CS { code = "V3PR1" },
+                interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" },
+                processingCode = new CS { code = "P" },
+                processingModeCode = new CS { code = "T" },
+                acceptAckCode = new CS { code = "NE" },
+                receiver = new MCCI_MT000100Receiver
+                {
+                    typeCode = "RCV",
+                    device = new MCCI_MT000100Device
+                    {
+                        determinerCode = Instance, classCode = "DEV",
+                        id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = clientIp },
+                        asAgent = new MCCI_MT000100Agent
+                        {
+                            classCode = "AGNT",
+                            representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" },
+                        },
+                    },
+                },
+            };
+
+            request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization
+            {
+                determinerCode = Instance, classCode = "ORG",
+                id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" },
+            };
+
+            request.sender = new MCCI_MT000100Sender
+            {
+                typeCode = "SND",
+                device = new MCCI_MT000100Device
+                {
+                    determinerCode = Instance, classCode = "DEV",
+                    id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" },
+                    asAgent = new MCCI_MT000100Agent
+                    {
+                        classCode = "AGNT",
+                        representedOrganization = new MCCI_MT000100Organization { determinerCode = Instance, classCode = "ORG" },
+                    },
+                },
+            };
+            request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization
+            {
+                determinerCode = Instance, classCode = "ORG",
+                id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" },
+            };
+
+            request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess
+            {
+                classCode = "ACCM", moodCode = "EVN",
+                effectiveTime = new IVL_TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) },
+                dataEnterer = new QUQI_MT020001DataEnterer
+                {
+                    typeCode = "CST", time = null, typeId = null,
+                    assignedPerson = new COCT_MT090100AssignedPerson
+                    {
+                        classCode = "ENT",
+                        id = new II { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" },
+                    },
+                },
+                queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter
+                {
+                    queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload
+                    {
+                        personid = new HCIM_IN_GetDemographicsPersonid
+                        {
+                            value = new II
+                            {
+                                root = oidType.ToString(),
+                                extension = identifierValue,
+                                assigningAuthorityName = "LCTZ_IAS",
+                            },
+                        },
+                    },
+                },
             };
 
             return new HCIM_IN_GetDemographicsRequest(request);
         }
 
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         private static Address? MapAddress(AD? address)
         {
             if (address?.Items == null)
@@ -399,7 +440,7 @@ namespace HealthGateway.Common.Delegates
 
         private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
         {
-            II? identifiedPersonId = Array.Find(retrievedPerson.identifiedPerson.id ?? Array.Empty<II>(), x => x.root == OidType.Phn.ToString());
+            II? identifiedPersonId = Array.Find(retrievedPerson.identifiedPerson.id ?? [], x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
             {
                 this.logger.LogWarning("The Client Registry returned a person without a PHN");
@@ -409,7 +450,7 @@ namespace HealthGateway.Common.Delegates
                 patient.PersonalHealthNumber = identifiedPersonId.extension;
             }
 
-            II? subjectId = Array.Find(retrievedPerson.id ?? Array.Empty<II>(), x => x.displayable && x.root == OidType.Hdid.ToString());
+            II? subjectId = Array.Find(retrievedPerson.id ?? [], x => x.displayable && x.root == OidType.Hdid.ToString());
             if (subjectId == null)
             {
                 this.logger.LogWarning("The Client Registry returned a person without an HDID");

@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public async Task QueueNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, CancellationToken ct = default)
         {
-            if (notificationSettings.SmsEnabled && !notificationSettings.SmsVerified && string.IsNullOrEmpty(notificationSettings.SmsVerificationCode))
+            if (notificationSettings is { SmsEnabled: true, SmsVerified: false } && string.IsNullOrEmpty(notificationSettings.SmsVerificationCode))
             {
                 throw new InvalidOperationException();
             }
@@ -66,26 +67,37 @@ namespace HealthGateway.Common.Services
 
             // Update the notification settings for any dependents
             IEnumerable<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(notificationSettings.SubjectHdid, 0, 500, ct);
-            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
+
+            // Transform resourceDelegates to NotificationSettingsRequest using LINQ
+            List<NotificationSettingsRequest> dependentNotificationSettingsList = resourceDelegates
+                .Select(
+                    resourceDelegate =>
+                    {
+                        NotificationSettingsRequest dependentNotificationSettings = new()
+                        {
+                            SubjectHdid = resourceDelegate.ResourceOwnerHdid,
+                            EmailAddress = notificationSettings.EmailAddress,
+                            EmailEnabled = notificationSettings.EmailEnabled,
+                            EmailScope = notificationSettings.EmailScope,
+                        };
+
+                        // Only populate SMS number if it has been verified
+                        if (notificationSettings.SmsVerified)
+                        {
+                            dependentNotificationSettings.SmsNumber = notificationSettings.SmsNumber;
+                            dependentNotificationSettings.SmsEnabled = notificationSettings.SmsEnabled;
+                            dependentNotificationSettings.SmsScope = notificationSettings.SmsScope;
+                            dependentNotificationSettings.SmsVerified = notificationSettings.SmsVerified;
+                        }
+
+                        return dependentNotificationSettings;
+                    })
+                .ToList();
+
+            // Process the transformed list
+            foreach (NotificationSettingsRequest dependentNotificationSettings in dependentNotificationSettingsList)
             {
-                NotificationSettingsRequest dependentNotificationSettings = new()
-                {
-                    SubjectHdid = resourceDelegate.ResourceOwnerHdid,
-                    EmailAddress = notificationSettings.EmailAddress,
-                    EmailEnabled = notificationSettings.EmailEnabled,
-                    EmailScope = notificationSettings.EmailScope,
-                };
-
-                // Only populate SMS number if it has been verified
-                if (notificationSettings.SmsVerified)
-                {
-                    dependentNotificationSettings.SmsNumber = notificationSettings.SmsNumber;
-                    dependentNotificationSettings.SmsEnabled = notificationSettings.SmsEnabled;
-                    dependentNotificationSettings.SmsScope = notificationSettings.SmsScope;
-                    dependentNotificationSettings.SmsVerified = notificationSettings.SmsVerified;
-                }
-
-                this.logger.LogDebug("Queueing notification settings push for dependent {Hdid}", resourceDelegate.ResourceOwnerHdid);
+                this.logger.LogDebug("Queueing notification settings push for dependent {Hdid}", dependentNotificationSettings.SubjectHdid);
                 string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings);
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettingsAsync(delegateJson, ct));
             }

@@ -84,7 +84,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 opts =>
                 {
                     opts.IncludeQueryInRequestPath = true;
-                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []);
+
+                    // ReSharper disable once RedundantDelegateCreation
+                    opts.GetLevel = new Func<HttpContext, double, Exception?, LogEventLevel>((httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []));
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
                         diagCtx.Set("Host", httpCtx.Request.Host.Value);
@@ -104,7 +106,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="otlpConfig">OpenTelemetry configuration values.</param>
         /// <returns>The DI container.</returns>
 #pragma warning disable CA1506 //Avoid excessive class coupling
-        public static IServiceCollection AddOpenTelemetryDefaults(this IServiceCollection services, OpenTelemetryConfig otlpConfig)
+        public static IServiceCollection AddOpenTelemetryDefaults(this IServiceCollection services, OpenTelemetryConfig otlpConfig) // NOSONAR
         {
             if (string.IsNullOrEmpty(otlpConfig.ServiceName))
             {
@@ -127,14 +129,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             .AddAspNetCoreInstrumentation(
                                 options =>
                                 {
-                                    options.Filter = httpContext => !Array.Exists(
+                                    // ReSharper disable once RedundantLambdaParameterType
+                                    options.Filter = (HttpContext httpContext) => !Array.Exists(
                                         otlpConfig.IgnorePathPrefixes,
                                         s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
                                 })
                             .AddRedisInstrumentation()
                             .AddEntityFrameworkCoreInstrumentation()
-                            .AddNpgsql()
-                            ;
+                            .AddNpgsql();
 
                         foreach (string source in otlpConfig.Sources)
                         {
@@ -167,8 +169,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         builder
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation()
-                            .AddRuntimeInstrumentation()
-                            ;
+                            .AddRuntimeInstrumentation();
 
                         if (otlpConfig.MetricsConsoleExporterEnabled)
                         {
@@ -270,29 +271,16 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 return LogEventLevel.Error;
             }
 
-            return Array.Exists(excludedPaths, path => IsWildcardMatch(ctx.Request.Path, path))
-                ? LogEventLevel.Verbose
-                : LogEventLevel.Information;
+            bool isWildcardMatch = Array.Exists(excludedPaths, path => IsWildcardMatch(ctx.Request.Path, path));
+            return isWildcardMatch ? LogEventLevel.Verbose : LogEventLevel.Information;
         }
 
         private static bool IsWildcardMatch(PathString requestPath, string path)
         {
-            if (!requestPath.HasValue)
-            {
-                return false;
-            }
-
-            if (path.EndsWith('*'))
-            {
-                return requestPath.Value!.StartsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
-            }
-
-            if (path.StartsWith('*'))
-            {
-                return requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
-            }
-
-            return requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase);
+            return requestPath.HasValue &&
+                   (path.StartsWith('*')
+                       ? requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase)
+                       : requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

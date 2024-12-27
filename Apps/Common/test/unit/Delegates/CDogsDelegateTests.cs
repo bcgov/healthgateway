@@ -97,7 +97,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             using HttpResponseMessage httpResponseMessage = new();
             httpResponseMessage.StatusCode = statusCode;
-            httpResponseMessage.Content = new ByteArrayContent(Array.Empty<byte>());
+            httpResponseMessage.Content = new ByteArrayContent([]);
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();

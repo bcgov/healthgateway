@@ -57,7 +57,7 @@ namespace HealthGateway.CommonTests.Utils
                 Converters = { new TimeOnlyJsonConverter() },
             };
 
-            object? actualResult = JsonSerializer.Deserialize($@"""{timeStr}""", typeof(TimeOnly), options);
+            object? actualResult = JsonSerializer.Deserialize<TimeOnly>($@"""{timeStr}""", options);
 
             Assert.IsType<TimeOnly>(actualResult);
             Assert.True(time.Equals(actualResult));

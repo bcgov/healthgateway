@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Security.Cryptography;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -53,6 +54,8 @@ namespace HealthGateway.Common.Delegates
         /// <param name="prf">The pseudorandom function to use for the hash.</param>
         /// <param name="iterations">The number of iterations to process over the hash.</param>
         /// <returns>The hash object.</returns>
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static HmacHash HmacHash(
             string? key,
             byte[] salt,
@@ -69,19 +72,12 @@ namespace HealthGateway.Common.Delegates
             {
                 // The key is not null, so we can generate a hash
                 // Calculate the length in bytes of the hash given the function size
-                int hashLength;
-                switch (prf)
+                int hashLength = prf switch
                 {
-                    case KeyDerivationPrf.HMACSHA1:
-                        hashLength = 20;
-                        break;
-                    case KeyDerivationPrf.HMACSHA256:
-                        hashLength = 32;
-                        break;
-                    default:
-                        hashLength = 64;
-                        break;
-                }
+                    KeyDerivationPrf.HMACSHA1 => 20,
+                    KeyDerivationPrf.HMACSHA256 => 32,
+                    _ => 64,
+                };
 
                 retHash.Salt = Convert.ToBase64String(salt);
                 retHash.Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(key, salt, prf, iterations, hashLength));

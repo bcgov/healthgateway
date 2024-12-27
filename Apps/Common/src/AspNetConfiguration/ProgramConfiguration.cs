@@ -84,7 +84,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .Enrich.FromLogContext()
                 .CreateBootstrapLogger();
 
-            using var factory = new SerilogLoggerFactory(Log.Logger);
+            using SerilogLoggerFactory factory = new(Log.Logger);
             return factory.CreateLogger("Startup");
         }
     }

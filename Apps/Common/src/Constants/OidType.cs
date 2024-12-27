@@ -50,23 +50,19 @@ namespace HealthGateway.Common.Constants
         /// <param name="lhs">The first type to compare, or null.</param>
         /// <param name="rhs">The second type to compare, or null.</param>
         [ExcludeFromCodeCoverage]
-        public static bool operator ==(OidType lhs, OidType rhs)
+        public static bool operator ==(OidType? lhs, OidType? rhs)
         {
-            // Check for null on left side.
-            if (ReferenceEquals(lhs, null))
+            // Use ReferenceEquals to check for null equality.
+            if (ReferenceEquals(lhs, rhs))
             {
-                if (ReferenceEquals(rhs, null))
-                {
-                    // null == null = true.
-                    return true;
-                }
-
-                // Only the left side is null.
-                return false;
+                return true;
             }
 
-            // Equals handles case of null on right side.
-            return lhs.Equals(rhs);
+            // If lhs is null, return false (rhs is not null at this point).
+            return lhs is not null &&
+
+                   // Delegate to Equals for further comparison.
+                   lhs.Equals(rhs);
         }
 
         /// <summary>
@@ -109,13 +105,9 @@ namespace HealthGateway.Common.Constants
         [ExcludeFromCodeCoverage]
         public override bool Equals(object? obj)
         {
-            // Check for null and compare run-time types.
-            if (obj == null || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-
-            return this.Equals((OidType)obj);
+            // Use 'is' to check for null and type compatibility, then delegate to the strongly-typed Equals method.
+            return obj is OidType other &&
+                   this.Equals(other);
         }
 
         /// <summary>

@@ -54,7 +54,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);

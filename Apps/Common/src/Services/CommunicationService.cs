@@ -141,6 +141,7 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="communicationType">The CommunicationType to retrieve the key for.</param>
         /// <returns>The key for the cache associated with the given CommunicationType.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         internal static string GetCacheKey(CommunicationType communicationType)
         {
             return communicationType switch

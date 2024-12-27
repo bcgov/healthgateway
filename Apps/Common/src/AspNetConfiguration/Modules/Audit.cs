@@ -37,7 +37,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use.</param>
         public static void ConfigureAuditServices(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
+            services.AddMvc(options => options.Filters.Add<AuditFilter>());
 
             bool redisAuditing = configuration.GetValue("RedisAuditing", false);
             if (redisAuditing)

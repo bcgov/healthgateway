@@ -406,7 +406,7 @@ namespace HealthGateway.CommonTests.Delegates
                 TotalResultCount = 1,
             };
 
-            byte[] fileContents = { 1 };
+            byte[] fileContents = [1];
             using MemoryStream memoryStream = new(fileContents);
             using HttpResponseMessage httpResponseMessage = new();
             httpResponseMessage.StatusCode = HttpStatusCode.OK;
@@ -461,7 +461,7 @@ namespace HealthGateway.CommonTests.Delegates
         public async Task ValidateGetAssetAsyncEmptyPayload()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
-            byte[] fileContents = Array.Empty<byte>();
+            byte[] fileContents = [];
             using MemoryStream memoryStream = new(fileContents);
             using HttpResponseMessage httpResponseMessage = new();
             httpResponseMessage.StatusCode = HttpStatusCode.OK;

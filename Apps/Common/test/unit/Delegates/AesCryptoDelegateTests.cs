@@ -51,7 +51,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -92,7 +92,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
