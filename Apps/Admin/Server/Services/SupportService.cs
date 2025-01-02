@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -72,16 +73,11 @@ namespace HealthGateway.Admin.Server.Services
             PatientSupportDetailsQuery query,
             CancellationToken ct = default)
         {
-            PatientModel patient;
-
-            if (query.QueryType == ClientRegistryType.Hdid)
-            {
-                patient = await this.GetPatientAsync(new(Hdid: query.QueryParameter, Source: PatientDetailSource.All, UseCache: false), ct);
-            }
-            else
-            {
-                patient = await this.GetPatientAsync(new(query.QueryParameter, Source: PatientDetailSource.Empi, UseCache: false), ct);
-            }
+            PatientModel patient = await this.GetPatientAsync(
+                query.QueryType == ClientRegistryType.Hdid
+                    ? new(Hdid: query.QueryParameter, Source: PatientDetailSource.All, UseCache: false)
+                    : new(query.QueryParameter, Source: PatientDetailSource.Empi, UseCache: false),
+                ct);
 
             Task<VaccineDetails>? getVaccineDetails =
                 query.IncludeCovidDetails ? this.GetVaccineDetailsAsync(patient, query.RefreshVaccineDetails, ct) : null;
@@ -109,6 +105,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public async Task<IReadOnlyList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default)
         {
             if (queryType is PatientQueryType.Hdid or PatientQueryType.Phn)
@@ -206,6 +203,7 @@ namespace HealthGateway.Admin.Server.Services
             return dependentInfo;
         }
 
+        [SuppressMessage("Style", "IDE0046:'if' statement can be simplified", Justification = "Team decision")]
         private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
@@ -233,12 +231,9 @@ namespace HealthGateway.Admin.Server.Services
                 ? null
                 : await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct);
 
-            if (patient == null && profile == null)
-            {
-                return null;
-            }
-
-            return mappingService.MapToPatientSupportResult(patient, profile);
+            return patient == null && profile == null
+                ? null
+                : mappingService.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<PatientSupportResult> GetPatientSupportResultAsync(UserProfile profile, CancellationToken ct)

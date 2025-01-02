@@ -48,32 +48,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// <returns>The generated <see cref="RequestError"/>.</returns>
         public static RequestError FormatRequestError(Exception? exception, RequestResultError? resultError = null)
         {
-            if (resultError is not null)
-            {
-                return new()
-                {
-                    Message = resultError.ResultMessage,
-                    Details = new()
-                    {
-                        { "errorCode", resultError.ErrorCode },
-                        { "traceId", resultError.TraceId },
-                        { "actionCode", resultError.ActionCodeValue ?? string.Empty },
-                    },
-                };
-            }
-
-            if (exception is not null)
-            {
-                return new()
-                {
-                    Message = exception.Message,
-                };
-            }
-
-            return new()
-            {
-                Message = "Unknown error",
-            };
+            return resultError is not null ? CreateRequestError(resultError) : CreateRequestError(exception);
         }
 
         /// <summary>
@@ -99,6 +74,28 @@ namespace HealthGateway.Admin.Client.Utils
                 new PatientSupportActions.LoadAction { QueryType = patientQueryType, QueryString = patientQueryString, ShouldNavigateToPatientDetails = shouldNavigateToPatientDetails });
             await SessionUtility.SetSessionStorageItem(jsRuntime, SessionUtility.SupportQueryType, patientQueryType.ToString());
             await SessionUtility.SetSessionStorageItem(jsRuntime, SessionUtility.SupportQueryString, patientQueryString);
+        }
+
+        private static RequestError CreateRequestError(RequestResultError resultError)
+        {
+            return new()
+            {
+                Message = resultError.ResultMessage,
+                Details = new()
+                {
+                    { "errorCode", resultError.ErrorCode },
+                    { "traceId", resultError.TraceId },
+                    { "actionCode", resultError.ActionCodeValue ?? string.Empty },
+                },
+            };
+        }
+
+        private static RequestError CreateRequestError(Exception? exception)
+        {
+            return new()
+            {
+                Message = exception?.Message ?? "Unknown error",
+            };
         }
     }
 }

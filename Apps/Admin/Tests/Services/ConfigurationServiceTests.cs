@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Tests.Services
 {
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.Extensions.Configuration;
@@ -61,7 +60,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
     }

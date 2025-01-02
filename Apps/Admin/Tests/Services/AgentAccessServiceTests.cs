@@ -236,8 +236,8 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IKeycloakAdminApi>? keycloakAdminApiMock = null)
         {
-            authenticationDelegateMock = authenticationDelegateMock ?? new();
-            keycloakAdminApiMock = keycloakAdminApiMock ?? new();
+            authenticationDelegateMock ??= new();
+            keycloakAdminApiMock ??= new();
 
             return new AgentAccessService(
                 authenticationDelegateMock.Object,

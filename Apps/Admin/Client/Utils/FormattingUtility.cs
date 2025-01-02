@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Utils
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -55,6 +56,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="status">The communication status to format.</param>
         /// <returns>A string formatted for display.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string FormatCommunicationStatus(CommunicationStatus status)
         {
             return status switch
@@ -69,6 +71,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="communicationType">The communication type to format.</param>
         /// <returns>A string formatted for display.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string FormatCommunicationType(CommunicationType? communicationType)
         {
             return communicationType switch
@@ -85,6 +88,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="dataSource">The data source to format.</param>
         /// <returns>A string formatted for display.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string FormatDataSource(DataSource dataSource)
         {
             return dataSource switch
@@ -110,6 +114,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="identityProvider">The identity provider to format.</param>
         /// <returns>A string formatted for display.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string FormatKeycloakIdentityProvider(KeycloakIdentityProvider identityProvider)
         {
             return identityProvider switch
@@ -125,6 +130,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="status">The patient status to format.</param>
         /// <returns>A string formatted for display.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string FormatPatientStatus(PatientStatus status)
         {
             return status switch
@@ -141,6 +147,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="queryType">The query type to format.</param>
         /// <returns>A string formatted for display.</returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string FormatPatientQueryType(PatientQueryType queryType)
         {
             return queryType switch

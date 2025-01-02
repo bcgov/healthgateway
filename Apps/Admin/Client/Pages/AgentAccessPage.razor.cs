@@ -40,17 +40,13 @@ public partial class AgentAccessPage : FluxorComponent
 
     private static Func<string, string?> ValidateQueryParameter => parameter =>
     {
-        if (string.IsNullOrWhiteSpace(parameter))
-        {
-            return "Search parameter is required";
-        }
+        string? lengthValidationResult = StringManipulator.StripWhitespace(parameter).Length < 3
+            ? "Query must contain at least 3 characters"
+            : null;
 
-        if (StringManipulator.StripWhitespace(parameter).Length < 3)
-        {
-            return "Query must contain at least 3 characters";
-        }
-
-        return null;
+        return string.IsNullOrWhiteSpace(parameter)
+            ? "Search parameter is required"
+            : lengthValidationResult;
     };
 
     [Inject]
