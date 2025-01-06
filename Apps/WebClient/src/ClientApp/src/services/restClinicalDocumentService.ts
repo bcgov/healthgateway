@@ -16,10 +16,10 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestClinicalDocumentService implements IClinicalDocumentService {
     private readonly BASE_URI = "ClinicalDocument";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,

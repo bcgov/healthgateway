@@ -13,7 +13,7 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
     public expiryDate?: DateWrapper;
     public referenceNumber: string;
 
-    private getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entyId: string) => UserComment[] | null;
 
     public constructor(
         model: MedicationRequest,

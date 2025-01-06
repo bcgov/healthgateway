@@ -5,7 +5,7 @@ import { HttpError } from "@/models/errors";
 import { IHttpDelegate, ILogger } from "@/services/interfaces";
 
 export class HttpDelegate implements IHttpDelegate {
-    private logger;
+    private readonly logger;
 
     constructor(logger: ILogger) {
         this.logger = logger;

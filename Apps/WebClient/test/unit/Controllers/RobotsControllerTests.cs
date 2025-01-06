@@ -17,7 +17,6 @@ namespace HealthGateway.WebClientTests.Controllers
 {
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Net.Mime;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -73,7 +72,7 @@ namespace HealthGateway.WebClientTests.Controllers
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
 
             using RobotsController controller = new(configuration);

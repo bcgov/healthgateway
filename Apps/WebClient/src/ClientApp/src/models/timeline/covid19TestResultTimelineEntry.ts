@@ -25,7 +25,7 @@ export default class Covid19TestResultTimelineEntry extends TimelineEntry {
 
     public tests: Covid19TestData[];
 
-    private getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entyId: string) => UserComment[] | null;
 
     public constructor(
         model: Covid19LaboratoryOrder,

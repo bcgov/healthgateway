@@ -15,10 +15,10 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestImmunizationService implements IImmunizationService {
     private readonly IMMS_BASE_URI: string = "Immunization";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,

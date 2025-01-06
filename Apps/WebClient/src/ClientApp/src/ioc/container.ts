@@ -6,8 +6,8 @@ interface IContainer {
 }
 
 class Container implements IContainer {
-    private mappings = new Map<Identifier, (c: Container) => any>();
-    private cachedMappings = new Map<Identifier, any>();
+    private readonly mappings = new Map<Identifier, (c: Container) => any>();
+    private readonly cachedMappings = new Map<Identifier, any>();
 
     public set<T>(key: Identifier, factory: (c: Container) => T): void {
         this.mappings.set(key, factory);

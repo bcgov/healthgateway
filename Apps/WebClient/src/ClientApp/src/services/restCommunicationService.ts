@@ -12,9 +12,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestCommunicationService implements ICommunicationService {
     private readonly BASE_URI: string = "Communication";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

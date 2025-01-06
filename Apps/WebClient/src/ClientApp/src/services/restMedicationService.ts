@@ -16,10 +16,10 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestMedicationService implements IMedicationService {
     private readonly BASE_URI: string = "MedicationStatement";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,
