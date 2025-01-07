@@ -64,7 +64,7 @@ namespace HealthGateway.Patient.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] PatientDataType[] patientDataTypes, CancellationToken ct)
         {
-            ValidateGetRequest(hdid, patientDataTypes);
+            ValidateRequest(hdid, patientDataTypes);
             PatientDataQuery query = new(hdid, patientDataTypes);
             return await this.patientDataService.QueryAsync(query, ct);
         }
@@ -86,13 +86,13 @@ namespace HealthGateway.Patient.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<ActionResult<PatientFileResponse>> GetFile(string hdid, string fileId, CancellationToken ct)
         {
-            ValidateGetFileRequest(hdid, fileId);
+            ValidateFileRequest(hdid, fileId);
             PatientFileQuery query = new(hdid, fileId);
             return await this.patientDataService.QueryAsync(query, ct) ??
                    throw new NotFoundException($"file {fileId} not found");
         }
 
-        private static void ValidateGetRequest(string hdid, PatientDataType[] patientDataTypes)
+        private static void ValidateRequest(string hdid, PatientDataType[] patientDataTypes)
         {
             if (string.IsNullOrEmpty(hdid))
             {
@@ -105,7 +105,7 @@ namespace HealthGateway.Patient.Controllers
             }
         }
 
-        private static void ValidateGetFileRequest(string hdid, string fileId)
+        private static void ValidateFileRequest(string hdid, string fileId)
         {
             if (string.IsNullOrEmpty(hdid))
             {
