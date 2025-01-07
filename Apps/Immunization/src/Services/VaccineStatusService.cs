@@ -238,7 +238,7 @@ namespace HealthGateway.Immunization.Services
             return retVal;
         }
 
-        [SuppressMessage("Style", "IDE0072:Switch expression should be exhaustive", Justification = "Team decision")]
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         private async Task<RequestResult<VaccineStatus>> GetVaccineStatusFromDelegateAsync(VaccineStatusQuery query, string accessToken, string? phn = null, CancellationToken ct = default)
         {
             RequestResult<VaccineStatus> retVal = new()
