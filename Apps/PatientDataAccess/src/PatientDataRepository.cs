@@ -31,7 +31,6 @@ namespace HealthGateway.PatientDataAccess
     /// </summary>
     /// <param name="patientApi">The patient API to use.</param>
     /// <param name="mapper">The injected mapper.</param>
-    [SuppressMessage("Style", "IDE0072:Switch expression should be exhaustive", Justification = "Team decision")]
     internal class PatientDataRepository(IPatientApi patientApi, IMapper mapper) : IPatientDataRepository
     {
         /// <summary>
@@ -51,6 +50,7 @@ namespace HealthGateway.PatientDataAccess
             };
         }
 
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         private static string? MapHealthOptionsCategories(HealthCategory category)
         {
             return category switch
@@ -60,6 +60,7 @@ namespace HealthGateway.PatientDataAccess
             };
         }
 
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         private static string? MapHealthDataCategories(HealthCategory category)
         {
             return category switch
