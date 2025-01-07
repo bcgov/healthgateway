@@ -277,10 +277,23 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
         private static bool IsWildcardMatch(PathString requestPath, string path)
         {
-            return requestPath.HasValue &&
-                   (path.StartsWith('*')
-                       ? requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase)
-                       : requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase));
+            if (!requestPath.HasValue)
+            {
+                return false;
+            }
+
+            string requestPathValue = requestPath.Value!;
+
+            return path switch
+            {
+                _ when path.EndsWith('*') => requestPathValue.StartsWith(
+                    path.TrimEnd('*'),
+                    StringComparison.InvariantCultureIgnoreCase),
+                _ when path.StartsWith('*') => requestPathValue.EndsWith(
+                    path.TrimStart('*'),
+                    StringComparison.InvariantCultureIgnoreCase),
+                _ => requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase),
+            };
         }
     }
 }
