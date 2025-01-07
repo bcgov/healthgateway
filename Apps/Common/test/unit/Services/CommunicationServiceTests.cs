@@ -108,9 +108,11 @@ namespace HealthGateway.CommonTests.Services
                 case Scenario.Expired:
                 case Scenario.Deleted:
                 case Scenario.DifferentCache:
-                default:
                     Assert.Equal(commResult.ResourcePayload!.Id, actualResult.ResourcePayload!.Id);
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), $"Unexpected scenario: {scenario}");
             }
         }
 

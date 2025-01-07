@@ -36,8 +36,8 @@ namespace HealthGateway.Common.Utils
         /// <inheritdoc/>
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            Type? actualType = this.FindType(typeToConvert, ref reader)
-                               ?? throw new JsonException($"serialized json doesn't have a {this.Discriminator} property");
+            Type actualType = this.FindType(typeToConvert, ref reader)
+                              ?? throw new JsonException($"serialized json doesn't have a {this.Discriminator} property");
 
             return (T)(JsonSerializer.Deserialize(ref reader, actualType, options)
                        ?? throw new JsonException($"failed to deserialize type {actualType.Name}"));

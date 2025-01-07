@@ -31,6 +31,8 @@ namespace HealthGateway.DBMaintainer.Mappers
         /// </summary>
         /// <param name="fileDownload">The fileDownload to map.</param>
         [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by ClassMap")]
+
+        // ReSharper disable once UnusedParameter.Local
         public PharmacyAssessmentMapper(FileDownload fileDownload)
         {
             this.Map(m => m.Pin).Index(0);
