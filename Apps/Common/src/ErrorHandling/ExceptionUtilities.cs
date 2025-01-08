@@ -110,7 +110,8 @@ namespace HealthGateway.Common.ErrorHandling
                 return new { e.Message, e.StackTrace };
             }
 
-            return new { e.Message, e.StackTrace, InnerException = FormatExceptionDetails(e.InnerException, maxDepth - 1) };
+            object? innerExceptionDetails = FormatExceptionDetails(e.InnerException, maxDepth - 1);
+            return new { e.Message, e.StackTrace, InnerException = innerExceptionDetails };
         }
     }
 }

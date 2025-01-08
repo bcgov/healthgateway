@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Data.Models
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// Represents an address.
@@ -26,7 +25,7 @@ namespace HealthGateway.Common.Data.Models
         /// <summary>
         /// Gets or sets the street lines.
         /// </summary>
-        public IEnumerable<string> StreetLines { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> StreetLines { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the city name.

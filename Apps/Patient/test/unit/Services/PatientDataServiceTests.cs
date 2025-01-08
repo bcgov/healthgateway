@@ -60,9 +60,9 @@ namespace HealthGateway.PatientTests.Services
             };
 
             PatientData[] data =
-            {
+            [
                 organDonorRegistration,
-            };
+            ];
 
             PatientDataResponse response = new(data);
 
@@ -95,9 +95,9 @@ namespace HealthGateway.PatientTests.Services
             };
 
             PatientData[] data =
-            {
+            [
                 diagnosticImagingExam,
-            };
+            ];
 
             PatientDataResponse response = new(data);
 
@@ -142,7 +142,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
-            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, [PatientDataType.OrganDonorRegistrationStatus]), CancellationToken.None)
                 ;
 
             if (canAccessDataSource)
@@ -184,7 +184,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
-            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, [PatientDataType.BcCancerScreening]), CancellationToken.None)
                 ;
 
             if (canAccessDataSource)
@@ -230,8 +230,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
 
-            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
-                ;
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, [PatientDataType.DiagnosticImaging]), CancellationToken.None);
 
             if (canAccessDataSource)
             {

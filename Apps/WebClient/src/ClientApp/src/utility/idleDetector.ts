@@ -13,11 +13,13 @@ export class IdleDetector {
     ];
     private readonly idleTimer: ReliableTimer;
     private enabled = false;
-    private notifyActiveThrottled = throttle(1000, () => this.notifyActive());
+    private readonly notifyActiveThrottled = throttle(1000, () =>
+        this.notifyActive()
+    );
 
     constructor(
-        private isIdleCallback: (timeIdle: number) => void,
-        private timeBeforeIdle: number,
+        private readonly isIdleCallback: (timeIdle: number) => void,
+        private readonly timeBeforeIdle: number,
         startEnabled: boolean
     ) {
         this.idleTimer = new ReliableTimer(

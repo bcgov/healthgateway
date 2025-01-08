@@ -77,7 +77,11 @@ namespace HealthGateway.CommonTests.Services
                 EffectiveDateTime = scenario switch
                 {
                     Scenario.Future => DateTime.UtcNow.AddDays(3),
-                    _ => DateTime.UtcNow,
+                    Scenario.Active => DateTime.UtcNow,
+                    Scenario.Expired => DateTime.UtcNow,
+                    Scenario.Deleted => DateTime.UtcNow,
+                    Scenario.DifferentCache => DateTime.UtcNow,
+                    _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, "Unhandled scenario value"),
                 },
             };
 
@@ -100,9 +104,15 @@ namespace HealthGateway.CommonTests.Services
                     Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                     break;
 
-                default:
+                case Scenario.Active:
+                case Scenario.Expired:
+                case Scenario.Deleted:
+                case Scenario.DifferentCache:
                     Assert.Equal(commResult.ResourcePayload!.Id, actualResult.ResourcePayload!.Id);
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), $"Unexpected scenario: {scenario}");
             }
         }
 
@@ -221,6 +231,9 @@ namespace HealthGateway.CommonTests.Services
                     communication.ExpiryDateTime = DateTime.Now.AddDays(5);
                     break;
 
+                case Scenario.Active:
+                case Scenario.Deleted:
+                case Scenario.DifferentCache:
                 default:
                     communication.EffectiveDateTime = DateTime.Now;
                     communication.ExpiryDateTime = DateTime.Now.AddDays(1);
@@ -306,6 +319,9 @@ namespace HealthGateway.CommonTests.Services
                     Assert.Equal(ResultType.Success, cacheResult!.ResultStatus);
                     Assert.Equal(1, cacheResult.TotalResultCount);
                     break;
+
+                default:
+                    throw new InvalidOperationException($"Unhandled scenario: {scenario}");
             }
         }
 

@@ -134,24 +134,19 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
-    private IEnumerable<DailyDataRow> TableData
-    {
-        get
-        {
-            return this.DailyUsageCounts.UserRegistrations.Select(x => new DailyDataRow { Date = x.Key, UserRegistrations = x.Value })
-                .Concat(this.DailyUsageCounts.UserLogins.Select(x => new DailyDataRow { Date = x.Key, UserLogins = x.Value }))
-                .Concat(this.DailyUsageCounts.DependentRegistrations.Select(x => new DailyDataRow { Date = x.Key, DependentRegistrations = x.Value }))
-                .GroupBy(x => x.Date)
-                .Select(
-                    g => new DailyDataRow
-                    {
-                        Date = g.Key,
-                        UserRegistrations = g.Sum(x => x.UserRegistrations),
-                        UserLogins = g.Sum(x => x.UserLogins),
-                        DependentRegistrations = g.Sum(x => x.DependentRegistrations),
-                    });
-        }
-    }
+    private IEnumerable<DailyDataRow> TableData =>
+        this.DailyUsageCounts.UserRegistrations.Select(x => new DailyDataRow { Date = x.Key, UserRegistrations = x.Value })
+            .Concat(this.DailyUsageCounts.UserLogins.Select(x => new DailyDataRow { Date = x.Key, UserLogins = x.Value }))
+            .Concat(this.DailyUsageCounts.DependentRegistrations.Select(x => new DailyDataRow { Date = x.Key, DependentRegistrations = x.Value }))
+            .GroupBy(x => x.Date)
+            .Select(
+                g => new DailyDataRow
+                {
+                    Date = g.Key,
+                    UserRegistrations = g.Sum(x => x.UserRegistrations),
+                    UserLogins = g.Sum(x => x.UserLogins),
+                    DependentRegistrations = g.Sum(x => x.DependentRegistrations),
+                });
 
     /// <inheritdoc/>
     protected override void OnInitialized()

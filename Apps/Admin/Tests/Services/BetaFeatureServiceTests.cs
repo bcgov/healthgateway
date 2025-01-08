@@ -285,7 +285,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -358,8 +358,8 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate>? profileDelegateMock = null,
             Mock<IBetaFeatureAccessDelegate>? betaFeatureAccessDelegateMock = null)
         {
-            profileDelegateMock = profileDelegateMock ?? new();
-            betaFeatureAccessDelegateMock = betaFeatureAccessDelegateMock ?? new();
+            profileDelegateMock ??= new();
+            betaFeatureAccessDelegateMock ??= new();
 
             return new BetaFeatureService(
                 profileDelegateMock.Object,

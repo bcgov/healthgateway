@@ -86,9 +86,15 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                    { GivenName = expectedCommonGivenName, Surname = PhsaPreferredLastName },
+                {
+                    GivenName = expectedCommonGivenName,
+                    Surname = PhsaPreferredLastName,
+                },
                 LegalName = new Name
-                    { GivenName = expectedLegalGivenName, Surname = PhsaLegalLastName },
+                {
+                    GivenName = expectedLegalGivenName,
+                    Surname = PhsaLegalLastName,
+                },
                 PhysicalAddress = new Address
                 {
                     StreetLines =
@@ -173,9 +179,15 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                {
+                    GivenName = expectedCommonGivenName,
+                    Surname = expectedCommonSurname,
+                },
                 LegalName = new Name
-                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                {
+                    GivenName = expectedLegalGivenName,
+                    Surname = expectedLegalSurname,
+                },
                 PhysicalAddress = null,
                 PostalAddress = null,
             };

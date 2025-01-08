@@ -32,23 +32,19 @@ namespace HealthGateway.Admin.Client.Services
         /// <inheritdoc/>
         public DateTime? ConvertFromUtc(DateTime? utcDateTime, bool returnNowIfNull = false)
         {
-            if (utcDateTime != null)
-            {
-                return this.ConvertFromUtc(utcDateTime.Value);
-            }
-
-            if (returnNowIfNull)
-            {
-                return this.ConvertFromUtc(DateTime.UtcNow);
-            }
-
-            return null;
+            DateTime? dateTimeToConvert = GetDateTimeToConvert(utcDateTime, returnNowIfNull);
+            return dateTimeToConvert.HasValue ? this.ConvertFromUtc(dateTimeToConvert.Value) : null;
         }
 
         /// <inheritdoc/>
         public string ConvertToShortFormatFromUtc(DateTime? utcDateTime, string fallbackString = "-")
         {
             return utcDateTime == null ? fallbackString : DateFormatter.ToShortDateAndTime(this.ConvertFromUtc(utcDateTime.Value));
+        }
+
+        private static DateTime? GetDateTimeToConvert(DateTime? utcDateTime, bool returnNowIfNull)
+        {
+            return utcDateTime ?? (returnNowIfNull ? DateTime.UtcNow : null);
         }
     }
 }

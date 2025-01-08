@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Server.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// Configuration data to be used by the Health Gateway Mobile App.
@@ -35,16 +34,16 @@ namespace HealthGateway.WebClient.Server.Models
         /// <summary>
         /// Gets or sets the collection of enabled datasets.
         /// </summary>
-        public IEnumerable<string> Datasets { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> Datasets { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the collection of enabled datasets for dependents.
         /// </summary>
-        public IEnumerable<string> DependentDatasets { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> DependentDatasets { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the collection of enabled services.
         /// </summary>
-        public IEnumerable<string> Services { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> Services { get; set; } = [];
     }
 }

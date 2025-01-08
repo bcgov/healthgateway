@@ -36,6 +36,7 @@ namespace HealthGateway.Laboratory.Controllers
     [Route("[controller]")]
     [ApiController]
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("SonarLint", "S6960:This controller has multiple responsibilities and could be split into 2 smaller controllers", Justification = "Team decision")]
     public class LaboratoryController : ControllerBase
     {
         private readonly ILaboratoryService labService;

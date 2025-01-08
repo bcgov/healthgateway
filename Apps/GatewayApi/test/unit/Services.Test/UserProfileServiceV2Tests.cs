@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
@@ -547,14 +548,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserProfileServiceV2 service = GetUserProfileService(
                 userProfileDelegateMock: userProfileDelegateMock);
 
-            if (profileUpdateStatus == DbStatusCode.Updated)
-            {
-                return new UpdateAcceptedTermsMock(
+            return profileUpdateStatus == DbStatusCode.Updated
+                ? new UpdateAcceptedTermsMock(
                     service,
-                    userProfileDelegateMock);
-            }
-
-            return new UpdateAcceptedTermsExceptionMock(service);
+                    userProfileDelegateMock)
+                : new UpdateAcceptedTermsExceptionMock(service);
         }
 
         private static BaseUserProfileServiceMock SetupCloseUserProfileMock(
@@ -580,17 +578,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 authenticationDelegateMock: authenticationDelegateMock,
                 jobServiceMock: jobServiceMock);
 
-            if (closedDateTime != null || profileUpdateStatus == DbStatusCode.Updated)
-            {
-                return new CloseUserProfileMock(
+            return closedDateTime != null || profileUpdateStatus == DbStatusCode.Updated
+                ? new CloseUserProfileMock(
                     service,
                     userProfileDelegateMock,
-                    jobServiceMock);
-            }
-
-            return new CloseUserProfileExceptionMock(service);
+                    jobServiceMock)
+                : new CloseUserProfileExceptionMock(service);
         }
 
+        [SuppressMessage("Style", "IDE0046: 'if' statement can be simplified", Justification = "Team decision")]
         private static BaseUserProfileServiceMock SetupRecoverUserProfileMock(
             bool userProfileExists = true,
             DateTime? profileClosedDateTime = null,
@@ -616,15 +612,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             if (userProfileExists)
             {
-                if (profileUpdateStatus == DbStatusCode.Error)
-                {
-                    return new RecoverUserProfileExceptionMock(service);
-                }
-
-                return new RecoverUserProfileMock(
-                    service,
-                    userProfileDelegateMock,
-                    jobServiceMock);
+                return profileUpdateStatus == DbStatusCode.Error
+                    ? new RecoverUserProfileExceptionMock(service)
+                    : new RecoverUserProfileMock(service, userProfileDelegateMock, jobServiceMock);
             }
 
             return new RecoverUserProfileExceptionMock(service);

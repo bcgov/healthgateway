@@ -210,7 +210,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateEmailAsync - invalid invite.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the verification by invite key..</param>
+        /// <param name="hdid">The hdid associated with the verification by invite key.</param>
         /// <param name="validated">The last verification for user Validated value.</param>
         /// <param name="deleted">The last verification's Deleted value.</param>
         /// <param name="userProfileExists">
@@ -317,7 +317,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
     }

@@ -183,37 +183,35 @@ namespace HealthGateway.JobScheduler.Jobs
             email.Attempts++;
             try
             {
-                using (SmtpClient smtpClient = new())
+                using SmtpClient smtpClient = new();
+                try
                 {
+                    await smtpClient.ConnectAsync(this.host, this.port, SecureSocketOptions.None, ct);
                     try
                     {
-                        await smtpClient.ConnectAsync(this.host, this.port, SecureSocketOptions.None, ct);
-                        try
-                        {
-                            using MimeMessage message = PrepareMessage(email);
-                            await smtpClient.SendAsync(message, ct);
-                            email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
-                            email.EmailStatusCode = EmailStatus.Processed;
-                            email.SentDateTime = DateTime.UtcNow;
-                            await this.emailDelegate.UpdateEmailAsync(email, ct);
-                        }
-                        catch (SmtpCommandException e)
-                        {
-                            caught = e;
-                            this.logger.LogError(e, "Unexpected error while sending email {Id}, SMTP Error = {SmtpStatusCode}", email.Id, email.SmtpStatusCode);
-                        }
-
-                        await smtpClient.DisconnectAsync(true, ct);
+                        using MimeMessage message = PrepareMessage(email);
+                        await smtpClient.SendAsync(message, ct);
+                        email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
+                        email.EmailStatusCode = EmailStatus.Processed;
+                        email.SentDateTime = DateTime.UtcNow;
+                        await this.emailDelegate.UpdateEmailAsync(email, ct);
                     }
                     catch (SmtpCommandException e)
                     {
                         caught = e;
-                        this.logger.LogError(
-                            e,
-                            "Unexpected error while connecting to SMTP Server to send email {Id}, SMTP Error = {SmtpStatusCode}",
-                            email.Id.ToString(),
-                            email.SmtpStatusCode);
+                        this.logger.LogError(e, "Unexpected error while sending email {Id}, SMTP Error = {SmtpStatusCode}", email.Id, email.SmtpStatusCode);
                     }
+
+                    await smtpClient.DisconnectAsync(true, ct);
+                }
+                catch (SmtpCommandException e)
+                {
+                    caught = e;
+                    this.logger.LogError(
+                        e,
+                        "Unexpected error while connecting to SMTP Server to send email {Id}, SMTP Error = {SmtpStatusCode}",
+                        email.Id.ToString(),
+                        email.SmtpStatusCode);
                 }
             }
             catch (Exception e)

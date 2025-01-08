@@ -43,7 +43,7 @@ namespace HealthGateway.Laboratory.Delegates
             };
             List<PhsaCovid19Order> mockData =
             [
-                new PhsaCovid19Order
+                new()
                 {
                     Id = Guid.Parse("612d31e5-12e1-451f-a475-58d6b0a8f007"),
                     Phn = "9735352542",
@@ -56,8 +56,8 @@ namespace HealthGateway.Laboratory.Delegates
                     MessageId = "20200770000196",
                     AdditionalData = string.Empty,
                     ReportAvailable = true,
-                    Covid19Tests = new PhsaCovid19Test[]
-                    {
+                    Covid19Tests =
+                    [
                         new()
                         {
                             Id = Guid.Parse("dee12642-fb2c-481f-9ae4-c672b045b2b1"),
@@ -76,7 +76,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 "This test targets the RdRP and E gene regions of COVID‑19 virus (2019-nCoV) and has not been fully validated.",
                             ],
                         },
-                    },
+                    ],
                 },
             ];
 

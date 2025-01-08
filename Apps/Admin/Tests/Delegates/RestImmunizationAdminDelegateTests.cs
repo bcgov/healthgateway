@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Tests.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models.CovidSupport;
@@ -190,7 +189,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
     }

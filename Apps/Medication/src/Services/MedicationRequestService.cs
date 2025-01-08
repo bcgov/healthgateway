@@ -66,27 +66,25 @@ namespace HealthGateway.Medication.Services
 
             // Retrieve the phn
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
-            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+            if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
             {
                 PatientModel patient = patientResult.ResourcePayload;
                 RequestResult<IList<MedicationRequest>> delegateResult = await this.medicationRequestDelegate.GetMedicationRequestsAsync(patient.PersonalHealthNumber, ct);
-                if (delegateResult.ResultStatus == ResultType.Success)
-                {
-                    return new RequestResult<IList<MedicationRequest>>
+
+                return delegateResult.ResultStatus == ResultType.Success
+                    ? new RequestResult<IList<MedicationRequest>>
                     {
                         ResultStatus = delegateResult.ResultStatus,
                         ResourcePayload = delegateResult.ResourcePayload,
                         PageIndex = delegateResult.PageIndex,
                         PageSize = delegateResult.PageSize,
                         TotalResultCount = delegateResult.TotalResultCount,
+                    }
+                    : new RequestResult<IList<MedicationRequest>>
+                    {
+                        ResultStatus = delegateResult.ResultStatus,
+                        ResultError = delegateResult.ResultError,
                     };
-                }
-
-                return new RequestResult<IList<MedicationRequest>>
-                {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResultError = delegateResult.ResultError,
-                };
             }
 
             return new RequestResult<IList<MedicationRequest>>

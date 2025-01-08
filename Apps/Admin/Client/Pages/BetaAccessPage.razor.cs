@@ -36,17 +36,13 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static Func<string, string?> ValidateQueryParameter => parameter =>
         {
-            if (string.IsNullOrWhiteSpace(parameter))
-            {
-                return "Email is required";
-            }
+            string? emailValidationResult = !NaiveEmailValidator.IsValid(StringManipulator.StripWhitespace(parameter))
+                ? "Invalid email format"
+                : null;
 
-            if (!NaiveEmailValidator.IsValid(StringManipulator.StripWhitespace(parameter)))
-            {
-                return "Invalid email format";
-            }
-
-            return null;
+            return string.IsNullOrWhiteSpace(parameter)
+                ? "Email is required"
+                : emailValidationResult;
         };
 
         [Inject]

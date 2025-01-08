@@ -11,10 +11,10 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestNotificationService implements INotificationService {
     private readonly NOTIFICATION_BASE_URI: string = "Notification";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,

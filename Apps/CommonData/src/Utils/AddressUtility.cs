@@ -240,7 +240,7 @@ namespace HealthGateway.Common.Data.Utils
             }
 
             IEnumerable<string> addressElements = address.StreetLines
-                .Concat(new[] { address.City, address.State, address.PostalCode });
+                .Concat([address.City, address.State, address.PostalCode]);
 
             if (includeCountry)
             {

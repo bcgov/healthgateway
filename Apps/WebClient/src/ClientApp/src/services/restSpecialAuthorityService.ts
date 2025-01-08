@@ -15,10 +15,10 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestSpecialAuthorityService implements ISpecialAuthorityService {
     private readonly SPECIAL_AUTHORITY_BASE_URI: string = "MedicationRequest";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,

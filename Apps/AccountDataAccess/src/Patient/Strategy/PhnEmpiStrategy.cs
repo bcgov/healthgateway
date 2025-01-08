@@ -27,34 +27,23 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// Strategy implementation for EMPI phn patient data source with or without cache.
     /// </summary>
-    internal class PhnEmpiStrategy : PatientQueryStrategy
+    /// <param name="configuration">The injected configuration.</param>
+    /// <param name="cacheProvider">The injected cache provider.</param>
+    /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
+    /// <param name="logger">The injected logger.</param>
+    internal class PhnEmpiStrategy(
+        IConfiguration configuration,
+        ICacheProvider cacheProvider,
+        IClientRegistriesDelegate clientRegistriesDelegate,
+        ILogger<PhnEmpiStrategy> logger) : PatientQueryStrategy(configuration, cacheProvider, logger)
     {
-        private readonly IClientRegistriesDelegate clientRegistriesDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PhnEmpiStrategy"/> class.
-        /// </summary>
-        /// <param name="configuration">The injected configuration.</param>
-        /// <param name="cacheProvider">The injected cache provider.</param>
-        /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
-        /// <param name="logger">The injected logger.</param>
-        public PhnEmpiStrategy(
-            IConfiguration configuration,
-            ICacheProvider cacheProvider,
-            IClientRegistriesDelegate clientRegistriesDelegate,
-            ILogger<PhnEmpiStrategy> logger)
-            : base(configuration, cacheProvider, logger)
-        {
-            this.clientRegistriesDelegate = clientRegistriesDelegate;
-        }
-
         /// <inheritdoc/>
         public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
             await new PhnValidator(ErrorMessages.PhnInvalid).ValidateAndThrowAsync(request.Identifier, ct);
 
             PatientModel patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null) ??
-                                   await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation, ct);
+                                   await clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation, ct);
 
             await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;

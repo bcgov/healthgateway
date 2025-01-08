@@ -57,12 +57,8 @@ namespace HealthGateway.JobScheduler.Controllers
 
             this.logger.LogDebug(@"Redirecting to dashboard");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
-            if (this.Url.IsLocalUrl(basePath))
-            {
-                return new RedirectResult($"{basePath}/");
-            }
+            return this.Url.IsLocalUrl(basePath) ? new RedirectResult($"{basePath}/") : new RedirectResult("/");
 
-            return new RedirectResult("/");
 #pragma warning restore CA1303 //Restore literal warning
         }
 
@@ -75,11 +71,10 @@ namespace HealthGateway.JobScheduler.Controllers
         public IActionResult Logout()
         {
             return new SignOutResult(
-                new[]
-                {
-                    OpenIdConnectDefaults.AuthenticationScheme,
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                });
+            [
+                OpenIdConnectDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults.AuthenticationScheme,
+            ]);
         }
 
         /// <summary>

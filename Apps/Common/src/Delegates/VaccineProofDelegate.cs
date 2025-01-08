@@ -64,6 +64,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Style", "IDE0072:Populate swtich", Justification = "Team decision")]
         public async Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, CancellationToken ct = default)
         {
             RequestResult<VaccineProofResponse> retVal = new()
@@ -134,6 +135,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public async Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, CancellationToken ct = default)
         {
             RequestResult<VaccineProofResponse> retVal = new()
@@ -192,6 +194,7 @@ namespace HealthGateway.Common.Delegates
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Prevent exception propagation")]
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         public async Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri, CancellationToken ct = default)
         {
             RequestResult<ReportModel> retVal = new()
@@ -258,6 +261,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         // ReSharper disable once CognitiveComplexity
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         private async Task<RequestResult<T>> PostAsync<T>(string endpointString, StringContent httpContent, CancellationToken ct)
             where T : class
         {

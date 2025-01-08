@@ -284,7 +284,7 @@ namespace HealthGateway.CommonTests.CacheProviders
                     return number;
 
                 case CacheType.ObjectType:
-                    IEnumerable<DataSource> dataSources = new[] { DataSource.Immunization };
+                    IEnumerable<DataSource> dataSources = [DataSource.Immunization];
                     return dataSources;
 
                 case CacheType.StringType:

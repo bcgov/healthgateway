@@ -16,12 +16,14 @@
 namespace HealthGateway.Admin.Server.MapProfiles
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using AutoMapper;
     using HealthGateway.Admin.Common.Constants;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
+    [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
     public class BetaFeatureProfile : Profile
     {
         /// <summary>

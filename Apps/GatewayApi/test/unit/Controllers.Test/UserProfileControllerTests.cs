@@ -555,11 +555,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("hdid", hdid),
-                new Claim("auth_time", "123"),
-                new Claim("access_token", token),
+                new(ClaimTypes.Name, "username"),
+                new(ClaimTypes.NameIdentifier, userId),
+                new("hdid", hdid),
+                new("auth_time", "123"),
+                new("access_token", token),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -572,10 +572,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IAuthenticationService> authenticationMock = new();
             AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(
-                new[]
-                {
-                    new AuthenticationToken { Name = "access_token", Value = token },
-                });
+            [
+                new AuthenticationToken { Name = "access_token", Value = token },
+            ]);
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);

@@ -43,17 +43,13 @@ namespace HealthGateway.Admin.Client.Pages
 
         private static Func<string, string?> ValidateQueryParameter => parameter =>
         {
-            if (string.IsNullOrWhiteSpace(parameter))
-            {
-                return "PHN is required";
-            }
+            string? phnValidationResult = !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid
+                ? "Invalid PHN"
+                : null;
 
-            if (!PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
-            {
-                return "Invalid PHN";
-            }
-
-            return null;
+            return string.IsNullOrWhiteSpace(parameter)
+                ? "PHN is required"
+                : phnValidationResult;
         };
 
         [Inject]

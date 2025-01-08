@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.Utils
                 Converters = { new DateOnlyJsonConverter() },
             };
 
-            object? actualResult = JsonSerializer.Deserialize($@"""{dateStr}""", typeof(DateOnly), options);
+            object? actualResult = JsonSerializer.Deserialize<DateOnly>($@"""{dateStr}""", options);
 
             Assert.IsType<DateOnly>(actualResult);
             Assert.True(date.Equals(actualResult));

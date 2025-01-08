@@ -158,19 +158,17 @@ public class InactiveUserService : IInactiveUserService
     private void AddInactiveUser(
         List<AdminUserProfileView> inactiveUsers,
         IEnumerable<AdminUserProfile> activeUserProfiles,
-        ICollection<UserRepresentation> identityAccessUsers,
+        List<UserRepresentation> identityAccessUsers,
         IdentityAccessRole role)
     {
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role, identityAccessUsers.Count);
 
         // Filter identities from keycloak where inactive (database) user's username does not match keycloak user's username
         // and active (database) user's username does not match keycloak users username
-        IEnumerable<AdminUserProfileView> adminUserProfiles = identityAccessUsers
-            .Where(x1 => inactiveUsers.TrueForAll(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username))
-            .Select(user => this.mappingService.MapToAdminUserProfileView(user));
-
-        foreach (AdminUserProfileView adminUserProfile in adminUserProfiles)
+        foreach (UserRepresentation user in identityAccessUsers
+                     .Where(x1 => inactiveUsers.TrueForAll(x2 => x1.Username != x2.Username) && activeUserProfiles.All(x2 => x1.Username != x2.Username)))
         {
+            AdminUserProfileView adminUserProfile = this.mappingService.MapToAdminUserProfileView(user);
             adminUserProfile.RealmRoles = role.ToString();
             inactiveUsers.Add(adminUserProfile);
         }

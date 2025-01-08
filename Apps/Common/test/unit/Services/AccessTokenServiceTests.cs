@@ -16,7 +16,6 @@
 namespace HealthGateway.CommonTests.Services
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -144,7 +143,7 @@ namespace HealthGateway.CommonTests.Services
             }
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList())
+                .AddInMemoryCollection(configuration)
                 .Build();
         }
 

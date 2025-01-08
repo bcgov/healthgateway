@@ -79,6 +79,6 @@ export default abstract class ValidationUtil {
         predicate: boolean,
         validatorObject: object
     ) {
-        return predicate ? validatorObject : {};
+        return (predicate && validatorObject) || {};
     }
 }

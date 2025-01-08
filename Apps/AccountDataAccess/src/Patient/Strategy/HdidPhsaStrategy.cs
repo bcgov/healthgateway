@@ -30,31 +30,18 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// Strategy implementation for PHSA phn patient data source with or without cache.
     /// </summary>
-    internal class HdidPhsaStrategy : PatientQueryStrategy
+    /// <param name="configuration">The injected configuration.</param>
+    /// <param name="cacheProvider">The injected cache provider.</param>
+    /// <param name="patientIdentityApi">The injected patient identity api. </param>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="mapper">The injected mapper.</param>
+    internal class HdidPhsaStrategy(
+        IConfiguration configuration,
+        ICacheProvider cacheProvider,
+        IPatientIdentityApi patientIdentityApi,
+        ILogger<HdidPhsaStrategy> logger,
+        IMapper mapper) : PatientQueryStrategy(configuration, cacheProvider, logger)
     {
-        private readonly IPatientIdentityApi patientIdentityApi;
-        private readonly IMapper mapper;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HdidPhsaStrategy"/> class.
-        /// </summary>
-        /// <param name="configuration">The injected configuration.</param>
-        /// <param name="cacheProvider">The injected cache provider.</param>
-        /// <param name="patientIdentityApi">The injected patient identity api. </param>
-        /// <param name="logger">The injected logger.</param>
-        /// <param name="mapper">The injected mapper.</param>
-        public HdidPhsaStrategy(
-            IConfiguration configuration,
-            ICacheProvider cacheProvider,
-            IPatientIdentityApi patientIdentityApi,
-            ILogger<HdidPhsaStrategy> logger,
-            IMapper mapper)
-            : base(configuration, cacheProvider, logger)
-        {
-            this.patientIdentityApi = patientIdentityApi;
-            this.mapper = mapper;
-        }
-
         /// <inheritdoc/>
         public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
@@ -65,8 +52,8 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 try
                 {
                     this.GetLogger().LogDebug("Retrieving patient from PHSA");
-                    PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
-                    patient = this.mapper.Map<PatientModel>(result);
+                    PatientIdentity result = await patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
+                    patient = mapper.Map<PatientModel>(result);
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {

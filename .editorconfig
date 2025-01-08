@@ -20,6 +20,15 @@ indent_size = 2
 # All Rules are enabled with default severity.
 # Rules with IsEnabledByDefault = false are force-enabled with default severity.
 
+# CA1515 Suppress "Because an application's API isn't typically referenced from outside the assembly, types can be made internal"
+dotnet_diagnostic.ca1515.severity = none
+
+# IDE0290 Suppress "Use primary constructor"
+dotnet_diagnostic.IDE0290.severity = none
+
+# IDE0160 Suppress "Convert to block scoped namespace"
+dotnet_diagnostic.IDE0160.severity = none
+
 # S101: Types should be named in PascalCase
 dotnet_diagnostic.s101.severity = none
 

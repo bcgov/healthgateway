@@ -18,7 +18,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -73,7 +72,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            NameAuthorizationRequirement[] requirements = { new(this.username) };
+            NameAuthorizationRequirement[] requirements = [new(this.username)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -118,7 +117,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -148,7 +147,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read, supportsUserDelegation: false) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read, supportsUserDelegation: false)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -177,7 +176,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -227,7 +226,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 mockPatientService.Object,
                 mockDependentDelegate.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -322,7 +321,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             }
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList())
+                .AddInMemoryCollection(configDictionary)
                 .Build();
         }
 
@@ -330,9 +329,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, this.username),
-                new Claim(ClaimTypes.NameIdentifier, this.userId),
-                new Claim(GatewayClaims.Hdid, this.hdid),
+                new(ClaimTypes.Name, this.username),
+                new(ClaimTypes.NameIdentifier, this.userId),
+                new(GatewayClaims.Hdid, this.hdid),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             return new ClaimsPrincipal(identity);

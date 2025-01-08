@@ -11,9 +11,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestUserFeedbackService implements IUserFeedbackService {
     private readonly USER_FEEDBACK_BASE_URI: string = "UserFeedback";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

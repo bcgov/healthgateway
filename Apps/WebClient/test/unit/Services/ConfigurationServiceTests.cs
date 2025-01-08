@@ -81,8 +81,8 @@ namespace HealthGateway.WebClientTests.Services
                     "myhealthbc://*"),
                 2)
             {
-                Datasets = new[]
-                {
+                Datasets =
+                [
                     "bcCancerScreening",
                     "clinicalDocument",
                     "covid19TestResult",
@@ -94,9 +94,9 @@ namespace HealthGateway.WebClientTests.Services
                     "medication",
                     "note",
                     "specialAuthorityRequest",
-                },
-                DependentDatasets = new[]
-                {
+                ],
+                DependentDatasets =
+                [
                     "bcCancerScreening",
                     "clinicalDocument",
                     "covid19TestResult",
@@ -107,12 +107,12 @@ namespace HealthGateway.WebClientTests.Services
                     "labResult",
                     "medication",
                     "specialAuthorityRequest",
-                },
-                Services = new[]
-                {
+                ],
+                Services =
+                [
                     "organDonorRegistration",
                     "healthConnectRegistry",
-                },
+                ],
             };
 
             MobileConfiguration actualResult = await this.service.GetMobileConfigurationAsync();
@@ -176,8 +176,8 @@ namespace HealthGateway.WebClientTests.Services
                         { "Logout", new Uri("https://localhost/logout") },
                     },
                 },
-                IdentityProviders = new[]
-                {
+                IdentityProviders =
+                [
                     new IdentityProviderConfiguration
                     {
                         Id = "Id",
@@ -186,7 +186,7 @@ namespace HealthGateway.WebClientTests.Services
                         Hint = "Hint",
                         Disabled = true,
                     },
-                },
+                ],
                 WebClient = new WebClientConfiguration
                 {
                     LogLevel = "LogLevel",
@@ -207,23 +207,10 @@ namespace HealthGateway.WebClientTests.Services
                             new HomepageSettings(true, true),
                             new NotificationCentreSettings(true),
                             new TimelineSettings(true),
-                            new DatasetSettings[]
-                            {
-                                new("bcCancerScreening", true),
-                                new("clinicalDocument", true),
-                                new("covid19TestResult", true),
-                                new("diagnosticImaging", true),
-                                new("healthVisit", true),
-                                new("hospitalVisit", true),
-                                new("immunization", true),
-                                new("labResult", true),
-                                new("medication", true),
-                                new("note", true),
-                                new("specialAuthorityRequest", true),
-                            },
+                            GetFeatureDatasetSettings(),
                             new Covid19Settings(true, new PublicCovid19Settings(true), new ProofOfVaccinationSettings(false)),
-                            new DependentsSettings(true, true, new DatasetSettings[] { new("note", false) }),
-                            new ServicesSettings(true, new ServiceSetting[] { new("organDonorRegistration", true), new("healthConnectRegistry", true) }))
+                            new DependentsSettings(true, true, [new("note", false)]),
+                            new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]))
                         : null,
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
@@ -233,6 +220,15 @@ namespace HealthGateway.WebClientTests.Services
                     },
                 },
             };
+        }
+
+        private static DatasetSettings[] GetFeatureDatasetSettings()
+        {
+            return
+            [
+                new("bcCancerScreening", true), new("clinicalDocument", true), new("covid19TestResult", true), new("diagnosticImaging", true), new("healthVisit", true),
+                new("hospitalVisit", true), new("immunization", true), new("labResult", true), new("medication", true), new("note", true), new("specialAuthorityRequest", true),
+            ];
         }
     }
 }

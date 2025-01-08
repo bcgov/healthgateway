@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -41,6 +42,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer,SupportUser")]
+    [SuppressMessage("Major Code Smell", "S6960:This controller has multiple responsibilities and could be split into 2 smaller controllers", Justification = "Team decision")]
     public class SupportController(ICovidSupportService covidSupportService, ISupportService supportService) : ControllerBase
     {
         /// <summary>

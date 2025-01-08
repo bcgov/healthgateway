@@ -46,10 +46,7 @@ namespace HealthGateway.Common.Swagger
                     ApiParameterDescription description = context.ApiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
                     ApiParameterRouteInfo? routeInfo = description.RouteInfo;
 
-                    if (parameter.Description == null)
-                    {
-                        parameter.Description = description.ModelMetadata?.Description;
-                    }
+                    parameter.Description ??= description.ModelMetadata?.Description;
 
                     if (routeInfo == null)
                     {

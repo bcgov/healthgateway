@@ -478,21 +478,18 @@ namespace AccountDataAccessTest
 
         private static II[] GenerateId(bool shouldReturnEmpty = false, string? extension = null, string? oidType = null, bool displayable = true)
         {
-            if (shouldReturnEmpty)
-            {
-                return [];
-            }
-
-            return
-            [
-                new II
-                {
-                    root = oidType ?? HdidOidType,
-                    extension = oidType == null || (oidType == HdidOidType && extension == null) ? Hdid
-                        : oidType == PhnOidType && extension == null ? Phn : extension,
-                    displayable = displayable,
-                },
-            ];
+            return shouldReturnEmpty
+                ? []
+                :
+                [
+                    new II
+                    {
+                        root = oidType ?? HdidOidType,
+                        extension = oidType == null || (oidType == HdidOidType && extension == null) ? Hdid
+                            : oidType == PhnOidType && extension == null ? Phn : extension,
+                        displayable = displayable,
+                    },
+                ];
         }
 
         private static HCIM_IN_GetDemographicsResponsePerson GenerateIdentifiedPerson(
@@ -507,7 +504,9 @@ namespace AccountDataAccessTest
             return new HCIM_IN_GetDemographicsResponsePerson
             {
                 deceasedInd = new BL
-                    { value = deceasedInd },
+                {
+                    value = deceasedInd,
+                },
                 id = GenerateId(shouldReturnEmpty, extension, oidType),
                 name = names.ToArray(),
                 birthTime = new TS

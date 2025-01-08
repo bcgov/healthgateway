@@ -11,7 +11,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
     public title: string;
     public hdid: string;
     public version?: number;
-    private static maxSumaryLength = 40;
+    private static readonly maxSumaryLength = 40;
 
     public constructor(model: UserNote) {
         super(

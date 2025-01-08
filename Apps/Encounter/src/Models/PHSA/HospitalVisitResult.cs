@@ -16,7 +16,6 @@
 namespace HealthGateway.Encounter.Models.PHSA
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -49,6 +48,6 @@ namespace HealthGateway.Encounter.Models.PHSA
         /// Gets or sets the list of hospital visits.
         /// </summary>
         [JsonPropertyName("hospitalVisits")]
-        public IEnumerable<HospitalVisitModel> HospitalVisits { get; set; } = Enumerable.Empty<HospitalVisitModel>();
+        public IEnumerable<HospitalVisitModel> HospitalVisits { get; set; } = [];
     }
 }

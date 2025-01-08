@@ -42,9 +42,10 @@ namespace HealthGateway.CommonUi.Tests.Utils
 
             jsRuntime.Verify(
                 a => a.InvokeAsync<IJSVoidResult>(
-                It.Is<string>(s =>
-                    s.Equals("initializeInactivityTimer",  StringComparison.OrdinalIgnoreCase)),
-                It.IsAny<object?[]?>()),
+                    It.Is<string>(
+                        s =>
+                            s.Equals("initializeInactivityTimer", StringComparison.OrdinalIgnoreCase)),
+                    It.IsAny<object?[]?>()),
                 Times.Once);
         }
     }

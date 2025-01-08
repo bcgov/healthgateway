@@ -47,11 +47,11 @@ namespace PatientDataAccessTests
 
             patientApi
                 .Setup(api => api.GetHealthOptionsAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthOptionsResult(new HealthOptionsMetadata(), new[] { phsaOrganDonorRegistrationResponse }));
+                .ReturnsAsync(new HealthOptionsResult(new HealthOptionsMetadata(), [phsaOrganDonorRegistrationResponse]));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, new[] { HealthCategory.OrganDonorRegistrationStatus }), CancellationToken.None);
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.OrganDonorRegistrationStatus]), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.OrganDonorRegistration
@@ -81,14 +81,11 @@ namespace PatientDataAccessTests
                 .ReturnsAsync(
                     new HealthDataResult(
                         new HealthDataMetadata(),
-                        new[]
-                        {
-                            bcCancerScreening,
-                        }));
+                        [bcCancerScreening]));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, new[] { HealthCategory.BcCancerScreening }), CancellationToken.None);
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.BcCancerScreening]), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.BcCancerScreening exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreening>();
@@ -121,14 +118,11 @@ namespace PatientDataAccessTests
                 .ReturnsAsync(
                     new HealthDataResult(
                         new HealthDataMetadata(),
-                        new[]
-                        {
-                            phsaDiagnosticImageExam,
-                        }));
+                        [phsaDiagnosticImageExam]));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging }), CancellationToken.None);
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.DiagnosticImaging]), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.DiagnosticImagingExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
@@ -159,11 +153,11 @@ namespace PatientDataAccessTests
 
             patientApi
                 .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), new HealthDataEntry[] { phsaDiagnosticImageExam, bcCancerScreening }));
+                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), [phsaDiagnosticImageExam, bcCancerScreening]));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging, HealthCategory.BcCancerScreening }), CancellationToken.None)
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.DiagnosticImaging, HealthCategory.BcCancerScreening]), CancellationToken.None)
                 ;
 
             result.ShouldNotBeNull();

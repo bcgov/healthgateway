@@ -21,22 +21,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// The Context defines the interface of interest to clients.
     /// </summary>
-    internal class PatientQueryContext
+    /// <param name="patientQueryStrategy">The implemented request to use.</param>
+    internal class PatientQueryContext(PatientQueryStrategy patientQueryStrategy)
     {
-        // The Context maintains a reference to one of the Strategy objects. The
-        // Context does not know the concrete class of a request. It should
-        // work with all strategies via the Strategy interface.
-        private readonly PatientQueryStrategy patientQueryStrategy;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PatientQueryContext"/> class.
-        /// </summary>
-        /// <param name="patientQueryStrategy">The implemented request to use.</param>
-        public PatientQueryContext(PatientQueryStrategy patientQueryStrategy)
-        {
-            this.patientQueryStrategy = patientQueryStrategy;
-        }
-
         /// <summary>
         /// Returns patient from the specified source in the patient request.
         /// </summary>
@@ -45,7 +32,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <returns>The patient model.</returns>
         public async Task<PatientModel> GetPatientAsync(PatientRequest patientRequest, CancellationToken ct = default)
         {
-            return await this.patientQueryStrategy.GetPatientAsync(patientRequest, ct);
+            return await patientQueryStrategy.GetPatientAsync(patientRequest, ct);
         }
     }
 }

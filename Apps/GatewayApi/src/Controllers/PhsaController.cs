@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -37,6 +38,7 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
+    [SuppressMessage("Major Code Smell", "S6960:Controllers should not have mixed responsibilities", Justification = "Team decision")]
     public class PhsaController : ControllerBase
     {
         private readonly IDependentService dependentService;

@@ -72,6 +72,8 @@ namespace HealthGateway.Laboratory.Delegates
             {
                 this.logger.LogDebug("Retrieving COVID-19 test results");
                 PhsaResult<List<PhsaCovid19Order>> response = await this.laboratoryApi.GetCovid19OrdersAsync(hdid, this.labConfig.FetchSize, bearerToken, ct);
+
+                // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
                 retVal.ResourcePayload = response ?? new() { Result = [] };
                 retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
                 retVal.ResultStatus = ResultType.Success;
@@ -150,6 +152,8 @@ namespace HealthGateway.Laboratory.Delegates
             {
                 this.logger.LogDebug("Retrieving laboratory orders");
                 PhsaResult<PhsaLaboratorySummary> response = await this.laboratoryApi.GetPlisLaboratorySummaryAsync(hdid, bearerToken, ct);
+
+                // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
                 retVal.ResourcePayload = response ?? new() { Result = new() };
                 retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;
                 retVal.ResultStatus = ResultType.Success;

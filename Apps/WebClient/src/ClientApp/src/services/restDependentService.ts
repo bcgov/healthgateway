@@ -14,10 +14,10 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 export class RestDependentService implements IDependentService {
     private readonly DEPENDENT_BASE_URI: string = "UserProfile";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,

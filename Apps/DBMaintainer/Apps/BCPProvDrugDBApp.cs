@@ -120,10 +120,12 @@ namespace HealthGateway.DBMaintainer.Apps
         /// <param name="downloadedFile">Search for all download files matching this one.</param>
         protected override void RemoveOldFiles(FileDownload downloadedFile)
         {
-            List<FileDownload> oldIds = this.DrugDbContext.FileDownload
-                .Where(p => p.ProgramCode == downloadedFile.ProgramCode)
-                .Select(f => new FileDownload { Id = f.Id, ProgramCode = f.ProgramCode, Version = f.Version })
-                .ToList();
+            List<FileDownload> oldIds =
+            [
+                .. this.DrugDbContext.FileDownload
+                    .Where(p => p.ProgramCode == downloadedFile.ProgramCode)
+                    .Select(f => new FileDownload { Id = f.Id, ProgramCode = f.ProgramCode, Version = f.Version }),
+            ];
             oldIds.ForEach(s => this.Logger.LogInformation("Deleting old file downloads with id: {Id} and program code: {ProgramCode}", s.Id, s.ProgramCode));
             this.DrugDbContext.RemoveRange(oldIds);
         }
@@ -131,12 +133,7 @@ namespace HealthGateway.DBMaintainer.Apps
         private static string GetDownloadedFile(string sourceFolder, string filenamePattern)
         {
             string[] files = Directory.GetFiles(sourceFolder, filenamePattern);
-            if (files.Length > 1)
-            {
-                throw new FormatException($"The zip file contained {files.Length} CSV files, very confused.");
-            }
-
-            return files[0];
+            return files.Length > 1 ? throw new FormatException($"The zip file contained {files.Length} CSV files, very confused.") : files[0];
         }
 
         private static void ModifyPharmaCareDrug(PharmacyAssessment pharmacyAssessment, IList<PharmaCareDrug> pharmaCareDrugs)

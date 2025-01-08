@@ -3,7 +3,10 @@ export class ReliableTimer {
     private timeoutId?: ReturnType<typeof setTimeout>;
     private startingTimestamp?: number;
 
-    constructor(private callback: () => void, private duration: number) {
+    constructor(
+        private readonly callback: () => void,
+        private readonly duration: number
+    ) {
         if (duration < this.interval) {
             throw new Error(`Duration must be at least ${this.interval}ms`);
         }

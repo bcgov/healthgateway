@@ -773,21 +773,18 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static II[] GenerateId(bool shouldReturnEmpty = false, string? extension = null, string? oidType = null)
         {
-            if (shouldReturnEmpty)
-            {
-                return [];
-            }
-
-            return
-            [
-                new II
-                {
-                    root = oidType ?? HdidOidType,
-                    extension = oidType == null || (oidType == HdidOidType && extension == null) ? Hdid
-                        : oidType == PhnOidType && extension == null ? Phn : extension,
-                    displayable = true,
-                },
-            ];
+            return shouldReturnEmpty
+                ? []
+                :
+                [
+                    new II
+                    {
+                        root = oidType ?? HdidOidType,
+                        extension = oidType == null || (oidType == HdidOidType && extension == null) ? Hdid
+                            : oidType == PhnOidType && extension == null ? Phn : extension,
+                        displayable = true,
+                    },
+                ];
         }
 
         private static IEnumerable<ENXP> GenerateItems(IEnumerable<EnName> givenNames, IEnumerable<EnName> familyNames)
@@ -848,7 +845,9 @@ namespace HealthGateway.CommonTests.Delegates
             return new HCIM_IN_GetDemographicsResponsePerson
             {
                 deceasedInd = new BL
-                    { value = deceasedInd },
+                {
+                    value = deceasedInd,
+                },
                 id = GenerateId(shouldReturnEmpty, extension, oidType),
                 name = names.ToArray(),
                 birthTime = new TS

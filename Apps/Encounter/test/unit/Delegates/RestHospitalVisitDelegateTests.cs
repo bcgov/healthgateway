@@ -167,7 +167,7 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList())
+                .AddInMemoryCollection(configuration)
                 .Build();
         }
     }

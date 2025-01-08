@@ -217,13 +217,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         private async Task<JwtModel?> ClientCredentialsGrantAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
             ClientCredentialsRequestParameters parameters = request.Parameters;
-            IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
-            {
-                new KeyValuePair<string?, string?>("client_id", parameters.ClientId),
-                new KeyValuePair<string?, string?>("client_secret", parameters.ClientSecret),
-                new KeyValuePair<string?, string?>("audience", parameters.Audience),
-                new KeyValuePair<string?, string?>("grant_type", "client_credentials"),
-            };
+            IEnumerable<KeyValuePair<string?, string?>> oauthParams =
+            [
+                new("client_id", parameters.ClientId),
+                new("client_secret", parameters.ClientSecret),
+                new("audience", parameters.Audience),
+                new("grant_type", "client_credentials"),
+            ];
             using FormUrlEncodedContent content = new(oauthParams);
             return await this.AuthenticateAsync(request.TokenUri, content, ct);
         }

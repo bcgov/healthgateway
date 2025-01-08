@@ -303,7 +303,7 @@ namespace AccountDataAccessTest
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -330,10 +330,12 @@ namespace AccountDataAccessTest
 
             if (changeFeedEnabled)
             {
-                IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
-                {
-                    new(new DataSourcesBlockedEvent(blockedAccess.Hdid, GetDataSourceValues(blockedAccess.DataSources)), blockedAccess.Hdid),
-                };
+                IEnumerable<MessageEnvelope> events =
+                [
+                    new(
+                        new DataSourcesBlockedEvent(blockedAccess.Hdid, GetDataSourceValues(blockedAccess.DataSources)),
+                        blockedAccess.Hdid),
+                ];
                 messageSender.Setup(ms => ms.SendAsync(events, It.IsAny<CancellationToken>()));
             }
 

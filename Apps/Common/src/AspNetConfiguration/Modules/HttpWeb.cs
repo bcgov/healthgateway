@@ -291,11 +291,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
                     if (context.File.Name == "blazor.boot.json")
                     {
-                        if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
-                        {
-                            context.Context.Response.Headers.Remove("blazor-environment");
-                        }
-
+                        context.Context.Response.Headers.Remove("blazor-environment");
                         context.Context.Response.Headers.Append("blazor-environment", environment.EnvironmentName);
                     }
                 },

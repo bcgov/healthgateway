@@ -17,7 +17,6 @@ namespace HealthGateway.Laboratory.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -95,6 +94,6 @@ namespace HealthGateway.Laboratory.Models
         /// Gets or sets the collection of COVID-19 tests.
         /// </summary>
         [JsonPropertyName("labResults")]
-        public IEnumerable<Covid19Test> Covid19Tests { get; set; } = Enumerable.Empty<Covid19Test>();
+        public IEnumerable<Covid19Test> Covid19Tests { get; set; } = [];
     }
 }

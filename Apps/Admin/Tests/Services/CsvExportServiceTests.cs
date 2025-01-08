@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -354,7 +353,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -366,12 +365,12 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IInactiveUserService>? inactiveUserServiceMock = null,
             Mock<IFeedbackDelegate>? feedbackDelegateMock = null)
         {
-            profileDelegateMock = profileDelegateMock ?? new();
-            commentDelegateMock = commentDelegateMock ?? new();
-            noteDelegateMock = noteDelegateMock ?? new();
-            ratingDelegateMock = ratingDelegateMock ?? new();
-            inactiveUserServiceMock = inactiveUserServiceMock ?? new();
-            feedbackDelegateMock = feedbackDelegateMock ?? new();
+            profileDelegateMock ??= new();
+            commentDelegateMock ??= new();
+            noteDelegateMock ??= new();
+            ratingDelegateMock ??= new();
+            inactiveUserServiceMock ??= new();
+            feedbackDelegateMock ??= new();
 
             return new CsvExportService(
                 Configuration,
