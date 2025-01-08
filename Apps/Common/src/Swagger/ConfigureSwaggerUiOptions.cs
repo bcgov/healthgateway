@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Swagger
 #pragma warning disable S3236
             Debug.Assert(versionDescriptionProvider != null, "The versionDescriptionProvider parameter cannot be null.");
             Debug.Assert(settings != null, "The settings parameter cannot be null.");
-#pragma warning restore CSHARP_S3236
+#pragma warning restore S3236
             this.provider = versionDescriptionProvider;
             this.settings = settings.Value;
         }
