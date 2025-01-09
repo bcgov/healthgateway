@@ -411,7 +411,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateRemove()
         {
-            IList<ResourceDelegate> resourceDelegates = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } };
+            IList<ResourceDelegate> resourceDelegates =
+            [
+                new()
+                    { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId },
+            ];
             DbResult<ResourceDelegate> dbResult = new()
             {
                 Status = DbStatusCode.Deleted,
@@ -465,7 +469,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -502,9 +506,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static RequestResult<PatientModel> SetupPatientRequestResultForInvalidPatient(ResultType resultType, string message)
         {
-            if (resultType == ResultType.ActionRequired)
-            {
-                return new()
+            return resultType == ResultType.ActionRequired
+                ? new()
                 {
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = message == ErrorMessages.InvalidServicesCard
@@ -513,13 +516,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             ActionCode = ActionType.NoHdId,
                         }
                         : null,
+                }
+                : new()
+                {
+                    ResultStatus = resultType,
                 };
-            }
-
-            return new()
-            {
-                ResultStatus = resultType,
-            };
         }
 
         private IList<ResourceDelegate> GenerateMockResourceDelegatesList()

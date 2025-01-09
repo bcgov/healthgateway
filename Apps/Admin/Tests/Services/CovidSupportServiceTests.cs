@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
@@ -553,7 +552,7 @@ namespace HealthGateway.Admin.Tests.Services
                 PersonalHealthNumber = Phn,
                 MailAddress = new()
                 {
-                    StreetLines = new[] { "9105 ROTTERDAM PLACE" },
+                    StreetLines = ["9105 ROTTERDAM PLACE"],
                     City = "VANCOUVER",
                     Country = string.Empty,
                     PostalCode = "V3X 4J5",
@@ -659,7 +658,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
     }

@@ -4,7 +4,7 @@ import { ILogger, ITrackingService } from "@/services/interfaces";
 declare let window: SnowplowWindow;
 
 export class RestTrackingService implements ITrackingService {
-    private logger;
+    private readonly logger;
 
     constructor(logger: ILogger) {
         this.logger = logger;

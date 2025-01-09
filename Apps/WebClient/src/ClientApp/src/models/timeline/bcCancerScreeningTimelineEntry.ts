@@ -17,7 +17,7 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public fileName!: string;
     public eventText!: string;
 
-    private getComments: (entryId: string) => UserComment[] | null;
+    private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: BcCancerScreening,

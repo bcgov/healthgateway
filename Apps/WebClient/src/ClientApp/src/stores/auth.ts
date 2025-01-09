@@ -124,21 +124,29 @@ export const useAuthStore = defineStore("auth", () => {
         }
     }
 
+    function handleTokenRefreshed() {
+        logger.verbose("Refreshed access token");
+        const tokenDetails = authService.getOidcTokenDetails();
+        if (tokenDetails !== null) {
+            handleSuccessfulAuthentication(tokenDetails);
+        }
+    }
+
+    function handleTokenNotRefreshed() {
+        logger.verbose("Access token refresh not required");
+    }
+
     function refreshToken() {
         logger.info("Refreshing access token");
+
+        const actions: Record<string, () => void> = {
+            true: handleTokenRefreshed,
+            false: handleTokenNotRefreshed,
+        };
+
         authService
             .refreshToken()
-            .then((refreshed) => {
-                if (refreshed) {
-                    logger.verbose("Refreshed access token");
-                    const tokenDetails = authService.getOidcTokenDetails();
-                    if (tokenDetails !== null) {
-                        handleSuccessfulAuthentication(tokenDetails);
-                    }
-                } else {
-                    logger.verbose("Access token refresh not required");
-                }
-            })
+            .then((refreshed) => actions[refreshed.toString()]())
             .catch(() => {
                 logger.warn("Access token expired unexpectedly");
                 signOut();

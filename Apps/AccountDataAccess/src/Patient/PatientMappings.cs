@@ -38,7 +38,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static Name ExtractPreferredName(PatientIdentity patientIdentity)
         {
             string preferredName = StringManipulator.JoinWithoutBlanks(
-                new[] { patientIdentity.PreferredFirstName, patientIdentity.PreferredSecondName, patientIdentity.PreferredThirdName });
+                [patientIdentity.PreferredFirstName, patientIdentity.PreferredSecondName, patientIdentity.PreferredThirdName]);
 
             return new()
             {
@@ -50,7 +50,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static Name ExtractLegalName(PatientIdentity patientIdentity)
         {
             string legalName = StringManipulator.JoinWithoutBlanks(
-                new[] { patientIdentity.LegalFirstName, patientIdentity.LegalSecondName, patientIdentity.LegalThirdName });
+                [patientIdentity.LegalFirstName, patientIdentity.LegalSecondName, patientIdentity.LegalThirdName]);
 
             return new()
             {
@@ -64,7 +64,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             if (ShouldReturnHomeAddress(patientIdentity))
             {
                 IEnumerable<string> streetLines = StringManipulator.ExcludeBlanks(
-                    new[] { patientIdentity.HomeAddressStreetOne, patientIdentity.HomeAddressStreetTwo, patientIdentity.HomeAddressStreetThree });
+                    [patientIdentity.HomeAddressStreetOne, patientIdentity.HomeAddressStreetTwo, patientIdentity.HomeAddressStreetThree]);
 
                 return new()
                 {
@@ -84,7 +84,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             if (ShouldReturnPostalAddress(patientIdentity))
             {
                 IEnumerable<string> streetLines = StringManipulator.ExcludeBlanks(
-                    new[] { patientIdentity.MailAddressStreetOne, patientIdentity.MailAddressStreetTwo, patientIdentity.MailAddressStreetThree });
+                    [patientIdentity.MailAddressStreetOne, patientIdentity.MailAddressStreetTwo, patientIdentity.MailAddressStreetThree]);
 
                 return new()
                 {

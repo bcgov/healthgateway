@@ -27,12 +27,7 @@ namespace HealthGateway.DBMaintainer.Mappers.Converters
         /// <inheritdoc/>
         public override object? ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
         {
-            if (TryConvertToBool(text, out bool result))
-            {
-                return result;
-            }
-
-            return null;
+            return TryConvertToBool(text, out bool result) ? result : null;
         }
 
         private static bool TryConvertToBool(string text, out bool result)

@@ -429,7 +429,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -438,9 +438,9 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IAdminTagDelegate>? adminTagDelegateMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null)
         {
-            feedbackDelegateMock = feedbackDelegateMock ?? new();
-            adminTagDelegateMock = adminTagDelegateMock ?? new();
-            userProfileDelegateMock = userProfileDelegateMock ?? new();
+            feedbackDelegateMock ??= new();
+            adminTagDelegateMock ??= new();
+            userProfileDelegateMock ??= new();
 
             return new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,

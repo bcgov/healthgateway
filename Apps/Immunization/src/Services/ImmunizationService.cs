@@ -61,28 +61,26 @@ namespace HealthGateway.Immunization.Services
             }
 
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationsAsync(hdid, ct);
-            if (delegateResult.ResultStatus == ResultType.Success)
-            {
-                return new RequestResult<ImmunizationResult>
+
+            return delegateResult.ResultStatus == ResultType.Success
+                ? new RequestResult<ImmunizationResult>
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResourcePayload = new ImmunizationResult
                     {
                         LoadState = this.mappingService.MapToLoadStateModel(delegateResult.ResourcePayload!.LoadState),
                         Immunizations = delegateResult.ResourcePayload!.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent).ToList(),
-                        Recommendations = this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations).ToList(),
+                        Recommendations = this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations),
                     },
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,
+                }
+                : new RequestResult<ImmunizationResult>
+                {
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResultError = delegateResult.ResultError,
                 };
-            }
-
-            return new RequestResult<ImmunizationResult>
-            {
-                ResultStatus = delegateResult.ResultStatus,
-                ResultError = delegateResult.ResultError,
-            };
         }
     }
 }

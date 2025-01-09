@@ -575,7 +575,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -844,7 +844,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true, CancellationToken.None)).ReturnsAsync(dependent);
 
-            messageSender = messageSender ?? new();
+            messageSender ??= new();
 
             return new(
                 GetIConfigurationRoot(isChangeFeedEnabled),

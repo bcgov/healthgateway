@@ -344,7 +344,7 @@ namespace HealthGateway.EncounterTests.Services
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
-                    Result = Enumerable.Empty<HospitalVisit>(),
+                    Result = [],
                 },
                 TotalResultCount = 0,
             };
@@ -377,7 +377,7 @@ namespace HealthGateway.EncounterTests.Services
                 ResultStatus = ResultType.ActionRequired,
                 ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
-                    Result = Enumerable.Empty<HospitalVisit>(),
+                    Result = [],
                     LoadState = new()
                     {
                         Queued = true,
@@ -416,7 +416,7 @@ namespace HealthGateway.EncounterTests.Services
                 ResultStatus = ResultType.Error,
                 ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
-                    Result = Enumerable.Empty<HospitalVisit>(),
+                    Result = [],
                 },
             };
             IEncounterService service = GetEncounterService(hospitalVisitResults);

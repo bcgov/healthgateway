@@ -94,7 +94,7 @@ namespace HealthGateway.ClinicalDocument.Services
                     this.logger.LogDebug("Retrieving clinical documents");
                     PhsaHealthDataResponse apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid, ct);
 
-                    IList<ClinicalDocumentRecord> clinicalDocuments = apiResponse.Data.Select(this.mappingService.MapToClinicalDocumentRecord).ToList();
+                    List<ClinicalDocumentRecord> clinicalDocuments = apiResponse.Data.Select(this.mappingService.MapToClinicalDocumentRecord).ToList();
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = clinicalDocuments;
                     requestResult.TotalResultCount = clinicalDocuments.Count;

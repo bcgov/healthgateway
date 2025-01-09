@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Components.Communications;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -47,21 +48,18 @@ public partial class BroadcastDialog : FluxorComponent
         BroadcastActionType.ExternalLink,
     ];
 
+    [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
     private Func<string, string?> ValidateActionUrl =>
         urlString =>
         {
-            switch (this.Broadcast.ActionType)
+            return this.Broadcast.ActionType switch
             {
-                case BroadcastActionType.InternalLink:
-                case BroadcastActionType.ExternalLink:
-                    return urlString.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
-                           && Uri.TryCreate(this.ActionUrlString, UriKind.Absolute, out Uri? _)
-                        ? null
-                        : "URL is invalid";
-                case BroadcastActionType.None:
-                default:
-                    return urlString.Length == 0 ? null : "Selected Action Type does not support Action URL";
-            }
+                BroadcastActionType.InternalLink or BroadcastActionType.ExternalLink => urlString.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
+                                                                                        && Uri.TryCreate(this.ActionUrlString, UriKind.Absolute, out Uri? _)
+                    ? null
+                    : "URL is invalid",
+                _ => urlString.Length == 0 ? null : "Selected Action Type does not support Action URL",
+            };
         };
 
     [CascadingParameter]
@@ -149,14 +147,10 @@ public partial class BroadcastDialog : FluxorComponent
             ? null
             : (this.ExpiryDate.Value + this.ExpiryTime.Value).ToUniversalTime();
 
-        if (this.ActionUrlString.Length > 0 && Uri.TryCreate(this.ActionUrlString, UriKind.Absolute, out Uri? result))
-        {
-            this.Broadcast.ActionUrl = result;
-        }
-        else
-        {
-            this.Broadcast.ActionUrl = null;
-        }
+        this.Broadcast.ActionUrl = this.ActionUrlString.Length > 0 &&
+                                   Uri.TryCreate(this.ActionUrlString, UriKind.Absolute, out Uri? result)
+            ? result
+            : null;
     }
 
     private void HandleClickCancel()

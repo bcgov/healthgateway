@@ -43,7 +43,7 @@ namespace HealthGateway.Common.Data.Tests.Extensions
         public void ValidateToEnumString(string[] userRoles, string[] targetRoles, bool expected)
         {
             IEnumerable<Claim> claims = userRoles.Select(r => new Claim(ClaimsIdentity.DefaultRoleClaimType, r));
-            ClaimsPrincipal user = new(new[] { new ClaimsIdentity(claims) });
+            ClaimsPrincipal user = new([new ClaimsIdentity(claims)]);
 
             bool actual = user.IsInAnyRole(targetRoles);
 

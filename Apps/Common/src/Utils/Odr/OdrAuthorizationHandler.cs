@@ -52,7 +52,12 @@ namespace HealthGateway.Common.Utils.Odr
             if (odrConfig.ClientCertificate?.Enabled == true)
             {
                 byte[] certificateData = File.ReadAllBytes(odrConfig.ClientCertificate?.Path);
+
+#pragma warning disable SYSLIB0057
+
+                // Using the obsolete X509Certificate2 constructor
                 this.ClientCertificates.Add(new X509Certificate2(certificateData, odrConfig.ClientCertificate?.Password));
+#pragma warning restore SYSLIB0057
             }
         }
 

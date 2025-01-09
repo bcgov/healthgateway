@@ -74,7 +74,7 @@ namespace HealthGateway.DBMaintainer
         /// </summary>
         /// <returns>The IHostBuilder.</returns>
         /// <param name="args">The set of command line arguments.</param>
-        [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Required for migrations")]
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required for migrations.")]
         public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";

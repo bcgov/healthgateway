@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Patient.Controllers
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -33,6 +34,7 @@ namespace HealthGateway.Patient.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
+    [SuppressMessage("SonarLint", "S6960:This controller has multiple responsibilities and could be split into 2 smaller controllers", Justification = "Team Decision")]
     public class PatientController : ControllerBase
     {
         /// <summary>

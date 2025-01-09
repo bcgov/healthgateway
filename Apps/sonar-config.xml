@@ -17,7 +17,8 @@
 
 -->
 <SonarQubeAnalysisProperties xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
-  <Property Name="sonar.exclusions">**/node_modules/**/*,**/wwwroot/**/*,**/ClientApp/public/**/*,**/Startup.cs</Property>
+  <Property Name="sonar.sources">$(Build.SourcesDirectory)/Apps</Property>
+  <Property Name="sonar.exclusions">**/node_modules/**/*,**/wwwroot/**/*,**/ClientApp/public/**/*,**/Startup.cs,**/Testing/**,**/Tools/**</Property>
   <Property Name="sonar.test.inclusions">**/test/**/*Tests.cs,**/Tests/**/*Tests.cs</Property>
   <Property Name="sonar.coverage.exclusions">**/*Controller.cs,**/Models/**/*,**/Admin/Client/**/*,**/Database/**/*,**/DBMaintainer/**/*,**/JobScheduler/**/*,**/ClientApp/**/*</Property>
   <Property Name="sonar.host.url">https://sonarcloud.io</Property>

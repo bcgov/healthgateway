@@ -17,6 +17,7 @@
 namespace HealthGateway.CommonTests.Validations
 {
     using System;
+    using FluentValidation.Results;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Validations;
     using Xunit;
@@ -38,13 +39,14 @@ namespace HealthGateway.CommonTests.Validations
         [InlineData("2000-01-01", "2021-01-01", "", "PHN is empty")]
         public void ShouldNotBeValid(DateTime dob, DateTime dov, string phn, string reason)
         {
-            var validator = new VaccineStatusQueryValidator();
-            var validationResult = validator.Validate(new VaccineStatusQuery
-            {
-                DateOfBirth = dob,
-                DateOfVaccine = dov,
-                PersonalHealthNumber = phn,
-            });
+            VaccineStatusQueryValidator validator = new();
+            ValidationResult? validationResult = validator.Validate(
+                new VaccineStatusQuery
+                {
+                    DateOfBirth = dob,
+                    DateOfVaccine = dov,
+                    PersonalHealthNumber = phn,
+                });
 
             Assert.False(validationResult.IsValid, reason);
         }
@@ -59,13 +61,14 @@ namespace HealthGateway.CommonTests.Validations
         [InlineData("2000-01-01", "2021-01-01", "9735353315")]
         public void ShouldBeValid(DateTime dob, DateTime dov, string phn)
         {
-            var validator = new VaccineStatusQueryValidator();
-            var validationResult = validator.Validate(new VaccineStatusQuery
-            {
-                DateOfBirth = dob,
-                DateOfVaccine = dov,
-                PersonalHealthNumber = phn,
-            });
+            VaccineStatusQueryValidator validator = new();
+            ValidationResult? validationResult = validator.Validate(
+                new VaccineStatusQuery
+                {
+                    DateOfBirth = dob,
+                    DateOfVaccine = dov,
+                    PersonalHealthNumber = phn,
+                });
 
             Assert.True(validationResult.IsValid);
         }

@@ -62,7 +62,10 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Protect reason input is empty
-        cy.get("[data-testid=audit-reason-input]").should("be.empty");
+        cy.get("[data-testid=audit-reason-input]")
+            .should("exist")
+            .should("be.visible")
+            .should("have.value", "");
 
         // Cancel confirmation dialog
         cy.get("[data-testid=audit-cancel-button]").click();

@@ -82,7 +82,7 @@ namespace HealthGateway.Database.Delegates
 
             int totalCount = await emailQuery.CountAsync(ct);
 
-            IList<string> emailAddresses = await emailQuery
+            List<string> emailAddresses = await emailQuery
                 .OrderBy(p => p)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)

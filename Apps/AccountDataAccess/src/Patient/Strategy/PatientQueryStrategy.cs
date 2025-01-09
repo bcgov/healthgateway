@@ -33,29 +33,16 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// The Context uses this interface to call the algorithm defined by Concrete
     /// Strategies.
     /// </summary>
-    internal abstract class PatientQueryStrategy
+    /// <param name="configuration">The Configuration to use.</param>
+    /// <param name="cacheProvider">The injected cache provider.</param>
+    /// <param name="logger">The injected logger.</param>
+    internal abstract class PatientQueryStrategy(
+        IConfiguration configuration,
+        ICacheProvider cacheProvider,
+        ILogger<PatientQueryStrategy> logger)
     {
         private const string PatientCacheDomain = "PatientV2";
-
-        private readonly ILogger<PatientQueryStrategy> logger;
-        private readonly ICacheProvider cacheProvider;
-        private readonly int cacheTtl;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PatientQueryStrategy"/> class.
-        /// </summary>
-        /// <param name="configuration">The Configuration to use.</param>
-        /// <param name="cacheProvider">The injected cache provider.</param>
-        /// <param name="logger">The injected logger.</param>
-        protected PatientQueryStrategy(
-            IConfiguration configuration,
-            ICacheProvider cacheProvider,
-            ILogger<PatientQueryStrategy> logger)
-        {
-            this.cacheProvider = cacheProvider;
-            this.logger = logger;
-            this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
-        }
+        private readonly int cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
 
         private static ActivitySource ActivitySource { get; } = new(typeof(PatientQueryStrategy).FullName);
 
@@ -75,7 +62,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <returns>A <see cref="ILogger"/> class.</returns>
         protected ILogger GetLogger()
         {
-            return this.logger;
+            return logger;
         }
 
         /// <summary>
@@ -94,16 +81,16 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 
             using Activity? activity = ActivitySource.StartActivity();
             activity?.AddBaggage("CacheIdentifier", identifier);
-            this.logger.LogDebug("Accessing patient cache via {CacheIdentifierType}", identifierType);
+            logger.LogDebug("Accessing patient cache via {CacheIdentifierType}", identifierType);
 
             PatientModel? retPatient = identifierType switch
             {
-                PatientIdentifierType.Hdid => await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}", ct),
-                PatientIdentifierType.Phn => await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}", ct),
+                PatientIdentifierType.Hdid => await cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}", ct),
+                PatientIdentifierType.Phn => await cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}", ct),
                 _ => null,
             };
 
-            this.logger.LogDebug("Patient cache access outcome: {CacheResult}", retPatient == null ? "miss" : "hit");
+            logger.LogDebug("Patient cache access outcome: {CacheResult}", retPatient == null ? "miss" : "hit");
             return retPatient;
         }
 
@@ -138,15 +125,15 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             if (!string.IsNullOrEmpty(patientModel.Hdid))
             {
                 activity?.AddBaggage("CacheIdentifier", patientModel.Hdid);
-                this.logger.LogDebug("Storing patient in cache via {CacheIdentifierType}", PatientIdentifierType.Hdid);
-                await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:HDID:{patientModel.Hdid}", patientModel, expiry, ct);
+                logger.LogDebug("Storing patient in cache via {CacheIdentifierType}", PatientIdentifierType.Hdid);
+                await cacheProvider.AddItemAsync($"{PatientCacheDomain}:HDID:{patientModel.Hdid}", patientModel, expiry, ct);
             }
 
             if (!string.IsNullOrEmpty(patientModel.Phn))
             {
                 activity?.AddBaggage("CacheIdentifier", patientModel.Phn);
-                this.logger.LogDebug("Storing patient in cache via {CacheIdentifierType}", PatientIdentifierType.Phn);
-                await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:PHN:{patientModel.Phn}", patientModel, expiry, ct);
+                logger.LogDebug("Storing patient in cache via {CacheIdentifierType}", PatientIdentifierType.Phn);
+                await cacheProvider.AddItemAsync($"{PatientCacheDomain}:PHN:{patientModel.Phn}", patientModel, expiry, ct);
             }
         }
     }

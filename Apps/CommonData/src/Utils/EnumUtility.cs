@@ -45,7 +45,7 @@ namespace HealthGateway.Common.Data.Utils
                     if (attr != null)
                     {
                         // if there's no EnumMember attr, use the default value
-                        enumString = attr.Value !;
+                        enumString = attr.Value!;
                     }
                 }
             }

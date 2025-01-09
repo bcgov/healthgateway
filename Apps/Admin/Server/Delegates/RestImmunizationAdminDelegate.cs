@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -47,6 +48,7 @@ namespace HealthGateway.Admin.Server.Delegates
         private static ActivitySource ActivitySource { get; } = new(typeof(RestImmunizationAdminDelegate).FullName);
 
         /// <inheritdoc/>
+        [SuppressMessage("Style", "IDE0046:Simplify 'if' statement", Justification = "Team decision")]
         public async Task<VaccineDetails> GetVaccineDetailsWithRetriesAsync(string phn, string accessToken, bool refresh = false, CancellationToken ct = default)
         {
             using Activity? activity = ActivitySource.StartActivity();

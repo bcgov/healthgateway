@@ -7,9 +7,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestPatientService implements IPatientService {
     private readonly PATIENT_BASE_URI: string = "Patient";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

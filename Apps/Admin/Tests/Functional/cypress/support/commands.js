@@ -112,6 +112,8 @@ Cypress.Commands.add("login", (username, password, path) => {
     cy.log(`Visiting ${path}`);
     setupStandardAliases(path);
 
+    cy.disableServiceWorker();
+
     cy.visit(path, { timeout: 60000 });
     waitForInitialDataLoad(path);
 
@@ -144,4 +146,17 @@ Cypress.Commands.add("validateTableLoad", (tableSelector) => {
     cy.get(tableSelector)
         .find(".mud-table-loading-progress")
         .should("not.exist");
+});
+
+Cypress.Commands.add("disableServiceWorker", () => {
+    cy.log("Unregistering ServiceWorker.");
+    cy.window().then((win) => {
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then((registrations) => {
+                registrations.forEach((registration) => {
+                    registration.unregister();
+                });
+            });
+        }
+    });
 });

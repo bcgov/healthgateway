@@ -25,32 +25,21 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// Strategy implementation for EMPI hdid patient data source with or without cache.
     /// </summary>
-    internal class HdidEmpiStrategy : PatientQueryStrategy
+    /// <param name="configuration">The injected configuration.</param>
+    /// <param name="cacheProvider">The injected cache provider.</param>
+    /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
+    /// <param name="logger">The injected logger.</param>
+    internal class HdidEmpiStrategy(
+        IConfiguration configuration,
+        ICacheProvider cacheProvider,
+        IClientRegistriesDelegate clientRegistriesDelegate,
+        ILogger<HdidEmpiStrategy> logger) : PatientQueryStrategy(configuration, cacheProvider, logger)
     {
-        private readonly IClientRegistriesDelegate clientRegistriesDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HdidEmpiStrategy"/> class.
-        /// </summary>
-        /// <param name="configuration">The injected configuration.</param>
-        /// <param name="cacheProvider">The injected cache provider.</param>
-        /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
-        /// <param name="logger">The injected logger.</param>
-        public HdidEmpiStrategy(
-            IConfiguration configuration,
-            ICacheProvider cacheProvider,
-            IClientRegistriesDelegate clientRegistriesDelegate,
-            ILogger<HdidEmpiStrategy> logger)
-            : base(configuration, cacheProvider, logger)
-        {
-            this.clientRegistriesDelegate = clientRegistriesDelegate;
-        }
-
         /// <inheritdoc/>
         public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
             PatientModel patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Hdid, ct) : null) ??
-                                   await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation, ct);
+                                   await clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation, ct);
 
             await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;

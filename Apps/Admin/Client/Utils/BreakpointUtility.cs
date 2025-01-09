@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Utils
 {
+    using System.Diagnostics.CodeAnalysis;
     using MudBlazor;
 
     /// <summary>
@@ -59,6 +60,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// A string containing the override code for the breakpoint or null if the breakpoint has no associated override
         /// code.
         /// </returns>
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         public static string? GetOverrideCode(this Breakpoint breakpoint)
         {
             return breakpoint switch

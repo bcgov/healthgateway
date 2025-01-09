@@ -103,7 +103,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             IEnumerable<AdminTag> adminTags = await adminTagDelegate.GetAllAsync(ct);
 
-            IList<AdminTagView> adminTagViews = adminTags.Select(mappingService.MapToAdminTagView).ToList();
+            List<AdminTagView> adminTagViews = adminTags.Select(mappingService.MapToAdminTagView).ToList();
 
             return new RequestResult<IList<AdminTagView>>
             {

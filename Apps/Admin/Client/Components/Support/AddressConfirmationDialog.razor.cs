@@ -109,6 +109,7 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
 
     private IMask? PostalCodeMask { get; set; }
 
+    [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
     private string Country
     {
         get => this.country;
@@ -188,6 +189,16 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
         return string.Empty;
     }
 
+    private static string? ValidateCanadianPostalCode(string postalCode)
+    {
+        return !AddressUtility.PostalCodeRegex().IsMatch(postalCode) ? "Incomplete postal code" : null;
+    }
+
+    private static string? ValidateUsPostalCode(string postalCode)
+    {
+        return !AddressUtility.ZipCodeRegex().IsMatch(postalCode) ? "Incomplete zip code" : null;
+    }
+
     private void PopulateInputs(Address address)
     {
         this.AddressLines = string.Join(Environment.NewLine, address.StreetLines);
@@ -211,14 +222,16 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
 
     private string GetCountryToOutput()
     {
-        if (this.SelectedCountryCode == CountryCode.CA && this.OutputCanadaAsEmptyString)
-        {
-            return string.Empty;
-        }
+        string? canadaOutput = this.SelectedCountryCode == CountryCode.CA && this.OutputCanadaAsEmptyString
+            ? string.Empty
+            : null;
 
-        return this.OutputCountryCodeFormat ? this.SelectedCountryCode.ToString() : AddressUtility.GetCountryName(this.SelectedCountryCode);
+        return canadaOutput ?? (this.OutputCountryCodeFormat
+            ? this.SelectedCountryCode.ToString()
+            : AddressUtility.GetCountryName(this.SelectedCountryCode));
     }
 
+    [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
     private Address GetAddressModel()
     {
         return new()
@@ -245,22 +258,17 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
         this.OtherState = string.Empty;
     }
 
+    [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
     private string? ValidatePostalCode(string postalCode)
     {
-        if (string.IsNullOrWhiteSpace(postalCode))
-        {
-            return "Required";
-        }
-
-        switch (this.SelectedCountryCode)
-        {
-            case CountryCode.CA:
-                return !AddressUtility.PostalCodeRegex().IsMatch(postalCode) ? "Incomplete postal code" : null;
-            case CountryCode.US:
-                return !AddressUtility.ZipCodeRegex().IsMatch(postalCode) ? "Incomplete zip code" : null;
-            default:
-                return null;
-        }
+        return string.IsNullOrWhiteSpace(postalCode)
+            ? "Required"
+            : this.SelectedCountryCode switch
+            {
+                CountryCode.CA => ValidateCanadianPostalCode(postalCode),
+                CountryCode.US => ValidateUsPostalCode(postalCode),
+                _ => null,
+            };
     }
 
     private void HandleActionSuccess(TSuccessAction successAction)

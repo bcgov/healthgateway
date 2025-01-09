@@ -64,7 +64,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             List<Comment> comments =
             [
-                new Comment
+                new()
                 {
                     UserProfileId = Hdid,
                     ParentEntryId = ParentEntryId,
@@ -73,7 +73,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 },
 
-                new Comment
+                new()
                 {
                     UserProfileId = Hdid,
                     ParentEntryId = ParentEntryId,
@@ -127,7 +127,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             List<Comment> comments =
             [
-                new Comment
+                new()
                 {
                     UserProfileId = Hdid,
                     ParentEntryId = ParentEntryId,
@@ -342,8 +342,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<IList<Comment>>? parentEntryCommentsDbResult = null,
             DbResult<IEnumerable<Comment>>? allCommentsDbResult = null)
         {
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
+            UserProfile userProfile = new() { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);

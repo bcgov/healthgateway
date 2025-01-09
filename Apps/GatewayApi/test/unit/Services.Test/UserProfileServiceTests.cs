@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -256,6 +257,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(DbStatusCode.Created, false, false, true, true, true, ResultType.Error)] // Cannot insert due to get patient error
         [InlineData(DbStatusCode.Concurrency, false, false, true, true, false, ResultType.Error)] // Cannot insert due to database error
         [InlineData(DbStatusCode.Error, false, false, true, true, false, ResultType.Error)] // Cannot insert due to database error
+        [SuppressMessage("Style", "IDE0046: 'if' statement can be simplified", Justification = "Team decision")]
         public async Task ShouldCreateUserProfile(
             DbStatusCode insertedStatus,
             bool accountsFeedEnabled,
@@ -515,7 +517,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<string>(),
                     It.Is<string>(x => x == EmailTemplateName.AccountClosedTemplate),
                     It.IsAny<Dictionary<string, string>>(),
-                    It.Is<bool>(x => x == true),
+                    It.Is<bool>(x => x),
                     It.IsAny<CancellationToken>()),
                 expectedTimesSendEmail);
         }
@@ -614,7 +616,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<string>(),
                     It.Is<string>(x => x == EmailTemplateName.AccountRecoveredTemplate),
                     It.IsAny<Dictionary<string, string>>(),
-                    It.Is<bool>(x => x == true),
+                    It.Is<bool>(x => x),
                     It.IsAny<CancellationToken>()),
                 expectedTimesSendEmail);
         }
@@ -831,7 +833,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -856,7 +858,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     s => s.GetPatientAsync(
                         It.Is<string>(x => x == Hdid),
                         It.Is<PatientIdentifierType>(x => x == PatientIdentifierType.Hdid),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientResult);
 
@@ -947,7 +949,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock.Setup(
                     s => s.GetUserProfileAsync(
                         It.Is<string>(x => x == Hdid),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfile);
 
@@ -964,7 +966,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     s => s.GetPatientAsync(
                         It.Is<string>(x => x == Hdid),
                         It.Is<PatientIdentifierType>(x => x == PatientIdentifierType.Hdid),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientResult);
 
@@ -1053,14 +1055,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock.Setup(
                     s => s.GetUserProfileAsync(
                         It.Is<string>(x => x == Hdid),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfile);
 
             userProfileDelegateMock.Setup(
                     s => s.UpdateAsync(
                         It.Is<UserProfile>(x => x.HdId == Hdid),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateResult!);
 
@@ -1110,14 +1112,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock.Setup(
                     s => s.GetUserProfileAsync(
                         It.Is<string>(x => x == Hdid),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(readUserProfile);
 
             userProfileDelegateMock.Setup(
                     s => s.UpdateAsync(
                         It.Is<UserProfile>(x => x.HdId == Hdid),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateResult);
 
@@ -1170,14 +1172,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock.Setup(
                     s => s.GetUserProfileAsync(
                         It.Is<string>(x => x == Hdid),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(readUserProfile);
 
             userProfileDelegateMock.Setup(
                     s => s.UpdateAsync(
                         It.Is<UserProfile>(x => x.HdId == Hdid),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateResult);
 

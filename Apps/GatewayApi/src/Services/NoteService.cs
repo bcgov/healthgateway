@@ -83,12 +83,9 @@ namespace HealthGateway.GatewayApi.Services
 
             DbResult<Note> dbNote = await this.noteDelegate.AddNoteAsync(note, ct: ct);
 
-            if (dbNote.Status != DbStatusCode.Created)
-            {
-                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbNote.Message);
-            }
-
-            return RequestResultFactory.Success(this.mappingService.MapToUserNote(dbNote.Payload, key));
+            return dbNote.Status != DbStatusCode.Created
+                ? RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbNote.Message)
+                : RequestResultFactory.Success(this.mappingService.MapToUserNote(dbNote.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -99,7 +96,7 @@ namespace HealthGateway.GatewayApi.Services
                 return new RequestResult<IEnumerable<UserNote>>
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = Enumerable.Empty<UserNote>(),
+                    ResourcePayload = [],
                     TotalResultCount = 0,
                 };
             }
@@ -117,16 +114,13 @@ namespace HealthGateway.GatewayApi.Services
                 dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
             }
 
-            if (dbNotes.Status != DbStatusCode.Read)
-            {
-                return RequestResultFactory.ServiceError<IEnumerable<UserNote>>(ErrorType.CommunicationInternal, ServiceType.Database, dbNotes.Message);
-            }
-
-            return RequestResultFactory.Success(
-                dbNotes.Payload.Select(c => this.mappingService.MapToUserNote(c, key)),
-                dbNotes.Payload.Count,
-                page,
-                pageSize);
+            return dbNotes.Status != DbStatusCode.Read
+                ? RequestResultFactory.ServiceError<IEnumerable<UserNote>>(ErrorType.CommunicationInternal, ServiceType.Database, dbNotes.Message)
+                : RequestResultFactory.Success(
+                    dbNotes.Payload.Select(c => this.mappingService.MapToUserNote(c, key)),
+                    dbNotes.Payload.Count,
+                    page,
+                    pageSize);
         }
 
         /// <inheritdoc/>
@@ -143,12 +137,9 @@ namespace HealthGateway.GatewayApi.Services
             Note note = this.mappingService.MapToNote(userNote, key);
             DbResult<Note> dbResult = await this.noteDelegate.UpdateNoteAsync(note, ct: ct);
 
-            if (dbResult.Status != DbStatusCode.Updated)
-            {
-                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
-            }
-
-            return RequestResultFactory.Success(this.mappingService.MapToUserNote(dbResult.Payload, key));
+            return dbResult.Status != DbStatusCode.Updated
+                ? RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
+                : RequestResultFactory.Success(this.mappingService.MapToUserNote(dbResult.Payload, key));
         }
 
         /// <inheritdoc/>
@@ -165,12 +156,9 @@ namespace HealthGateway.GatewayApi.Services
             Note note = this.mappingService.MapToNote(userNote, key);
             DbResult<Note> dbResult = await this.noteDelegate.DeleteNoteAsync(note, ct: ct);
 
-            if (dbResult.Status != DbStatusCode.Deleted)
-            {
-                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
-            }
-
-            return RequestResultFactory.Success(this.mappingService.MapToUserNote(dbResult.Payload, key));
+            return dbResult.Status != DbStatusCode.Deleted
+                ? RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message)
+                : RequestResultFactory.Success(this.mappingService.MapToUserNote(dbResult.Payload, key));
         }
 
         private async Task<string> EncryptFirstTimeAsync(UserProfile profile, IList<Note> dbNotes, CancellationToken ct)
@@ -191,12 +179,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DbResult<IEnumerable<Note>> batchUpdateResult = await this.noteDelegate.BatchUpdateAsync(dbNotes, ct: ct);
-            if (batchUpdateResult.Status != DbStatusCode.Updated)
-            {
-                throw new DatabaseException(batchUpdateResult.Message);
-            }
-
-            return key;
+            return batchUpdateResult.Status != DbStatusCode.Updated ? throw new DatabaseException(batchUpdateResult.Message) : key;
         }
     }
 }

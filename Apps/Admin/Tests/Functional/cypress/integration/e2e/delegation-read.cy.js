@@ -5,7 +5,7 @@ const dependentExceedingAgeCutoff = { phn: "9735353315" };
 const defaultTimeout = 60000;
 
 function performSearch(phn) {
-    cy.intercept("GET", "**/Delegation/").as("getDelegation");
+    cy.intercept("GET", "**/Delegation*").as("getDelegation");
     cy.get("[data-testid=query-input]").clear().type(phn);
     cy.get("[data-testid=search-button]").click();
     cy.wait("@getDelegation", { timeout: defaultTimeout });
@@ -31,10 +31,17 @@ describe("Delegation Search", () => {
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
             .within((_$rows) => {
-                cy.get("[data-testid=dependent-name]").should("not.be.empty");
-                cy.get("[data-testid=dependent-dob]").should("not.be.empty");
+                cy.get("[data-testid=dependent-name]").should(
+                    "not.have.text",
+                    ""
+                );
+                cy.get("[data-testid=dependent-dob]").should(
+                    "not.have.text",
+                    ""
+                );
                 cy.get("[data-testid=dependent-address]").should(
-                    "not.be.empty"
+                    "not.have.text",
+                    ""
                 );
                 cy.get("[data-testid=dependent-protected-switch]").should(
                     "not.be.checked"
@@ -50,10 +57,17 @@ describe("Delegation Search", () => {
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
             .within((_$rows) => {
-                cy.get("[data-testid=dependent-name]").should("not.be.empty");
-                cy.get("[data-testid=dependent-dob]").should("not.be.empty");
+                cy.get("[data-testid=dependent-name]").should(
+                    "not.have.text",
+                    ""
+                );
+                cy.get("[data-testid=dependent-dob]").should(
+                    "not.have.text",
+                    ""
+                );
                 cy.get("[data-testid=dependent-address]").should(
-                    "not.be.empty"
+                    "not.have.text",
+                    ""
                 );
                 cy.get("[data-testid=dependent-protected-switch]").should(
                     "not.be.checked"
@@ -67,16 +81,19 @@ describe("Delegation Search", () => {
                     .eq(0)
                     .within((_$row) => {
                         cy.get("[data-testid=delegate-name]").should(
-                            "not.be.empty"
+                            "not.have.text",
+                            ""
                         );
                         cy.get("[data-testid=delegate-phn]").contains(
                             dependentWithGuardian.guardianPhn
                         );
                         cy.get("[data-testid=delegate-dob]").should(
-                            "not.be.empty"
+                            "not.have.text",
+                            ""
                         );
                         cy.get("[data-testid=delegate-address]").should(
-                            "not.be.empty"
+                            "not.have.text",
+                            ""
                         );
                         cy.get("[data-testid=delegate-status]").contains(
                             "Added"

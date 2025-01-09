@@ -198,14 +198,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userPreferenceDelegateMock.Setup(
                     s => s.CreateUserPreferenceAsync(
                         It.Is<UserPreference>(x => x.Preference == createUserPreference.Preference),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
             userPreferenceDelegateMock.Setup(
                     s => s.UpdateUserPreferenceAsync(
                         It.Is<UserPreference>(x => x.Preference == createUserPreference.Preference),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 
@@ -219,7 +219,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userPreferenceDelegateMock.Setup(
                     s => s.UpdateUserPreferenceAsync(
                         It.Is<UserPreference>(x => x.Preference == updateUserPreference.Preference),
-                        It.Is<bool>(x => x == true),
+                        It.Is<bool>(x => x),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dbResult);
 

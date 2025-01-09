@@ -67,7 +67,7 @@ namespace HealthGateway.Admin.Server.Services
             IList<BlockedAccess> records = await blockedAccessDelegate.GetAllAsync(ct);
             return records
                 .Where(r => r.DataSources.Count > 0)
-                .Select(r => new BlockedAccessRecord(r.Hdid, r.DataSources.ToList()));
+                .Select(r => new BlockedAccessRecord(r.Hdid, [.. r.DataSources]));
         }
     }
 }

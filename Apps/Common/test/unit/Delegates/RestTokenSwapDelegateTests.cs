@@ -16,7 +16,6 @@
 namespace HealthGateway.CommonTests.Delegates
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -103,7 +102,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList())
+                .AddInMemoryCollection(configuration)
                 .Build();
         }
 

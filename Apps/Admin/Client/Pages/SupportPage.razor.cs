@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
@@ -109,24 +110,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private Func<string, string?> ValidateQueryParameter => parameter =>
         {
-            if (string.IsNullOrWhiteSpace(parameter))
-            {
-                return "Search parameter is required";
-            }
-
-            if (this.PhnOrDependentSelected && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
-            {
-                return "Invalid PHN";
-            }
-
-            return this.SelectedQueryType switch
-            {
-                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter).Length < 5
-                    => "Email/SMS must be minimum 5 characters",
-                PatientQueryType.Sms when !StringManipulator.IsPositiveNumeric(parameter)
-                    => "SMS must contain digits only",
-                _ => null,
-            };
+            string? result = ValidateParameterInput(parameter) ?? ValidatePhn(parameter, this.PhnOrDependentSelected);
+            return result ?? ValidateQueryType(parameter, this.SelectedQueryType);
         };
 
         private AuthenticationState? AuthenticationState { get; set; }
@@ -165,6 +150,31 @@ namespace HealthGateway.Admin.Client.Pages
             }
 
             await base.DisposeAsyncCore(disposing);
+        }
+
+        private static string? ValidateParameterInput(string parameter)
+        {
+            return string.IsNullOrWhiteSpace(parameter) ? "Search parameter is required" : null;
+        }
+
+        private static string? ValidatePhn(string parameter, bool phnOrDependentSelected)
+        {
+            return phnOrDependentSelected && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid
+                ? "Invalid PHN"
+                : null;
+        }
+
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
+        private static string? ValidateQueryType(string parameter, PatientQueryType selectedQueryType)
+        {
+            return selectedQueryType switch
+            {
+                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter).Length < 5
+                    => "Email/SMS must be minimum 5 characters",
+                PatientQueryType.Sms when !StringManipulator.IsPositiveNumeric(parameter)
+                    => "SMS must contain digits only",
+                _ => null,
+            };
         }
 
         private void Clear()

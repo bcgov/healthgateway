@@ -104,7 +104,7 @@ namespace AccountDataAccessTest.Strategy
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -127,7 +127,7 @@ namespace AccountDataAccessTest.Strategy
                         s => s.GetDemographicsAsync(
                             It.Is<OidType>(x => x == OidType.Phn),
                             It.Is<string>(x => x == Phn),
-                            It.Is<bool>(x => x == false),
+                            It.Is<bool>(x => !x),
                             It.IsAny<CancellationToken>()))
                     .ReturnsAsync(patient);
             }

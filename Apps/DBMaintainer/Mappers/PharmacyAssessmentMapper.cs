@@ -30,7 +30,9 @@ namespace HealthGateway.DBMaintainer.Mappers
         /// Performs the mapping of read Pharmacy Assessment file to the db model.
         /// </summary>
         /// <param name="fileDownload">The fileDownload to map.</param>
-        [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Required by ClassMap")]
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by ClassMap")]
+
+        // ReSharper disable once UnusedParameter.Local
         public PharmacyAssessmentMapper(FileDownload fileDownload)
         {
             this.Map(m => m.Pin).Index(0);

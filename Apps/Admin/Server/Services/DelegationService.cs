@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -211,13 +212,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<AgentAction> UnprotectDependentAsync(string dependentHdid, string reason, CancellationToken ct = default)
         {
             string authenticatedUserId = authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
-            Dependent? dependent = await delegationDelegate.GetDependentAsync(dependentHdid, true, ct);
-
-            if (dependent == null)
-            {
-                throw new NotFoundException($"Dependent not found for hdid: {dependentHdid}");
-            }
-
+            Dependent dependent = await delegationDelegate.GetDependentAsync(dependentHdid, true, ct) ?? throw new NotFoundException($"Dependent not found for hdid: {dependentHdid}");
             dependent.Protected = false;
             dependent.UpdatedBy = authenticatedUserId;
             dependent.AllowedDelegations = [];
@@ -253,6 +248,7 @@ namespace HealthGateway.Admin.Server.Services
             return mappingService.MapToAgentAction(agentAudit);
         }
 
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         private static void ValidatePatientResult(RequestResult<PatientModel> patientResult)
         {
             switch (patientResult)

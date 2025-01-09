@@ -41,8 +41,7 @@ namespace HealthGateway.Encounter.MapProfiles
                 .ForMember(
                     dest => dest.Clinic,
                     opt => opt.MapFrom(
-                        src => new Clinic
-                            { Name = src.LocationName }))
+                        src => new Clinic { Name = src.LocationName }))
                 .AfterMap(
                     (src, dest) =>
                     {

@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Tests.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -55,7 +54,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Dependents = dependentCount,
             };
 
-            IDashboardService service = SetupGetAllTimeCountsMock(userProfileCount, closedUserProfileCount, dependentCount);
+            IDashboardService service = SetupDashboardServiceForAllTimeCounts(userProfileCount, closedUserProfileCount, dependentCount);
 
             // Act
             AllTimeCounts actual = await service.GetAllTimeCountsAsync();
@@ -104,7 +103,7 @@ namespace HealthGateway.Admin.Tests.Services
                 DependentRegistrations = new SortedDictionary<DateOnly, int>(dependentRegistrationCounts),
             };
 
-            IDashboardService service = SetupDailyUsageCountsMock(userRegistrationCounts, userLoginCounts, dependentRegistrationCounts);
+            IDashboardService service = SetupDashboardServiceForDailyUsageCounts(userRegistrationCounts, userLoginCounts, dependentRegistrationCounts);
 
             // Act
             DailyUsageCounts actual = await service.GetDailyUsageCountsAsync(startDate, endDate);
@@ -128,7 +127,7 @@ namespace HealthGateway.Admin.Tests.Services
             const int userCount = 10;
             const int expected = 10;
 
-            IDashboardService service = SetupGetRecurringUserCountMock(dayCount, userCount);
+            IDashboardService service = SetupDashboardServiceForRecurringUserCount(dayCount, userCount);
 
             // Act
             int actual = await service.GetRecurringUserCountAsync(dayCount, startDate, endDate);
@@ -156,7 +155,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             AppLoginCounts expected = new(webCount, mobileCount + androidCount + iosCount, androidCount, iosCount, salesforceCount);
 
-            IDashboardService service = SetupGetAppLoginCountsMock(webCount, mobileCount, androidCount, iosCount, salesforceCount);
+            IDashboardService service = SetupDashboardServiceForAppLoginCounts(webCount, mobileCount, androidCount, iosCount, salesforceCount);
 
             // Act
             AppLoginCounts actual = await service.GetAppLoginCountsAsync(startDate, endDate);
@@ -185,7 +184,7 @@ namespace HealthGateway.Admin.Tests.Services
                 { "5", fiveStarCount },
             };
 
-            IDashboardService service = SetupGetRatingsSummaryMock(threeStarCount, fiveStarCount);
+            IDashboardService service = SetupDashboardServiceForRatingsSummary(threeStarCount, fiveStarCount);
 
             // Act
             IDictionary<string, int> actual = await service.GetRatingsSummaryAsync(startDate, endDate);
@@ -206,8 +205,9 @@ namespace HealthGateway.Admin.Tests.Services
             DateOnly startDatePlus5Years = startDate.AddYears(5);
             DateOnly endDate = new(2024, 1, 15);
 
-            const int startDateAge = 14;
-            const int startDatePlus5YearsAge = 9;
+            int currentYear = DateTime.UtcNow.Year;
+            int startDateAge = currentYear - startDate.Year;
+            int startDatePlus5YearsAge = currentYear - startDatePlus5Years.Year;
             const int startDateAgeCount = 5;
             const int startDatePlus5YearsAgeCount = 1;
 
@@ -217,7 +217,7 @@ namespace HealthGateway.Admin.Tests.Services
                 { startDatePlus5YearsAge, startDatePlus5YearsAgeCount },
             };
 
-            IDashboardService service = SetupGetAgeCountsMock(startDate, startDatePlus5Years, startDateAgeCount, startDatePlus5YearsAgeCount);
+            IDashboardService service = SetupDashboardServiceForAgeCounts(startDate, startDatePlus5Years, startDateAgeCount, startDatePlus5YearsAgeCount);
 
             // Act
             IDictionary<int, int> actual = await service.GetAgeCountsAsync(startDate, endDate);
@@ -235,7 +235,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -255,7 +255,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ratingDelegateMock.Object);
         }
 
-        private static IDashboardService SetupGetAllTimeCountsMock(int userProfileCount, int closedUserProfileCount, int dependentCount)
+        private static IDashboardService SetupDashboardServiceForAllTimeCounts(int userProfileCount, int closedUserProfileCount, int dependentCount)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(userProfileCount);
@@ -267,7 +267,7 @@ namespace HealthGateway.Admin.Tests.Services
             return GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
         }
 
-        private static IDashboardService SetupDailyUsageCountsMock(
+        private static IDashboardService SetupDashboardServiceForDailyUsageCounts(
             IDictionary<DateOnly, int> userRegistrationCounts,
             IDictionary<DateOnly, int> userLoginCounts,
             IDictionary<DateOnly, int> dependentRegistrationCounts)
@@ -284,7 +284,7 @@ namespace HealthGateway.Admin.Tests.Services
             return GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
         }
 
-        private static IDashboardService SetupGetRecurringUserCountMock(int dayCount, int userCount)
+        private static IDashboardService SetupDashboardServiceForRecurringUserCount(int dayCount, int userCount)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetRecurringUserCountAsync(dayCount, It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>()))
@@ -293,7 +293,7 @@ namespace HealthGateway.Admin.Tests.Services
             return GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
         }
 
-        private static IDashboardService SetupGetAppLoginCountsMock(int webCount, int mobileCount, int androidCount, int iosCount, int salesforceCount)
+        private static IDashboardService SetupDashboardServiceForAppLoginCounts(int webCount, int mobileCount, int androidCount, int iosCount, int salesforceCount)
         {
             IDictionary<UserLoginClientType, int> lastLoginClientCounts = new Dictionary<UserLoginClientType, int>
             {
@@ -311,7 +311,7 @@ namespace HealthGateway.Admin.Tests.Services
             return GetDashboardService(userProfileDelegateMock: userProfileDelegateMock);
         }
 
-        private static IDashboardService SetupGetRatingsSummaryMock(int threeStarCount, int fiveStarCount)
+        private static IDashboardService SetupDashboardServiceForRatingsSummary(int threeStarCount, int fiveStarCount)
         {
             IDictionary<string, int> summary = new Dictionary<string, int>
             {
@@ -326,7 +326,7 @@ namespace HealthGateway.Admin.Tests.Services
             return GetDashboardService(ratingDelegateMock: ratingsDelegateMock);
         }
 
-        private static IDashboardService SetupGetAgeCountsMock(DateOnly startDate, DateOnly startDatePlus5Years, int startDateAgeCount, int startDatePlus5YearsAgeCount)
+        private static IDashboardService SetupDashboardServiceForAgeCounts(DateOnly startDate, DateOnly startDatePlus5Years, int startDateAgeCount, int startDatePlus5YearsAgeCount)
         {
             IDictionary<int, int> yearOfBirthCounts = new Dictionary<int, int>
             {

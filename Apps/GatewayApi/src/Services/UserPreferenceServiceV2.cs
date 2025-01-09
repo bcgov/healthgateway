@@ -38,12 +38,7 @@ namespace HealthGateway.GatewayApi.Services
             UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
 
             DbResult<UserPreference> dbResult = await userPreferenceDelegate.UpdateUserPreferenceAsync(userPreference, ct: ct);
-            if (dbResult.Status != DbStatusCode.Updated)
-            {
-                throw new DatabaseException(dbResult.Message);
-            }
-
-            return mappingService.MapToUserPreferenceModel(dbResult.Payload);
+            return dbResult.Status != DbStatusCode.Updated ? throw new DatabaseException(dbResult.Message) : mappingService.MapToUserPreferenceModel(dbResult.Payload);
         }
 
         /// <inheritdoc/>
@@ -55,12 +50,7 @@ namespace HealthGateway.GatewayApi.Services
             UserPreference userPreference = mappingService.MapToUserPreference(userPreferenceModel);
 
             DbResult<UserPreference> dbResult = await userPreferenceDelegate.CreateUserPreferenceAsync(userPreference, ct: ct);
-            if (dbResult.Status != DbStatusCode.Created)
-            {
-                throw new DatabaseException(dbResult.Message);
-            }
-
-            return mappingService.MapToUserPreferenceModel(dbResult.Payload);
+            return dbResult.Status != DbStatusCode.Created ? throw new DatabaseException(dbResult.Message) : mappingService.MapToUserPreferenceModel(dbResult.Payload);
         }
 
         /// <inheritdoc/>

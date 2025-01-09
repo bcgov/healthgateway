@@ -227,7 +227,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetPatient - Returns action required when identifer is null.
+        /// GetPatient - Returns action required when identifier is null.
         /// </summary>
         /// <param name="identifierType">The identifier type used to query with.</param>
         /// <returns>
@@ -297,7 +297,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             IConfigurationRoot config = new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList())
+                .AddInMemoryCollection(configDictionary)
                 .Build();
 
             patientDelegateMock.Setup(p => p.GetDemographicsByHdidAsync(It.IsAny<string>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);

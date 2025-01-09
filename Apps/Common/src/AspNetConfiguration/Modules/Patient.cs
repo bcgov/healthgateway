@@ -59,7 +59,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         // Note: As per reading we do not have to dispose of the certificate.
                         string? clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
                         string? certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
+#pragma warning disable SYSLIB0057
+
+                        // Using the obsolete X509Certificate2 constructor
                         X509Certificate2 clientRegistriesCertificate = new(File.ReadAllBytes(clientCertificatePath), certificatePassword);
+#pragma warning restore SYSLIB0057
                         client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
                         client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
                         client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =

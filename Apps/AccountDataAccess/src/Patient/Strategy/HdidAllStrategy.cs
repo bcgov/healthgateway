@@ -31,35 +31,20 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// <summary>
     /// Strategy implementation for all hdid patient data sources with or without cache.
     /// </summary>
-    internal class HdidAllStrategy : PatientQueryStrategy
+    /// <param name="configuration">The injected configuration.</param>
+    /// <param name="cacheProvider">The injected cache provider.</param>
+    /// <param name="logger">The injected logger.</param>
+    /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
+    /// <param name="patientIdentityApi">The injected patient identity api.</param>
+    /// <param name="mapper">The injected mapper.</param>
+    internal class HdidAllStrategy(
+        IConfiguration configuration,
+        ICacheProvider cacheProvider,
+        IClientRegistriesDelegate clientRegistriesDelegate,
+        IPatientIdentityApi patientIdentityApi,
+        ILogger<HdidAllStrategy> logger,
+        IMapper mapper) : PatientQueryStrategy(configuration, cacheProvider, logger)
     {
-        private readonly IClientRegistriesDelegate clientRegistriesDelegate;
-        private readonly IPatientIdentityApi patientIdentityApi;
-        private readonly IMapper mapper;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HdidAllStrategy"/> class.
-        /// </summary>
-        /// <param name="configuration">The injected configuration.</param>
-        /// <param name="cacheProvider">The injected cache provider.</param>
-        /// <param name="logger">The injected logger.</param>
-        /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
-        /// <param name="patientIdentityApi">The injected patient identity api.</param>
-        /// <param name="mapper">The injected mapper.</param>
-        public HdidAllStrategy(
-            IConfiguration configuration,
-            ICacheProvider cacheProvider,
-            IClientRegistriesDelegate clientRegistriesDelegate,
-            IPatientIdentityApi patientIdentityApi,
-            ILogger<HdidAllStrategy> logger,
-            IMapper mapper)
-            : base(configuration, cacheProvider, logger)
-        {
-            this.clientRegistriesDelegate = clientRegistriesDelegate;
-            this.patientIdentityApi = patientIdentityApi;
-            this.mapper = mapper;
-        }
-
         /// <inheritdoc/>
         public override async Task<PatientModel> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
@@ -67,7 +52,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 
             try
             {
-                patient ??= await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation, ct);
+                patient ??= await clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation, ct);
             }
             catch (CommunicationException ce)
             {
@@ -76,8 +61,8 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 try
                 {
                     this.GetLogger().LogDebug("Retrieving patient from PHSA");
-                    PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
-                    patient = this.mapper.Map<PatientModel>(result);
+                    PatientIdentity result = await patientIdentityApi.GetPatientIdentityAsync(request.Identifier, ct);
+                    patient = mapper.Map<PatientModel>(result);
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
