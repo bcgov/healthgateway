@@ -73,8 +73,8 @@ nextTick(() => {
             <v-img
                 alt="Go to Health Gateway home page"
                 src="@/assets/images/gov/hg-logo.png"
-                width="151"
-                height="82"
+                width="173"
+                height="54"
             />
         </router-link>
         <v-spacer />
