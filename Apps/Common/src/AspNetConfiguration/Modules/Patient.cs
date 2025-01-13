@@ -25,6 +25,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.ServiceModel.Security;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -59,11 +60,18 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         // Note: As per reading we do not have to dispose of the certificate.
                         string? clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
                         string? certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
-#pragma warning disable SYSLIB0057
 
-                        // Using the obsolete X509Certificate2 constructor
-                        X509Certificate2 clientRegistriesCertificate = new(File.ReadAllBytes(clientCertificatePath), certificatePassword);
-#pragma warning restore SYSLIB0057
+                        // Read the .pfx file as a byte array
+                        byte[] pfxDataForConversion = File.ReadAllBytes(clientCertificatePath);
+
+                        // Convert the .pfx file to separate PEM certificate and private key
+                        (string clientCertificatePem, string privateKeyPem) = CertificateConverter.ConvertPfxToPem(pfxDataForConversion, certificatePassword);
+
+                        // Create X509Certificate2 from PEM content
+                        X509Certificate2 clientRegistriesCertificate = X509Certificate2.CreateFromPem(
+                            clientCertificatePem,
+                            privateKeyPem);
+
                         client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
                         client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
                         client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =

@@ -51,13 +51,17 @@ namespace HealthGateway.Common.Utils.Odr
 
             if (odrConfig.ClientCertificate?.Enabled == true)
             {
-                byte[] certificateData = File.ReadAllBytes(odrConfig.ClientCertificate?.Path);
+                byte[] pfxDataForConversion = File.ReadAllBytes(odrConfig.ClientCertificate?.Path);
 
-#pragma warning disable SYSLIB0057
+                // Convert the .pfx file to separate PEM certificate and private key
+                (string clientCertificatePem, string privateKeyPem) = CertificateConverter.ConvertPfxToPem(pfxDataForConversion, odrConfig.ClientCertificate?.Password);
 
-                // Using the obsolete X509Certificate2 constructor
-                this.ClientCertificates.Add(new X509Certificate2(certificateData, odrConfig.ClientCertificate?.Password));
-#pragma warning restore SYSLIB0057
+                // Create X509Certificate2 from PEM content
+                X509Certificate2 clientRegistriesCertificate = X509Certificate2.CreateFromPem(
+                    clientCertificatePem,
+                    privateKeyPem);
+
+                this.ClientCertificates.Add(clientRegistriesCertificate);
             }
         }
 
