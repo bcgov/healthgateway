@@ -5,7 +5,7 @@
 {{- $namespace := $top.Values.namespace | default $top.Release.Namespace -}}
 {{- $labels := include "standard.labels" $top -}}
 {{- $minAvailable := ($context.scaling).pdbMinAvailable | default ($top.Values.scaling).pdbMinAvailable | required "pdbMinAvailable required" -}}
-{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).dcReplicas | required "dcReplicas required") -}}
+{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).deploymentReplicas | required "deploymentReplicas required") -}}
 {{- if and (ne 0.0 $minAvailable) (gt $replicas 1.0) -}}
 kind: PodDisruptionBudget
 apiVersion: policy/v1
@@ -17,6 +17,8 @@ spec:
   minAvailable: {{ $minAvailable }}
   selector:
     matchLabels:
-      deploymentconfig: {{ $name }}-dc
+      app: {{ $name }}
+      name: {{ $name }}
+      role: {{ $context.role }}
 {{- end -}}
 {{- end -}}

@@ -16,7 +16,9 @@ metadata:
 spec:
   podSelector:
     matchLabels:
+      app: {{ $name }}
       name: {{ $name }}
+      role: {{ $context.role }}
   ingress:
     - from:
       - namespaceSelector:
