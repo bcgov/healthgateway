@@ -53,6 +53,7 @@ namespace HealthGateway.Admin.Client.Pages
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             await this.GetClaimsPrincipalDataAsync();
             await this.CreateCookieAsync("HGAdmin", "dark mode", 365);
         }
