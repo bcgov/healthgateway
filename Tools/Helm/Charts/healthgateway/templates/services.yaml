@@ -10,7 +10,7 @@
     {{ "---" | nindent 0 }}
     {{ include "service.tpl" (list $ $value) | nindent 0 }}
     {{ "---" | nindent 0 }}
-    {{ include "ingress.tpl" (list $ $value) | nindent 0 }}
+    {{ include "route.tpl" (list $ $value) | nindent 0 }}
     {{- range $secretValue := $value.secrets -}}
         {{ include "secret.tpl" (list $ (dict "name" (printf "%s-%s" $value.name $secretValue.name) "values" ($.Files.Get $secretValue.file | fromYaml))) | nindent 0 }}
         {{ "---" | nindent 0 }}

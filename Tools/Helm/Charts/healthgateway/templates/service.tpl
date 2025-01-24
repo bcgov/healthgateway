@@ -19,9 +19,7 @@ metadata:
     service.alpha.openshift.io/serving-cert-secret-name: {{ $name }}-ssl
 spec:
   selector:
-    app: {{ $name }}
     name: {{ $name }}
-    role: {{ $context.role }}
   ports:
     - name: {{ (printf "%s-%s" ($port | toString) $protocol) }}
       port: {{ $port }}

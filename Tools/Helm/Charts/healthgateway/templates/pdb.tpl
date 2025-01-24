@@ -17,8 +17,6 @@ spec:
   minAvailable: {{ $minAvailable }}
   selector:
     matchLabels:
-      app: {{ $name }}
       name: {{ $name }}
-      role: {{ $context.role }}
 {{- end -}}
 {{- end -}}

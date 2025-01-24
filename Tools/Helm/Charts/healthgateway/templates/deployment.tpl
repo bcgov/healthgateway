@@ -19,6 +19,8 @@ metadata:
   labels:
     {{- $labels | trim | nindent 4 }}
     role: {{ $role }}
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ $context.name }}:{{ $tag }}","namespace":"{{ $top.Values.toolsNamespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ $name }}\")].image","pause":"false"}]'
 spec:
   replicas: {{ $replicas }}
   revisionHistoryLimit: 10
@@ -29,13 +31,12 @@ spec:
       maxSurge: 50%
   selector:
     matchLabels:
-      app: {{ $name }}
       name: {{ $name }}
-      role: {{ $role }}
   template:
     metadata:
+      name: {{ $name }}
       labels:
-        app: {{ $name }}
+        name: {{ $name }}
         role: {{ $role }}
       annotations:
         checksum/config: {{ $top.Values.commonConfig | toYaml | sha256sum }}
@@ -47,9 +48,6 @@ spec:
         {{- range $key, $value := $context.secrets }}
         {{ print "checksum/" $value.name  "-secrets"}}: {{ $top.Files.Get $value.file | toYaml | sha256sum }}
         {{- end }}
-        image/tag: "{{ $tag }}"
-        redeploy-timestamp: "{{ now | unixEpoch }}"
-        reloader.stakater.com/auto: "true"
     spec:
       restartPolicy: Always
       containers:
@@ -58,11 +56,11 @@ spec:
           imagePullPolicy: Always
           resources:
             limits:
-              cpu: {{ $context.limitCpu | default ($top.Values.defaultResources).limitCpu | default "15m" }}
-              memory: {{ $context.limitMemory | default ($top.Values.defaultResources).limitMemory | default "64Mi" }}
+              cpu: {{ $context.limitCpu | default ($top.Values.defaultResources).limitCpu | default "150m" }}
+              memory: {{ $context.limitMemory | default ($top.Values.defaultResources).limitMemory | default "512Mi" }}
             requests:
-              cpu: {{ $context.requestCpu | default ($top.Values.defaultResources).requestCpu | default "5m" }}
-              memory: {{ $context.requestMemory | default ($top.Values.defaultResources).requestMemory | default "32Mi" }}
+              cpu: {{ $context.requestCpu | default ($top.Values.defaultResources).requestCpu | default "50m" }}
+              memory: {{ $context.requestMemory | default ($top.Values.defaultResources).requestMemory | default "256Mi" }}
           volumeMounts:
             - mountPath: /dpkeys
               name: dp
