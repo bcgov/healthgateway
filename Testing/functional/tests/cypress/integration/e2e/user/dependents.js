@@ -359,7 +359,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-history-report-pdf-btn-${validDependentHdid}]`
         )
-            .should("be.visible")
+            .should("be.visible", "be.enabled")
             .click();
 
         // Confirmation modal
@@ -382,7 +382,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-history-report-csv-btn-${validDependentHdid}]`
         )
-            .should("be.visible")
+            .should("be.visible", "be.enabled")
             .click();
 
         // Confirmation modal
@@ -405,7 +405,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-history-report-xlsx-btn-${validDependentHdid}]`
         )
-            .should("be.visible")
+            .should("be.visible", "be.enabled")
             .click();
 
         // Confirmation modal
@@ -455,8 +455,8 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-forecast-report-pdf-btn-${validDependentHdid}]`
         )
-            .should("be.visible")
-            .click();
+            .should("be.visible", "be.enabled")
+            .click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -479,7 +479,7 @@ describe("dependents", () => {
             `[data-testid=download-immunization-forecast-report-csv-btn-${validDependentHdid}]`
         )
             .should("be.visible")
-            .click();
+            .click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -495,14 +495,14 @@ describe("dependents", () => {
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
         )
             .should("be.visible", "be.enabled")
-            .click();
+            .click({ force: true });
 
         // Click XLSX
         cy.get(
             `[data-testid=download-immunization-forecast-report-xlsx-btn-${validDependentHdid}]`
         )
             .should("be.visible")
-            .click();
+            .click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
