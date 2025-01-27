@@ -363,12 +363,14 @@ describe("dependents", () => {
             .click();
 
         // Confirmation modal
+        cy.intercept("POST", "**/Report").as("postReport");
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+                timeout: 60000,
+                interval: 5000,
+            });
         });
 
         // Click download dropdown under History tab
@@ -388,10 +390,11 @@ describe("dependents", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+                timeout: 60000,
+                interval: 5000,
+            });
         });
 
         // Click download dropdown under History tab
@@ -411,10 +414,11 @@ describe("dependents", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+                timeout: 60000,
+                interval: 5000,
+            });
         });
     });
 
@@ -459,12 +463,14 @@ describe("dependents", () => {
             .click();
 
         // Confirmation modal
+        cy.intercept("POST", "**/Report").as("postReport");
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+                timeout: 60000,
+                interval: 5000,
+            });
         });
 
         // Click download dropdown under Forecasts tab
@@ -484,10 +490,11 @@ describe("dependents", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+                timeout: 60000,
+                interval: 5000,
+            });
         });
 
         // Click download dropdown under Forecasts tab
@@ -507,10 +514,11 @@ describe("dependents", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+                timeout: 60000,
+                interval: 5000,
+            });
         });
     });
 
