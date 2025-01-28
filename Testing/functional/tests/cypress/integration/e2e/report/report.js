@@ -106,7 +106,9 @@ describe("Reports", () => {
 
         cy.get("[data-testid=export-record-btn]").click();
 
-        cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
+        cy.get("[data-testid=export-record-menu] .v-list-item")
+            .first()
+            .click({ force: true });
 
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
 

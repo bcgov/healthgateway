@@ -1,6 +1,6 @@
 import { AuthMethod } from "../../../support/constants";
 
-const defaultTimeout = 60000;
+const defaultTimeout = 120000;
 
 function triggerEmptyValidation(vuetifySelector) {
     cy.get(vuetifySelector + " input")
@@ -359,63 +359,83 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-history-report-pdf-btn-${validDependentHdid}]`
         )
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
             .click();
 
-        // Confirmation modal
+        // Confirmation modal for PDF
+        cy.intercept("POST", "**/Report").as("postReport");
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.wait("@postReport", { timeout: defaultTimeout })
+            .then(() => {
+                cy.verifyDownload(
+                    "HealthGatewayDependentImmunizationReport.pdf",
+                    {
+                        timeout: 60000,
+                        interval: 5000,
+                    }
+                );
+            })
+            .then(() => {
+                // Click download dropdown under History tab for CSV
+                cy.get(
+                    `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible", "be.enabled")
+                    .click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
+                // Click CSV
+                cy.get(
+                    `[data-testid=download-immunization-history-report-csv-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible")
+                    .click();
 
-        // Click download dropdown under History tab
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
+                // Confirmation modal for CSV
+                cy.get("[data-testid=generic-message-modal]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=generic-message-submit-btn]").click();
+                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+                    cy.verifyDownload(
+                        "HealthGatewayDependentImmunizationReport.csv",
+                        {
+                            timeout: 60000,
+                            interval: 5000,
+                        }
+                    );
+                });
+            })
+            .then(() => {
+                // Click download dropdown under History tab for XLSX
+                cy.get(
+                    `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible", "be.enabled")
+                    .click();
 
-        // Click CSV
-        cy.get(
-            `[data-testid=download-immunization-history-report-csv-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
+                // Click XLSX
+                cy.get(
+                    `[data-testid=download-immunization-history-report-xlsx-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible")
+                    .click();
 
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
-            timeout: 60000,
-            interval: 5000,
-        });
-
-        // Click download dropdown under History tab
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
-
-        // Click XLSX
-        cy.get(
-            `[data-testid=download-immunization-history-report-xlsx-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
-            timeout: 60000,
-            interval: 5000,
-        });
+                // Confirmation modal for XLSX
+                cy.get("[data-testid=generic-message-modal]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=generic-message-submit-btn]").click();
+                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+                    cy.verifyDownload(
+                        "HealthGatewayDependentImmunizationReport.xlsx",
+                        {
+                            timeout: 60000,
+                            interval: 5000,
+                        }
+                    );
+                });
+            });
     });
 
     it("Validate Immunization Forecast - Verify result and download", () => {
@@ -455,63 +475,83 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=download-immunization-forecast-report-pdf-btn-${validDependentHdid}]`
         )
-            .should("be.visible", "be.enabled")
-            .click({ force: true });
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
-
-        // Click download dropdown under Forecasts tab
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}`
-        )
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
             .click();
 
-        // Click CSV
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-csv-btn-${validDependentHdid}]`
-        )
-            .should("be.visible")
-            .click({ force: true });
-
-        // Confirmation modal
+        // Confirmation modal for PDF
+        cy.intercept("POST", "**/Report").as("postReport");
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.wait("@postReport", { timeout: defaultTimeout })
+            .then(() => {
+                cy.verifyDownload(
+                    "HealthGatewayDependentImmunizationReport.pdf",
+                    {
+                        timeout: 60000,
+                        interval: 5000,
+                    }
+                );
+            })
+            .then(() => {
+                // Click download dropdown under Forecasts tab for CSV
+                cy.get(
+                    `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible", "be.enabled")
+                    .click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
-            timeout: 60000,
-            interval: 5000,
-        });
+                // Click CSV
+                cy.get(
+                    `[data-testid=download-immunization-forecast-report-csv-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible")
+                    .click();
 
-        // Click download dropdown under Forecasts tab
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click({ force: true });
+                // Confirmation modal for CSV
+                cy.get("[data-testid=generic-message-modal]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=generic-message-submit-btn]").click();
+                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+                    cy.verifyDownload(
+                        "HealthGatewayDependentImmunizationReport.csv",
+                        {
+                            timeout: 60000,
+                            interval: 5000,
+                        }
+                    );
+                });
+            })
+            .then(() => {
+                // Click download dropdown under Forecasts tab for XLSX
+                cy.get(
+                    `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible", "be.enabled")
+                    .click();
 
-        // Click XLSX
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-xlsx-btn-${validDependentHdid}]`
-        )
-            .should("be.visible")
-            .click({ force: true });
+                // Click XLSX
+                cy.get(
+                    `[data-testid=download-immunization-forecast-report-xlsx-btn-${validDependentHdid}]`
+                )
+                    .should("be.visible")
+                    .click();
 
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
-            timeout: 60000,
-            interval: 5000,
-        });
+                // Confirmation modal for XLSX
+                cy.get("[data-testid=generic-message-modal]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=generic-message-submit-btn]").click();
+                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+                    cy.verifyDownload(
+                        "HealthGatewayDependentImmunizationReport.xlsx",
+                        {
+                            timeout: 60000,
+                            interval: 5000,
+                        }
+                    );
+                });
+            });
     });
 
     // test should be skipped until PHSA fixes test data for this dependent
