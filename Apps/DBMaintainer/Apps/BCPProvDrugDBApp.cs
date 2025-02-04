@@ -167,9 +167,10 @@ namespace HealthGateway.DBMaintainer.Apps
         {
             Uri? file = section.GetValue<Uri>("Url");
             string? targetFolder = section.GetValue<string>("TargetFolder");
+            this.Logger.LogInformation("File Uri absolute path: {AbsolutePath} and target folder: {TargetFolder}", file?.AbsolutePath, targetFolder);
             FileDownload fileDownload = await this.DownloadFileAsync(file, targetFolder, ct);
             fileDownload.ProgramCode = section.GetValue<string>("AppName");
-            this.Logger.LogInformation("Downloaded file for program code: {ProgramCode}", fileDownload.ProgramCode);
+            this.Logger.LogInformation("Downloaded file for program code: {ProgramCode} and local file path: {LocalFilePath}", fileDownload.ProgramCode, fileDownload.LocalFilePath);
             return fileDownload;
         }
 
