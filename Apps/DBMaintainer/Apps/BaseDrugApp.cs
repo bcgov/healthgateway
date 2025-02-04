@@ -100,7 +100,7 @@ namespace HealthGateway.DBMaintainer.Apps
             else
             {
                 this.Logger.LogInformation("File has been previously processed - exiting");
-                if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
+                if (downloadedFile is { LocalFilePath: not null, Name: not null })
                 {
                     string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
                     this.Logger.LogInformation("Removing zip file: {Filename}", filename);
@@ -172,20 +172,32 @@ namespace HealthGateway.DBMaintainer.Apps
         /// <returns>The path to the unzipped folder.</returns>
         protected string ExtractFiles(FileDownload downloadedFile)
         {
-            if (downloadedFile is { LocalFilePath: not null, Name: not null })
+            if (string.IsNullOrWhiteSpace(downloadedFile.LocalFilePath) || string.IsNullOrWhiteSpace(downloadedFile.Name))
             {
-                string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-                this.Logger.LogInformation("Extracting zip file: {Filename}", filename);
-                string unzippedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
-                ZipFile.ExtractToDirectory(filename, unzippedPath);
-                this.Logger.LogInformation("Deleting Zip file");
-                File.Delete(filename);
-                return unzippedPath;
+                throw new ArgumentNullException(
+                    nameof(downloadedFile),
+                    $"Downloaded file has null or empty attributes. LocalFilePath = '{downloadedFile.LocalFilePath}', Name = '{downloadedFile.Name}'");
             }
 
-            throw new ArgumentNullException(
-                nameof(downloadedFile),
-                $"Downloaded file has null attributes, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
+            string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
+            if (!File.Exists(filename))
+            {
+                throw new FileNotFoundException($"The zip file '{filename}' does not exist.");
+            }
+
+            // Ensure that the extracted folder name is valid
+            string extractedFolderName = Path.GetFileNameWithoutExtension(downloadedFile.Name);
+            if (string.IsNullOrWhiteSpace(extractedFolderName))
+            {
+                throw new ArgumentException($"Invalid extracted folder name derived from '{downloadedFile.Name}'");
+            }
+
+            string unzippedPath = Path.Combine(downloadedFile.LocalFilePath, extractedFolderName);
+            this.Logger.LogInformation("Extracting zip file: {Filename} to {UnzippedPath}", filename, unzippedPath);
+            ZipFile.ExtractToDirectory(filename, unzippedPath);
+            this.Logger.LogInformation("Deleting Zip file");
+            File.Delete(filename);
+            return unzippedPath;
         }
 
         /// <summary>
