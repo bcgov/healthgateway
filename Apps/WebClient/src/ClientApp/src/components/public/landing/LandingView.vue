@@ -10,7 +10,6 @@ import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useLayoutStore } from "@/stores/layout";
 import ConfigUtil from "@/utility/configUtil";
 
 enum PreviewDevice {
@@ -35,7 +34,6 @@ const serviceEntryTypes: EntryType[] = [EntryType.BcCancerScreening];
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
-const layoutStore = useLayoutStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp } = useDisplay();
@@ -382,51 +380,6 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </v-col>
             </v-row>
         </div>
-        <v-row align="center" justify="center">
-            <v-col cols="12" md="6" lg="3" class="text-center">
-                <v-img
-                    src="@/assets/images/landing/mobile-app.png"
-                    alt="Health Gateway Splash Page App"
-                    data-testid="spash-page-app"
-                    max-height="374px"
-                />
-            </v-col>
-            <v-col cols="12" md="6" lg="3" class="text-center mb-6 mb-md-12">
-                <h2 class="text-primary text-h4 font-weight-bold mb-6">
-                    Try the mobile app.
-                </h2>
-                <p class="text-body-1 mb-6">
-                    You can download it for free to your phone, tablet or iPad.
-                </p>
-                <div
-                    class="d-flex justify-center"
-                    :class="{ 'flex-column': layoutStore.isMobile }"
-                >
-                    <a
-                        href="https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US"
-                        rel="noopener"
-                        target="_blank"
-                        class="px-2"
-                    >
-                        <img
-                            src="@/assets/images/landing/google-play-badge.png"
-                            alt="Go to Google Play"
-                        />
-                    </a>
-                    <a
-                        href="https://apps.apple.com/ca/app/health-gateway/id1590009068"
-                        rel="noopener"
-                        target="_blank"
-                        class="px-2"
-                    >
-                        <img
-                            src="@/assets/images/landing/apple-badge.png"
-                            alt="Go to App Store"
-                        />
-                    </a>
-                </div>
-            </v-col>
-        </v-row>
     </v-container>
 </template>
 
