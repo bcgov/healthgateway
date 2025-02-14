@@ -335,7 +335,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
     }

@@ -140,10 +140,12 @@ namespace HealthGateway.DBMaintainer.Apps
         /// <param name="downloadedFile">Search for all download files not matching this one.</param>
         protected virtual void RemoveOldFiles(FileDownload downloadedFile)
         {
-            List<FileDownload> oldIds = this.DrugDbContext.FileDownload
-                .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
-                .Select(f => new FileDownload { Id = f.Id, Version = f.Version })
-                .ToList();
+            List<FileDownload> oldIds =
+            [
+                .. this.DrugDbContext.FileDownload
+                    .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
+                    .Select(f => new FileDownload { Id = f.Id, Version = f.Version }),
+            ];
             oldIds.ForEach(s => this.Logger.LogInformation("Deleting old Download file with hash: {Hash}", s.Hash));
             this.DrugDbContext.RemoveRange(oldIds);
         }

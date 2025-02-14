@@ -67,9 +67,9 @@ namespace HealthGateway.CommonTests.Messaging
             // Arrange
             IEnumerable<MessageEnvelope> allMessages =
             [
-                new MessageEnvelope(AccountCreatedEvent, AccountCreatedEvent.Hdid) { CreatedOn = DateTime },
-                new MessageEnvelope(AccountClosedEvent, AccountClosedEvent.Hdid) { CreatedOn = DateTime },
-                new MessageEnvelope(DependentAddedEvent, DependentAddedEvent.DelegateHdid) { CreatedOn = DateTime },
+                new(AccountCreatedEvent, AccountCreatedEvent.Hdid) { CreatedOn = DateTime },
+                new(AccountClosedEvent, AccountClosedEvent.Hdid) { CreatedOn = DateTime },
+                new(DependentAddedEvent, DependentAddedEvent.DelegateHdid) { CreatedOn = DateTime },
             ];
             IList<MessageEnvelope> messages = allMessages.Take(messageCount).ToList();
             IList<ServiceBusMessage> expectedMessages = messages.Select(m => new ServiceBusMessage { SessionId = m.SessionId, Body = new(m.Content.Serialize(false)) }).ToList();
@@ -236,14 +236,16 @@ namespace HealthGateway.CommonTests.Messaging
                 attemptedAddMessageCollections.Add(attemptedAddMessageCollection);
 
                 int callCount = 0;
-                Func<ServiceBusMessage, bool> tryAddFunc = message =>
+
+                setupSequentialResult = setupSequentialResult.ReturnsAsync(ServiceBusModelFactory.ServiceBusMessageBatch(0, [], null, TryAddFunc));
+                continue;
+
+                bool TryAddFunc(ServiceBusMessage message)
                 {
                     bool added = callCount++ < batchSize;
                     attemptedAddMessageCollection.Add((message, added));
                     return added;
-                };
-
-                setupSequentialResult = setupSequentialResult.ReturnsAsync(ServiceBusModelFactory.ServiceBusMessageBatch(0, [], null, tryAddFunc));
+                }
             }
 
             setupSequentialResult.ThrowsAsync(new InvalidOperationException("More batches were created than expected."));

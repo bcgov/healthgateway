@@ -9,9 +9,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestReportService implements IReportService {
     private readonly REPORT_BASE_URI: string = "Report";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

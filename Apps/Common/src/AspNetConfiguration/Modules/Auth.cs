@@ -58,6 +58,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">The services collection provider.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use for values.</param>
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Parameter kept for future extensibility")]
         public static void ConfigureAuthorizationServices(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
             logger.LogDebug("ConfigureAuthorizationServices...");

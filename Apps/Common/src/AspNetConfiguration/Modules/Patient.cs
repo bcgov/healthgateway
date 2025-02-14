@@ -59,7 +59,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         // Note: As per reading we do not have to dispose of the certificate.
                         string? clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
                         string? certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
-                        X509Certificate2 clientRegistriesCertificate = new(File.ReadAllBytes(clientCertificatePath), certificatePassword);
+                        byte[] certificateData = File.ReadAllBytes(clientCertificatePath);
+                        X509Certificate2 clientRegistriesCertificate = X509CertificateLoader.LoadPkcs12(certificateData, certificatePassword);
                         client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
                         client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
                         client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =

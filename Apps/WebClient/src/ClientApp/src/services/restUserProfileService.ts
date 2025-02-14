@@ -19,9 +19,9 @@ export class RestUserProfileService implements IUserProfileService {
         "application/json; charset=utf-8";
     private readonly CONTENT_TYPE: string = "Content-Type";
     private readonly USER_PROFILE_BASE_URI: string = "UserProfile";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

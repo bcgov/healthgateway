@@ -37,9 +37,10 @@ namespace HealthGateway.Common.Swagger
         /// <param name="settings">settings.</param>
         public ConfigureSwaggerUiOptions(IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> settings)
         {
-            Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
-            Debug.Assert(settings != null, $"{nameof(versionDescriptionProvider)} != null");
-
+#pragma warning disable S3236
+            Debug.Assert(versionDescriptionProvider != null, "The versionDescriptionProvider parameter cannot be null.");
+            Debug.Assert(settings != null, "The settings parameter cannot be null.");
+#pragma warning restore S3236
             this.provider = versionDescriptionProvider;
             this.settings = settings.Value;
         }

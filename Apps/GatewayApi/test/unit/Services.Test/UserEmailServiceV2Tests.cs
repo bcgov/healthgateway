@@ -280,7 +280,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegateMock.Verify(
                 s => s.UpdateAsync(
                     It.Is<MessagingVerification>(
-                        mv => mv.Validated == false &&
+                        mv => !mv.Validated &&
                               mv.VerificationAttempts == 1),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
@@ -291,8 +291,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             messagingVerificationDelegateMock.Verify(
                 s => s.UpdateAsync(
-                    It.Is<MessagingVerification>(
-                        mv => mv.Validated == true),
+                    It.Is<MessagingVerification>(mv => mv.Validated),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
@@ -496,8 +495,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             It.IsAny<bool>(),
                             It.IsAny<CancellationToken>()))
                     .ReturnsAsync(
-                        new DbResult<UserProfile>
-                            { Status = dbUpdateStatus.Value });
+                        new DbResult<UserProfile> { Status = dbUpdateStatus.Value });
             }
 
             return userProfileDelegateMock;

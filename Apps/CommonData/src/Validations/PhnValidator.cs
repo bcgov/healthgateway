@@ -26,7 +26,7 @@ namespace HealthGateway.Common.Data.Validations
     /// </summary>
     public class PhnValidator : AbstractValidator<string?>
     {
-        private static readonly int[] PhnSigDigits = { 2, 4, 8, 5, 10, 9, 7, 3 };
+        private static readonly int[] PhnSigDigits = [2, 4, 8, 5, 10, 9, 7, 3];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhnValidator"/> class.
@@ -49,7 +49,7 @@ namespace HealthGateway.Common.Data.Validations
 
         private static bool IsValidInternal(string? phn)
         {
-            if (string.IsNullOrEmpty(phn) || phn.Length != 10 || !phn.All(c => char.IsDigit(c)) || phn[0] != '9')
+            if (string.IsNullOrEmpty(phn) || phn.Length != 10 || !phn.All(char.IsDigit) || phn[0] != '9')
             {
                 return false;
             }

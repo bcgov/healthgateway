@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
@@ -49,6 +50,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 
         private IEnumerable<DelegateRow> Rows => this.Data.Select(d => new DelegateRow(d));
 
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         private static Color GetStatusColor(DelegationStatus status)
         {
             return status switch
@@ -73,11 +75,9 @@ namespace HealthGateway.Admin.Client.Components.Delegation
                 this.DateOfBirth = model.Birthdate;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
                 this.Address = AddressUtility.GetAddressAsSingleLine(model.PhysicalAddress ?? model.PostalAddress);
-                this.DelegationStatus = model.DelegationStatus switch
-                {
-                    DelegationStatus.Unknown => DelegationStatus.Allowed,
-                    _ => model.DelegationStatus,
-                };
+                this.DelegationStatus = model.DelegationStatus == DelegationStatus.Unknown
+                    ? DelegationStatus.Allowed
+                    : model.DelegationStatus;
                 this.ToBeRemoved = model.StagedDelegationStatus == DelegationStatus.Disallowed;
             }
 

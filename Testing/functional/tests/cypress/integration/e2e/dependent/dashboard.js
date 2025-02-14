@@ -1,4 +1,6 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+
+const defaultTimeout = 120000;
 
 const validDependent = {
     hdid: "162346565465464564565463257",
@@ -104,14 +106,17 @@ describe("dependents - dashboard", () => {
             .should("be.visible", "be.enabled")
             .click();
         cy.get(recommendationsDownloadPdfButtonSelector).first().click();
-        cy.get(confirmationModalButton).click();
 
-        cy.verifyDownload(
-            "HealthGatewayDependentImmunizationRecommendationReport.pdf",
-            {
-                timeout: 60000,
-                interval: 5000,
-            }
-        );
+        cy.intercept("POST", "**/Report").as("postReport");
+        cy.get(confirmationModalButton).click();
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload(
+                "HealthGatewayDependentImmunizationRecommendationReport.pdf",
+                {
+                    timeout: 60000,
+                    interval: 5000,
+                }
+            );
+        });
     });
 });

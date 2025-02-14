@@ -32,7 +32,11 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// <summary>
     /// The Client Registries delegate.
     /// </summary>
-    internal class ClientRegistriesDelegate : IClientRegistriesDelegate
+    /// <param name="logger">The injected logger provider.</param>
+    /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
+    internal class ClientRegistriesDelegate(
+        ILogger<ClientRegistriesDelegate> logger,
+        QUPA_AR101102_PortType clientRegistriesClient) : IClientRegistriesDelegate
     {
         private const string Instance = "INSTANCE";
         private static readonly List<string> WarningResponseCodes =
@@ -40,23 +44,6 @@ namespace HealthGateway.AccountDataAccess.Patient
             "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
             "BCHCIM.GD.1.0022", "BCHCIM.GD.0.0023", "BCHCIM.GD.1.0023", "BCHCIM.GD.0.0578", "BCHCIM.GD.1.0578",
         ];
-
-        private readonly QUPA_AR101102_PortType clientRegistriesClient;
-        private readonly ILogger<ClientRegistriesDelegate> logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientRegistriesDelegate"/> class.
-        /// Constructor that requires an IEndpointBehavior for dependency injection.
-        /// </summary>
-        /// <param name="logger">The injected logger provider.</param>
-        /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
-        public ClientRegistriesDelegate(
-            ILogger<ClientRegistriesDelegate> logger,
-            QUPA_AR101102_PortType clientRegistriesClient)
-        {
-            this.logger = logger;
-            this.clientRegistriesClient = clientRegistriesClient;
-        }
 
         private static ActivitySource ActivitySource { get; } = new(typeof(ClientRegistriesDelegate).FullName);
 
@@ -66,13 +53,13 @@ namespace HealthGateway.AccountDataAccess.Patient
             using Activity? activity = ActivitySource.StartActivity();
             activity?.AddBaggage("PatientIdentifier", identifier);
 
-            this.logger.LogDebug("Retrieving patient from the Client Registry");
+            logger.LogDebug("Retrieving patient from the Client Registry");
 
             // Create request object
             HCIM_IN_GetDemographicsRequest request = CreateRequest(type, identifier);
 
             // Perform the request
-            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
+            HCIM_IN_GetDemographicsResponse1 reply = await clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
             return this.ParseResponse(reply);
         }
 
@@ -162,7 +149,32 @@ namespace HealthGateway.AccountDataAccess.Patient
             return new HCIM_IN_GetDemographicsRequest(request);
         }
 
-        private static Address? MapAddress(AD? address)
+        private static Name ExtractName(PN nameSection)
+        {
+            // Extract the subject names
+            List<string> givenNameList = [];
+            List<string> lastNameList = [];
+            foreach (ENXP name in nameSection.Items)
+            {
+                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    givenNameList.Add(name.Text[0]);
+                }
+                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    lastNameList.Add(name.Text[0]);
+                }
+            }
+
+            const string delimiter = " ";
+            return new Name
+            {
+                GivenName = givenNameList.Aggregate((i, j) => i + delimiter + j),
+                Surname = lastNameList.Aggregate((i, j) => i + delimiter + j),
+            };
+        }
+
+        private Address? MapAddress(AD? address)
         {
             if (address?.Items == null)
             {
@@ -189,35 +201,13 @@ namespace HealthGateway.AccountDataAccess.Patient
                     case ADCountry country:
                         retAddress.Country = country.Text[0] ?? string.Empty;
                         break;
+                    default:
+                        logger.LogDebug("Unmatched item of type {Type}", item.GetType());
+                        break;
                 }
             }
 
             return retAddress;
-        }
-
-        private static Name ExtractName(PN nameSection)
-        {
-            // Extract the subject names
-            List<string> givenNameList = [];
-            List<string> lastNameList = [];
-            foreach (ENXP name in nameSection.Items)
-            {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    givenNameList.Add(name.Text[0]);
-                }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    lastNameList.Add(name.Text[0]);
-                }
-            }
-
-            const string delimiter = " ";
-            return new Name
-            {
-                GivenName = givenNameList.Aggregate((i, j) => i + delimiter + j),
-                Surname = lastNameList.Aggregate((i, j) => i + delimiter + j),
-            };
         }
 
         private void CheckResponseCode(string responseCode)
@@ -229,7 +219,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
-                this.logger.LogWarning(ErrorMessages.PhnInvalid);
+                logger.LogWarning(ErrorMessages.PhnInvalid);
                 throw new ValidationException(ErrorMessages.PhnInvalid, [new("PHN", ErrorMessages.PhnInvalid)]); // should throw InvalidDataException instead
             }
 
@@ -241,7 +231,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             // Verify that the reply contains a result
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
-                this.logger.LogWarning(ErrorMessages.ClientRegistryDoesNotReturnPerson);
+                logger.LogWarning(ErrorMessages.ClientRegistryDoesNotReturnPerson);
                 throw new NotFoundException(ErrorMessages.ClientRegistryDoesNotReturnPerson);
             }
         }
@@ -261,7 +251,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             string? dobStr = retrievedPerson.identifiedPerson.birthTime.value;
             if (!DateTime.TryParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dob))
             {
-                this.logger.LogWarning("Unable to parse patient's date of birth");
+                logger.LogWarning("Unable to parse patient's date of birth");
                 throw new NotFoundException(ErrorMessages.InvalidServicesCard);
             }
 
@@ -288,8 +278,8 @@ namespace HealthGateway.AccountDataAccess.Patient
             AD[] addresses = retrievedPerson.addr;
             if (addresses != null)
             {
-                patientModel.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                patientModel.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                patientModel.PhysicalAddress = this.MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
+                patientModel.PostalAddress = this.MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
             }
 
             if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
@@ -309,11 +299,11 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (documentedName == null && legalName == null)
             {
-                this.logger.LogWarning("The Client Registry returned a person without a Documented Name or a Legal Name");
+                logger.LogWarning("The Client Registry returned a person without a Documented Name or a Legal Name");
             }
             else if (documentedName == null)
             {
-                this.logger.LogWarning("The Client Registry returned a person without a Documented Name");
+                logger.LogWarning("The Client Registry returned a person without a Documented Name");
             }
 
             if (documentedName != null)
@@ -333,7 +323,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
             {
-                this.logger.LogWarning("The Client Registry returned a person without a PHN");
+                logger.LogWarning("The Client Registry returned a person without a PHN");
             }
             else
             {
@@ -343,7 +333,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.Hdid.ToString());
             if (subjectId == null)
             {
-                this.logger.LogWarning("The Client Registry returned a person without an HDID");
+                logger.LogWarning("The Client Registry returned a person without an HDID");
             }
             else
             {

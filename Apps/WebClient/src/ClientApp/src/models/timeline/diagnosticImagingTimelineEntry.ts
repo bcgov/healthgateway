@@ -16,7 +16,7 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
     public fileId: string | undefined;
     public examDate: StringISODate;
 
-    private getComments: (entryId: string) => UserComment[] | null;
+    private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: DiagnosticImagingExam,

@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation.Results;
@@ -237,6 +238,7 @@ namespace HealthGateway.Immunization.Services
             return retVal;
         }
 
+        [SuppressMessage("Style", "IDE0072:Populate switch", Justification = "Team decision")]
         private async Task<RequestResult<VaccineStatus>> GetVaccineStatusFromDelegateAsync(VaccineStatusQuery query, string accessToken, string? phn = null, CancellationToken ct = default)
         {
             RequestResult<VaccineStatus> retVal = new()

@@ -98,9 +98,15 @@ namespace AccountDataAccessTest.Strategy
                 ResponseCode = string.Empty,
                 IsDeceased = false,
                 CommonName = new Name
-                    { GivenName = string.Empty, Surname = string.Empty },
+                {
+                    GivenName = string.Empty,
+                    Surname = string.Empty,
+                },
                 LegalName = new Name
-                    { GivenName = string.Empty, Surname = string.Empty },
+                {
+                    GivenName = string.Empty,
+                    Surname = string.Empty,
+                },
             };
 
             PatientIdentity patientIdentity = new()
@@ -146,7 +152,7 @@ namespace AccountDataAccessTest.Strategy
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
@@ -169,7 +175,7 @@ namespace AccountDataAccessTest.Strategy
                         s => s.GetDemographicsAsync(
                             It.Is<OidType>(x => x == OidType.Hdid),
                             It.Is<string>(x => x == Hdid),
-                            It.Is<bool>(x => x == false),
+                            It.Is<bool>(x => !x),
                             It.IsAny<CancellationToken>()))
                     .ReturnsAsync(patient);
             }
@@ -192,7 +198,7 @@ namespace AccountDataAccessTest.Strategy
                     s => s.GetDemographicsAsync(
                         It.Is<OidType>(x => x == OidType.Hdid),
                         It.Is<string>(x => x == PhsaHdid),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
@@ -219,7 +225,7 @@ namespace AccountDataAccessTest.Strategy
                     s => s.GetDemographicsAsync(
                         It.Is<OidType>(x => x == OidType.Hdid),
                         It.Is<string>(x => x == PhsaHdidNotFound),
-                        It.Is<bool>(x => x == false),
+                        It.Is<bool>(x => !x),
                         It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity. NotFound"));
 

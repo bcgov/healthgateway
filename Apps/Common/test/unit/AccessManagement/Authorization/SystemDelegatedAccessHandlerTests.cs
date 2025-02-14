@@ -49,9 +49,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.Hdid, hdid),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.NameIdentifier, userId),
+                new(GatewayClaims.Hdid, hdid),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -79,7 +79,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<SystemDelegatedAccessHandler> logger = loggerFactory.CreateLogger<SystemDelegatedAccessHandler>();
 
             SystemDelegatedAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            NameAuthorizationRequirement[] requirements = { new(username) };
+            NameAuthorizationRequirement[] requirements = [new(username)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -104,9 +104,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string scopes = "system/Patient.read";
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.Scope, scopes),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.NameIdentifier, userId),
+                new(GatewayClaims.Scope, scopes),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -134,7 +134,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<SystemDelegatedAccessHandler> logger = loggerFactory.CreateLogger<SystemDelegatedAccessHandler>();
 
             SystemDelegatedAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read, supportsSystemDelegation: false) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read, supportsSystemDelegation: false)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -159,9 +159,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string scopes = string.Empty;
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.Scope, scopes),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.NameIdentifier, userId),
+                new(GatewayClaims.Scope, scopes),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -189,7 +189,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<SystemDelegatedAccessHandler> logger = loggerFactory.CreateLogger<SystemDelegatedAccessHandler>();
 
             SystemDelegatedAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -213,8 +213,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string username = "User Name";
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, userId),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.NameIdentifier, userId),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -242,7 +242,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<SystemDelegatedAccessHandler> logger = loggerFactory.CreateLogger<SystemDelegatedAccessHandler>();
 
             SystemDelegatedAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -267,9 +267,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string scopes = "system/Patient.read";
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.Scope, scopes),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.NameIdentifier, userId),
+                new(GatewayClaims.Scope, scopes),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -297,7 +297,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<SystemDelegatedAccessHandler> logger = loggerFactory.CreateLogger<SystemDelegatedAccessHandler>();
 
             SystemDelegatedAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Read)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -322,9 +322,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string scopes = "system/Patient.write";
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.Scope, scopes),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.NameIdentifier, userId),
+                new(GatewayClaims.Scope, scopes),
             ];
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -352,7 +352,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<SystemDelegatedAccessHandler> logger = loggerFactory.CreateLogger<SystemDelegatedAccessHandler>();
 
             SystemDelegatedAccessHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Write) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Patient, FhirAccessType.Write)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 

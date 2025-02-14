@@ -7,7 +7,8 @@ import {
     required,
     requiredIf,
 } from "@vuelidate/validators";
-import { Mask, MaskaDetail, vMaska } from "maska";
+import { Mask, MaskaDetail } from "maska";
+import { vMaska } from "maska/vue";
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -441,7 +442,7 @@ if (!props.serialNumber) {
                         />
                         <v-text-field
                             v-model="v$.phn.$model"
-                            v-maska:[phnMaskOptions]
+                            v-maska="phnMaskOptions"
                             label="Personal Health Number"
                             class="mb-2"
                             data-testid="phn-input"
@@ -512,7 +513,7 @@ if (!props.serialNumber) {
                         />
                         <v-text-field
                             v-model="v$.postalOrZip.$model"
-                            v-maska:[postalCodeMaskOptions]
+                            v-maska="postalCodeMaskOptions"
                             label="Postal Code"
                             data-testid="pcr-zip-input"
                             type="text"
@@ -543,7 +544,7 @@ if (!props.serialNumber) {
                         <v-text-field
                             v-if="dataSource === PcrDataSource.Manual"
                             v-model="v$.contactPhoneNumber.$model"
-                            v-maska:[phoneMaskOptions]
+                            v-maska="phoneMaskOptions"
                             data-testid="contact-phone-number-input"
                             class="mb-2"
                             type="tel"

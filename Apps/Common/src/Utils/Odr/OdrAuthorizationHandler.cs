@@ -52,7 +52,8 @@ namespace HealthGateway.Common.Utils.Odr
             if (odrConfig.ClientCertificate?.Enabled == true)
             {
                 byte[] certificateData = File.ReadAllBytes(odrConfig.ClientCertificate?.Path);
-                this.ClientCertificates.Add(new X509Certificate2(certificateData, odrConfig.ClientCertificate?.Password));
+                X509Certificate2 clientRegistriesCertificate = X509CertificateLoader.LoadPkcs12(certificateData, odrConfig.ClientCertificate?.Password);
+                this.ClientCertificates.Add(clientRegistriesCertificate);
             }
         }
 

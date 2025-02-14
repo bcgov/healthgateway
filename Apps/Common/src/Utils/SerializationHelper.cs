@@ -64,12 +64,14 @@ public static class SerializationHelper
     {
         if (obj == null)
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
-        return serializeUsingActualType
+        byte[] serializedData = serializeUsingActualType
             ? SerializeUsingConcreteType(obj, options)
             : SerializeUsingGenericType(obj, options);
+
+        return serializedData;
     }
 
     private static byte[] SerializeUsingConcreteType<T>(T obj, JsonSerializerOptions? options = null)

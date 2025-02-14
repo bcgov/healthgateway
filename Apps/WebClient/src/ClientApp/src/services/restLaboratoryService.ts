@@ -19,11 +19,11 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestLaboratoryService implements ILaboratoryService {
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
-    private isCovid19Enabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
+    private readonly isCovid19Enabled;
 
     constructor(
         logger: ILogger,

@@ -148,11 +148,11 @@ namespace HealthGateway.Admin.Tests.Services
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
             VaccineDetails vaccineDetails = GenerateVaccineDetails(GenerateVaccineDose());
             AgentAuditQuery auditQuery = new(Hdid);
-            IEnumerable<AgentAudit> agentAudits = new[] { GenerateAgentAudit() };
-            IEnumerable<DataSource> blockedDataSources = new[]
-            {
+            IEnumerable<AgentAudit> agentAudits = [GenerateAgentAudit()];
+            IEnumerable<DataSource> blockedDataSources =
+            [
                 DataSource.Immunization,
-            };
+            ];
             ResourceDelegateQuery resourceDelegateQuery = new() { ByDelegateHdid = patientQuery.Hdid, IncludeDependent = true };
             ResourceDelegateQueryResult resourceDelegateQueryResult = GenerateResourceDelegatesForDelegate(patientQuery.Hdid, [Hdid2]);
             PatientDetailsQuery dependentPatientQuery =

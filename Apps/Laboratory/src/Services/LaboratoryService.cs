@@ -17,6 +17,7 @@ namespace HealthGateway.Laboratory.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -73,6 +74,7 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Style", "IDE0046:'if' statement can be simplified", Justification = "Team decision")]
         public async Task<RequestResult<Covid19OrderResult>> GetCovid19OrdersAsync(string hdid, int pageIndex = 0, CancellationToken ct = default)
         {
             if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Covid19TestResult, ct))
@@ -107,23 +109,21 @@ namespace HealthGateway.Laboratory.Services
                     "Refresh in progress");
             }
 
-            if (delegateResult.ResultStatus != ResultType.Success)
-            {
-                return RequestResultFactory.Error<Covid19OrderResult>(delegateResult.ResultError);
-            }
-
-            return RequestResultFactory.Success(
-                new Covid19OrderResult
-                {
-                    Covid19Orders = delegateResult.ResourcePayload?.Result?.Select(this.mappingService.MapToCovid19Order).ToList() ?? [],
-                    Loaded = true,
-                },
-                delegateResult.TotalResultCount,
-                delegateResult.PageIndex,
-                delegateResult.PageSize);
+            return delegateResult.ResultStatus != ResultType.Success
+                ? RequestResultFactory.Error<Covid19OrderResult>(delegateResult.ResultError)
+                : RequestResultFactory.Success(
+                    new Covid19OrderResult
+                    {
+                        Covid19Orders = delegateResult.ResourcePayload?.Result?.Select(this.mappingService.MapToCovid19Order).ToList() ?? [],
+                        Loaded = true,
+                    },
+                    delegateResult.TotalResultCount,
+                    delegateResult.PageIndex,
+                    delegateResult.PageSize);
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Style", "IDE0046:'if' statement can be simplified", Justification = "Team decision")]
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrdersAsync(string hdid, CancellationToken ct = default)
         {
             if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.LabResult, ct))
@@ -163,21 +163,18 @@ namespace HealthGateway.Laboratory.Services
                     "Refresh in progress");
             }
 
-            if (delegateResult.ResultStatus != ResultType.Success)
-            {
-                return RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError);
-            }
-
-            return RequestResultFactory.Success(
-                new LaboratoryOrderResult
-                {
-                    LaboratoryOrders = delegateResult.ResourcePayload?.Result?.LabOrders?.Select(this.mappingService.MapToLaboratoryOrder).ToList() ?? [],
-                    Loaded = !(loadState?.RefreshInProgress ?? false),
-                    Queued = loadState?.Queued ?? false,
-                },
-                delegateResult.TotalResultCount,
-                delegateResult.PageIndex,
-                delegateResult.PageSize);
+            return delegateResult.ResultStatus != ResultType.Success
+                ? RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError)
+                : RequestResultFactory.Success(
+                    new LaboratoryOrderResult
+                    {
+                        LaboratoryOrders = delegateResult.ResourcePayload?.Result?.LabOrders?.Select(this.mappingService.MapToLaboratoryOrder).ToList() ?? [],
+                        Loaded = !(loadState?.RefreshInProgress ?? false),
+                        Queued = loadState?.Queued ?? false,
+                    },
+                    delegateResult.TotalResultCount,
+                    delegateResult.PageIndex,
+                    delegateResult.PageSize);
         }
 
         /// <inheritdoc/>

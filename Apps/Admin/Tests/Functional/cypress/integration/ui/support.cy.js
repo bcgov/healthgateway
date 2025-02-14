@@ -171,7 +171,10 @@ describe("Support", () => {
         verifySupportTableResults(hdid, phn, 2);
         cy.get("[data-testid=clear-btn]").click();
         cy.get("[data-testid=query-type-select]").should("have.value", "Sms");
-        cy.get("[data-testid=query-input]").should("be.empty");
+        cy.get("[data-testid=query-input]")
+            .should("exist")
+            .should("be.visible")
+            .should("have.value", "");
         cy.get("[data-testid=user-table]").should("not.exist");
     });
 });

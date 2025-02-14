@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -67,6 +68,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, DbStatusCode.Error, null, true, true)]
         [InlineData(DbStatusCode.Read, DbStatusCode.Error, null, null, true, true)]
         [InlineData(null, null, null, null, false, false)]
+        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
         public async Task ShouldGetNotes(
             DbStatusCode? notesDbStatusCode,
             DbStatusCode? updateProfileDbStatusCode,
@@ -78,7 +80,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             List<UserNote> expected =
             [
-                new UserNote
+                new()
                 {
                     HdId = Hdid,
                     Title = "First Note",
@@ -86,7 +88,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 },
 
-                new UserNote
+                new()
                 {
                     HdId = Hdid,
                     Title = "Second Note",
@@ -95,7 +97,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             ];
 
-            IList<Note> notes = expected.Select(n => Mapper.Map<UserNote, Note>(n)).ToList();
+            IList<Note> notes = expected.Select(Mapper.Map<UserNote, Note>).ToList();
             if (encryptionKey != null)
             {
                 foreach (Note note in notes)
@@ -203,8 +205,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 }
                 : null;
 
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
+            UserProfile userProfile = new() { EncryptionKey = encryptionKey };
 
             NoteService service = GetNoteService(userProfile: userProfile, noteDbResult: noteDbResult);
 
@@ -256,8 +257,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 }
                 : null;
 
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
+            UserProfile userProfile = new() { EncryptionKey = encryptionKey };
 
             NoteService service = GetNoteService(userProfile: userProfile, noteDbResult: noteDbResult);
 
@@ -309,8 +309,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 }
                 : null;
 
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
+            UserProfile userProfile = new() { EncryptionKey = encryptionKey };
 
             NoteService service = GetNoteService(userProfile: userProfile, noteDbResult: noteDbResult);
 

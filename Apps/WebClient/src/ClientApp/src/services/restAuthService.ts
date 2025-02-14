@@ -8,11 +8,11 @@ import { IAuthenticationService, ILogger } from "@/services/interfaces";
 const REFRESH_CUSHION = 30;
 
 export class RestAuthenticationService implements IAuthenticationService {
-    private logger;
-    private keycloak;
-    private scope!: string;
-    private logonCallback!: string;
-    private logoutCallback!: string;
+    private readonly logger;
+    private readonly keycloak;
+    private readonly scope!: string;
+    private readonly logonCallback!: string;
+    private readonly logoutCallback!: string;
 
     // RestAuthenticationService.GetService() should be called instead of using the constructor directly.
     constructor(

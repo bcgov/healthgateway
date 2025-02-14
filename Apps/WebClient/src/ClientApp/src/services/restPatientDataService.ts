@@ -39,9 +39,9 @@ export const entryTypeToPatientDataTypeMap: Map<EntryType, PatientDataType> =
 
 export class RestPatientDataService implements IPatientDataService {
     private readonly BASE_URI = "PatientData";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

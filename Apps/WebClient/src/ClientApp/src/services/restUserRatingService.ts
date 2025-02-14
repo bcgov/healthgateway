@@ -11,9 +11,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestUserRatingService implements IUserRatingService {
     private readonly USER_RATING_BASE_URI: string = "UserFeedback/Rating";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,

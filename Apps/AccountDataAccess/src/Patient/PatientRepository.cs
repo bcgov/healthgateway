@@ -189,6 +189,11 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private async Task<PatientQueryResult> HandlePatientDetailsQueryAsync(PatientDetailsQuery query, CancellationToken ct)
         {
+            if (ct.IsCancellationRequested)
+            {
+                throw new InvalidOperationException("Cancellation was requested");
+            }
+
             using Activity? activity = ActivitySource.StartActivity();
 
             if (!string.IsNullOrEmpty(query.Hdid))
@@ -206,17 +211,9 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             this.logger.LogDebug("Retrieving patient details");
 
-            if (ct.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("Cancellation was requested");
-            }
-
-            if (query.Hdid == null && query.Phn == null)
-            {
-                throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
-            }
-
-            return await this.GetPatientAsync(query, ct: ct);
+            return (query.Hdid ?? query.Phn) == null
+                ? throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details")
+                : await this.GetPatientAsync(query, ct: ct);
         }
 
         private async Task<PatientQueryResult> GetPatientAsync(PatientDetailsQuery query, bool disabledValidation = false, CancellationToken ct = default)

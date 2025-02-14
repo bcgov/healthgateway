@@ -12,7 +12,7 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
     public specialtyDescription: string;
     public clinic: ClinicViewModel;
     public showRollOffWarning: boolean;
-    private getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entyId: string) => UserComment[] | null;
 
     public constructor(
         model: Encounter,

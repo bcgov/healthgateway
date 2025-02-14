@@ -3,7 +3,7 @@
 {{- $top := index . 0 -}}
 {{- $context := index . 1 -}}
 {{- if or (or (not (hasKey $context "scaling")) (not (hasKey $context.scaling "enabled"))) ($context.scaling).enabled -}}
-    {{- $name := printf "%s-%s" $top.Release.Name $context.name -}}
+    {{- $name := printf "%s-%s-deployment" $top.Release.Name $context.name -}}
     {{- $namespace := $top.Values.namespace | default $top.Release.Namespace -}}
     {{- $labels := include "standard.labels" $top -}}
     {{- $minReplicas := ($context.scaling).hpaMinReplicas | default $top.Values.scaling.hpaMinReplicas | required "hpaMinReplicas required" -}}
@@ -19,9 +19,9 @@ metadata:
   labels: {{ $labels | nindent 4 }}
 spec:
   scaleTargetRef:
-    kind: DeploymentConfig
-    name: {{ $name }}-dc
-    apiVersion: apps.openshift.io/v1
+    kind: Deployment
+    name: {{ $name }}-deployment
+    apiVersion: apps/v1
   minReplicas: {{ $minReplicas }}
   maxReplicas: {{ $maxReplicas }}
   metrics:

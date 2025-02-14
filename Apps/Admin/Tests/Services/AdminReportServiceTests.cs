@@ -132,9 +132,9 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IBlockedAccessDelegate>? blockedAccessDelegateMock = null,
             Mock<IPatientRepository>? patientRepositoryMock = null)
         {
-            delegationDelegateMock = delegationDelegateMock ?? new();
-            blockedAccessDelegateMock = blockedAccessDelegateMock ?? new();
-            patientRepositoryMock = patientRepositoryMock ?? new();
+            delegationDelegateMock ??= new();
+            blockedAccessDelegateMock ??= new();
+            patientRepositoryMock ??= new();
 
             return new AdminReportService(
                 delegationDelegateMock.Object,

@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
@@ -89,15 +90,10 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<VaccineStatusResult> GetVaccineStatusResultAsync(string phn, DateTime birthdate, string accessToken, CancellationToken ct)
         {
             PhsaResult<VaccineStatusResult> phsaResult = await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(phn, birthdate, accessToken, ct);
-
-            if (phsaResult.Result == null)
-            {
-                throw new NotFoundException(ErrorMessages.CannotGetVaccineStatus);
-            }
-
-            return phsaResult.Result;
+            return phsaResult.Result ?? throw new NotFoundException(ErrorMessages.CannotGetVaccineStatus);
         }
 
+        [SuppressMessage("Style", "IDE0046:Simplify 'if' statement", Justification = "Team decision")]
         private VaccinationStatus GetVaccinationStatus(VaccineStatusResult result)
         {
             logger.LogDebug("Vaccination Status Indicator: {VaccinationStatusIndicator}", result.StatusIndicator);
@@ -118,6 +114,7 @@ namespace HealthGateway.Admin.Server.Services
             };
         }
 
+        [SuppressMessage("Style", "IDE0046:Simplify 'if' statement", Justification = "Team decision")]
         private async Task<VaccineProofResponse> GetVaccineProofAsync(VaccinationStatus vaccinationStatus, string qrCode, CancellationToken ct)
         {
             VaccineProofRequest request = new()
@@ -127,6 +124,7 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             RequestResult<VaccineProofResponse> vaccineProof = await vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request, ct);
+
             if (vaccineProof.ResultStatus != ResultType.Success || vaccineProof.ResourcePayload == null)
             {
                 throw new NotFoundException(vaccineProof.ResultError?.ResultMessage ?? ErrorMessages.CannotGetVaccineProof);

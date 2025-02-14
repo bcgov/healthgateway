@@ -72,7 +72,7 @@ namespace HealthGateway.JobScheduler.Tasks
             DateTime extendedStartDateTime = StartDateTime.AddMinutes(-5);
             DateTime extendedHotfixDateTime = HotfixDateTime.AddMinutes(5);
 
-            IList<UserProfile> profiles = await dbContext.UserProfile
+            List<UserProfile> profiles = await dbContext.UserProfile
                 .AsNoTracking()
                 .Where(p => p.CreatedDateTime > extendedStartDateTime && p.CreatedDateTime < extendedHotfixDateTime)
                 .ToListAsync(ct);
@@ -90,7 +90,7 @@ namespace HealthGateway.JobScheduler.Tasks
             DateTime extendedHotfixDateTime = HotfixDateTime.AddMinutes(-5);
 
             int iteration = 0;
-            IList<UserProfile> profiles;
+            List<UserProfile> profiles;
             do
             {
                 profiles = await dbContext.UserProfile
@@ -128,7 +128,7 @@ namespace HealthGateway.JobScheduler.Tasks
             DateTime extendedStartDateTime = StartDateTime.AddMinutes(-5);
 
             int iteration = 0;
-            IList<UserProfile> profiles;
+            List<UserProfile> profiles;
             do
             {
                 profiles = await dbContext.UserProfile

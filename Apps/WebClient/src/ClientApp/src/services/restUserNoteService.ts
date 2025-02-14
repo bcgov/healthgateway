@@ -17,10 +17,10 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 export class RestUserNoteService implements IUserNoteService {
     private readonly USER_NOTE_BASE_URI: string = "Note";
-    private logger;
-    private http;
-    private baseUri;
-    private isEnabled;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
+    private readonly isEnabled;
 
     constructor(
         logger: ILogger,

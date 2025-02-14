@@ -223,10 +223,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             {
                 User = new ClaimsPrincipal(
                     new ClaimsIdentity(
-                        new Claim[]
-                        {
+                        [
                             new("azp", clientAzp),
-                        },
+                        ],
                         "token")),
             };
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();

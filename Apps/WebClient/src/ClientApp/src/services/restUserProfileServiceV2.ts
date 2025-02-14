@@ -18,9 +18,9 @@ export class RestUserProfileServiceV2 implements IUserProfileService {
     private readonly CONTENT_TYPE: string = "Content-Type";
     private readonly USER_PROFILE_BASE_URI: string = "UserProfile";
     private readonly API_VERSION: string = "2.0";
-    private logger;
-    private http;
-    private baseUri;
+    private readonly logger;
+    private readonly http;
+    private readonly baseUri;
 
     constructor(
         logger: ILogger,
