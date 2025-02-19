@@ -3,7 +3,7 @@
 {{- $top := index . 0 -}}
 {{- $context := index . 1 -}}
 {{- if or (or (not (hasKey $context "scaling")) (not (hasKey $context.scaling "enabled"))) ($context.scaling).enabled -}}
-    {{- $name := printf "%s-%s-deployment" $top.Release.Name $context.name -}}
+    {{- $name := printf "%s-%s" $top.Release.Name $context.name -}}
     {{- $namespace := $top.Values.namespace | default $top.Release.Namespace -}}
     {{- $labels := include "standard.labels" $top -}}
     {{- $minReplicas := ($context.scaling).hpaMinReplicas | default $top.Values.scaling.hpaMinReplicas | required "hpaMinReplicas required" -}}
