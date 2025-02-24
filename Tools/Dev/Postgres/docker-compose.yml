@@ -22,21 +22,8 @@ services:
     restart: unless-stopped
     volumes:
       - gatewaycache:/data
-  gatewaylogs:
-    container_name: gatewaylogs
-    image: datalust/seq:latest
-    ports:
-      - "6080:80"
-      - "5341:5341"
-    env_file:
-      - ./seq.env
-    restart: unless-stopped
-    volumes:
-      - gatewaylogs:/data
 volumes:
   gatewaydb:
     name: gatewaydb.local
   gatewaycache:
     name: gatewaycache.local
-  gatewaylogs:
-    name: gatewaylogs.local
