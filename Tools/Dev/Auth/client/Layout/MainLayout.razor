@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="fas fa-bars" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudText Typo="Typo.h6" Class="ml-4">Regional Portal</MudText>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudMenu AnchorOrigin="@Origin.BottomRight" TransformOrigin="@Origin.TopRight" Dense="true" Class="mt-1 ml-4">
+                    <ActivatorContent>
+                        <MudIconButton Icon="fas fa-user" Color="Color.Inherit" Edge="@Edge.End" data-testid="user-account-icon" />
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudNavLink href="user-info" Disabled="false" data-testid="user-info-link">
+                            @(context.User.Identity?.Name ?? "Unknown")
+                        </MudNavLink>
+                        <MudNavLink Icon="fas fa-right-from-bracket" OnClick="@LogOut" data-testid="logout-text-link">Log Out</MudNavLink>
+                    </ChildContent>
+                </MudMenu>
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="DrawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-6">
+            <main>
+                @Body
+            </main>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

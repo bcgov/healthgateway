@@ -1,0 +1,16 @@
+﻿@page "/home"
+@layout MainLayout
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IConfiguration Configuration
+
+<PageTitle>Main</PageTitle>
+<p class="text-center">
+    <div>
+        <a href="@Configuration["HGBaseURL"]/timeline">Navigate to Classic Health Gateway Timeline</a>
+    </div>
+    <div>
+        <a href="@Configuration["SFBaseURL"]/timeline">Navigate to New Health Gateway Timeline</a>
+    </div>
+</p>

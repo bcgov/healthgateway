@@ -1,0 +1,28 @@
+﻿@page "/user-info"
+@layout MainLayout
+
+<PageTitle>Health Gateway Admin User Info</PageTitle>
+
+<PageTitle>User Info</PageTitle>
+<MudField Label="Auth Message" Variant="Variant.Outlined">
+    @AuthMessage
+</MudField>
+@if (Token != null)
+{
+    <MudTextField @bind-Value="Token" Label="Token" Variant="Variant.Outlined" Lines="6" ReadOnly="true" />
+}
+@if (Claims.Any())
+{
+    <MudField Label="Claims" Variant="Variant.Outlined">
+        <MudTable Items="@Claims" Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+            <HeaderContent>
+                <MudTh>Claim</MudTh>
+                <MudTh>Value</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Claim">@context.Type</MudTd>
+                <MudTd DataLabel="Value">@context.Value</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudField>
+}
