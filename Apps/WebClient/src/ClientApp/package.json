@@ -17,7 +17,7 @@
         "axios": "^1.7.9",
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
-        "keycloak-js": "^22.0.5",
+        "keycloak-js": "^26.2.0",
         "loglevel": "^1.9.2",
         "luxon": "^3.5.0",
         "maska": "^3.0.4",
