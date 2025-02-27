@@ -10,6 +10,51 @@
         <MudIconButton Icon="fas fa-bars" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudText Typo="Typo.h6" Class="ml-4">Regional Portal</MudText>
         <MudSpacer />
+
+        <!-- My Health Apps Button -->
+        <MudMenu AnchorOrigin="@Origin.BottomRight" TransformOrigin="@Origin.TopRight" Dense="true" Class="mt-1 ml-4">
+            <ActivatorContent>
+                <MudButton Color="Color.Inherit" StartIcon="fas fa-th-large" OnClick="ToggleMyHealthApps">
+                    My Health Apps
+                </MudButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MudPopover Open="@ShowHealthAppsPopup"
+                            Class="popup-overlay"
+                            AnchorOrigin="Origin.TopRight"
+                            TransformOrigin="Origin.TopRight"
+                            Position="Position.Fixed">
+                    <ChildContent>
+                        <div class="health-apps-popup">
+                            <h3>My Health Apps</h3>
+
+                            <!-- Horizontal Navigation Icons -->
+                            <div class="health-apps-nav">
+                                <MudNavLink Icon="fas fa-handshake" Href="/">Home</MudNavLink>
+                                <MudNavLink Icon="fas fa-inbox" Href="/">Inbox</MudNavLink>
+                                <MudNavLink Icon="fas fa-file-medical" Href="@TimelineUrl">Health Records</MudNavLink>
+                            </div>
+                            <hr />
+                            <h4>Trusted Partners</h4>
+                            <MudNavLink Href="https://www.fraserhealth.ca/" Target="_blank" Rel="noopener noreferrer">Fraser Health</MudNavLink>
+                            <MudNavLink Href="https://www.islandhealth.ca/" Target="_blank" Rel="noopener noreferrer">Vancouver Island Health</MudNavLink>
+                            <MudNavLink Href="https://www.interiorhealth.ca/" Target="_blank" Rel="noopener noreferrer">Interior Health</MudNavLink>
+                            <MudNavLink Href="https://www.northernhealth.ca/" Target="_blank" Rel="noopener noreferrer">Northern Health</MudNavLink>
+                            <MudNavLink Href="mailto:healthgateway@gov.bc.ca">Contact Us</MudNavLink>
+                            <hr />
+                            <!-- Sign Out Button -->
+                            <div class="sign-out-container">
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="@LogOut" Class="sign-out-button">
+                                    Sign Out
+                                </MudButton>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </MudPopover>
+            </ChildContent>
+        </MudMenu>
+
+        <!-- User Account Menu -->
         <AuthorizeView>
             <Authorized>
                 <MudMenu AnchorOrigin="@Origin.BottomRight" TransformOrigin="@Origin.TopRight" Dense="true" Class="mt-1 ml-4">

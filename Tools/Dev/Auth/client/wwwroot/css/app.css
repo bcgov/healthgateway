@@ -139,6 +139,75 @@ a, .btn-link {
     font-size: 1rem;
 }
 
+.popup-overlay {
+    position: fixed !important; /* Ensures it stays within viewport */
+    left: auto !important;
+    right: 20px !important; /* Aligns with the button */
+    top: 60px !important;
+    width: 400px !important;
+    max-width: 450px;
+    z-index: 10000 !important; /* Keeps it on top */
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+/* Horizontal Navigation for Home, Inbox, Health Records */
+.health-apps-nav {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    flex-wrap: nowrap;
+}
+
+.health-apps-nav .MudNavLink {
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds "..." if text is too long */
+}
+
+/* Prevents popover from overflowing on smaller screens */
+@media (max-width: 1024px) {
+    .popup-overlay {
+        right: 10px !important;
+        width: 350px !important;
+    }
+}
+
+/* Horizontal Navigation for Home, Inbox, Health Records */
+.health-apps-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+.health-apps-nav .MudNavLink {
+    flex: 1;
+    text-align: center;
+}
+
+/* Sign Out Button - Centered and Full Width */
+.sign-out-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.sign-out-button {
+    border-color: #1b6ec2 !important; /* Blue border */
+    color: #1b6ec2 !important; /* Blue text */
+    width: 100%;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 1440px) {
     .health-records-container {
