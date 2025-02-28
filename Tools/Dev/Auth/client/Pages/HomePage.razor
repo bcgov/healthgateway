@@ -1,0 +1,67 @@
+﻿@page "/home"
+@layout MainLayout
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IConfiguration Configuration
+
+<PageTitle>Main</PageTitle>
+
+<!-- Breadcrumb Navigation -->
+<div class="breadcrumb-container">
+    <nav>
+        <a href="/home" class="breadcrumb-link">Home</a> /
+        <span class="breadcrumb-active">My Health Records</span>
+    </nav>
+</div>
+
+<!-- My Health Records Section -->
+<div class="health-records-container">
+    <h1>My Health Records</h1>
+
+    <div class="health-records-card">
+        <div class="record-header">
+            <span class="record-name"><strong>Name</strong></span>
+            <span class="record-dob"><strong>Date of Birth</strong></span>
+            <span class="record-phn"><strong>PHN</strong></span>
+        </div>
+        <div class="record-details">
+            <span class="record-name">Sarah Johnson</span>
+            <span class="record-dob">January 15, 1985</span>
+            <span class="record-phn">9874307777</span>
+        </div>
+    </div>
+
+    <!-- Flexbox container for Latest Visit + Tiles -->
+    <div class="info-container">
+        <!-- Latest Visit Section -->
+        <div class="visit-card">
+            <h2>Latest visit</h2>
+            <p><strong>Vancouver General Hospital (VGH)</strong></p>
+            <p><strong>Date:</strong> February 10, 2025</p>
+            <p><strong>Reason:</strong> Severe abdominal pain</p>
+            <p><strong>Summary:</strong> Details of the visit here including diagnosis and treatment.</p>
+            <a href="@Configuration["SFBaseURL"]/timeline" class="btn-primary">View details</a>
+        </div>
+
+        <!-- Statistics Tiles -->
+        <div class="stats-container">
+            <div class="stats-tile">
+                <h2>2</h2>
+                <p>Total visits</p>
+            </div>
+            <div class="stats-tile">
+                <h2>0</h2>
+                <p>Upcoming appointments</p>
+            </div>
+            <div class="stats-tile">
+                <h2>1</h2>
+                <p>Discharge summary</p>
+            </div>
+            <div class="stats-tile">
+                <h2>3</h2>
+                <p>Labs</p>
+            </div>
+        </div>
+    </div>
+</div>

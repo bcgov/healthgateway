@@ -1,0 +1,328 @@
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+h1:focus {
+    outline: none;
+}
+
+a, .btn-link {
+    color: #0071c1;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Ensure the main content wrapper expands fully */
+.main-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Adjust the main content container */
+.health-records-container {
+    background: white;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 8px;
+    width: 95%;
+    max-width: 1600px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Title */
+.health-records-container h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* Card Styling */
+.health-records-card {
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.record-header,
+.record-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.record-header {
+    font-weight: bold;
+    border-bottom: 2px solid #eee;
+}
+
+/* Latest Visit + Tiles Wrapper */
+.info-container {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+/* Latest Visit Section */
+.visit-card {
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.visit-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.visit-card p {
+    margin: 0.25rem 0;
+}
+
+.btn-primary {
+    background-color: #1b6ec2;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+/* Statistics Tiles */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    flex: 1;
+}
+
+.stats-tile {
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stats-tile h2 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.stats-tile p {
+    margin: 0.25rem 0;
+    font-size: 1rem;
+}
+
+.popup-overlay {
+    position: fixed !important; /* Ensures it stays within viewport */
+    left: auto !important;
+    right: 20px !important; /* Aligns with the button */
+    top: 60px !important;
+    width: 400px !important;
+    max-width: 450px;
+    z-index: 10000 !important; /* Keeps it on top */
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+/* Horizontal Navigation for Home, Inbox, Health Records */
+.health-apps-nav {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    flex-wrap: nowrap;
+}
+
+.health-apps-nav .MudNavLink {
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds "..." if text is too long */
+}
+
+/* Prevents popover from overflowing on smaller screens */
+@media (max-width: 1024px) {
+    .popup-overlay {
+        right: 10px !important;
+        width: 350px !important;
+    }
+}
+
+/* Horizontal Navigation for Home, Inbox, Health Records */
+.health-apps-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+.health-apps-nav .MudNavLink {
+    flex: 1;
+    text-align: center;
+}
+
+/* Sign Out Button - Centered and Full Width */
+.sign-out-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.sign-out-button {
+    border-color: #1b6ec2 !important; /* Blue border */
+    color: #1b6ec2 !important; /* Blue text */
+    width: 100%;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1440px) {
+    .health-records-container {
+        width: 98%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .info-container {
+        flex-direction: column;
+    }
+
+    .visit-card,
+    .stats-container {
+        width: 100%;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3Lm...) no-repeat 1rem / 1.8rem, #b32121;
+    padding: 1rem;
+    color: white;
+}
+
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    margin: 20vh auto 1rem;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: #e0e0e0;
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: #1b6ec2;
+    stroke-dasharray: calc(3.141 * 80% * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+.loading-progress-text:after {
+    content: "Loading";
+}
+
+code {
+    color: #c02d76;
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}

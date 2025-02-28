@@ -20,7 +20,7 @@ metadata:
     {{- $labels | trim | nindent 4 }}
     role: {{ $role }}
   annotations:
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ $context.name }}:{{ $tag }}","namespace":"{{ $top.Values.toolsNamespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ $name }}\")].image","pause":"false"}]'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ $context.image.imageStreamName | default $context.name }}:{{ $tag }}","namespace":"{{ $top.Values.toolsNamespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ $name }}\")].image","pause":"false"}]'
 spec:
   replicas: {{ $replicas }}
   revisionHistoryLimit: 10
