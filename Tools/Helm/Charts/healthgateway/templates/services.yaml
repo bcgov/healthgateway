@@ -1,6 +1,6 @@
 # creates each defined component using the templates
 {{- range $key, $value := .Values.components -}}
-    {{ include "dc.tpl" (list $ $value) | nindent 0 }}
+    {{ include "deployment.tpl" (list $ $value) | nindent 0 }}
     {{ "---" | nindent 0 }}
     {{ include "hpa.tpl" (list $ $value) | nindent 0 }}
     {{ "---" | nindent 0 }}

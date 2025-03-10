@@ -1,5 +1,5 @@
-# deployment config template
-{{- define "dc.tpl" }}
+# deployment template
+{{- define "deployment.tpl" }}
 {{- $top := index . 0 -}}
 {{- $context := index . 1 -}}
 {{- $name := printf "%s-%s" $top.Release.Name $context.name -}}
@@ -9,32 +9,29 @@
 {{- $protocol := ($context.protocol | default "tcp") -}}
 {{- $image := print $top.Values.defaultImageRepository "/" $top.Values.toolsNamespace "/" ($context.image.imageStreamName | default $context.name) -}}
 {{- $tag := $context.image.tag | default $top.Values.defaultImageTag | default "latest" -}}
-{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).dcReplicas | required "dcReplicas required") -}}
+{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).deploymentReplicas | required "deploymentReplicas required") -}}
 {{- $role := $context.role -}}
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: {{ $name }}-dc
+  name: {{ $name }}-deployment
   namespace: {{ $namespace }}
-  labels: {{ $labels | nindent 4 }}
+  labels:
+    {{- $labels | trim | nindent 4 }}
     role: {{ $role }}
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ $context.image.imageStreamName | default $context.name }}:{{ $tag }}","namespace":"{{ $top.Values.toolsNamespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ $name }}\")].image","pause":"false"}]'
 spec:
   replicas: {{ $replicas }}
   revisionHistoryLimit: 10
   strategy:
-    type: Rolling
-    rollingParams:
+    type: RollingUpdate
+    rollingUpdate:
       maxUnavailable: 50%
       maxSurge: 50%
-    resources:
-      limits:
-        cpu: 15m
-        memory: 64Mi
-      requests:
-        cpu: 5m
-        memory: 32Mi
   selector:
-    name: {{ $name }}
+    matchLabels:
+      name: {{ $name }}
   template:
     metadata:
       name: {{ $name }}
@@ -52,6 +49,7 @@ spec:
         {{ print "checksum/" $value.name  "-secrets"}}: {{ $top.Files.Get $value.file | toYaml | sha256sum }}
         {{- end }}
     spec:
+      restartPolicy: Always
       containers:
         - name: {{ $name }}
           image: {{ $image }}:{{ $tag }}
@@ -113,9 +111,6 @@ spec:
             timeoutSeconds: {{ $context.startupProbeTimeout | default 5 }}
             periodSeconds: {{ $context.startupProbePeriod | default 10 }}
             failureThreshold: {{ $context.startupProbeFailureThreshold | default 5 }}
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      terminationGracePeriodSeconds: 30
       volumes:
         - name: dp
           persistentVolumeClaim:
@@ -128,15 +123,4 @@ spec:
           configMap:
             name: {{ printf "%s-files" $top.Release.Name }}
         {{- end }}
-  triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-          - {{ $name }}
-        from:
-          kind: ImageStreamTag
-          name: {{ $context.image.imageStreamName | default $context.name }}:{{ $tag }}
-          namespace: {{ $top.Values.toolsNamespace }}
 {{- end }}
