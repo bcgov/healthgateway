@@ -25,6 +25,7 @@ resource "keycloak_openid_client_default_scopes" "iapyx_client_default_scopes" {
   client_id = local.devtest ? keycloak_openid_client.iapyx_client[0].id : null
 
   default_scopes = [
+    "basic",
     "profile",
     "web-origins",
     "email"

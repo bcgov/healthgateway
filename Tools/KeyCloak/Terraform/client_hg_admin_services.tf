@@ -19,6 +19,7 @@ resource "keycloak_openid_client_default_scopes" "hgadminservices_client_default
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminservices_client.id
   default_scopes = [
+    "basic",
     "email",
     "profile",
     "web-origins",
