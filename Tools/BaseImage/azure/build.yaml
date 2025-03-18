@@ -31,6 +31,11 @@ pool:
   vmImage: "ubuntu-20.04"
 
 steps:
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo -n "$(tls-chain)" > $(Build.BinariesDirectory)/tls-chain.crt
   - task: Docker@2
     displayName: "Build Image and push to Docker"
     inputs:
