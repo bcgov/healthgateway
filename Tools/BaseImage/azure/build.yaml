@@ -31,6 +31,24 @@ pool:
   vmImage: "ubuntu-20.04"
 
 steps:
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "$(tls-chain)" | base64 --decode > $(Build.BinariesDirectory)/tls-chain.crt
+        echo "---- Debug: TLS Chain Certificate Contents ----"
+        cat $(Build.BinariesDirectory)/tls-chain.crt
+        echo "---- End Debug: TLS Chain Certificate Contents ----"
+
+        echo "$(tls-root)" | base64 --decode > $(Build.BinariesDirectory)/tls-root.crt
+        echo "---- Debug: TLS Root Certificate Contents ----"
+        cat $(Build.BinariesDirectory)/tls-root.crt
+        echo "---- End Debug: TLS Root Certificate Contents ----"
+
+        echo "$(trusted-root)" | base64 --decode > $(Build.BinariesDirectory)/trusted-root.crt
+        echo "---- Debug: Trusted Root Certificate Contents ----"
+        cat $(Build.BinariesDirectory)/trusted-root.crt
+        echo "---- End Debug: Trusted RootCertificate Contents ----"
   - task: Docker@2
     displayName: "Build Image and push to Docker"
     inputs:
