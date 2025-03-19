@@ -26,7 +26,7 @@ entryTypeMap.set(EntryType.Immunization, {
     type: EntryType.Immunization,
     name: "Immunizations",
     description:
-        "View immunizations you received from public health and community pharmacies and recommended vaccines.",
+        "View immunizations you received from community pharmacies or public health including COVID-19 and vaccine recommendations.",
     icon: "syringe",
 });
 
@@ -42,14 +42,6 @@ entryTypeMap.set(EntryType.LabResult, {
     name: "Lab Results",
     description: "View and download the results of your lab tests.",
     icon: "microscope",
-});
-
-entryTypeMap.set(EntryType.Covid19TestResult, {
-    type: EntryType.Covid19TestResult,
-    name: "COVID‑19 Tests",
-    description:
-        "View and download your COVID‑19 test results as soon as they are available.",
-    icon: "vial",
 });
 
 entryTypeMap.set(EntryType.HealthVisit, {
@@ -103,8 +95,6 @@ entryTypeMap.set(EntryType.BcCancerScreening, {
     name: "BC Cancer Screening",
     description:
         "View and download your notices and results as soon as they are available.",
-    logoUri: new URL("@/assets/images/services/bc-cancer.png", import.meta.url)
-        .href,
     icon: "ribbon",
 });
 

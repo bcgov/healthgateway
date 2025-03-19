@@ -20,7 +20,7 @@ enum PreviewDevice {
 const datasetEntryTypes: EntryType[] = [
     EntryType.Medication,
     EntryType.LabResult,
-    EntryType.Covid19TestResult,
+    EntryType.BcCancerScreening,
     EntryType.HealthVisit,
     EntryType.Immunization,
     EntryType.SpecialAuthorityRequest,
@@ -28,8 +28,6 @@ const datasetEntryTypes: EntryType[] = [
     EntryType.HospitalVisit,
     EntryType.DiagnosticImaging,
 ];
-
-const serviceEntryTypes: EntryType[] = [EntryType.BcCancerScreening];
 
 const configStore = useConfigStore();
 
@@ -66,11 +64,9 @@ const organDonorRegistrationTile = computed<InfoTile>(() => ({
     active: ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration),
 }));
 const servicesTiles = computed(() =>
-    [
-        proofOfVaccinationTile.value,
-        organDonorRegistrationTile.value,
-        ...serviceEntryTypes.map<InfoTile>(mapEntryTypeToTile),
-    ].filter((tile) => tile.active)
+    [proofOfVaccinationTile.value, organDonorRegistrationTile.value].filter(
+        (tile) => tile.active
+    )
 );
 const shouldDisplayServices = computed(() => servicesTiles.value.length > 0);
 const datasetTiles = computed(() =>
@@ -369,8 +365,8 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                         </template>
                         <template #text>
                             <p class="text-body-1">
-                                Add a quick link to the records you use the
-                                most. Filter or search to find what you need.
+                                Filter by category or search your health records
+                                to find what you need.
                             </p>
                         </template>
                     </v-card>
