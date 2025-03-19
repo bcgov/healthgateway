@@ -26,7 +26,7 @@ entryTypeMap.set(EntryType.Immunization, {
     type: EntryType.Immunization,
     name: "Immunizations",
     description:
-        "View immunizations you received from community pharmacies or public health including COVID-19 and vaccine recommendations.",
+        "View immunizations you received from community pharmacies or public health, including COVID-19, and vaccine recommendations.",
     icon: "syringe",
 });
 
