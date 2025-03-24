@@ -19,7 +19,9 @@ resource "keycloak_openid_client_default_scopes" "hgk6_client_default_scopes" {
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgk6_client[0].id
 
-  default_scopes = []
+  default_scopes = [
+    "basic",
+  ]
 }
 resource "keycloak_openid_client_optional_scopes" "hgk6_client_optional_scopes" {
   count     = local.development ? 1 : 0

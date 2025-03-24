@@ -219,17 +219,7 @@ variable "client_hg_keycloak" {
   description = "HealthGateway Keycloak Administration Client"
 }
 
-variable "client_hg_seq" {
-  type = object({
-    id              = optional(string, "hg-seq")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-    token_lifespan  = number
-  })
-  description = "Health Gateway Seq Administration Access"
-}
-
 locals {
   development = var.environment.name == "Development"
-  devtest = var.environment.name == "Development" || var.environment.name == "Test"
+  devtest     = var.environment.name == "Development" || var.environment.name == "Test"
 }

@@ -19,6 +19,7 @@ resource "keycloak_openid_client_default_scopes" "hgphsasystem_client_default_sc
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgphsasystem_client.id
   default_scopes = [
+    "basic",
     "profile",
     "web-origins",
     "roles",

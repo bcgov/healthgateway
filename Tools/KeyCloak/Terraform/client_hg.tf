@@ -18,6 +18,7 @@ resource "keycloak_openid_client_default_scopes" "hg_client_default_scopes" {
   client_id = keycloak_openid_client.hg_client.id
 
   default_scopes = [
+    "basic",
     "profile",
     "web-origins",
     keycloak_openid_client_scope.audience_scope.name,
