@@ -320,8 +320,8 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                         </template>
                         <template #text>
                             <p class="text-body-1">
-                                View your health information in a list or
-                                calendar view, so you can easily see what’s new.
+                                View your health information in chronological
+                                order, so you can easily see what’s new.
                             </p>
                         </template>
                     </v-card>
