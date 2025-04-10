@@ -15,10 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
@@ -31,8 +29,8 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The user's HDID.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A collection of blocked <see cref="DataSource"/> items.</returns>
-        Task<IEnumerable<DataSource>> GetBlockedDatasetsAsync(string hdid, CancellationToken ct);
+        /// <returns>The <see cref="BlockedDatasets"/> for the specified user.</returns>
+        Task<BlockedDatasets> GetBlockedDatasetsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets contact info for the specified user.
@@ -40,7 +38,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The user's HDID.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="ContactInfo"/> object for the specified user.</returns>
-        Task<ContactInfo> GetContactInfoAsync(string hdid, CancellationToken ct);
+        Task<ContactInfo> GetContactInfoAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Confirms if the supplied user is protected.
@@ -48,7 +46,10 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The subject's HDID.</param>
         /// <param name="delegateHdid">The delegate's HDID.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns><c>true</c> if the subject is protected; otherwise, <c>false</c>.</returns>
-        Task<bool> Protected(string hdid, string delegateHdid, CancellationToken ct);
+        /// <returns>
+        /// A <see cref="UserProtection"/> model containing the specified user's HDID and the protection status of the subject
+        /// user.
+        /// </returns>
+        Task<UserProtection> GetUserProtectionAsync(string hdid, string delegateHdid, CancellationToken ct = default);
     }
 }

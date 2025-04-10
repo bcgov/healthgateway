@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -36,14 +35,17 @@ namespace HealthGateway.GatewayApi.Services
         ILogger<DataAccessService> logger) : IDataAccessService
     {
         /// <inheritdoc/>
-        public async Task<IEnumerable<DataSource>> GetBlockedDatasetsAsync(string hdid, CancellationToken ct)
+        public async Task<BlockedDatasets> GetBlockedDatasetsAsync(string hdid, CancellationToken ct = default)
         {
-            BlockedAccess? blockedAccess = await blockedAccessDelegate.GetBlockedAccessAsync(hdid, ct);
-            return blockedAccess?.DataSources ?? Enumerable.Empty<DataSource>();
+            return new()
+            {
+                Hdid = hdid,
+                DataSources = await blockedAccessDelegate.GetDataSourcesAsync(hdid, ct),
+            };
         }
 
         /// <inheritdoc/>
-        public async Task<ContactInfo> GetContactInfoAsync(string hdid, CancellationToken ct)
+        public async Task<ContactInfo> GetContactInfoAsync(string hdid, CancellationToken ct = default)
         {
             UserProfile userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
@@ -64,17 +66,24 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> Protected(string hdid, string delegateHdid, CancellationToken ct)
+        public async Task<UserProtection> GetUserProtectionAsync(string hdid, string delegateHdid, CancellationToken ct = default)
         {
+            UserProtection userProtection = new()
+            {
+                DelegateHdid = delegateHdid,
+                ProtectedSubject = new(hdid),
+            };
+
             Dependent? dependent = await delegationDelegate.GetDependentAsync(hdid, true, ct);
             if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId == delegateHdid))
             {
-                logger.LogDebug("Dependent: {Hdid} is protected by Delegate: {DelegateHdid}", hdid, delegateHdid);
-                return true;
+                userProtection.ProtectedSubject = new(hdid, true);
             }
 
-            logger.LogDebug("Dependent: {Hdid} is not protected by Delegate: {DelegateHdid}", hdid, delegateHdid);
-            return false;
+            bool isProtected = userProtection.ProtectedSubject.Protected;
+            logger.LogDebug("Subject: {SubjectHdid} isProtected: {IsProtected} by Delegate: {DelegateHdid}", userProtection.ProtectedSubject.SubjectHdid, isProtected, delegateHdid);
+
+            return userProtection;
         }
     }
 }

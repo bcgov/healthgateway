@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Controllers
 {
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Threading;
     using System.Threading.Tasks;
@@ -50,14 +49,14 @@ namespace HealthGateway.GatewayApi.Controllers
         [AllowAnonymous]
         // [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("BlockedDatasets/{hdid}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DataSource>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BlockedDatasets))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<IEnumerable<DataSource>>> BlockedDatasets([FromRoute] [Required] string hdid, CancellationToken ct)
+        public async Task<ActionResult<BlockedDatasets>> BlockedDatasets([FromRoute] [Required] string hdid, CancellationToken ct)
         {
-            IEnumerable<DataSource> datasets = await dataAccessService.GetBlockedDatasetsAsync(hdid, ct);
-            return this.Ok(datasets);
+            BlockedDatasets blockedDatasets = await dataAccessService.GetBlockedDatasetsAsync(hdid, ct);
+            return this.Ok(blockedDatasets);
         }
 
         /// <summary>
@@ -93,30 +92,24 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="delegateHdid">The delegate user's HDID.</param>
         /// <param name="ct">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>
-        /// A boolean value indicating the protection status of the subject user:
-        /// - <c>true</c> if the user is protected;
-        /// - <c>false</c> if the user is not protected.
-        /// Both outcomes are returned with an HTTP <c>200 OK</c> status unless access is restricted or the request is invalid.
+        /// A <see cref="UserProtection"/> model containing the specified user's HDID and the protection status of the subject
+        /// user.
         /// </returns>
         /// <response code="200">
-        /// The request was successful. Returns <c>true</c> if the subject is protected, or <c>false</c> if not.
+        /// The request was successful. The response contains a <see cref="UserProtection"/> object with the protection status.
         /// </response>
         /// <response code="401">Authentication is required and was not provided or is invalid.</response>
         /// <response code="403">The client is authenticated but does not have permission to access this resource.</response>
-        /// <response code="451">
-        /// The subject is protected, and delegation is not permitted due to legal or policy restrictions. Returns <c>true</c>.
-        /// </response>
         [HttpGet]
         [AllowAnonymous]
         // [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("Protected/{hdid}/{delegateHdid}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserProtection))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status451UnavailableForLegalReasons)]
-        public async Task<ActionResult<bool>> Protected([FromRoute] [Required] string hdid, [FromRoute] [Required] string delegateHdid, CancellationToken ct)
+        public async Task<ActionResult<UserProtection>> Protected([FromRoute] [Required] string hdid, [FromRoute] [Required] string delegateHdid, CancellationToken ct)
         {
-            return await dataAccessService.Protected(hdid, delegateHdid, ct);
+            return await dataAccessService.GetUserProtectionAsync(hdid, delegateHdid, ct);
         }
     }
 }
