@@ -37,9 +37,8 @@ jobs:
           secureFile: "integration_test_secrets.json"
 
       - script: |
-          dotnet tool install --global JetBrains.dotCover.GlobalTool
           dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)
-        displayName: "Install SonarScanner and dotCover"
+        displayName: "Install SonarScanner"
         enabled: true
 
       - script: |
@@ -61,11 +60,76 @@ jobs:
           set -e
           export SECRETS_PATH=$(testSecrets.secureFilePath)
           dotnet build --no-incremental
-          dotnet dotcover test --filter "Category!=IntegrationTest" --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
+          dotnet test \
+            --no-build \
+            --filter "Category!=IntegrationTest" \
+            -p:CollectCoverage=true \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=TestResults/coverage.opencover.xml \
+            -p:ExcludeByAttribute=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute \
+            -p:ParallelizeTestCollections=true
         displayName: "Build and Test"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
         enabled: "true"
+
+      - script: |
+          set -e
+          dotnet test \
+          Admin/Tests/Admin.Tests.csproj \
+          --no-build \
+          -p:CollectCoverage=true \
+          -p:CoverletOutputFormat=opencover \
+          -p:CoverletOutput=TestResults/coverage.opencover.xml \
+          -p:ExcludeByAttribute=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute \
+          -p:ParallelizeTestCollections=true
+        displayName: "Run Admin.Tests with Coverage"
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+
+      - script: |
+          set -e
+          dotnet test \
+            Common/test/unit/CommonTests.csproj \
+            --no-build \
+            -p:CollectCoverage=true \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=TestResults/coverage.opencover.xml \
+            -p:ExcludeByAttribute=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute \
+            -p:ParallelizeTestCollections=true
+        displayName: "Run CommonTests with Coverage"
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+
+      - script: |
+          set -e
+          dotnet test \
+            CommonUi/test/unit/CommonUiTests.csproj \
+            --no-build \
+            --results-directory CommonUi/test/unit/TestResults \
+            -p:CollectCoverage=true \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=TestResults/coverage.opencover.xml \
+            -p:ExcludeByAttribute=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute \
+            -p:ParallelizeTestCollections=true
+        displayName: "Run CommonUiTests with Coverage"
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+
+      - script: |
+          set -e
+          dotnet test \
+            CommonData/test/unit/CommonDataTests.csproj \
+            --no-build \
+            -p:CollectCoverage=true \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=TestResults/coverage.opencover.xml \
+            -p:ExcludeByAttribute=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute \
+            -p:ParallelizeTestCollections=true
+        displayName: "Run CommonDataTests with Coverage"
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+
+      - script: |
+          echo "Coverage file location:"
+          find $(Build.SourcesDirectory) -name "coverage.opencover.xml"
+        displayName: "Confirm location of coverage.opencover.xml"
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major
