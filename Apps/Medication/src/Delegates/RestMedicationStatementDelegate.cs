@@ -123,7 +123,7 @@ namespace HealthGateway.Medication.Delegates
                 retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = new RequestResultError
                 {
-                    ResultMessage = "An error occured with the Medication History Provider",
+                    ResultMessage = "An error occurred with the Medication History Provider",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                 };
             }
