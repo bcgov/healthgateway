@@ -21,8 +21,4 @@
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="9.0.4" />
-    </ItemGroup>
-
 </Project>
