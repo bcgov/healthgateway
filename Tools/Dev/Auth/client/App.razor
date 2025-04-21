@@ -1,0 +1,36 @@
+﻿@inject NavigationManager NavigationManager;
+<PageTitle>Regional Portal Demo</PageTitle>    
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(DefaultLayout)">
+                <NotAuthorized>
+                    @if (!context.User.Identity!.IsAuthenticated)
+                    {
+                        NavigationManager.NavigateTo(
+                            NavigationManager.GetUriWithQueryParameters(
+                                "/login",
+                                new Dictionary<string, object?>
+                                {
+                                    ["returnUrl"] = NavigationManager.Uri,
+                                }), replace: true);
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/unauthorized");
+                    }
+                </NotAuthorized>
+                <Authorizing>
+                    <p class="text-center">Determining session state, please wait...</p>
+                </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(DefaultLayout)">
+                <PageTitle>Not found</PageTitle>
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

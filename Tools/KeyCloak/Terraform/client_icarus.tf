@@ -22,7 +22,7 @@ resource "keycloak_openid_client_default_scopes" "icarus_client_default_scopes" 
   client_id = keycloak_openid_client.icarus_client.id
 
   default_scopes = [
-    "openid",
+    "basic",
     "profile",
     "web-origins",
     "email",

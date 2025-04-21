@@ -162,6 +162,16 @@ variable "client_icarus" {
   description = "Health Gateway Salesforce client configuration"
 }
 
+variable "client_iapyx" {
+  type = object({
+    id              = optional(string, "iapyx")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+  })
+  description = "Regional Portal Demo Auth App"
+}
+
 variable "client_hg_phsa" {
   type = object({
     id              = optional(string, "hg-phsa")
@@ -209,16 +219,7 @@ variable "client_hg_keycloak" {
   description = "HealthGateway Keycloak Administration Client"
 }
 
-variable "client_hg_seq" {
-  type = object({
-    id              = optional(string, "hg-seq")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-    token_lifespan  = number
-  })
-  description = "Health Gateway Seq Administration Access"
-}
-
 locals {
   development = var.environment.name == "Development"
+  devtest     = var.environment.name == "Development" || var.environment.name == "Test"
 }
