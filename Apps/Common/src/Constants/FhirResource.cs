@@ -75,5 +75,10 @@ namespace HealthGateway.Common.Constants
         /// The Health Gateway specific resource that represents a UserProfile.
         /// </summary>
         public const string UserProfile = "UserProfile";
+
+        /// <summary>
+        /// The Health Gateway specific resource that represents LRA Data Access.
+        /// </summary>
+        public const string LraDataAccess = "LRADataAccess";
     }
 }

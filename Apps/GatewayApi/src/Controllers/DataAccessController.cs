@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -46,8 +47,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="401">Authentication is required and was not provided or is invalid.</response>
         /// <response code="403">The client is authenticated but does not have permission to access the resource.</response>
         [HttpGet]
-        [AllowAnonymous]
-        // [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
+        [Authorize(Policy = SystemDelegatedLraDataAccessPolicy.Read)]
         [Route("BlockedDatasets/{hdid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BlockedDatasets))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,8 +71,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="403">The client is authenticated but does not have permission to access the resource.</response>
         /// <response code="404">No contact information was found for the specified user.</response>
         [HttpGet]
-        [AllowAnonymous]
-        // [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
+        [Authorize(Policy = SystemDelegatedLraDataAccessPolicy.Read)]
         [Route("ContactInfo/{hdid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactInfo))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -101,8 +100,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="401">Authentication is required and was not provided or is invalid.</response>
         /// <response code="403">The client is authenticated but does not have permission to access this resource.</response>
         [HttpGet]
-        [AllowAnonymous]
-        // [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
+        [Authorize(Policy = SystemDelegatedLraDataAccessPolicy.Read)]
         [Route("Protected/{hdid}/{delegateHdid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserProtection))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
