@@ -80,9 +80,6 @@ namespace HealthGateway.GatewayApi.Services
                 userProtection.ProtectedSubject = new(hdid, true);
             }
 
-            bool isProtected = userProtection.ProtectedSubject.Protected;
-            logger.LogDebug("Subject: {SubjectHdid} isProtected: {IsProtected} by Delegate: {DelegateHdid}", userProtection.ProtectedSubject.SubjectHdid, isProtected, delegateHdid);
-
             return userProtection;
         }
     }
