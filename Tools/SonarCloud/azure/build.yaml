@@ -37,10 +37,14 @@ jobs:
           secureFile: "integration_test_secrets.json"
 
       - script: |
-          dotnet tool install --global JetBrains.dotCover.GlobalTool
           dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)
-        displayName: "Install SonarScanner and dotCover"
+        displayName: "Install SonarScanner"
         enabled: true
+
+      - script: |
+          echo "Cleaning up old coverage reports..."
+          find $(Build.SourcesDirectory) -name "coverage.opencover.xml" -delete
+        displayName: "Clean previous coverage files"
 
       - script: |
           set -e
@@ -61,11 +65,22 @@ jobs:
           set -e
           export SECRETS_PATH=$(testSecrets.secureFilePath)
           dotnet build --no-incremental
-          dotnet dotcover test --filter "Category!=IntegrationTest" --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
+          dotnet test \
+            --no-build \
+            --filter "Category!=IntegrationTest" \
+            -p:CollectCoverage=true \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=TestResults/coverage.opencover.xml \
+            -p:ExcludeByAttribute=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute
         displayName: "Build and Test"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
         enabled: "true"
+
+      - script: |
+          echo "Coverage file location:"
+          find $(Build.SourcesDirectory) -name "coverage.opencover.xml" -exec ls -lh --time-style=long-iso {} \;
+        displayName: "Confirm location of coverage.opencover.xml"
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major

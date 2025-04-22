@@ -11,10 +11,15 @@
         <AdditionalFiles Include="..\..\..\stylecop.json" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="coverlet.msbuild" Version="6.0.4">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="9.0.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="Shouldly" Version="4.3.0" />
