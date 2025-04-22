@@ -89,6 +89,13 @@ resource "keycloak_openid_client_scope" "phsa_scope" {
   include_in_token_scope = true
 }
 
+resource "keycloak_openid_client_scope" "system_lra_read_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "system/LRADataAccess.read"
+  description            = "Allow LRA to read Data Access in Gateway API as a system"
+  include_in_token_scope = true
+}
+
 resource "keycloak_openid_client_scope" "audience_scope" {
   realm_id               = data.keycloak_realm.hg_realm.id
   name                   = "audience"

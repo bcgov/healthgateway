@@ -73,6 +73,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 SystemDelegatedPatientPolicy.Read,
                 policy => { policy.Requirements.Add(new GeneralFhirRequirement(FhirResource.Patient, FhirAccessType.Read)); });
 
+            authBuilder.AddPolicy(
+                SystemDelegatedLraDataAccessPolicy.Read,
+                policy => { policy.Requirements.Add(new GeneralFhirRequirement(FhirResource.LraDataAccess, FhirAccessType.Read)); });
+
             // User Profile Policies
             authBuilder.AddPolicy(
                     UserProfilePolicy.Read,
