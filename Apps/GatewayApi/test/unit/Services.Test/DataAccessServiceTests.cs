@@ -24,7 +24,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -62,10 +61,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IBlockedAccessDelegate> blockedAccessDelegateMock = new();
-            blockedAccessDelegateMock.Setup(
-                    s => s.GetDataSourcesAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            blockedAccessDelegateMock.Setup(s => s.GetDataSourcesAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedDataSources);
 
             IDataAccessService service = GetDataAccessService(blockedAccessDelegateMock);
@@ -101,11 +99,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(
-                    s => s.GetUserProfileAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfile);
 
             MessagingVerification[] verifications = CreateVerifications(verificationEmailExists, verificationSmsExists);
@@ -113,11 +110,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             foreach (MessagingVerification verification in verifications)
             {
-                messagingVerificationDelegateMock.Setup(
-                        s => s.GetLastForUserAsync(
-                            It.IsAny<string>(),
-                            It.Is<string>(x => x == verification.VerificationType),
-                            It.IsAny<CancellationToken>()))
+                messagingVerificationDelegateMock.Setup(s => s.GetLastForUserAsync(
+                        It.IsAny<string>(),
+                        It.Is<string>(x => x == verification.VerificationType),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(verification);
             }
 
@@ -174,18 +170,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfile? userProfile = null;
 
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(
-                    s => s.GetUserProfileAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfile);
 
             IDataAccessService service = GetDataAccessService(userProfileDelegateMock: userProfileDelegateMock);
 
             // Act and Assert
-            await Assert.ThrowsAsync<NotFoundException>(
-                async () => { await service.GetContactInfoAsync(Hdid, CancellationToken.None); });
+            await Assert.ThrowsAsync<NotFoundException>(async () => { await service.GetContactInfoAsync(Hdid, CancellationToken.None); });
         }
 
         /// <summary>
@@ -211,11 +205,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IDelegationDelegate> delegationDelegateMock = new();
-            delegationDelegateMock.Setup(
-                    s => s.GetDependentAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            delegationDelegateMock.Setup(s => s.GetDependentAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dependent);
 
             UserProtection expected = new()
@@ -248,8 +241,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 blockedAccessDelegateMock.Object,
                 delegationDelegateMock.Object,
                 messagingVerificationDelegateMock.Object,
-                userProfileDelegateMock.Object,
-                new Mock<ILogger<DataAccessService>>().Object);
+                userProfileDelegateMock.Object);
         }
     }
 }

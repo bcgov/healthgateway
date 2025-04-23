@@ -24,15 +24,13 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class DataAccessService(
         IBlockedAccessDelegate blockedAccessDelegate,
         IDelegationDelegate delegationDelegate,
         IMessagingVerificationDelegate messageVerificationDelegate,
-        IUserProfileDelegate userProfileDelegate,
-        ILogger<DataAccessService> logger) : IDataAccessService
+        IUserProfileDelegate userProfileDelegate) : IDataAccessService
     {
         /// <inheritdoc/>
         public async Task<BlockedDatasets> GetBlockedDatasetsAsync(string hdid, CancellationToken ct = default)

@@ -53,7 +53,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<BlockedDatasets>> BlockedDatasets([FromRoute] [Required] string hdid, CancellationToken ct)
+        public async Task<ActionResult<BlockedDatasets>> BlockedDatasets(
+            [FromRoute] [Required]
+            string hdid,
+            CancellationToken ct)
         {
             BlockedDatasets blockedDatasets = await dataAccessService.GetBlockedDatasetsAsync(hdid, ct);
             return this.Ok(blockedDatasets);
@@ -78,7 +81,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ContactInfo>> ContactInfo([FromRoute] [Required] string hdid, CancellationToken ct)
+        public async Task<ActionResult<ContactInfo>> ContactInfo(
+            [FromRoute] [Required]
+            string hdid,
+            CancellationToken ct)
         {
             ContactInfo contactInfo = await dataAccessService.GetContactInfoAsync(hdid, ct);
             return this.Ok(contactInfo);
@@ -105,7 +111,12 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserProtection))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<UserProtection>> Protected([FromRoute] [Required] string hdid, [FromRoute] [Required] string delegateHdid, CancellationToken ct)
+        public async Task<ActionResult<UserProtection>> Protected(
+            [FromRoute] [Required]
+            string hdid,
+            [FromRoute] [Required]
+            string delegateHdid,
+            CancellationToken ct)
         {
             return await dataAccessService.GetUserProtectionAsync(hdid, delegateHdid, ct);
         }
