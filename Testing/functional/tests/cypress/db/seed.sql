@@ -1712,21 +1712,34 @@ VALUES (
 	current_timestamp - INTERVAL '2 day'
 );
 
-
-INSERT INTO gateway."BlockedAccess"(
-	"Hdid", 
-	"DataSources", 
-	"CreatedBy", 
-	"CreatedDateTime", 
-	"UpdatedBy", 
-	"UpdatedDateTime")
+INSERT INTO gateway."BlockedAccess" (
+    "Hdid", 
+    "DataSources", 
+    "CreatedBy", 
+    "CreatedDateTime", 
+    "UpdatedBy", 
+    "UpdatedDateTime"
+)
 VALUES (
-		'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA', 
-		'["ClinicalDocument","Covid19TestResult"]', 
-		'System', 
-		current_timestamp - INTERVAL '2 day', 
-		'System', 
-		current_timestamp - INTERVAL '2 day'
+    'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA', 
+    '[
+        "ClinicalDocument",
+        "Covid19TestResult",
+        "HealthVisit",
+        "Medication",
+        "SpecialAuthorityRequest",
+        "Immunization",
+        "DiagnosticImaging",
+        "HospitalVisit",
+        "Note",
+        "OrganDonorRegistration",
+        "LabResult",
+        "BcCancerScreening"
+    ]', 
+    'System', 
+    current_timestamp - INTERVAL '2 day', 
+    'System', 
+    current_timestamp - INTERVAL '2 day'
 );
 
 INSERT INTO gateway."BlockedAccess"(
