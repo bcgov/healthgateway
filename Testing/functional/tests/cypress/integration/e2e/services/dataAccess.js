@@ -23,7 +23,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Blocked Datasets Unauthorized", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Blocked Datasets Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets`
@@ -38,7 +39,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Blocked Datasets Forbidden", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Blocked Datasets Forbidden", () => {
         const BOGUSHDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
@@ -63,7 +65,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Blocked Datasets Authorized", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Blocked Datasets Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -87,7 +90,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Contact Info Unauthorized", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Contact Info Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo`
@@ -102,7 +106,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Contact Info Forbidden", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Contact Info Forbidden", () => {
         const BOGUSHDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
@@ -127,7 +132,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Contact Info Authorized", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Contact Info Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -151,7 +157,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Protected Unauthorized", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Protected Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/Protected`
@@ -166,7 +173,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Protected Forbidden", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Protected Forbidden", () => {
         const BOGUSHDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
@@ -191,7 +199,8 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    it("Verify Data Access Protected Authorized", () => {
+    // Skip test until automated keycloak user is created with correct access
+    it.skip("Verify Data Access Protected Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
