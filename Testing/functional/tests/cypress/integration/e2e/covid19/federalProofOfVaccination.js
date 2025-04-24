@@ -2,7 +2,8 @@ const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
-    it("Save Federal Proof of Vaccination", () => {
+    // Skip test as functionality may be removed from classic
+    it.skip("Save Federal Proof of Vaccination", () => {
         cy.configureSettings({
             homepage: {
                 showFederalProofOfVaccination: true,

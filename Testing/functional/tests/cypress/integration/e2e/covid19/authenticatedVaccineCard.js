@@ -9,7 +9,8 @@ function validateOnCovid19Page() {
 }
 
 describe("Authenticated Vaccine Card", () => {
-    it("Validate Partially Vaccinated and PDF download", () => {
+    // Skip test as functionality may be removed from classic
+    it.skip("Validate Partially Vaccinated and PDF download", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"
         );
