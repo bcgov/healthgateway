@@ -56,7 +56,7 @@
         }
     ],
     "covid19": {
-        "pcrTestEnabled": true,
+        "pcrTestEnabled": false,
         "publicCovid19": {
             "showFederalProofOfVaccination": true
         },

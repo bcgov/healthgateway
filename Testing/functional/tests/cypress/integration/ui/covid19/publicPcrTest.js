@@ -82,7 +82,8 @@ describe("Public PcrTest Registration Form", () => {
         cy.visit(pcrTestUrl);
     });
 
-    it("Validate button options and form inputs", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Validate button options and form inputs", () => {
         // Register option buttons are available
         cy.log("Check all button visibility.");
         cy.get("[data-testid=btn-login]").should("be.visible");
@@ -163,7 +164,8 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
         });
     });
 
-    it("Successful Test Kit with Valid PHN", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Successful Test Kit with Valid PHN", () => {
         clickManualRegistrationButton();
         // get the data in the fixture.
         cy.fixture("LaboratoryService/publicPcrTestValidPhn.json").then(
@@ -210,7 +212,8 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
         });
     });
 
-    it("Successful Test Kit with no Valid PHN", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Successful Test Kit with no Valid PHN", () => {
         clickManualRegistrationButton();
         // get the data in the fixture.
         cy.fixture("LaboratoryService/publicPcrTestNoValidPhn.json").then(
@@ -259,7 +262,8 @@ describe("Public PcrTest Registration with Feature Disabled", () => {
         cy.visit(pcrTestUrl);
     });
 
-    it("HTTP 401", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("HTTP 401", () => {
         cy.visit("/unauthorized");
         cy.contains("h1", "401");
     });
@@ -276,7 +280,8 @@ describe("Public PcrTest Registration with Test Kit Id", () => {
         cy.visit(`${pcrTestUrl}/222BAAB1-8C6E-4FA1-86ED-C4E3517A16A2`);
     });
 
-    it("Register options buttons are available", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Register options buttons are available", () => {
         cy.get("[data-testid=btn-login]").should("be.visible");
         cy.get("[data-testid=btn-manual]").should("be.visible");
     });
@@ -289,7 +294,8 @@ describe("Public PcrTest Registration with Test Kit Id with Feature Disabled", (
         cy.visit(`${pcrTestUrl}/222BAAB1-8C6E-4FA1-86ED-C4E3517A16A2`);
     });
 
-    it("HTTP 401", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("HTTP 401", () => {
         cy.visit("/unauthorized");
         cy.contains("h1", "401");
     });
