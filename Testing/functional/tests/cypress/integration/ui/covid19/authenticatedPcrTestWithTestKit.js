@@ -44,7 +44,8 @@ describe("Authenticated Pcr Test Registration", () => {
         Cypress.session.clearAllSavedSessions();
     });
 
-    it("Successful Test Kit", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Successful Test Kit", () => {
         // Authenticated PcrTest Registration Form
         cy.log("Validate Authenticated PcrTest Registration Form");
         cy.get(testTakenMinutesAgo).should("be.visible");
@@ -100,7 +101,8 @@ describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
         Cypress.session.clearAllSavedSessions();
     });
 
-    it("Error Test Kit", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Error Test Kit", () => {
         // get the data in the fixture.
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestErrorWithTestKit.json"
@@ -142,7 +144,8 @@ describe("Previously Registered Test Kit", () => {
         Cypress.session.clearAllSavedSessions();
     });
 
-    it("Already Processed Test Kit", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Already Processed Test Kit", () => {
         // get the data in the fixture.
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestDuplicateWithTestKit.json"

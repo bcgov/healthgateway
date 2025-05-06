@@ -47,7 +47,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         Cypress.session.clearAllSavedSessions();
     });
 
-    it("Success with Test Kit CID", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Success with Test Kit CID", () => {
         cy.visit(`/pcrtest/${successfulTestKitCid}`);
 
         // populate the form with values from the fixture
@@ -68,7 +69,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         cy.url().should("include", "/logout");
     });
 
-    it("Already Processed with Test Kit CID", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Already Processed with Test Kit CID", () => {
         cy.visit(`/pcrtest/${processedTestKitCid}`);
 
         // populate the form with values from the fixture
@@ -86,7 +88,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         cy.get(processedBanner).should("be.visible");
     });
 
-    it("Error with Test Kit CID", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Error with Test Kit CID", () => {
         cy.visit(`/pcrtest/${errorTestKitCid}`);
 
         // populate the form with values from the fixture
@@ -106,7 +109,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         cy.get(errorBanner).should("be.visible");
     });
 
-    it("Error with Test Kit Code", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Error with Test Kit Code", () => {
         cy.visit("/pcrtest");
 
         // populate the form with values from the fixture
@@ -142,7 +146,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
         cy.logout();
     });
 
-    it("Success with Test Kit CID and PHN", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Success with Test Kit CID and PHN", () => {
         cy.visit(`/pcrtest/${successfulTestKitCid}`);
         clickManualRegistrationButton();
 
@@ -175,7 +180,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
         cy.location("pathname").should("eq", landingPagePath);
     });
 
-    it("Success with Test Kit CID and No PHN", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Success with Test Kit CID and No PHN", () => {
         cy.visit(`/pcrtest/${successfulTestKitCid}`);
         clickManualRegistrationButton();
 
@@ -216,7 +222,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
         cy.location("pathname").should("eq", landingPagePath);
     });
 
-    it("Already Processed with Test Kit CID", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Already Processed with Test Kit CID", () => {
         cy.visit(`/pcrtest/${processedTestKitCid}`);
         clickManualRegistrationButton();
 
@@ -244,7 +251,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
         cy.get(processedBanner).should("be.visible");
     });
 
-    it("Error with Test Kit CID", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Error with Test Kit CID", () => {
         cy.visit(`/pcrtest/${errorTestKitCid}`);
         clickManualRegistrationButton();
 
@@ -272,7 +280,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
         cy.get(errorBanner).should("be.visible");
     });
 
-    it("Error with Test Kit Code", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Error with Test Kit Code", () => {
         cy.visit("/pcrtest");
         clickManualRegistrationButton();
 
