@@ -22,6 +22,7 @@ namespace HealthGateway.Laboratory.Controllers
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
@@ -35,6 +36,7 @@ namespace HealthGateway.Laboratory.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
+    [TypeFilter(typeof(AvailabilityFilter))]
     [ExcludeFromCodeCoverage]
     [SuppressMessage("SonarLint", "S6960:This controller has multiple responsibilities and could be split into 2 smaller controllers", Justification = "Team decision")]
     public class LaboratoryController : ControllerBase

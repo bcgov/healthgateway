@@ -46,7 +46,8 @@ describe("Authenticated Pcr Test Registration", () => {
         Cypress.session.clearAllSavedSessions();
     });
 
-    it("Successful Test Kit", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Successful Test Kit", () => {
         // Authenticated PcrTest Registration Form
         cy.log("Validate Authenticated PcrTest Registration Form");
         cy.get(testKitCodeField).should("be.visible");
@@ -89,7 +90,8 @@ describe("Authenticated Pcr Test Registration", () => {
         cy.url().should("include", "/logout");
     });
 
-    it("Log Out Using Header", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Log Out Using Header", () => {
         cy.get(headerLogOutBtn).should("be.visible").click();
         cy.url().should("include", "/logout");
     });
@@ -118,7 +120,8 @@ describe("Authenticated Pcr Test Registration with Error", () => {
         });
     });
 
-    it("Error Registration Test Kit", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Error Registration Test Kit", () => {
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTestError.json").then(
             (data) => {
@@ -163,7 +166,8 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
         });
     });
 
-    it("Duplicate Test Kit Registration", () => {
+    // Disable PCR test kit test - AB#16912
+    it.skip("Duplicate Test Kit Registration", () => {
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTestDuplicate.json").then(
             (data) => {
