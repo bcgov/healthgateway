@@ -25,8 +25,8 @@ function deleteDependent(cardSelector, confirmDelete) {
 }
 
 const validDependent = {
-    firstName: "Sam ", // Aooend space to ensure field is trimmed
-    lastName: "Testfive ", // Aooend space to ensure field is trimmed
+    firstName: "Sam ", // Append space to ensure field is trimmed
+    lastName: "Testfive ", // Append space to ensure field is trimmed
     wrongLastName: "Testfive2",
     invalidDoB: "2007-Aug-05",
     doB: "2014-Mar-15",
@@ -728,6 +728,7 @@ describe("CRUD Operations", () => {
         cy.get("[data-testid=generic-message-modal]").should("not.exist");
 
         cy.log("Adding same dependent as another user");
+        cy.logout();
 
         cy.configureSettings({
             dependents: {
@@ -781,6 +782,7 @@ describe("CRUD Operations", () => {
         deleteDependent("@newDependentCard", true);
 
         cy.log("Removing dependent from original user");
+        cy.logout();
 
         cy.configureSettings({
             dependents: {

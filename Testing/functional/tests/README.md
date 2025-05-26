@@ -38,13 +38,29 @@ While creating and debugging tests you will want to run Cypress interactively.
 
 ```bash
 export CYPRESS_BASE_URL=http://localhost:5002
+
+# Option 1: Recommended for large test suites to avoid memory issues
+CYPRESS_numTestsKeptInMemory=1 npx cypress open --e2e --browser chrome
+
+# Option 2: Standard launch without memory optimizations
 npx cypress open --e2e --browser chrome
 ```
 
 ```Powershell
 $Env:CYPRESS_BASE_URL = "http://localhost:5002"
+
+# Option 1: Recommended for large test suites to avoid memory issues
+$Env:CYPRESS_numTestsKeptInMemory = 1
+npx cypress open --e2e --browser chrome
+
+# Option 2: Standard launch without memory optimizations
+Remove-Item Env:CYPRESS_numTestsKeptInMemory  # optional cleanup
 npx cypress open --e2e --browser chrome
 ```
+
+Tip: If you encounter crashes or sluggish performance with npx cypress open, use CYPRESS_numTestsKeptInMemory=1 to reduce memory usage.
+
+Note: This flag is only applicable for local testing (e.g., http://localhost:5002). It should not be used against deployed environments like https://dev-classic.healthgateway.gov.bc.ca.
 
 If you want to verify the tests against <https://dev-classic.healthgateway.gov.bc.ca> then do not set the CYPRESS_BASE_URL environment variable.
 
