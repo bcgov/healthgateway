@@ -1,14 +1,20 @@
 # Developer Tooling Setup
 
+You should have Podman installed
+
+```console
+brew install podman-desktop
+```
+
 ## Postgres
 
 ### DB Initialization
 
-To initialize the Health Gateway DB start the Docker image
+To initialize the Health Gateway DB start the db container
 
 ```console
-docker compose up -d
-docker logs --follow gatewaydb
+podman compose up -d
+podman logs --follow gatewaydb
 ```
 
 Once the DB has started and you see a message like
@@ -39,7 +45,7 @@ SET ROLE hglocal;
 Remove the pgdata volume by executing
 
 ```console
-docker volume rm gatewaydb.local
+podman volume rm gatewaydb.local
 ```
 
 ## Redis
@@ -49,27 +55,5 @@ docker volume rm gatewaydb.local
 Remove the Redis volume by executing
 
 ```console
-docker volume rm gatewaycache.local
-```
-
-## Seq
-
-### Verify
-
-```console
-curl -XPOST "http://localhost:5341/api/events/raw?clef" \
-  -d "{'@t':'2018-06-07T03:44:57.8532799Z','@mt':'Hello, {User}','User':'alice'}"
-```
-### Password
-
-```console
-echo $(echo 'NewPassword' | docker run --rm -i datalust/seq config hash)
-```
-
-### Cleanup
-
-Remove the Seq log volume by executing
-
-```console
-docker volume rm gatewaylogs.local
+podman volume rm gatewaycache.local
 ```
