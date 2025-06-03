@@ -42,6 +42,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 AgentActions = action.Data.AgentActions?.ToImmutableList(),
                 Dependents = action.Data.Dependents?.ToImmutableList(),
                 VaccineDetails = action.Data.VaccineDetails,
+                IsAccountRegistered = action.Data.IsAccountRegistered,
             };
         }
 
@@ -68,6 +69,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 AgentActions = null,
                 Dependents = null,
                 VaccineDetails = null,
+                IsAccountRegistered = null,
             };
         }
 

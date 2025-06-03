@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
@@ -110,13 +111,15 @@ namespace HealthGateway.Admin.Tests.Services
         /// <param name="includeCovidDetails">Value indicating whether covid details are included.</param>
         /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
+        /// <param name="isPatientRegistered">Value indicating if personal account is registered.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid)]
-        [InlineData(true, 2, true, 1, true, 1, true, false, 0, true, false, ClientRegistryType.Hdid)]
-        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Hdid)]
-        [InlineData(false, null, false, null, false, null, false, false, null, true, false, ClientRegistryType.Phn)]
-        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Phn)]
+        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, true)]
+        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, false)]
+        [InlineData(true, 2, true, 1, true, 1, true, false, 0, true, false, ClientRegistryType.Hdid, true)]
+        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Hdid, true)]
+        [InlineData(false, null, false, null, false, null, false, false, null, true, false, ClientRegistryType.Phn, true)]
+        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Phn, true)]
         public async Task ShouldGetPatientSupportDetails(
             bool includeMessagingVerifications,
             int? expectedMessagingVerificationCount,
@@ -129,7 +132,8 @@ namespace HealthGateway.Admin.Tests.Services
             int? expectedDependentCount,
             bool includeCovidDetails,
             bool expectedCovidDetails,
-            ClientRegistryType queryType)
+            ClientRegistryType queryType,
+            bool isPatientRegistered)
         {
             // Arrange
             PatientDetailsQuery patientQuery = new()
@@ -171,7 +175,8 @@ namespace HealthGateway.Admin.Tests.Services
                 null,
                 GetAuthenticationDelegateMock(AccessToken),
                 GetImmunizationAdminDelegateMock(vaccineDetails),
-                GetAuditRepositoryMock((auditQuery, agentAudits)));
+                GetAuditRepositoryMock((auditQuery, agentAudits)),
+                GetHgAdminApiMock(isPatientRegistered));
 
             // Act
             PatientSupportDetails actualResult =
@@ -194,6 +199,7 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedBlockedDataSourceCount, actualResult.BlockedDataSources?.Count());
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
+            Assert.Equal(isPatientRegistered, actualResult.IsAccountRegistered);
         }
 
         /// <summary>
@@ -222,22 +228,21 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken));
 
             // Act and Verify
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(
-                async () =>
-                {
-                    await supportService.GetPatientSupportDetailsAsync(
-                        new()
-                        {
-                            QueryType = ClientRegistryType.Phn,
-                            QueryParameter = Phn,
-                            IncludeMessagingVerifications = false,
-                            IncludeBlockedDataSources = false,
-                            IncludeAgentActions = false,
-                            IncludeDependents = false,
-                            IncludeCovidDetails = true,
-                            RefreshVaccineDetails = false,
-                        });
-                });
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(async () =>
+            {
+                await supportService.GetPatientSupportDetailsAsync(
+                    new()
+                    {
+                        QueryType = ClientRegistryType.Phn,
+                        QueryParameter = Phn,
+                        IncludeMessagingVerifications = false,
+                        IncludeBlockedDataSources = false,
+                        IncludeAgentActions = false,
+                        IncludeDependents = false,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
+            });
             Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
         }
 
@@ -265,22 +270,21 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(accessToken));
 
             // Act and Verify
-            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () =>
-                {
-                    await supportService.GetPatientSupportDetailsAsync(
-                        new()
-                        {
-                            QueryType = ClientRegistryType.Hdid,
-                            QueryParameter = Hdid,
-                            IncludeMessagingVerifications = true,
-                            IncludeBlockedDataSources = true,
-                            IncludeAgentActions = true,
-                            IncludeDependents = false,
-                            IncludeCovidDetails = true,
-                            RefreshVaccineDetails = false,
-                        });
-                });
+            UnauthorizedAccessException exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+            {
+                await supportService.GetPatientSupportDetailsAsync(
+                    new()
+                    {
+                        QueryType = ClientRegistryType.Hdid,
+                        QueryParameter = Hdid,
+                        IncludeMessagingVerifications = true,
+                        IncludeBlockedDataSources = true,
+                        IncludeAgentActions = true,
+                        IncludeDependents = false,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
+            });
             Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.Message);
         }
 
@@ -753,14 +757,14 @@ namespace HealthGateway.Admin.Tests.Services
         {
             return new()
             {
-                Items = dependentHdids
-                    .Select(
-                        dependentHdid => new ResourceDelegateQueryResultItem
-                        {
-                            ResourceDelegate = new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = delegateHdid },
-                            Dependent = new Dependent { HdId = dependentHdid },
-                        })
-                    .ToList(),
+                Items =
+                [
+                    .. dependentHdids.Select(dependentHdid => new ResourceDelegateQueryResultItem
+                    {
+                        ResourceDelegate = new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = delegateHdid },
+                        Dependent = new Dependent { HdId = dependentHdid },
+                    }),
+                ],
             };
         }
 
@@ -772,17 +776,23 @@ namespace HealthGateway.Admin.Tests.Services
         {
             return new()
             {
-                Items = delegateHdids.Select(
-                        delegateHdid => new ResourceDelegateQueryResultItem
+                Items =
+                [
+                    .. delegateHdids.Select(delegateHdid => new ResourceDelegateQueryResultItem
+                    {
+                        ResourceDelegate = new ResourceDelegate
                         {
-                            ResourceDelegate = new ResourceDelegate
+                            ResourceOwnerHdid = dependentHdid,
+                            ProfileHdid = delegateHdid,
+                            UserProfile = new()
                             {
-                                ResourceOwnerHdid = dependentHdid,
-                                ProfileHdid = delegateHdid,
-                                UserProfile = new() { HdId = delegateHdid, CreatedDateTime = profileCreatedDateTime, LastLoginDateTime = profileLastLoginDateTime },
+                                HdId = delegateHdid,
+                                CreatedDateTime = profileCreatedDateTime,
+                                LastLoginDateTime = profileLastLoginDateTime,
                             },
-                        })
-                    .ToList(),
+                        },
+                    }),
+                ],
             };
         }
 
@@ -873,6 +883,14 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
+        private static Mock<IHgAdminApi> GetHgAdminApiMock(bool isRegistered = true)
+        {
+            Mock<IHgAdminApi> mock = new();
+            mock.Setup(d => d.PersonalAccountsStatusAsync(It.IsAny<PersonalAccountStatusRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PersonalAccountsResponse { Registered = isRegistered });
+            return mock;
+        }
+
         private static Mock<IAuditRepository> GetAuditRepositoryMock(params (AgentAuditQuery Query, IEnumerable<AgentAudit> AgentAudits)[] pairs)
         {
             Mock<IAuditRepository> mock = new();
@@ -950,7 +968,8 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IImmunizationAdminDelegate>? immunizationAdminDelegateMock = null,
-            Mock<IAuditRepository>? auditRepositoryMock = null)
+            Mock<IAuditRepository>? auditRepositoryMock = null,
+            Mock<IHgAdminApi>? hgAdminApiMock = null)
         {
             userProfileDelegateMock ??= new Mock<IUserProfileDelegate>();
             messagingVerificationDelegateMock ??= new Mock<IMessagingVerificationDelegate>();
@@ -959,6 +978,7 @@ namespace HealthGateway.Admin.Tests.Services
             authenticationDelegateMock ??= new Mock<IAuthenticationDelegate>();
             immunizationAdminDelegateMock ??= new Mock<IImmunizationAdminDelegate>();
             auditRepositoryMock ??= new Mock<IAuditRepository>();
+            hgAdminApiMock ??= new Mock<IHgAdminApi>();
 
             return new SupportService(
                 MappingService,
@@ -971,7 +991,8 @@ namespace HealthGateway.Admin.Tests.Services
                 immunizationAdminDelegateMock.Object,
                 auditRepositoryMock.Object,
                 new Mock<ICacheProvider>().Object,
-                new Mock<ILogger<SupportService>>().Object);
+                new Mock<ILogger<SupportService>>().Object,
+                hgAdminApiMock.Object);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

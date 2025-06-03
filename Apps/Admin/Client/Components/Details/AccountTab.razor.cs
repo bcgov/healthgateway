@@ -62,5 +62,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
         private bool IsDefaultPatientStatus => this.Patient?.Status == PatientStatus.Default;
+
+        private bool? IsAccountRegistered => this.PatientDetailsState.Value.IsAccountRegistered;
     }
 }

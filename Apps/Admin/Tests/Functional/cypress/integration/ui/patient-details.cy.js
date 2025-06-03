@@ -107,6 +107,11 @@ describe("Patient details as admin", () => {
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(hdid);
+
+        cy.get("[data-testid=api-registration]")
+            .should("be.visible")
+            .contains("True");
+
         cy.get("[data-testid=profile-created-datetime]").should("be.visible");
         cy.get("[data-testid=profile-last-login-datetime]").should(
             "be.visible"
