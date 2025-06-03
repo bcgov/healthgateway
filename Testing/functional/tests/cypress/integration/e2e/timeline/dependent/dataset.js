@@ -191,13 +191,13 @@ describe("Dependent Timeline Datasets", () => {
     describe("Validate health visits on dependent timeline", () => {
         // Michael Testertwo
         const hdid = "BNV554213556";
-        it.skip("Enabled HealthVisit dataset should be present", () => {
+        it("Enabled HealthVisit dataset should be present", () => {
             enabledDatasetShouldBePresent(Dataset.HealthVisit, hdid);
         });
-        it.skip("Disabled HealthVisit dataset should not be present", () => {
+        it("Disabled HealthVisit dataset should not be present", () => {
             disabledDatasetShouldNotBePresent(Dataset.HealthVisit, hdid);
         });
-        it.skip("Disabled dependent HealthVisit dataset should not be present", () => {
+        it("Disabled dependent HealthVisit dataset should not be present", () => {
             disabledDependentDatasetShouldNotBePresent(
                 Dataset.HealthVisit,
                 hdid
@@ -208,13 +208,13 @@ describe("Dependent Timeline Datasets", () => {
     describe("Validate medications on dependent timeline", () => {
         // Michael Testertwo
         const hdid = "BNV554213556";
-        it.skip("Enabled Medication dataset should be present", () => {
+        it("Enabled Medication dataset should be present", () => {
             enabledDatasetShouldBePresent(Dataset.Medication, hdid);
         });
-        it.skip("Disabled Medication dataset should not be present", () => {
+        it("Disabled Medication dataset should not be present", () => {
             disabledDatasetShouldNotBePresent(Dataset.Medication, hdid);
         });
-        it.skip("Disabled dependent Medication dataset should not be present", () => {
+        it("Disabled dependent Medication dataset should not be present", () => {
             disabledDependentDatasetShouldNotBePresent(
                 Dataset.Medication,
                 hdid
