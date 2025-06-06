@@ -176,7 +176,7 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetImmunizationAdminDelegateMock(vaccineDetails),
                 GetAuditRepositoryMock((auditQuery, agentAudits)),
-                GetHgAdminApiMock(isPatientRegistered));
+                GetHgAdminApiMock(isRegistered: isPatientRegistered));
 
             // Act
             PatientSupportDetails actualResult =
@@ -200,6 +200,8 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
             Assert.Equal(isPatientRegistered, actualResult.IsAccountRegistered);
+            Assert.NotNull(actualResult.LastLaboratoryRefreshDate);
+            Assert.NotNull(actualResult.LastDiagnosticImagingRefreshDate);
         }
 
         /// <summary>
@@ -707,6 +709,32 @@ namespace HealthGateway.Admin.Tests.Services
             actualResult.ShouldDeepEqual(expectedResult);
         }
 
+        /// <summary>
+        /// RequestHealthDataRefreshAsync - Happy Path.
+        /// </summary>
+        /// <param name="system">The value to identify which patient's refresh status should be queried.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(SystemSource.DiagnosticImaging)]
+        [InlineData(SystemSource.Laboratory)]
+        public async Task ShouldRequestHealthDataRefresh(SystemSource system)
+        {
+            // Arrange
+            Mock<IHgAdminApi> hgAdminApiMock = new();
+            ISupportService service = CreateSupportService(hgAdminApiMock: hgAdminApiMock);
+            HealthDataStatusRequest request = new() { Phn = Phn, System = system };
+
+            // Act
+            await service.RequestHealthDataRefreshAsync(request);
+
+            // Verify
+            hgAdminApiMock.Verify(
+                v => v.HealthDataQueueRefreshAsync(
+                    It.Is<HealthDataStatusRequest>(x => x.Phn == Phn && x.System == system),
+                    It.IsAny<CancellationToken>()),
+                Times.Once());
+        }
+
         private static PatientSupportResult GetExpectedPatientSupportDetails(PatientModel? patient, UserProfile? profile)
         {
             PatientStatus status = PatientStatus.Default;
@@ -888,6 +916,14 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IHgAdminApi> mock = new();
             mock.Setup(d => d.PersonalAccountsStatusAsync(It.IsAny<PersonalAccountStatusRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PersonalAccountsResponse { Registered = isRegistered });
+            mock.Setup(d => d.HealthDataStatusAsync(
+                    It.Is<HealthDataStatusRequest>(x => x.System == SystemSource.DiagnosticImaging),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new HealthDataResponse());
+            mock.Setup(d => d.HealthDataStatusAsync(
+                    It.Is<HealthDataStatusRequest>(x => x.System == SystemSource.Laboratory),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new HealthDataResponse());
             return mock;
         }
 

@@ -55,7 +55,7 @@ public interface ISupportApi
     /// Creates, updates, or deletes block access configuration for the passed HDID.
     /// </summary>
     /// <param name="hdid">HDID of the patient to restrict access.</param>
-    /// <param name="request">The request containing all datasources to block for the patient.</param>
+    /// <param name="request">The request containing all data sources to block for the patient.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Put("/{hdid}/BlockAccess")]
     Task BlockAccessAsync(string hdid, BlockAccessRequest request);
@@ -75,4 +75,12 @@ public interface ISupportApi
     /// <returns>The encoded immunization document.</returns>
     [Get("/Patient/Document?phn={phn}")]
     Task<ReportModel> RetrieveVaccineRecordAsync(string phn);
+
+    /// <summary>
+    /// Requests a refresh of cached health data for a specified personal health number (PHN) and system source.
+    /// </summary>
+    /// <param name="request">The request containing the PHN and source system.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Post("/Patient/RefreshHealthData")]
+    Task RequestHealthDataRefreshAsync(HealthDataStatusRequest request);
 }

@@ -188,7 +188,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="404">The vaccine status could not be found for the given personal health number.</response>
-        /// ///
         /// <response code="500">The vaccine result could not be retrieved due to an internal server error.</response>
         [HttpGet]
         [Route("Patient/Document")]
@@ -201,6 +200,33 @@ namespace HealthGateway.Admin.Server.Controllers
         public async Task<ReportModel> RetrieveVaccineRecord([FromQuery] string phn, CancellationToken ct)
         {
             return await covidSupportService.RetrieveVaccineRecordAsync(phn, ct);
+        }
+
+        /// <summary>
+        /// Requests a refresh of cached health data for a specified personal health number (PHN) from a given system source.
+        /// </summary>
+        /// <param name="request">
+        /// Contains the PHN and the system source for which the health data should be refreshed.
+        /// </param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The encoded immunization document.</returns>
+        /// <response code="200">The request to retrieve the encoded immunization document was successful.</response>
+        /// <response code="400">The request could not be submitted successfully.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="500">The vaccine result could not be retrieved due to an internal server error.</response>
+        [HttpPost("Patient/RefreshHealthData")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task RequestHealthDataRefresh([FromBody] HealthDataStatusRequest request, CancellationToken ct)
+        {
+            await supportService.RequestHealthDataRefreshAsync(request, ct);
         }
     }
 }

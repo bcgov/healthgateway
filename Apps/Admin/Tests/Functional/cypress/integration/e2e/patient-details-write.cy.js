@@ -182,9 +182,41 @@ describe("Patient details page as admin user", () => {
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(hdid);
-        cy.get("[data-testid=api-registration]").should("be.visible");
         cy.get("[data-testid=profile-created-datetime]").should("be.visible");
         cy.get("[data-testid=profile-last-login-datetime]").should(
+            "be.visible"
+        );
+
+        cy.log("Verify API Registration");
+        cy.get("[data-testid=api-registration]").should("be.visible");
+
+        cy.log("Verify Refresh Disagnoistic Image Cache ");
+        cy.get("[data-testid=last-diagnostic-image-refresh-date]").should(
+            "be.visible"
+        );
+
+        cy.intercept("POST", "**/Support/Patient/RefreshHealthData*").as(
+            "refreshHealthData"
+        );
+        cy.get("[data-testid=diagnostic-imaging-refresh-button]").click();
+
+        cy.wait("@refreshHealthData", { timeout: defaultTimeout });
+        // Intercept already defined in initial search
+        cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+        cy.get("[data-testid=last-diagnostic-image-refresh-date]").should(
+            "be.visible"
+        );
+
+        cy.log("Verify Refresh Laboratory Cache ");
+        cy.get("[data-testid=last-laboratory-refresh-date]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=laboratory-refresh-button]").click();
+
+        cy.wait("@refreshHealthData", { timeout: defaultTimeout });
+        // Intercept already defined in initial search
+        cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
+        cy.get("[data-testid=last-laboratory-refresh-date]").should(
             "be.visible"
         );
 

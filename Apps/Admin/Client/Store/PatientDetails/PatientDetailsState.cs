@@ -16,6 +16,7 @@
 
 namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
+    using System;
     using System.Collections.Immutable;
     using Fluxor;
     using HealthGateway.Admin.Common.Models;
@@ -61,8 +62,28 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public BaseRequestState BlockAccess { get; init; } = new();
 
         /// <summary>
+        /// Gets the request state for refresh diagnostic imaging cache requests.
+        /// </summary>
+        public BaseRequestState RefreshDiagnosticImagingCache { get; init; } = new();
+
+        /// <summary>
+        /// Gets the request state for refresh laboratory cache requests.
+        /// </summary>
+        public BaseRequestState RefreshLaboratoryCache { get; init; } = new();
+
+        /// <summary>
         /// Gets a value indicating whether the account registration status is linked to the patient support details.
         /// </summary>
         public bool? IsAccountRegistered { get; init; }
+
+        /// <summary>
+        /// Gets the date when diagnostic imaaging data was last refreshed from the source system, if available.
+        /// </summary>
+        public DateOnly? LastDiagnosticImagingRefreshDate { get; init; }
+
+        /// <summary>
+        /// Gets the date when laboratory data was last refreshed from the source system, if available.
+        /// </summary>
+        public DateOnly? LastLaboratoryRefreshDate { get; init; }
     }
 }
