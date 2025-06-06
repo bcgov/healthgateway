@@ -97,8 +97,14 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<PatientSupportDependentInfo>? dependents =
                 query.IncludeDependents ? await this.GetAllDependentInfoAsync(patient.Hdid, ct) : null;
 
-            PersonalAccountStatusRequest request = new() { Phn = patient.Phn };
-            PersonalAccountsResponse response = await hgAdminApi.PersonalAccountsStatusAsync(request, ct);
+            PersonalAccountStatusRequest personalAccountStatusRequest = new() { Phn = patient.Phn };
+            PersonalAccountsResponse personalAccountsResponse = await hgAdminApi.PersonalAccountsStatusAsync(personalAccountStatusRequest, ct);
+
+            HealthDataStatusRequest diagnosticImagingStatusRequest = new() { Phn = patient.Phn, System = SystemSource.DiagnosticImaging };
+            HealthDataResponse diagnosticImagingResponse = await hgAdminApi.HealthDataStatusAsync(diagnosticImagingStatusRequest, ct);
+
+            HealthDataStatusRequest laboratoryStatusRequest = new() { Phn = patient.Phn, System = SystemSource.Laboratory };
+            HealthDataResponse laboratoryResponse = await hgAdminApi.HealthDataStatusAsync(laboratoryStatusRequest, ct);
 
             return new()
             {
@@ -107,7 +113,9 @@ namespace HealthGateway.Admin.Server.Services
                 AgentActions = agentActions,
                 Dependents = dependents,
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
-                IsAccountRegistered = response.Registered,
+                IsAccountRegistered = personalAccountsResponse.Registered,
+                LastDiagnosticImagingRefreshDate = DateOnly.FromDateTime(DateTime.Today),
+                LastLaboratoryRefreshDate = DateOnly.FromDateTime(DateTime.Today),
             };
         }
 
@@ -143,6 +151,12 @@ namespace HealthGateway.Admin.Server.Services
         {
             BlockAccessCommand blockAccessCommand = new(hdid, dataSources, reason);
             await patientRepository.BlockAccessAsync(blockAccessCommand, ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task RequestHealthDataRefreshAsync(HealthDataStatusRequest request, CancellationToken ct = default)
+        {
+            await hgAdminApi.HealthDataQueueRefreshAsync(request, ct);
         }
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)

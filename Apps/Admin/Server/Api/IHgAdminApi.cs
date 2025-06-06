@@ -19,6 +19,8 @@ namespace HealthGateway.Admin.Server.Api
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Common.Models;
     using Refit;
 
     /// <summary>
@@ -37,6 +39,36 @@ namespace HealthGateway.Admin.Server.Api
         /// </returns>
         [Post("/personal-accounts/status")]
         Task<PersonalAccountsResponse> PersonalAccountsStatusAsync([Body] PersonalAccountStatusRequest request, CancellationToken ct = default);
+
+        /// <summary>
+        /// Retrieves the refresh status for a specified personal health number (PHN) from a given system source.
+        /// </summary>
+        /// <param name="request">
+        /// The request containing the personal health number (PHN) and system source for which to check
+        /// refresh status.
+        /// </param>
+        /// <param name="ct">A <see cref="CancellationToken"/> that can be used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. Upon completion, the task result contains a
+        /// <see cref="HealthDataResponse"/> with the raw refresh status and source system details for the given PHN.
+        /// </returns>
+        [Post("/patient/health-data/status")]
+        Task<HealthDataResponse> HealthDataStatusAsync([Body] HealthDataStatusRequest request, CancellationToken ct = default);
+
+        /// <summary>
+        /// Queues a request to refresh cached health data for a specified personal health number (PHN) and system source.
+        /// </summary>
+        /// <param name="request">
+        /// The request containing the personal health number (PHN) and the source system identifier to refresh data from.
+        /// </param>
+        /// <param name="ct">
+        /// A <see cref="CancellationToken"/> that can be used to cancel the asynchronous operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous operation.
+        /// </returns>
+        [Post("/patient/health-data/queue-refresh")]
+        Task HealthDataQueueRefreshAsync([Body] HealthDataStatusRequest request, CancellationToken ct = default);
     }
 
     /// <summary>
@@ -51,7 +83,33 @@ namespace HealthGateway.Admin.Server.Api
         /// This value is sent in the request body to identify which patient's registration status should be queried.
         /// </remarks>
         [JsonPropertyName("phn")]
-        public string Phn { get; init; } = string.Empty;
+        public required string Phn { get; init; }
+    }
+
+    /// <summary>
+    /// Represents the response containing refresh status information for a specific
+    /// personal health number (PHN) and associated system source.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record HealthDataResponse
+    {
+        /// <summary>
+        /// Gets the raw refresh status message as provided by the source system.
+        /// </summary>
+        /// <returns>
+        /// A string representing the source system's refresh status. The content is not interpreted by this service.
+        /// </returns>
+        [JsonPropertyName("status")]
+        public string? Status { get; init; }
+
+        /// <summary>
+        /// Gets the system source from which the refresh status originated.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="SystemSource"/> value such as <c>DiagnosticImaging</c> or <c>Laboratory</c>.
+        /// </returns>
+        [JsonPropertyName("system")]
+        public SystemSource System { get; init; }
     }
 
     /// <summary>

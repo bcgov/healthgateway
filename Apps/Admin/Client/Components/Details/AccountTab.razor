@@ -39,6 +39,28 @@
                 <HgField Label="Api Registration" Value="@IsAccountRegistered?.ToString()"
                          data-testid="api-registration"/>
             </MudItem>
+            <MudItem xs="12">
+                <MudText Class="mb-4 mt-6" Typo="Typo.h6">
+                    Imagining Reports (Provincial Digital Imaging Vault)
+                </MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <HgField Label="Last Refreshed Date"
+                         Value="@LastDiagnosticImagingRefreshDate?.ToString()"
+                         InlineContent="DiagnosticImagingRefreshButton"
+                         data-testid="last-diagnostic-image-refresh-date"/>
+            </MudItem>
+            <MudItem xs="12">
+                <MudText Class="mb-4 mt-6" Typo="Typo.h6">
+                    Labs Cache (Provincial Laboratory Information Solution)
+                </MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <HgField Label="Last Refreshed Date"
+                         Value="@LastLaboratoryRefreshDate?.ToString()"
+                         InlineContent="LaboratoryRefreshButton"
+                         data-testid="last-laboratory-refresh-date"/>
+            </MudItem>
         }
         else
         {
@@ -57,3 +79,29 @@
         <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading"/>
     }
 </AuthorizeView>
+
+@code {
+
+    private RenderFragment DiagnosticImagingRefreshButton => @<HgButton
+                                                                 EndIcon="fas fa-arrow-rotate-right"
+                                                                 Variant="@Variant.Filled"
+                                                                 Color="@Color.Primary"
+                                                                 Loading="@RefreshDiagnosticImagingCacheIsLoading"
+                                                                 Disabled="@(RefreshDiagnosticImagingCacheIsLoading || PatientSupportDetailsLoading)"
+                                                                 OnClick="@RefreshDiagnosticImagingCache"
+                                                                 data-testid="diagnostic-imaging-refresh-button">
+                                                                 Refresh
+                                                             </HgButton>;
+
+    private RenderFragment LaboratoryRefreshButton => @<HgButton
+                                                          EndIcon="fas fa-arrow-rotate-right"
+                                                          Variant="@Variant.Filled"
+                                                          Color="@Color.Primary"
+                                                          Loading="@RefreshLaboratoryCacheIsLoading"
+                                                          Disabled="@(RefreshLaboratoryCacheIsLoading || PatientSupportDetailsLoading)"
+                                                          OnClick="@RefreshLaboratoryCache"
+                                                          data-testid="laboratory-refresh-button">
+                                                          Refresh
+                                                      </HgButton>;
+
+}

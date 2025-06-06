@@ -7,15 +7,38 @@
         <MudText Typo="Typo.body1" Color="@Color.Primary">
             @Label
         </MudText>
-        <MudText Typo="Typo.body1">
-            @if (string.IsNullOrEmpty(Value))
-            {
-                <text>&nbsp;</text>
-            }
-            else
-            {
-                @Value
-            }
-        </MudText>
+        @if (InlineContent is null)
+        {
+            <MudText Typo="Typo.body1">
+                @if (string.IsNullOrEmpty(Value))
+                {
+                    <text>&nbsp;</text>
+                }
+                else
+                {
+                    @Value
+                }
+            </MudText>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body1">
+                        @if (string.IsNullOrEmpty(Value))
+                        {
+                            <text>&nbsp;</text>
+                        }
+                        else
+                        {
+                            @Value
+                        }
+                    </MudText>
+                </MudItem>
+                <MudItem xs="6" Class="d-flex justify-end">
+                    @InlineContent
+                </MudItem>
+            </MudGrid>
+        }
     </MudPaper>
 </div>
