@@ -18,6 +18,11 @@ describe("Authentication", () => {
             AuthMethod.BCSC,
             "/home"
         );
+        cy.url().should("include", "/login/username");
+
+        // Agree to terms
+        cy.get('input[type="checkbox"][name="accept"]').check({ force: true });
+        cy.get("button#btnSubmit").click();
         cy.url().should("include", "/home");
 
         cy.get("[data-testid=headerDropdownBtn]").click();
