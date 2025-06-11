@@ -117,8 +117,8 @@ function downloadFile(): void {
                         ? "unknown program"
                         : entry.programName?.toLowerCase()
                 }}
-                result result letter. It may include important information about
-                If you have questions,
+                screening result letter. It may include important information
+                about next steps. If you have questions,
                 <a
                     :href="programLink"
                     target="_blank"
@@ -135,7 +135,7 @@ function downloadFile(): void {
                         ? "unknown program"
                         : entry.programName?.toLowerCase()
                 }}
-                steps. You will also get this letter in the mail.
+                screening next steps. You will also get this letter in the mail.
                 <a
                     :href="programLink"
                     target="_blank"
@@ -146,7 +146,8 @@ function downloadFile(): void {
                         entry.programName?.toLowerCase() === "unknown"
                             ? "unknown program"
                             : entry.programName?.toLowerCase()
-                    }}</a
+                    }}
+                    screening</a
                 >.
             </span>
         </p>
