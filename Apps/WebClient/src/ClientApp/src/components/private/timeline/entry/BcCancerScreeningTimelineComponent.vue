@@ -61,6 +61,16 @@ const programLink = computed(() => {
     }
 });
 
+const programDisplayName = computed(() => {
+    const name = props.entry.programName?.trim().toLowerCase() || "unknown";
+
+    const overrides: Record<string, string> = {
+        "cervical cancer": "cervix cancer",
+    };
+
+    return overrides[name] ?? name;
+});
+
 function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
@@ -112,13 +122,9 @@ function downloadFile(): void {
                 data-testid="bc-cancer-result-body"
             >
                 Download your
-                {{
-                    entry.programName?.toLowerCase() === "unknown"
-                        ? "unknown program"
-                        : entry.programName?.toLowerCase()
-                }}
-                result result letter. It may include important information about
-                If you have questions,
+                {{ programDisplayName }}
+                screening result letter. It may include important information
+                about next steps. If you have questions,
                 <a
                     :href="programLink"
                     target="_blank"
@@ -130,23 +136,16 @@ function downloadFile(): void {
             </span>
             <span v-else data-testid="bc-cancer-screening-body">
                 Find out about your
-                {{
-                    entry.programName?.toLowerCase() === "unknown"
-                        ? "unknown program"
-                        : entry.programName?.toLowerCase()
-                }}
-                steps. You will also get this letter in the mail.
+                {{ programDisplayName }}
+                screening next steps. You will also get this letter in the mail.
                 <a
                     :href="programLink"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
                     >Learn more about
-                    {{
-                        entry.programName?.toLowerCase() === "unknown"
-                            ? "unknown program"
-                            : entry.programName?.toLowerCase()
-                    }}</a
+                    {{ programDisplayName }}
+                    screening</a
                 >.
             </span>
         </p>
