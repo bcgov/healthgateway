@@ -16,6 +16,7 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public isResult!: boolean;
     public fileName!: string;
     public eventText!: string;
+    public programName!: string;
 
     private readonly getComments: (entryId: string) => UserComment[] | null;
 
@@ -23,6 +24,12 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         model: BcCancerScreening,
         getComments: (entryId: string) => UserComment[] | null
     ) {
+        const programDisplayNameMap: Record<string, string> = {
+            "cervical cancer": "Cervix",
+            "breast cancer": "Breast",
+            "colon cancer": "Colon",
+            "lung cancer": "Lung",
+        };
         const isResult = model.eventType === BcCancerScreeningType.Result;
         const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
         super(
@@ -32,7 +39,15 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         );
         this.isResult = isResult;
         this.fileId = model.fileId;
-        this.subtitle = `Program: Cervix Screening`;
+        this.programName = model.programName?.trim() || "Unknown";
+        // Normalize incoming value: trim, lowercase, single space
+        const normalizedProgramName = this.programName
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, " ");
+        const program =
+            programDisplayNameMap[normalizedProgramName] ?? this.programName;
+        this.subtitle = `Program: ${program} Screening`;
         this.screeningType = model.eventType;
         this.setEntryProperties();
         this.getComments = getComments;
