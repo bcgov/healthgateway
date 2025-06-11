@@ -19,6 +19,21 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public programName!: string;
 
     private readonly getComments: (entryId: string) => UserComment[] | null;
+    private readonly normalizedProgramName: string;
+
+    private static readonly programResultTitleMap: Record<string, string> = {
+        "cervical cancer": "BC Cervical Cancer Screening Result Letter",
+        "breast cancer": "BC Breast Cancer Screening Result Letter",
+        "colon cancer": "BC Colon Cancer Screening Result Letter",
+        "lung cancer": "BC Lung Cancer Screening Result Letter",
+    };
+
+    private static readonly programReminderTitleMap: Record<string, string> = {
+        "cervical cancer": "BC Cervical Cancer Screening Reminder Letter",
+        "breast cancer": "BC Breast Screening Cancer Reminder Letter",
+        "colon cancer": "BC Colon Cancer Screening Reminder Letter",
+        "lung cancer": "BC Lung Cancer Screening Reminder Letter",
+    };
 
     public constructor(
         model: BcCancerScreening,
@@ -30,6 +45,7 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
             "colon cancer": "Colon",
             "lung cancer": "Lung",
         };
+
         const isResult = model.eventType === BcCancerScreeningType.Result;
         const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
         super(
@@ -41,12 +57,13 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         this.fileId = model.fileId;
         this.programName = model.programName?.trim() || "Unknown";
         // Normalize incoming value: trim, lowercase, single space
-        const normalizedProgramName = this.programName
+        this.normalizedProgramName = this.programName
             .trim()
             .toLowerCase()
             .replace(/\s+/g, " ");
         const program =
-            programDisplayNameMap[normalizedProgramName] ?? this.programName;
+            programDisplayNameMap[this.normalizedProgramName] ??
+            this.programName;
         this.subtitle = `Program: ${program} Screening`;
         this.screeningType = model.eventType;
         this.setEntryProperties();
@@ -55,13 +72,19 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
 
     private setEntryProperties(): void {
         if (this.screeningType === BcCancerScreeningType.Result) {
-            this.title = "BC Cancer Screening Result Letter";
+            this.title =
+                BcCancerScreeningTimelineEntry.programResultTitleMap[
+                    this.normalizedProgramName
+                ] ?? this.programName;
             this.callToActionText = "View Letter";
             this.documentType = "Screening results";
             this.fileName = "bc_cancer_result";
             this.eventText = "BC Cancer Result PDF";
         } else {
-            this.title = "BC Cancer Screening Reminder Letter";
+            this.title =
+                BcCancerScreeningTimelineEntry.programReminderTitleMap[
+                    this.normalizedProgramName
+                ] ?? this.programName;
             this.callToActionText = "View Letter";
             this.documentType = "Screening letter";
             this.fileName = "bc_cancer_screening";
