@@ -46,6 +46,21 @@ const isLoadingFile = computed(
 );
 const hasFile = computed(() => Boolean(props.entry.fileId));
 
+const programLink = computed(() => {
+    const name = props.entry.programName?.toLowerCase() ?? "";
+    if (name.includes("breast")) {
+        return "http://www.bccancer.bc.ca/screening/breast";
+    } else if (name.includes("colon")) {
+        return "http://www.bccancer.bc.ca/screening/colon";
+    } else if (name.includes("lung")) {
+        return "http://www.bccancer.bc.ca/screening/lung";
+    } else if (name.includes("cervical")) {
+        return "http://www.bccancer.bc.ca/screening/cervix";
+    } else {
+        return "http://www.bccancer.bc.ca/screening/cervix";
+    }
+});
+
 function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
@@ -96,10 +111,11 @@ function downloadFile(): void {
                 v-if="props.entry.isResult"
                 data-testid="bc-cancer-result-body"
             >
-                Download your cervix screening result letter. It may include
-                important information about next steps. If you have questions,
+                Download your {{ entry.programName.toLowerCase() }} result
+                letter. It may include important information about next steps.
+                If you have questions,
                 <a
-                    href="http://www.bccancer.bc.ca/screening/cervix"
+                    :href="programLink"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
@@ -108,14 +124,14 @@ function downloadFile(): void {
                 or talk to your care provider.
             </span>
             <span v-else data-testid="bc-cancer-screening-body">
-                Find out about your cervix screening next steps. You will also
-                get this letter in the mail.
+                Find out about your {{ entry.programName.toLowerCase() }} next
+                steps. You will also get this letter in the mail.
                 <a
-                    href="http://www.bccancer.bc.ca/screening/cervix"
+                    :href="programLink"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
-                    >Learn more about cervix screening</a
+                    >Learn more about {{ entry.programName.toLowerCase() }}</a
                 >.
             </span>
         </p>
