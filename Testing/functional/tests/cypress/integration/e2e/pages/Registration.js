@@ -81,6 +81,14 @@ describe("Registration Page", () => {
             cy.get("div").contains("Invalid phone number").should("not.exist");
         });
 
+        cy.get("[data-testid=smsNumberInput] input")
+            .should("be.visible")
+            .clear();
+        cy.get('[data-testid="sms-checkbox"] input')
+            .should("be.enabled")
+            .uncheck({ force: true });
+        cy.get("[data-testid=smsNumberInput] input").should("have.value", "");
+
         cy.get("[data-testid=acceptCheckbox] input")
             .should("be.enabled")
             .check();
