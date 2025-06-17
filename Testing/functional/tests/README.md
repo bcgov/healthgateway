@@ -28,9 +28,11 @@ Create a cypress.env.json and update with passwords or any other environment var
     "keycloak.password": "THE PASSWORD",
     "idir.password": "THE PASSWORD",
     "keycloak.unregistered.password": "THE PASSWORD",
-    "phoneNumber": "2505084843"
+    "phoneNumber": "<VALID NUMBER>"
 }
 ```
+
+Note: The phoneNumber value must be a valid-looking number (e.g., "6041234567"), but it is not actually used during tests. Cypress uses cy.intercept() to stub the backend response, so the number is never submitted or validated.
 
 ### Running Interactively
 
