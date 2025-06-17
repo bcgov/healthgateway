@@ -699,9 +699,10 @@ setPageFromDate(linearDate.value);
                 variant="outlined"
                 border
             >
-                Only BC Cancer cervix screening letters are available here. Your
-                Health Gateway timeline may include these and other screening
-                test results in lab or imaging reports.
+                BC Cancer screening letters for Breast, Colon, Lung, and Cervix
+                are available here. Your Health Gateway timeline may include
+                these and other screening test results in lab or imaging
+                reports.
                 <a
                     href="http://www.bccancer.bc.ca/screening"
                     target="_blank"
