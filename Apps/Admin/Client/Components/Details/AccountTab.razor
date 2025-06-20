@@ -11,7 +11,7 @@
             @if (!string.IsNullOrWhiteSpace(Patient.Hdid))
             {
                 <MudItem xs="12">
-                    <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+                    <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid"/>
                 </MudItem>
             }
         </AuthorizeView>
@@ -19,11 +19,29 @@
         @if (IsDefaultPatientStatus)
         {
             <MudItem xs="12" lg="6">
-                <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
+                <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()"
+                         data-testid="profile-created-datetime"/>
             </MudItem>
             <MudItem xs="12" lg="6">
-                <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
+                <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()"
+                         data-testid="profile-last-login-datetime"/>
             </MudItem>
+            @if (ShowApiRegistration && PatientSupportDetailsLoading)
+            {
+                <MudItem xs="12">
+                    <MudProgressLinear Class="rounding-t overflow-hidden"
+                                       Color="Color.Primary"
+                                       Indeterminate="true"/>
+                </MudItem>
+            }
+
+            @if (ShowApiRegistration)
+            {
+                <MudItem xs="12">
+                    <HgField Label="Api Registration" Value="@IsAccountRegistered?.ToString()"
+                             data-testid="api-registration"/>
+                </MudItem>
+            }
         }
         else
         {
@@ -39,6 +57,6 @@
 <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
     @if (IsDefaultPatientStatus)
     {
-        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
+        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading"/>
     }
 </AuthorizeView>

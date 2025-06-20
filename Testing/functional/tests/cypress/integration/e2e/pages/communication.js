@@ -15,7 +15,7 @@ describe("Communication", () => {
             .should("exist")
             .contains("Test Banner");
 
-        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
+        cy.intercept("GET", "**/UserProfile/termsofservice*").as(
             "getTermsOfService"
         );
         cy.visit("/termsOfService");

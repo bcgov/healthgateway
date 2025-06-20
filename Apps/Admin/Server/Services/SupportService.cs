@@ -28,6 +28,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -54,6 +55,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="auditRepository">The injected audit repository.</param>
     /// <param name="cacheProvider">The injected cache provider.</param>
     /// <param name="logger">The injected logger provider.</param>
+    /// <param name="hgAdminApi">The injected admin patient api.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
     public class SupportService(
         IAdminServerMappingService mappingService,
@@ -66,7 +68,8 @@ namespace HealthGateway.Admin.Server.Services
         IImmunizationAdminDelegate immunizationAdminDelegate,
         IAuditRepository auditRepository,
         ICacheProvider cacheProvider,
-        ILogger<SupportService> logger) : ISupportService
+        ILogger<SupportService> logger,
+        IHgAdminApi hgAdminApi) : ISupportService
     {
         /// <inheritdoc/>
         public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
@@ -94,6 +97,14 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<PatientSupportDependentInfo>? dependents =
                 query.IncludeDependents ? await this.GetAllDependentInfoAsync(patient.Hdid, ct) : null;
 
+            PersonalAccountsResponse? response = null;
+
+            if (query.IncludeApiRegistration)
+            {
+                PersonalAccountStatusRequest request = new() { Phn = patient.Phn };
+                response = await hgAdminApi.PersonalAccountsStatusAsync(request, ct);
+            }
+
             return new()
             {
                 MessagingVerifications = messagingVerifications,
@@ -101,6 +112,7 @@ namespace HealthGateway.Admin.Server.Services
                 AgentActions = agentActions,
                 Dependents = dependents,
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
+                IsAccountRegistered = response?.Registered,
             };
         }
 

@@ -114,7 +114,7 @@ describe("Reports", () => {
         );
     });
 
-    it("Validate Service Selection", () => {
+    it("Validate Service Selection - Desktop", () => {
         const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
@@ -137,12 +137,8 @@ describe("Reports", () => {
 
                     cy.get(`[data-testid=info-text]`).should("be.visible");
 
-                    // display visual when no record type selected (mobile and desktop)
+                    // display visual when no record type selected
                     cy.get(`[data-testid=info-image]`).should("be.visible");
-                    cy.viewport("iphone-6");
-                    cy.get(`[data-testid=info-image]`).should("be.visible");
-                    cy.viewport(1440, 600);
-
                     cy.vSelect(`[data-testid=report-type]`, "COVID‑19 Tests");
 
                     cy.get(`[data-testid=export-record-btn]`).should(
@@ -153,7 +149,45 @@ describe("Reports", () => {
             });
     });
 
-    it("Validate Medication Report", () => {
+    it("Validate Service Selection - Mobile", () => {
+        const hdid = dependent1.hdid;
+
+        const cardSelector = getCardSelector(hdid);
+        const tabButtonSelector = getTabButtonSelector(hdid, "report");
+        const tabSelector = `[data-testid=report-tab]`;
+
+        cy.viewport("iphone-6");
+
+        cy.get(cardSelector)
+            .should("be.visible")
+            .within(() => {
+                cy.get(tabButtonSelector)
+                    .should("be.visible")
+                    .should("not.be.disabled")
+                    .click();
+
+                cy.get(tabSelector).within(() => {
+                    cy.get(`[data-testid=export-record-btn]`).should(
+                        "be.disabled",
+                        "be.visible"
+                    );
+
+                    cy.get(`[data-testid=info-text]`).should("be.visible");
+
+                    // display visual when no record type selected
+                    cy.get(`[data-testid=info-image]`).should("be.visible");
+                    cy.vSelect(`[data-testid=report-type]`, "COVID‑19 Tests");
+
+                    cy.get(`[data-testid=export-record-btn]`).should(
+                        "be.enabled",
+                        "be.visible"
+                    );
+                });
+            });
+    });
+
+    // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+    it.skip("Validate Medication Report", () => {
         const hdid = dependent2.hdid;
 
         const cardSelector = getCardSelector(hdid);
@@ -192,7 +226,8 @@ describe("Reports", () => {
         cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
-    it("Validate MSP Visits Report", () => {
+    // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+    it.skip("Validate MSP Visits Report", () => {
         const hdid = dependent2.hdid;
 
         const cardSelector = getCardSelector(hdid);

@@ -59,5 +59,10 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// Gets the request state for block access requests.
         /// </summary>
         public BaseRequestState BlockAccess { get; init; } = new();
+
+        /// <summary>
+        /// Gets a value indicating whether the account registration status is linked to the patient support details.
+        /// </summary>
+        public bool? IsAccountRegistered { get; init; }
     }
 }

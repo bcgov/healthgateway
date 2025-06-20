@@ -18,7 +18,7 @@ variables:
 jobs:
   - job: "PackageTests"
     pool:
-      vmImage: "ubuntu-20.04"
+      vmImage: "ubuntu-latest"
     displayName: "Packaging Functional Tests"
     steps:
       - script: |

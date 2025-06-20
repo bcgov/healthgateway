@@ -83,6 +83,10 @@ namespace HealthGateway.Admin.Server
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
+            services.AddRefitClient<IHgAdminApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+
             Uri? baseUri = configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
             services.AddRefitClient<IKeycloakAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = baseUri);

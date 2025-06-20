@@ -52,7 +52,7 @@ describe("Notes", () => {
         cy.wait("@updateNote");
         cy.get("[data-testid=entryCardDate]")
             .last()
-            .should("have.text", "1950-Jan-01");        
+            .should("have.text", "1950-Jan-01");
         cy.get("[data-testid=noteTitle]")
             .last()
             .should("have.text", "Test Edit");

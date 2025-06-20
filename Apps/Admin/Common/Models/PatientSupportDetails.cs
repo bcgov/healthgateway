@@ -49,5 +49,10 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets the vaccine details.
         /// </summary>
         public VaccineDetails? VaccineDetails { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether the patient's account is registered in the system.
+        /// </summary>
+        public bool? IsAccountRegistered { get; init; }
     }
 }
