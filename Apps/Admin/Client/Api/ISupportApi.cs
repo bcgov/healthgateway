@@ -49,7 +49,7 @@ public interface ISupportApi
     /// </param>
     /// <param name="includeApiRegistration">Indicates whether the response should include Api Registration status.</param>
     /// <returns>The patient support details object.</returns>
-    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}&includeApiRegistration={includeApiRegistration}")]
+    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}&refreshVaccineDetails={refreshVaccineDetails}&includeApiRegistration={includeApiRegistration}")]
     Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails, bool includeApiRegistration);
 
     /// <summary>
