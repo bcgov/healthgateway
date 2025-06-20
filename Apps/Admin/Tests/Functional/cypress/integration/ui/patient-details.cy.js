@@ -51,7 +51,7 @@ describe("Patient details as admin", () => {
         // Patient Details
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=False`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=False&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -60,7 +60,7 @@ describe("Patient details as admin", () => {
         // Patient Details with deceased PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&refreshVaccineDetails=False`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&refreshVaccineDetails=False&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -69,7 +69,7 @@ describe("Patient details as admin", () => {
         // Patient Details with not a user PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&refreshVaccineDetails=False`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&refreshVaccineDetails=False&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -269,7 +269,7 @@ describe("Patient details as support", () => {
         // Patient Details with deceased PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&refreshVaccineDetails=False`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&refreshVaccineDetails=False&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -278,7 +278,7 @@ describe("Patient details as support", () => {
         // Patient Details with not a user PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&refreshVaccineDetails=False`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&refreshVaccineDetails=False&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -287,7 +287,7 @@ describe("Patient details as support", () => {
         // Patient Details with one dose
         cy.intercept(
             "GET",
-            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=False`,
+            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=False&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details-one-dose.json",
             }
@@ -296,7 +296,7 @@ describe("Patient details as support", () => {
         // Patient Details with vaccine details with multiple doses
         cy.intercept(
             "GET",
-            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=True`,
+            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=True&includeApiRegistration=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
