@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Client.Components.Details
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
@@ -48,6 +49,9 @@ namespace HealthGateway.Admin.Client.Components.Details
         [Inject]
         private IDateConversionService DateConversionService { get; set; } = default!;
 
+        [Inject]
+        private IState<ConfigurationState> ConfigurationState { get; set; } = null!;
+
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
@@ -64,5 +68,16 @@ namespace HealthGateway.Admin.Client.Components.Details
         private bool IsDefaultPatientStatus => this.Patient?.Status == PatientStatus.Default;
 
         private bool? IsAccountRegistered => this.PatientDetailsState.Value.IsAccountRegistered;
+
+        private bool ShowApiRegistration
+        {
+            get
+            {
+                Dictionary<string, bool>? features = this.ConfigurationState.Value.Result?.Features;
+                return features != null &&
+                       features.TryGetValue("ShowApiRegistration", out bool enabled) &&
+                       enabled;
+            }
+        }
     }
 }
