@@ -47,9 +47,10 @@ public interface ISupportApi
     /// Whether the call should force cached vaccine validation details data to be
     /// refreshed.
     /// </param>
+    /// <param name="includeApiRegistration">Indicates whether the response should include Api Registration status.</param>
     /// <returns>The patient support details object.</returns>
-    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}")]
-    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails);
+    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}&includeApiRegistration={includeApiRegistration}")]
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails, bool includeApiRegistration);
 
     /// <summary>
     /// Creates, updates, or deletes block access configuration for the passed HDID.

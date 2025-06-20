@@ -26,7 +26,7 @@
                 <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()"
                          data-testid="profile-last-login-datetime"/>
             </MudItem>
-            @if (PatientSupportDetailsLoading)
+            @if (ShowApiRegistration && PatientSupportDetailsLoading)
             {
                 <MudItem xs="12">
                     <MudProgressLinear Class="rounding-t overflow-hidden"
@@ -35,10 +35,13 @@
                 </MudItem>
             }
 
-            <MudItem xs="12">
-                <HgField Label="Api Registration" Value="@IsAccountRegistered?.ToString()"
-                         data-testid="api-registration"/>
-            </MudItem>
+            @if (ShowApiRegistration)
+            {
+                <MudItem xs="12">
+                    <HgField Label="Api Registration" Value="@IsAccountRegistered?.ToString()"
+                             data-testid="api-registration"/>
+                </MudItem>
+            }
         }
         else
         {

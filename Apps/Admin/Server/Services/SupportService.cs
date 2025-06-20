@@ -97,8 +97,13 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<PatientSupportDependentInfo>? dependents =
                 query.IncludeDependents ? await this.GetAllDependentInfoAsync(patient.Hdid, ct) : null;
 
-            PersonalAccountStatusRequest request = new() { Phn = patient.Phn };
-            PersonalAccountsResponse response = await hgAdminApi.PersonalAccountsStatusAsync(request, ct);
+            PersonalAccountsResponse? response = null;
+
+            if (query.IncludeApiRegistration)
+            {
+                PersonalAccountStatusRequest request = new() { Phn = patient.Phn };
+                response = await hgAdminApi.PersonalAccountsStatusAsync(request, ct);
+            }
 
             return new()
             {
@@ -107,7 +112,7 @@ namespace HealthGateway.Admin.Server.Services
                 AgentActions = agentActions,
                 Dependents = dependents,
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
-                IsAccountRegistered = response.Registered,
+                IsAccountRegistered = response?.Registered,
             };
         }
 
