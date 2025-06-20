@@ -204,7 +204,6 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
             Assert.Equal(includeApiRegistration ? isPatientRegistered : null, actualResult.IsAccountRegistered);
-            // Assert.Equal(includeApiRegistration ? isPatientRegistered : null, actualResult.IsAccountRegistered);
         }
 
         /// <summary>
