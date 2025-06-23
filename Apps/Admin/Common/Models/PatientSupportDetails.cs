@@ -54,14 +54,14 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets a value indicating whether the patient's account is registered in the system.
         /// </summary>
-        public bool IsAccountRegistered { get; init; }
+        public bool? IsAccountRegistered { get; init; }
 
         /// <summary>
         /// Gets the last diagnostic imaging refresh date.
         /// </summary>
         public DateOnly? LastDiagnosticImagingRefreshDate { get; init; }
-
         /// <summary>
+
         /// Gets the last laboratory refresh date.
         /// </summary>
         public DateOnly? LastLaboratoryRefreshDate { get; init; }

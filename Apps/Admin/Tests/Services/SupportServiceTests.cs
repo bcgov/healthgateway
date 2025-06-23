@@ -112,14 +112,16 @@ namespace HealthGateway.Admin.Tests.Services
         /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <param name="isPatientRegistered">Value indicating if personal account is registered.</param>
+        /// <param name="includeApiRegistration">Value indicating if api registration should be included.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, true)]
-        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, false)]
-        [InlineData(true, 2, true, 1, true, 1, true, false, 0, true, false, ClientRegistryType.Hdid, true)]
-        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Hdid, true)]
-        [InlineData(false, null, false, null, false, null, false, false, null, true, false, ClientRegistryType.Phn, true)]
-        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Phn, true)]
+        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, true, true)]
+        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, null, false)]
+        [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, false, true)]
+        [InlineData(true, 2, true, 1, true, 1, true, false, 0, true, false, ClientRegistryType.Hdid, true, true)]
+        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Hdid, true, true)]
+        [InlineData(false, null, false, null, false, null, false, false, null, true, false, ClientRegistryType.Phn, true, true)]
+        [InlineData(false, null, false, null, false, null, false, false, null, false, true, ClientRegistryType.Phn, true, true)]
         public async Task ShouldGetPatientSupportDetails(
             bool includeMessagingVerifications,
             int? expectedMessagingVerificationCount,
@@ -133,7 +135,8 @@ namespace HealthGateway.Admin.Tests.Services
             bool includeCovidDetails,
             bool expectedCovidDetails,
             ClientRegistryType queryType,
-            bool isPatientRegistered)
+            bool? isPatientRegistered,
+            bool includeApiRegistration)
         {
             // Arrange
             PatientDetailsQuery patientQuery = new()
@@ -176,7 +179,7 @@ namespace HealthGateway.Admin.Tests.Services
                 GetAuthenticationDelegateMock(AccessToken),
                 GetImmunizationAdminDelegateMock(vaccineDetails),
                 GetAuditRepositoryMock((auditQuery, agentAudits)),
-                GetHgAdminApiMock(isRegistered: isPatientRegistered));
+                isPatientRegistered != null ? GetHgAdminApiMock(isPatientRegistered.Value) : null);
 
             // Act
             PatientSupportDetails actualResult =
@@ -191,6 +194,7 @@ namespace HealthGateway.Admin.Tests.Services
                         IncludeDependents = includeDependents,
                         IncludeCovidDetails = includeCovidDetails,
                         RefreshVaccineDetails = false,
+                        IncludeApiRegistration = includeApiRegistration,
                     });
 
             // Assert
@@ -199,7 +203,7 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedBlockedDataSourceCount, actualResult.BlockedDataSources?.Count());
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
-            Assert.Equal(isPatientRegistered, actualResult.IsAccountRegistered);
+            Assert.Equal(includeApiRegistration ? isPatientRegistered : null, actualResult.IsAccountRegistered);
             Assert.NotNull(actualResult.LastLaboratoryRefreshDate);
             Assert.NotNull(actualResult.LastDiagnosticImagingRefreshDate);
         }

@@ -17,7 +17,7 @@ describe("Services - Organ Donor Registration Card", () => {
         });
     });
 
-    it("Should by default handle an unregistered patient", () => {
+    it("Verify unregistered patient", () => {
         cy.intercept(
             "GET",
             `**/PatientData/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*OrganDonorRegistrationStatus*`,
@@ -42,12 +42,20 @@ describe("Services - Organ Donor Registration Card", () => {
             .contains("Not Available");
     });
 
-    it("Should handle a Registered patient", () => {
+    it("Verify registered patient and download", () => {
         cy.intercept(
             "GET",
             `**/PatientData/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*OrganDonorRegistrationStatus*`,
             {
                 fixture: "PatientData/donorRegistrationRegistered.json",
+            }
+        );
+
+        cy.intercept(
+            "GET",
+            "**/patientservice/PatientData/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/file/bctransplantorgandonor_14bac0b6-9e95-4a1b-b6fd-d354edfce4e7?api-version=2.0",
+            {
+                fixture: "PatientData/donorRegistrationDownload.json",
             }
         );
 
@@ -79,6 +87,12 @@ describe("Services - Organ Donor Registration Card", () => {
             .click();
 
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+
+        cy.verifyDownload("Organ_Donor_Registration.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 });
 

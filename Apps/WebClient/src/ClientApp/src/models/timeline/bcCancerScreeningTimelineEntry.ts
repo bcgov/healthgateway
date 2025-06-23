@@ -16,13 +16,36 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public isResult!: boolean;
     public fileName!: string;
     public eventText!: string;
+    public programName!: string;
 
     private readonly getComments: (entryId: string) => UserComment[] | null;
+    private readonly programKey: string;
+
+    private static readonly programResultTitleMap: Record<string, string> = {
+        "cervical cancer": "BC Cervix Cancer Screening Result Letter",
+        "breast cancer": "BC Breast Cancer Screening Result Letter",
+        "colon cancer": "BC Colon Cancer Screening Result Letter",
+        "lung cancer": "BC Lung Cancer Screening Result Letter",
+    };
+
+    private static readonly programReminderTitleMap: Record<string, string> = {
+        "cervical cancer": "BC Cervix Cancer Screening Reminder Letter",
+        "breast cancer": "BC Breast Cancer Screening Reminder Letter",
+        "colon cancer": "BC Colon Cancer Screening Reminder Letter",
+        "lung cancer": "BC Lung Cancer Screening Reminder Letter",
+    };
 
     public constructor(
         model: BcCancerScreening,
         getComments: (entryId: string) => UserComment[] | null
     ) {
+        const programDisplayNameMap: Record<string, string> = {
+            "cervical cancer": "Cervix",
+            "breast cancer": "Breast",
+            "colon cancer": "Colon",
+            "lung cancer": "Lung",
+        };
+
         const isResult = model.eventType === BcCancerScreeningType.Result;
         const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
         super(
@@ -32,21 +55,40 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         );
         this.isResult = isResult;
         this.fileId = model.fileId;
-        this.subtitle = `Program: Cervix Screening`;
+        this.programName = model.programName?.trim() || "Unknown";
+
+        this.programKey = this.programName
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, " ");
+
+        const program =
+            programDisplayNameMap[this.programKey] ?? this.programName;
+
+        this.subtitle = `Program: ${program} Screening`;
         this.screeningType = model.eventType;
         this.setEntryProperties();
         this.getComments = getComments;
     }
 
     private setEntryProperties(): void {
+        const defaultReminderTitle = `${this.programName} Screening Reminder Letter`;
+        const defaultResultTitle = `${this.programName} Screening Result Letter`;
+
         if (this.screeningType === BcCancerScreeningType.Result) {
-            this.title = "BC Cancer Screening Result Letter";
+            this.title =
+                BcCancerScreeningTimelineEntry.programResultTitleMap[
+                    this.programKey
+                ] ?? defaultResultTitle;
             this.callToActionText = "View Letter";
             this.documentType = "Screening results";
             this.fileName = "bc_cancer_result";
             this.eventText = "BC Cancer Result PDF";
         } else {
-            this.title = "BC Cancer Screening Reminder Letter";
+            this.title =
+                BcCancerScreeningTimelineEntry.programReminderTitleMap[
+                    this.programKey
+                ] ?? defaultReminderTitle;
             this.callToActionText = "View Letter";
             this.documentType = "Screening letter";
             this.fileName = "bc_cancer_screening";

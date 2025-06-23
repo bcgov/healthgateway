@@ -186,7 +186,8 @@ describe("Reports", () => {
             });
     });
 
-    it("Validate Medication Report", () => {
+    // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+    it.skip("Validate Medication Report", () => {
         const hdid = dependent2.hdid;
 
         const cardSelector = getCardSelector(hdid);
@@ -225,7 +226,8 @@ describe("Reports", () => {
         cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
-    it("Validate MSP Visits Report", () => {
+    // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+    it.skip("Validate MSP Visits Report", () => {
         const hdid = dependent2.hdid;
 
         const cardSelector = getCardSelector(hdid);

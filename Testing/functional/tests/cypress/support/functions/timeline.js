@@ -15,12 +15,13 @@ export function validateAttachmentDownload() {
     });
 }
 
-export function validateFileDownload(buttonSelector) {
+export function validateFileDownload(buttonSelector, clickEntryCard = true) {
     getEntryCardDateString().then((dateString) => {
-        cy.get("[data-testid=entryCardDetailsTitle]")
-            .should("be.visible")
-            .click({ force: true });
-
+        if (clickEntryCard) {
+            cy.get("[data-testid=entryCardDetailsTitle]")
+                .should("be.visible")
+                .click({ force: true });
+        }
         cy.get(buttonSelector).should("be.visible").click();
         validateSensitiveDocumentDownload(dateString);
     });

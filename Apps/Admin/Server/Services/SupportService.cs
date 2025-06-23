@@ -97,15 +97,18 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<PatientSupportDependentInfo>? dependents =
                 query.IncludeDependents ? await this.GetAllDependentInfoAsync(patient.Hdid, ct) : null;
 
-            PersonalAccountStatusRequest personalAccountStatusRequest = new() { Phn = patient.Phn };
-            PersonalAccountsResponse personalAccountsResponse = await hgAdminApi.PersonalAccountsStatusAsync(personalAccountStatusRequest, ct);
+            PersonalAccountsResponse? response = null;
 
+            if (query.IncludeApiRegistration)
+            {
+                PersonalAccountStatusRequest request = new() { Phn = patient.Phn };
+                response = await hgAdminApi.PersonalAccountsStatusAsync(request, ct);
+            }
             HealthDataStatusRequest diagnosticImagingStatusRequest = new() { Phn = patient.Phn, System = SystemSource.DiagnosticImaging };
             HealthDataResponse diagnosticImagingResponse = await hgAdminApi.HealthDataStatusAsync(diagnosticImagingStatusRequest, ct);
 
             HealthDataStatusRequest laboratoryStatusRequest = new() { Phn = patient.Phn, System = SystemSource.Laboratory };
             HealthDataResponse laboratoryResponse = await hgAdminApi.HealthDataStatusAsync(laboratoryStatusRequest, ct);
-
             return new()
             {
                 MessagingVerifications = messagingVerifications,
@@ -113,7 +116,7 @@ namespace HealthGateway.Admin.Server.Services
                 AgentActions = agentActions,
                 Dependents = dependents,
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
-                IsAccountRegistered = personalAccountsResponse.Registered,
+                IsAccountRegistered = response?.Registered,
                 LastDiagnosticImagingRefreshDate = DateOnly.FromDateTime(DateTime.Today),
                 LastLaboratoryRefreshDate = DateOnly.FromDateTime(DateTime.Today),
             };

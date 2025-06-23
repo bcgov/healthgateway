@@ -17,17 +17,19 @@
 namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
+    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    public class PatientDetailsEffects(ILogger<PatientDetailsEffects> logger, ISupportApi supportApi)
+    public class PatientDetailsEffects(ILogger<PatientDetailsEffects> logger, ISupportApi supportApi, IState<ConfigurationState> configurationState)
     {
         [EffectMethod]
         public async Task HandleLoadAction(PatientDetailsActions.LoadAction action, IDispatcher dispatcher)
@@ -36,7 +38,12 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
 
             try
             {
-                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails);
+                Dictionary<string, bool>? features = configurationState.Value.Result?.Features;
+                bool showApiRegistration = features != null &&
+                                           features.TryGetValue("ShowApiRegistration", out bool enabled) &&
+                                           enabled;
+
+                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails, showApiRegistration);
                 logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }

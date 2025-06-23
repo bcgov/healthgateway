@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Client.Components.Details
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Store.HealthData;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
@@ -49,6 +50,9 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         [Inject]
         private IDateConversionService DateConversionService { get; set; } = null!;
+
+        [Inject]
+        private IState<ConfigurationState> ConfigurationState { get; set; } = null!;
 
         [Inject]
         private IState<HealthDataState> HealthDataState { get; set; } = null!;
@@ -82,6 +86,17 @@ namespace HealthGateway.Admin.Client.Components.Details
         private bool IsDefaultPatientStatus => this.Patient?.Status == PatientStatus.Default;
 
         private bool? IsAccountRegistered => this.PatientDetailsState.Value.IsAccountRegistered;
+
+        private bool ShowApiRegistration
+        {
+            get
+            {
+                Dictionary<string, bool>? features = this.ConfigurationState.Value.Result?.Features;
+                return features != null &&
+                       features.TryGetValue("ShowApiRegistration", out bool enabled) &&
+                       enabled;
+            }
+        }
 
         private DateOnly? LastDiagnosticImagingRefreshDate => this.PatientDetailsState.Value.LastDiagnosticImagingRefreshDate;
 

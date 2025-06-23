@@ -58,6 +58,11 @@ namespace HealthGateway.Admin.Server.Models
         public bool IncludeCovidDetails { get; init; }
 
         /// <summary>
+        /// Gets a value indicating whether Api Registration status should be included in the result.
+        /// </summary>
+        public bool IncludeApiRegistration { get; init; }
+
+        /// <summary>
         /// Gets a value indicating whether the query should force cached vaccine validation details data to be refreshed.
         /// </summary>
         public bool RefreshVaccineDetails { get; init; }

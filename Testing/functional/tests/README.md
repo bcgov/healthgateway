@@ -28,7 +28,7 @@ Create a cypress.env.json and update with passwords or any other environment var
     "keycloak.password": "THE PASSWORD",
     "idir.password": "THE PASSWORD",
     "keycloak.unregistered.password": "THE PASSWORD",
-    "phoneNumber": "2505084843"
+    "phoneNumber": "<VALID PHONE NUMBER>"
 }
 ```
 

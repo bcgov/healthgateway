@@ -3,9 +3,11 @@
         {
             "status": "Registered",
             "statusMessage": "Your decision about organ donation has been registered.",
-            "registrationFileId": "some-file-id",
+            "registrationFileId": "bctransplantorgandonor_14bac0b6-9e95-4a1b-b6fd-d354edfce4e7",
+            "organDonorRegistrationLinkText": "If needed, you can update your decision",
             "type": "OrganDonorRegistration",
-            "_type": "OrganDonorRegistration"
+            "id": null,
+            "$type": "OrganDonorRegistration"
         }
     ]
 }
