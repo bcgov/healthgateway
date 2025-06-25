@@ -57,13 +57,13 @@ namespace HealthGateway.Admin.Common.Models
         public bool? IsAccountRegistered { get; init; }
 
         /// <summary>
-        /// Gets the last diagnostic imaging refresh date.
+        /// Gets the last imaging refresh date.
         /// </summary>
-        public DateOnly? LastDiagnosticImagingRefreshDate { get; init; }
-        /// <summary>
+        public DateOnly? LastImagingRefreshDate { get; init; }
 
-        /// Gets the last laboratory refresh date.
+        /// <summary>
+        /// Gets the last labs refresh date.
         /// </summary>
-        public DateOnly? LastLaboratoryRefreshDate { get; init; }
+        public DateOnly? LastLabsRefreshDate { get; init; }
     }
 }

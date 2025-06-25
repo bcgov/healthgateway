@@ -83,6 +83,8 @@ namespace HealthGateway.Admin.Server.Controllers
         /// refreshed.
         /// </param>
         /// <param name="includeApiRegistration">Indicates whether the response should include the Api Registration status.</param>
+        /// <param name="includeImagingRefresh">Indicates whether the response should include imaging refresh data.</param>
+        /// <param name="includeLabsRefresh">Indicates whether the response should include labs refresh data.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Patient support details matching the query.</returns>
         /// <response code="200">Returns the patient support details matching the query.</response>
@@ -105,6 +107,8 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] string queryString,
             [FromQuery] bool refreshVaccineDetails,
             [FromQuery] bool includeApiRegistration,
+            [FromQuery] bool includeImagingRefresh,
+            [FromQuery] bool includeLabsRefresh,
             CancellationToken ct)
         {
             ClaimsPrincipal user = this.HttpContext.User;
@@ -123,6 +127,8 @@ namespace HealthGateway.Admin.Server.Controllers
                     IncludeDependents = userIsAdmin || userIsReviewer,
                     IncludeCovidDetails = userIsAdmin || userIsSupport,
                     IncludeApiRegistration = includeApiRegistration,
+                    IncludeImagingRefresh = includeImagingRefresh,
+                    IncludeLabsRefresh = includeLabsRefresh,
                     RefreshVaccineDetails = refreshVaccineDetails,
                 },
                 ct);

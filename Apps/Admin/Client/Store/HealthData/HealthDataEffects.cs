@@ -29,9 +29,9 @@ namespace HealthGateway.Admin.Client.Store.HealthData
     public class HealthDataEffects(ILogger<HealthDataEffects> logger, ISupportApi supportApi)
     {
         [EffectMethod]
-        public async Task HandleRefreshDiagnosticImagingCacheAction(HealthDataActions.RefreshDiagnosticImagingCacheAction action, IDispatcher dispatcher)
+        public async Task HandleRefreshImagingCacheAction(HealthDataActions.RefreshImagingCacheAction action, IDispatcher dispatcher)
         {
-            logger.LogInformation("Request to refresh diagnostic imaging cache");
+            logger.LogInformation("Request to refresh imaging cache");
             try
             {
                 HealthDataStatusRequest request = new()
@@ -41,20 +41,20 @@ namespace HealthGateway.Admin.Client.Store.HealthData
                 };
 
                 await supportApi.RequestHealthDataRefreshAsync(request);
-                dispatcher.Dispatch(new HealthDataActions.RefreshDiagnosticImagingCacheSuccessAction());
+                dispatcher.Dispatch(new HealthDataActions.RefreshImagingCacheSuccessAction());
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                logger.LogError(e, "Error requesting to refresh diagnostic imaging cache: {Message}", e.Message);
+                logger.LogError(e, "Error requesting to refresh imaging cache: {Message}", e.Message);
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new HealthDataActions.RefreshDiagnosticImagingCacheFailureAction { Error = error });
+                dispatcher.Dispatch(new HealthDataActions.RefreshImagingCacheFailureAction { Error = error });
             }
         }
 
         [EffectMethod]
-        public async Task HandleRefreshLaboratoryCacheAction(HealthDataActions.RefreshLaboratoryCacheAction action, IDispatcher dispatcher)
+        public async Task HandleRefreshLabsCacheAction(HealthDataActions.RefreshLabsCacheAction action, IDispatcher dispatcher)
         {
-            logger.LogInformation("Request to refresh laboratory cache");
+            logger.LogInformation("Request to refresh labs cache");
             try
             {
                 HealthDataStatusRequest request = new()
@@ -64,13 +64,13 @@ namespace HealthGateway.Admin.Client.Store.HealthData
                 };
 
                 await supportApi.RequestHealthDataRefreshAsync(request);
-                dispatcher.Dispatch(new HealthDataActions.RefreshLaboratoryCacheSuccessAction());
+                dispatcher.Dispatch(new HealthDataActions.RefreshLabsCacheSuccessAction());
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                logger.LogError(e, "Error requesting to refresh laboratory cache: {Message}", e.Message);
+                logger.LogError(e, "Error requesting to refresh labs cache: {Message}", e.Message);
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new HealthDataActions.RefreshLaboratoryCacheFailureAction { Error = error });
+                dispatcher.Dispatch(new HealthDataActions.RefreshLabsCacheFailureAction { Error = error });
             }
         }
     }

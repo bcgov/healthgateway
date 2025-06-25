@@ -44,7 +44,7 @@ namespace HealthGateway.Admin.Client.Components.Common
         public string Value { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets optional content rendered next to the value (e.g., a refresh button).
+        /// Gets or sets optional content rendered next to the value (e.g., a button).
         /// </summary>
         [Parameter]
         public RenderFragment? InlineContent { get; set; }

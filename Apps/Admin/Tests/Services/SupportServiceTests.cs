@@ -112,7 +112,10 @@ namespace HealthGateway.Admin.Tests.Services
         /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <param name="isPatientRegistered">Value indicating if personal account is registered.</param>
-        /// <param name="includeApiRegistration">Value indicating if api registration should be included.</param>
+        /// <param name="includeAdminPatient">
+        /// Indicates whether to include admin-related patient data from the PHSA `patient/health-data/status` endpoint,
+        /// such as API registration status, imaging refresh metadata, and lab refresh metadata.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true, 2, true, 1, true, 1, true, true, 1, true, false, ClientRegistryType.Hdid, true, true)]
@@ -136,9 +139,10 @@ namespace HealthGateway.Admin.Tests.Services
             bool expectedCovidDetails,
             ClientRegistryType queryType,
             bool? isPatientRegistered,
-            bool includeApiRegistration)
+            bool includeAdminPatient)
         {
             // Arrange
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
             PatientDetailsQuery patientQuery = new()
             {
                 Hdid = queryType == ClientRegistryType.Hdid ? Hdid : null,
@@ -194,7 +198,9 @@ namespace HealthGateway.Admin.Tests.Services
                         IncludeDependents = includeDependents,
                         IncludeCovidDetails = includeCovidDetails,
                         RefreshVaccineDetails = false,
-                        IncludeApiRegistration = includeApiRegistration,
+                        IncludeApiRegistration = includeAdminPatient,
+                        IncludeImagingRefresh = includeAdminPatient,
+                        IncludeLabsRefresh = includeAdminPatient,
                     });
 
             // Assert
@@ -203,9 +209,9 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expectedBlockedDataSourceCount, actualResult.BlockedDataSources?.Count());
             Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
-            Assert.Equal(includeApiRegistration ? isPatientRegistered : null, actualResult.IsAccountRegistered);
-            Assert.NotNull(actualResult.LastLaboratoryRefreshDate);
-            Assert.NotNull(actualResult.LastDiagnosticImagingRefreshDate);
+            Assert.Equal(includeAdminPatient ? isPatientRegistered : null, actualResult.IsAccountRegistered);
+            Assert.Equal(includeAdminPatient ? today : null, actualResult.LastLabsRefreshDate);
+            Assert.Equal(includeAdminPatient ? today : null, actualResult.LastImagingRefreshDate);
         }
 
         /// <summary>
@@ -917,17 +923,19 @@ namespace HealthGateway.Admin.Tests.Services
 
         private static Mock<IHgAdminApi> GetHgAdminApiMock(bool isRegistered = true)
         {
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
             Mock<IHgAdminApi> mock = new();
             mock.Setup(d => d.PersonalAccountsStatusAsync(It.IsAny<PersonalAccountStatusRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PersonalAccountsResponse { Registered = isRegistered });
             mock.Setup(d => d.HealthDataStatusAsync(
                     It.Is<HealthDataStatusRequest>(x => x.System == SystemSource.DiagnosticImaging),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthDataResponse());
+                .ReturnsAsync(new HealthDataResponse { System = SystemSource.DiagnosticImaging, LastRefreshDate = today });
             mock.Setup(d => d.HealthDataStatusAsync(
                     It.Is<HealthDataStatusRequest>(x => x.System == SystemSource.Laboratory),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthDataResponse());
+                .ReturnsAsync(new HealthDataResponse { System = SystemSource.Laboratory, LastRefreshDate = today });
             return mock;
         }
 

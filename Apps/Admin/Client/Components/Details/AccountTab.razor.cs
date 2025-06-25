@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Client.Components.Details
     using HealthGateway.Admin.Client.Store.HealthData;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Models;
@@ -79,36 +80,33 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
-        private bool RefreshDiagnosticImagingCacheIsLoading => this.HealthDataState.Value.RefreshDiagnosticImagingCache.IsLoading;
+        private bool RefreshImagingCacheIsLoading => this.HealthDataState.Value.RefreshImagingCache.IsLoading;
 
-        private bool RefreshLaboratoryCacheIsLoading => this.HealthDataState.Value.RefreshLaboratoryCache.IsLoading;
+        private bool RefreshLabCacheIsLoading => this.HealthDataState.Value.RefreshLabsCache.IsLoading;
 
         private bool IsDefaultPatientStatus => this.Patient?.Status == PatientStatus.Default;
 
         private bool? IsAccountRegistered => this.PatientDetailsState.Value.IsAccountRegistered;
 
-        private bool ShowApiRegistration
-        {
-            get
-            {
-                Dictionary<string, bool>? features = this.ConfigurationState.Value.Result?.Features;
-                return features != null &&
-                       features.TryGetValue("ShowApiRegistration", out bool enabled) &&
-                       enabled;
-            }
-        }
+        private Dictionary<string, bool>? Features => this.ConfigurationState.Value.Result?.Features;
 
-        private DateOnly? LastDiagnosticImagingRefreshDate => this.PatientDetailsState.Value.LastDiagnosticImagingRefreshDate;
+        private bool ShowApiRegistration => FeatureToggleUtility.IsEnabled(this.Features, "ShowApiRegistration");
 
-        private DateOnly? LastLaboratoryRefreshDate => this.PatientDetailsState.Value.LastLaboratoryRefreshDate;
+        private bool ShowImagingRefresh => FeatureToggleUtility.IsEnabled(this.Features, "ShowImagingRefresh");
+
+        private bool ShowLabsRefresh => FeatureToggleUtility.IsEnabled(this.Features, "ShowLabsRefresh");
+
+        private DateOnly? LastImagingRefreshDate => this.PatientDetailsState.Value.LastImagingRefreshDate;
+
+        private DateOnly? LastLabsRefreshDate => this.PatientDetailsState.Value.LastLabsRefreshDate;
 
         /// <inheritdoc/>
         protected override void OnInitialized()
         {
             base.OnInitialized();
             this.ResetHealthDataState();
-            this.ActionSubscriber.SubscribeToAction<HealthDataActions.RefreshDiagnosticImagingCacheSuccessAction>(this, this.DisplayRefreshDiagnosticImagingCacheSuccessful);
-            this.ActionSubscriber.SubscribeToAction<HealthDataActions.RefreshLaboratoryCacheSuccessAction>(this, this.DisplayRefreshLaboratoryCacheSuccessful);
+            this.ActionSubscriber.SubscribeToAction<HealthDataActions.RefreshImagingCacheSuccessAction>(this, this.DisplayRefreshImagingCacheSuccessful);
+            this.ActionSubscriber.SubscribeToAction<HealthDataActions.RefreshLabsCacheSuccessAction>(this, this.DisplayRefreshLabsCacheSuccessful);
         }
 
         private void ResetHealthDataState()
@@ -116,19 +114,19 @@ namespace HealthGateway.Admin.Client.Components.Details
             this.Dispatcher.Dispatch(new HealthDataActions.ResetStateAction());
         }
 
-        private void RefreshDiagnosticImagingCache()
+        private void RefreshImagingCache()
         {
-            this.Dispatcher.Dispatch(new HealthDataActions.RefreshDiagnosticImagingCacheAction { Phn = this.Phn });
+            this.Dispatcher.Dispatch(new HealthDataActions.RefreshImagingCacheAction { Phn = this.Phn });
         }
 
-        private void RefreshLaboratoryCache()
+        private void RefreshLabsCache()
         {
-            this.Dispatcher.Dispatch(new HealthDataActions.RefreshLaboratoryCacheAction { Phn = this.Phn });
+            this.Dispatcher.Dispatch(new HealthDataActions.RefreshLabsCacheAction { Phn = this.Phn });
         }
 
-        private void DisplayRefreshDiagnosticImagingCacheSuccessful(HealthDataActions.RefreshDiagnosticImagingCacheSuccessAction action)
+        private void DisplayRefreshImagingCacheSuccessful(HealthDataActions.RefreshImagingCacheSuccessAction action)
         {
-            this.Snackbar.Add("Diagnostic imaging data refresh submitted successfully.", Severity.Success);
+            this.Snackbar.Add("Imaging data refresh submitted successfully.", Severity.Success);
 
             this.Dispatcher.Dispatch(
                 new PatientDetailsActions.LoadAction
@@ -139,9 +137,9 @@ namespace HealthGateway.Admin.Client.Components.Details
                 });
         }
 
-        private void DisplayRefreshLaboratoryCacheSuccessful(HealthDataActions.RefreshLaboratoryCacheSuccessAction action)
+        private void DisplayRefreshLabsCacheSuccessful(HealthDataActions.RefreshLabsCacheSuccessAction action)
         {
-            this.Snackbar.Add("Laboratory data refresh submitted successfully.", Severity.Success);
+            this.Snackbar.Add("Labs data refresh submitted successfully.", Severity.Success);
 
             this.Dispatcher.Dispatch(
                 new PatientDetailsActions.LoadAction

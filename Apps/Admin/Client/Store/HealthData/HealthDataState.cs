@@ -25,13 +25,13 @@ namespace HealthGateway.Admin.Client.Store.HealthData
     public record HealthDataState
     {
         /// <summary>
-        /// Gets the request state for refresh diagnostic imaging cache requests.
+        /// Gets the request state for refresh imaging cache requests.
         /// </summary>
-        public BaseRequestState RefreshDiagnosticImagingCache { get; init; } = new();
+        public BaseRequestState RefreshImagingCache { get; init; } = new();
 
         /// <summary>
-        /// Gets the request state for refresh laboratory cache requests.
+        /// Gets the request state for refresh labs cache requests.
         /// </summary>
-        public BaseRequestState RefreshLaboratoryCache { get; init; } = new();
+        public BaseRequestState RefreshLabsCache { get; init; } = new();
     }
 }

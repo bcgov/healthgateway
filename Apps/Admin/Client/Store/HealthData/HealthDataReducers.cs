@@ -24,29 +24,29 @@ namespace HealthGateway.Admin.Client.Store.HealthData
         {
             return state with
             {
-                RefreshDiagnosticImagingCache = new(),
-                RefreshLaboratoryCache = new(),
+                RefreshImagingCache = new(),
+                RefreshLabsCache = new(),
             };
         }
 
-        [ReducerMethod(typeof(HealthDataActions.RefreshDiagnosticImagingCacheAction))]
-        public static HealthDataState ReduceRefreshDiagnosticImagingCacheAction(HealthDataState state)
+        [ReducerMethod(typeof(HealthDataActions.RefreshImagingCacheAction))]
+        public static HealthDataState ReduceRefreshImagingCacheAction(HealthDataState state)
         {
             return state with
             {
-                RefreshDiagnosticImagingCache = state.RefreshDiagnosticImagingCache with
+                RefreshImagingCache = state.RefreshImagingCache with
                 {
                     IsLoading = true,
                 },
             };
         }
 
-        [ReducerMethod(typeof(HealthDataActions.RefreshDiagnosticImagingCacheSuccessAction))]
-        public static HealthDataState ReduceRefreshDiagnosticImagingSuccessAction(HealthDataState state)
+        [ReducerMethod(typeof(HealthDataActions.RefreshImagingCacheSuccessAction))]
+        public static HealthDataState ReduceRefreshImagingSuccessAction(HealthDataState state)
         {
             return state with
             {
-                RefreshDiagnosticImagingCache = state.RefreshDiagnosticImagingCache with
+                RefreshImagingCache = state.RefreshImagingCache with
                 {
                     IsLoading = false,
                     Error = null,
@@ -55,11 +55,11 @@ namespace HealthGateway.Admin.Client.Store.HealthData
         }
 
         [ReducerMethod]
-        public static HealthDataState ReduceRefreshDiagnosticImagingCacheFailureAction(HealthDataState state, HealthDataActions.RefreshDiagnosticImagingCacheFailureAction action)
+        public static HealthDataState ReduceRefreshImagingCacheFailureAction(HealthDataState state, HealthDataActions.RefreshImagingCacheFailureAction action)
         {
             return state with
             {
-                RefreshDiagnosticImagingCache = state.RefreshDiagnosticImagingCache with
+                RefreshImagingCache = state.RefreshImagingCache with
                 {
                     IsLoading = false,
                     Error = action.Error,
@@ -67,12 +67,12 @@ namespace HealthGateway.Admin.Client.Store.HealthData
             };
         }
 
-        [ReducerMethod(typeof(HealthDataActions.RefreshLaboratoryCacheAction))]
-        public static HealthDataState ReduceRefreshLaboratoryCacheAction(HealthDataState state)
+        [ReducerMethod(typeof(HealthDataActions.RefreshLabsCacheAction))]
+        public static HealthDataState ReduceRefreshLabsCacheAction(HealthDataState state)
         {
             return state with
             {
-                RefreshLaboratoryCache = state.RefreshLaboratoryCache with
+                RefreshLabsCache = state.RefreshLabsCache with
                 {
                     IsLoading = true,
                 },
@@ -80,11 +80,11 @@ namespace HealthGateway.Admin.Client.Store.HealthData
         }
 
         [ReducerMethod]
-        public static HealthDataState ReduceRefreshLaboratoryCacheSuccessAction(HealthDataState state, HealthDataActions.RefreshLaboratoryCacheSuccessAction action)
+        public static HealthDataState ReduceRefreshLabsCacheSuccessAction(HealthDataState state, HealthDataActions.RefreshLabsCacheSuccessAction action)
         {
             return state with
             {
-                RefreshLaboratoryCache = state.RefreshLaboratoryCache with
+                RefreshLabsCache = state.RefreshLabsCache with
                 {
                     IsLoading = false,
                     Error = null,
@@ -93,11 +93,11 @@ namespace HealthGateway.Admin.Client.Store.HealthData
         }
 
         [ReducerMethod]
-        public static HealthDataState ReduceRefreshLaboratoryCacheFailureAction(HealthDataState state, HealthDataActions.RefreshLaboratoryCacheFailureAction action)
+        public static HealthDataState ReduceRefreshLabsCacheFailureAction(HealthDataState state, HealthDataActions.RefreshLabsCacheFailureAction action)
         {
             return state with
             {
-                RefreshLaboratoryCache = state.RefreshLaboratoryCache with
+                RefreshLabsCache = state.RefreshLabsCache with
                 {
                     IsLoading = false,
                     Error = action.Error,

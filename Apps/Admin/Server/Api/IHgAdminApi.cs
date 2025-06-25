@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Api
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -101,6 +102,15 @@ namespace HealthGateway.Admin.Server.Api
         /// </returns>
         [JsonPropertyName("status")]
         public string? Status { get; init; }
+
+        /// <summary>
+        /// Gets the last refresh date as provided by the source system.
+        /// </summary>
+        /// <returns>
+        /// A nullable <see cref="DateOnly"/> representing the last known refresh date from the source system.
+        /// </returns>
+        [JsonPropertyName("lastRefreshDate")]
+        public DateOnly? LastRefreshDate { get; init; }
 
         /// <summary>
         /// Gets the system source from which the refresh status originated.

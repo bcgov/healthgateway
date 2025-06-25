@@ -24,9 +24,9 @@ namespace HealthGateway.Admin.Client.Store.HealthData
     public static class HealthDataActions
     {
         /// <summary>
-        /// The action representing the request to trigger the process to refresh diagnostic imaging cache.
+        /// The action representing the request to trigger the process to refresh imaging cache.
         /// </summary>
-        public record RefreshDiagnosticImagingCacheAction
+        public record RefreshImagingCacheAction
         {
             /// <summary>
             /// Gets the personal health number (PHN) to check for patient's refresh status.
@@ -35,9 +35,9 @@ namespace HealthGateway.Admin.Client.Store.HealthData
         }
 
         /// <summary>
-        /// The action representing the request to trigger the process to refresh laboratory cache.
+        /// The action representing the request to trigger the process to refresh labs cache.
         /// </summary>
-        public record RefreshLaboratoryCacheAction
+        public record RefreshLabsCacheAction
         {
             /// <summary>
             /// Gets the personal health number (PHN) to check for patient's refresh status.
@@ -46,24 +46,24 @@ namespace HealthGateway.Admin.Client.Store.HealthData
         }
 
         /// <summary>
-        /// The action representing a successful request to trigger the process to refresh diagnostic imaging cache.
+        /// The action representing a successful request to trigger the process to refresh imaging cache.
         /// </summary>
-        public record RefreshDiagnosticImagingCacheSuccessAction;
+        public record RefreshImagingCacheSuccessAction;
 
         /// <summary>
-        /// The action representing a failed request to trigger the process to refresh diagnostic imaging cache.
+        /// The action representing a failed request to trigger the process to refresh imaging cache.
         /// </summary>
-        public record RefreshDiagnosticImagingCacheFailureAction : BaseFailureAction;
+        public record RefreshImagingCacheFailureAction : BaseFailureAction;
 
         /// <summary>
-        /// The action representing a successful request to trigger the process to refresh laboratory cache.
+        /// The action representing a successful request to trigger the process to refresh labs cache.
         /// </summary>
-        public record RefreshLaboratoryCacheSuccessAction;
+        public record RefreshLabsCacheSuccessAction;
 
         /// <summary>
-        /// The action representing a failed request to trigger the process to refresh laboratory cache.
+        /// The action representing a failed request to trigger the process to refresh labs cache.
         /// </summary>
-        public record RefreshLaboratoryCacheFailureAction : BaseFailureAction;
+        public record RefreshLabsCacheFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action that clears the state.

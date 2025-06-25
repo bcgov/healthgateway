@@ -48,15 +48,24 @@ public interface ISupportApi
     /// refreshed.
     /// </param>
     /// <param name="includeApiRegistration">Indicates whether the response should include Api Registration status.</param>
+    /// <param name="includeImagingRefresh">Indicates whether the response should include imaging refresh data.</param>
+    /// <param name="includeLabsRefresh">Indicates whether the response should include labs refresh data.</param>
     /// <returns>The patient support details object.</returns>
-    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}&refreshVaccineDetails={refreshVaccineDetails}&includeApiRegistration={includeApiRegistration}")]
-    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails, bool includeApiRegistration);
+    [Get(
+        "/PatientSupportDetails?queryType={queryType}&queryString={queryString}&refreshVaccineDetails={refreshVaccineDetails}&includeApiRegistration={includeApiRegistration}&includeImagingRefresh={includeImagingRefresh}&includeLabsRefresh={includeLabsRefresh}")]
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
+        ClientRegistryType queryType,
+        string queryString,
+        bool refreshVaccineDetails,
+        bool includeApiRegistration,
+        bool includeImagingRefresh,
+        bool includeLabsRefresh);
 
     /// <summary>
     /// Creates, updates, or deletes block access configuration for the passed HDID.
     /// </summary>
     /// <param name="hdid">HDID of the patient to restrict access.</param>
-    /// <param name="request">The request containing all data sources to block for the patient.</param>
+    /// <param name="request">The request containing all datasources to block for the patient.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Put("/{hdid}/BlockAccess")]
     Task BlockAccessAsync(string hdid, BlockAccessRequest request);
