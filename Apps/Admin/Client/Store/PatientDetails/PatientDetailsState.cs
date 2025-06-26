@@ -16,6 +16,7 @@
 
 namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
+    using System;
     using System.Collections.Immutable;
     using Fluxor;
     using HealthGateway.Admin.Common.Models;
@@ -64,5 +65,15 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// Gets a value indicating whether the account registration status is linked to the patient support details.
         /// </summary>
         public bool? IsAccountRegistered { get; init; }
+
+        /// <summary>
+        /// Gets the date when imaging data was last refreshed from the source system, if available.
+        /// </summary>
+        public DateOnly? LastImagingRefreshDate { get; init; }
+
+        /// <summary>
+        /// Gets the date when labs data was last refreshed from the source system, if available.
+        /// </summary>
+        public DateOnly? LastLabsRefreshDate { get; init; }
     }
 }

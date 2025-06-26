@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
@@ -54,5 +55,15 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets a value indicating whether the patient's account is registered in the system.
         /// </summary>
         public bool? IsAccountRegistered { get; init; }
+
+        /// <summary>
+        /// Gets the last imaging refresh date.
+        /// </summary>
+        public DateOnly? LastImagingRefreshDate { get; init; }
+
+        /// <summary>
+        /// Gets the last labs refresh date.
+        /// </summary>
+        public DateOnly? LastLabsRefreshDate { get; init; }
     }
 }

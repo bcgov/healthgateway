@@ -63,6 +63,16 @@ namespace HealthGateway.Admin.Server.Models
         public bool IncludeApiRegistration { get; init; }
 
         /// <summary>
+        /// Gets a value indicating whether imaging refresh data should be included in the result.
+        /// </summary>
+        public bool IncludeImagingRefresh { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether labs refresh data should be included in the result.
+        /// </summary>
+        public bool IncludeLabsRefresh { get; init; }
+
+        /// <summary>
         /// Gets a value indicating whether the query should force cached vaccine validation details data to be refreshed.
         /// </summary>
         public bool RefreshVaccineDetails { get; init; }

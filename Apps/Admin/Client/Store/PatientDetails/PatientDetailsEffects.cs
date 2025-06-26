@@ -39,11 +39,17 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             try
             {
                 Dictionary<string, bool>? features = configurationState.Value.Result?.Features;
-                bool showApiRegistration = features != null &&
-                                           features.TryGetValue("ShowApiRegistration", out bool enabled) &&
-                                           enabled;
+                bool includeApiRegistration = FeatureToggleUtility.IsEnabled(features, "ShowApiRegistration");
+                bool includeImagingRefresh = FeatureToggleUtility.IsEnabled(features, "ShowImagingRefresh");
+                bool includeLabsRefresh = FeatureToggleUtility.IsEnabled(features, "ShowLabsRefresh");
 
-                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails, showApiRegistration);
+                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(
+                    action.QueryType,
+                    action.QueryString,
+                    action.RefreshVaccineDetails,
+                    includeApiRegistration,
+                    includeImagingRefresh,
+                    includeLabsRefresh);
                 logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }

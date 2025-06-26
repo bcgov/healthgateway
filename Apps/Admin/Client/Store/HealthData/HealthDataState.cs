@@ -13,40 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components.Common
+namespace HealthGateway.Admin.Client.Store.HealthData
 {
-    using Microsoft.AspNetCore.Components;
+    using Fluxor;
 
     /// <summary>
-    /// Backing logic for the HgField component.
+    /// The state for the feature.
+    /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
-    public partial class HgField : HgComponentBase
+    [FeatureState]
+    public record HealthDataState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HgField"/> class.
+        /// Gets the request state for refresh imaging cache requests.
         /// </summary>
-        public HgField()
-        {
-            this.HorizontalMarginSize = 3;
-            this.VerticalMarginSize = 3;
-        }
+        public BaseRequestState RefreshImagingCache { get; init; } = new();
 
         /// <summary>
-        /// Gets or sets the field label.
+        /// Gets the request state for refresh labs cache requests.
         /// </summary>
-        [Parameter]
-        public string Label { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the field value.
-        /// </summary>
-        [Parameter]
-        public string Value { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets optional content rendered next to the value (e.g., a button).
-        /// </summary>
-        [Parameter]
-        public RenderFragment? InlineContent { get; set; }
+        public BaseRequestState RefreshLabsCache { get; init; } = new();
     }
 }

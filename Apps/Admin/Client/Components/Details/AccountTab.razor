@@ -1,4 +1,4 @@
-﻿@using HealthGateway.Admin.Client.Components.Support
+@using HealthGateway.Admin.Client.Components.Support
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @if (Patient != null)
@@ -42,6 +42,38 @@
                              data-testid="api-registration"/>
                 </MudItem>
             }
+
+            @if (ShowImagingRefresh)
+            {
+                <MudItem xs="12">
+                    <MudText Class="mb-0 mt-0" Typo="Typo.h6">
+                        Imaging Reports (Provincial Digital Imaging Vault)
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <HgField Class="mb-0"
+                             Label="Last Refreshed Date"
+                             Value="@LastImagingRefreshDate?.ToString()"
+                             InlineContent="ImagingCacheRefreshButton"
+                             data-testid="last-imaging-refresh-date"/>
+                </MudItem>
+            }
+
+            @if (ShowLabsRefresh)
+            {
+                <MudItem xs="12">
+                    <MudText Class="mb-0 mt-0" Typo="Typo.h6">
+                        Labs Cache (Provincial Laboratory Information Solution)
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <HgField Class="mb-0"
+                             Label="Last Refreshed Date"
+                             Value="@LastLabsRefreshDate?.ToString()"
+                             InlineContent="LabsCacheRefreshButton"
+                             data-testid="last-labs-refresh-date"/>
+                </MudItem>
+            }
         }
         else
         {
@@ -60,3 +92,29 @@
         <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading"/>
     }
 </AuthorizeView>
+
+@code {
+
+    private RenderFragment ImagingCacheRefreshButton => @<HgButton
+                                                            EndIcon="fas fa-arrow-rotate-right"
+                                                            Variant="@Variant.Filled"
+                                                            Color="@Color.Primary"
+                                                            Loading="@RefreshImagingCacheIsLoading"
+                                                            Disabled="@(RefreshImagingCacheIsLoading || PatientSupportDetailsLoading)"
+                                                            OnClick="@RefreshImagingCache"
+                                                            data-testid="imaging-cache-refresh-button">
+                                                            Refresh
+                                                        </HgButton>;
+
+    private RenderFragment LabsCacheRefreshButton => @<HgButton
+                                                         EndIcon="fas fa-arrow-rotate-right"
+                                                         Variant="@Variant.Filled"
+                                                         Color="@Color.Primary"
+                                                         Loading="@RefreshLabCacheIsLoading"
+                                                         Disabled="@(RefreshLabCacheIsLoading || PatientSupportDetailsLoading)"
+                                                         OnClick="@RefreshLabsCache"
+                                                         data-testid="labs-cache-refresh-button">
+                                                         Refresh
+                                                     </HgButton>;
+
+}

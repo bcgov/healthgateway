@@ -48,9 +48,18 @@ public interface ISupportApi
     /// refreshed.
     /// </param>
     /// <param name="includeApiRegistration">Indicates whether the response should include Api Registration status.</param>
+    /// <param name="includeImagingRefresh">Indicates whether the response should include imaging refresh data.</param>
+    /// <param name="includeLabsRefresh">Indicates whether the response should include labs refresh data.</param>
     /// <returns>The patient support details object.</returns>
-    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}&refreshVaccineDetails={refreshVaccineDetails}&includeApiRegistration={includeApiRegistration}")]
-    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails, bool includeApiRegistration);
+    [Get(
+        "/PatientSupportDetails?queryType={queryType}&queryString={queryString}&refreshVaccineDetails={refreshVaccineDetails}&includeApiRegistration={includeApiRegistration}&includeImagingRefresh={includeImagingRefresh}&includeLabsRefresh={includeLabsRefresh}")]
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
+        ClientRegistryType queryType,
+        string queryString,
+        bool refreshVaccineDetails,
+        bool includeApiRegistration,
+        bool includeImagingRefresh,
+        bool includeLabsRefresh);
 
     /// <summary>
     /// Creates, updates, or deletes block access configuration for the passed HDID.
@@ -76,4 +85,12 @@ public interface ISupportApi
     /// <returns>The encoded immunization document.</returns>
     [Get("/Patient/Document?phn={phn}")]
     Task<ReportModel> RetrieveVaccineRecordAsync(string phn);
+
+    /// <summary>
+    /// Requests a refresh of cached health data for a specified personal health number (PHN) and system source.
+    /// </summary>
+    /// <param name="request">The request containing the PHN and source system.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Post("/Patient/RefreshHealthData")]
+    Task RequestHealthDataRefreshAsync(HealthDataStatusRequest request);
 }
