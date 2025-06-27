@@ -363,77 +363,109 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("getTokens", (username, password) => {
-    cy.readConfig().then((config) => {
+    return cy.readConfig().then((config) => {
         cy.log(`Performing Keycloak logout`);
         cy.request({
             url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
         });
 
-        cy.log("Performing Keycloak Authentication");
-        let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
-        const loginCallback =
-            config.openIdConnect.callbacks?.Logon ||
-            `${Cypress.config().baseUrl}/loginCallback`;
-        cy.request({
-            url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
-            followRedirect: false,
-            qs: {
-                scope: config.openIdConnect.scope,
-                response_type: config.openIdConnect.responseType,
-                approval_prompt: "auto",
-                redirect_uri: loginCallback,
-                client_id: config.openIdConnect.clientId,
-                response_mode: "query",
-                state: stateId,
-            },
-        })
-            .then((response) => {
-                cy.log("Posting credentials");
-                const html = document.createElement("html");
-                html.innerHTML = response.body;
-                const form = html.getElementsByTagName("form")[0];
-                const url = form.action;
-                return cy.request({
-                    method: "POST",
-                    url,
+        if (username && password) {
+            cy.log(
+                "Performing Keycloak Authentication with username and password"
+            );
+            let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
+            const loginCallback =
+                config.openIdConnect.callbacks?.Logon ||
+                `${Cypress.config().baseUrl}/loginCallback`;
+            return cy
+                .request({
+                    url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
                     followRedirect: false,
-                    form: true,
-                    body: {
-                        username: username,
-                        password: password,
-                    },
-                });
-            })
-            .then((response) => {
-                cy.log(
-                    `CALLBACK for Posting credentials : response: ${JSON.stringify(
-                        response
-                    )}`
-                );
-                let callBackQS = response.headers["location"];
-                const url = new URL(callBackQS);
-                const params = url.search.substring(1).split("&");
-                let code;
-                for (const param of params) {
-                    const [key, value] = param.split("=");
-                    if (key === "code") {
-                        code = value;
-                        break;
-                    }
-                }
-                cy.request({
-                    method: "post",
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
-                    body: {
-                        client_id: config.openIdConnect.clientId,
+                    qs: {
+                        scope: config.openIdConnect.scope,
+                        response_type: config.openIdConnect.responseType,
+                        approval_prompt: "auto",
                         redirect_uri: loginCallback,
-                        code,
-                        grant_type: "authorization_code",
+                        client_id: config.openIdConnect.clientId,
+                        response_mode: "query",
+                        state: stateId,
                     },
+                })
+                .then((response) => {
+                    cy.log("Posting credentials");
+                    const html = document.createElement("html");
+                    html.innerHTML = response.body;
+                    const form = html.getElementsByTagName("form")[0];
+                    const url = form.action;
+                    return cy.request({
+                        method: "POST",
+                        url,
+                        followRedirect: false,
+                        form: true,
+                        body: {
+                            username: username,
+                            password: password,
+                        },
+                    });
+                })
+                .then((response) => {
+                    cy.log(
+                        `CALLBACK for Posting credentials : response: ${JSON.stringify(
+                            response
+                        )}`
+                    );
+                    let callBackQS = response.headers["location"];
+                    const url = new URL(callBackQS);
+                    const params = url.search.substring(1).split("&");
+                    let code;
+                    for (const param of params) {
+                        const [key, value] = param.split("=");
+                        if (key === "code") {
+                            code = value;
+                            break;
+                        }
+                    }
+                    cy.request({
+                        method: "post",
+                        url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
+                        body: {
+                            client_id: config.openIdConnect.clientId,
+                            redirect_uri: loginCallback,
+                            code,
+                            grant_type: "authorization_code",
+                        },
+                        form: true,
+                        followRedirect: false,
+                    }).its("body");
+                });
+        } else {
+            cy.log(
+                "Performing Keycloak Authenticaiton with cleint credentials"
+            );
+            cy.log(
+                `Keycloak erebus client: ${Cypress.env(
+                    "keycloak.erebus.client"
+                )}`
+            );
+            cy.log(
+                `Keycloak erebus secret: ${Cypress.env(
+                    "keycloak.erebus.secret"
+                )}`
+            );
+
+            return cy
+                .request({
+                    method: "POST",
+                    url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
                     form: true,
-                    followRedirect: false,
-                }).its("body");
-            });
+                    body: {
+                        grant_type: "client_credentials",
+                        client_id: Cypress.env("keycloak.erebus.client"),
+                        client_secret: Cypress.env("keycloak.erebus.secret"),
+                    },
+                })
+                .its("body");
+        }
     });
 });
 
