@@ -35,6 +35,8 @@ module.exports = defineConfig({
         "idir.password": "",
         "keycloak.phsa.client": "",
         "keycloak.phsa.secret": "",
+        "keycloak.erebus.client": "",
+        "keycloak.erebus.secret": "",
         phoneNumber: "",
         emailAddress: "fakeemail@healthgateway.gov.bc.ca",
         phn: "9735353315",
