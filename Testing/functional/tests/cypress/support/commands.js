@@ -442,16 +442,6 @@ Cypress.Commands.add("getTokens", (username, password) => {
             cy.log(
                 "Performing Keycloak Authenticaiton with cleint credentials"
             );
-            cy.log(
-                `Keycloak erebus client: ${Cypress.env(
-                    "keycloak.erebus.client"
-                )}`
-            );
-            cy.log(
-                `Keycloak erebus secret: ${Cypress.env(
-                    "keycloak.erebus.secret"
-                )}`
-            );
 
             return cy
                 .request({
