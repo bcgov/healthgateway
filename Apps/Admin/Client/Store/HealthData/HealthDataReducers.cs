@@ -79,8 +79,8 @@ namespace HealthGateway.Admin.Client.Store.HealthData
             };
         }
 
-        [ReducerMethod]
-        public static HealthDataState ReduceRefreshLabsCacheSuccessAction(HealthDataState state, HealthDataActions.RefreshLabsCacheSuccessAction action)
+        [ReducerMethod(typeof(HealthDataActions.RefreshLabsCacheSuccessAction))]
+        public static HealthDataState ReduceRefreshLabsCacheSuccessAction(HealthDataState state)
         {
             return state with
             {
