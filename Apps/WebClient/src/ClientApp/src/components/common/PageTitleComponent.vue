@@ -34,10 +34,10 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
                 <slot name="append" />
             </v-col>
         </v-row>
-        <v-divider
+        <!-- <v-divider
             class="border-opacity-100 my-2"
             color="primary"
             :thickness="2"
-        />
+        /> -->
     </div>
 </template>
