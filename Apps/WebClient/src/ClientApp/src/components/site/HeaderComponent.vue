@@ -4,7 +4,6 @@ import { useRoute, useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
-import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
 import RatingComponent from "@/components/site/RatingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -12,7 +11,6 @@ import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
-import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
 const headerScrollThreshold = 100;
@@ -20,20 +18,24 @@ const headerScrollThreshold = 100;
 const layoutStore = useLayoutStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
+const notificationStore = useNotificationStore(); */
 const authStore = useAuthStore();
 
 const route = useRoute();
 const router = useRouter();
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-const notificationButtonClicked = ref(false);
-const hasViewedTour = ref(false);
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
+const notificationButtonClicked = ref(false); */
+/* AB#16927 Disable app tour while aligning Classic with Salesforce version
+const hasViewedTour = ref(false); */
 const isScrollNearBottom = ref(false);
 const isHeaderVisible = ref();
 
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
-const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
+/* AB#16927 Disable app tour while aligning Classic with Salesforce version
+const appTourComponent = ref<InstanceType<typeof AppTourComponent>>(); */
 
 const isMobileWidth = computed(() => layoutStore.isMobile);
 const isOffline = computed(() => configStore.isOffline);
@@ -44,7 +46,8 @@ const isValidIdentityProvider = computed(
 const isHeaderShown = computed(
     () => layoutStore.isHeaderShown || isScrollNearBottom.value
 );
-const user = computed(() => userStore.user);
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
+const user = computed(() => userStore.user); */
 const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
 const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
@@ -61,6 +64,7 @@ const isSidebarButtonShown = computed(
         !patientRetrievalFailed.value &&
         !isPcrTest.value
 );
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 const isNotificationCentreAvailable = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.notificationCentre
@@ -72,7 +76,8 @@ const isNotificationCentreAvailable = computed(
         userIsRegistered.value &&
         userIsActive.value &&
         !patientRetrievalFailed.value
-);
+); */
+/* AB#16927 Disable app tour while aligning Classic with Salesforce version 
 const isAppTourAvailable = computed(
     () =>
         !isOffline.value &&
@@ -82,7 +87,7 @@ const isAppTourAvailable = computed(
         userIsRegistered.value &&
         userIsActive.value &&
         !patientRetrievalFailed.value
-);
+); */
 const isLoggedInMenuShown = computed(
     () => oidcIsAuthenticated.value && !isPcrTest.value
 );
@@ -102,17 +107,21 @@ const isProfileLinkAvailable = computed(
         isValidIdentityProvider.value &&
         !patientRetrievalFailed.value
 );
-const newNotifications = computed(() => notificationStore.newNotifications);
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
+const newNotifications = computed(() => notificationStore.newNotifications); */
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 const hasNewNotifications = computed(
     () => newNotifications.value.length > 0 && !notificationButtonClicked.value
-);
+); */
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 const notificationBadgeContent = computed(() => {
     const count = newNotifications.value.length;
     return hasNewNotifications.value ? count.toString() : "";
-});
+}); */
+/* AB#16927 Disable app tour while aligning Classic with Salesforce version 
 const highlightTourChangeIndicator = computed(
     () => user.value.hasTourUpdated && !hasViewedTour.value
-);
+); */
 
 function testIfScrollIsNearBottom() {
     const scrollPosition = window.scrollY;
@@ -130,11 +139,12 @@ function setHeaderState(isOpen: boolean): void {
     layoutStore.setHeaderState(isOpen);
 }
 
+/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 function handleNotificationCentreClick(): void {
     notificationButtonClicked.value = true;
     notificationStore.isNotificationCenterOpen =
         !notificationStore.isNotificationCenterOpen;
-}
+} */
 
 function handleLogoutClick(): void {
     if (isValidIdentityProvider.value) {
@@ -159,6 +169,7 @@ watch(isMobileWidth, (value) => {
     }
 });
 
+/* AB#16927 Disable app tour while aligning Classic with Salesforce version 
 watch(
     () => route.query,
     (value) => {
@@ -167,7 +178,7 @@ watch(
             appTourComponent.value?.showDialog();
         }
     }
-);
+); */
 
 watch(
     () => route.path,
@@ -193,7 +204,7 @@ nextTick(() => {
         v-model="isHeaderVisible"
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
         class="border-b-md border-accent border-opacity-100 d-print-none"
-        color="primary"
+        color="background"
         :scroll-threshold="headerScrollThreshold"
         flat
     >
@@ -204,20 +215,24 @@ nextTick(() => {
                 @click="toggleSidebar"
             />
         </template>
-        <router-link to="/" class="px-2" style="width: 160px">
+        <router-link to="/" class="px-2" style="max-width: 240px; width: 100%">
             <v-img
                 alt="Go to Health Gateway home page"
                 src="@/assets/images/gov/hg-logo-rev.svg"
-                max-width="135px"
+                width="100%"
+                height="auto"
+                contain
             />
         </router-link>
         <v-spacer />
+        <!-- AB#16927 Disable app tour while aligning Classic with Salesforce version 
         <AppTourComponent
             ref="appTourComponent"
             :is-available="isAppTourAvailable"
             :highlight-tour-change-indicator="highlightTourChangeIndicator"
             @click="hasViewedTour = true"
-        />
+        /> -->
+        <!-- AB#16927 Disable notifications while aligning Classic with Salesforce version 
         <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"
             data-testid="notification-centre-button"
@@ -228,16 +243,19 @@ nextTick(() => {
                 :model-value="hasNewNotifications"
                 :content="notificationBadgeContent"
             >
-                <v-icon icon="fas fa-bell" />
+                <v-icon icon="fas fa-bell" class="text-grey-darken-1" />
             </v-badge>
-        </HgIconButtonComponent>
+        </HgIconButtonComponent> -->
         <template v-if="isLoggedInMenuShown">
             <HgIconButtonComponent
                 id="menuBtnLogout"
                 data-testid="headerDropdownBtn"
                 class="mx-2"
             >
-                <v-avatar data-testid="profileButtonInitials" color="info">
+                <v-avatar
+                    data-testid="profileButtonInitials"
+                    color="grey-lighten-2"
+                >
                     {{ userStore.userInitials }}
                 </v-avatar>
             </HgIconButtonComponent>
@@ -266,8 +284,7 @@ nextTick(() => {
         </template>
         <HgButtonComponent
             v-else-if="isLogInButtonShown"
-            variant="secondary"
-            inverse
+            variant="white"
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
@@ -275,8 +292,7 @@ nextTick(() => {
         />
         <HgButtonComponent
             v-else-if="isLogOutButtonShown"
-            variant="secondary"
-            inverse
+            variant="white"
             prepend-icon="fas fa-sign-out-alt"
             data-testid="header-log-out-button"
             to="/logout"
