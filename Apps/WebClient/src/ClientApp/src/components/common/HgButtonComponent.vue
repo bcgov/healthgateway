@@ -12,7 +12,12 @@ const props = withDefaults(defineProps<Props>(), {
     disabled: undefined,
 });
 
-export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
+export type HgButtonVariant =
+    | "primary"
+    | "secondary"
+    | "link"
+    | "transparent"
+    | "white";
 
 interface HgButtonVariantDetails {
     inverseVariant: HgButtonVariant;
@@ -44,6 +49,12 @@ variants.set("transparent", {
     color: "transparent",
 });
 
+variants.set("white", {
+    inverseVariant: "white",
+    vuetifyVariant: "elevated",
+    color: "white",
+});
+
 const slots = useSlots();
 
 const hasSlot = computed(() => slots.default !== undefined);
@@ -64,6 +75,9 @@ const disabledColor = computed(
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
         class="transition-none"
+        :class="{
+            'white-button': props.variant === 'white',
+        }"
     >
         <slot />
     </v-btn>
@@ -79,5 +93,15 @@ const disabledColor = computed(
 <style lang="scss" scoped>
 .transition-none {
     transition: none;
+}
+
+.white-button {
+    background-color: white !important;
+    color: #212121 !important; // darker than generic "black"
+    border: 1px solid #999 !important; // visible gray, not too dark
+
+    .v-icon {
+        color: #212121 !important;
+    }
 }
 </style>

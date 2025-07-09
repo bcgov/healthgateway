@@ -5,6 +5,7 @@ import { Duration } from "luxon";
 import { vMaska } from "maska/vue";
 import { computed, nextTick, ref, watch } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -239,13 +240,11 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
             </v-card-title>
             <v-card-text class="pa-4" data-testid="new-dependent-modal-form">
                 <TooManyRequestsComponent location="addDependentDialog" />
-                <v-alert
+                <HgAlertComponent
                     v-if="isError"
                     data-testid="dependent-error-banner"
-                    class="d-print-none mb-4"
                     type="error"
-                    variant="outlined"
-                    border
+                    :custom="true"
                 >
                     <template #text>
                         <p
@@ -297,7 +296,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             >.
                         </span>
                     </template>
-                </v-alert>
+                </HgAlertComponent>
                 <v-row>
                     <v-col cols="12" sm="6">
                         <label for="firstName">First and Middle Names</label>
