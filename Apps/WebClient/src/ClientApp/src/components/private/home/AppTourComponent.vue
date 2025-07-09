@@ -132,7 +132,7 @@ function previous(): void {
                         color="red"
                         :model-value="highlightTourChangeIndicator"
                     >
-                        <v-icon icon="lightbulb" />
+                        <v-icon icon="lightbulb" class="text-grey-darken-1" />
                     </v-badge>
                 </HgIconButtonComponent>
             </template>

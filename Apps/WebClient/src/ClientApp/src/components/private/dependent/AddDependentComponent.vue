@@ -245,7 +245,6 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                     class="d-print-none mb-4"
                     type="error"
                     variant="outlined"
-                    border
                 >
                     <template #text>
                         <p
