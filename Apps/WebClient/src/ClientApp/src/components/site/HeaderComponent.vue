@@ -193,7 +193,7 @@ nextTick(() => {
         v-model="isHeaderVisible"
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
         class="border-b-md border-accent border-opacity-100 d-print-none"
-        color="primary"
+        color="background"
         :scroll-threshold="headerScrollThreshold"
         flat
     >
@@ -228,7 +228,7 @@ nextTick(() => {
                 :model-value="hasNewNotifications"
                 :content="notificationBadgeContent"
             >
-                <v-icon icon="fas fa-bell" />
+                <v-icon icon="fas fa-bell" class="text-grey-darken-1" />
             </v-badge>
         </HgIconButtonComponent>
         <template v-if="isLoggedInMenuShown">
@@ -237,7 +237,10 @@ nextTick(() => {
                 data-testid="headerDropdownBtn"
                 class="mx-2"
             >
-                <v-avatar data-testid="profileButtonInitials" color="info">
+                <v-avatar
+                    data-testid="profileButtonInitials"
+                    color="grey-lighten-2"
+                >
                     {{ userStore.userInitials }}
                 </v-avatar>
             </HgIconButtonComponent>
@@ -266,8 +269,7 @@ nextTick(() => {
         </template>
         <HgButtonComponent
             v-else-if="isLogInButtonShown"
-            variant="secondary"
-            inverse
+            variant="white"
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
@@ -275,8 +277,7 @@ nextTick(() => {
         />
         <HgButtonComponent
             v-else-if="isLogOutButtonShown"
-            variant="secondary"
-            inverse
+            variant="white"
             prepend-icon="fas fa-sign-out-alt"
             data-testid="header-log-out-button"
             to="/logout"
