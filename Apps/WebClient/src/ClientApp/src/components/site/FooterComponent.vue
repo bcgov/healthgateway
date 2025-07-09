@@ -26,7 +26,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
     <v-footer
         v-if="isFooterShown"
         data-testid="footer"
-        color="primary"
+        color="white"
         :app="isFooterFixed"
     >
         <v-row class="pa-2">
@@ -34,7 +34,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                 <router-link
                     :to="Path.TermsOfService"
                     data-testid="footer-terms-of-service-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     Terms of Service
                 </router-link>
@@ -45,7 +45,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-release-notes-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     Release Notes
                 </a>
@@ -56,7 +56,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     About Us
                 </a>
@@ -67,7 +67,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     FAQ
                 </a>
@@ -77,7 +77,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                 <a
                     href="mailto:healthgateway@gov.bc.ca"
                     data-testid="footer-email-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     Email: HealthGateway@gov.bc.ca
                 </a>

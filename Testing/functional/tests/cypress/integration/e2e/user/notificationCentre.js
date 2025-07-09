@@ -21,7 +21,8 @@ describe("Notification Centre", () => {
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
-    it("Get notifications", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Get notifications", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();

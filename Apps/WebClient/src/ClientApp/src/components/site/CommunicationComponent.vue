@@ -81,7 +81,7 @@ fetchCommunication(CommunicationType.InApp);
 </script>
 
 <template>
-    <v-banner v-if="hasCommunication" class="bg-accent justify-center">
+    <v-banner v-if="hasCommunication" class="bg-info-light justify-center">
         <v-banner-text>
             <!-- eslint-disable vue/no-v-html -->
             <div data-testid="communicationBanner" v-html="text" />
@@ -89,3 +89,10 @@ fetchCommunication(CommunicationType.InApp);
         </v-banner-text>
     </v-banner>
 </template>
+
+<style scoped lang="scss">
+.bg-info-light {
+    background-color: #e5edf5 !important;
+    color: #1a2e49 !important;
+}
+</style>
