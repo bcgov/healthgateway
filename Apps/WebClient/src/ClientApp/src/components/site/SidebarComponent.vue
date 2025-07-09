@@ -64,7 +64,7 @@ watch(isSidebarOpen, (value: boolean) => {
         :permanent="!isMobile"
         :temporary="isMobile"
         :rail="isMobile ? false : collapsedOnDesktop"
-        color="primary"
+        color="background"
         class="d-print-none"
         data-testid="sidenavbar"
         @click.stop="collapsedOnDesktop = false"
@@ -134,7 +134,7 @@ watch(isSidebarOpen, (value: boolean) => {
             <v-list-item
                 title="Feedback"
                 data-testid="menu-btn-feedback-link"
-                class="bg-info"
+                class="nav-feedback-button"
                 @click.stop="feedbackDialog?.showDialog()"
             >
                 <template #prepend>
@@ -151,5 +151,14 @@ watch(isSidebarOpen, (value: boolean) => {
 <style scoped>
 .nav-list-item-icon {
     width: 1.5em;
+}
+.nav-feedback-button {
+    background-color: #f2f2f2 !important;
+    color: #1a1a1a !important;
+    border-top: 1px solid #d1d5db;
+}
+
+.nav-feedback-button .v-icon {
+    color: #1a1a1a !important;
 }
 </style>
