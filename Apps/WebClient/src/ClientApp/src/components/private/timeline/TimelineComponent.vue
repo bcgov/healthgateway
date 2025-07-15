@@ -704,7 +704,7 @@ setPageFromDate(linearDate.value);
                 these and other screening test results in lab or imaging
                 reports.
                 <a
-                    href="http://www.bccancer.bc.ca/screening"
+                    href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/healthrecords"
                     target="_blank"
                     rel="noopener"
                     class="text-link"
