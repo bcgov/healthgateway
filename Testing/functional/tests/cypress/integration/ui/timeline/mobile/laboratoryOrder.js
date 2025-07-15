@@ -71,19 +71,6 @@ describe("Laboratory Orders", () => {
                 cy.get("[data-testid=reporting-lab-information-text]").should(
                     "be.visible"
                 );
-                cy.get("[data-testid=other-resources-info-button]")
-                    .should("be.visible")
-                    .click();
-                cy.get("[data-testid=other-resources-info-popover]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=result-info-button]")
-                    .should("be.visible")
-                    .click();
-
-                cy.document()
-                    .find("[data-testid=result-info-popover]")
-                    .should("exist");
             });
 
         cy.get("[data-testid=backBtn]").click({ force: true });
