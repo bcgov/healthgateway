@@ -5,7 +5,6 @@ import { computed, ref } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
-import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
@@ -65,7 +64,6 @@ const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
 
 const isLoadingDocument = ref(false);
-const showInfoDetails = ref(false);
 const sensitiveDocumentModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 
@@ -167,84 +165,49 @@ function getReport(): void {
                 />
             </v-col>
         </v-row>
-        <p class="text-body-1">
+        <p class="text-body-1 mb-2">
             <span data-testid="reporting-lab-information-text"
-                >Find resources about your lab tests.</span
+                ><strong>Find resources about your lab tests:</strong></span
             >
-
-            <HgIconButtonComponent
-                data-testid="other-resources-info-button"
-                aria-label="More Information"
-                class="ml-1 text-primary"
-                size="x-small"
-                @click="showInfoDetails = !showInfoDetails"
-            >
-                <v-icon icon="info-circle" size="large" />
-            </HgIconButtonComponent>
         </p>
-        <v-slide-y-transition>
-            <v-alert
-                v-show="showInfoDetails"
-                data-testid="other-resources-info-popover"
-                class="d-print-none mb-6"
-                type="info"
-                variant="outlined"
-                border
-            >
-                <p>
-                    Use these websites to learn about specific types of lab
-                    tests:
-                </p>
-                <ul>
-                    <li>
-                        <a
-                            href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests"
-                            target="_blank"
-                            rel="noopener"
-                            class="text-link"
-                        >
-                            HealthLink BC
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="https://www.mayocliniclabs.com/"
-                            target="_blank"
-                            rel="noopener"
-                            class="text-link"
-                        >
-                            Mayo Clinic Laboratories
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="https://www.mypathologyreport.ca/"
-                            target="_blank"
-                            rel="noopener"
-                            class="text-link"
-                        >
-                            For pathology tests (like a biopsy)
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="https://smartsexresource.com/resources/"
-                            target="_blank"
-                            rel="noopener"
-                            class="text-link"
-                        >
-                            BC CDC - Smart Sex Resource
-                        </a>
-                    </li>
-                </ul>
-            </v-alert>
-        </v-slide-y-transition>
+        <ul>
+            <li>
+                <a
+                    href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                >
+                    HealthLink BC
+                </a>
+            </li>
+            <li>
+                <a
+                    href="https://www.mypathologyreport.ca/"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                >
+                    For pathology tests (like a biopsy)
+                </a>
+            </li>
+            <li>
+                <a
+                    href="https://smartsexresource.com/resources/"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                >
+                    BC CDC - Smart Sex Resource
+                </a>
+            </li>
+        </ul>
         <HgButtonComponent
             v-if="entry.reportAvailable"
             class="mt-2 mb-6"
             data-testid="laboratory-report-download-btn"
             variant="primary"
-            text="View Test Results"
+            text="Download report"
             prepend-icon="eye"
             :loading="isLoadingDocument"
             @click="showConfirmationModal"
