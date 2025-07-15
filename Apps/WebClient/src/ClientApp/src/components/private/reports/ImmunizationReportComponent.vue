@@ -289,29 +289,28 @@ immunizationStore
                     <p>
                         Vaccine recommendations are based on the
                         <a
-                            href="https://immunizebc.ca/tools-resources/immunization-schedules"
+                            href="https://www.healthlinkbc.ca/health-library/immunizations/schedules"
                             class="text-link"
                             @click.prevent="
                                 trackLink(
-                                    'https://immunizebc.ca/tools-resources/immunization-schedules',
+                                    'https://www.healthlinkbc.ca/health-library/immunizations/schedules',
                                     Destination.PublicHealthImmunizationSchedule
                                 )
                             "
                         >
                             BC Vaccine Schedule</a
-                        >. For information on booking COVID or Flu vaccinations,
-                        please visit the
+                        >. For more information, please visit
                         <a
-                            href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations#resources"
+                            href="https://www.healthlinkbc.ca/health-library/immunizations"
                             class="text-link"
                             @click.prevent="
                                 trackLink(
-                                    'https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations#resources',
+                                    'https://www.healthlinkbc.ca/health-library/immunizations',
                                     Destination.BcGovImmunizations
                                 )
                             "
                         >
-                            BC Government Immunization page</a
+                            Immunizations | HealthLink BC</a
                         >.
                     </p>
                 </template>
