@@ -65,10 +65,9 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
             <v-alert
                 v-show="showInfoDetails"
                 data-testid="health-visit-clinic-name-info-popover"
-                class="d-print-none mb-6"
+                class="d-print-none mb-6 bg-info-light"
                 type="info"
                 variant="outlined"
-                border
             >
                 <p class="text-body-1">
                     Information is from the billing claim and may show a
@@ -86,13 +85,11 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
             </v-alert>
         </v-slide-y-transition>
         <v-alert
-            v-if="entry.showRollOffWarning"
             data-testid="encounterRolloffAlert"
             class="d-print-none"
             type="warning"
             icon="circle-exclamation"
             variant="outlined"
-            border
             text="Health visits are shown for the past 6 years only. You may wish
                 to export and save older records so you still have them when the
                 calendar year changes."

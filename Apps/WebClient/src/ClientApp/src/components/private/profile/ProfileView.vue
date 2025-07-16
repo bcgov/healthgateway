@@ -34,11 +34,10 @@ const isLoading = computed(() => loadingStore.isLoading(Loader.UserProfile));
     <v-alert
         v-if="userStore.userIsActive && showCheckEmailAlert"
         data-testid="verifyEmailTxt"
-        class="d-print-none mb-4"
+        class="d-print-none mb-4 bg-info-light"
         closable
         type="info"
         variant="outlined"
-        border
         title="Please check your email"
         text="Please check your email for an email verification link. If you
             didn't receive one, please check your junk mail."

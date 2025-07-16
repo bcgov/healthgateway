@@ -582,10 +582,9 @@ setPageFromDate(linearDate.value);
             v-if="labResultsAreQueued"
             type="info"
             data-testid="laboratory-orders-queued-alert-message"
-            class="d-print-none mb-4"
+            class="d-print-none mb-4 bg-info-light"
             closable
             variant="outlined"
-            border
         >
             We are getting your lab results. It may take up to 48 hours until
             you can see them.
@@ -639,10 +638,9 @@ setPageFromDate(linearDate.value);
                 v-if="isOnlyClinicalDocumentSelected"
                 type="info"
                 data-testid="timeline-clinical-document-alert"
-                class="d-print-none mb-4"
+                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
-                border
             >
                 Only documents shared by your provider at some sites are
                 available.
@@ -658,10 +656,9 @@ setPageFromDate(linearDate.value);
                 v-else-if="isOnlyImmunizationSelected"
                 type="info"
                 data-testid="timeline-immunization-alert"
-                class="d-print-none mb-4"
+                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
-                border
             >
                 If any of your immunizations are missing or incorrect,
                 <a
@@ -676,10 +673,9 @@ setPageFromDate(linearDate.value);
                 v-else-if="isOnlyDiagnosticImagingSelected"
                 type="info"
                 data-testid="timeline-diagnostic-imaging-alert"
-                class="d-print-none mb-4"
+                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
-                border
             >
                 Most reports are available 10-14 days after your procedure.
                 <a
@@ -694,10 +690,9 @@ setPageFromDate(linearDate.value);
                 v-else-if="isOnlyBcCancerScreeningSelected"
                 type="info"
                 data-testid="timeline-cancer-screening-alert"
-                class="d-print-none mb-4"
+                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
-                border
             >
                 BC Cancer screening letters for Breast, Colon, Lung, and Cervix
                 are available here. Your Health Gateway timeline may include
