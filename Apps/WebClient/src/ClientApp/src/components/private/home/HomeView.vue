@@ -633,8 +633,4 @@ watch(vaccineRecordState, () => {
         height: 2.1em;
     }
 }
-.bg-info-light {
-    background-color: #e5edf5 !important;
-    color: #1a2e49 !important;
-}
 </style>
