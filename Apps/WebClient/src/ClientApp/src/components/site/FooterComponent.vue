@@ -85,3 +85,9 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
         </v-row>
     </v-footer>
 </template>
+
+<style lang="scss" scoped>
+.v-footer {
+    border-top: 1px solid #dcdcdc; // Light grey line
+}
+</style>
