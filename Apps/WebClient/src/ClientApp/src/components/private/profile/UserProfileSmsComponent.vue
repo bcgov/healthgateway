@@ -261,7 +261,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
             v-if="!verified && rawStoreValue"
             data-testid="verifySMSBtn"
             class="mb-4"
-            variant="secondary"
+            variant="white"
             text="Verify"
             @click="verifySms"
         />
