@@ -114,6 +114,9 @@ const isProfileLinkAvailable = computed(
         isValidIdentityProvider.value &&
         !patientRetrievalFailed.value
 );
+const logoLinkDestination = computed(() =>
+    oidcIsAuthenticated.value ? "/home" : "/"
+);
 /* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 const newNotifications = computed(() => notificationStore.newNotifications); 
 */
@@ -228,7 +231,11 @@ nextTick(() => {
                 @click="toggleSidebar"
             />
         </template>
-        <router-link to="/" class="px-2" style="max-width: 240px; width: 100%">
+        <router-link
+            :to="logoLinkDestination"
+            class="px-2"
+            style="max-width: 240px; width: 100%"
+        >
             <v-img
                 alt="Go to Health Gateway home page"
                 src="@/assets/images/gov/hg-logo-rev.svg"
