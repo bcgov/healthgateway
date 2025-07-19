@@ -89,10 +89,3 @@ fetchCommunication(CommunicationType.InApp);
         </v-banner-text>
     </v-banner>
 </template>
-
-<style scoped lang="scss">
-.bg-info-light {
-    background-color: #e5edf5 !important;
-    color: #1a2e49 !important;
-}
-</style>
