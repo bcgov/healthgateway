@@ -115,7 +115,7 @@ const isProfileLinkAvailable = computed(
         !patientRetrievalFailed.value
 );
 const logoLinkDestination = computed(() =>
-    oidcIsAuthenticated.value ? "/home" : "/"
+    oidcIsAuthenticated.value && !patientRetrievalFailed.value ? "/home" : "/"
 );
 /* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 const newNotifications = computed(() => notificationStore.newNotifications); 
