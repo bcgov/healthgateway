@@ -19,7 +19,6 @@ const isFooterShown = computed(
             !userStore.isValidIdentityProvider ||
             userStore.userIsRegistered)
 );
-const isFooterFixed = computed(() => !layoutStore.isMobile);
 </script>
 
 <template>
@@ -27,7 +26,8 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
         v-if="isFooterShown"
         data-testid="footer"
         color="white"
-        :app="isFooterFixed"
+        app
+        :class="{ 'non-fixed-footer': layoutStore.isMobile }"
     >
         <v-row class="pa-2">
             <v-col class="flex-grow-0" cols="12" md="auto">
@@ -88,6 +88,22 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
 
 <style lang="scss" scoped>
 .v-footer {
-    border-top: 1px solid #dcdcdc; // Light grey line
+    // Light grey line
+    border-top: 1px solid #dcdcdc;
+
+    // Ensure the footer appears above overlapping components like drawers or content
+    z-index: 100;
+
+    // Prevent transparency issues — ensures consistent white background across viewports
+    background-color: white;
+
+    // Sticky positioning keeps the footer visible at the bottom when not using the Vuetify layout system
+    position: sticky;
+    bottom: 0;
+}
+
+// On mobile, let it flow with content
+.non-fixed-footer {
+    position: static !important;
 }
 </style>
