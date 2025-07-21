@@ -282,7 +282,7 @@ for (const [entryType] of reportComponentMap) {
             you can see them."
             variant="outlined"
         />
-        <v-sheet color="grey-lighten-4" class="pa-4 mb-4">
+        <v-sheet color="white" class="pa-4 mb-4">
             <v-row align="center">
                 <v-col cols="12" sm="auto" class="flex-grow-1">
                     <v-select
