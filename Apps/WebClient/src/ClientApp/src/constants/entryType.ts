@@ -40,7 +40,7 @@ entryTypeMap.set(EntryType.Immunization, {
     commentType: CommentEntryType.Immunization,
     name: "Immunizations",
     description:
-        "View immunizations you received from public health and community pharmacies and recommended vaccines.",
+        "View immunizations you received from community pharmacies or public health, including COVID-19, and vaccine recommendations.",
     icon: "syringe",
     component: "ImmunizationTimelineComponent",
     eventName: "immunizations",
@@ -167,8 +167,6 @@ entryTypeMap.set(EntryType.BcCancerScreening, {
     name: "BC Cancer Screening",
     description:
         "View and download your notices and results as soon as they are available.",
-    logoUri: new URL("@/assets/images/services/bc-cancer.png", import.meta.url)
-        .href,
     icon: "ribbon",
     component: "BcCancerScreeningTimelineComponent",
     eventName: "bc_cancer_screening",

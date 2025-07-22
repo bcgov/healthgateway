@@ -44,7 +44,8 @@ describe("Notification Centre", () => {
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
-    it("Dismiss individual notification", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Dismiss individual notification", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -81,7 +82,8 @@ describe("Notification Centre", () => {
         );
     });
 
-    it("Dismiss all notifications", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Dismiss all notifications", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -147,7 +149,8 @@ describe("Notification Badge", () => {
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
-    it("Verify notification badge", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Verify notification badge", () => {
         cy.get("[data-testid=notification-centre-button]")
             .get("span")
             .should("have.class", "v-badge__badge")
@@ -213,7 +216,8 @@ describe("Categorized web alerts", () => {
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
-    it("Web alert category to pre-filtered timeline", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Web alert category to pre-filtered timeline", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -226,7 +230,8 @@ describe("Categorized web alerts", () => {
         cy.contains("[data-testid=filter-label]", immunizationTitle);
     });
 
-    it("Web alert category to services", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Web alert category to services", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -240,7 +245,8 @@ describe("Categorized web alerts", () => {
         cy.location("pathname").should("eq", servicesPath);
     });
 
-    it("Web alert category to other internal link", () => {
+    // AB#16927 Disable notifications while aligning Classic with Salesforce version
+    it.skip("Web alert category to other internal link", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();

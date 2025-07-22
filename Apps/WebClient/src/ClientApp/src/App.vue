@@ -58,6 +58,6 @@ function currentPathMatches(...paths: string[]): boolean {
             </v-container>
         </v-main>
         <IdleComponent />
-        <FooterComponent v-if="isFooterVisible" :order="-1" />
+        <FooterComponent v-if="isFooterVisible" />
     </v-app>
 </template>
