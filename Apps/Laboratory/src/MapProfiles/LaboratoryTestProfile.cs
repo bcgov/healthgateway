@@ -26,28 +26,32 @@ namespace HealthGateway.Laboratory.MapProfiles
     public class LaboratoryTestProfile : Profile
     {
         /// <summary>
+        /// Indicates a laboratory test result that is within the expected reference range.
+        /// </summary>
+        public const string InRange = "-";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryTestProfile"/> class.
         /// </summary>
         [SuppressMessage("Minor Code Smell", "S3440:Variables should not be checked against the values they\'re about to be assigned", Justification = "Team decision")]
         public LaboratoryTestProfile()
         {
             this.CreateMap<PhsaLaboratoryTest, LaboratoryTest>()
-                .AfterMap(
-                    (src, dest) =>
+                .AfterMap((src, dest) =>
+                {
+                    dest.TestStatus = src.PlisTestStatus switch
                     {
-                        dest.TestStatus = src.PlisTestStatus switch
-                        {
-                            "Active" => "Pending",
-                            _ => src.PlisTestStatus,
-                        };
-                        dest.Result = src.PlisTestStatus switch
-                        {
-                            "Completed" or "Corrected" when src.OutOfRange => "Out of Range",
-                            "Completed" or "Corrected" when !src.OutOfRange => "In Range",
-                            "Cancelled" => "Cancelled",
-                            _ => "Pending",
-                        };
-                    });
+                        "Active" => "Pending",
+                        _ => src.PlisTestStatus,
+                    };
+                    dest.Result = src.PlisTestStatus switch
+                    {
+                        "Completed" or "Corrected" when src.OutOfRange => "Out of Range",
+                        "Completed" or "Corrected" when !src.OutOfRange => InRange,
+                        "Cancelled" => "Cancelled",
+                        _ => "Pending",
+                    };
+                });
         }
     }
 }

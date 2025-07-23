@@ -54,7 +54,7 @@
                         "outOfRange": false,
                         "loinc": "14749-6",
                         "testStatus": "Completed",
-                        "result": "In Range"
+                        "result": "-"
                     },
                     {
                         "batteryType": "Urea",
