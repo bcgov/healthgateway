@@ -92,6 +92,12 @@ function downloadFile(): void {
         :has-attachment="hasFile"
         @click-attachment-button="showConfirmationModal"
     >
+        <div class="pt-0">
+            <p class="text-body-1 font-italic mt-0 mb-4">
+                Imaging reports contain sensitive information. Consult your
+                provider if you are unsure about viewing.
+            </p>
+        </div>
         <v-row class="mb-3">
             <v-col :cols="cols">
                 <DisplayFieldComponent
