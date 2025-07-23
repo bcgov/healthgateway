@@ -20,6 +20,8 @@ describe("Laboratory Orders", () => {
     });
 
     it("Validate Card", () => {
+        const inRange = "-"; // For reference see HealthGateway.Laboratory.MapProfiles.LaboratoryTestProfile
+
         cy.log("Verifying card data");
         cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
             "not.exist"
@@ -55,7 +57,7 @@ describe("Laboratory Orders", () => {
                                 if (status === "Completed") {
                                     expect([
                                         "Out of Range",
-                                        "In Range",
+                                        inRange,
                                     ]).to.include(result);
                                 }
 

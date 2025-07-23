@@ -77,6 +77,8 @@ describe("Laboratory Orders", () => {
     });
 
     it("Should have a valid result table", () => {
+        const inRange = "-"; // For reference see HealthGateway.Laboratory.MapProfiles.LaboratoryTestProfile
+
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
         cy.get("[data-testid=laboratoryResultTable]").within(() => {
             cy.contains("td", "Alanine Aminotransferase Test")
@@ -147,7 +149,7 @@ describe("Laboratory Orders", () => {
                     cy.get("td:nth-child(2)").then(($result) => {
                         const result = $result.text().trim();
                         cy.log(result);
-                        expect(result).equal("In Range");
+                        expect(result).equal(inRange);
                     });
                     // Check the Status Column
                     cy.get("td:nth-child(3)").then(($status) => {
