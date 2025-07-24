@@ -19,22 +19,22 @@ const isFooterShown = computed(
             !userStore.isValidIdentityProvider ||
             userStore.userIsRegistered)
 );
-const isFooterFixed = computed(() => !layoutStore.isMobile);
 </script>
 
 <template>
     <v-footer
         v-if="isFooterShown"
         data-testid="footer"
-        color="primary"
-        :app="isFooterFixed"
+        color="white"
+        app
+        :class="{ 'non-fixed-footer': layoutStore.isMobile }"
     >
         <v-row class="pa-2">
             <v-col class="flex-grow-0" cols="12" md="auto">
                 <router-link
                     :to="Path.TermsOfService"
                     data-testid="footer-terms-of-service-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     Terms of Service
                 </router-link>
@@ -45,7 +45,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-release-notes-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     Release Notes
                 </a>
@@ -56,7 +56,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     About Us
                 </a>
@@ -67,7 +67,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     FAQ
                 </a>
@@ -77,7 +77,7 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
                 <a
                     href="mailto:healthgateway@gov.bc.ca"
                     data-testid="footer-email-link"
-                    class="text-white"
+                    class="text-primary"
                 >
                     Email: HealthGateway@gov.bc.ca
                 </a>
@@ -85,3 +85,25 @@ const isFooterFixed = computed(() => !layoutStore.isMobile);
         </v-row>
     </v-footer>
 </template>
+
+<style lang="scss" scoped>
+.v-footer {
+    // Light grey line
+    border-top: 1px solid #dcdcdc;
+
+    // Ensure the footer appears above overlapping components like drawers or content
+    z-index: 100;
+
+    // Prevent transparency issues — ensures consistent white background across viewports
+    background-color: white;
+
+    // Sticky positioning keeps the footer visible at the bottom when not using the Vuetify layout system
+    position: sticky;
+    bottom: 0;
+}
+
+// On mobile, let it flow with content
+.non-fixed-footer {
+    position: static !important;
+}
+</style>

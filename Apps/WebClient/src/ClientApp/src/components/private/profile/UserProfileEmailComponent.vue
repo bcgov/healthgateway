@@ -154,7 +154,7 @@ watch(email, (value) => (inputValue.value = value));
         <v-alert
             v-if="!inputValue && email"
             data-testid="emailOptOutMessage"
-            class="text-center pt-0"
+            class="pt-0"
             type="error"
             variant="text"
             icon="exclamation-triangle"

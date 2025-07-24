@@ -178,6 +178,8 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           PHONENUMBER: $(phoneNumber)
+          KEYCLOAK_EREBUS_CLIENT: $(keycloak.erebus.client)
+          KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
 
@@ -206,5 +208,7 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           PHONENUMBER: $(phoneNumber)
+          KEYCLOAK_EREBUS_CLIENT: $(keycloak.erebus.client)
+          KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)

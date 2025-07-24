@@ -129,7 +129,10 @@ if (!showOrganDonorRegistration.value) {
             <div>
                 <span class="text-medium-emphasis">Decision: </span>
                 <HgButtonComponent
-                    v-if="registrationData?.registrationFileId"
+                    v-if="
+                        registrationData?.status === 'Registered' &&
+                        registrationData?.registrationFileId
+                    "
                     data-testid="organ-donor-registration-download-button"
                     variant="secondary"
                     prepend-icon="download"
@@ -138,10 +141,17 @@ if (!showOrganDonorRegistration.value) {
                     @click="showConfirmationModal"
                 />
                 <strong
+                    v-else-if="registrationData?.status === 'Registered'"
+                    data-testid="organ-donor-registration-decision-registered-no-file"
+                >
+                    Download only available to registrants after November 2022
+                </strong>
+                <strong
                     v-else
                     data-testid="organ-donor-registration-decision-no-file"
-                    >Not Available</strong
                 >
+                    Not Available
+                </strong>
             </div>
             <div class="text-body-1">
                 <p>

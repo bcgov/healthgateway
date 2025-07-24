@@ -16,6 +16,7 @@
 namespace HealthGateway.LaboratoryTests.MapProfiles
 {
     using AutoMapper;
+    using HealthGateway.Laboratory.MapProfiles;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.LaboratoryTests.Utils;
@@ -36,9 +37,9 @@ namespace HealthGateway.LaboratoryTests.MapProfiles
         /// <param name="expectedResult">The expected result based on plsTestStatus and outOfRange.</param>
         [Theory]
         [InlineData("Completed", true, "Out of Range")]
-        [InlineData("Completed", false, "In Range")]
+        [InlineData("Completed", false, LaboratoryTestProfile.InRange)]
         [InlineData("Corrected", true, "Out of Range")]
-        [InlineData("Corrected", false, "In Range")]
+        [InlineData("Corrected", false, LaboratoryTestProfile.InRange)]
         [InlineData("Cancelled", true, "Cancelled")]
         [InlineData("Cancelled", false, "Cancelled")]
         [InlineData("Active", true, "Pending")]

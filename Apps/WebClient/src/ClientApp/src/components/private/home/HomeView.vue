@@ -9,7 +9,6 @@ import MessageModalComponent from "@/components/common/MessageModalComponent.vue
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddQuickLinkComponent from "@/components/private/home/AddQuickLinkComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
-import { BetaFeature } from "@/constants/betaFeature";
 import {
     EntryType,
     EntryTypeDetails,
@@ -144,12 +143,6 @@ const showHealthConnectButton = computed(
         ConfigUtil.isServiceEnabled(ServiceName.HealthConnectRegistry) &&
         !preferenceHealthConnectHidden.value
 );
-const betaUrl = computed(() => configStore.webConfig.betaUrl);
-const showBetaAlert = computed(
-    () =>
-        betaUrl.value &&
-        user.value.betaFeatures.includes(BetaFeature.Salesforce)
-);
 const enabledQuickLinks = computed(
     () =>
         quickLinks.value?.filter((quickLink) =>
@@ -234,16 +227,6 @@ function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
                 );
             }
         });
-}
-
-function handleClickBetaLink(): void {
-    trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.ExternalLink,
-        destination: Destination.HealthGatewayBeta,
-        origin: Origin.Home,
-    });
-    window.open(betaUrl.value, "_self");
 }
 
 function handleClickHealthRecords(): void {
@@ -411,36 +394,13 @@ watch(vaccineRecordState, () => {
         :text="vaccineRecordStatusMessage"
     />
     <v-alert
-        v-if="showBetaAlert"
-        data-testid="beta-alert"
-        closable
-        type="info"
-        class="d-print-none mb-4"
-        title="Health Gateway Classic Version"
-        variant="outlined"
-        border
-    >
-        <span class="text-body-1">
-            Return to
-            <a
-                :href="betaUrl"
-                target="_self"
-                class="text-link"
-                @click.prevent="handleClickBetaLink()"
-                >Health Gateway's New Look</a
-            >
-            version.
-        </span>
-    </v-alert>
-    <v-alert
         v-if="unverifiedEmail || unverifiedSms"
         data-testid="incomplete-profile-banner"
         closable
         type="info"
-        class="d-print-none mb-4"
+        class="d-print-none mb-4 bg-info-light"
         title="Verify Contact Information"
         variant="outlined"
-        border
     >
         <span class="text-body-1">
             Your email or cell phone number has not been verified. You can use
@@ -472,7 +432,7 @@ watch(vaccineRecordState, () => {
                 <template #icon>
                     <img
                         class="quick-link-icon"
-                        src="@/assets/images/gov/health-gateway-logo.svg"
+                        src="@/assets/images/home/health-records-icon.svg"
                         alt="Health Gateway Logo"
                     />
                 </template>

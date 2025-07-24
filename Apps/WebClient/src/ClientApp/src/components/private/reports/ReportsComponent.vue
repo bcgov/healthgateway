@@ -276,14 +276,13 @@ for (const [entryType] of reportComponentMap) {
             v-show="showLabResultsQueuedMessage"
             closable
             type="info"
-            class="d-print-none mb-4"
+            class="d-print-none mb-4 bg-info-light"
             data-testid="laboratory-orders-queued-alert-message"
             text="We are getting your lab results. It may take up to 48 hours until
             you can see them."
             variant="outlined"
-            border
         />
-        <v-sheet color="grey-lighten-4" class="pa-4 mb-4">
+        <v-sheet color="white" class="pa-4 mb-4">
             <v-row align="center">
                 <v-col cols="12" sm="auto" class="flex-grow-1">
                     <v-select

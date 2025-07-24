@@ -43,6 +43,8 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 Dependents = action.Data.Dependents?.ToImmutableList(),
                 VaccineDetails = action.Data.VaccineDetails,
                 IsAccountRegistered = action.Data.IsAccountRegistered,
+                LastImagingRefreshDate = action.Data.LastImagingRefreshDate,
+                LastLabsRefreshDate = action.Data.LastLabsRefreshDate,
             };
         }
 
@@ -70,6 +72,8 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 Dependents = null,
                 VaccineDetails = null,
                 IsAccountRegistered = null,
+                LastImagingRefreshDate = null,
+                LastLabsRefreshDate = null,
             };
         }
 

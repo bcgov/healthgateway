@@ -744,7 +744,7 @@ watch(vaccineRecordState, () => {
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
                                     <HgButtonComponent
-                                        variant="secondary"
+                                        variant="white"
                                         text="Remove Dependent"
                                         @click="deleteDependent()"
                                     />
@@ -981,10 +981,9 @@ watch(vaccineRecordState, () => {
                     >
                         <v-alert
                             v-if="immunizationItems.length != 0"
-                            class="mb-4"
+                            class="mb-4 bg-info-light"
                             type="info"
                             variant="outlined"
-                            border
                             data-testid="dependent-immunization-disclaimer-alert"
                         >
                             <template #text>

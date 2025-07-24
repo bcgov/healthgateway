@@ -71,25 +71,14 @@ describe("Laboratory Orders", () => {
                 cy.get("[data-testid=reporting-lab-information-text]").should(
                     "be.visible"
                 );
-                cy.get("[data-testid=other-resources-info-button]")
-                    .should("be.visible")
-                    .click();
-                cy.get("[data-testid=other-resources-info-popover]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=result-info-button]")
-                    .should("be.visible")
-                    .click();
-
-                cy.document()
-                    .find("[data-testid=result-info-popover]")
-                    .should("exist");
             });
 
         cy.get("[data-testid=backBtn]").click({ force: true });
     });
 
     it("Should have a valid result table", () => {
+        const inRange = "-"; // For reference see HealthGateway.Laboratory.MapProfiles.LaboratoryTestProfile
+
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
         cy.get("[data-testid=laboratoryResultTable]").within(() => {
             cy.contains("td", "Alanine Aminotransferase Test")
@@ -160,7 +149,7 @@ describe("Laboratory Orders", () => {
                     cy.get("td:nth-child(2)").then(($result) => {
                         const result = $result.text().trim();
                         cy.log(result);
-                        expect(result).equal("In Range");
+                        expect(result).equal(inRange);
                     });
                     // Check the Status Column
                     cy.get("td:nth-child(3)").then(($status) => {

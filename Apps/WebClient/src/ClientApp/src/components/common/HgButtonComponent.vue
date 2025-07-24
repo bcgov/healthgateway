@@ -12,11 +12,22 @@ const props = withDefaults(defineProps<Props>(), {
     disabled: undefined,
 });
 
-export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
+export type HgButtonVariant =
+    | "primary"
+    | "secondary"
+    | "link"
+    | "transparent"
+    | "white";
 
 interface HgButtonVariantDetails {
     inverseVariant: HgButtonVariant;
-    vuetifyVariant: "elevated" | "flat" | "text";
+    vuetifyVariant:
+        | "elevated"
+        | "flat"
+        | "text"
+        | "outlined"
+        | "tonal"
+        | "plain";
     color: string;
     disabledColor?: string;
 }
@@ -42,6 +53,13 @@ variants.set("transparent", {
     inverseVariant: "transparent",
     vuetifyVariant: "flat",
     color: "transparent",
+});
+
+variants.set("white", {
+    inverseVariant: "white",
+    vuetifyVariant: "elevated",
+    color: "white",
+    disabledColor: "indigo-darken-3",
 });
 
 const slots = useSlots();

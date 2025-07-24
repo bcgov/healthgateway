@@ -132,7 +132,7 @@ function removeDependent(): void {
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
                                     <HgButtonComponent
-                                        variant="secondary"
+                                        variant="white"
                                         text="Remove Dependent"
                                         :data-testid="`remove-dependent-btn-${dependent.ownerId}`"
                                         @click="removeDependent"

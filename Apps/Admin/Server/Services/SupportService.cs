@@ -97,12 +97,25 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<PatientSupportDependentInfo>? dependents =
                 query.IncludeDependents ? await this.GetAllDependentInfoAsync(patient.Hdid, ct) : null;
 
-            PersonalAccountsResponse? response = null;
-
+            PersonalAccountsResponse? personalAccountsResponse = null;
             if (query.IncludeApiRegistration)
             {
-                PersonalAccountStatusRequest request = new() { Phn = patient.Phn };
-                response = await hgAdminApi.PersonalAccountsStatusAsync(request, ct);
+                PersonalAccountStatusRequest personalAccountRequest = new() { Phn = patient.Phn };
+                personalAccountsResponse = await hgAdminApi.PersonalAccountsStatusAsync(personalAccountRequest, ct);
+            }
+
+            HealthDataResponse? imagingResponse = null;
+            if (query.IncludeImagingRefresh)
+            {
+                HealthDataStatusRequest imagingStatusRequest = new() { Phn = patient.Phn, System = SystemSource.DiagnosticImaging };
+                imagingResponse = await hgAdminApi.HealthDataStatusAsync(imagingStatusRequest, ct);
+            }
+
+            HealthDataResponse? laboratoryResponse = null;
+            if (query.IncludeLabsRefresh)
+            {
+                HealthDataStatusRequest laboratoryStatusRequest = new() { Phn = patient.Phn, System = SystemSource.Laboratory };
+                laboratoryResponse = await hgAdminApi.HealthDataStatusAsync(laboratoryStatusRequest, ct);
             }
 
             return new()
@@ -112,7 +125,9 @@ namespace HealthGateway.Admin.Server.Services
                 AgentActions = agentActions,
                 Dependents = dependents,
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
-                IsAccountRegistered = response?.Registered,
+                IsAccountRegistered = personalAccountsResponse?.Registered,
+                LastImagingRefreshDate = imagingResponse?.LastRefreshDate,
+                LastLabsRefreshDate = laboratoryResponse?.LastRefreshDate,
             };
         }
 
@@ -148,6 +163,12 @@ namespace HealthGateway.Admin.Server.Services
         {
             BlockAccessCommand blockAccessCommand = new(hdid, dataSources, reason);
             await patientRepository.BlockAccessAsync(blockAccessCommand, ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task RequestHealthDataRefreshAsync(HealthDataStatusRequest request, CancellationToken ct = default)
+        {
+            await hgAdminApi.HealthDataQueueRefreshAsync(request, ct);
         }
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)

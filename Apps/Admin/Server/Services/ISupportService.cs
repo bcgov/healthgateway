@@ -54,5 +54,15 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default);
+
+        /// <summary>
+        /// Queues a request to refresh cached health data for a specified personal health number (PHN) and system source.
+        /// </summary>
+        /// <param name="request">
+        /// The request containing the personal health number (PHN) and the source system identifier to refresh data from.
+        /// </param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task RequestHealthDataRefreshAsync(HealthDataStatusRequest request, CancellationToken ct = default);
     }
 }

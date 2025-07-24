@@ -14,18 +14,19 @@ const isTooManyRequests = computed(
 <template>
     <v-app>
         <v-app-bar
-            class="border-b-md border-accent border-opacity-100"
-            color="primary"
+            class="d-flex align-center border-b-md border-accent border-opacity-100 d-print-none"
+            color="background"
         >
-            <a href="/">
-                <v-img
-                    alt="Go to Health Gateway home page"
+            <a href="/" style="display: inline-block">
+                <img
                     src="@/assets/images/gov/hg-logo-rev.svg"
-                    max-width="143px"
-                    class="pa-1"
+                    alt="Go to Health Gateway home page"
+                    style="height: 48px; width: auto; padding-right: 16px"
                 />
             </a>
-            <v-toolbar-title>Application Error!</v-toolbar-title>
+            <v-toolbar-title style="font-size: 1.5rem">
+                Application Error!
+            </v-toolbar-title>
         </v-app-bar>
         <v-main>
             <v-container class="fill-height">

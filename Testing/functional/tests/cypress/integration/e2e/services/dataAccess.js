@@ -6,10 +6,7 @@ describe("Gateway Api Data Access Service", () => {
 
     beforeEach(() => {
         cy.readConfig().as("config");
-        cy.getTokens(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password")
-        ).as("tokens");
+        cy.getTokens().as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -23,8 +20,7 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Blocked Datasets Unauthorized", () => {
+    it("Verify Data Access Blocked Datasets Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets`
@@ -39,34 +35,7 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Blocked Datasets Forbidden", () => {
-        const BOGUSHDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
-            cy.get("@config").then((config) => {
-                cy.log(
-                    `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApit}DataAccess/BlockedDatasets`
-                );
-                cy.request({
-                    url: `${config.serviceEndpoints.GatewayApit}DataAccess/BlockedDatasets/${BOGUSHDID}`,
-                    followRedirect: false,
-                    failOnStatusCode: false,
-                    auth: {
-                        bearer: tokens.access_token,
-                    },
-                    headers: {
-                        accept: "application/json",
-                    },
-                }).should((response) => {
-                    expect(response.status).to.eq(403);
-                });
-            });
-        });
-    });
-
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Blocked Datasets Authorized", () => {
+    it("Verify Data Access Blocked Datasets Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -90,8 +59,7 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Contact Info Unauthorized", () => {
+    it("Verify Data Access Contact Info Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo`
@@ -106,34 +74,7 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Contact Info Forbidden", () => {
-        const BOGUSHDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
-            cy.get("@config").then((config) => {
-                cy.log(
-                    `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApit}DataAccess/ContactInfo`
-                );
-                cy.request({
-                    url: `${config.serviceEndpoints.GatewayApit}DataAccess/ContactInfo/${BOGUSHDID}`,
-                    followRedirect: false,
-                    failOnStatusCode: false,
-                    auth: {
-                        bearer: tokens.access_token,
-                    },
-                    headers: {
-                        accept: "application/json",
-                    },
-                }).should((response) => {
-                    expect(response.status).to.eq(403);
-                });
-            });
-        });
-    });
-
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Contact Info Authorized", () => {
+    it("Verify Data Access Contact Info Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -157,8 +98,7 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Protected Unauthorized", () => {
+    it("Verify Data Access Protected Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/Protected`
@@ -173,34 +113,7 @@ describe("Gateway Api Data Access Service", () => {
         });
     });
 
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Protected Forbidden", () => {
-        const BOGUSHDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
-            cy.get("@config").then((config) => {
-                cy.log(
-                    `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApit}DataAccess/Protected`
-                );
-                cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}DataAccess/Protected/${BOGUSHDID}/${DELEGATE_HDID}`,
-                    followRedirect: false,
-                    failOnStatusCode: false,
-                    auth: {
-                        bearer: tokens.access_token,
-                    },
-                    headers: {
-                        accept: "application/json",
-                    },
-                }).should((response) => {
-                    expect(response.status).to.eq(403);
-                });
-            });
-        });
-    });
-
-    // Skip test until automated keycloak user is created with correct access
-    it.skip("Verify Data Access Protected Authorized", () => {
+    it("Verify Data Access Protected Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {

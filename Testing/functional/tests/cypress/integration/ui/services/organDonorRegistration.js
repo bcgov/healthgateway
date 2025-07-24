@@ -94,6 +94,36 @@ describe("Services - Organ Donor Registration Card", () => {
             interval: 5000,
         });
     });
+
+    it("Verify registered patient and no download", () => {
+        cy.intercept(
+            "GET",
+            `**/PatientData/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*OrganDonorRegistrationStatus*`,
+            {
+                fixture:
+                    "PatientData/donorRegistrationRegisteredNoDownload.json",
+            }
+        );
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/services"
+        );
+
+        cy.get("[data-testid=organ-donor-registration-status]")
+            .should("be.visible")
+            .contains("Registered");
+
+        cy.get(
+            "[data-testid=organ-donor-registration-decision-registered-no-file]"
+        )
+            .should("be.visible")
+            .contains(
+                "Download only available to registrants after November 2022"
+            );
+    });
 });
 
 describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () => {

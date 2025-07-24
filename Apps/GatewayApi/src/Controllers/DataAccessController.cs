@@ -45,7 +45,6 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">Successfully retrieved the list of blocked datasets.</response>
         /// <response code="400">The request is malformed or missing required information (e.g., HDID).</response>
         /// <response code="401">Authentication is required and was not provided or is invalid.</response>
-        /// <response code="403">The client is authenticated but does not have permission to access the resource.</response>
         [HttpGet]
         [Authorize(Policy = SystemDelegatedLraDataAccessPolicy.Read)]
         [Route("BlockedDatasets/{hdid}")]
@@ -71,7 +70,6 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">Successfully retrieved the contact information.</response>
         /// <response code="400">The request is malformed or missing required information (e.g., HDID).</response>
         /// <response code="401">Authentication is required and was not provided or is invalid.</response>
-        /// <response code="403">The client is authenticated but does not have permission to access the resource.</response>
         /// <response code="404">No contact information was found for the specified user.</response>
         [HttpGet]
         [Authorize(Policy = SystemDelegatedLraDataAccessPolicy.Read)]
@@ -104,7 +102,6 @@ namespace HealthGateway.GatewayApi.Controllers
         /// The request was successful. The response contains a <see cref="UserProtection"/> object with the protection status.
         /// </response>
         /// <response code="401">Authentication is required and was not provided or is invalid.</response>
-        /// <response code="403">The client is authenticated but does not have permission to access this resource.</response>
         [HttpGet]
         [Authorize(Policy = SystemDelegatedLraDataAccessPolicy.Read)]
         [Route("Protected/{hdid}/{delegateHdid}")]

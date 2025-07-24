@@ -5,7 +5,7 @@ import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 const resultOutOfRange = "Out of Range";
-const resultInRange = "In Range";
+const resultInRange = "-"; // For reference see HealthGateway.Laboratory.MapProfiles.LaboratoryTestProfile
 
 // The lab result timeline entry model
 export default class LabResultTimelineEntry extends TimelineEntry {
