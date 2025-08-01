@@ -215,7 +215,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
             <HgButtonComponent
                 id="add-dependent-button"
                 data-testid="add-dependent-button"
-                variant="white"
+                variant="secondary"
                 v-bind="slotProps.props"
                 :disabled="disabled"
                 prepend-icon="user-plus"

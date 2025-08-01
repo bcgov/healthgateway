@@ -49,7 +49,7 @@ function closeAccount(): void {
         v-if="!showCloseWarning"
         id="recoverAccountShowCloseWarningBtn"
         data-testid="recoverAccountShowCloseWarningBtn"
-        variant="white"
+        variant="secondary"
         text="Delete My Account"
         @click="showCloseWarning = true"
     />

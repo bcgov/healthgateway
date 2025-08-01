@@ -744,7 +744,7 @@ watch(vaccineRecordState, () => {
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
                                     <HgButtonComponent
-                                        variant="white"
+                                        variant="secondary"
                                         text="Remove Dependent"
                                         @click="deleteDependent()"
                                     />

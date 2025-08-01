@@ -47,6 +47,7 @@ export default createVuetify({
                     surface: "#ffffff",
                     primary: "#003366",
                     secondary: "#38598a",
+                    secondaryButtonHover: "#f3f4f6",
                     success: "#2e8540",
                     // warning: "",
                     error: "#d8292f",
