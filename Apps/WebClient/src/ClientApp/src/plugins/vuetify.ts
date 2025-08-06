@@ -68,6 +68,7 @@ export default createVuetify({
                     infoBackground: "#e5edf5",
                     infoText: "#1a2e49",
                     borderLight: "#e0e0e0",
+                    navHighlight: "#e0e0e0",
                 },
             },
         },
