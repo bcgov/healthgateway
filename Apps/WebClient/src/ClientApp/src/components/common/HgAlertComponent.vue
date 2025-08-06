@@ -26,11 +26,11 @@ const backgroundClass = computed(() => {
         case "info":
             return "hg-alert-info";
         case "success":
-            return "hg-alert-success";
+            return "";
         case "warning":
-            return "hg-alert-warning";
+            return "";
         case "error":
-            return "hg-alert-error";
+            return "";
         default:
             return "";
     }
@@ -61,20 +61,5 @@ const backgroundClass = computed(() => {
 .hg-alert-info {
     background-color: rgb(var(--v-theme-infoBackground)) !important;
     color: rgb(var(--v-theme-infoText)) !important;
-}
-
-.hg-alert-success {
-    background-color: #e6f4ea !important; // placeholder color
-    color: #1b4332 !important; // placeholder text color
-}
-
-.hg-alert-warning {
-    background-color: #e6f4ea !important; // placeholder color
-    color: #1b4332 !important; // placeholder text color
-}
-
-.hg-alert-error {
-    background-color: #fdecea !important; // placeholder color
-    color: #611a15 !important; // placeholder text color
 }
 </style>

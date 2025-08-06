@@ -4,7 +4,6 @@ import { helpers, not, sameAs } from "@vuelidate/validators";
 import { computed, ref, watch } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
-import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
@@ -152,12 +151,13 @@ watch(email, (value) => (inputValue.value = value));
         />
     </v-sheet>
     <div v-if="isEmailEditable" class="mb-4">
-        <HgAlertComponent
+        <v-alert
             v-if="!inputValue && email"
             data-testid="emailOptOutMessage"
             class="pt-0"
             type="error"
             variant="text"
+            icon="exclamation-triangle"
             text="Removing your email address will disable future email
                 communications from the Health Gateway."
         />
