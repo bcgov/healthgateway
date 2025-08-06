@@ -21,8 +21,3 @@
     hyphens: none;
     -webkit-hyphens: none;
 }
-
-// Override the yellow system-bar accent color
-.v-app-bar.border-accent {
-    border-color: #e0e0e0 !important; // Light gray tone
-}

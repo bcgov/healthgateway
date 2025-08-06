@@ -219,7 +219,7 @@ nextTick(() => {
     <v-app-bar
         v-model="isHeaderVisible"
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
-        class="border-b-md border-accent border-opacity-100 d-print-none"
+        class="border-b-md border-borderLight border-opacity-100 d-print-none"
         color="background"
         :scroll-threshold="headerScrollThreshold"
         flat
