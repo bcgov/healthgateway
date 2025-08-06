@@ -93,8 +93,8 @@ function downloadFile(): void {
         @click-attachment-button="showConfirmationModal"
     >
         <p class="text-body-1 font-italic mb-4">
-            Imaging reports contain sensitive information. Consult your provider
-            if you are unsure about viewing.
+            Imaging reports may contain sensitive information. Consult your
+            provider if you are unsure about viewing.
         </p>
         <v-row class="mb-3">
             <v-col :cols="cols">
