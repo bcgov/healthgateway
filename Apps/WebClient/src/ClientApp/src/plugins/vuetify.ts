@@ -8,6 +8,15 @@ import { aliases, fa } from "vuetify/iconsets/fa-svg";
 
 library.add(far, fas);
 
+// Override the default Vuetify icon aliases
+const customAliases = {
+    ...aliases,
+    error: "fas fa-circle-xmark", // Override default error icon replaces 'fa-triangle-exclamation'
+    warning: "fas fa-triangle-exclamation", // Re-assert warning icon - 'fa-triangle-exclamation'
+    success: "fas fa-check-circle", // Re-assert success icon - 'fa-check-circle'
+    info: "fas fa-circle-info", // Re-assert info icon - 'fa-circle-info'
+};
+
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
     defaults: {
@@ -34,7 +43,7 @@ export default createVuetify({
     },
     icons: {
         defaultSet: "fa",
-        aliases,
+        aliases: customAliases,
         sets: {
             fa,
         },
@@ -56,6 +65,8 @@ export default createVuetify({
                     accent: "#fcba19",
                     link: "#1a5a96",
                     focus: "#3b99fc",
+                    infoBackground: "#e5edf5",
+                    infoText: "#1a2e49",
                 },
             },
         },

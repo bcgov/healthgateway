@@ -8,6 +8,7 @@ import {
     watch,
 } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import FilterComponent from "@/components/private/timeline/FilterComponent.vue";
 import FullscreenTimelineEntryComponent from "@/components/private/timeline/FullscreenTimelineEntryComponent.vue";
@@ -578,17 +579,16 @@ setPageFromDate(linearDate.value);
 
 <template>
     <div>
-        <v-alert
+        <HgAlertComponent
             v-if="labResultsAreQueued"
             type="info"
             data-testid="laboratory-orders-queued-alert-message"
-            class="d-print-none mb-4 bg-info-light"
             closable
             variant="outlined"
         >
             We are getting your lab results. It may take up to 48 hours until
             you can see them.
-        </v-alert>
+        </HgAlertComponent>
         <template v-if="unfilteredTimelineEntries.length > 0">
             <v-banner
                 class="timeline-filter-banner d-print-none px-4 py-2 mt-n2 mb-2 mx-n4 overflow-visible"
@@ -634,11 +634,10 @@ setPageFromDate(linearDate.value);
             >
                 {{ recordCountMessage }}
             </p>
-            <v-alert
+            <HgAlertComponent
                 v-if="isOnlyClinicalDocumentSelected"
                 type="info"
                 data-testid="timeline-clinical-document-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -651,12 +650,11 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
-            </v-alert>
-            <v-alert
+            </HgAlertComponent>
+            <HgAlertComponent
                 v-else-if="isOnlyImmunizationSelected"
                 type="info"
                 data-testid="timeline-immunization-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -668,12 +666,11 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >fill in this online form</a
                 >.
-            </v-alert>
-            <v-alert
+            </HgAlertComponent>
+            <HgAlertComponent
                 v-else-if="isOnlyDiagnosticImagingSelected"
                 type="info"
                 data-testid="timeline-diagnostic-imaging-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -685,12 +682,11 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
-            </v-alert>
-            <v-alert
+            </HgAlertComponent>
+            <HgAlertComponent
                 v-else-if="isOnlyBcCancerScreeningSelected"
                 type="info"
                 data-testid="timeline-cancer-screening-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -705,7 +701,7 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
-            </v-alert>
+            </HgAlertComponent>
             <div v-if="visibleTimelineEntries.length > 0" class="mb-4">
                 <template v-for="dateGroup in dateGroups" :key="dateGroup.key">
                     <component

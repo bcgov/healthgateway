@@ -2,6 +2,7 @@
 import { saveAs } from "file-saver";
 import { computed, ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -272,11 +273,10 @@ for (const [entryType] of reportComponentMap) {
 
 <template>
     <div>
-        <v-alert
+        <HgAlertComponent
             v-show="showLabResultsQueuedMessage"
             closable
             type="info"
-            class="d-print-none mb-4 bg-info-light"
             data-testid="laboratory-orders-queued-alert-message"
             text="We are getting your lab results. It may take up to 48 hours until
             you can see them."
