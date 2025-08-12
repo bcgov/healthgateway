@@ -99,10 +99,7 @@ describe("Report Filtering", () => {
         verifyDate(startDateId, "2021-FEB-03");
         verifyDate(endDateId, "2021-FEB-05");
 
-        // Click on canel button to close date range filter
-        cy.get("[data-testid=clear-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
+        // After clicking on Apply, advanced filter should not be visible
         verifyAdvancedFiltersVisible(false);
 
         // Click on advnaced button to open date range filter

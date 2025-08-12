@@ -178,6 +178,7 @@ function cancelFilterChanges(): void {
 
 function applyFilterChanges(): void {
     updateFilter();
+    isAdvancedOpen.value = false;
 }
 
 function updateFilter(): void {
