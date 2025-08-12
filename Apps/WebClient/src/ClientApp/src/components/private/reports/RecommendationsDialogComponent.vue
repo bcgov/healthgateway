@@ -192,19 +192,18 @@ function showDialog() {
                                 <p>
                                     Vaccine recommendations are based on the
                                     <a
-                                        href="https://immunizebc.ca/tools-resources/immunization-schedules"
+                                        href="https://www.healthlinkbc.ca/health-library/immunizations/schedules"
                                         target="_blank"
                                         rel="noopener"
                                         class="text-link"
-                                        >BC Immunization Schedule</a
-                                    >. For information on booking COVID or Flu
-                                    vaccinations, please visit the
+                                        >BC Vaccine Schedule</a
+                                    >. For more information, please visit
                                     <a
-                                        href="https://www2.gov.bc.ca/gov/content/covid-19/info/response"
+                                        href="https://www.healthlinkbc.ca/health-library/immunizations"
                                         target="_blank"
                                         rel="noopener"
                                         class="text-link"
-                                        >BC respiratory illness page</a
+                                        >Immunizations | HealthLink BC</a
                                     >.
                                 </p>
                                 <HgButtonComponent
