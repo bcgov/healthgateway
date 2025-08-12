@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import ActiveUserProfileComponent from "@/components/private/profile/ActiveUserProfileComponent.vue";
@@ -31,10 +32,9 @@ const isLoading = computed(() => loadingStore.isLoading(Loader.UserProfile));
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
     <LoadingComponent :is-loading="isLoading" />
-    <v-alert
+    <HgAlertComponent
         v-if="userStore.userIsActive && showCheckEmailAlert"
         data-testid="verifyEmailTxt"
-        class="d-print-none mb-4 bg-info-light"
         closable
         type="info"
         variant="outlined"

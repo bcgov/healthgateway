@@ -2,6 +2,7 @@
 import { saveAs } from "file-saver";
 import { computed, ref, watch } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -744,7 +745,7 @@ watch(vaccineRecordState, () => {
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
                                     <HgButtonComponent
-                                        variant="white"
+                                        variant="secondary"
                                         text="Remove Dependent"
                                         @click="deleteDependent()"
                                     />
@@ -979,9 +980,9 @@ watch(vaccineRecordState, () => {
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
                         class="pa-1"
                     >
-                        <v-alert
+                        <HgAlertComponent
                             v-if="immunizationItems.length != 0"
-                            class="mb-4 bg-info-light"
+                            class="mb-4"
                             type="info"
                             variant="outlined"
                             data-testid="dependent-immunization-disclaimer-alert"
@@ -999,7 +1000,7 @@ watch(vaccineRecordState, () => {
                                     >.
                                 </span>
                             </template>
-                        </v-alert>
+                        </HgAlertComponent>
 
                         <div
                             :data-testid="`immunization-tab-div-${dependent.ownerId}`"

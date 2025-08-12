@@ -3,6 +3,7 @@ import { saveAs } from "file-saver";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
@@ -393,29 +394,30 @@ watch(vaccineRecordState, () => {
         :is-loading="isVaccineRecordDownloading"
         :text="vaccineRecordStatusMessage"
     />
-    <v-alert
+    <HgAlertComponent
         v-if="unverifiedEmail || unverifiedSms"
         data-testid="incomplete-profile-banner"
         closable
         type="info"
-        class="d-print-none mb-4 bg-info-light"
         title="Verify Contact Information"
         variant="outlined"
     >
-        <span class="text-body-1">
-            Your email or cell phone number has not been verified. You can use
-            the Health Gateway without verified contact information, however,
-            you will not receive notifications. Visit the
-            <router-link
-                id="profilePageLink"
-                data-testid="profile-page-link"
-                class="text-link"
-                to="/profile"
-                >Profile Page</router-link
-            >
-            to complete your verification.
-        </span>
-    </v-alert>
+        <template #default>
+            <span class="text-body-1">
+                Your email or cell phone number has not been verified. You can
+                use the Health Gateway without verified contact information,
+                however, you will not receive notifications. Visit the
+                <router-link
+                    id="profilePageLink"
+                    data-testid="profile-page-link"
+                    class="text-link"
+                    to="/profile"
+                    >Profile Page</router-link
+                >
+                to complete your verification.
+            </span>
+        </template>
+    </HgAlertComponent>
     <PageTitleComponent title="Home">
         <template #append>
             <AddQuickLinkComponent :disabled="isAddQuickLinkButtonDisabled" />

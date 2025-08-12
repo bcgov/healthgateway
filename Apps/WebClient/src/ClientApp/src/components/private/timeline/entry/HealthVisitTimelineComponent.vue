@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
@@ -62,10 +63,10 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
             </v-col>
         </v-row>
         <v-slide-y-transition>
-            <v-alert
+            <HgAlertComponent
                 v-show="showInfoDetails"
                 data-testid="health-visit-clinic-name-info-popover"
-                class="d-print-none mb-6 bg-info-light"
+                class="d-print-none mb-6"
                 type="info"
                 variant="outlined"
             >
@@ -82,7 +83,7 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                     >
                     page.
                 </p>
-            </v-alert>
+            </HgAlertComponent>
         </v-slide-y-transition>
         <v-alert
             v-if="entry.showRollOffWarning"

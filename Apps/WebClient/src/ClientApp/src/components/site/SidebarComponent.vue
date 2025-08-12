@@ -153,12 +153,7 @@ watch(isSidebarOpen, (value: boolean) => {
     width: 1.5em;
 }
 .nav-feedback-button {
-    background-color: #f2f2f2 !important;
-    color: #1a1a1a !important;
-    border-top: 1px solid #d1d5db;
-}
-
-.nav-feedback-button .v-icon {
-    color: #1a1a1a !important;
+    background-color: rgb(var(--v-theme-navHighlight)) !important;
+    border-top: 1px solid rgb(var(--v-theme-borderDivider));
 }
 </style>

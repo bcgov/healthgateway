@@ -238,7 +238,7 @@ function hideModal(): void {
                 id="add-quick-link-button"
                 data-testid="add-quick-link-button"
                 :disabled="disabled"
-                variant="white"
+                variant="secondary"
                 v-bind="slotProps.props"
                 prepend-icon="plus"
                 text="Add Quick Link"
