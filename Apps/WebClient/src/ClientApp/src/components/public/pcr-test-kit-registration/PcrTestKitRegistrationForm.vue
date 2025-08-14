@@ -12,6 +12,7 @@ import { vMaska } from "maska/vue";
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import InfoPopoverComponent from "@/components/common/InfoPopoverComponent.vue";
@@ -383,14 +384,12 @@ if (!props.serialNumber) {
 
 <template>
     <PageTitleComponent title="Register a Test Kit" />
-    <v-alert
+    <HgAlertComponent
         v-if="!!errorMessage"
         data-testid="alreadyProcessedBanner"
         type="warning"
-        icon="circle-exclamation"
         closable
         variant="outlined"
-        border
         class="d-print-none"
         :text="errorMessage"
     />

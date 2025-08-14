@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import { useAuthStore } from "@/stores/auth";
@@ -63,7 +64,7 @@ if (oidcIsAuthenticated.value) {
     <LoadingComponent :is-loading="isLoading" />
     <v-row align="center" justify="center" class="mb-5">
         <v-col md="5">
-            <v-alert
+            <HgAlertComponent
                 v-model="showError"
                 closable
                 close-label="Close"
@@ -71,7 +72,6 @@ if (oidcIsAuthenticated.value) {
                 title="Error"
                 text="An unexpected error occured while processing the request, please try again."
                 variant="outlined"
-                border
             />
         </v-col>
     </v-row>

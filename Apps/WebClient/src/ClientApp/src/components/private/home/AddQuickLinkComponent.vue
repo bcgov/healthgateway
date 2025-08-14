@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
@@ -262,14 +263,13 @@ function hideModal(): void {
                 </v-card-title>
                 <v-card-text class="pa-4">
                     <TooManyRequestsComponent location="addQuickLinkModal" />
-                    <v-alert
+                    <HgAlertComponent
                         v-if="bannerError"
                         data-testid="quick-link-modal-error"
                         type="error"
                         closable
                         class="my-3"
                         variant="outlined"
-                        border
                     >
                         <h5 class="text-body-1 font-weight-bold mb-2">
                             {{ bannerError.title }}
@@ -282,7 +282,7 @@ function hideModal(): void {
                                 >HealthGateway@gov.bc.ca</a
                             >.
                         </span>
-                    </v-alert>
+                    </HgAlertComponent>
                     <v-chip-group v-model="selectedQuickLinks" column multiple>
                         <v-chip
                             v-for="quickLink in enabledQuickLinkFilter"

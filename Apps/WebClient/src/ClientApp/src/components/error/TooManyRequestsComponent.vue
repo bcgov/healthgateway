@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import { useErrorStore } from "@/stores/error";
 
 interface Props {
@@ -30,31 +31,26 @@ function clearTooManyRequestsError(): void {
 </script>
 
 <template>
-    <v-alert
+    <HgAlertComponent
         v-if="showError"
         data-testid="too-many-requests-error"
         type="error"
         closable
-        class="d-print-none mb-4"
         variant="outlined"
-        border
         @click:close="clearTooManyRequestsError"
     >
         Unable to complete action as the site is too busy. Please try again
         later.
-    </v-alert>
-    <v-alert
+    </HgAlertComponent>
+    <HgAlertComponent
         v-else-if="showWarning"
         data-testid="too-many-requests-warning"
         type="warning"
-        icon="circle-exclamation"
         closable
-        class="d-print-none mb-4"
         variant="outlined"
-        border
         @click:close="clearTooManyRequestsWarning"
     >
         We are unable to complete all actions because the site is too busy.
         Please try again later.
-    </v-alert>
+    </HgAlertComponent>
 </template>

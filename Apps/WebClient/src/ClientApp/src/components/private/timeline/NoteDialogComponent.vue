@@ -3,6 +3,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import { computed, ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -198,14 +199,13 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
                 </v-card-title>
                 <v-card-text class="text-body-1 pa-4">
                     <TooManyRequestsComponent location="noteDialog" />
-                    <v-alert
+                    <HgAlertComponent
                         :model-value="Boolean(errorMessage)"
                         data-testid="noteEditErrorBanner"
                         class="d-print-none mb-4"
                         type="error"
                         closable
                         variant="outlined"
-                        border
                     >
                         <p data-testid="noteEditErrorText">
                             {{ errorMessage }}
@@ -218,7 +218,7 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
                                 >HealthGateway@gov.bc.ca</a
                             >.
                         </p>
-                    </v-alert>
+                    </HgAlertComponent>
                     <v-row class="mb-2">
                         <v-col cols="12" sm="6">
                             <v-text-field

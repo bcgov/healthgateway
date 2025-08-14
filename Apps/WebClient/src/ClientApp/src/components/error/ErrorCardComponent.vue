@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import useClipboard from "vue-clipboard3";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
@@ -62,15 +63,13 @@ async function copyToClipboard() {
 
 <template>
     <TooManyRequestsComponent />
-    <v-alert
+    <HgAlertComponent
         v-show="isShowing"
         :title="errorTitle"
         type="error"
         data-testid="errorBanner"
-        class="d-print-none mb-4"
         closable
         variant="outlined"
-        border
         @click:close="clearErrors"
     >
         <v-expansion-panels variant="accordion" class="mt-4">
@@ -108,7 +107,7 @@ async function copyToClipboard() {
                 </template>
             </v-expansion-panel>
         </v-expansion-panels>
-    </v-alert>
+    </HgAlertComponent>
     <MessageModalComponent
         ref="copySuccessModal"
         title="Copy to Clipboard"

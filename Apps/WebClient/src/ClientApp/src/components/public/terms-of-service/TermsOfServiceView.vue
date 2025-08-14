@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
@@ -56,10 +57,9 @@ userProfileService
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <PageTitleComponent title="Terms of Service" />
-        <v-alert
+        <HgAlertComponent
             v-if="hasErrors"
             variant="outlined"
-            border
             closable
             type="error"
             title="Error"
@@ -70,7 +70,7 @@ userProfileService
                     Please refresh your browser.
                 </p>
             </template>
-        </v-alert>
+        </HgAlertComponent>
         <HtmlTextAreaComponent v-if="!isLoading" :input="termsOfService" />
     </div>
 </template>
