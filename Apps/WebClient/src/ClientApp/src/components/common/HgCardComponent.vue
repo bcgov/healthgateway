@@ -36,7 +36,7 @@ const isNormalDensity = computed<boolean>(() => {
 </script>
 
 <template>
-    <v-card>
+    <v-card class="hover-card">
         <template #title>
             <v-row align="center" class="text-wrap">
                 <v-col
@@ -88,3 +88,12 @@ const isNormalDensity = computed<boolean>(() => {
         </template>
     </v-card>
 </template>
+
+<style scoped>
+.hover-card {
+    --v-hover-opacity: 0;
+}
+.hover-card:hover {
+    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+}
+</style>

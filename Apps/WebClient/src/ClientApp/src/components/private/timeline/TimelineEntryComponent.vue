@@ -194,6 +194,13 @@ watch(
 .all-pointer-events {
     pointer-events: all;
 }
+
+:deep(.v-expansion-panel-title:hover) {
+    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+}
+:deep(.v-expansion-panel-title:hover > .v-expansion-panel-title__overlay) {
+    opacity: 0 !important;
+}
 </style>
 
 <style lang="scss">

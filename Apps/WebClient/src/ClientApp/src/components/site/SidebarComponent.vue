@@ -72,6 +72,7 @@ watch(isSidebarOpen, (value: boolean) => {
     >
         <v-list density="compact" nav>
             <v-list-item
+                class="nav-hover"
                 title="Home"
                 to="/home"
                 data-testid="menu-btn-home-link"
@@ -83,6 +84,7 @@ watch(isSidebarOpen, (value: boolean) => {
                 </template>
             </v-list-item>
             <v-list-item
+                class="nav-hover"
                 title="Timeline"
                 to="/timeline"
                 data-testid="menu-btn-timeline-link"
@@ -95,6 +97,7 @@ watch(isSidebarOpen, (value: boolean) => {
             </v-list-item>
             <v-list-item
                 v-show="isDependentEnabled && userStore.userIsActive"
+                class="nav-hover"
                 title="Dependents"
                 to="/dependents"
                 data-testid="menu-btn-dependents-link"
@@ -107,6 +110,7 @@ watch(isSidebarOpen, (value: boolean) => {
             </v-list-item>
             <v-list-item
                 v-show="isServicesEnabled && userStore.userIsActive"
+                class="nav-hover"
                 title="Services"
                 to="/services"
                 data-testid="menu-btn-services-link"
@@ -119,6 +123,7 @@ watch(isSidebarOpen, (value: boolean) => {
             </v-list-item>
             <v-list-item
                 v-show="userStore.userIsActive"
+                class="nav-hover"
                 title="Export Records"
                 to="/reports"
                 data-testid="menu-btn-reports-link"
@@ -155,5 +160,13 @@ watch(isSidebarOpen, (value: boolean) => {
 .nav-feedback-button {
     background-color: rgb(var(--v-theme-navHighlight)) !important;
     border-top: 1px solid rgb(var(--v-theme-borderDivider));
+}
+
+:deep(.nav-hover) {
+    --v-hover-opacity: 0;
+}
+
+:deep(.nav-hover:not(.v-list-item--active):hover) {
+    background-color: rgb(var(--v-theme-surfaceHover)) !important;
 }
 </style>

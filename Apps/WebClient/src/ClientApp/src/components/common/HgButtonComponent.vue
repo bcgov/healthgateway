@@ -65,7 +65,9 @@ const disabledColor = computed(
         :disabled="disabled"
         :class="[
             'transition-none',
-            props.variant === 'secondary' ? 'secondary-hover-white' : '',
+            props.variant === 'secondary'
+                ? 'secondary-btn-primarytext-surfacehover'
+                : '',
         ]"
     >
         <slot />
@@ -77,7 +79,9 @@ const disabledColor = computed(
         :disabled="disabled"
         :class="[
             'transition-none',
-            props.variant === 'secondary' ? 'secondary-hover-white' : '',
+            props.variant === 'secondary'
+                ? 'secondary-btn-primarytext-surfacehover'
+                : '',
         ]"
     />
 </template>
@@ -87,11 +91,13 @@ const disabledColor = computed(
     transition: none;
 }
 
-.v-btn.secondary-hover-white {
+.v-btn.secondary-btn-primarytext-surfacehover {
     color: rgb(var(--v-theme-primary)) !important;
 
+    --v-hover-opacity: 0;
+
     &:hover {
-        background-color: rgb(var(--v-theme-secondaryButtonHover)) !important;
+        background-color: rgb(var(--v-theme-surfaceHover)) !important;
     }
 }
 </style>
