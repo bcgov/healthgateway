@@ -3,6 +3,7 @@ import VueCountdown from "@chenfengyuan/vue-countdown";
 import { Mask } from "maska";
 import { computed, ComputedRef, ref, watch } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -187,7 +188,7 @@ setResendTimeout();
                 </v-card-title>
                 <v-card-text class="text-body-1 pa-4">
                     <TooManyRequestsComponent location="verifySmsModal" />
-                    <v-alert
+                    <HgAlertComponent
                         v-if="unexpectedError"
                         data-testid="verifySMSModalUnexpectedErrorText"
                         class="d-print-none pa-0"
@@ -196,7 +197,7 @@ setResendTimeout();
                     >
                         An unexpected error has occurred. Please try refreshing
                         your browser or try again later.
-                    </v-alert>
+                    </HgAlertComponent>
                     <div
                         v-else-if="tooManyRetries"
                         data-testid="verifySMSModalErrorAttemptsText"

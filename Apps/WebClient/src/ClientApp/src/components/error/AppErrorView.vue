@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import { AppErrorType } from "@/constants/errorType";
 import { useAppStore } from "@/stores/app";
 
@@ -32,27 +33,24 @@ const isTooManyRequests = computed(
             <v-container class="fill-height">
                 <v-row justify="center">
                     <v-col sm="10" md="6">
-                        <v-alert
+                        <HgAlertComponent
                             v-if="isTooManyRequests"
                             type="warning"
-                            icon="circle-exclamation"
                             data-testid="app-warning"
                             variant="outlined"
-                            border
                         >
                             We are unable to complete all actions because the
                             site is too busy. Please try again later.
-                        </v-alert>
-                        <v-alert
+                        </HgAlertComponent>
+                        <HgAlertComponent
                             v-else
                             type="error"
                             data-testid="app-error"
                             variant="outlined"
-                            border
                         >
                             Unable to load application. Please try refreshing
                             the page or come back later.
-                        </v-alert>
+                        </HgAlertComponent>
                     </v-col>
                 </v-row>
             </v-container>

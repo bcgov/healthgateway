@@ -3,6 +3,7 @@ import { Duration, DurationUnit } from "luxon";
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { ErrorSourceType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
@@ -81,12 +82,11 @@ intervalHandler.value = window.setInterval(
 </script>
 
 <template>
-    <v-alert
+    <HgAlertComponent
         data-testid="emailOptOutMessage"
         class="pt-0"
         type="error"
         variant="text"
-        icon="exclamation-triangle"
         title="Account marked for removal"
         text="Your account has been deactivated. If you wish to recover your account,
                 click on the “Recover Account” button before the time expires."

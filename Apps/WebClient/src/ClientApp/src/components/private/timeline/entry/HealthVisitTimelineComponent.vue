@@ -85,12 +85,11 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                 </p>
             </HgAlertComponent>
         </v-slide-y-transition>
-        <v-alert
+        <HgAlertComponent
             v-if="entry.showRollOffWarning"
             data-testid="encounterRolloffAlert"
             class="d-print-none"
             type="warning"
-            icon="circle-exclamation"
             variant="outlined"
             text="Health visits are shown for the past 6 years only. You may wish
                 to export and save older records so you still have them when the

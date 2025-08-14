@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import { ErrorSourceType } from "@/constants/errorType";
@@ -56,11 +57,9 @@ function closeAccount(): void {
     <template v-else>
         <v-card variant="text">
             <template #text>
-                <v-alert
-                    class="pa-0"
+                <HgAlertComponent
                     type="error"
                     variant="text"
-                    icon="exclamation-triangle"
                     text="Your account will be marked for removal, preventing
                         you from accessing your information on the Health
                         Gateway. After a set period of time it will be

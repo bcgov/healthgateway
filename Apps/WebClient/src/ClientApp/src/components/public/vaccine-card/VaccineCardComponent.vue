@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { VDialog } from "vuetify/lib/components/index.mjs";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
@@ -237,7 +238,7 @@ function hideDialog(): void {
         class="mx-4 mt-4"
         location="vaccineCardComponent"
     />
-    <v-alert
+    <HgAlertComponent
         v-if="error !== undefined"
         class="d-print-none mx-4 mt-4"
         closable
@@ -246,7 +247,6 @@ function hideDialog(): void {
         title="Our Apologies"
         text="An unexpected error occured while processing the request, please try again."
         variant="outlined"
-        border
     >
         <template #text>
             <p data-testid="errorTextDescription" class="text-body-1">
@@ -254,7 +254,7 @@ function hideDialog(): void {
                 to fix it.
             </p>
         </template>
-    </v-alert>
+    </HgAlertComponent>
 </template>
 
 <style lang="scss" scoped>

@@ -6,6 +6,7 @@ import html2canvas from "html2canvas";
 import { vMaska } from "maska/vue";
 import { computed, ref, watch } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import InfoPopoverComponent from "@/components/common/InfoPopoverComponent.vue";
@@ -355,9 +356,8 @@ watch(vaccineRecord, (value) => {
             >
                 <TooManyRequestsComponent location="publicVaccineCard" />
                 <div v-if="bannerError !== undefined">
-                    <v-alert
+                    <HgAlertComponent
                         variant="outlined"
-                        border
                         closable
                         type="error"
                         :title="bannerError.title"
@@ -365,7 +365,7 @@ watch(vaccineRecord, (value) => {
                         <div data-testid="errorTextDescription">
                             {{ bannerError.description }}
                         </div>
-                    </v-alert>
+                    </HgAlertComponent>
                 </div>
                 <h1
                     data-testid="vaccineCardFormTitle"
