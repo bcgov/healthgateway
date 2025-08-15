@@ -154,16 +154,6 @@ const visibleRecommendations = computed(() =>
     immunizationStore
         .recommendations(props.hdid)
         .filter((x) => x.recommendedVaccinations)
-        .sort((a, b) =>
-            DateSortUtility.descending(
-                a.agentDueDate
-                    ? DateWrapper.fromIsoDate(a.agentDueDate)
-                    : undefined,
-                b.agentDueDate
-                    ? DateWrapper.fromIsoDate(b.agentDueDate)
-                    : undefined
-            )
-        )
 );
 const recommendationItems = computed(() =>
     visibleRecommendations.value.map<RecommendationRow>((x) => ({

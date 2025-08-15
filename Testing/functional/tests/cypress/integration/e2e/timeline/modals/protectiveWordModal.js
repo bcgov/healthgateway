@@ -22,7 +22,7 @@ describe("Validate Modals Popup", () => {
         cy.get("[data-testid=protectiveWordModalText]").contains(
             "Please enter the protective word required to access these restricted PharmaNet records."
         );
-        cy.get("[data-testid=protectiveWordModalMoreInfoText]").contains(
+        cy.get("[data-testid=protectiveWordModalText]").contains(
             "For more information visit"
         );
         cy.get("[data-testid=protectiveWordModalRulesHREF]")

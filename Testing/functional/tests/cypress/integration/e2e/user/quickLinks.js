@@ -420,13 +420,15 @@ describe("Disabling organ donor services", () => {
     });
 });
 
-// Vaccine Card Quick Link tests
-const vaccineCardQuickLinkCardSelector = "[data-testid=bc-vaccine-card-card]";
-const vaccineCardAddQuickLinkChipSelector =
-    "[data-testid=bc-vaccine-card-filter]";
-
 describe("Vaccine Card Quick Link", () => {
-    it("Remove and Add Vaccine Card Quick Link", () => {
+    // Vaccine Card Quick Link tests
+    const vaccineCardQuickLinkCardSelector =
+        "[data-testid=bc-vaccine-card-card]";
+    const vaccineCardAddQuickLinkChipSelector =
+        "[data-testid=bc-vaccine-card-filter]";
+
+    // AB#16941 - Skip test as Vaccine Card has been removed from Home
+    it.skip("Remove and Add Vaccine Card Quick Link", () => {
         cy.configureSettings({});
 
         cy.login(

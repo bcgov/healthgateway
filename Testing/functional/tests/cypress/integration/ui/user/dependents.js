@@ -231,7 +231,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         });
     });
 
-    it("Immunization - Forecast Tab - Verify sort", () => {
+    it("Immunization - Schedule Tab - Verify sort", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
@@ -240,29 +240,29 @@ describe("Dependents - Immunization Tab - Enabled", () => {
 
         cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
-        // Click download dropdown under Forecasts tab
-        cy.log("Validating Forecasts Tab");
+        // Click download dropdown under Schedule tab
+        cy.log("Validating Schedule Tab");
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`)
-            .contains("button", "Forecasts")
+            .contains("button", "Schedule")
             .click();
         cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
+            `[data-testid=download-immunization-schedule-report-btn-${dependentHdid}]`
         ).click({ force: true });
 
-        // Verify forecast table has been sorted by due date ascending
-        cy.get(`[data-testid=forecast-due-date-${dependentHdid}-0]`).then(
+        // Verify schedule table has been sorted by due date ascending
+        cy.get(`[data-testid=schedule-due-date-${dependentHdid}-0]`).then(
             ($dateItem) => {
                 // Column date in the 1st row in the table
                 const firstDate = getDate($dateItem.text());
                 cy.get(
-                    `[data-testid=forecast-due-date-${dependentHdid}-1]`
+                    `[data-testid=schedule-due-date-${dependentHdid}-1]`
                 ).then(($dateItem) => {
                     // Column date in the 2nd row in the table
                     const secondDate = getDate($dateItem.text());
                     expect(firstDate).to.be.lte(secondDate);
                     // Column date in the last row in the table
                     cy.get(
-                        `[data-testid=forecast-due-date-${dependentHdid}-4]`
+                        `[data-testid=schedule-due-date-${dependentHdid}-4]`
                     ).then(($dateItem) => {
                         // Column date in the last row in the table
                         const lastDate = getDate($dateItem.text());
@@ -290,14 +290,14 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).should("not.exist");
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
             () => {
-                cy.contains("button", "Forecasts").click();
+                cy.contains("button", "Schedule").click();
             }
         );
         cy.get(
-            `[data-testid=immunization-forecast-no-rows-found-${dependentHdid}]`
+            `[data-testid=immunization-schedule-no-rows-found-${dependentHdid}]`
         ).should("be.visible");
         cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
+            `[data-testid=download-immunization-schedule-report-btn-${dependentHdid}]`
         ).should("not.exist");
     });
 });

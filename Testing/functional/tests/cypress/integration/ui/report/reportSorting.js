@@ -87,7 +87,8 @@ describe("Reports - Covid19", () => {
         );
     });
 
-    it("Validate Covid19 Report with Unsorted Data", () => {
+    // AB#16941 - Skip test as Covid19 removed from report list.
+    it.skip("Validate Covid19 Report with Unsorted Data", () => {
         cy.intercept("GET", `**/Laboratory/Covid19Orders?hdid=${HDID}`, {
             fixture: "Report/covid19UnSorted.json",
         });
