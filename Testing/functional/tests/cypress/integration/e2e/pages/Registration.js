@@ -17,8 +17,7 @@ describe("Registration Page", () => {
         cy.location("pathname").should("eq", registrationPath);
     });
 
-    // AB#16927 Disable notifications while aligning Classic with Salesforce version
-    it.skip("Registering leads to home page and opens app tour", () => {
+    it("Registering leads to home page and opens app tour", () => {
         cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.unregistered.username"),

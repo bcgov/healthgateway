@@ -139,7 +139,7 @@ describe("Reports", () => {
 
                     // display visual when no record type selected
                     cy.get(`[data-testid=info-image]`).should("be.visible");
-                    cy.vSelect(`[data-testid=report-type]`, "COVID‑19 Tests");
+                    cy.vSelect(`[data-testid=report-type]`, "Immunizations");
 
                     cy.get(`[data-testid=export-record-btn]`).should(
                         "be.enabled",
@@ -176,7 +176,7 @@ describe("Reports", () => {
 
                     // display visual when no record type selected
                     cy.get(`[data-testid=info-image]`).should("be.visible");
-                    cy.vSelect(`[data-testid=report-type]`, "COVID‑19 Tests");
+                    cy.vSelect(`[data-testid=report-type]`, "Immunizations");
 
                     cy.get(`[data-testid=export-record-btn]`).should(
                         "be.enabled",
@@ -247,7 +247,8 @@ describe("Reports", () => {
         );
     });
 
-    it("Validate COVID-19 Report", () => {
+    // AB#16941 - Skip test as COVID-19 removed from report list.
+    it.skip("Validate COVID-19 Report", () => {
         const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
