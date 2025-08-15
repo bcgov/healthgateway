@@ -36,8 +36,11 @@ const formattedLoginDateTimes = computed(() =>
     <UserProfileEmailComponent @email-updated="emit('email-updated', $event)" />
     <UserProfileSmsComponent />
     <UserProfileAddressComponent />
-    <SectionHeaderComponent title="Login History" />
-    <ul id="lastLoginDate" class="text-body-1">
+    {{
+        /* AB#16941 - Hide login history as that was not in Sales Force Implementationy */ ""
+    }}
+    <SectionHeaderComponent v-if="false" title="Login History" />
+    <ul v-if="false" id="lastLoginDate" class="text-body-1">
         <li
             v-for="(item, index) in formattedLoginDateTimes"
             :key="index"
