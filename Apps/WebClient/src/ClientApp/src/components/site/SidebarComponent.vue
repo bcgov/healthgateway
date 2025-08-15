@@ -124,7 +124,7 @@ watch(isSidebarOpen, (value: boolean) => {
             <v-list-item
                 v-show="userStore.userIsActive"
                 class="nav-hover"
-                title="Export Records"
+                title="Export"
                 to="/reports"
                 data-testid="menu-btn-reports-link"
             >
