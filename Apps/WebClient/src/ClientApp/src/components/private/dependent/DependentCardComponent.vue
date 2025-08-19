@@ -93,7 +93,7 @@ function removeDependent(): void {
                     <v-tab
                         :id="`report-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
-                        text="Export Records"
+                        text="Export"
                     />
                     <v-tab
                         :id="`profile-tab-button-${dependent.ownerId}`"
