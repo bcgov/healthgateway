@@ -438,9 +438,9 @@ describe("dependents", () => {
             });
     });
 
-    it("Validate Immunization Forecast - Verify result and download", () => {
+    it("Validate Immunization Schedule - Verify result and download", () => {
         cy.log(
-            "Validating Immunization Forecast Tab - Verify result and download"
+            "Validating Immunization Schedule Tab - Verify result and download"
         );
 
         cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
@@ -449,31 +449,31 @@ describe("dependents", () => {
         ).click();
         cy.wait("@getImmunization", { timeout: defaultTimeout });
 
-        // Forecast tab
-        cy.log("Validating forecast tab");
+        // Schedule tab
+        cy.log("Validating schedule tab");
         cy.get(
             `[data-testid=immunization-tab-div-${validDependentHdid}]`
         ).within(() => {
-            cy.contains(".v-btn .v-btn__content", "Forecasts").click();
+            cy.contains(".v-btn .v-btn__content", "Schedule").click();
         });
 
         // Expecting more than 1 row to return because we also need to consider the table headers.
         cy.get(
-            `[data-testid=immunization-forecast-table-${validDependentHdid}]`
+            `[data-testid=immunization-schedule-table-${validDependentHdid}]`
         )
             .find("tr")
             .should("have.length.greaterThan", 1);
 
-        // Click download dropdown under Forecasts tab
+        // Click download dropdown under Schedule tab
         cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
+            `[data-testid=download-immunization-schedule-report-btn-${validDependentHdid}]`
         )
             .should("be.visible", "be.enabled")
             .click();
 
         // Click PDF
         cy.get(
-            `[data-testid=download-immunization-forecast-report-pdf-btn-${validDependentHdid}]`
+            `[data-testid=download-immunization-schedule-report-pdf-btn-${validDependentHdid}]`
         )
             .should("be.visible")
             .click();
@@ -493,16 +493,16 @@ describe("dependents", () => {
                 );
             })
             .then(() => {
-                // Click download dropdown under Forecasts tab for CSV
+                // Click download dropdown under Schedule tab for CSV
                 cy.get(
-                    `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
+                    `[data-testid=download-immunization-schedule-report-btn-${validDependentHdid}]`
                 )
                     .should("be.visible", "be.enabled")
                     .click();
 
                 // Click CSV
                 cy.get(
-                    `[data-testid=download-immunization-forecast-report-csv-btn-${validDependentHdid}]`
+                    `[data-testid=download-immunization-schedule-report-csv-btn-${validDependentHdid}]`
                 )
                     .should("be.visible")
                     .click();
@@ -523,16 +523,16 @@ describe("dependents", () => {
                 });
             })
             .then(() => {
-                // Click download dropdown under Forecasts tab for XLSX
+                // Click download dropdown under Schedule tab for XLSX
                 cy.get(
-                    `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
+                    `[data-testid=download-immunization-schedule-report-btn-${validDependentHdid}]`
                 )
                     .should("be.visible", "be.enabled")
                     .click();
 
                 // Click XLSX
                 cy.get(
-                    `[data-testid=download-immunization-forecast-report-xlsx-btn-${validDependentHdid}]`
+                    `[data-testid=download-immunization-schedule-report-xlsx-btn-${validDependentHdid}]`
                 )
                     .should("be.visible")
                     .click();

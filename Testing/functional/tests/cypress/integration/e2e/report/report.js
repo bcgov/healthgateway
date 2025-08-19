@@ -152,7 +152,8 @@ describe("Reports", () => {
         cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
-    it("Validate COVID-19 Report", () => {
+    // AB#16941 - Skip test as Covid19 removed from report list.
+    it.skip("Validate COVID-19 Report", () => {
         cy.vSelect("[data-testid=report-type]", "COVID‑19 Tests");
         cy.wait("@getCovid19Tests", { timeout: defaultTimeout });
 
