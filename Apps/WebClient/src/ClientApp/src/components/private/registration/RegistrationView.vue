@@ -76,6 +76,7 @@ const isLoading = computed(
         loadingUserData.value ||
         submittingRegistration.value
 );
+
 const termsOfServiceLoaded = computed(
     () => !isLoading.value && Boolean(termsOfService.value?.content)
 );
@@ -377,6 +378,14 @@ loadTermsOfService();
                 <strong>{{ webClientConfig.minPatientAge }}</strong>
                 years of age or older to use this application
             </p>
+            <HgButtonComponent
+                variant="secondary"
+                prepend-icon="fas fa-sign-out-alt"
+                class="mt-4"
+                data-testid="registration-logout-button"
+                text="Log Out"
+                to="/logout"
+            />
         </div>
         <div v-else-if="clientRegistryError">
             <p class="text-h4">Error retrieving user information</p>
@@ -388,6 +397,14 @@ loadTermsOfService();
                     >HealthGateway@gov.bc.ca</a
                 >
             </p>
+            <HgButtonComponent
+                variant="secondary"
+                prepend-icon="fas fa-sign-out-alt"
+                class="mt-4"
+                data-testid="registration-logout-button"
+                text="Log Out"
+                to="/logout"
+            />
         </div>
         <h1 v-else class="text-h4">Unknown error</h1>
     </template>

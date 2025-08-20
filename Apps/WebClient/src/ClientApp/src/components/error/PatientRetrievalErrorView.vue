@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import PageErrorComponent from "@/components/error/PageErrorComponent.vue";
 import { AppErrorType } from "@/constants/errorType";
 import { useAppStore } from "@/stores/app";
@@ -31,5 +32,13 @@ const isTooManyRequestsError = computed(
                 >HealthGateway@gov.bc.ca
             </a>
         </p>
+        <HgButtonComponent
+            variant="secondary"
+            prepend-icon="fas fa-sign-out-alt"
+            class="mt-4"
+            data-testid="patient-retrieval-error-logout-button"
+            text="Log Out"
+            to="/logout"
+        />
     </PageErrorComponent>
 </template>
