@@ -127,6 +127,10 @@ describe("Filters", () => {
         );
     });
 
+    it(`Verify health visit alert appears when the health visit filter is the only active filter`, () => {
+        testFilteredResultAlerts("HealthVisit", "timeline-health-visit-alert");
+    });
+
     it(`Verify immunization alert appears when the immunization filter is the only active filter`, () => {
         testFilteredResultAlerts("Immunization", "timeline-immunization-alert");
     });
