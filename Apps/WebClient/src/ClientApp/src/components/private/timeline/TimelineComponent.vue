@@ -333,6 +333,11 @@ const isOnlyClinicalDocumentSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.ClinicalDocument)
 );
+const isOnlyHealthVisitSelected = computed(
+    () =>
+        selectedEntryTypes.value.size === 1 &&
+        selectedEntryTypes.value.has(EntryType.HealthVisit)
+);
 const isOnlyImmunizationSelected = computed(
     () =>
         selectedEntryTypes.value.size === 1 &&
@@ -650,6 +655,34 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
+            </HgAlertComponent>
+            <HgAlertComponent
+                v-else-if="isOnlyHealthVisitSelected"
+                type="info"
+                data-testid="timeline-health-visit-alert"
+                closable
+                variant="outlined"
+            >
+                <p class="text-body-1">
+                    Information is from the billing claim and may show a
+                    different practitioner or clinic from the one you visited.
+                    For more information, visit the
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80#healthandhospital"
+                        target="_blank"
+                        rel="noopener"
+                        class="text-link"
+                        >FAQ</a
+                    >
+                    page.
+                </p>
+                <p class="text-body-1">
+                    Health Gateway shows your health visits billed to the BC
+                    Medical Services Plan (MSP) for the past seven years. You
+                    can also get your hospital visits since 2021 for everywhere
+                    except Interior Health. We are working on adding Interior
+                    visits in the future.
+                </p>
             </HgAlertComponent>
             <HgAlertComponent
                 v-else-if="isOnlyImmunizationSelected"

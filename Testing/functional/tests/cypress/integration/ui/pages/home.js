@@ -18,7 +18,8 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
+        // AB#16941 - Vaccine Card has been removed from Home
+        // cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
@@ -41,7 +42,8 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
     });
 
-    it("Home - Link to COVID-19 page", () => {
+    // AB#16941 - Skip test as Vaccine Card has been removed from Home
+    it.skip("Home - Link to COVID-19 page", () => {
         cy.configureSettings({});
 
         setupStandardFixtures();

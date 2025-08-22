@@ -9,6 +9,7 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
+import PageErrorComponent from "@/components/error/PageErrorComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
@@ -76,6 +77,7 @@ const isLoading = computed(
         loadingUserData.value ||
         submittingRegistration.value
 );
+
 const termsOfServiceLoaded = computed(
     () => !isLoading.value && Boolean(termsOfService.value?.content)
 );
@@ -371,23 +373,45 @@ loadTermsOfService();
             </div>
         </v-form>
         <div v-else-if="isValidAge === false">
-            <p class="text-h4">Minimum age required for registration</p>
-            <p data-testid="minimumAgeErrorText" class="text-body-1">
-                You must be
-                <strong>{{ webClientConfig.minPatientAge }}</strong>
-                years of age or older to use this application
-            </p>
+            <PageErrorComponent title="Minimum age required for registration">
+                <p
+                    data-testid="minimumAgeErrorText"
+                    class="text-body-1 text-h5 mt-1 mb-4"
+                >
+                    You must be
+                    <strong>{{ webClientConfig.minPatientAge }}</strong>
+                    years of age or older to use this application.
+                </p>
+                <HgButtonComponent
+                    variant="secondary"
+                    prepend-icon="fas fa-sign-out-alt"
+                    data-testid="registration-logout-button"
+                    text="Log Out"
+                    to="/logout"
+                />
+            </PageErrorComponent>
         </div>
         <div v-else-if="clientRegistryError">
-            <p class="text-h4">Error retrieving user information</p>
-            <p data-testid="clientRegistryErrorText" class="text-body-1">
-                There may be an issue in our Client Registry. Please contact
-                <a
-                    href="mailto:HealthGateway@gov.bc.ca"
-                    class="text-link font-weight-bold"
-                    >HealthGateway@gov.bc.ca</a
+            <PageErrorComponent title="Error retrieving user information">
+                <p
+                    data-testid="clientRegistryErrorText"
+                    class="text-body-1 text-h5 mt-1 mb-4"
                 >
-            </p>
+                    There may be an issue in our Client Registry. Please contact
+                    <a
+                        href="mailto:HealthGateway@gov.bc.ca"
+                        class="text-link font-weight-bold"
+                        >HealthGateway@gov.bc.ca</a
+                    >
+                </p>
+                <HgButtonComponent
+                    variant="secondary"
+                    prepend-icon="fas fa-sign-out-alt"
+                    data-testid="registration-logout-button"
+                    text="Log Out"
+                    to="/logout"
+                />
+            </PageErrorComponent>
         </div>
         <h1 v-else class="text-h4">Unknown error</h1>
     </template>

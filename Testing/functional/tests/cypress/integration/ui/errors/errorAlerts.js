@@ -493,7 +493,8 @@ describe("Error Alerts", () => {
         testRemoveQuickLinkError();
     });
 
-    it("Error Hiding Vaccine Card Quick Link", () => {
+    // AB#16941 - Skip test as Vaccine Card removed from home page.
+    it.skip("Error Hiding Vaccine Card Quick Link", () => {
         testHideVaccineCardQuickLinkError();
     });
 
@@ -538,7 +539,8 @@ describe("429 Alerts", () => {
         testRemoveQuickLinkError(429);
     });
 
-    it("429 Error Hiding Vaccine Card Quick Link", () => {
+    // AB#16941 - Skip test as Vaccine Card removed from home page.
+    it.skip("429 Error Hiding Vaccine Card Quick Link", () => {
         testHideVaccineCardQuickLinkError(429);
     });
 

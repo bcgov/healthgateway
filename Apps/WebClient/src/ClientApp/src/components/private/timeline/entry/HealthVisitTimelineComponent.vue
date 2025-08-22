@@ -83,6 +83,13 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                     >
                     page.
                 </p>
+                <p class="text-body-1">
+                    Health Gateway shows your health visits billed to the BC
+                    Medical Services Plan (MSP) for the past seven years. You
+                    can also get your hospital visits since 2021 for everywhere
+                    except Interior Health. We are working on adding Interior
+                    visits in the future.
+                </p>
             </HgAlertComponent>
         </v-slide-y-transition>
         <HgAlertComponent

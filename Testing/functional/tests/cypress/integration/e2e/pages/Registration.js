@@ -1,11 +1,12 @@
 import { AuthMethod } from "../../../support/constants";
+const logoutCompletePath = "/logoutComplete";
 const registrationPath = "/registration";
 const homePath = "/home";
 const invalidEmail = "gov.bc.ca";
 const invalidPhone = "250";
 
 describe("Registration Page", () => {
-    it("Minimum age error", () => {
+    it("Minimum age error and logout", () => {
         cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.hlthgw401.username"),
@@ -15,10 +16,13 @@ describe("Registration Page", () => {
         );
         cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
         cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=registration-logout-button]")
+            .should("be.visible")
+            .click();
+        cy.location("pathname").should("eq", logoutCompletePath);
     });
 
-    // AB#16927 Disable notifications while aligning Classic with Salesforce version
-    it.skip("Registering leads to home page and opens app tour", () => {
+    it("Registering leads to home page and opens app tour", () => {
         cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
@@ -114,5 +118,9 @@ describe("Registration Page", () => {
             .should("exist")
             .contains("Error retrieving user information");
         cy.url().should("include", "/patientRetrievalError");
+        cy.get("[data-testid=patient-retrieval-error-logout-button]")
+            .should("be.visible")
+            .click();
+        cy.location("pathname").should("eq", logoutCompletePath);
     });
 });

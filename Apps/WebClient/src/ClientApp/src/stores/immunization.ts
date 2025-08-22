@@ -36,7 +36,7 @@ const immunizationSort = (a: ImmunizationEvent, b: ImmunizationEvent): number =>
     );
 
 const recommendationSort = (a: Recommendation, b: Recommendation): number =>
-    DateSortUtility.ascending(
+    DateSortUtility.descending(
         a.agentDueDate ? DateWrapper.fromIsoDate(a.agentDueDate) : undefined,
         b.agentDueDate ? DateWrapper.fromIsoDate(b.agentDueDate) : undefined
     );

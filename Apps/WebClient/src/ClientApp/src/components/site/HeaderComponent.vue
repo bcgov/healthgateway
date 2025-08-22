@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
 import RatingComponent from "@/components/site/RatingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -11,6 +12,7 @@ import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
+import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
 const headerScrollThreshold = 100;
@@ -18,28 +20,20 @@ const headerScrollThreshold = 100;
 const layoutStore = useLayoutStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
-const notificationStore = useNotificationStore(); 
-*/
+const notificationStore = useNotificationStore();
 const authStore = useAuthStore();
 
 const route = useRoute();
 const router = useRouter();
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
-const notificationButtonClicked = ref(false); 
-*/
-/* AB#16927 Disable app tour while aligning Classic with Salesforce version
-const hasViewedTour = ref(false); 
-*/
+const notificationButtonClicked = ref(false);
+const hasViewedTour = ref(false);
 const isScrollNearBottom = ref(false);
 const isHeaderVisible = ref();
 
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
-/* AB#16927 Disable app tour while aligning Classic with Salesforce version
-const appTourComponent = ref<InstanceType<typeof AppTourComponent>>(); 
-*/
+const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
 
 const isMobileWidth = computed(() => layoutStore.isMobile);
 const isOffline = computed(() => configStore.isOffline);
@@ -50,9 +44,7 @@ const isValidIdentityProvider = computed(
 const isHeaderShown = computed(
     () => layoutStore.isHeaderShown || isScrollNearBottom.value
 );
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
-const user = computed(() => userStore.user); 
-*/
+const user = computed(() => userStore.user);
 const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
 const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
@@ -69,7 +61,6 @@ const isSidebarButtonShown = computed(
         !patientRetrievalFailed.value &&
         !isPcrTest.value
 );
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 const isNotificationCentreAvailable = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.notificationCentre
@@ -81,9 +72,7 @@ const isNotificationCentreAvailable = computed(
         userIsRegistered.value &&
         userIsActive.value &&
         !patientRetrievalFailed.value
-); 
-*/
-/* AB#16927 Disable app tour while aligning Classic with Salesforce version 
+);
 const isAppTourAvailable = computed(
     () =>
         !isOffline.value &&
@@ -93,8 +82,7 @@ const isAppTourAvailable = computed(
         userIsRegistered.value &&
         userIsActive.value &&
         !patientRetrievalFailed.value
-); 
-*/
+);
 const isLoggedInMenuShown = computed(
     () => oidcIsAuthenticated.value && !isPcrTest.value
 );
@@ -124,25 +112,18 @@ const logoLinkDestination = computed(() =>
         ? "/home"
         : "/"
 );
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
-const newNotifications = computed(() => notificationStore.newNotifications); 
-*/
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
+
+const newNotifications = computed(() => notificationStore.newNotifications);
 const hasNewNotifications = computed(
     () => newNotifications.value.length > 0 && !notificationButtonClicked.value
-); 
-*/
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
+);
 const notificationBadgeContent = computed(() => {
     const count = newNotifications.value.length;
     return hasNewNotifications.value ? count.toString() : "";
-}); 
-*/
-/* AB#16927 Disable app tour while aligning Classic with Salesforce version 
+});
 const highlightTourChangeIndicator = computed(
     () => user.value.hasTourUpdated && !hasViewedTour.value
-); 
-*/
+);
 
 function testIfScrollIsNearBottom() {
     const scrollPosition = window.scrollY;
@@ -160,13 +141,11 @@ function setHeaderState(isOpen: boolean): void {
     layoutStore.setHeaderState(isOpen);
 }
 
-/* AB#16927 Disable notifications while aligning Classic with Salesforce version 
 function handleNotificationCentreClick(): void {
     notificationButtonClicked.value = true;
     notificationStore.isNotificationCenterOpen =
         !notificationStore.isNotificationCenterOpen;
-} 
-*/
+}
 
 function handleLogoutClick(): void {
     if (isValidIdentityProvider.value) {
@@ -191,7 +170,6 @@ watch(isMobileWidth, (value) => {
     }
 });
 
-/* AB#16927 Disable app tour while aligning Classic with Salesforce version 
 watch(
     () => route.query,
     (value) => {
@@ -200,8 +178,7 @@ watch(
             appTourComponent.value?.showDialog();
         }
     }
-); 
-*/
+);
 
 watch(
     () => route.path,
@@ -252,17 +229,18 @@ nextTick(() => {
             />
         </router-link>
         <v-spacer />
-        <!-- AB#16927 Disable app tour while aligning Classic with Salesforce version 
         <AppTourComponent
             ref="appTourComponent"
             :is-available="isAppTourAvailable"
             :highlight-tour-change-indicator="highlightTourChangeIndicator"
             @click="hasViewedTour = true"
-        /> 
-        -->
-        <!-- AB#16927 Disable notifications while aligning Classic with Salesforce version 
+        />
+        {{
+            /* AB#16927 Disable notifications while aligning Classic with Salesforce version
+               v-if="isNotificationCentreAvailable && false" */ ""
+        }}
         <HgIconButtonComponent
-            v-if="isNotificationCentreAvailable"
+            v-if="isNotificationCentreAvailable && false"
             data-testid="notification-centre-button"
             @click="handleNotificationCentreClick"
         >
@@ -273,8 +251,7 @@ nextTick(() => {
             >
                 <v-icon icon="fas fa-bell" class="text-grey-darken-1" />
             </v-badge>
-        </HgIconButtonComponent> 
-        -->
+        </HgIconButtonComponent>
         <template v-if="isLoggedInMenuShown">
             <HgIconButtonComponent
                 id="menuBtnLogout"
