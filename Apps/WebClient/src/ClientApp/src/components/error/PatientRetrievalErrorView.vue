@@ -35,7 +35,6 @@ const isTooManyRequestsError = computed(
         <HgButtonComponent
             variant="secondary"
             prepend-icon="fas fa-sign-out-alt"
-            class="mt-4"
             data-testid="patient-retrieval-error-logout-button"
             text="Log Out"
             to="/logout"
