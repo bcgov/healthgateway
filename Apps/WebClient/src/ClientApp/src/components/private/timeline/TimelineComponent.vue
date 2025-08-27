@@ -8,6 +8,7 @@ import {
     watch,
 } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import FilterComponent from "@/components/private/timeline/FilterComponent.vue";
 import FullscreenTimelineEntryComponent from "@/components/private/timeline/FullscreenTimelineEntryComponent.vue";
@@ -332,6 +333,11 @@ const isOnlyClinicalDocumentSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.ClinicalDocument)
 );
+const isOnlyHealthVisitSelected = computed(
+    () =>
+        selectedEntryTypes.value.size === 1 &&
+        selectedEntryTypes.value.has(EntryType.HealthVisit)
+);
 const isOnlyImmunizationSelected = computed(
     () =>
         selectedEntryTypes.value.size === 1 &&
@@ -578,17 +584,16 @@ setPageFromDate(linearDate.value);
 
 <template>
     <div>
-        <v-alert
+        <HgAlertComponent
             v-if="labResultsAreQueued"
             type="info"
             data-testid="laboratory-orders-queued-alert-message"
-            class="d-print-none mb-4 bg-info-light"
             closable
             variant="outlined"
         >
             We are getting your lab results. It may take up to 48 hours until
             you can see them.
-        </v-alert>
+        </HgAlertComponent>
         <template v-if="unfilteredTimelineEntries.length > 0">
             <v-banner
                 class="timeline-filter-banner d-print-none px-4 py-2 mt-n2 mb-2 mx-n4 overflow-visible"
@@ -634,11 +639,10 @@ setPageFromDate(linearDate.value);
             >
                 {{ recordCountMessage }}
             </p>
-            <v-alert
+            <HgAlertComponent
                 v-if="isOnlyClinicalDocumentSelected"
                 type="info"
                 data-testid="timeline-clinical-document-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -651,12 +655,39 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
-            </v-alert>
-            <v-alert
+            </HgAlertComponent>
+            <HgAlertComponent
+                v-else-if="isOnlyHealthVisitSelected"
+                type="info"
+                data-testid="timeline-health-visit-alert"
+                closable
+                variant="outlined"
+            >
+                <p class="text-body-1">
+                    Information is from the billing claim and may show a
+                    different practitioner or clinic from the one you visited.
+                    For more information, visit the
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80#healthandhospital"
+                        target="_blank"
+                        rel="noopener"
+                        class="text-link"
+                        >FAQ</a
+                    >
+                    page.
+                </p>
+                <p class="text-body-1">
+                    Health Gateway shows your health visits billed to the BC
+                    Medical Services Plan (MSP) for the past seven years. You
+                    can also get your hospital visits since 2021 for everywhere
+                    except Interior Health. We are working on adding Interior
+                    visits in the future.
+                </p>
+            </HgAlertComponent>
+            <HgAlertComponent
                 v-else-if="isOnlyImmunizationSelected"
                 type="info"
                 data-testid="timeline-immunization-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -668,12 +699,11 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >fill in this online form</a
                 >.
-            </v-alert>
-            <v-alert
+            </HgAlertComponent>
+            <HgAlertComponent
                 v-else-if="isOnlyDiagnosticImagingSelected"
                 type="info"
                 data-testid="timeline-diagnostic-imaging-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -685,12 +715,11 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
-            </v-alert>
-            <v-alert
+            </HgAlertComponent>
+            <HgAlertComponent
                 v-else-if="isOnlyBcCancerScreeningSelected"
                 type="info"
                 data-testid="timeline-cancer-screening-alert"
-                class="d-print-none mb-4 bg-info-light"
                 closable
                 variant="outlined"
             >
@@ -705,7 +734,7 @@ setPageFromDate(linearDate.value);
                     class="text-link"
                     >Learn more</a
                 >.
-            </v-alert>
+            </HgAlertComponent>
             <div v-if="visibleTimelineEntries.length > 0" class="mb-4">
                 <template v-for="dateGroup in dateGroups" :key="dateGroup.key">
                     <component

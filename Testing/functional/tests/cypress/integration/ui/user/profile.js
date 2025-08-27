@@ -23,7 +23,8 @@ describe("User Profile", () => {
         );
     });
 
-    it("Validate Login History Sorted Descending", () => {
+    // AB#16941 - Hide login history as that was not in Sales Force implementation
+    it.skip("Validate Login History Sorted Descending", () => {
         cy.get("[data-testid=lastLoginDateItem]")
             .first()
             .then(($dateItem) => {

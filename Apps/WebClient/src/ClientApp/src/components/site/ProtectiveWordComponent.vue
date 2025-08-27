@@ -87,39 +87,14 @@ function handleClose(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="text-body-1 pa-4">
-                    <v-text-field
-                        id="protectiveWord-input"
-                        v-model="protectiveWord"
-                        label="Protective Word"
-                        data-testid="protectiveWordInput"
-                        type="password"
-                        :error-messages="errorMessages"
-                    />
-                </v-card-text>
-                <v-card-actions
-                    class="d-flex flex-column align-start border-t-sm pa-4"
-                >
-                    <HgButtonComponent
-                        data-testid="protectiveWordContinueBtn"
-                        variant="primary"
-                        :disabled="!protectiveWord"
-                        text="Continue"
-                        class="mb-3"
-                        @click.prevent="handleOk()"
-                    />
+                <div class="d-flex flex-column align-start border-t-sm pa-4">
                     <p
                         class="text-body-2"
                         data-testid="protectiveWordModalText"
                     >
                         Please enter the protective word required to access
-                        these restricted PharmaNet records.
-                    </p>
-                    <p
-                        class="text-body-2"
-                        data-testid="protectiveWordModalMoreInfoText"
-                    >
-                        For more information visit
+                        these restricted PharmaNet records. For more information
+                        visit
                         <a
                             data-testid="protectiveWordModalRulesHREF"
                             href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
@@ -128,6 +103,34 @@ function handleClose(): void {
                             protective-word-for-a-pharmanet-record
                         </a>
                     </p>
+                </div>
+                <v-card-text class="text-body-1 px-4 pt-0 pb-4">
+                    <label
+                        for="protectiveWord-input"
+                        class="d-block text-body-2 mb-1 mt-0"
+                    >
+                        <span class="text-error" aria-hidden="true">*</span>
+                        <span class="ms-1">Protective word</span>
+                    </label>
+                    <v-text-field
+                        id="protectiveWord-input"
+                        v-model="protectiveWord"
+                        placeholder="Protective Word"
+                        data-testid="protectiveWordInput"
+                        type="password"
+                        :error-messages="errorMessages"
+                    />
+                </v-card-text>
+                <v-card-actions
+                    class="d-flex flex-column align-end px-4 pt-0 pb-4"
+                >
+                    <HgButtonComponent
+                        data-testid="protectiveWordContinueBtn"
+                        variant="primary"
+                        :disabled="!protectiveWord"
+                        text="Continue"
+                        @click.prevent="handleOk()"
+                    />
                 </v-card-actions>
             </v-card>
         </div>

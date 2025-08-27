@@ -2,6 +2,7 @@
 import { saveAs } from "file-saver";
 import { computed, ref, watch } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -744,7 +745,7 @@ watch(vaccineRecordState, () => {
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
                                     <HgButtonComponent
-                                        variant="white"
+                                        variant="secondary"
                                         text="Remove Dependent"
                                         @click="deleteDependent()"
                                     />
@@ -979,9 +980,9 @@ watch(vaccineRecordState, () => {
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
                         class="pa-1"
                     >
-                        <v-alert
+                        <HgAlertComponent
                             v-if="immunizationItems.length != 0"
-                            class="mb-4 bg-info-light"
+                            class="mb-4"
                             type="info"
                             variant="outlined"
                             data-testid="dependent-immunization-disclaimer-alert"
@@ -999,7 +1000,7 @@ watch(vaccineRecordState, () => {
                                     >.
                                 </span>
                             </template>
-                        </v-alert>
+                        </HgAlertComponent>
 
                         <div
                             :data-testid="`immunization-tab-div-${dependent.ownerId}`"
@@ -1009,7 +1010,7 @@ watch(vaccineRecordState, () => {
                                 color="primary"
                             >
                                 <v-tab :key="1">History</v-tab>
-                                <v-tab :key="2">Forecasts</v-tab>
+                                <v-tab :key="2">Schedule</v-tab>
                             </v-tabs>
                             <v-skeleton-loader
                                 v-if="immunizationsAreLoading"
@@ -1218,8 +1219,8 @@ watch(vaccineRecordState, () => {
                                             class="pl-4 d-flex align-start"
                                         >
                                             <v-menu
-                                                id="download-immunization-forecast-report-menu"
-                                                :data-testid="`download-immunization-forecast-report-menu-${dependent.ownerId}`"
+                                                id="download-immunization-schedule-report-menu"
+                                                :data-testid="`download-immunization-schedule-report-menu-${dependent.ownerId}`"
                                             >
                                                 <template
                                                     #activator="{
@@ -1233,7 +1234,7 @@ watch(vaccineRecordState, () => {
                                                         v-bind="
                                                             immunizationForecastMenuProps
                                                         "
-                                                        :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
+                                                        :data-testid="`download-immunization-schedule-report-btn-${dependent.ownerId}`"
                                                         :disabled="
                                                             isDownloadImmunizationReportButtonDisabled
                                                         "
@@ -1241,7 +1242,7 @@ watch(vaccineRecordState, () => {
                                                 </template>
                                                 <v-list>
                                                     <v-list-item
-                                                        :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
+                                                        :data-testid="`download-immunization-schedule-report-pdf-btn-${dependent.ownerId}`"
                                                         title="PDF"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
@@ -1250,7 +1251,7 @@ watch(vaccineRecordState, () => {
                                                         "
                                                     />
                                                     <v-list-item
-                                                        :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
+                                                        :data-testid="`download-immunization-schedule-report-csv-btn-${dependent.ownerId}`"
                                                         title="CSV"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
@@ -1259,7 +1260,7 @@ watch(vaccineRecordState, () => {
                                                         "
                                                     />
                                                     <v-list-item
-                                                        :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
+                                                        :data-testid="`download-immunization-schedule-report-xlsx-btn-${dependent.ownerId}`"
                                                         title="XLSX"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
@@ -1273,7 +1274,7 @@ watch(vaccineRecordState, () => {
                                     </v-row>
                                     <p
                                         v-if="recommendationItems.length === 0"
-                                        :data-testid="`immunization-forecast-no-rows-found-${dependent.ownerId}`"
+                                        :data-testid="`immunization-schedule-no-rows-found-${dependent.ownerId}`"
                                         class="text-body-1 my-4"
                                     >
                                         No records found.
@@ -1281,8 +1282,8 @@ watch(vaccineRecordState, () => {
                                     <v-table
                                         v-else
                                         class="w-100 mb-0"
-                                        aria-label="Immunization Forecasts"
-                                        :data-testid="`immunization-forecast-table-${dependent.ownerId}`"
+                                        aria-label="Immunization Schedule"
+                                        :data-testid="`immunization-schedule-table-${dependent.ownerId}`"
                                     >
                                         <thead>
                                             <tr>
@@ -1308,13 +1309,13 @@ watch(vaccineRecordState, () => {
                                                 :key="index"
                                             >
                                                 <td
-                                                    :data-testid="`forecast-immunization-${dependent.ownerId}-${index}`"
+                                                    :data-testid="`schedule-immunization-${dependent.ownerId}-${index}`"
                                                     class="text-center"
                                                 >
                                                     {{ row.immunization }}
                                                 </td>
                                                 <td
-                                                    :data-testid="`forecast-due-date-${dependent.ownerId}-${index}`"
+                                                    :data-testid="`schedule-due-date-${dependent.ownerId}-${index}`"
                                                     class="text-center text-nowrap"
                                                 >
                                                     {{ row.due_date }}

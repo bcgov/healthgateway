@@ -3,6 +3,7 @@ import { saveAs } from "file-saver";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
@@ -393,29 +394,58 @@ watch(vaccineRecordState, () => {
         :is-loading="isVaccineRecordDownloading"
         :text="vaccineRecordStatusMessage"
     />
-    <v-alert
+    <HgAlertComponent
         v-if="unverifiedEmail || unverifiedSms"
         data-testid="incomplete-profile-banner"
         closable
         type="info"
-        class="d-print-none mb-4 bg-info-light"
         title="Verify Contact Information"
         variant="outlined"
     >
-        <span class="text-body-1">
-            Your email or cell phone number has not been verified. You can use
-            the Health Gateway without verified contact information, however,
-            you will not receive notifications. Visit the
-            <router-link
-                id="profilePageLink"
-                data-testid="profile-page-link"
-                class="text-link"
-                to="/profile"
-                >Profile Page</router-link
-            >
-            to complete your verification.
-        </span>
-    </v-alert>
+        <template #default>
+            <span class="text-body-1">
+                Your email or cell phone number has not been verified. You can
+                use the Health Gateway without verified contact information,
+                however, you will not receive notifications. Visit the
+                <router-link
+                    id="profilePageLink"
+                    data-testid="profile-page-link"
+                    class="text-link"
+                    to="/profile"
+                    >Profile Page</router-link
+                >
+                to complete your verification.
+            </span>
+        </template>
+    </HgAlertComponent>
+    <HgAlertComponent
+        data-testid="immunization-tip-banner"
+        closable
+        type="info"
+        variant="outlined"
+    >
+        <template #default>
+            <span class="text-body-1">
+                Tip: Immunization schedule can be viewed in
+                <router-link
+                    id="exportRecordsLink"
+                    data-testid="export-records-link"
+                    class="text-link"
+                    to="/reports"
+                    >Export</router-link
+                >
+                and
+                <router-link
+                    id="dependentsLink"
+                    data-testid="dependents-link"
+                    class="text-link"
+                    to="/dependents"
+                    >Dependents</router-link
+                >
+                menu items
+            </span>
+        </template>
+    </HgAlertComponent>
     <PageTitleComponent title="Home">
         <template #append>
             <AddQuickLinkComponent :disabled="isAddQuickLinkButtonDisabled" />
@@ -437,29 +467,42 @@ watch(vaccineRecordState, () => {
                     />
                 </template>
                 <p class="text-body-1">
-                    View and manage all your available health records, including
-                    dispensed medications, health visits, lab results,
-                    immunizations, BC Cancer cervix screenings and more.
+                    View your available health records, including dispensed
+                    medications, health visits, lab results, immunizations, and
+                    more.
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showFederalCardButton" :cols="columns" class="d-flex">
+        <v-col
+            v-if="showRecommendationsCardButton"
+            :cols="columns"
+            class="d-flex"
+        >
             <HgCardComponent
-                title="Proof of Vaccination"
-                data-testid="proof-vaccination-card-btn"
+                title="Immunizations"
+                data-testid="recommendations-card-button"
                 class="flex-grow-1"
-                @click="showSensitiveDocumentDownloadModal()"
+                @click="showRecommendationsDialog()"
             >
                 <template #icon>
-                    <img
+                    <v-icon
+                        icon="syringe"
                         class="quick-link-icon"
-                        src="@/assets/images/gov/canada-gov-logo.svg"
-                        alt="Canada Government Logo"
+                        aria-label="Syringe icon"
+                        color="primary"
+                        size="small"
+                    />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveRecommendations()"
                     />
                 </template>
                 <p class="text-body-1">
-                    Download and print your Federal Proof of Vaccination for
-                    domestic and international travel.
+                    View immunizations you received from community pharmacies or
+                    public health, including vaccine recommendations.
                 </p>
             </HgCardComponent>
         </v-col>
@@ -484,8 +527,9 @@ watch(vaccineRecordState, () => {
                     />
                 </template>
                 <p class="text-body-1">
-                    Register on the Health Connect Registry to get a family
-                    doctor or nurse practitioner in your community.
+                    Register for the Health Connect Registry and get matched
+                    with a family doctor or nurse practitioner in your
+                    community.
                 </p>
             </HgCardComponent>
         </v-col>
@@ -511,42 +555,37 @@ watch(vaccineRecordState, () => {
                     />
                 </template>
                 <p class="text-body-1">
-                    Check whether you are registered as an organ donor with BC
-                    Transplant. If you are registered, you can review the
-                    details of your decision.
+                    Check whether you have registered your decision on organ
+                    donation with BC Transplant. If you have registered your
+                    decision, you can review the details here.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col v-if="showFederalCardButton" :cols="columns" class="d-flex">
+            <HgCardComponent
+                title="Proof of Vaccination"
+                data-testid="proof-vaccination-card-btn"
+                class="flex-grow-1"
+                @click="showSensitiveDocumentDownloadModal()"
+            >
+                <template #icon>
+                    <img
+                        class="quick-link-icon"
+                        src="@/assets/images/gov/canada-gov-logo.svg"
+                        alt="Canada Government Logo"
+                    />
+                </template>
+                <p class="text-body-1">
+                    Download and print your Federal Proof of Vaccination
+                    Certificate (PVC) for domestic and international travel.
                 </p>
             </HgCardComponent>
         </v-col>
         <v-col
-            v-if="showRecommendationsCardButton"
+            v-if="showVaccineCardButton && false"
             :cols="columns"
             class="d-flex"
         >
-            <HgCardComponent
-                data-testid="recommendations-card-button"
-                class="flex-grow-1"
-                @click="showRecommendationsDialog()"
-            >
-                <template #icon>
-                    <img
-                        class="quick-link-icon-large"
-                        src="@/assets/images/services/immunize-bc-logo.svg"
-                        alt="Immunize BC Logo"
-                    />
-                </template>
-                <template #menu-items>
-                    <v-list-item
-                        data-testid="remove-quick-link-button"
-                        title="Remove"
-                        @click.stop="handleClickRemoveRecommendations()"
-                    />
-                </template>
-                <p class="text-body-1">
-                    View your recommendations for vaccines.
-                </p>
-            </HgCardComponent>
-        </v-col>
-        <v-col v-if="showVaccineCardButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="BC Vaccine Card"
                 data-testid="bc-vaccine-card-card"

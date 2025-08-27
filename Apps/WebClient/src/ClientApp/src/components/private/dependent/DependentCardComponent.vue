@@ -93,7 +93,7 @@ function removeDependent(): void {
                     <v-tab
                         :id="`report-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
-                        text="Export Records"
+                        text="Export"
                     />
                     <v-tab
                         :id="`profile-tab-button-${dependent.ownerId}`"
@@ -132,7 +132,7 @@ function removeDependent(): void {
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
                                     <HgButtonComponent
-                                        variant="white"
+                                        variant="secondary"
                                         text="Remove Dependent"
                                         :data-testid="`remove-dependent-btn-${dependent.ownerId}`"
                                         @click="removeDependent"

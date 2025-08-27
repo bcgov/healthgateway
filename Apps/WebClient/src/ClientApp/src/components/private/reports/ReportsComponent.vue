@@ -2,11 +2,11 @@
 import { saveAs } from "file-saver";
 import { computed, ref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
-import Covid19TestResultReportComponent from "@/components/private/reports/Covid19TestResultReportComponent.vue";
 import HealthVisitReportComponent from "@/components/private/reports/HealthVisitReportComponent.vue";
 import HospitalVisitReportComponent from "@/components/private/reports/HospitalVisitReportComponent.vue";
 import ImmunizationReportComponent from "@/components/private/reports/ImmunizationReportComponent.vue";
@@ -46,14 +46,13 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const reportComponentMap = new Map<EntryType, unknown>([
-    [EntryType.Medication, MedicationReportComponent],
     [EntryType.HealthVisit, HealthVisitReportComponent],
-    [EntryType.Covid19TestResult, Covid19TestResultReportComponent],
-    [EntryType.Immunization, ImmunizationReportComponent],
-    [EntryType.SpecialAuthorityRequest, SpecialAuthorityRequestReportComponent],
-    [EntryType.Note, NoteReportComponent],
-    [EntryType.LabResult, LabResultReportComponent],
     [EntryType.HospitalVisit, HospitalVisitReportComponent],
+    [EntryType.Immunization, ImmunizationReportComponent],
+    [EntryType.LabResult, LabResultReportComponent],
+    [EntryType.Medication, MedicationReportComponent],
+    [EntryType.Note, NoteReportComponent],
+    [EntryType.SpecialAuthorityRequest, SpecialAuthorityRequestReportComponent],
 ]);
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -177,6 +176,7 @@ function cancelFilterChanges(): void {
 
 function applyFilterChanges(): void {
     updateFilter();
+    isAdvancedOpen.value = false;
 }
 
 function updateFilter(): void {
@@ -272,11 +272,10 @@ for (const [entryType] of reportComponentMap) {
 
 <template>
     <div>
-        <v-alert
+        <HgAlertComponent
             v-show="showLabResultsQueuedMessage"
             closable
             type="info"
-            class="d-print-none mb-4 bg-info-light"
             data-testid="laboratory-orders-queued-alert-message"
             text="We are getting your lab results. It may take up to 48 hours until
             you can see them."

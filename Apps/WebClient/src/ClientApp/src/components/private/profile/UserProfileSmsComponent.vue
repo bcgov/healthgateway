@@ -6,6 +6,7 @@ import { vMaska } from "maska/vue";
 import { computed, ref, watch } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import VerifySmsDialogComponent from "@/components/private/profile/VerifySmsDialogComponent.vue";
@@ -201,13 +202,12 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
         </v-text-field>
     </v-sheet>
     <div v-if="isSmsEditable" class="mb-4">
-        <v-alert
+        <HgAlertComponent
             v-if="!rawValue && rawStoreValue"
             data-testid="smsOptOutMessage"
             class="pt-0"
             type="error"
             variant="text"
-            icon="exclamation-triangle"
             text="Removing your phone number will disable future SMS communications
                 from the Health Gateway."
         />
@@ -261,7 +261,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
             v-if="!verified && rawStoreValue"
             data-testid="verifySMSBtn"
             class="mb-4"
-            variant="white"
+            variant="secondary"
             text="Verify"
             @click="verifySms"
         />

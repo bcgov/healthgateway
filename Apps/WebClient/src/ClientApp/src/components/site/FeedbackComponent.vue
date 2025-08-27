@@ -3,6 +3,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { maxLength, minLength, required } from "@vuelidate/validators";
 import { computed, ref, unref } from "vue";
 
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { ClientType } from "@/constants/clientType";
@@ -171,18 +172,21 @@ function resetFeedback(): void {
                             {{ resultDescription }}
                         </p>
                     </div>
-                    <v-alert
+                    <HgAlertComponent
                         v-if="isSuccessWithoutEmail"
                         type="warning"
-                        icon="circle-exclamation"
                         variant="text"
                     >
                         <template #text>
                             We won't be able to respond to your message unless
                             you have a verified email address in your profile.
                         </template>
-                    </v-alert>
-                    <v-alert v-if="hasFailed" type="error" variant="text">
+                    </HgAlertComponent>
+                    <HgAlertComponent
+                        v-if="hasFailed"
+                        type="error"
+                        variant="text"
+                    >
                         <template #text>
                             If the problem persists please send your feedback to
                             <a
@@ -192,7 +196,7 @@ function resetFeedback(): void {
                                 HealthGateway@gov.bc.ca
                             </a>
                         </template>
-                    </v-alert>
+                    </HgAlertComponent>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-spacer />

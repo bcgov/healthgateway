@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
@@ -62,10 +63,10 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
             </v-col>
         </v-row>
         <v-slide-y-transition>
-            <v-alert
+            <HgAlertComponent
                 v-show="showInfoDetails"
                 data-testid="health-visit-clinic-name-info-popover"
-                class="d-print-none mb-6 bg-info-light"
+                class="d-print-none mb-6"
                 type="info"
                 variant="outlined"
             >
@@ -82,14 +83,20 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                     >
                     page.
                 </p>
-            </v-alert>
+                <p class="text-body-1">
+                    Health Gateway shows your health visits billed to the BC
+                    Medical Services Plan (MSP) for the past seven years. You
+                    can also get your hospital visits since 2021 for everywhere
+                    except Interior Health. We are working on adding Interior
+                    visits in the future.
+                </p>
+            </HgAlertComponent>
         </v-slide-y-transition>
-        <v-alert
+        <HgAlertComponent
             v-if="entry.showRollOffWarning"
             data-testid="encounterRolloffAlert"
             class="d-print-none"
             type="warning"
-            icon="circle-exclamation"
             variant="outlined"
             text="Health visits are shown for the past 6 years only. You may wish
                 to export and save older records so you still have them when the

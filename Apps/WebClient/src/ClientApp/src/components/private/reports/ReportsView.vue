@@ -7,7 +7,7 @@ import { useUserStore } from "@/stores/user";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
-        text: "Export Records",
+        text: "Export",
         to: "/reports",
         active: true,
         dataTestId: "breadcrumb-export-records",
@@ -20,7 +20,7 @@ const userStore = useUserStore();
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <PageTitleComponent title="Export Records" />
+        <PageTitleComponent title="Export" />
         <ReportsComponent :hdid="userStore.hdid" />
     </div>
 </template>
