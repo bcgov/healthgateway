@@ -23,10 +23,15 @@ interface TourSlide {
     imageUri: string;
     // Optional alt text for the image.
     imageAlt?: string;
+    // Controls placement of title and description relative to the slide:
+    // - "below": title and description are both rendered below the slide
+    // - "split": title above the slide, description below the slide
+    layout?: "below" | "split";
 }
 
 const desktopSlides: TourSlide[] = [
-    {
+    /* AB#16942 Disable majority of App Tour cards until re-design is complete. Leave only Thank you registration active for time being. */
+    /* {
         title: "App Tour",
         description:
             "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
@@ -35,6 +40,7 @@ const desktopSlides: TourSlide[] = [
             import.meta.url
         ).href,
         imageAlt: "App tour start splash",
+        layout: "below",
     },
     {
         title: "Add a Quick Link",
@@ -45,6 +51,7 @@ const desktopSlides: TourSlide[] = [
             import.meta.url
         ).href,
         imageAlt: "Quick link web demo",
+        layout: "below",
     },
     {
         title: "Filter your Timeline records",
@@ -55,6 +62,7 @@ const desktopSlides: TourSlide[] = [
             import.meta.url
         ).href,
         imageAlt: "Timeline filter web demo",
+        layout: "below",
     },
     {
         title: "Notifications centre",
@@ -65,6 +73,18 @@ const desktopSlides: TourSlide[] = [
             import.meta.url
         ).href,
         imageAlt: "Notifications centre web demo",
+        layout: "below",
+    }, */
+    {
+        title: "Thank you for registering!",
+        description:
+            "It may take up to four business days for all of your available health records to appear.",
+        imageUri: new URL(
+            "@/assets/images/tour/web/at-registration-web.png",
+            import.meta.url
+        ).href,
+        imageAlt: "Thank you registration splash",
+        layout: "split",
     },
 ];
 
@@ -82,6 +102,11 @@ const slides = computed<TourSlide[]>(() => {
     return desktopSlides;
 });
 
+const carouselHeight = computed(() => {
+    if (!mdAndUp.value) return 250;
+    return currentSlide.value?.layout === "split" ? 440 : 480;
+});
+
 const currentSlide = computed<TourSlide | undefined>(() => {
     return slides.value.length > 0 ? slides.value[slideIndex.value] : undefined;
 });
@@ -92,6 +117,10 @@ const isFinalSlide = computed<boolean>(() => {
 
 const isFirstSlide = computed<boolean>(() => {
     return slideIndex.value === 0;
+});
+
+const isSingleSlide = computed<boolean>(() => {
+    return slides.value.length === 1;
 });
 
 function showDialog(): void {
@@ -138,13 +167,21 @@ function previous(): void {
             </template>
             <v-card data-testid="app-tour-modal">
                 <v-card-text class="pa-0">
+                    <div
+                        v-if="currentSlide && currentSlide.layout === 'split'"
+                        class="pt-3 pb-0 text-center"
+                    >
+                        <h3 class="text-h6 font-weight-bold">
+                            {{ currentSlide.title }}
+                        </h3>
+                    </div>
                     <v-carousel
                         id="tourCarousel"
                         v-model="slideIndex"
                         :continuous="false"
                         :show-arrows="false"
                         hide-delimiter-background
-                        :height="mdAndUp ? 480 : 250"
+                        :height="carouselHeight"
                         class="overflow-hidden"
                     >
                         <v-carousel-item
@@ -156,16 +193,35 @@ function previous(): void {
                         />
                     </v-carousel>
                     <div v-if="currentSlide" class="pa-4">
-                        <h3 class="text-h6 font-weight-bold">
-                            {{ currentSlide.title }}
-                        </h3>
-                        <p v-if="currentSlide.description" class="text-body-1">
-                            {{ currentSlide.description }}
-                        </p>
+                        <template
+                            v-if="
+                                !currentSlide.layout ||
+                                currentSlide.layout === 'below'
+                            "
+                        >
+                            <h3 class="text-h6 font-weight-bold">
+                                {{ currentSlide.title }}
+                            </h3>
+                            <p
+                                v-if="currentSlide.description"
+                                class="text-body-1"
+                            >
+                                {{ currentSlide.description }}
+                            </p>
+                        </template>
+                        <template v-else-if="currentSlide.layout === 'split'">
+                            <p
+                                v-if="currentSlide.description"
+                                class="text-body-1 text-center mx-auto"
+                                style="max-width: 640px"
+                            >
+                                {{ currentSlide.description }}
+                            </p>
+                        </template>
                     </div>
                 </v-card-text>
                 <template #actions>
-                    <v-row v-if="isFirstSlide" no-gutters>
+                    <v-row v-if="isFirstSlide && !isSingleSlide" no-gutters>
                         <v-col cols="3">
                             <HgButtonComponent
                                 variant="link"
