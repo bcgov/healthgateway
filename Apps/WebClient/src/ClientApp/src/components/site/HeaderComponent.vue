@@ -229,9 +229,12 @@ nextTick(() => {
             />
         </router-link>
         <v-spacer />
+        {{
+            /* AB#16942 Disable App Tour access via  :is-available="isAppTourAvailable && false" */ ""
+        }}
         <AppTourComponent
             ref="appTourComponent"
-            :is-available="isAppTourAvailable"
+            :is-available="isAppTourAvailable && false"
             :highlight-tour-change-indicator="highlightTourChangeIndicator"
             @click="hasViewedTour = true"
         />
