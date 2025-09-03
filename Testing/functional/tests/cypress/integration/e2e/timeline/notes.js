@@ -38,7 +38,8 @@ describe("Notes", () => {
             .should("have.text", "1950-Jan-01");
         cy.get("[data-testid=noteTitle]")
             .last()
-            .should("have.text", "Note Title!");
+            .should("include.text", "1950-Jan-01")
+            .should("include.text", "Note | Note Title!");
 
         // Edit Note
         cy.intercept("PUT", "**/Note/*").as("updateNote");
@@ -55,7 +56,8 @@ describe("Notes", () => {
             .should("have.text", "1950-Jan-01");
         cy.get("[data-testid=noteTitle]")
             .last()
-            .should("have.text", "Test Edit");
+            .should("include.text", "1950-Jan-01")
+            .should("include.text", "Note | Test Edit");
 
         // Delete Note
         cy.intercept("DELETE", "**/Note/*").as("deleteNote");

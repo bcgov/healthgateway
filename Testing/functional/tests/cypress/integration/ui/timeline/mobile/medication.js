@@ -67,7 +67,7 @@ describe("Medication", () => {
             ).should("be.visible");
             cy.contains(
                 "[data-testid=medication-din-pin]",
-                "DIN: 2391724"
+                "DIN: 02391724"
             ).should("be.visible");
 
             cy.contains(

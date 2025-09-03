@@ -15,7 +15,7 @@ const isTooManyRequests = computed(
 <template>
     <v-app>
         <v-app-bar
-            class="d-flex align-center border-b-md border-accent border-opacity-100 d-print-none"
+            class="d-flex align-center border-b-md border-background border-opacity-100 d-print-none"
             color="background"
         >
             <a href="/" style="display: inline-block">

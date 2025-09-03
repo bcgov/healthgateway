@@ -88,7 +88,8 @@ describe("Immunization", () => {
 
         cy.get("[data-testid=immunizationTitle]")
             .should("be.visible")
-            .should("have.text", "Immunization");
+            .should("include.text", "2013-Sep-20")
+            .should("include.text", "Immunizations");
     });
 });
 

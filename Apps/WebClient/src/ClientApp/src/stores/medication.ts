@@ -42,6 +42,10 @@ export const useMedicationStore = defineStore("medication", () => {
 
     const medicationMap = ref(new Map<string, MedicationState>());
 
+    function formatDinPin(din: string | null | undefined): string {
+        return (din ?? "").padStart(8, "0");
+    }
+
     function getMedicationState(hdid: string): MedicationState {
         return datasetMapUtil.getDatasetState(medicationMap.value, hdid);
     }
@@ -71,14 +75,20 @@ export const useMedicationStore = defineStore("medication", () => {
         medicationResult: RequestResult<MedicationStatement[]>
     ): void {
         if (medicationResult.resultStatus == ResultType.Success) {
-            datasetMapUtil.setStateData(
-                medicationMap.value,
-                hdid,
-                medicationResult.resourcePayload ?? [],
-                {
-                    protectiveWordAttempts: 0,
+            const payload = medicationResult.resourcePayload ?? [];
+
+            // Normalize DIN/PIN
+            for (const medication of payload) {
+                if (medication?.medicationSummary) {
+                    medication.medicationSummary.din = formatDinPin(
+                        medication.medicationSummary.din
+                    );
                 }
-            );
+            }
+
+            datasetMapUtil.setStateData(medicationMap.value, hdid, payload, {
+                protectiveWordAttempts: 0,
+            });
         } else if (
             medicationResult.resultStatus == ResultType.ActionRequired &&
             medicationResult.resultError?.actionCode == ActionType.Protected
