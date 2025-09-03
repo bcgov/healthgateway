@@ -271,7 +271,8 @@ function previous(): void {
                         <HgButtonComponent
                             variant="primary"
                             data-testid="app-tour-done"
-                            text="Done"
+                            text="Got it!"
+                            class="text-none"
                             @click="hideDialog"
                         />
                     </div>
