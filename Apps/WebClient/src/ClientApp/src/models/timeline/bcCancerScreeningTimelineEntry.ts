@@ -22,17 +22,17 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     private readonly programKey: string;
 
     private static readonly programResultTitleMap: Record<string, string> = {
-        "cervical cancer": "BC Cervix Cancer Screening Result Letter",
-        "breast cancer": "BC Breast Cancer Screening Result Letter",
-        "colon cancer": "BC Colon Cancer Screening Result Letter",
-        "lung cancer": "BC Lung Cancer Screening Result Letter",
+        "cervical cancer": "Cervix Screening Result Letter",
+        "breast cancer": "Breast Screening Result Letter",
+        "colon cancer": "Colon Screening Result Letter",
+        "lung cancer": "Lung Screening Result Letter",
     };
 
     private static readonly programReminderTitleMap: Record<string, string> = {
-        "cervical cancer": "BC Cervix Cancer Screening Reminder Letter",
-        "breast cancer": "BC Breast Cancer Screening Reminder Letter",
-        "colon cancer": "BC Colon Cancer Screening Reminder Letter",
-        "lung cancer": "BC Lung Cancer Screening Reminder Letter",
+        "cervical cancer": "Cervix Screening Reminder Letter",
+        "breast cancer": "Breast Screening Reminder Letter",
+        "colon cancer": "Colon Screening Reminder Letter",
+        "lung cancer": "Lung Screening Reminder Letter",
     };
 
     public constructor(
