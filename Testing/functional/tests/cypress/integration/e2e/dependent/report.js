@@ -247,8 +247,7 @@ describe("Reports", () => {
         );
     });
 
-    // AB#16941 - Skip test as COVID-19 removed from report list.
-    it.skip("Validate COVID-19 Report", () => {
+    it("Validate COVID-19 Report", () => {
         const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
