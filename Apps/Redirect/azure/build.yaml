@@ -9,7 +9,7 @@ trigger:
       - dev
   paths:
     include:
-      - Apps/Offline
+      - Apps/Redirect
 
 pool:
   vmImage: "ubuntu-latest"
@@ -17,7 +17,7 @@ pool:
 variables:
   - group: Secrets
   - name: App.Name
-    value: Offline
+    value: Redirect
   - name: Image.Name
     value: $[lower(variables['App.Name'])]
   - name: App.Home
