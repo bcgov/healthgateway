@@ -5,6 +5,7 @@ import { useDisplay } from "vuetify";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TileComponent from "@/components/public/landing/TileComponent.vue";
+import { getAccessLinks, getManageHealthLinks } from "@/constants/accessLinks";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";
@@ -34,7 +35,7 @@ const configStore = useConfigStore();
 const authStore = useAuthStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
-const { mdAndUp } = useDisplay();
+const { mdAndUp, xs } = useDisplay();
 
 const showLaptopTooltip = ref(false);
 const showTabletTooltip = ref(false);
@@ -46,6 +47,10 @@ const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
 const offlineMessage = computed(
     () => configStore.webConfig.offlineMode?.message ?? ""
 );
+
+const accessLinks = computed(() => getAccessLinks());
+const managedHealthLinks = computed(() => getManageHealthLinks());
+
 const proofOfVaccinationTile = computed<InfoTile>(() => ({
     type: "ProofOfVaccination",
     icon: "check-circle",
@@ -66,6 +71,7 @@ const organDonorRegistrationTile = computed<InfoTile>(() => ({
         "Check your Organ Donor Registration status with BC Transplant.",
     active: ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration),
 }));
+
 const servicesTiles = computed(() =>
     [proofOfVaccinationTile.value, organDonorRegistrationTile.value].filter(
         (tile) => tile.active
@@ -80,6 +86,11 @@ const activeDatasetTiles = computed(() =>
 );
 const shouldDisplayDatasets = computed(
     () => activeDatasetTiles.value.length > 0
+);
+
+const shouldDisplayAccessLinks = computed(() => accessLinks.value.length > 0);
+const shouldDisplayManagedHealthLinks = computed(
+    () => managedHealthLinks.value.length > 0
 );
 
 function mapEntryTypeToTile(type: EntryType): InfoTile {
@@ -162,7 +173,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 />
             </v-col>
         </v-row>
-        <div v-if="shouldDisplayDatasets" class="mt-6 mt-md-12">
+        <div v-if="shouldDisplayDatasets && false" class="mt-6 mt-md-12">
             <h2
                 class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
                 data-testid="active-dataset-tiles-header"
@@ -183,7 +194,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </v-col>
             </v-row>
         </div>
-        <div v-if="shouldDisplayServices" class="mt-6 mt-md-12">
+        <div v-if="shouldDisplayServices && false" class="mt-6 mt-md-12">
             <h2
                 class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
                 data-testid="active-service-tiles-header"
@@ -204,7 +215,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </v-col>
             </v-row>
         </div>
-        <div class="mt-6 mt-md-12">
+        <div v-if="false" class="mt-6 mt-md-12">
             <v-row no-gutters>
                 <v-col cols="12" lg="6">
                     <h2 class="mb-4 text-primary text-h4 font-weight-bold">
@@ -372,6 +383,246 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                                 to find what you need.
                             </p>
                         </template>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
+        <div v-if="shouldDisplayAccessLinks" class="mt-6 mt-md-12">
+            <h2
+                class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
+                data-testid="access-links-header"
+            >
+                What you can access
+            </h2>
+            <p class="text-body-1 text-medium-emphasis mb-6">
+                Access built-in features to help you view, manage and stay
+                informed about your health.
+            </p>
+            <v-carousel
+                v-if="!mdAndUp"
+                :height="xs ? 440 : 390"
+                class="w-100"
+                color="primary"
+                show-arrows="always"
+                hide-delimiter-background
+                data-testid="mobile-access-card-carousel"
+            >
+                <template #prev="{ props }">
+                    <v-btn
+                        v-bind="props"
+                        icon
+                        size="small"
+                        density="comfortable"
+                        data-testid="mobile-access-card-carousel-prev"
+                        aria-label="Previous slide"
+                    >
+                        <v-icon icon="fa-solid fa-chevron-left" />
+                    </v-btn>
+                </template>
+                <template #next="{ props }">
+                    <v-btn
+                        v-bind="props"
+                        icon
+                        size="small"
+                        density="comfortable"
+                        data-testid="mobile-access-card-carousel-next"
+                        aria-label="Next slide"
+                    >
+                        <v-icon icon="fa-solid fa-chevron-right" />
+                    </v-btn>
+                </template>
+                <v-carousel-item v-for="tile in accessLinks" :key="tile.name">
+                    <v-card
+                        variant="outlined"
+                        color="outline"
+                        rounded="md"
+                        class="d-flex flex-column h-100 text-start pa-5 border-sm"
+                        :data-testid="`mobile-access-card-${tile.type}`"
+                    >
+                        <TileComponent :tile="tile" />
+                        <div class="pt-4 text-center">
+                            <HgButtonComponent
+                                text="Read more"
+                                variant="landing"
+                                class="text-none mx-auto mb-2"
+                                :aria-label="`Read more about ${tile.name}`"
+                                :href="`${tile.link}`"
+                                :new-tab="true"
+                                :data-testid="`mobile-read-more-button-${tile.type}`"
+                            />
+                        </div>
+                    </v-card>
+                </v-carousel-item>
+            </v-carousel>
+            <v-row v-else align="stretch">
+                <v-col
+                    v-for="tile in accessLinks"
+                    :key="tile.name"
+                    cols="12"
+                    md="6"
+                    lg="3"
+                    class="px-2 px-md-4 pb-6 pb-md-12"
+                >
+                    <v-card
+                        variant="outlined"
+                        rounded="md"
+                        class="h-100 d-flex flex-column text-start pa-5 border-sm"
+                        :data-testid="`access-card-${tile.type}`"
+                    >
+                        <TileComponent :tile="tile" />
+                        <div class="mt-auto pt-4 text-center">
+                            <HgButtonComponent
+                                text="Read more"
+                                variant="landing"
+                                class="text-none mt-auto mx-auto"
+                                :aria-label="`Read more about ${tile.name}`"
+                                :href="tile.link"
+                                :new-tab="true"
+                                :data-testid="`read-more-button-${tile.type}`"
+                            />
+                        </div>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
+        <div class="mt-6 mt-md-12">
+            <v-sheet
+                color="sectionBackground"
+                variant="tonal"
+                class="pa-6 pa-md-10"
+            >
+                <v-row align="start" no-gutters>
+                    <v-col cols="12" md="7" class="pr-md-8">
+                        <h2 class="text-h4 font-weight-bold text-primary mb-2">
+                            Finding your health records
+                        </h2>
+                        <p class="text-body-1 mb-4">
+                            Your digital health record starts at the place where
+                            you get care. Health Gateway helps bring your
+                            records together in one place. It connects to many
+                            record sources, but not all.
+                        </p>
+                        <a
+                            href="https://www.healthlinkbc.ca/health-library/health-features/your-health-information"
+                            target="_blank"
+                            rel="noopener"
+                            class="text-primary text-body-1 font-weight-bold text-decoration-underline"
+                        >
+                            Learn more about where your records can be found
+                            besides Health Gateway
+                        </a>
+                    </v-col>
+                    <v-col
+                        cols="12"
+                        md="5"
+                        class="d-none d-md-flex justify-center align-center"
+                    >
+                        <v-img
+                            src="@/assets/images/landing/finding-records.png"
+                            alt="Illustration for finding records"
+                            max-width="300"
+                            contain
+                        />
+                    </v-col>
+                </v-row>
+            </v-sheet>
+        </div>
+        <div v-if="shouldDisplayManagedHealthLinks" class="mt-6 mt-md-12">
+            <h2
+                class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
+                data-testid="managed-health-links-header"
+            >
+                Other ways to manage your health
+            </h2>
+            <p class="text-body-1 text-medium-emphasis mb-6">
+                Explore trusted health services in BC for care, advice or
+                support.
+            </p>
+            <v-carousel
+                v-if="!mdAndUp"
+                :height="xs ? 440 : 390"
+                class="w-100"
+                color="primary"
+                show-arrows="always"
+                hide-delimiter-background
+                data-testid="mobile-managed-health-card-carousel"
+            >
+                <template #prev="{ props }">
+                    <v-btn
+                        v-bind="props"
+                        icon
+                        size="small"
+                        density="comfortable"
+                        data-testid="mobile-managed-health-card-carousel-prev"
+                        aria-label="Previous slide"
+                    >
+                        <v-icon icon="fa-solid fa-chevron-left" />
+                    </v-btn>
+                </template>
+                <template #next="{ props }">
+                    <v-btn
+                        v-bind="props"
+                        icon
+                        size="small"
+                        density="comfortable"
+                        data-testid="mobile-managed-health-card-carousel-next"
+                        aria-label="Next slide"
+                    >
+                        <v-icon icon="fa-solid fa-chevron-right" />
+                    </v-btn>
+                </template>
+                <v-carousel-item
+                    v-for="tile in managedHealthLinks"
+                    :key="tile.name"
+                >
+                    <v-card
+                        variant="outlined"
+                        rounded="md"
+                        class="h-100 d-flex flex-column text-start pa-5 border-sm"
+                        :data-testid="`mobile-managed-health-card-${tile.type}`"
+                    >
+                        <TileComponent :tile="tile" />
+                        <div class="pt-4 text-center">
+                            <HgButtonComponent
+                                text="Read more"
+                                variant="landing"
+                                class="text-none mx-auto mb-2"
+                                :aria-label="`Read more about ${tile.name}`"
+                                :href="`${tile.link}`"
+                                :new-tab="true"
+                                :data-testid="`mobile-read-more-button-${tile.type}`"
+                            />
+                        </div>
+                    </v-card>
+                </v-carousel-item>
+            </v-carousel>
+            <v-row v-else align="stretch">
+                <v-col
+                    v-for="tile in managedHealthLinks"
+                    :key="tile.name"
+                    cols="12"
+                    md="6"
+                    lg="4"
+                    class="px-2 px-md-4 pb-6 pb-md-12"
+                >
+                    <v-card
+                        variant="outlined"
+                        rounded="md"
+                        class="h-100 d-flex flex-column text-start pa-5 border-sm"
+                        :data-testid="`managed-health-card-${tile.type}`"
+                    >
+                        <TileComponent :tile="tile" />
+                        <div class="mt-auto pt-4 text-center">
+                            <HgButtonComponent
+                                text="Read More"
+                                variant="landing"
+                                class="text-none mt-auto mx-auto"
+                                :aria-label="`Read more about ${tile.name}`"
+                                :href="tile.link"
+                                :new-tab="true"
+                                :data-testid="`read-more-button-${tile.type}`"
+                            />
+                        </div>
                     </v-card>
                 </v-col>
             </v-row>

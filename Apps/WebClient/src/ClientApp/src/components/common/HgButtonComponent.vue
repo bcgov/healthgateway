@@ -5,14 +5,22 @@ interface Props {
     variant?: HgButtonVariant;
     inverse?: boolean;
     disabled?: boolean;
+    href?: string;
+    newTab?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     variant: "primary",
     inverse: false,
     disabled: undefined,
+    href: undefined,
 });
 
-export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
+export type HgButtonVariant =
+    | "primary"
+    | "secondary"
+    | "link"
+    | "transparent"
+    | "landing";
 
 interface HgButtonVariantDetails {
     inverseVariant: HgButtonVariant;
@@ -43,6 +51,11 @@ variants.set("transparent", {
     vuetifyVariant: "flat",
     color: "transparent",
 });
+variants.set("landing", {
+    inverseVariant: "landing",
+    vuetifyVariant: "outlined",
+    color: "background",
+});
 
 const slots = useSlots();
 
@@ -63,11 +76,15 @@ const disabledColor = computed(
         :variant="variantDetails.vuetifyVariant"
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
+        :href="href"
+        :target="newTab ? '_blank' : undefined"
+        :rel="newTab ? 'noopener noreferrer' : undefined"
         :class="[
             'transition-none',
             props.variant === 'secondary'
                 ? 'secondary-btn-primarytext-surfacehover'
                 : '',
+            props.variant === 'landing' ? 'landing-btn' : '',
         ]"
     >
         <slot />
@@ -77,11 +94,15 @@ const disabledColor = computed(
         :variant="variantDetails.vuetifyVariant"
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
+        :href="href"
+        :target="newTab ? '_blank' : undefined"
+        :rel="newTab ? 'noopener noreferrer' : undefined"
         :class="[
             'transition-none',
             props.variant === 'secondary'
                 ? 'secondary-btn-primarytext-surfacehover'
                 : '',
+            props.variant === 'landing' ? 'landing-btn' : '',
         ]"
     />
 </template>
@@ -93,9 +114,20 @@ const disabledColor = computed(
 
 .v-btn.secondary-btn-primarytext-surfacehover {
     color: rgb(var(--v-theme-primary)) !important;
-
     --v-hover-opacity: 0;
+    &:hover {
+        background-color: rgb(var(--v-theme-surfaceHover)) !important;
+    }
+}
 
+.v-btn.landing-btn {
+    color: rgb(var(--v-theme-primary)) !important;
+    font-weight: 700;
+    --v-border-opacity: 1;
+    border-color: rgb(var(--v-theme-primary)) !important;
+    border-width: 2px !important;
+    border-style: solid !important;
+    --v-hover-opacity: 0;
     &:hover {
         background-color: rgb(var(--v-theme-surfaceHover)) !important;
     }
