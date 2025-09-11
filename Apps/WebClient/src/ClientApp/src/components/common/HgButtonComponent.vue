@@ -5,11 +5,14 @@ interface Props {
     variant?: HgButtonVariant;
     inverse?: boolean;
     disabled?: boolean;
+    href?: string;
+    newTab?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     variant: "primary",
     inverse: false,
     disabled: undefined,
+    href: undefined,
 });
 
 export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
@@ -63,6 +66,9 @@ const disabledColor = computed(
         :variant="variantDetails.vuetifyVariant"
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
+        :href="href"
+        :target="newTab ? '_blank' : undefined"
+        :rel="newTab ? 'noopener noreferrer' : undefined"
         :class="[
             'transition-none',
             props.variant === 'secondary'
@@ -77,6 +83,9 @@ const disabledColor = computed(
         :variant="variantDetails.vuetifyVariant"
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
+        :href="href"
+        :target="newTab ? '_blank' : undefined"
+        :rel="newTab ? 'noopener noreferrer' : undefined"
         :class="[
             'transition-none',
             props.variant === 'secondary'
