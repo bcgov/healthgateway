@@ -293,7 +293,7 @@ nextTick(() => {
         </template>
         <HgButtonComponent
             v-else-if="isLogInButtonShown"
-            variant="secondary"
+            variant="primary"
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
