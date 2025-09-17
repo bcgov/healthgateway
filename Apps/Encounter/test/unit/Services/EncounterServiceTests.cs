@@ -119,7 +119,7 @@ namespace HealthGateway.EncounterTests.Services
                 PageIndex = 1,
                 ResourcePayload = new MspVisitHistoryResponse
                 {
-                    Claims = [..includedClaims, ..excludedClaims],
+                    Claims = [.. includedClaims, .. excludedClaims],
                 },
             };
             string hdid = "MOCKHDID";

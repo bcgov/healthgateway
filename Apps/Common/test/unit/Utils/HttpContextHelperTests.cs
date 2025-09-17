@@ -69,27 +69,27 @@ namespace HealthGateway.CommonTests.Utils
             switch (lookupMethod)
             {
                 case FhirSubjectLookupMethod.Parameter:
-                {
-                    QueryCollection queryCollection = new(
-                        new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase)
-                        {
+                    {
+                        QueryCollection queryCollection = new(
+                            new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase)
+                            {
                             { "Hdid", QueryParamHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
-                        });
+                            });
 
-                    httpRequestMock.Setup(s => s.Query).Returns(queryCollection);
-                    break;
-                }
+                        httpRequestMock.Setup(s => s.Query).Returns(queryCollection);
+                        break;
+                    }
 
                 case FhirSubjectLookupMethod.Route:
-                {
-                    RouteValueDictionary routeValues = new()
+                    {
+                        RouteValueDictionary routeValues = new()
                     {
                         { "Hdid", RouteHdid }, // Use Hdid for hdid in HttpContextHelper to check for case insensitivity
                     };
 
-                    httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
-                    break;
-                }
+                        httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
+                        break;
+                    }
             }
 
             Mock<HttpContext> httpContextMock = new();

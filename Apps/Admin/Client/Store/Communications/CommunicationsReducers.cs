@@ -83,7 +83,7 @@ public static class CommunicationsReducers
         Communication? communication = action.Data.ResourcePayload;
         if (communication != null)
         {
-            data = [..data, new(communication)];
+            data = [.. data, new(communication)];
         }
 
         return state with
