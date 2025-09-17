@@ -111,7 +111,7 @@ namespace HealthGateway.Admin.Tests.Services
                 GenerateBetaFeatureAccess(Hdid3Email2, Email2),
             ];
 
-            IGrouping<string, BetaFeatureAccess>[] groupedAssociations = [..associations.GroupBy(a => a.UserProfile.Email!).OrderBy(a => a.Key)];
+            IGrouping<string, BetaFeatureAccess>[] groupedAssociations = [.. associations.GroupBy(a => a.UserProfile.Email!).OrderBy(a => a.Key)];
             IList<string> expectedEmails = groupedAssociations.Select(i => i.Key).ToList();
             IBetaFeatureService service = SetupGetBetaFeatureAccessMock(groupedAssociations);
 

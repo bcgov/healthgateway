@@ -68,7 +68,7 @@ namespace HealthGateway.GatewayApi.Services
 
             userProfileModel.BlockedDataSources = await patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
             userProfileModel.Preferences = await userPreferenceService.GetUserPreferencesAsync(userProfileModel.HdId, ct);
-            userProfileModel.LastLoginDateTimes = [userProfile.LastLoginDateTime, ..historyCollection.Select(h => h.LastLoginDateTime)];
+            userProfileModel.LastLoginDateTimes = [userProfile.LastLoginDateTime, .. historyCollection.Select(h => h.LastLoginDateTime)];
 
             return userProfileModel;
         }

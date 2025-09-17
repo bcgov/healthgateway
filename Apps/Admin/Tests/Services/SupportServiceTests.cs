@@ -570,7 +570,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ;
 
             // Assert
-            Assert.Contains(exception.Message, "Unknown queryType", StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Unknown queryType", exception.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
