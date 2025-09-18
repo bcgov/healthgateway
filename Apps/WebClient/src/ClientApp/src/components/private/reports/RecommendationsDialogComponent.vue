@@ -146,7 +146,7 @@ function showDialog() {
             >
                 <v-card-title class="px-0">
                     <v-toolbar
-                        title="Vaccine Recommendations"
+                        title="Recommended Immunizations"
                         color="transparent"
                     >
                         <HgIconButtonComponent
@@ -190,7 +190,7 @@ function showDialog() {
                             </p>
                             <template v-else>
                                 <p>
-                                    Vaccine recommendations are based on the
+                                    Recommended immunizations are based on the
                                     <a
                                         href="https://www.healthlinkbc.ca/health-library/immunizations/schedules"
                                         target="_blank"
