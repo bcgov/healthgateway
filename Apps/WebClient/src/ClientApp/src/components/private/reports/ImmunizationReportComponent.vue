@@ -277,7 +277,7 @@ immunizationStore
                 </template>
                 <template v-else>
                     <p>
-                        Vaccine recommendations are based on the
+                        Recommended immunizations are based on the
                         <a
                             href="https://www.healthlinkbc.ca/health-library/immunizations/schedules"
                             class="text-link"
