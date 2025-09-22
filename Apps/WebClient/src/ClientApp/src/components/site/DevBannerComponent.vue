@@ -14,6 +14,7 @@ const isProduction = computed(
         (host.value.startsWith("HEALTHGATEWAY") ||
             host.value.startsWith("WWW.HEALTHGATEWAY") ||
             host.value.startsWith("CLASSIC.HEALTHGATEWAY") ||
+            host.value.startsWith("SECURE.HEALTHGATEWAY") ||
             host.value.startsWith("LEGACY.HEALTHGATEWAY"))
 );
 </script>
