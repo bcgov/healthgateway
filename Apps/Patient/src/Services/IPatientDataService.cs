@@ -220,7 +220,7 @@ namespace HealthGateway.Patient.Services
     [ExcludeFromCodeCoverage]
     public record PatientFileResponse(IEnumerable<byte> Content, string ContentType);
 
-// Disable documentation for internal class.
+    // Disable documentation for internal class.
 #pragma warning disable SA1600
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
     {

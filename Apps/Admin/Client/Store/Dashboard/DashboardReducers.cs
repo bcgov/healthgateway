@@ -219,7 +219,7 @@ public static class DashboardReducers
     [ReducerMethod]
     public static DashboardState ReduceGetAgeCountsSuccessAction(DashboardState state, DashboardActions.GetAgeCountsSuccessAction action)
     {
-        IList<int> ages = [..action.Data.Keys.Order()];
+        IList<int> ages = [.. action.Data.Keys.Order()];
         Dictionary<int, int> ageCounts = new(action.Data);
 
         // add empty entries for ages that are not populated

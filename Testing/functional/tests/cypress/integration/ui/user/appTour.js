@@ -13,7 +13,8 @@ describe("App Tour Authenticated", () => {
         );
     });
 
-    it("Header tour button should be visible and have badge when tour changes present", () => {
+    // AB#16942 Disable App Tour access
+    it.skip("Header tour button should be visible and have badge when tour changes present", () => {
         cy.get("[data-testid=app-tour-button]")
             .should("be.visible")
             .find("span")
@@ -44,7 +45,8 @@ describe("App Tour Authenticated", () => {
             });
     }
 
-    it("User should be able to move through all slides and use done to close modal", () => {
+    // AB#16942 Disable App Tour access
+    it.skip("User should be able to move through all slides and use done to close modal", () => {
         cy.get("[data-testid=app-tour-button]").should("be.visible").click();
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
@@ -67,8 +69,9 @@ describe("App Tour Authenticated", () => {
         });
     });
 
+    // AB#16942 Disable App Tour access
     // This greatly depends on the tour content, and isn't a great test but will test if the content is there
-    it("User should be able to navigate forwards and backwards if greater than 2 slides", () => {
+    it.skip("User should be able to navigate forwards and backwards if greater than 2 slides", () => {
         cy.get("[data-testid=app-tour-button]").should("be.visible").click();
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 

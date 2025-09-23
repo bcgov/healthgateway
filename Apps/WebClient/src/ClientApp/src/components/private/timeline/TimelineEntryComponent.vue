@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import CommentSectionComponent from "@/components/private/timeline/comment/CommentSectionComponent.vue";
+import { entryTypeMap } from "@/constants/entryType";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { EventName, useEventStore } from "@/stores/event";
 import { useLayoutStore } from "@/stores/layout";
@@ -43,9 +44,11 @@ const isInteractive = computed(
         (!layoutStore.isMobile && props.canShowDetails) ||
         (layoutStore.isMobile && !props.isMobileDetails)
 );
-const displayTitle = computed(() =>
-    props.title === "" ? props.entry.type.toString() : props.title
-);
+const entryTypeTitle = computed(() => {
+    const title = entryTypeMap.get(props.entry.type)?.title;
+    return title && title.trim() ? title : props.entry.type.toString();
+});
+const displayTitle = computed(() => props.title?.trim() ?? "");
 const dateString = computed(() => props.entry.date.format());
 const commentCount = computed(() => props.entry.comments?.length ?? 0);
 
@@ -101,21 +104,40 @@ watch(
                     <v-col>
                         <v-row dense>
                             <v-col
-                                :data-testid="`${entry.type.toLowerCase()}Title`"
+                                :data-testid="`${String(
+                                    entry.type
+                                ).toLowerCase()}Title`"
                             >
-                                <h2
-                                    data-testid="entryCardDetailsTitle"
-                                    class="text-subtitle-1 font-weight-bold"
+                                <span
+                                    data-testid="entryCardDate"
+                                    class="text-subtitle-1 font-weight-bold d-sm-inline d-block text-no-wrap mr-sm-2"
                                 >
-                                    {{ displayTitle }}
-                                </h2>
-                            </v-col>
-                            <v-col
-                                cols="auto"
-                                data-testid="entryCardDate"
-                                class="text-body-2 text-no-wrap"
-                            >
-                                {{ dateString }}
+                                    {{ dateString }}
+                                </span>
+                                <span
+                                    data-testid="entry-card-type-title"
+                                    class="text-subtitle-1 font-weight-bold d-sm-inline d-block text-no-wrap"
+                                >
+                                    {{ entryTypeTitle }}
+                                </span>
+                                <span
+                                    v-if="displayTitle"
+                                    class="d-sm-inline d-block"
+                                >
+                                    <span
+                                        data-testid="entry-card-details-pipe"
+                                        class="text-subtitle-1 font-weight-bold d-none d-sm-inline"
+                                        aria-hidden="true"
+                                    >
+                                        |
+                                    </span>
+                                    <span
+                                        data-testid="entryCardDetailsTitle"
+                                        class="text-subtitle-1"
+                                    >
+                                        {{ displayTitle }}
+                                    </span>
+                                </span>
                             </v-col>
                         </v-row>
                         <v-row dense justify="end">
