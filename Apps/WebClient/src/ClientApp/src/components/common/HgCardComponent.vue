@@ -6,10 +6,20 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 interface Props {
     title?: string;
     density?: "compact" | "normal";
+    compactHeader?: boolean;
+    variant?: "elevated" | "flat" | "outlined" | "tonal" | "text";
+    elevation?: number | string;
+    border?: boolean | string;
+    color?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
     title: undefined,
     density: "normal",
+    compactHeader: false,
+    variant: "elevated",
+    elevation: 1,
+    border: undefined,
+    color: undefined,
 });
 
 const slots = useSlots();
@@ -36,20 +46,40 @@ const isNormalDensity = computed<boolean>(() => {
 </script>
 
 <template>
-    <v-card class="hover-card">
+    <v-card
+        class="hover-card"
+        :variant="variant"
+        :elevation="elevation"
+        :border="border"
+        :color="color"
+    >
         <template #title>
             <v-row align="center" class="text-wrap">
                 <v-col
                     v-if="hasIconSlot"
-                    class="flex-grow-0 d-flex"
-                    :class="{ 'py-5': isNormalDensity }"
+                    class="flex-grow-0 d-flex align-center"
+                    :class="[
+                        isNormalDensity
+                            ? props.compactHeader
+                                ? 'py-3 py-sm-5'
+                                : 'py-5'
+                            : '',
+                        props.compactHeader ? 'ps-4 pe-2 ps-sm-3 pe-sm-3' : '',
+                    ]"
                 >
                     <slot name="icon" />
                 </v-col>
                 <v-col
                     v-if="title"
                     data-testid="card-button-title"
-                    :class="{ 'py-5': isNormalDensity }"
+                    :class="[
+                        isNormalDensity
+                            ? props.compactHeader
+                                ? 'py-3 py-sm-5'
+                                : 'py-5'
+                            : '',
+                        props.compactHeader ? 'px-0 px-sm-3' : '',
+                    ]"
                 >
                     {{ title }}
                 </v-col>

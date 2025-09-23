@@ -6,5 +6,6 @@ export interface InfoTile {
     logoUri?: string;
     active: boolean;
     link?: string;
+    linkText?: string;
     section?: string;
 }
