@@ -134,15 +134,18 @@ const showRecommendationsCardButton = computed(
 const showVaccineCardButton = computed(
     () => !preferenceVaccineCardHidden.value
 );
-const showOrganDonorButton = computed(
+const showOrganDonorCardButton = computed(
     () =>
         ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration) &&
         !preferenceOrganDonorHidden.value
 );
-const showHealthConnectButton = computed(
+const showHealthConnectCardButton = computed(
     () =>
         ConfigUtil.isServiceEnabled(ServiceName.HealthConnectRegistry) &&
         !preferenceHealthConnectHidden.value
+);
+const showOtherRecordSourcesCardButton = computed(() =>
+    ConfigUtil.isServiceEnabled(ServiceName.OtherRecordSources)
 );
 const enabledQuickLinks = computed(
     () =>
@@ -258,6 +261,16 @@ function handleClickOrganDonorCard(): void {
         origin: Origin.Home,
     });
     router.push({ path: "/services" });
+}
+
+function handleClickOtherRecordSources(): void {
+    trackingService.trackEvent({
+        action: Action.Visit,
+        text: Text.ExternalLink,
+        destination: Destination.OtherRecordSources,
+        origin: Origin.Home,
+    });
+    router.push({ path: "/otherRecordSources" });
 }
 
 function showRecommendationsDialog(): void {
@@ -455,6 +468,9 @@ watch(vaccineRecordState, () => {
         <v-col :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Health Records"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="health-records-card"
                 class="flex-grow-1"
                 @click="handleClickHealthRecords()"
@@ -480,6 +496,9 @@ watch(vaccineRecordState, () => {
         >
             <HgCardComponent
                 title="Immunizations"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="recommendations-card-button"
                 class="flex-grow-1"
                 @click="showRecommendationsDialog()"
@@ -506,8 +525,15 @@ watch(vaccineRecordState, () => {
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showHealthConnectButton" :cols="columns" class="d-flex">
+        <v-col
+            v-if="showHealthConnectCardButton"
+            :cols="columns"
+            class="d-flex"
+        >
             <HgCardComponent
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="health-connect-registry-card"
                 class="flex-grow-1"
                 @click="handleClickHealthConnectCard()"
@@ -533,9 +559,12 @@ watch(vaccineRecordState, () => {
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showOrganDonorButton" :cols="columns" class="d-flex">
+        <v-col v-if="showOrganDonorCardButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Organ Donor Registration"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="organ-donor-registration-card"
                 class="flex-grow-1"
                 @click="handleClickOrganDonorCard()"
@@ -564,6 +593,9 @@ watch(vaccineRecordState, () => {
         <v-col v-if="showFederalCardButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Proof of Vaccination"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="proof-vaccination-card-btn"
                 class="flex-grow-1"
                 @click="showSensitiveDocumentDownloadModal()"
@@ -588,6 +620,9 @@ watch(vaccineRecordState, () => {
         >
             <HgCardComponent
                 title="BC Vaccine Card"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="bc-vaccine-card-card"
                 class="flex-grow-1"
                 @click="handleClickVaccineCard()"
@@ -617,6 +652,9 @@ watch(vaccineRecordState, () => {
         >
             <HgCardComponent
                 :title="card.title"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
                 data-testid="quick-link-card"
                 class="flex-grow-1"
                 @click="handleClickQuickLink(card.index)"
@@ -647,6 +685,41 @@ watch(vaccineRecordState, () => {
             </HgCardComponent>
         </v-col>
     </v-row>
+    <v-row>
+        <v-col v-if="showOtherRecordSourcesCardButton" cols="12" class="d-flex">
+            <HgCardComponent
+                density="compact"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
+                class="flex-grow-1 w-100"
+                data-testid="other-record-sources-card"
+                @click="handleClickOtherRecordSources()"
+            >
+                <template #default>
+                    <div class="d-flex align-start">
+                        <img
+                            src="@/assets/images/home/other-record-sources.svg"
+                            alt="Other record sources illustration"
+                            class="other-record-sources-img mr-4 mr-md-6"
+                        />
+                        <div>
+                            <div
+                                class="text-h6 font-weight-bold text-high-emphasis mb-1 mb-md-2"
+                            >
+                                Other record sources
+                            </div>
+                            <p class="text-body-1 mb-0">
+                                Some health records may not appear in Health
+                                Gateway. Learn about other trusted websites to
+                                find where your records may be.
+                            </p>
+                        </div>
+                    </div>
+                </template>
+            </HgCardComponent>
+        </v-col>
+    </v-row>
     <RecommendationsDialogComponent
         ref="recommendationsDialogComponent"
         :hdid="user.hdid"
@@ -666,6 +739,12 @@ watch(vaccineRecordState, () => {
 </template>
 
 <style lang="scss" scoped>
+.other-record-sources-img {
+    height: 3.5rem;
+    @media (max-width: 960px) {
+        height: 3rem;
+    }
+}
 .quick-link-icon {
     height: 1.5em;
     &-large {
