@@ -28,6 +28,9 @@ export const enum Action {
     Submit = "Submit",
     View = "View",
     Visit = "Visit",
+    ButtonClick = "button_click",
+    InternalLink = "internal_link",
+    ExternalLink = "external_link",
 }
 
 export const enum Actor {
@@ -58,6 +61,11 @@ export const enum Destination {
     OrganDonorRegistration = "Organ Donor Registration",
     PrimaryCare = "Primary Care",
     PublicHealthImmunizationSchedule = "Public Health Immunization Schedule",
+    Dependents = "Dependents",
+    Download = "Download",
+    Export = "Export",
+    HealthLinkBC = "HealthLink BC",
+    Services = "Services",
     Timeline = "Timeline",
 }
 
@@ -93,6 +101,16 @@ export const enum Text {
     InternalLink = "Internal Link",
     Page = "Page",
     Request = "Request",
+    BcVaccineCard = "BC Vaccine Card",
+    HealthRecords = "Health Records",
+    HealthLinkBC = "HealthLinkBC",
+    Immunizations = "View Recommend Immunizations",
+    ImmunizationScheduleExport = "Immunization Schedule Export",
+    ImmunizationScheduleDependents = "Immunization Schedule Dependents",
+    OrganDonor = "Organ Donor",
+    ViewProofOfVaccination = "View Proof of Vaccination",
+    DownloadProofOfVaccination = "Download Proof of Vaccination",
+    QuickLink = "Quicklink",
 }
 
 export const enum Type {
@@ -101,4 +119,19 @@ export const enum Type {
     PublicCovid19ProofOfVaccination = "Public COVID-19 Proof of Vaccination",
     Recall = "Recall",
     Result = "Result",
+    HomeTile = "Home Tile",
+    InfoBanner = "Info Banner",
+}
+
+export const enum ExternalUrl {
+    HealthLinkBC = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
+}
+
+export const enum InternalUrl {
+    Timeline = "./timeline",
+    HealthRecords = Timeline,
+    ImmunizationScheduleExport = "./export-records",
+    ImmunizationScheduleDependents = "./dependents",
+    OrganDonor = "./services",
+    QuickLink = Timeline,
 }
