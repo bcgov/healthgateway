@@ -22,7 +22,7 @@ export default abstract class EventDataUtility {
     public static getDataset(entryType: EntryType | undefined): Dataset {
         switch (entryType) {
             case EntryType.BcCancerScreening:
-                return Dataset.BcCancer;
+                return Dataset.BcCancerScreening;
             case EntryType.ClinicalDocument:
                 return Dataset.ClinicalDocuments;
             case EntryType.Covid19TestResult:
