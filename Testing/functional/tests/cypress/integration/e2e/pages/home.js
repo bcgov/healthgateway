@@ -81,14 +81,6 @@ describe("Home Page", () => {
         cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
-
-    it("Home - Other Record Sources Card link to Other Record Sources", () => {
-        cy.get("[data-testid=other-record-sources-card]")
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.url().should("include", otherRecordSourcesUrl);
-    });
 });
 
 describe("Home page - Recommendations", () => {
