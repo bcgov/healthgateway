@@ -11,7 +11,7 @@ export interface SnowPlowEvent {
 
 export interface EventData {
     action: Action;
-    text: Text;
+    text: Text | string;
     actor?: Actor;
     dataset?: Dataset;
     destination?: Destination | string;
@@ -19,7 +19,7 @@ export interface EventData {
     origin?: Origin;
     rating?: Rating;
     type?: Type;
-    url?: string;
+    url?: string | InternalUrl | ExternalUrl;
 }
 
 export const enum Action {
@@ -28,6 +28,10 @@ export const enum Action {
     Submit = "Submit",
     View = "View",
     Visit = "Visit",
+    ButtonClick = "button_click",
+    InternalLink = "internal_link",
+    ExternalLink = "external_link",
+    TimelineCardClick = "timeline_card_click",
 }
 
 export const enum Actor {
@@ -37,6 +41,7 @@ export const enum Actor {
 
 export const enum Dataset {
     BcCancer = "BC Cancer",
+    BcCancerScreening = "BC Cancer Screening",
     ClinicalDocuments = "Clinical Documents",
     Covid19Tests = "COVID-19 Tests",
     HealthVisits = "Health Visits",
@@ -59,6 +64,11 @@ export const enum Destination {
     OtherRecordSources = "Other Record Sources",
     PrimaryCare = "Primary Care",
     PublicHealthImmunizationSchedule = "Public Health Immunization Schedule",
+    Dependents = "Dependents",
+    Download = "Download",
+    Export = "Export",
+    HealthLinkBC = "HealthLink BC",
+    Services = "Services",
     Timeline = "Timeline",
 }
 
@@ -94,6 +104,16 @@ export const enum Text {
     InternalLink = "Internal Link",
     Page = "Page",
     Request = "Request",
+    BcVaccineCard = "BC Vaccine Card",
+    HealthRecords = "Health Records",
+    HealthLinkBC = "HealthLinkBC",
+    Immunizations = "View Recommend Immunizations",
+    ImmunizationScheduleExport = "Immunization Schedule Export",
+    ImmunizationScheduleDependents = "Immunization Schedule Dependents",
+    OrganDonor = "Organ Donor",
+    ViewProofOfVaccination = "View Proof of Vaccination",
+    DownloadProofOfVaccination = "Download Proof of Vaccination",
+    QuickLink = "Quicklink",
 }
 
 export const enum Type {
@@ -102,4 +122,41 @@ export const enum Type {
     PublicCovid19ProofOfVaccination = "Public COVID-19 Proof of Vaccination",
     Recall = "Recall",
     Result = "Result",
+    BcCancerScreening = "BC Cancer Screening",
+    HomeTile = "Home Tile",
+    InfoBanner = "Info Banner",
+}
+
+export const BcCancerPrograms = ["Breast", "Cervix", "Colon", "Lung"] as const;
+export type BcCancerProgram = (typeof BcCancerPrograms)[number];
+
+export const BcCancerDestination: Record<BcCancerProgram, string> = {
+    Breast: "Breast Cancer Screening",
+    Cervix: "Cervix Cancer Screening",
+    Colon: "Colon Cancer Screening",
+    Lung: "Lung Cancer Screening",
+} as const;
+
+export const BcCancerUrl: Record<BcCancerProgram, string> = {
+    Breast: "http://www.bccancer.bc.ca/screening/breast",
+    Cervix: "http://www.bccancer.bc.ca/screening/cervix",
+    Colon: "http://www.bccancer.bc.ca/screening/colon",
+    Lung: "http://www.bccancer.bc.ca/screening/lung",
+} as const;
+
+export function isBcCancerProgram(x: string): x is BcCancerProgram {
+    return (BcCancerPrograms as readonly string[]).includes(x);
+}
+
+export const enum ExternalUrl {
+    HealthLinkBC = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
+}
+
+export const enum InternalUrl {
+    Timeline = "./timeline",
+    HealthRecords = Timeline,
+    ImmunizationScheduleExport = "./export-records",
+    ImmunizationScheduleDependents = "./dependents",
+    OrganDonor = "./services",
+    QuickLink = Timeline,
 }

@@ -72,14 +72,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Null(actual.SmsNumber);
             Assert.Null(actual.SmsValidationCode);
 
-            mock.MessagingVerificationDelegateMock.Verify(
-                v => v.InsertAsync(
-                    It.Is<MessagingVerification>(
-                        x => string.IsNullOrWhiteSpace(x.SmsNumber)
-                             && x.Email != null
-                             && !string.IsNullOrWhiteSpace(x.EmailAddress)),
-                    It.Is<bool>(x => x == shouldCommit),
-                    It.IsAny<CancellationToken>()));
+            mock.MessagingVerificationDelegateMock.Verify(v => v.InsertAsync(
+                It.Is<MessagingVerification>(x => string.IsNullOrWhiteSpace(x.SmsNumber)
+                                                  && x.Email != null
+                                                  && !string.IsNullOrWhiteSpace(x.EmailAddress)),
+                It.Is<bool>(x => x == shouldCommit),
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
@@ -104,14 +102,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(SmsNumber, actual.SmsNumber);
             Assert.NotNull(actual.SmsValidationCode);
 
-            mock.MessagingVerificationDelegateMock.Verify(
-                v => v.InsertAsync(
-                    It.Is<MessagingVerification>(
-                        x => !string.IsNullOrWhiteSpace(x.SmsNumber)
-                             && x.Email == null
-                             && string.IsNullOrWhiteSpace(x.EmailAddress)),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()));
+            mock.MessagingVerificationDelegateMock.Verify(v => v.InsertAsync(
+                It.Is<MessagingVerification>(x => !string.IsNullOrWhiteSpace(x.SmsNumber)
+                                                  && x.Email == null
+                                                  && string.IsNullOrWhiteSpace(x.EmailAddress)),
+                It.IsAny<bool>(),
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
@@ -159,7 +155,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     dateTime.Day,
                     dateTime.Hour,
                     dateTime.Minute,
-                    dateTime.Second,
+                    0,
                     dateTime.Kind);
             }
         }
@@ -177,15 +173,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             MessagingVerificationMock mock = SetupEmailMessagingVerificationMock(false);
 
             // Act and Assert
-            await Assert.ThrowsAsync<DatabaseException>(
-                async () =>
-                {
-                    await mock.Service.GenerateMessagingVerificationAsync(
-                        Hdid,
-                        EmailAddress,
-                        inviteKey,
-                        isVerified);
-                });
+            await Assert.ThrowsAsync<DatabaseException>(async () =>
+            {
+                await mock.Service.GenerateMessagingVerificationAsync(
+                    Hdid,
+                    EmailAddress,
+                    inviteKey,
+                    isVerified);
+            });
         }
 
         /// <summary>
@@ -286,19 +281,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static Mock<IEmailQueueService> SetupEmailQueueServiceMock(EmailTemplate? emailTemplate, Email? email = null)
         {
             Mock<IEmailQueueService> emailQueueServiceMock = new();
-            emailQueueServiceMock.Setup(
-                    s => s.GetEmailTemplateAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            emailQueueServiceMock.Setup(s => s.GetEmailTemplateAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(emailTemplate);
 
             if (email != null)
             {
-                emailQueueServiceMock.Setup(
-                        s => s.ProcessTemplate(
-                            It.IsAny<string>(),
-                            It.IsAny<EmailTemplate>(),
-                            It.IsAny<Dictionary<string, string>>()))
+                emailQueueServiceMock.Setup(s => s.ProcessTemplate(
+                        It.IsAny<string>(),
+                        It.IsAny<EmailTemplate>(),
+                        It.IsAny<Dictionary<string, string>>()))
                     .Returns(email);
             }
 

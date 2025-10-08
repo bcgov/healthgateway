@@ -10,10 +10,9 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
-import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import { Action, Dataset, Format, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
-import EventDataUtility from "@/utility/eventDataUtility";
 
 interface Props {
     hdid: string;
@@ -75,15 +74,24 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
+function trackProgramLinkClick(): void {
+    trackingService.trackEvent({
+        action: Action.ExternalLink,
+        text: `${props.entry.title} Help`,
+        type: Type.BcCancerScreening,
+        destination: props.entry.bcCancerDestination,
+        url: props.entry.bcCancerUrl,
+    });
+}
+
 function downloadFile(): void {
     if (props.entry.fileId) {
         trackingService.trackEvent({
             action: Action.Download,
-            text: Text.Document,
-            dataset: Dataset.BcCancer,
-            type: EventDataUtility.getType(props.entry.screeningType),
+            text: `Download ${props.entry.title}`,
+            dataset: Dataset.BcCancerScreening,
+            type: Type.BcCancerScreening,
             format: Format.Pdf,
-            actor: Actor.User,
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore
@@ -130,6 +138,7 @@ function downloadFile(): void {
                     target="_blank"
                     rel="noopener"
                     class="text-link"
+                    @click="trackProgramLinkClick"
                     >check the BC Cancer website</a
                 >
                 or talk to your care provider.
@@ -143,6 +152,7 @@ function downloadFile(): void {
                     target="_blank"
                     rel="noopener"
                     class="text-link"
+                    @click="trackProgramLinkClick"
                     >Learn more about
                     {{ programDisplayName }}
                     screening</a

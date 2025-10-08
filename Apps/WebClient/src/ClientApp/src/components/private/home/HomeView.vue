@@ -26,9 +26,11 @@ import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import {
     Action,
-    Actor,
+    Dataset,
     Destination,
+    ExternalUrl,
     Format,
+    InternalUrl,
     Origin,
     Text,
     Type,
@@ -235,30 +237,35 @@ function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
 
 function handleClickHealthRecords(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.InternalLink,
-        destination: Destination.Timeline,
+        action: Action.InternalLink,
+        text: Text.HealthRecords,
         origin: Origin.Home,
+        destination: Destination.Timeline,
+        type: Type.HomeTile,
+        url: InternalUrl.HealthRecords,
     });
     router.push({ path: "/timeline" });
 }
 
 function handleClickVaccineCard(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.InternalLink,
-        destination: Destination.BcVaccineCard,
+        action: Action.InternalLink,
+        text: Text.BcVaccineCard,
         origin: Origin.Home,
+        destination: Destination.BcVaccineCard,
+        type: Type.HomeTile,
     });
     router.push({ path: "/covid19" });
 }
 
 function handleClickOrganDonorCard(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.InternalLink,
-        destination: Destination.OrganDonorRegistration,
+        action: Action.InternalLink,
+        text: Text.OrganDonor,
         origin: Origin.Home,
+        destination: Destination.Services,
+        type: Type.HomeTile,
+        url: InternalUrl.OrganDonor,
     });
     router.push({ path: "/services" });
 }
@@ -275,20 +282,23 @@ function handleClickOtherRecordSources(): void {
 
 function showRecommendationsDialog(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.InternalLink,
-        destination: Destination.ImmunizationRecommendationDialog,
+        action: Action.ButtonClick,
+        text: Text.Immunizations,
         origin: Origin.Home,
+        dataset: Dataset.Immunizations,
+        type: Type.HomeTile,
     });
     recommendationsDialogComponent.value?.showDialog();
 }
 
 function handleClickHealthConnectCard(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.ExternalLink,
-        destination: Destination.PrimaryCare,
+        action: Action.ExternalLink,
+        text: Text.HealthLinkBC,
+        destination: Destination.HealthLinkBC,
         origin: Origin.Home,
+        type: Type.HomeTile,
+        url: ExternalUrl.HealthLinkBC,
     });
     window.open(
         "https://www.healthlinkbc.ca/health-connect-registry",
@@ -355,12 +365,14 @@ function handleClickQuickLink(index: number): void {
 
     if (detailsCollection.length === 1) {
         trackingService.trackEvent({
-            action: Action.Visit,
-            text: Text.InternalLink,
+            action: Action.InternalLink,
+            text: Text.QuickLink,
+            origin: Origin.Home,
+            dataset: EventDataUtility.getDataset(detailsCollection[0].type),
             destination: `${EventDataUtility.getDataset(
                 detailsCollection[0].type
             )} Timeline`,
-            origin: Origin.Home,
+            url: InternalUrl.QuickLink,
         });
     }
 
@@ -372,6 +384,12 @@ function handleClickQuickLink(index: number): void {
 }
 
 function showSensitiveDocumentDownloadModal(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.ViewProofOfVaccination,
+        origin: Origin.Home,
+        type: Type.HomeTile,
+    });
     sensitiveDocumentDownloadModal.value?.showModal();
 }
 
@@ -389,11 +407,12 @@ watch(vaccineRecordState, () => {
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
             trackingService.trackEvent({
-                action: Action.Download,
-                text: Text.Document,
+                action: Action.ButtonClick,
+                text: Text.DownloadProofOfVaccination,
+                origin: Origin.Home,
+                destination: Destination.Download,
                 type: Type.Covid19ProofOfVaccination,
                 format: Format.Pdf,
-                actor: Actor.User,
             });
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });
@@ -445,6 +464,16 @@ watch(vaccineRecordState, () => {
                     data-testid="export-records-link"
                     class="text-link"
                     to="/reports"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.InternalLink,
+                            text: Text.ImmunizationScheduleExport,
+                            origin: Origin.Home,
+                            destination: Destination.Export,
+                            type: Type.InfoBanner,
+                            url: InternalUrl.ImmunizationScheduleExport,
+                        })
+                    "
                     >Export</router-link
                 >
                 and
@@ -453,6 +482,16 @@ watch(vaccineRecordState, () => {
                     data-testid="dependents-link"
                     class="text-link"
                     to="/dependents"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.InternalLink,
+                            text: Text.ImmunizationScheduleDependents,
+                            origin: Origin.Home,
+                            destination: Destination.Dependents,
+                            type: Type.InfoBanner,
+                            url: InternalUrl.ImmunizationScheduleDependents,
+                        })
+                    "
                     >Dependents</router-link
                 >
                 menu items

@@ -6,6 +6,11 @@ import {
 } from "@/models/patientDataResponse";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
+import {
+    BcCancerDestination,
+    BcCancerUrl,
+    isBcCancerProgram,
+} from "@/plugins/extensions";
 export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public title!: string;
     public documentType!: string;
@@ -17,6 +22,8 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public fileName!: string;
     public eventText!: string;
     public programName!: string;
+    public bcCancerUrl!: string;
+    public bcCancerDestination!: string;
 
     private readonly getComments: (entryId: string) => UserComment[] | null;
     private readonly programKey: string;
@@ -69,6 +76,12 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         this.screeningType = model.eventType;
         this.setEntryProperties();
         this.getComments = getComments;
+        this.bcCancerUrl = isBcCancerProgram(program)
+            ? BcCancerUrl[program]
+            : "";
+        this.bcCancerDestination = isBcCancerProgram(program)
+            ? BcCancerDestination[program]
+            : "";
     }
 
     private setEntryProperties(): void {
