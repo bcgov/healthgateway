@@ -10,7 +10,7 @@ describe("Dashboard", () => {
     it("Verify dashboard counts from seeded data.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(8);
-        cy.get("[data-testid=total-dependents]").contains(6);
+        cy.get("[data-testid=total-dependents]").contains(7);
         cy.get("[data-testid=total-closed-accounts]").contains(1);
         cy.get("[data-testid=recurring-user-count]").contains(2);
         cy.get("[data-testid=total-mobile-users]").contains(4);
@@ -27,7 +27,7 @@ describe("Dashboard", () => {
                 cy.get(
                     "[data-testid=daily-data-total-logged-in-users]"
                 ).contains("6");
-                cy.get("[data-testid=daily-data-dependents]").contains("6");
+                cy.get("[data-testid=daily-data-dependents]").contains("7");
             });
 
         cy.log("Change value in unique days input field.");

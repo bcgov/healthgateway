@@ -176,21 +176,23 @@ namespace HealthGateway.GatewayApi.Services
             {
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(resourceDelegate.ResourceOwnerHdid, ct: ct);
 
-                if (patientResult.ResourcePayload != null)
+                if (patientResult.ResultStatus != ResultType.Error && patientResult.ResourcePayload != null)
                 {
                     int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(resourceDelegate.ResourceOwnerHdid);
                     dependentModels.Add(this.mappingService.MapToDependentModel(resourceDelegate, patientResult.ResourcePayload, totalDelegateCount));
                 }
                 else
                 {
-                    if (result.ResultStatus != ResultType.Error)
+                    if (patientResult.ResultError?.ResultMessage != ErrorMessages.ClientRegistryReturnedDeceasedPerson)
                     {
                         result.ResultStatus = ResultType.Error;
-                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $"Communication Exception when trying to retrieve Dependent(s) - HdId: {resourceDelegate.ResourceOwnerHdid};");
+                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $"Exception when trying to retrieve Dependent - HdId: {resourceDelegate.ResourceOwnerHdid};");
                     }
                     else
                     {
-                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $" HdId: {resourceDelegate.ResourceOwnerHdid};");
+                        this.logger.LogWarning(
+                            "Dependent with Hdid {Hdid} was skipped because client registry reported the person as deceased",
+                            resourceDelegate.ResourceOwnerHdid);
                     }
                 }
             }
@@ -198,7 +200,6 @@ namespace HealthGateway.GatewayApi.Services
             result.ResourcePayload = dependentModels;
             if (result.ResultStatus != ResultType.Error)
             {
-                result.ResultError = null;
                 result.TotalResultCount = dependentModels.Count;
             }
             else
@@ -225,13 +226,12 @@ namespace HealthGateway.GatewayApi.Services
 
             IEnumerable<GetDependentResponse> getDependentResponses =
                 resourceDelegates
-                    .Select(
-                        g => new GetDependentResponse
-                        {
-                            DelegateId = g.ProfileHdid,
-                            OwnerId = g.ResourceOwnerHdid,
-                            CreationDateTime = g.CreatedDateTime,
-                        })
+                    .Select(g => new GetDependentResponse
+                    {
+                        DelegateId = g.ProfileHdid,
+                        OwnerId = g.ResourceOwnerHdid,
+                        CreationDateTime = g.CreatedDateTime,
+                    })
                     .ToList();
 
             return RequestResultFactory.Success(getDependentResponses, getDependentResponses.Count(), page, pageSize);

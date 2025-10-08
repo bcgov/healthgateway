@@ -222,7 +222,7 @@ describe("Patient details page as admin user", () => {
 
         cy.log("Verify dependents.");
         getTableRows("[data-testid=dependent-table]")
-            .should("have.length.gt", 1)
+            .filter(':contains("John Tester")')
             .first()
             .within(() => {
                 cy.get("[data-testid=dependent-name]").contains("John Tester");
