@@ -14,8 +14,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     ca-certificates lsb-release git tzdata iputils-ping netcat-openbsd traceroute curl \
     apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils zip unzip \
-    dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential \
-    redis-tools
+    dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential
 
 RUN ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
