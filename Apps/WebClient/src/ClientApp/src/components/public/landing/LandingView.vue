@@ -35,7 +35,7 @@ const configStore = useConfigStore();
 const authStore = useAuthStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
-const { mdAndUp, xs } = useDisplay();
+const { mdAndUp, xs, width } = useDisplay();
 
 const showLaptopTooltip = ref(false);
 const showTabletTooltip = ref(false);
@@ -50,6 +50,7 @@ const offlineMessage = computed(
 
 const accessLinks = computed(() => getAccessLinks());
 const managedHealthLinks = computed(() => getManageHealthLinks());
+const hideArrowsOnTinyPhones = computed(() => width.value < 400);
 
 const proofOfVaccinationTile = computed<InfoTile>(() => ({
     type: "ProofOfVaccination",
@@ -405,10 +406,10 @@ function openExternalLink(url?: string) {
             </p>
             <v-carousel
                 v-if="!mdAndUp"
-                :height="xs ? 440 : 390"
+                :height="xs ? 360 : 340"
                 class="w-100"
                 color="primary"
-                show-arrows="always"
+                :show-arrows="!hideArrowsOnTinyPhones"
                 hide-delimiter-background
                 data-testid="mobile-access-card-carousel"
             >
@@ -546,7 +547,7 @@ function openExternalLink(url?: string) {
                 :height="xs ? 440 : 390"
                 class="w-100"
                 color="primary"
-                show-arrows="always"
+                :show-arrows="!hideArrowsOnTinyPhones"
                 hide-delimiter-background
                 data-testid="mobile-managed-health-card-carousel"
             >
