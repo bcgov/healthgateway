@@ -441,15 +441,17 @@ function openExternalLink(url?: string) {
                         variant="outlined"
                         color="outline"
                         rounded="md"
-                        class="d-flex flex-column h-100 text-start pa-5 border-sm"
+                        class="d-flex flex-column h-100 text-start pa-5 pb-6 border-sm"
                         :data-testid="`mobile-access-card-${tile.type}`"
                     >
-                        <TileComponent :tile="tile" />
-                        <div class="pt-4 text-center">
+                        <div class="flex-grow-1" style="min-height: 100px">
+                            <TileComponent :tile="tile" />
+                        </div>
+                        <div class="pt-3 mb-8 text-center">
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none mx-auto mb-2"
+                                class="text-none"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
@@ -473,12 +475,14 @@ function openExternalLink(url?: string) {
                         class="h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm"
                         :data-testid="`access-card-${tile.type}`"
                     >
-                        <TileComponent :tile="tile" />
-                        <div class="mt-auto pt-3 text-center">
+                        <div class="flex-grow-1" style="min-height: 140px">
+                            <TileComponent :tile="tile" />
+                        </div>
+                        <div class="pt-3 text-center">
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none mt-auto mx-auto"
+                                class="text-none"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
@@ -581,15 +585,17 @@ function openExternalLink(url?: string) {
                     <v-card
                         variant="outlined"
                         rounded="md"
-                        class="h-100 d-flex flex-column text-start pa-5 border-sm"
+                        class="d-flex flex-column h-100 text-start pa-5 pb-6 border-sm"
                         :data-testid="`mobile-managed-health-card-${tile.type}`"
                     >
-                        <TileComponent :tile="tile" />
-                        <div class="pt-4 text-center">
+                        <div class="flex-grow-1" style="min-height: 100px">
+                            <TileComponent :tile="tile" />
+                        </div>
+                        <div class="pt-3 mb-8 text-center">
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none mx-auto mb-2"
+                                class="text-none"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :href="`${tile.link}`"
                                 :new-tab="true"
@@ -615,12 +621,14 @@ function openExternalLink(url?: string) {
                         class="h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm"
                         :data-testid="`managed-health-card-${tile.type}`"
                     >
-                        <TileComponent :tile="tile" />
-                        <div class="mt-auto pt-3 text-center">
+                        <div class="flex-grow-1" style="min-height: 140px">
+                            <TileComponent :tile="tile" />
+                        </div>
+                        <div class="pt-3 text-center">
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none mt-auto mx-auto"
+                                class="text-none"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
