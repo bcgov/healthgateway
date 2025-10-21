@@ -618,7 +618,7 @@ function openExternalLink(url?: string) {
                         <TileComponent :tile="tile" />
                         <div class="mt-auto pt-3 text-center">
                             <HgButtonComponent
-                                text="Read More"
+                                text="Read more"
                                 variant="secondary"
                                 class="text-none mt-auto mx-auto"
                                 :aria-label="`Read more about ${tile.name}`"
