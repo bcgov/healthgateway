@@ -7,8 +7,12 @@ import MessageModalComponent from "@/components/common/MessageModalComponent.vue
 import DependentDashboardTabComponent from "@/components/private/dependent/tabs/DependentDashboardTabComponent.vue";
 import DependentProfileTabComponent from "@/components/private/dependent/tabs/DependentProfileTabComponent.vue";
 import ReportsComponent from "@/components/private/reports/ReportsComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useDependentStore } from "@/stores/dependent";
 import { useUserStore } from "@/stores/user";
@@ -22,6 +26,10 @@ const props = defineProps<Props>();
 const configStore = useConfigStore();
 const dependentStore = useDependentStore();
 const userStore = useUserStore();
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const deleteConfirmationModal =
     ref<InstanceType<typeof MessageModalComponent>>();
@@ -41,6 +49,11 @@ const isExpired = computed(
 );
 
 function removeDependent(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.RemoveDependent,
+        type: Type.Dependents,
+    });
     dependentStore.removeDependent(userStore.hdid, props.dependent);
 }
 </script>

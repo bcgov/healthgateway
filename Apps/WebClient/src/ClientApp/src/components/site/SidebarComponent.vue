@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import {
+    Action,
+    Destination,
+    InternalUrl,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
@@ -11,6 +22,11 @@ const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
+const router = useRouter();
 
 const collapsedOnDesktop = ref(false);
 const feedbackDialog = ref<InstanceType<typeof FeedbackComponent>>();
@@ -43,6 +59,59 @@ const visibleOnMobile = computed({
         }
     },
 });
+
+function handleDependentsClick(): void {
+    trackingService.trackEvent({
+        action: Action.InternalLink,
+        text: Text.Dependents,
+        destination: Destination.Dependents,
+        type: Type.Sidebar,
+        url: InternalUrl.Dependents,
+    });
+    router.push({ path: "/dependents" });
+}
+
+function handleExportClick(): void {
+    trackingService.trackEvent({
+        action: Action.InternalLink,
+        text: Text.Export,
+        destination: Destination.Export,
+        type: Type.Sidebar,
+        url: InternalUrl.Export,
+    });
+    router.push({ path: "/reports" });
+}
+
+function handleFeedbackClick(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.SendFeedback,
+        type: Type.Sidebar,
+    });
+    feedbackDialog.value?.showDialog();
+}
+
+function handleServicesClick(): void {
+    trackingService.trackEvent({
+        action: Action.InternalLink,
+        text: Text.Services,
+        destination: Destination.Services,
+        type: Type.Sidebar,
+        url: InternalUrl.Services,
+    });
+    router.push({ path: "/services" });
+}
+
+function handleTimelineClick(): void {
+    trackingService.trackEvent({
+        action: Action.InternalLink,
+        text: Text.Timeline,
+        destination: Destination.Timeline,
+        type: Type.Sidebar,
+        url: InternalUrl.Timeline,
+    });
+    router.push({ path: "/timeline" });
+}
 
 function toggleOpenClose(state: boolean) {
     if (isMobile.value) {
@@ -86,8 +155,8 @@ watch(isSidebarOpen, (value: boolean) => {
             <v-list-item
                 class="nav-hover"
                 title="Timeline"
-                to="/timeline"
                 data-testid="menu-btn-timeline-link"
+                @click="handleTimelineClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
@@ -99,8 +168,8 @@ watch(isSidebarOpen, (value: boolean) => {
                 v-show="isDependentEnabled && userStore.userIsActive"
                 class="nav-hover"
                 title="Dependents"
-                to="/dependents"
                 data-testid="menu-btn-dependents-link"
+                @click="handleDependentsClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
@@ -112,8 +181,8 @@ watch(isSidebarOpen, (value: boolean) => {
                 v-show="isServicesEnabled && userStore.userIsActive"
                 class="nav-hover"
                 title="Services"
-                to="/services"
                 data-testid="menu-btn-services-link"
+                @click="handleServicesClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
@@ -125,8 +194,8 @@ watch(isSidebarOpen, (value: boolean) => {
                 v-show="userStore.userIsActive"
                 class="nav-hover"
                 title="Export"
-                to="/reports"
                 data-testid="menu-btn-reports-link"
+                @click="handleExportClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
@@ -140,7 +209,7 @@ watch(isSidebarOpen, (value: boolean) => {
                 title="Feedback"
                 data-testid="menu-btn-feedback-link"
                 class="nav-feedback-button"
-                @click.stop="feedbackDialog?.showDialog()"
+                @click.stop="handleFeedbackClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">

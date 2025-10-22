@@ -17,7 +17,8 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import { isTooManyRequestsError } from "@/models/errors";
-import { IUserProfileService } from "@/services/interfaces";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ITrackingService, IUserProfileService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
@@ -34,6 +35,9 @@ const maskOptions = {
 
 const userProfileService = container.get<IUserProfileService>(
     SERVICE_IDENTIFIER.UserProfileService
+);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
 );
 const errorStore = useErrorStore();
 const loadingStore = useLoadingStore();
@@ -139,6 +143,11 @@ function updateSms(): void {
 }
 
 function verifySms(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.VerifyMobileNumber,
+        type: Type.Profile,
+    });
     verifySmsDialog.value?.showDialog();
 }
 

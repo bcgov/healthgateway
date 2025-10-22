@@ -2,6 +2,18 @@
 import { computed } from "vue";
 
 import { Path } from "@/constants/path";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import {
+    Action,
+    Destination,
+    EmailUrl,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
@@ -11,6 +23,10 @@ const authStore = useAuthStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
 const layoutStore = useLayoutStore();
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const isFooterShown = computed(
     () =>
@@ -35,6 +51,16 @@ const isFooterShown = computed(
                     :to="Path.TermsOfService"
                     data-testid="footer-terms-of-service-link"
                     class="text-primary"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.TermsOfService,
+                            origin: Origin.Footer,
+                            destination: Destination.TermsOfService,
+                            type: Type.Footer,
+                            url: ExternalUrl.TermsOfService,
+                        })
+                    "
                 >
                     Terms of Service
                 </router-link>
@@ -46,6 +72,16 @@ const isFooterShown = computed(
                     rel="noopener"
                     data-testid="footer-release-notes-link"
                     class="text-primary"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.ReleaseNotes,
+                            origin: Origin.Footer,
+                            destination: Destination.SupportGuide,
+                            type: Type.Footer,
+                            url: ExternalUrl.ReleaseNotes,
+                        })
+                    "
                 >
                     Release Notes
                 </a>
@@ -57,6 +93,16 @@ const isFooterShown = computed(
                     rel="noopener"
                     data-testid="footer-faq-link"
                     class="text-primary"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.AboutUs,
+                            origin: Origin.Footer,
+                            destination: Destination.SupportGuide,
+                            type: Type.Footer,
+                            url: ExternalUrl.AbuutUs,
+                        })
+                    "
                 >
                     About Us
                 </a>
@@ -68,6 +114,16 @@ const isFooterShown = computed(
                     rel="noopener"
                     data-testid="footer-faq-link"
                     class="text-primary"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.Faq,
+                            origin: Origin.Footer,
+                            destination: Destination.SupportGuide,
+                            type: Type.Footer,
+                            url: ExternalUrl.Faq,
+                        })
+                    "
                 >
                     FAQ
                 </a>
@@ -78,6 +134,16 @@ const isFooterShown = computed(
                     href="mailto:healthgateway@gov.bc.ca"
                     data-testid="footer-email-link"
                     class="text-primary"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.Email,
+                            text: Text.EmailHealthGateway,
+                            origin: Origin.Footer,
+                            destination: Destination.SupportEmail,
+                            type: Type.Footer,
+                            url: EmailUrl.HealthGatewayEmail,
+                        })
+                    "
                 >
                     Email: HealthGateway@gov.bc.ca
                 </a>
