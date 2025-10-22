@@ -9,12 +9,16 @@ import { Loader } from "@/constants/loader";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
-import { ILogger } from "@/services/interfaces";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const errorStore = useErrorStore();
 const loadingStore = useLoadingStore();
 const userStore = useUserStore();
@@ -22,6 +26,11 @@ const userStore = useUserStore();
 const showCloseWarning = ref(false);
 
 function closeAccount(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.DeleteAccount,
+        type: Type.Profile,
+    });
     loadingStore.applyLoader(
         Loader.UserProfile,
         "closeAccount",

@@ -11,7 +11,7 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
-import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import { Action, Dataset, Format, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useTimelineStore } from "@/stores/timeline";
@@ -58,10 +58,10 @@ function downloadFile(): void {
     if (props.entry.fileId) {
         trackingService.trackEvent({
             action: Action.Download,
-            text: Text.Document,
+            text: Text.DownloadImagingReport,
             dataset: Dataset.ImagingReports,
+            type: Type.ImagingReports,
             format: Format.Pdf,
-            actor: Actor.User,
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore

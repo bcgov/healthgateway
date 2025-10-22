@@ -37,7 +37,10 @@ import {
     Action,
     Actor,
     Dataset,
+    Destination,
+    ExternalUrl,
     Format,
+    Origin,
     Text,
     Type,
 } from "@/plugins/extensions";
@@ -261,6 +264,11 @@ const isDownloadImmunizationReportButtonDisabled = computed(() => {
 });
 
 function deleteDependent(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.RemoveDependent,
+        type: Type.Dependents,
+    });
     dependentStore
         .removeDependent(user.value.hdid, props.dependent)
         .catch((err: ResultError) => {
@@ -365,10 +373,13 @@ function downloadImmunizationReport(): void {
 
     trackingService.trackEvent({
         action: Action.Download,
-        text: Text.Export,
+        text:
+            immunizationTabIndex.value === 0
+                ? Text.DownloadDependentHistoricImmunizations
+                : Text.DownloadDependentRecommendedImmunizations,
         dataset: Dataset.Immunizations,
+        type: Type.Dependents,
         format: EventDataUtility.getFormat(reportFormatType.value),
-        actor: Actor.Guardian,
     });
 
     generateReport(
@@ -996,6 +1007,17 @@ watch(vaccineRecordState, () => {
                                         target="_blank"
                                         rel="noopener"
                                         class="text-link"
+                                        @click="
+                                            trackingService.trackEvent({
+                                                action: Action.ExternalLink,
+                                                text: Text.ImmunizationUpdateForm,
+                                                origin: Origin.Dependents,
+                                                destination:
+                                                    Destination.ImmunizationRecordBC,
+                                                type: Type.Dependents,
+                                                url: ExternalUrl.ImmunizationRecordBC,
+                                            })
+                                        "
                                         >fill in this online form</a
                                     >.
                                 </span>

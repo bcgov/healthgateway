@@ -23,14 +23,15 @@ export interface EventData {
 }
 
 export const enum Action {
-    Download = "Download",
     Load = "Load",
-    Submit = "Submit",
     View = "View",
     Visit = "Visit",
     ButtonClick = "button_click",
+    Download = "download",
+    Email = "email",
     InternalLink = "internal_link",
     ExternalLink = "external_link",
+    Submit = "submit",
     TimelineCardClick = "timeline_card_click",
 }
 
@@ -63,12 +64,20 @@ export const enum Destination {
     OrganDonorRegistration = "Organ Donor Registration",
     PrimaryCare = "Primary Care",
     PublicHealthImmunizationSchedule = "Public Health Immunization Schedule",
+    AddressChangeBC = "Address Change BC",
     Dependents = "Dependents",
     Download = "Download",
     Export = "Export",
     HealthLinkBC = "HealthLink BC",
+    Home = "Home",
+    ImmunizationRecordBC = "Immunization Record BC",
+    Profile = "Profile",
     Services = "Services",
+    SupportEmail = "Support Email",
+    SupportGuide = "Support Guide",
+    TermsOfService = "Terms of Service",
     Timeline = "Timeline",
+    TransplantBC = "Transplant BC",
 }
 
 export const enum Format {
@@ -79,10 +88,15 @@ export const enum Format {
 }
 
 export const enum Origin {
+    Breadcrumb = "Breadcrumb",
     Dependents = "Dependents",
     Exports = "Exports",
+    Footer = "Footer",
     Home = "Home",
     ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
+    Profile = "Profile",
+    ServicesPage = "Services Page",
+    Timeline = "Timeline",
 }
 
 export const enum Rating {
@@ -95,24 +109,55 @@ export const enum Rating {
 }
 
 export const enum Text {
-    AppRating = "App Rating",
     Data = "Data",
     Document = "Document",
-    Export = "Export",
     ExternalLink = "External Link",
     InternalLink = "Internal Link",
     Page = "Page",
     Request = "Request",
+    AboutUs = "About Us",
+    AddDependent = "Add a Dependent",
+    AddNote = "Add a Note",
+    AppRating = "App Rating",
     BcVaccineCard = "BC Vaccine Card",
+    DeleteAccount = "Delete Account",
+    Dependents = "Dependents",
+    DownloadClinicalDocument = "Download Clinical Document",
+    DownloadDependentHistoricImmunizations = "Download Dependent Historic Immunizations",
+    DownloadDependentRecommendedImmunizations = "Download Dependent Recommended Immunizations",
+    DownloadImagingReport = "Download Imaging Report",
+    DownloadLabResult = "Download Lab Result",
+    DownloadProofOfVaccination = "Download Proof of Vaccination",
+    EmailHealthGateway = "Email HealthGateway",
+    Export = "Export",
+    Faq = "FAQ",
+    HealthGatewayLogo = "Health Gateway Logo",
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLinkBC",
+    HomeBreadcrumb = "Home Breadcrumb",
     Immunizations = "View Recommend Immunizations",
     ImmunizationScheduleExport = "Immunization Schedule Export",
     ImmunizationScheduleDependents = "Immunization Schedule Dependents",
+    ImmunizationUpdateForm = "Immunization Update Form",
+    Logout = "Logout",
     OrganDonor = "Organ Donor",
-    ViewProofOfVaccination = "View Proof of Vaccination",
-    DownloadProofOfVaccination = "Download Proof of Vaccination",
+    RegisterDependent = "Register a Dependent",
+    RegisterOrganDonorDecision = "Register Organ Donor Decision",
+    DownloadOrganDonorDecision = "Download Organ Donor Decision",
+    Profile = "Profile",
+    RemoveDependent = "Remove a Dependent",
     QuickLink = "Quicklink",
+    ReleaseNotes = "Release Notes",
+    SendFeedback = "Send Feedback",
+    Services = "Services",
+    TermsOfService = "Terms of Service",
+    Timeline = "Timeline",
+    TimelineMissingImmunizations = "Timeline - Missing Immunizations Fill In Online Form",
+    VerifyContactInformation = "Verify Contact Information",
+    ViewProofOfVaccination = "View Proof of Vaccination",
+    VerifyEmailAddress = "Verify Email Address",
+    VerifyMobileNumber = "Verify Mobile Number",
+    UpdateMailingAddress = "Update Mailing Address",
 }
 
 export const enum Type {
@@ -122,8 +167,21 @@ export const enum Type {
     Recall = "Recall",
     Result = "Result",
     BcCancerScreening = "BC Cancer Screening",
+    ClinicalDocuments = "Clinical Documents",
+    Dependents = "Dependents",
+    Footer = "Footer",
+    Header = "Header",
     HomeTile = "Home Tile",
     InfoBanner = "Info Banner",
+    ImagingReports = "Imaging Reports",
+    Immunizations = "Immunizations",
+    LabResults = "Lab Results",
+    Logout = "Logout",
+    Notes = "Notes",
+    OrganDonor = "Organ Donor",
+    Profile = "Profile",
+    ServiceTile = "Service Tile",
+    Sidebar = "Sidebar",
 }
 
 export const BcCancerPrograms = ["Breast", "Cervix", "Colon", "Lung"] as const;
@@ -143,19 +201,35 @@ export const BcCancerUrl: Record<BcCancerProgram, string> = {
     Lung: "http://www.bccancer.bc.ca/screening/lung",
 } as const;
 
-export function isBcCancerProgram(x: string): x is BcCancerProgram {
-    return (BcCancerPrograms as readonly string[]).includes(x);
+export function isBcCancerProgram(program: string): program is BcCancerProgram {
+    return (BcCancerPrograms as readonly string[]).includes(program);
+}
+
+export const enum EmailUrl {
+    HealthGatewayEmail = "healthgateway@gov.bc.ca",
 }
 
 export const enum ExternalUrl {
+    AbuutUs = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway",
+    AddressChangeBC = "https://www.addresschange.gov.bc.ca",
+    ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
+    Faq = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
     HealthLinkBC = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
+    OrganDonorRegistration = "http://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
+    ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
+    TermsOfService = "https://www.healthgateway.gov.bc.ca/termsOfService",
 }
 
 export const enum InternalUrl {
     Timeline = "./timeline",
+    Dependents = "./dependents",
+    Export = "./export",
     HealthRecords = Timeline,
+    Home = "./home",
     ImmunizationScheduleExport = "./export-records",
     ImmunizationScheduleDependents = "./dependents",
     OrganDonor = "./services",
+    Profile = "./profile",
     QuickLink = Timeline,
+    Services = "./services",
 }

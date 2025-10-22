@@ -16,7 +16,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import ReportField from "@/models/reportField";
 import LabResultTimelineEntry from "@/models/timeline/labResultTimelineEntry";
-import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import { Action, Dataset, Format, Text, Type } from "@/plugins/extensions";
 import {
     ILaboratoryService,
     ILogger,
@@ -88,10 +88,10 @@ function formatDate(date?: DateWrapper): string | undefined {
 function getReport(): void {
     trackingService.trackEvent({
         action: Action.Download,
-        text: Text.Document,
+        text: Text.DownloadLabResult,
         dataset: Dataset.LabResults,
+        type: Type.LabResults,
         format: Format.Pdf,
-        actor: Actor.User,
     });
 
     isLoadingDocument.value = true;

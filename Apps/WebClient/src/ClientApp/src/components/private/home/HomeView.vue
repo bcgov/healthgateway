@@ -431,6 +431,16 @@ watch(vaccineRecordState, () => {
                     data-testid="profile-page-link"
                     class="text-link"
                     to="/profile"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.InternalLink,
+                            text: Text.VerifyContactInformation,
+                            origin: Origin.Home,
+                            destination: Destination.Profile,
+                            type: Type.InfoBanner,
+                            url: InternalUrl.Profile,
+                        })
+                    "
                     >Profile Page</router-link
                 >
                 to complete your verification.

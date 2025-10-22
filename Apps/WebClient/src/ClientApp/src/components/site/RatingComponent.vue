@@ -4,7 +4,7 @@ import { ref } from "vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { Action, Rating, Text } from "@/plugins/extensions";
+import { Action, Rating, Text, Type } from "@/plugins/extensions";
 import {
     ILogger,
     ITrackingService,
@@ -69,6 +69,7 @@ function handleRating(value: number | string, skip = false): void {
                 rating: skip
                     ? Rating.Skip
                     : EventDataUtility.getRating(value.toString()),
+                type: Type.Logout,
             });
             logger.debug(`submitRating with success.`);
         })
