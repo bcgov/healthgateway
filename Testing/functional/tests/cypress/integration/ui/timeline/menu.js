@@ -3,6 +3,9 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 function login(isMobile) {
     cy.configureSettings({
+        dependents: {
+            enabled: true,
+        },
         datasets: [
             {
                 name: "note",
@@ -22,6 +25,12 @@ function login(isMobile) {
         AuthMethod.KeyCloak
     );
     cy.checkTimelineHasLoaded();
+}
+
+function verifyNavClick(testId, expectedPath) {
+    login(false);
+    cy.get(`[data-testid=${testId}]`).should("be.visible").click();
+    cy.location("pathname", { timeout: 10000 }).should("eq", expectedPath);
 }
 
 describe("Menu System", () => {
@@ -52,15 +61,11 @@ describe("Menu System", () => {
             .should("be.visible", "be.enabled")
             .click();
         cy.get("[data-testid=profileUserName]").should("be.visible");
-        cy.get("[data-testid=profileBtn]").should("be.visible");
-        cy.get("[data-testid=profileBtn]").should(
-            "have.attr",
-            "href",
-            "/profile"
-        );
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
             .should("include.text", "Log Out");
+        cy.get("[data-testid=profileBtn]").should("be.visible").click();
+        cy.location("pathname", { timeout: 10000 }).should("eq", "/profile");
     });
 
     it("Validate Profile Button for Mobile", () => {
@@ -74,18 +79,19 @@ describe("Menu System", () => {
             .should("be.visible", "be.enabled")
             .click();
         cy.get("[data-testid=profileUserName]").should("be.visible");
-        cy.get("[data-testid=profileBtn]").should("be.visible", "be.visible");
-        cy.get("[data-testid=profileBtn]").should(
-            "have.attr",
-            "href",
-            "/profile"
-        );
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
             .should("include.text", "Log Out");
+        cy.get("[data-testid=profileBtn]").should("be.visible").click();
+        cy.location("pathname", { timeout: 10000 }).should("eq", "/profile");
     });
 
-    it("Side bar contains nav links", () => {
+    it("Side bar does not expand on login for mobile", () => {
+        login(true);
+        cy.get("[data-testid=sidenavbar]").should("not.be.visible");
+    });
+
+    it("Side bar contains nav items", () => {
         login(false);
         cy.get("[data-testid=menu-btn-home-link]").should(
             "have.attr",
@@ -93,26 +99,30 @@ describe("Menu System", () => {
             "/home"
         );
         cy.get("[data-testid=menu-btn-timeline-link]").should(
-            "have.attr",
-            "href",
-            "/timeline"
-        );
-        cy.get("[data-testid=menu-btn-reports-link]").should(
-            "have.attr",
-            "href",
-            "/reports"
+            "have.text",
+            "Timeline"
         );
         cy.get("[data-testid=menu-btn-dependents-link]").should(
-            "have.attr",
-            "href",
-            "/dependents"
+            "have.text",
+            "Dependents"
+        );
+        cy.get("[data-testid=menu-btn-reports-link]").should(
+            "have.text",
+            "Export"
         );
         cy.get("[data-testid=navbar-toggle-button]").should("be.visible");
         cy.get("[data-testid=menu-btn-feedback-link]").should("be.visible");
     });
 
-    it("Side bar expands on login for desktop", () => {
-        login(true);
-        cy.get("[data-testid=sidenavbar]").should("not.be.visible");
+    it("Validate Side bar Timeline link", () => {
+        verifyNavClick("menu-btn-timeline-link", "/timeline");
+    });
+
+    it("Validate Side bar Dependents link", () => {
+        verifyNavClick("menu-btn-dependents-link", "/dependents");
+    });
+
+    it("Validate Side bar Export link", () => {
+        verifyNavClick("menu-btn-reports-link", "/reports");
     });
 });
