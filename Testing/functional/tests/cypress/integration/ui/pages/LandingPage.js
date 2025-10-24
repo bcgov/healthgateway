@@ -298,14 +298,6 @@ describe("Mobile Landing Page", () => {
             .scrollIntoView()
             .should("be.visible");
 
-        cy.get("[data-testid=mobile-access-card-DependentRecords]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=mobile-read-more-button-DependentRecords]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=mobile-access-card-carousel-next]").click();
-
         cy.get("[data-testid=mobile-access-card-HealthRecords]").should(
             "be.visible"
         );
@@ -314,10 +306,10 @@ describe("Mobile Landing Page", () => {
         );
         cy.get("[data-testid=mobile-access-card-carousel-next]").click();
 
-        cy.get("[data-testid=mobile-read-more-button-HealthServices]").should(
+        cy.get("[data-testid=mobile-access-card-DependentRecords]").should(
             "be.visible"
         );
-        cy.get("[data-testid=mobile-read-more-button-HealthServices]").should(
+        cy.get("[data-testid=mobile-read-more-button-DependentRecords]").should(
             "be.visible"
         );
         cy.get("[data-testid=mobile-access-card-carousel-next]").click();
@@ -326,6 +318,14 @@ describe("Mobile Landing Page", () => {
             "be.visible"
         );
         cy.get("[data-testid=mobile-read-more-button-RecordManagement]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=mobile-access-card-carousel-next]").click();
+
+        cy.get("[data-testid=mobile-read-more-button-HealthServices]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=mobile-read-more-button-HealthServices]").should(
             "be.visible"
         );
     });
