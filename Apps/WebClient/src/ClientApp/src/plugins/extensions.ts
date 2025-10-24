@@ -135,7 +135,7 @@ export const enum Text {
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLinkBC",
     HomeBreadcrumb = "Home Breadcrumb",
-    Immunizations = "View Recommend Immunizations",
+    ViewRecommendedImmunizations = "View Recommended Immunizations",
     ImmunizationScheduleExport = "Immunization Schedule Export",
     ImmunizationScheduleDependents = "Immunization Schedule Dependents",
     ImmunizationUpdateForm = "Immunization Update Form",

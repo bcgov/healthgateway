@@ -19,6 +19,14 @@ function login(isMobile) {
 
     setupStandardFixtures();
 
+    cy.intercept("GET", "**/Note/*", {
+        fixture: "NoteService/notes-test-note.json",
+    });
+
+    cy.intercept("GET", "**/UserProfile/*/Dependent", {
+        fixture: "UserProfileService/dependent.json",
+    });
+
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
