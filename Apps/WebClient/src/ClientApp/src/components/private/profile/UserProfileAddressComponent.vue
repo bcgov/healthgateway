@@ -2,9 +2,24 @@
 import { computed } from "vue";
 
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useUserStore } from "@/stores/user";
 
 const userStore = useUserStore();
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const physicalAddress = computed(() => userStore.patient.physicalAddress);
 const postalAddress = computed(() => userStore.patient.postalAddress);
@@ -37,6 +52,16 @@ const postalAddressLabel = computed(() =>
         ? "Mailing Address"
         : "Address"
 );
+function onAddressChangeClick() {
+    trackingService.trackEvent({
+        action: Action.ExternalLink,
+        text: Text.UpdateMailingAddress,
+        origin: Origin.Profile,
+        destination: Destination.AddressChangeBC,
+        type: Type.Profile,
+        url: ExternalUrl.AddressChangeBC,
+    });
+}
 </script>
 
 <template>
@@ -109,6 +134,7 @@ const postalAddressLabel = computed(() =>
             target="_blank"
             rel="noopener"
             class="text-link"
+            @click="onAddressChangeClick"
             >here</a
         >.
     </div>
@@ -119,6 +145,7 @@ const postalAddressLabel = computed(() =>
             target="_blank"
             rel="noopener"
             class="text-link"
+            @click="onAddressChangeClick"
             >here</a
         >.
     </div>
@@ -129,6 +156,7 @@ const postalAddressLabel = computed(() =>
             target="_blank"
             rel="noopener"
             class="text-link"
+            @click="onAddressChangeClick"
             >this page</a
         >.
     </div>

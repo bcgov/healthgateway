@@ -3,8 +3,12 @@ import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import CommentSectionComponent from "@/components/private/timeline/comment/CommentSectionComponent.vue";
-import { entryTypeMap } from "@/constants/entryType";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import TimelineEntry from "@/models/timeline/timelineEntry";
+import { Action, Type } from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { EventName, useEventStore } from "@/stores/event";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -36,6 +40,9 @@ const emit = defineEmits<{
 
 const layoutStore = useLayoutStore();
 const eventStore = useEventStore();
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const detailsVisible = ref(props.isMobileDetails);
 
@@ -53,6 +60,13 @@ const dateString = computed(() => props.entry.date.format());
 const commentCount = computed(() => props.entry.comments?.length ?? 0);
 
 function handleCardClick(): void {
+    if (props.entry.type === EntryType.BcCancerScreening) {
+        trackingService.trackEvent({
+            action: Action.TimelineCardClick,
+            text: props.title,
+            type: Type.BcCancerScreening,
+        });
+    }
     if (layoutStore.isMobile && !props.isMobileDetails) {
         eventStore.emit(EventName.OpenFullscreenTimelineEntry, props.entry);
     } else if (!layoutStore.isMobile && props.canShowDetails) {

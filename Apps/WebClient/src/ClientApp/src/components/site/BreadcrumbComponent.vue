@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import {
+    Action,
+    Destination,
+    InternalUrl,
+    Origin,
+    Text,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
 
@@ -21,6 +31,10 @@ const homeBreadcrumbItem: BreadcrumbItem = {
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
+
 const isAuthenticated = computed(() => authStore.oidcIsAuthenticated);
 
 const isValidIdentityProvider = computed(
@@ -31,6 +45,18 @@ const allBreadcrumbItems = computed(() => [homeBreadcrumbItem, ...props.items]);
 const displayBreadcrumbs = computed(
     () => isAuthenticated.value && isValidIdentityProvider.value
 );
+
+function onBreadcrumbClick(item: BreadcrumbItem) {
+    if (item.dataTestId === "breadcrumb-home" || item.to === "/home") {
+        trackingService.trackEvent({
+            action: Action.InternalLink,
+            text: Text.HomeBreadcrumb,
+            origin: Origin.Breadcrumb,
+            destination: Destination.Home,
+            url: InternalUrl.Home,
+        });
+    }
+}
 </script>
 
 <template>
@@ -46,6 +72,7 @@ const displayBreadcrumbs = computed(
                 :active="item.active"
                 :data-testid="item.dataTestId"
                 :disabled="item.active"
+                @click="onBreadcrumbClick(item)"
             >
                 {{ item.text }}
             </v-breadcrumbs-item>

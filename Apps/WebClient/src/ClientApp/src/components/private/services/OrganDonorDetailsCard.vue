@@ -15,7 +15,15 @@ import {
     PatientDataFile,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import { Action, Actor, Format, Text, Type } from "@/plugins/extensions";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    Format,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { usePatientDataStore } from "@/stores/patientData";
@@ -66,10 +74,9 @@ function getDecisionFile(): void {
     if (registrationDataValue?.registrationFileId) {
         trackingService.trackEvent({
             action: Action.Download,
-            text: Text.Document,
-            type: Type.OrganDonorRegistration,
+            text: Text.DownloadOrganDonorDecision,
+            type: Type.OrganDonor,
             format: Format.Pdf,
-            actor: Actor.User,
         });
         patientDataStore
             .retrievePatientDataFile(
@@ -161,6 +168,16 @@ if (!showOrganDonorRegistration.value) {
                         rel="noopener"
                         class="text-link"
                         data-testid="organ-donor-registration-link"
+                        @click="
+                            trackingService.trackEvent({
+                                action: Action.ExternalLink,
+                                text: Text.RegisterOrganDonorDecision,
+                                origin: Origin.ServicesPage,
+                                destination: Destination.TransplantBC,
+                                type: Type.ServiceTile,
+                                url: ExternalUrl.OrganDonorRegistration,
+                            })
+                        "
                     >
                         {{ registrationData?.organDonorRegistrationLinkText }}
                     </a>

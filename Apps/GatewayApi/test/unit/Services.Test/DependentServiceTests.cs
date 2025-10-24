@@ -90,6 +90,29 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
+        /// Verifies that <see cref="IDependentService.GetDependentsAsync(string, int, int, CancellationToken)"/>
+        /// returns an empty result when the dependent is marked as deceased.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetDependentsAsyncReturnsEmptyForDeceasedDependent()
+        {
+            // Arrange
+            IDependentService service = this.SetupMockForGetDependents(isDeceased: true);
+
+            // Act
+            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(
+                this.mockParentHdid,
+                0,
+                25,
+                It.IsAny<CancellationToken>());
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(0, actualResult.TotalResultCount);
+        }
+
+        /// <summary>
         /// GetDependents by date - Happy Path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -120,13 +143,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<PatientModel> patientResult = new();
             IDependentService service = this.SetupMockForGetDependents(patientResult);
 
+            IList<ResourceDelegate> mockDelegates = this.GenerateMockResourceDelegatesList();
+            string expectedMessage = string.Join(
+                string.Empty,
+                mockDelegates.Select(d =>
+                    $"Exception when trying to retrieve Dependent - HdId: {d.ResourceOwnerHdid};"));
+
             RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
-            Assert.Equal(
-                "Communication Exception when trying to retrieve Dependent(s) - HdId: MockHdId-0; HdId: MockHdId-1; HdId: MockHdId-2; HdId: MockHdId-3; HdId: MockHdId-4; HdId: MockHdId-5; HdId: MockHdId-6; HdId: MockHdId-7; HdId: MockHdId-8; HdId: MockHdId-9;",
-                actualResult.ResultError?.ResultMessage);
+            Assert.Equal(expectedMessage, actualResult.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -569,7 +596,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return delegateCounts;
         }
 
-        private IDependentService SetupMockForGetDependents(RequestResult<PatientModel>? patientResult = null)
+        private IDependentService SetupMockForGetDependents(RequestResult<PatientModel>? patientResult = null, bool isDeceased = false)
         {
             // Setup Mock<IResourceDelegateDelegate>
             DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
@@ -583,8 +610,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
             mockResourceDelegateDelegate.Setup(s => s.GetAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
-            mockResourceDelegateDelegate.Setup(
-                    s => s.GetTotalDelegateCountsAsync(It.Is<IEnumerable<string>>(h => h.SequenceEqual(mockDelegateCountsResult.Payload.Keys)), It.IsAny<CancellationToken>()))
+            mockResourceDelegateDelegate.Setup(s => s.GetTotalDelegateCountsAsync(
+                    It.Is<IEnumerable<string>>(h => h.SequenceEqual(mockDelegateCountsResult.Payload.Keys)),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockDelegateCountsResult)
                 .Verifiable();
 
@@ -593,16 +621,27 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             patientResult ??= new RequestResult<PatientModel>
             {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new PatientModel
-                {
-                    HdId = this.mockHdId,
-                    PersonalHealthNumber = this.mockPhn,
-                    FirstName = this.mockFirstName,
-                    LastName = this.mockLastName,
-                    Birthdate = this.mockDateOfBirth,
-                    Gender = this.mockGender,
-                },
+                ResultStatus = isDeceased ? ResultType.Error : ResultType.Success,
+                ResourcePayload = isDeceased
+                    ? null
+                    : new PatientModel
+                    {
+                        HdId = this.mockHdId,
+                        PersonalHealthNumber = this.mockPhn,
+                        FirstName = this.mockFirstName,
+                        LastName = this.mockLastName,
+                        Birthdate = this.mockDateOfBirth,
+                        Gender = this.mockGender,
+                    },
+                ResultError = isDeceased
+                    ? new RequestResultError
+                    {
+                        ResultMessage = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
+                        ErrorCode = ErrorTranslator.ServiceError(
+                            ErrorType.CommunicationExternal,
+                            ServiceType.ClientRegistries),
+                    }
+                    : null,
             };
 
             mockPatientService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(patientResult);
@@ -698,11 +737,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             insertResult.Payload = expectedDbDependent;
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(
-                    s => s.InsertAsync(
-                        It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            mockDependentDelegate.Setup(s => s.InsertAsync(
+                    It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(insertResult);
             DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
             {

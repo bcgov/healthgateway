@@ -37,7 +37,15 @@ import NoteTimelineEntry from "@/models/timeline/noteTimelineEntry";
 import SpecialAuthorityRequestTimelineEntry from "@/models/timeline/specialAuthorityRequestTimelineEntry";
 import TimelineEntry, { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
-import { ILogger } from "@/services/interfaces";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { entryTypeToPatientDataTypeMap } from "@/services/restPatientDataService";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCommentStore } from "@/stores/comment";
@@ -76,6 +84,9 @@ enum FilterLabelType {
 const pageSize = 25;
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const layoutStore = useLayoutStore();
 const clinicalDocumentStore = useClinicalDocumentStore();
 const commentStore = useCommentStore();
@@ -697,6 +708,16 @@ setPageFromDate(linearDate.value);
                     target="_blank"
                     rel="noopener"
                     class="text-link"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.ImmunizationUpdateForm,
+                            origin: Origin.Timeline,
+                            destination: Destination.ImmunizationRecordBC,
+                            type: Type.Immunizations,
+                            url: ExternalUrl.ImmunizationRecordBC,
+                        })
+                    "
                     >fill in this online form</a
                 >.
             </HgAlertComponent>

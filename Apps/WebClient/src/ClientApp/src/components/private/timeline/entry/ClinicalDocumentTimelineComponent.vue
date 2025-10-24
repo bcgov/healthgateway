@@ -12,7 +12,14 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import EncodedMedia from "@/models/encodedMedia";
 import { LoadStatus } from "@/models/storeOperations";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
-import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import {
+    Action,
+    Dataset,
+    Format,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useTimelineStore } from "@/stores/timeline";
@@ -62,10 +69,11 @@ function showConfirmationModal(): void {
 function downloadFile(): void {
     trackingService.trackEvent({
         action: Action.Download,
-        text: Text.Document,
+        text: Text.DownloadClinicalDocument,
+        origin: Origin.Timeline,
         dataset: Dataset.ClinicalDocuments,
+        type: Type.ClinicalDocuments,
         format: Format.Pdf,
-        actor: Actor.User,
     });
 
     clinicalDocumentStore

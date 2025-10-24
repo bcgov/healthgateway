@@ -14,7 +14,7 @@ export class RestTrackingService implements ITrackingService {
         this.logger.debug(`Tracking event: ${JSON.stringify(data)}`);
 
         window.snowplow("trackSelfDescribingEvent", {
-            schema: "iglu:ca.bc.gov.gateway/action/jsonschema/2-0-0",
+            schema: "iglu:ca.bc.gov.gateway/action/jsonschema/3-0-0",
             data,
         });
     }

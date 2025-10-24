@@ -7,7 +7,11 @@ import NoteDialogComponent from "@/components/private/timeline/NoteDialogCompone
 import TimelineComponent from "@/components/private/timeline/TimelineComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { EventName, useEventStore } from "@/stores/event";
 import { useNoteStore } from "@/stores/note";
@@ -28,6 +32,10 @@ const eventStore = useEventStore();
 const noteStore = useNoteStore();
 const userStore = useUserStore();
 
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
+
 const commentsAreEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.timeline.comment
 );
@@ -42,6 +50,11 @@ const entryTypes = computed(() =>
 );
 
 function openNoteDialog(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.AddNote,
+        type: Type.Notes,
+    });
     eventStore.emit(EventName.OpenNoteDialog);
 }
 </script>

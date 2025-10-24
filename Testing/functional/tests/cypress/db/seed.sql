@@ -906,6 +906,28 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
 );
+/* Dependent PHN:9873224879 (MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ), Is decesased in client registry - should be ignored when retrieving dependents */
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'Guardian', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2023-03-27T00:00:00"'
+);
 
 INSERT INTO gateway."Email"(
     "EmailId", 
