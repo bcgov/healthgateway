@@ -18,7 +18,8 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import AddDependentRequest from "@/models/addDependentRequest";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
-import { IDependentService } from "@/services/interfaces";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { IDependentService, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useDependentStore } from "@/stores/dependent";
 import { useErrorStore } from "@/stores/error";
@@ -56,6 +57,9 @@ const maxBirthdate = DateWrapper.today();
 
 const dependentService = container.get<IDependentService>(
     SERVICE_IDENTIFIER.DependentService
+);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
 );
 const configStore = useConfigStore();
 const dependentStore = useDependentStore();
@@ -183,6 +187,11 @@ function clear(): void {
 
 function handleSubmit(): void {
     v$.value.$reset();
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.RegisterDependent,
+        type: Type.Dependents,
+    });
     addDependent();
 }
 
@@ -197,6 +206,14 @@ function setTooManyRequestsError(key: string): void {
 
 function touchDateOfBirth(): void {
     v$.value.dependent.dateOfBirth.$touch();
+}
+
+function onAddDependentClick() {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.AddDependent,
+        type: Type.Dependents,
+    });
 }
 
 watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
@@ -221,6 +238,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 :disabled="disabled"
                 prepend-icon="user-plus"
                 text="Add dependent"
+                @click="onAddDependentClick"
             />
         </template>
         <v-card>

@@ -30,12 +30,6 @@ describe("Menu System when services are enabled", () => {
 
     it("Side bar contains services nav link and toggle validated", () => {
         login(false);
-        cy.get("[data-testid=menu-btn-services-link]").should("be.visible");
-        cy.get("[data-testid=menu-btn-services-link]").should(
-            "have.attr",
-            "href",
-            "/services"
-        );
 
         cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
@@ -47,6 +41,11 @@ describe("Menu System when services are enabled", () => {
             "not.have.class",
             "v-navigation-drawer--rail"
         );
+
+        cy.get("[data-testid=menu-btn-services-link]")
+            .should("be.visible")
+            .click();
+        cy.location("pathname", { timeout: 10000 }).should("eq", "/services");
     });
 
     it("Side navigation bar does not expand on mobile", () => {

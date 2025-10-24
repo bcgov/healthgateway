@@ -10,7 +10,7 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
-import { Action, Dataset, Format, Type } from "@/plugins/extensions";
+import { Action, Dataset, Format, Origin, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 
@@ -78,6 +78,7 @@ function trackProgramLinkClick(): void {
     trackingService.trackEvent({
         action: Action.ExternalLink,
         text: `${props.entry.title} Help`,
+        origin: Origin.Timeline,
         type: Type.BcCancerScreening,
         destination: props.entry.bcCancerDestination,
         url: props.entry.bcCancerUrl,

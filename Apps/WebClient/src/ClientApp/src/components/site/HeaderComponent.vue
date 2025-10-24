@@ -8,7 +8,14 @@ import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
 import RatingComponent from "@/components/site/RatingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { ILogger } from "@/services/interfaces";
+import {
+    Action,
+    Destination,
+    InternalUrl,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
@@ -26,6 +33,9 @@ const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const notificationButtonClicked = ref(false);
 const hasViewedTour = ref(false);
@@ -155,11 +165,26 @@ function handleLogoutClick(): void {
     }
 }
 
+function handleProfileClick(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.Profile,
+        type: Type.Profile,
+        url: InternalUrl.Profile,
+    });
+    router.push({ path: "/profile" });
+}
+
 function showRating(): void {
     ratingComponent.value?.showDialog();
 }
 
 function processLogout(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.Logout,
+        type: Type.Logout,
+    });
     logger.debug(`redirecting to logout view ...`);
     router.push({ path: "/logout" });
 }
@@ -219,6 +244,14 @@ nextTick(() => {
             :to="logoLinkDestination"
             class="px-2"
             style="max-width: 240px; width: 100%"
+            @click="
+                trackingService.trackEvent({
+                    action: Action.InternalLink,
+                    text: Text.HealthGatewayLogo,
+                    destination: Destination.Home,
+                    url: InternalUrl.Home,
+                })
+            "
         >
             <v-img
                 alt="Go to Health Gateway home page"
@@ -277,9 +310,9 @@ nextTick(() => {
                     <v-divider />
                     <v-list-item
                         v-if="isProfileLinkAvailable"
-                        to="/profile"
                         prepend-icon="fas fa-user"
                         data-testid="profileBtn"
+                        @click="handleProfileClick"
                         >Profile</v-list-item
                     >
                     <v-list-item
