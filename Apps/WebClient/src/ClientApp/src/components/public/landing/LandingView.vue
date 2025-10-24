@@ -35,8 +35,8 @@ const configStore = useConfigStore();
 const authStore = useAuthStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
-const { mdAndUp, xs } = useDisplay();
-const accessLinkCarouselHeight = computed(() => (xs.value ? 280 : 200));
+const { mdAndUp, sm, xs } = useDisplay();
+const accessLinkCarouselHeight = computed(() => (xs.value ? 290 : 200));
 const managedHealthCarouselHeight = computed(() => (xs.value ? 300 : 220));
 
 const showLaptopTooltip = ref(false);
@@ -394,7 +394,10 @@ function openExternalLink(url?: string) {
                 </v-col>
             </v-row>
         </div>
-        <div v-if="shouldDisplayAccessLinks" class="mt-4 mt-md-8">
+        <div
+            v-if="shouldDisplayAccessLinks"
+            class="landing-primary-override mt-4 mt-md-8"
+        >
             <h2
                 class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-5"
                 data-testid="access-links-header"
@@ -443,13 +446,22 @@ function openExternalLink(url?: string) {
                         variant="outlined"
                         color="outline"
                         rounded="md"
-                        class="d-flex flex-column h-100 text-start pa-5 pb-6 border-sm"
+                        :class="[
+                            'h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm',
+                            xs ? 'pb-12' : sm ? 'pb-12' : 'pb-6',
+                        ]"
                         :data-testid="`mobile-access-card-${tile.type}`"
                     >
-                        <div class="flex-grow-1" style="min-height: 100px">
+                        <div
+                            class="flex-grow-1"
+                            :style="{ minHeight: xs ? '120px' : '70px' }"
+                        >
                             <TileComponent :tile="tile" />
                         </div>
-                        <div class="pt-3 mb-8 text-center">
+                        <v-card-actions
+                            class="justify-center"
+                            :class="xs ? 'pb-1' : 'pb-0'"
+                        >
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
@@ -458,7 +470,7 @@ function openExternalLink(url?: string) {
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
                             />
-                        </div>
+                        </v-card-actions>
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
@@ -477,10 +489,10 @@ function openExternalLink(url?: string) {
                         class="h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm"
                         :data-testid="`access-card-${tile.type}`"
                     >
-                        <div class="flex-grow-1" style="min-height: 140px">
+                        <div class="flex-grow-1">
                             <TileComponent :tile="tile" />
                         </div>
-                        <div class="pt-3 text-center">
+                        <v-card-actions class="justify-center pt-4">
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
@@ -489,12 +501,12 @@ function openExternalLink(url?: string) {
                                 :data-testid="`read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
                             />
-                        </div>
+                        </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>
         </div>
-        <div class="mt-4 mt-md-8">
+        <div class="landing-primary-override mt-4 mt-md-8">
             <v-sheet
                 color="sectionBackground"
                 variant="tonal"
@@ -536,7 +548,10 @@ function openExternalLink(url?: string) {
                 </v-row>
             </v-sheet>
         </div>
-        <div v-if="shouldDisplayManagedHealthLinks" class="mt-6 mt-md-8">
+        <div
+            v-if="shouldDisplayManagedHealthLinks"
+            class="landing-primary-override mt-6 mt-md-8"
+        >
             <h2
                 class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-5"
                 data-testid="managed-health-links-header"
@@ -587,24 +602,31 @@ function openExternalLink(url?: string) {
                     <v-card
                         variant="outlined"
                         rounded="md"
-                        class="d-flex flex-column h-100 text-start pa-5 pb-6 border-sm"
+                        :class="[
+                            'h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm',
+                            xs ? 'pb-12' : sm ? 'pb-12' : 'pb-6',
+                        ]"
                         :data-testid="`mobile-managed-health-card-${tile.type}`"
                     >
-                        <div class="flex-grow-1" style="min-height: 100px">
+                        <div
+                            class="flex-grow-1"
+                            :style="{ minHeight: xs ? '120px' : '70px' }"
+                        >
                             <TileComponent :tile="tile" />
                         </div>
-                        <div class="pt-3 mb-8 text-center">
+                        <v-card-actions
+                            class="justify-center"
+                            :class="xs ? 'pb-1' : 'pb-0'"
+                        >
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
                                 class="text-none"
                                 :aria-label="`Read more about ${tile.name}`"
-                                :href="`${tile.link}`"
-                                :new-tab="true"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
                             />
-                        </div>
+                        </v-card-actions>
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
@@ -623,10 +645,10 @@ function openExternalLink(url?: string) {
                         class="h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm"
                         :data-testid="`managed-health-card-${tile.type}`"
                     >
-                        <div class="flex-grow-1" style="min-height: 140px">
+                        <div class="flex-grow-1">
                             <TileComponent :tile="tile" />
                         </div>
-                        <div class="pt-3 text-center">
+                        <v-card-actions class="justify-center pt-4">
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
@@ -635,7 +657,7 @@ function openExternalLink(url?: string) {
                                 :data-testid="`read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
                             />
-                        </div>
+                        </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>
@@ -644,6 +666,10 @@ function openExternalLink(url?: string) {
 </template>
 
 <style lang="scss" scoped>
+.landing-primary-override :deep(.text-primary) {
+    color: #313132 !important;
+}
+
 .device-preview {
     max-height: 212px;
 
