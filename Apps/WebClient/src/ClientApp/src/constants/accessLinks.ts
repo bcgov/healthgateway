@@ -25,15 +25,6 @@ export enum AccessLinkType {
 const ALL_TILES = [
     {
         section: TileSection.Access,
-        type: AccessLinkType.DependentRecords,
-        name: "Dependent Records",
-        description:
-            "View your dependent's immunization records, including history and schedule.",
-        link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/dependents",
-        active: true,
-    },
-    {
-        section: TileSection.Access,
         type: AccessLinkType.HealthRecords,
         name: "Health Records",
         description:
@@ -43,11 +34,11 @@ const ALL_TILES = [
     },
     {
         section: TileSection.Access,
-        type: AccessLinkType.HealthServices,
-        name: "Health Services",
+        type: AccessLinkType.DependentRecords,
+        name: "Dependent Records",
         description:
-            "Easily check and update your organ donor registry information.",
-        link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/services",
+            "View your dependent's immunization records, including history and schedule.",
+        link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/dependents",
         active: true,
     },
     {
@@ -57,6 +48,15 @@ const ALL_TILES = [
         description:
             "Download your health records, organize them, and print them. Make your own notes to track health events.",
         link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/export",
+        active: true,
+    },
+    {
+        section: TileSection.Access,
+        type: AccessLinkType.HealthServices,
+        name: "Health Services",
+        description:
+            "Easily check and update your organ donor registry information.",
+        link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/services",
         active: true,
     },
     {
