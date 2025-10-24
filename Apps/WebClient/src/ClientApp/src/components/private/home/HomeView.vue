@@ -270,7 +270,7 @@ function handleClickOrganDonorCard(): void {
 function showRecommendationsDialog(): void {
     trackingService.trackEvent({
         action: Action.ButtonClick,
-        text: Text.Immunizations,
+        text: Text.ViewRecommendedImmunizations,
         origin: Origin.Home,
         dataset: Dataset.Immunizations,
         type: Type.HomeTile,

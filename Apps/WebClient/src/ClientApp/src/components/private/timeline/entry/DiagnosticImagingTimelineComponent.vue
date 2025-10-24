@@ -11,7 +11,14 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
-import { Action, Dataset, Format, Text, Type } from "@/plugins/extensions";
+import {
+    Action,
+    Dataset,
+    Format,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useTimelineStore } from "@/stores/timeline";
@@ -59,6 +66,7 @@ function downloadFile(): void {
         trackingService.trackEvent({
             action: Action.Download,
             text: Text.DownloadImagingReport,
+            origin: Origin.Timeline,
             dataset: Dataset.ImagingReports,
             type: Type.ImagingReports,
             format: Format.Pdf,
