@@ -155,6 +155,7 @@ function openExternalLink(url?: string) {
                         variant="primary"
                         to="/login"
                         data-testid="btnLogin"
+                        :uppercase="false"
                     />
                     <div class="mt-4 d-flex align-center">
                         <span class="text-body-1 mr-2">Need an account?</span>
@@ -164,6 +165,7 @@ function openExternalLink(url?: string) {
                             variant="link"
                             to="/registration"
                             data-testid="btnStart"
+                            :uppercase="false"
                         />
                     </div>
                 </div>
@@ -462,7 +464,7 @@ function openExternalLink(url?: string) {
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none"
+                                :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
@@ -493,7 +495,7 @@ function openExternalLink(url?: string) {
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none"
+                                :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
@@ -615,7 +617,7 @@ function openExternalLink(url?: string) {
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none"
+                                :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"
@@ -646,7 +648,7 @@ function openExternalLink(url?: string) {
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
-                                class="text-none"
+                                :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
                                 @click="openExternalLink(tile.link)"

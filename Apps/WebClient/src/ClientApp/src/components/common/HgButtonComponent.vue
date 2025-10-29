@@ -5,11 +5,13 @@ interface Props {
     variant?: HgButtonVariant;
     inverse?: boolean;
     disabled?: boolean;
+    uppercase?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     variant: "primary",
     inverse: false,
     disabled: undefined,
+    uppercase: true,
 });
 
 export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
@@ -55,6 +57,10 @@ const color = computed(() => variantDetails.value.color);
 const disabledColor = computed(
     () => variantDetails.value.disabledColor ?? color.value
 );
+
+const textCaseClass = computed(() =>
+    props.uppercase ? "text-uppercase" : "text-none"
+);
 </script>
 
 <template>
@@ -65,6 +71,7 @@ const disabledColor = computed(
         :disabled="disabled"
         :class="[
             'transition-none',
+            textCaseClass,
             props.variant === 'secondary'
                 ? 'secondary-btn-primarytext-surfacehover'
                 : '',
@@ -79,6 +86,7 @@ const disabledColor = computed(
         :disabled="disabled"
         :class="[
             'transition-none',
+            textCaseClass,
             props.variant === 'secondary'
                 ? 'secondary-btn-primarytext-surfacehover'
                 : '',
