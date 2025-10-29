@@ -401,7 +401,7 @@ function openExternalLink(url?: string) {
             >
                 What you can access
             </h2>
-            <p class="text-body-1 text-medium-emphasis mb-4">
+            <p class="landing-bc-black text-body-1 mb-4">
                 Access built-in features to help you view, manage and stay
                 informed about your health.
             </p>
@@ -552,7 +552,7 @@ function openExternalLink(url?: string) {
             >
                 Other ways to manage your health
             </h2>
-            <p class="text-body-1 text-medium-emphasis mb-4">
+            <p class="landing-bc-black text-body-1 mb-4">
                 Explore trusted health services in BC for care, advice or
                 support.
             </p>
@@ -661,12 +661,16 @@ function openExternalLink(url?: string) {
 
 <style lang="scss" scoped>
 /* 
-  Override the Vuetify primary text color (#text-primary)
-  for TileComponent titles used on the Landing page.
-  Ensures tile headings appear in BCGov black (#313132)
-  instead of the default theme primary color.
+  LandingView override:
+  - Recolor TileComponent titles to BC Black (#313132)
+    instead of the Vuetify theme primary.
 */
 :deep(.tile-title) {
+    color: #313132 !important;
+}
+
+/* Paragraph override: Landing-only text requiring BC Black */
+.landing-bc-black {
     color: #313132 !important;
 }
 
