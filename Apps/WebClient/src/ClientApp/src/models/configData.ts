@@ -71,6 +71,7 @@ export interface FeatureToggleConfiguration {
     covid19: Covid19Settings;
     dependents: DependentsSettings;
     services: ServicesSettings;
+    otherRecordSources: OtherRecordSourcesSettings;
 }
 
 export interface HomepageSettings {
@@ -117,6 +118,16 @@ export interface ServicesSettings {
 }
 
 export interface ServiceSettings {
+    name: string;
+    enabled: boolean;
+}
+
+export interface OtherRecordSourcesSettings {
+    enabled: boolean;
+    sources: SourceSettings[];
+}
+
+export interface SourceSettings {
     name: string;
     enabled: boolean;
 }

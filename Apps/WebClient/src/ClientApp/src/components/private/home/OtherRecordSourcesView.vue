@@ -8,7 +8,7 @@ import {
     AccessLinkType,
     getOtherRecordSourcesLinks,
 } from "@/constants/accessLinks";
-import { ServiceName } from "@/constants/serviceName";
+import { CardName } from "@/constants/cardName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import ConfigUtil from "@/utility/configUtil";
 import { useGrid } from "@/utility/useGrid";
@@ -25,7 +25,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const { columns } = useGrid();
 
 const showAccessMyHealthCard = computed(() =>
-    ConfigUtil.isServiceEnabled(ServiceName.AccessMyHealth)
+    ConfigUtil.isOtherRecordSourcesCardEnabled(CardName.AccessMyHealth)
 );
 
 const otherRecordSourcesLinks = computed(() => {

@@ -84,14 +84,15 @@
             {
                 "name": "healthConnectRegistry",
                 "enabled": true
-            },
-            {
-                "name": "otherRecordSources",
-                "enabled": true
-            },
+            }
+        ]
+    },
+    "otherRecordSources": {
+        "enabled": false,
+        "sources": [
             {
                 "name": "accessMyHealth",
-                "enabled": true
+                "enabled": false
             }
         ]
     }

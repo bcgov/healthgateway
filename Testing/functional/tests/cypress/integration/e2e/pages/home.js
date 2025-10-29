@@ -1,7 +1,6 @@
 const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
-const otherRecordSourcesUrl = "/otherRecordSources";
 
 describe("Home Page", () => {
     beforeEach(() => {

@@ -147,7 +147,7 @@ const showHealthConnectCardButton = computed(
         !preferenceHealthConnectHidden.value
 );
 const showOtherRecordSourcesCardButton = computed(() =>
-    ConfigUtil.isServiceEnabled(ServiceName.OtherRecordSources)
+    ConfigUtil.isOtherRecordSourcesFeatureEnabled()
 );
 const enabledQuickLinks = computed(
     () =>

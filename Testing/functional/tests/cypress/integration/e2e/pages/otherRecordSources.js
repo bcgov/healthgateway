@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 
 const PATH = "/otherRecordSources";
+const UNAUTHORIZED_URL = "/unauthorized";
 
 const LINK_CASES = {
     AccessMyHealth: "https://www.phsa.ca/",
@@ -30,8 +31,12 @@ function expectCardVisibleWithUrl(type, expectedUrl) {
 }
 
 describe("Other Record Sources Page", () => {
-    it("Access My Health card is not rendered when services are disabled", () => {
-        cy.configureSettings({});
+    it("Other record sources URL goes to Unauthorized when other record resouces feature is turned off", () => {
+        cy.configureSettings({
+            otherRecordSources: {
+                enabled: false,
+            },
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -40,14 +45,17 @@ describe("Other Record Sources Page", () => {
             PATH
         );
 
-        cy.get(selectors("AccessMyHealth").card).should("not.exist");
+        cy.location("pathname", { timeout: 10000 }).should(
+            "eq",
+            UNAUTHORIZED_URL
+        );
     });
 
     it("Cards are rendered and link to the correct URLs", () => {
         cy.configureSettings({
-            services: {
+            otherRecordSources: {
                 enabled: true,
-                services: [{ name: "accessMyHealth", enabled: true }],
+                sources: [{ name: "accessMyHealth", enabled: true }],
             },
         });
 
@@ -61,5 +69,23 @@ describe("Other Record Sources Page", () => {
         Object.entries(LINK_CASES).forEach(([type, url]) => {
             expectCardVisibleWithUrl(type, url);
         });
+    });
+
+    it("Access My Health card is not rendered when source is disabled", () => {
+        cy.configureSettings({
+            otherRecordSources: {
+                enabled: true,
+                sources: [{ name: "accessMyHealth", enabled: false }],
+            },
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            PATH
+        );
+
+        cy.get(selectors("AccessMyHealth").card).should("not.exist");
     });
 });
