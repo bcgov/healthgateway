@@ -181,6 +181,8 @@ const routes = [
         component: OtherRecordSourcesView,
         meta: {
             validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.otherRecordSources.enabled,
         },
     },
     {

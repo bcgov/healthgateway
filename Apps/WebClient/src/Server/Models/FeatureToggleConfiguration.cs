@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
     /// <param name="Services">Settings for services features.</param>
+    /// <param name="OtherRecordSources">Settings for other record sources features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         NotificationCentreSettings NotificationCentre,
@@ -34,7 +35,8 @@ namespace HealthGateway.WebClient.Server.Models
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
         DependentsSettings Dependents,
-        ServicesSettings Services);
+        ServicesSettings Services,
+        OtherRecordSourcesSettings OtherRecordSources);
 
     /// <summary>
     /// Settings for the home page.
@@ -119,6 +121,24 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Enabled">Toggles organ donor services feature.</param>
     /// <param name="Name">Name of the service the configuration element refers to.</param>
     public record ServiceSetting(
+        string Name,
+        bool Enabled);
+
+    /// <summary>
+    /// Settings for the other record sources feature.
+    /// </summary>
+    /// <param name="Enabled">Toggles services feature.</param>
+    /// <param name="Sources">Contains the array of all the sources configured.</param>
+    public record OtherRecordSourcesSettings(
+        bool Enabled,
+        SourceSettings[] Sources);
+
+    /// <summary>
+    /// Settings for source.
+    /// </summary>
+    /// <param name="Name">Name of the source the configuration element refers to.</param>
+    /// <param name="Enabled">Toggles source feature.</param>
+    public record SourceSettings(
         string Name,
         bool Enabled);
 

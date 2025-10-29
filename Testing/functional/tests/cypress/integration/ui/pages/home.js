@@ -45,14 +45,8 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Other Record Sources Card button enabled", () => {
         cy.configureSettings({
-            services: {
+            otherRecordSources: {
                 enabled: true,
-                services: [
-                    {
-                        name: "otherRecordSources",
-                        enabled: true,
-                    },
-                ],
             },
         });
 
@@ -128,14 +122,8 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Other Record Sources Card button disabled", () => {
         cy.configureSettings({
-            services: {
-                enabled: true,
-                services: [
-                    {
-                        name: "otherRecordSources",
-                        enabled: false,
-                    },
-                ],
+            otherRecordSources: {
+                enabled: false,
             },
         });
 
