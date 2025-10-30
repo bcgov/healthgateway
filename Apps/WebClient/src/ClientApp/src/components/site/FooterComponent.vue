@@ -154,6 +154,8 @@ const isFooterShown = computed(
 
 <style lang="scss" scoped>
 .v-footer {
+    --v-theme-primary: 49, 49, 50; /* BC Black #313132 as R,G,B */
+
     // Light grey line
     border-top: 1px solid #dcdcdc;
 
