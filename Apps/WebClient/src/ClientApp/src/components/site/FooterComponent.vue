@@ -153,6 +153,10 @@ const isFooterShown = computed(
 </template>
 
 <style lang="scss" scoped>
+.v-footer :deep(.text-primary) {
+    color: #313132 !important; /* BC Black */
+}
+
 .v-footer {
     // Light grey line
     border-top: 1px solid #dcdcdc;
