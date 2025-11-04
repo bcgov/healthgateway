@@ -40,10 +40,10 @@ describe("Gateway Api Data Access Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
-                    `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApit}DataAccess/BlockedDatasets`
+                    `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApit}DataAccess/BlockedDatasets/${HDID}`,
+                    url: `${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -79,10 +79,10 @@ describe("Gateway Api Data Access Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
-                    `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApit}DataAccess/ContactInfo`
+                    `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApit}DataAccess/ContactInfo/${HDID}`,
+                    url: `${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -118,7 +118,7 @@ describe("Gateway Api Data Access Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
-                    `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApit}DataAccess/Protected`
+                    `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/Protected`
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}DataAccess/Protected/${DEPENDENT_HDID}/${DELEGATE_HDID}`,
