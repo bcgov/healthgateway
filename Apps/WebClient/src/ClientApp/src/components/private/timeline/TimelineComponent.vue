@@ -602,8 +602,7 @@ setPageFromDate(linearDate.value);
             closable
             variant="outlined"
         >
-            We are getting your lab results. It may take up to 48 hours until
-            you can see them.
+            Your lab results are still being processed.
         </HgAlertComponent>
         <template v-if="unfilteredTimelineEntries.length > 0">
             <v-banner
