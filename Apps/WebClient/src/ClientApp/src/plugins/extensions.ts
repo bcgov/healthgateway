@@ -130,7 +130,6 @@ export const enum Text {
     DownloadProofOfVaccination = "Download Proof of Vaccination",
     EmailHealthGateway = "Email HealthGateway",
     Export = "Export",
-    Faq = "FAQ",
     HealthGatewayLogo = "Health Gateway Logo",
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLinkBC",
@@ -150,6 +149,7 @@ export const enum Text {
     ReleaseNotes = "Release Notes",
     SendFeedback = "Send Feedback",
     Services = "Services",
+    SupportGuide = "Support Guide",
     TermsOfService = "Terms of Service",
     Timeline = "Timeline",
     TimelineMissingImmunizations = "Timeline - Missing Immunizations Fill In Online Form",
@@ -213,10 +213,10 @@ export const enum ExternalUrl {
     AbuutUs = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway",
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
-    Faq = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
     HealthLinkBC = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
     OrganDonorRegistration = "http://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
     ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
+    SupportGuide = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
     TermsOfService = "https://www.healthgateway.gov.bc.ca/termsOfService",
 }
 
