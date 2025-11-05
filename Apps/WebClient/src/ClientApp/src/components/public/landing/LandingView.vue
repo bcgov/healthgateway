@@ -37,7 +37,7 @@ const authStore = useAuthStore();
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp, sm, xs } = useDisplay();
 const accessLinkCarouselHeight = computed(() => (xs.value ? 290 : 200));
-const managedHealthCarouselHeight = computed(() => (xs.value ? 300 : 220));
+const managedHealthCarouselHeight = computed(() => (xs.value ? 350 : 220));
 
 const showLaptopTooltip = ref(false);
 const showTabletTooltip = ref(false);
@@ -404,7 +404,7 @@ function openExternalLink(url?: string) {
                 What you can access
             </h2>
             <p class="landing-bc-black text-body-1 mb-4">
-                Access built-in features to help you view, manage and stay
+                There are many features that help you view, manage and stay
                 informed about your health.
             </p>
             <v-carousel
@@ -514,13 +514,12 @@ function openExternalLink(url?: string) {
                 <v-row align="start" no-gutters>
                     <v-col cols="12" md="7" class="pr-md-8">
                         <h2 class="text-h4 font-weight-bold text-primary mb-2">
-                            Finding your health records
+                            Find your health records
                         </h2>
                         <p class="text-body-1 mb-4">
-                            Your digital health record starts at the place where
-                            you get care. Health Gateway helps bring your
-                            records together in one place. It connects to many
-                            record sources, but not all.
+                            Health Gateway helps bring your records together in
+                            one place. It corrects to many record sources, but
+                            not all.
                         </p>
                         <a
                             href="https://www.healthlinkbc.ca/health-library/health-features/your-health-information"
@@ -528,8 +527,7 @@ function openExternalLink(url?: string) {
                             rel="noopener"
                             class="text-primary text-body-1 font-weight-bold text-decoration-underline"
                         >
-                            Learn more about where your records can be found
-                            besides Health Gateway
+                            Learn more about other health records in B.C.
                         </a>
                     </v-col>
                     <v-col
