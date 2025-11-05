@@ -19,53 +19,42 @@ export enum AccessLinkType {
     MyHealth = "MyHealth",
     MyHealthKey = "MyHealthKey",
     MyHealthPortal = "MyHealthPortal",
-    RecordManagement = "RecordManagement",
+    RecordsManagement = "RecordsManagement",
 }
 
 const ALL_TILES = [
     {
         section: TileSection.Access,
         type: AccessLinkType.HealthRecords,
-        name: "Health Records",
+        name: "Health records",
         description:
-            "View your available health records, including dispensed medications, health visits, lab results, immunizations, and more.",
+            "View health records including immunizations, lab results, imaging reports, medications, BC Cancer Screening letters and more.",
         link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/healthrecords",
         active: true,
     },
     {
         section: TileSection.Access,
         type: AccessLinkType.DependentRecords,
-        name: "Dependent Records",
-        description:
-            "View your dependent's immunization records, including history and schedule.",
+        name: "Dependent records",
+        description: "View your children’s immunization records and schedule.",
         link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/dependents",
         active: true,
     },
     {
         section: TileSection.Access,
-        type: AccessLinkType.RecordManagement,
-        name: "Record Management",
+        type: AccessLinkType.RecordsManagement,
+        name: "Records management",
         description:
-            "Download your health records, organize them, and print them. Make your own notes to track health events.",
+            "Add your own notes in Health Gateway to help manage your health. Download health records to save or print.",
         link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/export",
         active: true,
     },
     {
         section: TileSection.Access,
         type: AccessLinkType.HealthServices,
-        name: "Health Services",
-        description:
-            "Easily check and update your organ donor registry information.",
+        name: "Health services",
+        description: "Check and update your Organ Donor registration status.",
         link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/services",
-        active: true,
-    },
-    {
-        section: TileSection.ManageHealth,
-        type: AccessLinkType.Call811,
-        name: "Call 8-1-1 for Health Advice",
-        description:
-            "Speak to a navigator who can guide you to reliable health information or connect you with a health professional.",
-        link: "https://www.healthlinkbc.ca/find-care/healthlink-bc-8-1-1-services",
         active: true,
     },
     {
@@ -79,8 +68,17 @@ const ALL_TILES = [
     },
     {
         section: TileSection.ManageHealth,
+        type: AccessLinkType.Call811,
+        name: "Call 8-1-1 for health information and advice",
+        description:
+            "Speak to a navigator who can guide you to reliable health information or connect you with a registered nurse, registered dietitian, qualified exercise professional, pharmacist or physician.",
+        link: "https://www.healthlinkbc.ca/find-care/healthlink-bc-8-1-1-services",
+        active: true,
+    },
+    {
+        section: TileSection.ManageHealth,
         type: AccessLinkType.FindDoctor,
-        name: "Find a family doctor or nurse practitioner",
+        name: "Find a family doctor or nurse practioner",
         description:
             "Register with the Health Connect Registry to get matched with a family doctor or nurse practitioner in your community.",
         link: "https://www.healthlinkbc.ca/find-care/health-connect-registry",
