@@ -4,6 +4,7 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 const homeUrl = "/home";
 const covid19Url = "/covid19";
 const timelineUrl = "/timeline";
+const otherRecordSourcesUrl = "/otherRecordSources";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
@@ -40,6 +41,29 @@ describe("Authenticated User - Home Page", () => {
         );
 
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
+    });
+
+    it("Home - Other Record Sources Card button enabled", () => {
+        cy.configureSettings({
+            otherRecordSources: {
+                enabled: true,
+            },
+        });
+
+        setupStandardFixtures();
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.get("[data-testid=other-record-sources-card]")
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.url().should("include", otherRecordSourcesUrl);
     });
 
     // AB#16941 - Skip test as Vaccine Card has been removed from Home
@@ -94,6 +118,25 @@ describe("Authenticated User - Home Page", () => {
         );
 
         cy.get("[data-testid=proof-vaccination-card-btn]").should("not.exist");
+    });
+
+    it("Home - Other Record Sources Card button disabled", () => {
+        cy.configureSettings({
+            otherRecordSources: {
+                enabled: false,
+            },
+        });
+
+        setupStandardFixtures();
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.get("[data-testid=other-record-sources-card]").should("not.exist");
     });
 
     it("Home - Notes Card link to Timeline", () => {

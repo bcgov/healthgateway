@@ -62,6 +62,7 @@ export const enum Destination {
     HealthGatewayBeta = "Health Gateway Beta",
     ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
     OrganDonorRegistration = "Organ Donor Registration",
+    OtherRecordSources = "Other Record Sources",
     PrimaryCare = "Primary Care",
     PublicHealthImmunizationSchedule = "Public Health Immunization Schedule",
     AddressChangeBC = "Address Change BC",

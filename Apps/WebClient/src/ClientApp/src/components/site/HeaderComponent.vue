@@ -330,7 +330,8 @@ nextTick(() => {
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
-            text="Log In"
+            text="Log in"
+            :uppercase="false"
         />
         <HgButtonComponent
             v-else-if="isLogOutButtonShown"
@@ -338,8 +339,9 @@ nextTick(() => {
             prepend-icon="fas fa-sign-out-alt"
             data-testid="header-log-out-button"
             to="/logout"
+            :uppercase="false"
         >
-            Log Out
+            Log out
         </HgButtonComponent>
     </v-app-bar>
     <RatingComponent ref="ratingComponent" @on-close="processLogout()" />

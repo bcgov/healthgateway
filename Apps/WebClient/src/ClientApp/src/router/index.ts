@@ -49,6 +49,10 @@ const HomeView = () =>
     import(
         /* webpackChunkName: "home" */ "@/components/private/home/HomeView.vue"
     );
+const OtherRecordSourcesView = () =>
+    import(
+        /* webpackChunkName: "otherRecordSources" */ "@/components/private/home/OtherRecordSourcesView.vue"
+    );
 const IdirLoggedInView = () =>
     import(
         /* webpackChunkName: "idirLoggedIn" */ "@/components/error/IdirLoggedInView.vue"
@@ -169,6 +173,16 @@ const routes = [
         component: HomeView,
         meta: {
             validStates: [UserState.registered],
+        },
+    },
+    {
+        path: Path.OtherRecordSources,
+        name: "OtherRecordSources",
+        component: OtherRecordSourcesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.otherRecordSources.enabled,
         },
     },
     {
