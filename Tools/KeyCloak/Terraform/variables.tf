@@ -171,6 +171,15 @@ variable "client_hg_phsa" {
   description = "HealthGateway PHSA client configuration"
 }
 
+variable "client_erebus" {
+  type = object({
+    id              = optional(string, "erebus")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+  })
+  description = "LRA PHSA client configuration"
+}
+
 variable "client_hg" {
   type = object({
     id              = optional(string, "hg")
