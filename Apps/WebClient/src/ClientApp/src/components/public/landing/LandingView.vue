@@ -41,7 +41,7 @@ const accessLinkCarouselHeight = computed(() =>
     isTightPhone.value ? 290 : 270
 );
 const managedHealthCarouselHeight = computed(() =>
-    isTightPhone.value ? 390 : 320
+    isTightPhone.value ? 390 : 360
 );
 
 const showLaptopTooltip = ref(false);
@@ -529,7 +529,7 @@ function openExternalLink(url?: string) {
                             href="https://www.healthlinkbc.ca/health-library/health-features/your-health-information"
                             target="_blank"
                             rel="noopener"
-                            class="text-primary text-body-1 font-weight-bold text-decoration-underline"
+                            class="text-link"
                         >
                             Learn more about other health records in B.C.
                         </a>
