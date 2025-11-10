@@ -83,12 +83,12 @@ describe("Dependent Timeline", () => {
         cy.location("pathname").should("eq", homePath);
     });
 
-    it("Validate timeline for unauthorized dependent is inaccessible", () => {
+    it("Validate Health Records for unauthorized dependent is inaccessible", () => {
         cy.visit(`/dependents/${unauthorizedDependentHdid}/timeline`);
         cy.location("pathname").should("eq", unauthorizedPath);
     });
 
-    it("Validate timeline for authorized dependent is accessible and commenting is unavailable", () => {
+    it("Validate Health Records for authorized dependent is accessible and commenting is unavailable", () => {
         const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
         cy.visit(dependentTimelinePath);
         cy.location("pathname").should("eq", dependentTimelinePath);

@@ -51,7 +51,9 @@ const entryTypes = computed<EntryType[]>(() => {
         .filter((d) => ConfigUtil.isDependentDatasetEnabled(d.type))
         .map((d) => d.type);
 });
-const title = computed<string>(() => `Timeline for ${formattedName.value}`);
+const title = computed<string>(
+    () => `Health Records for ${formattedName.value}`
+);
 
 function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
     return dependentStore.retrieveDependents(hdid, bypassCache);

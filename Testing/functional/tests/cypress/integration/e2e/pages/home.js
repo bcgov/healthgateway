@@ -37,7 +37,7 @@ describe("Home Page", () => {
         );
     });
 
-    it("Home - Health Records Card link to Timeline", () => {
+    it("Home - Health Records Card link to Health Records", () => {
         cy.contains("[data-testid=card-button-title]", "Health Records")
             .parents("[data-testid=health-records-card]")
             .should("be.visible", "be.enabled")
@@ -52,7 +52,7 @@ describe("Home Page", () => {
         cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 
-    it("Home - Medication Card link to Timeline", () => {
+    it("Home - Medication Card link to Health Records", () => {
         cy.contains("[data-testid=card-button-title]", "Medications")
             .parents("[data-testid=quick-link-card]")
             .should("be.visible", "be.enabled")
@@ -67,8 +67,8 @@ describe("Home Page", () => {
         cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 
-    it("Home - Side Menu Timeline link to Timeline", () => {
-        cy.get("[data-testid=menu-btn-timeline-link]")
+    it("Home - Side Menu Timeline link to Health Records", () => {
+        cy.get("[data-testid=menu-btn-health-records-link]")
             .should("be.visible", "be.enabled")
             .click();
 

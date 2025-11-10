@@ -44,7 +44,9 @@ function verifyNavClick(testId, expectedPath) {
 describe("Menu System", () => {
     it("Validate Toggle Sidebar", { scrollBehavior: "top" }, () => {
         login(false);
-        cy.get("[data-testid=menu-btn-timeline-link]").should("be.visible");
+        cy.get("[data-testid=menu-btn-health-records-link]").should(
+            "be.visible"
+        );
 
         cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
@@ -106,9 +108,9 @@ describe("Menu System", () => {
             "href",
             "/home"
         );
-        cy.get("[data-testid=menu-btn-timeline-link]").should(
+        cy.get("[data-testid=menu-btn-health-records-link]").should(
             "have.text",
-            "Timeline"
+            "Health Records"
         );
         cy.get("[data-testid=menu-btn-dependents-link]").should(
             "have.text",
@@ -123,7 +125,7 @@ describe("Menu System", () => {
     });
 
     it("Validate Side bar Timeline link", () => {
-        verifyNavClick("menu-btn-timeline-link", "/timeline");
+        verifyNavClick("menu-btn-health-records-link", "/timeline");
     });
 
     it("Validate Side bar Dependents link", () => {
