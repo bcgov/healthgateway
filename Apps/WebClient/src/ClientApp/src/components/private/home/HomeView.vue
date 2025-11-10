@@ -240,7 +240,7 @@ function handleClickHealthRecords(): void {
         action: Action.InternalLink,
         text: Text.HealthRecords,
         origin: Origin.Home,
-        destination: Destination.Timeline,
+        destination: Destination.HealthRecords,
         type: Type.HomeTile,
         url: InternalUrl.HealthRecords,
     });

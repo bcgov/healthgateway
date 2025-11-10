@@ -102,11 +102,11 @@ function handleServicesClick(): void {
     router.push({ path: "/services" });
 }
 
-function handleTimelineClick(): void {
+function handleHealthRecordsClick(): void {
     trackingService.trackEvent({
         action: Action.InternalLink,
-        text: Text.Timeline,
-        destination: Destination.Timeline,
+        text: Text.HealthRecords,
+        destination: Destination.HealthRecords,
         type: Type.Sidebar,
         url: InternalUrl.Timeline,
     });
@@ -154,9 +154,9 @@ watch(isSidebarOpen, (value: boolean) => {
             </v-list-item>
             <v-list-item
                 class="nav-hover"
-                title="Timeline"
-                data-testid="menu-btn-timeline-link"
-                @click="handleTimelineClick"
+                title="Health Records"
+                data-testid="menu-btn-health-records-link"
+                @click="handleHealthRecordsClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">

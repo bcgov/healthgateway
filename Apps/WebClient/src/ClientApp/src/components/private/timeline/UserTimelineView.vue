@@ -20,7 +20,7 @@ import ConfigUtil from "@/utility/configUtil";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
-        text: "Timeline",
+        text: "Health Records",
         to: "/timeline",
         active: true,
         dataTestId: "breadcrumb-timeline",
@@ -61,7 +61,7 @@ function openNoteDialog(): void {
 
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
-    <PageTitleComponent title="Timeline">
+    <PageTitleComponent title="Health Records">
         <template #append>
             <HgButtonComponent
                 v-if="notesAreEnabled && !notesAreLoading"
