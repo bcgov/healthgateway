@@ -26,8 +26,7 @@ describe("Provision", () => {
         cy.get("[data-testid=identity-provider]").contains("IDIR").click();
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
-        cy.get("[data-testid=save-btn]").parents(".mud-dialog").click(0, 0);
-
+        cy.get("body").type("{esc}");
         cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
         cy.get("[data-testid=save-btn]").click();
         cy.wait("@postAgentAccess", { timeout: defaultTimeout });
@@ -60,8 +59,8 @@ describe("Provision", () => {
         cy.get("[data-testid=identity-provider]").contains("IDIR").click();
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
+        cy.get("body").type("{esc}");
         cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
-        cy.get("[data-testid=save-btn]").parents(".mud-dialog").click(0, 0);
         cy.get("[data-testid=save-btn]").click();
         cy.wait("@postAgentAccess", { timeout: defaultTimeout });
 
@@ -95,9 +94,9 @@ describe("Provision", () => {
 
         // This line may trigger ResizeObserver exception
         cy.get("[data-testid=role]").contains("AdminAnalyst").click();
+        cy.get("body").type("{esc}");
 
         cy.intercept("PUT", "**/AgentAccess/").as("putAgentAccess");
-        cy.get("[data-testid=save-btn]").parents(".mud-dialog").click(0, 0);
         cy.get("[data-testid=save-btn]").click();
         cy.wait("@putAgentAccess", { timeout: defaultTimeout });
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
