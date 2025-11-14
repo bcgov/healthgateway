@@ -36,12 +36,23 @@ const authStore = useAuthStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp, smAndDown, width, xs } = useDisplay();
+
+// Narrow-phone detection (e.g., Galaxy Z Fold width)
+const isVeryNarrowPhone = computed(() => width.value <= 360);
+
+// Tight-phone threshold for managed health cards
 const isTightPhone = computed(() => width.value <= 375);
+
+/*
+  Carousel heights depend not only on screen width, but also on the
+  length of the AccessLink name/description content inside each card.
+  These values were tuned to prevent text clipping across all major phones.
+*/
 const accessLinkCarouselHeight = computed(() =>
-    isTightPhone.value ? 290 : 270
+    isVeryNarrowPhone.value ? 360 : 340
 );
 const managedHealthCarouselHeight = computed(() =>
-    isTightPhone.value ? 390 : 370
+    isTightPhone.value ? 400 : 370
 );
 
 const showLaptopTooltip = ref(false);
@@ -413,7 +424,7 @@ function openExternalLink(url?: string) {
                 informed about your health.
             </p>
             <v-carousel
-                v-if="!mdAndUp"
+                v-if="xs"
                 :height="accessLinkCarouselHeight"
                 class="w-100"
                 color="primary"
@@ -557,7 +568,7 @@ function openExternalLink(url?: string) {
                 Explore other trusted B.C. health services
             </h2>
             <v-carousel
-                v-if="!mdAndUp"
+                v-if="xs"
                 :height="managedHealthCarouselHeight"
                 class="w-100"
                 color="primary"
