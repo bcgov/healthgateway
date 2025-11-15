@@ -28,7 +28,7 @@ const ALL_TILES = [
         type: AccessLinkType.HealthRecords,
         name: "Health records",
         description:
-            "View health records including immunizations, lab results, imaging reports, medications, health and hospital visits, Special Authority requests, clinical documents, BC Cancer Screening letters and more.",
+            "View health records including immunizations, lab results, imaging reports, medications, health and hospital visits, special authority requests, clinical documents, BC Cancer Screening letters and more.",
         link: "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/healthrecords",
         active: true,
     },
