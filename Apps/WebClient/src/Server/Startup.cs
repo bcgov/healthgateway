@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Server
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Utils;
     using HealthGateway.WebClient.Server.Services;
@@ -31,6 +32,7 @@ namespace HealthGateway.WebClient.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Primitives;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Configures the application during startup.
@@ -73,12 +75,11 @@ namespace HealthGateway.WebClient.Server
             services.AddSpaStaticFiles(options => options.RootPath = "ClientApp/dist");
 
             services.AddControllers()
-                .AddJsonOptions(
-                    options =>
-                    {
-                        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    });
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                });
 
             // Add services
             services.AddSingleton<IConfigurationService, ConfigurationService>();
@@ -142,29 +143,41 @@ namespace HealthGateway.WebClient.Server
             this.startupConfig.UseHttp(app);
             this.startupConfig.EnrichTracing(app);
 
-            app.UseEndpoints(
-                endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
-                });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+            });
 
-            app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
+            // Only run SPA middleware for normal browser HTML navigations
+            app.UseWhen(
+                context =>
+                {
+                    if (!HttpMethods.IsGet(context.Request.Method))
+                    {
+                        return false;
+                    }
+
+                    return context.Request.Headers.TryGetValue(HeaderNames.Accept, out StringValues accept) &&
+
+                           // Look for "text/html" in Accept header
+                           accept.Any(value => value != null && value.Contains("text/html", StringComparison.OrdinalIgnoreCase));
+                },
+                spaApp => { spaApp.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; }); });
         }
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(
-                async (context, next) =>
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE")
                 {
-                    if (context.Request.Method == "TRACE")
-                    {
-                        context.Response.StatusCode = 405;
-                        return;
-                    }
+                    context.Response.StatusCode = 405;
+                    return;
+                }
 
-                    await next.Invoke();
-                });
+                await next.Invoke();
+            });
         }
     }
 }
