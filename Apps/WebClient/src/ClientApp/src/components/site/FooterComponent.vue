@@ -47,23 +47,25 @@ const isFooterShown = computed(
     >
         <v-row class="pa-2">
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <router-link
-                    :to="Path.TermsOfService"
-                    data-testid="footer-terms-of-service-link"
+                <a
+                    href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
+                    target="_blank"
+                    rel="noopener"
+                    data-testid="footer-faq-link"
                     class="text-primary"
                     @click="
                         trackingService.trackEvent({
                             action: Action.ExternalLink,
-                            text: Text.TermsOfService,
+                            text: Text.SupportGuide,
                             origin: Origin.Footer,
-                            destination: Destination.TermsOfService,
+                            destination: Destination.SupportGuide,
                             type: Type.Footer,
-                            url: ExternalUrl.TermsOfService,
+                            url: ExternalUrl.SupportGuide,
                         })
                     "
                 >
-                    Terms of Service
-                </router-link>
+                    Support Guide
+                </a>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
                 <a
@@ -87,6 +89,25 @@ const isFooterShown = computed(
                 </a>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
+                <router-link
+                    :to="Path.TermsOfService"
+                    data-testid="footer-terms-of-service-link"
+                    class="text-primary"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.TermsOfService,
+                            origin: Origin.Footer,
+                            destination: Destination.TermsOfService,
+                            type: Type.Footer,
+                            url: ExternalUrl.TermsOfService,
+                        })
+                    "
+                >
+                    Terms of Service
+                </router-link>
+            </v-col>
+            <v-col class="flex-grow-0" cols="12" md="auto">
                 <a
                     href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway"
                     target="_blank"
@@ -105,27 +126,6 @@ const isFooterShown = computed(
                     "
                 >
                     About Us
-                </a>
-            </v-col>
-            <v-col class="flex-grow-0" cols="12" md="auto">
-                <a
-                    href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
-                    target="_blank"
-                    rel="noopener"
-                    data-testid="footer-faq-link"
-                    class="text-primary"
-                    @click="
-                        trackingService.trackEvent({
-                            action: Action.ExternalLink,
-                            text: Text.Faq,
-                            origin: Origin.Footer,
-                            destination: Destination.SupportGuide,
-                            type: Type.Footer,
-                            url: ExternalUrl.Faq,
-                        })
-                    "
-                >
-                    FAQ
                 </a>
             </v-col>
             <v-spacer />
@@ -153,6 +153,10 @@ const isFooterShown = computed(
 </template>
 
 <style lang="scss" scoped>
+.v-footer :deep(.text-primary) {
+    color: #313132 !important; /* BC Black */
+}
+
 .v-footer {
     // Light grey line
     border-top: 1px solid #dcdcdc;

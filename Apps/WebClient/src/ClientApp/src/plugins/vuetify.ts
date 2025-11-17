@@ -70,6 +70,7 @@ export default createVuetify({
                     navHighlight: "#e0e0e0",
                     borderDivider: "#d1d5db",
                     surfaceHover: "#f3f4f6",
+                    sectionBackground: "#f0f5fa",
                 },
             },
         },

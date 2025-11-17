@@ -162,16 +162,6 @@ variable "client_icarus" {
   description = "Health Gateway Salesforce client configuration"
 }
 
-variable "client_iapyx" {
-  type = object({
-    id              = optional(string, "iapyx")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-    token_lifespan  = number
-  })
-  description = "Regional Portal Demo Auth App"
-}
-
 variable "client_hg_phsa" {
   type = object({
     id              = optional(string, "hg-phsa")

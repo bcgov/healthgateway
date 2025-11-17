@@ -237,6 +237,12 @@ const immunizationsAreLoading = computed(
 const immunizationItems = computed(() =>
     immunizationStore
         .immunizations(dependentHdid.value)
+        .sort((a, b) =>
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.dateOfImmunization),
+                DateWrapper.fromIsoDate(b.dateOfImmunization)
+            )
+        )
         .map<ImmunizationRow>((x) => ({
             date: DateWrapper.fromIsoDate(x.dateOfImmunization).format(),
             immunization: x.immunization.name,
