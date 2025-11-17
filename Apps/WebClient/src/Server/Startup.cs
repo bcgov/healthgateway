@@ -106,7 +106,7 @@ namespace HealthGateway.WebClient.Server
                 app.UseRewriter(rewriteOption);
             }
 
-            app.UseSpaStaticFiles();
+            // app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {
@@ -149,7 +149,7 @@ namespace HealthGateway.WebClient.Server
                     endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
                 });
 
-            app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
+            // app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
         }
 
         private static void DisableTraceMethod(IApplicationBuilder app)
