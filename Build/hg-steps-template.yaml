@@ -145,6 +145,11 @@ steps:
       projects: "$(App.Home)/src"
       arguments: "-o $(Build.BinariesDirectory)"
       zipAfterPublish: false
+  - script: |
+      echo "Listing ClientApp in publish output:"
+      ls -R $(Build.BinariesDirectory)/ClientApp || echo "ClientApp not found"
+    displayName: "Debug: list ClientApp/dist in publish output"
+    condition: and(succeeded(), eq(variables['WASMBuild'], false), eq(variables['WebBuild'], false))
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for Blazor Solution $(App.Name)"
