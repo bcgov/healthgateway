@@ -73,12 +73,11 @@ namespace HealthGateway.WebClient.Server
             services.AddSpaStaticFiles(options => options.RootPath = "ClientApp/dist");
 
             services.AddControllers()
-                .AddJsonOptions(
-                    options =>
-                    {
-                        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    });
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                });
 
             // Add services
             services.AddSingleton<IConfigurationService, ConfigurationService>();
@@ -106,7 +105,7 @@ namespace HealthGateway.WebClient.Server
                 app.UseRewriter(rewriteOption);
             }
 
-            app.UseSpaStaticFiles();
+            // app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {
@@ -142,29 +141,27 @@ namespace HealthGateway.WebClient.Server
             this.startupConfig.UseHttp(app);
             this.startupConfig.EnrichTracing(app);
 
-            app.UseEndpoints(
-                endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
-                });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+            });
 
-            app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
+            // app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
         }
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(
-                async (context, next) =>
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE")
                 {
-                    if (context.Request.Method == "TRACE")
-                    {
-                        context.Response.StatusCode = 405;
-                        return;
-                    }
+                    context.Response.StatusCode = 405;
+                    return;
+                }
 
-                    await next.Invoke();
-                });
+                await next.Invoke();
+            });
         }
     }
 }
