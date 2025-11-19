@@ -304,7 +304,10 @@ describe("Mobile Landing Page", () => {
         cy.get("[data-testid=mobile-read-more-button-HealthRecords]").should(
             "be.visible"
         );
-        cy.get("[data-testid=mobile-access-card-carousel-next]").click();
+        cy.get('[data-testid="mobile-access-card-carousel"]')
+            .find(".v-carousel__controls button")
+            .eq(1)
+            .click();
 
         cy.get("[data-testid=mobile-access-card-DependentRecords]").should(
             "be.visible"
@@ -312,7 +315,10 @@ describe("Mobile Landing Page", () => {
         cy.get("[data-testid=mobile-read-more-button-DependentRecords]").should(
             "be.visible"
         );
-        cy.get("[data-testid=mobile-access-card-carousel-next]").click();
+        cy.get('[data-testid="mobile-access-card-carousel"]')
+            .find(".v-carousel__controls button")
+            .eq(2)
+            .click();
 
         cy.get("[data-testid=mobile-access-card-RecordsManagement]").should(
             "be.visible"
@@ -320,7 +326,10 @@ describe("Mobile Landing Page", () => {
         cy.get(
             "[data-testid=mobile-read-more-button-RecordsManagement]"
         ).should("be.visible");
-        cy.get("[data-testid=mobile-access-card-carousel-next]").click();
+        cy.get('[data-testid="mobile-access-card-carousel"]')
+            .find(".v-carousel__controls button")
+            .eq(3)
+            .click();
 
         cy.get("[data-testid=mobile-read-more-button-HealthServices]").should(
             "be.visible"
@@ -330,35 +339,33 @@ describe("Mobile Landing Page", () => {
         );
     });
 
-    it("Mobile - Validate Managed Health Cards", () => {
+    it("Mobile - Validate Explore Trusted Health Services Cards", () => {
         cy.visit("/");
-        cy.log("Validate mobile managed health cards.");
+        cy.log("Validate mobile explore trusted health services cards.");
 
-        cy.get("[data-testid=mobile-managed-health-card-HealthLinkBC]")
+        cy.get("[data-testid=mobile-health-services-card-HealthLinkBC]")
             .scrollIntoView()
             .should("be.visible");
         cy.get("[data-testid=mobile-read-more-button-HealthLinkBC]").should(
             "be.visible"
         );
-        cy.get(
-            "[data-testid=mobile-managed-health-card-carousel-next]"
-        ).click();
+        cy.get('[data-testid="mobile-health-services-card-carousel"]')
+            .find(".v-carousel__controls button")
+            .eq(1)
+            .click();
 
-        cy.get("[data-testid=mobile-managed-health-card-carousel]").should(
-            "be.visible"
-        );
-
-        cy.get("[data-testid=mobile-managed-health-card-Call811]").should(
+        cy.get("[data-testid=mobile-health-services-card-Call811]").should(
             "be.visible"
         );
         cy.get("[data-testid=mobile-read-more-button-Call811]").should(
             "be.visible"
         );
-        cy.get(
-            "[data-testid=mobile-managed-health-card-carousel-next]"
-        ).click();
+        cy.get('[data-testid="mobile-health-services-card-carousel"]')
+            .find(".v-carousel__controls button")
+            .eq(2)
+            .click();
 
-        cy.get("[data-testid=mobile-managed-health-card-FindDoctor]").should(
+        cy.get("[data-testid=mobile-health-services-card-FindDoctor]").should(
             "be.visible"
         );
         cy.get("[data-testid=mobile-read-more-button-FindDoctor]").should(
