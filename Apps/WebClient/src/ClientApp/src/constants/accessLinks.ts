@@ -2,7 +2,7 @@ import { InfoTile } from "@/models/infoTile";
 
 export enum TileSection {
     Access = "Access",
-    ManageHealth = "ManageHealth",
+    HealthServices = "HealthServices",
     OtherRecordSources = "OtherRecordSources",
 }
 
@@ -58,7 +58,7 @@ const ALL_TILES = [
         active: true,
     },
     {
-        section: TileSection.ManageHealth,
+        section: TileSection.HealthServices,
         type: AccessLinkType.HealthLinkBC,
         name: "Visit HealthLink BC",
         description:
@@ -67,7 +67,7 @@ const ALL_TILES = [
         active: true,
     },
     {
-        section: TileSection.ManageHealth,
+        section: TileSection.HealthServices,
         type: AccessLinkType.Call811,
         name: "Call 8-1-1 for health information and advice",
         description:
@@ -76,7 +76,7 @@ const ALL_TILES = [
         active: true,
     },
     {
-        section: TileSection.ManageHealth,
+        section: TileSection.HealthServices,
         type: AccessLinkType.FindDoctor,
         name: "Find a family doctor or nurse practioner",
         description:
@@ -175,7 +175,7 @@ export function getTilesBySection(section: TileSection): InfoTile[] {
 }
 
 export const getAccessLinks = () => getTilesBySection(TileSection.Access);
-export const getManageHealthLinks = () =>
-    getTilesBySection(TileSection.ManageHealth);
+export const getHealthServicesLinks = () =>
+    getTilesBySection(TileSection.HealthServices);
 export const getOtherRecordSourcesLinks = () =>
     getTilesBySection(TileSection.OtherRecordSources);

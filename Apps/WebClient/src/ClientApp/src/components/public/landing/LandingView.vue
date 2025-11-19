@@ -5,7 +5,10 @@ import { useDisplay } from "vuetify";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TileComponent from "@/components/public/landing/TileComponent.vue";
-import { getAccessLinks, getManageHealthLinks } from "@/constants/accessLinks";
+import {
+    getAccessLinks,
+    getHealthServicesLinks,
+} from "@/constants/accessLinks";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";
@@ -51,7 +54,7 @@ const isTightPhone = computed(() => width.value <= 375);
 const accessLinkCarouselHeight = computed(() =>
     isVeryNarrowPhone.value ? 360 : 340
 );
-const managedHealthCarouselHeight = computed(() =>
+const healthServicesCarouselHeight = computed(() =>
     isTightPhone.value ? 400 : 370
 );
 
@@ -67,7 +70,7 @@ const offlineMessage = computed(
 );
 
 const accessLinks = computed(() => getAccessLinks());
-const managedHealthLinks = computed(() => getManageHealthLinks());
+const healthServicesLinks = computed(() => getHealthServicesLinks());
 
 const proofOfVaccinationTile = computed<InfoTile>(() => ({
     type: "ProofOfVaccination",
@@ -107,8 +110,8 @@ const shouldDisplayDatasets = computed(
 );
 
 const shouldDisplayAccessLinks = computed(() => accessLinks.value.length > 0);
-const shouldDisplayManagedHealthLinks = computed(
-    () => managedHealthLinks.value.length > 0
+const shouldDisplayHealthServicesLinks = computed(
+    () => healthServicesLinks.value.length > 0
 );
 
 function mapEntryTypeToTile(type: EntryType): InfoTile {
@@ -428,34 +431,10 @@ function openExternalLink(url?: string) {
                 :height="accessLinkCarouselHeight"
                 class="w-100"
                 color="primary"
-                show-arrows="hover"
+                :show-arrows="false"
                 hide-delimiter-background
                 data-testid="mobile-access-card-carousel"
             >
-                <template #prev="{ props }">
-                    <v-btn
-                        v-bind="props"
-                        icon
-                        size="small"
-                        density="comfortable"
-                        data-testid="mobile-access-card-carousel-prev"
-                        aria-label="Previous slide"
-                    >
-                        <v-icon icon="fa-solid fa-chevron-left" />
-                    </v-btn>
-                </template>
-                <template #next="{ props }">
-                    <v-btn
-                        v-bind="props"
-                        icon
-                        size="small"
-                        density="comfortable"
-                        data-testid="mobile-access-card-carousel-next"
-                        aria-label="Next slide"
-                    >
-                        <v-icon icon="fa-solid fa-chevron-right" />
-                    </v-btn>
-                </template>
                 <v-carousel-item v-for="tile in accessLinks" :key="tile.name">
                     <v-card
                         variant="outlined"
@@ -560,48 +539,24 @@ function openExternalLink(url?: string) {
                 </v-row>
             </v-sheet>
         </div>
-        <div v-if="shouldDisplayManagedHealthLinks" class="mt-6 mt-md-8">
+        <div v-if="shouldDisplayHealthServicesLinks" class="mt-6 mt-md-8">
             <h2
                 class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-5"
-                data-testid="managed-health-links-header"
+                data-testid="health-services-links-header"
             >
                 Explore other trusted B.C. health services
             </h2>
             <v-carousel
                 v-if="xs"
-                :height="managedHealthCarouselHeight"
+                :height="healthServicesCarouselHeight"
                 class="w-100"
                 color="primary"
-                show-arrows="hover"
+                :show-arrows="false"
                 hide-delimiter-background
-                data-testid="mobile-managed-health-card-carousel"
+                data-testid="mobile-health-services-card-carousel"
             >
-                <template #prev="{ props }">
-                    <v-btn
-                        v-bind="props"
-                        icon
-                        size="small"
-                        density="comfortable"
-                        data-testid="mobile-managed-health-card-carousel-prev"
-                        aria-label="Previous slide"
-                    >
-                        <v-icon icon="fa-solid fa-chevron-left" />
-                    </v-btn>
-                </template>
-                <template #next="{ props }">
-                    <v-btn
-                        v-bind="props"
-                        icon
-                        size="small"
-                        density="comfortable"
-                        data-testid="mobile-managed-health-card-carousel-next"
-                        aria-label="Next slide"
-                    >
-                        <v-icon icon="fa-solid fa-chevron-right" />
-                    </v-btn>
-                </template>
                 <v-carousel-item
-                    v-for="tile in managedHealthLinks"
+                    v-for="tile in healthServicesLinks"
                     :key="tile.name"
                 >
                     <v-card
@@ -611,7 +566,7 @@ function openExternalLink(url?: string) {
                             'h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm',
                             smAndDown ? 'pb-12' : 'pb-6',
                         ]"
-                        :data-testid="`mobile-managed-health-card-${tile.type}`"
+                        :data-testid="`mobile-health-services-card-${tile.type}`"
                     >
                         <div
                             class="flex-grow-1"
@@ -637,7 +592,7 @@ function openExternalLink(url?: string) {
             </v-carousel>
             <v-row v-else align="stretch" class="mb-6 mb-md-8">
                 <v-col
-                    v-for="tile in managedHealthLinks"
+                    v-for="tile in healthServicesLinks"
                     :key="tile.name"
                     cols="12"
                     md="6"
