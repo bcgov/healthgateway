@@ -148,6 +148,7 @@ export const enum Text {
     Profile = "Profile",
     RemoveDependent = "Remove a Dependent",
     QuickLink = "Quicklink",
+    RecoverAccount = "Recover Account",
     ReleaseNotes = "Release Notes",
     SendFeedback = "Send Feedback",
     Services = "Services",
