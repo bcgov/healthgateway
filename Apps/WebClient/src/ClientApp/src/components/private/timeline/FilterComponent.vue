@@ -6,8 +6,12 @@ import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataType } from "@/models/patientDataResponse";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
 import { useHealthVisitStore } from "@/stores/healthVisit";
@@ -33,6 +37,10 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
     entryTypes: () => [],
 });
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const layoutStore = useLayoutStore();
 const timelineStore = useTimelineStore();
@@ -74,6 +82,12 @@ function showDialog(): void {
     selectedEntryTypes.value = [...activeEntryTypes.value];
 
     isVisible.value = true;
+
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.FilterHealthRecords,
+        type: Type.Filter,
+    });
 }
 
 function hideDialog(): void {
