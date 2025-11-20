@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -11,7 +12,21 @@ import {
 } from "@/constants/accessLinks";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { InfoTile } from "@/models/infoTile";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    InternalUrl,
+    LandingAccessLinkText,
+    LandingAccessLinkType,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
@@ -34,8 +49,14 @@ const datasetEntryTypes: EntryType[] = [
     EntryType.DiagnosticImaging,
 ];
 
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
+
 const configStore = useConfigStore();
 const authStore = useAuthStore();
+const router = useRouter();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp, smAndDown, width, xs } = useDisplay();
@@ -114,6 +135,28 @@ const shouldDisplayHealthServicesLinks = computed(
     () => healthServicesLinks.value.length > 0
 );
 
+function handleLoginClick(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.LoginBCSC,
+        type: Type.Login,
+        url: InternalUrl.Login,
+    });
+    router.push({ path: "/login" });
+}
+
+function handleRegisterClick(): void {
+    trackingService.trackEvent({
+        action: Action.InternalLink,
+        text: Text.Register,
+        origin: Origin.Landing,
+        destination: Destination.Registration,
+        type: Type.Landing,
+        url: InternalUrl.Registration,
+    });
+    router.push({ path: "/registration" });
+}
+
 function mapEntryTypeToTile(type: EntryType): InfoTile {
     const details = entryTypeMap.get(type);
     return {
@@ -141,9 +184,27 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
     }
 }
 
-function openExternalLink(url?: string) {
+function openExternalLink(type: string, url?: string) {
     if (!url) return;
     window.open(url, "_blank", "noopener");
+
+    const landingAccessLinkType = type as LandingAccessLinkType;
+
+    if (!(landingAccessLinkType in LandingAccessLinkText)) {
+        logger.warn(
+            `openExternalLink: unsupported landing access link type: ${type}`
+        );
+        return;
+    }
+
+    trackingService.trackEvent({
+        action: Action.ExternalLink,
+        text: LandingAccessLinkText[landingAccessLinkType],
+        origin: Origin.Landing,
+        destination: Destination.SupportGuide,
+        type: Type.Landing,
+        url: url,
+    });
 }
 </script>
 
@@ -172,9 +233,9 @@ function openExternalLink(url?: string) {
                         class="btn-auth-landing"
                         text="Log in with BC Services Card"
                         variant="primary"
-                        to="/login"
                         data-testid="btnLogin"
                         :uppercase="false"
+                        @click="handleLoginClick"
                     />
                     <div class="mt-4 d-flex align-center">
                         <span class="text-body-1 mr-2">Need an account?</span>
@@ -182,9 +243,9 @@ function openExternalLink(url?: string) {
                             id="btnStart"
                             text="Register"
                             variant="link"
-                            to="/registration"
                             data-testid="btnStart"
                             :uppercase="false"
+                            @click="handleRegisterClick"
                         />
                     </div>
                 </div>
@@ -461,7 +522,7 @@ function openExternalLink(url?: string) {
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.link)"
+                                @click="openExternalLink(tile.type, tile.link)"
                             />
                         </v-card-actions>
                     </v-card>
@@ -492,7 +553,7 @@ function openExternalLink(url?: string) {
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.link)"
+                                @click="openExternalLink(tile.type, tile.link)"
                             />
                         </v-card-actions>
                     </v-card>
@@ -516,10 +577,20 @@ function openExternalLink(url?: string) {
                             not all.
                         </p>
                         <a
-                            href="https://www.healthlinkbc.ca/health-library/health-features/your-health-information"
+                            :href="ExternalUrl.YourHealthInformationUrl"
                             target="_blank"
                             rel="noopener"
                             class="text-link"
+                            @click="
+                                trackingService.trackEvent({
+                                    action: Action.ExternalLink,
+                                    text: Text.FilterHealthRecords,
+                                    origin: Origin.Landing,
+                                    destination: Destination.SupportGuide,
+                                    type: Type.Landing,
+                                    url: ExternalUrl.YourHealthInformationUrl,
+                                })
+                            "
                         >
                             Learn more about other health records in B.C.
                         </a>
@@ -584,7 +655,7 @@ function openExternalLink(url?: string) {
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.link)"
+                                @click="openExternalLink(tile.type, tile.link)"
                             />
                         </v-card-actions>
                     </v-card>
@@ -615,7 +686,7 @@ function openExternalLink(url?: string) {
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.link)"
+                                @click="openExternalLink(tile.type, tile.link)"
                             />
                         </v-card-actions>
                     </v-card>
