@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Server
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Utils;
     using HealthGateway.WebClient.Server.Services;
@@ -31,6 +32,7 @@ namespace HealthGateway.WebClient.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Primitives;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Configures the application during startup.
@@ -73,12 +75,11 @@ namespace HealthGateway.WebClient.Server
             services.AddSpaStaticFiles(options => options.RootPath = "ClientApp/dist");
 
             services.AddControllers()
-                .AddJsonOptions(
-                    options =>
-                    {
-                        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    });
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                });
 
             // Add services
             services.AddSingleton<IConfigurationService, ConfigurationService>();
@@ -142,29 +143,37 @@ namespace HealthGateway.WebClient.Server
             this.startupConfig.UseHttp(app);
             this.startupConfig.EnrichTracing(app);
 
-            app.UseEndpoints(
-                endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
-                });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+            });
 
-            app.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; });
+            // Only run SPA fallback for real browser navigations (GET + Accept: text/html).
+            // Prevents SPA middleware from trying to serve index.html for non-HTML requests
+            // such as bots, scanners, and POST calls, which avoids unnecessary SPA errors.
+            app.UseWhen(
+                context =>
+                {
+                    return HttpMethods.IsGet(context.Request.Method)
+                           && context.Request.Headers.TryGetValue(HeaderNames.Accept, out StringValues accept)
+                           && accept.Any(v => v?.Contains("text/html", StringComparison.OrdinalIgnoreCase) == true);
+                },
+                spaApp => { spaApp.UseSpa(spa => { spa.Options.SourcePath = "ClientApp"; }); });
         }
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(
-                async (context, next) =>
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE")
                 {
-                    if (context.Request.Method == "TRACE")
-                    {
-                        context.Response.StatusCode = 405;
-                        return;
-                    }
+                    context.Response.StatusCode = 405;
+                    return;
+                }
 
-                    await next.Invoke();
-                });
+                await next.Invoke();
+            });
         }
     }
 }
