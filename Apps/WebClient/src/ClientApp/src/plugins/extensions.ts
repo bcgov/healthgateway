@@ -226,13 +226,6 @@ export const BcCancerDestination: Record<BcCancerProgram, string> = {
     Lung: "Lung Cancer Screening",
 } as const;
 
-export const BcCancerUrl: Record<BcCancerProgram, string> = {
-    Breast: "http://www.bccancer.bc.ca/screening/breast",
-    Cervix: "http://www.bccancer.bc.ca/screening/cervix",
-    Colon: "http://www.bccancer.bc.ca/screening/colon",
-    Lung: "http://www.bccancer.bc.ca/screening/lung",
-} as const;
-
 export function isBcCancerProgram(program: string): program is BcCancerProgram {
     return (BcCancerPrograms as readonly string[]).includes(program);
 }
