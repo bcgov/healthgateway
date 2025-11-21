@@ -703,7 +703,7 @@ setPageFromDate(linearDate.value);
             >
                 If any of your immunizations are missing or incorrect,
                 <a
-                    href="https://www.immunizationrecord.gov.bc.ca/"
+                    :href="ExternalUrl.ImmunizationRecordBC"
                     target="_blank"
                     rel="noopener"
                     class="text-link"

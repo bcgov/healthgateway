@@ -245,7 +245,7 @@ export const enum ExternalUrl {
     AbuutUs = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway",
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
-    HealthLinkBC = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
+    HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
     OrganDonorRegistration = "http://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
     ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
     SupportGuide = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
