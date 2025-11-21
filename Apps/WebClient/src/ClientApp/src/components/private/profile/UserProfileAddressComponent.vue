@@ -130,7 +130,7 @@ function onAddressChangeClick() {
     <div v-if="hasAddress && isSameAddress" class="mb-4 text-body-1">
         If this address is incorrect, update it
         <a
-            href="https://www.addresschange.gov.bc.ca/"
+            :href="ExternalUrl.AddressChangeBC"
             target="_blank"
             rel="noopener"
             class="text-link"
@@ -141,7 +141,7 @@ function onAddressChangeClick() {
     <div v-if="!isSameAddress" class="mb-4 text-body-1">
         If either of these addresses is incorrect, update them
         <a
-            href="https://www.addresschange.gov.bc.ca/"
+            :href="ExternalUrl.AddressChangeBC"
             target="_blank"
             rel="noopener"
             class="text-link"
@@ -152,7 +152,7 @@ function onAddressChangeClick() {
     <div v-if="!hasAddress" class="mb-4 text-body-1">
         To add an address, visit
         <a
-            href="https://www.addresschange.gov.bc.ca/"
+            :href="ExternalUrl.AddressChangeBC"
             target="_blank"
             rel="noopener"
             class="text-link"

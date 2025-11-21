@@ -1,3 +1,4 @@
+import { AccessLinkType } from "@/constants/accessLinks";
 export interface SnowplowWindow extends Window {
     snowplow(eventName: string): void;
 
@@ -74,6 +75,7 @@ export const enum Destination {
     Home = "Home",
     ImmunizationRecordBC = "Immunization Record BC",
     Profile = "Profile",
+    Registration = "Registration",
     Services = "Services",
     SupportEmail = "Support Email",
     SupportGuide = "Support Guide",
@@ -96,6 +98,7 @@ export const enum Origin {
     Footer = "Footer",
     Home = "Home",
     ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
+    Landing = "Landing",
     Profile = "Profile",
     ServicesPage = "Services Page",
     Timeline = "Timeline",
@@ -132,6 +135,8 @@ export const enum Text {
     DownloadProofOfVaccination = "Download Proof of Vaccination",
     EmailHealthGateway = "Email HealthGateway",
     Export = "Export",
+    FilterHealthRecords = "Filter Health Records",
+    FindYourHealthRecords = "Find your health records",
     HealthGatewayLogo = "Health Gateway Logo",
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLinkBC",
@@ -140,14 +145,18 @@ export const enum Text {
     ImmunizationScheduleExport = "Immunization Schedule Export",
     ImmunizationScheduleDependents = "Immunization Schedule Dependents",
     ImmunizationUpdateForm = "Immunization Update Form",
+    Login = "Log in",
+    LoginBCSC = "Log in with BCSC",
     Logout = "Logout",
     OrganDonor = "Organ Donor",
+    Register = "Register",
     RegisterDependent = "Register a Dependent",
     RegisterOrganDonorDecision = "Register Organ Donor Decision",
     DownloadOrganDonorDecision = "Download Organ Donor Decision",
     Profile = "Profile",
     RemoveDependent = "Remove a Dependent",
     QuickLink = "Quicklink",
+    RecoverAccount = "Recover Account",
     ReleaseNotes = "Release Notes",
     SendFeedback = "Send Feedback",
     Services = "Services",
@@ -170,6 +179,7 @@ export const enum Type {
     BcCancerScreening = "BC Cancer Screening",
     ClinicalDocuments = "Clinical Documents",
     Dependents = "Dependents",
+    Filter = "Filter",
     Footer = "Footer",
     Header = "Header",
     HomeTile = "Home Tile",
@@ -177,6 +187,8 @@ export const enum Type {
     ImagingReports = "Imaging Reports",
     Immunizations = "Immunizations",
     LabResults = "Lab Results",
+    Landing = "Landing",
+    Login = "Login",
     Logout = "Logout",
     Notes = "Notes",
     OrganDonor = "Organ Donor",
@@ -184,6 +196,25 @@ export const enum Type {
     ServiceTile = "Service Tile",
     Sidebar = "Sidebar",
 }
+
+export type LandingAccessLinkType =
+    | AccessLinkType.Call811
+    | AccessLinkType.DependentRecords
+    | AccessLinkType.FindDoctor
+    | AccessLinkType.HealthRecords
+    | AccessLinkType.HealthLinkBC
+    | AccessLinkType.HealthServices
+    | AccessLinkType.RecordsManagement;
+
+export const LandingAccessLinkText: Record<LandingAccessLinkType, string> = {
+    [AccessLinkType.Call811]: "HealthLink BC 8-1-1",
+    [AccessLinkType.DependentRecords]: "Dependent records",
+    [AccessLinkType.FindDoctor]: "Find family doctor",
+    [AccessLinkType.HealthRecords]: "Health records",
+    [AccessLinkType.RecordsManagement]: "Records management",
+    [AccessLinkType.HealthLinkBC]: "HealthLink BC",
+    [AccessLinkType.HealthServices]: "Health services",
+} as const;
 
 export const BcCancerPrograms = ["Breast", "Cervix", "Colon", "Lung"] as const;
 export type BcCancerProgram = (typeof BcCancerPrograms)[number];
@@ -214,11 +245,12 @@ export const enum ExternalUrl {
     AbuutUs = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway",
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
-    HealthLinkBC = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
+    HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
     OrganDonorRegistration = "http://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
     ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
     SupportGuide = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
     TermsOfService = "https://www.healthgateway.gov.bc.ca/termsOfService",
+    YourHealthInformationUrl = "https://www.healthlinkbc.ca/health-library/health-features/your-health-information",
 }
 
 export const enum InternalUrl {
@@ -229,8 +261,10 @@ export const enum InternalUrl {
     Home = "./home",
     ImmunizationScheduleExport = "./export-records",
     ImmunizationScheduleDependents = "./dependents",
+    Login = "./login",
     OrganDonor = "./services",
     Profile = "./profile",
     QuickLink = Timeline,
+    Registration = "./Registration",
     Services = "./services",
 }

@@ -151,6 +151,16 @@ function setHeaderState(isOpen: boolean): void {
     layoutStore.setHeaderState(isOpen);
 }
 
+function handleLoginClick(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.Login,
+        type: Type.Login,
+        url: InternalUrl.Login,
+    });
+    router.push({ path: "/login" });
+}
+
 function handleNotificationCentreClick(): void {
     notificationButtonClicked.value = true;
     notificationStore.isNotificationCenterOpen =
@@ -329,9 +339,9 @@ nextTick(() => {
             variant="primary"
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
-            to="/login"
             text="Log in"
             :uppercase="false"
+            @click="handleLoginClick"
         />
         <HgButtonComponent
             v-else-if="isLogOutButtonShown"

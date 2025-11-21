@@ -11,13 +11,17 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
-import { ILogger } from "@/services/interfaces";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const configStore = useConfigStore();
 const errorStore = useErrorStore();
 const loadingStore = useLoadingStore();
@@ -44,6 +48,11 @@ const timeForDeletionString = computed(() => {
 });
 
 function recoverAccount(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.RecoverAccount,
+        type: Type.Profile,
+    });
     loadingStore.applyLoader(
         Loader.UserProfile,
         "recoverAccount",

@@ -1009,7 +1009,7 @@ watch(vaccineRecordState, () => {
                                     If your dependent’s immunizations are
                                     missing or incorrect,
                                     <a
-                                        href="https://www.immunizationrecord.gov.bc.ca/"
+                                        :href="ExternalUrl.ImmunizationRecordBC"
                                         target="_blank"
                                         rel="noopener"
                                         class="text-link"
