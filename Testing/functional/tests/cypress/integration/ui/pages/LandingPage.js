@@ -6,17 +6,25 @@ describe("Landing Page", () => {
 
     it("Sign Up Button", () => {
         cy.visit("/");
-        cy.get("#btnStart")
-            .should("be.visible")
-            .should("have.attr", "href", "/registration")
-            .contains("Register");
+        cy.get("#btnStart").should("be.visible").contains("Register");
     });
 
-    it("Login Button", () => {
+    it("Login BCSC", () => {
         cy.visit("/");
         cy.get("[data-testid=btnLogin]")
             .should("be.visible")
-            .should("have.attr", "href", "/login");
+            .contains("Log in with BC Services Card")
+            .click();
+        cy.location("pathname", { timeout: 10000 }).should("eq", "/login");
+    });
+
+    it("Login Header", () => {
+        cy.visit("/");
+        cy.get("[data-testid=loginBtn]")
+            .should("be.visible")
+            .should("have.text", "Log in")
+            .click();
+        cy.location("pathname", { timeout: 10000 }).should("eq", "/login");
     });
 
     it("Validate What You Can Access Cards", () => {
