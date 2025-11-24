@@ -295,7 +295,7 @@ function handleClickHealthConnectCard(): void {
     trackingService.trackEvent({
         action: Action.ExternalLink,
         text: Text.HealthLinkBC,
-        destination: Destination.HealthLinkBC,
+        destination: Destination.HealthConnectRegistry,
         origin: Origin.Home,
         type: Type.HomeTile,
         url: ExternalUrl.HealthConnectRegistry,
