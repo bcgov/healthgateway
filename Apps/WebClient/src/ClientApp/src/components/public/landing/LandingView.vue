@@ -20,6 +20,7 @@ import {
     Destination,
     ExternalUrl,
     InternalUrl,
+    LandingAccessLinkDestination,
     LandingAccessLinkText,
     LandingAccessLinkType,
     Origin,
@@ -201,7 +202,7 @@ function openExternalLink(type: string, url?: string) {
         action: Action.ExternalLink,
         text: LandingAccessLinkText[landingAccessLinkType],
         origin: Origin.Landing,
-        destination: Destination.SupportGuide,
+        destination: LandingAccessLinkDestination[landingAccessLinkType],
         type: Type.Landing,
         url: url,
     });
@@ -584,7 +585,7 @@ function openExternalLink(type: string, url?: string) {
                             @click="
                                 trackingService.trackEvent({
                                     action: Action.ExternalLink,
-                                    text: Text.FilterHealthRecords,
+                                    text: Text.FindYourHealthRecords,
                                     origin: Origin.Landing,
                                     destination: Destination.SupportGuide,
                                     type: Type.Landing,

@@ -72,6 +72,7 @@ export const enum Destination {
     Download = "Download",
     Export = "Export",
     HealthLinkBC = "HealthLink BC",
+    HealthLinkBC811 = "HealthLink BC 8-1-1",
     HealthConnectRegistry = "HealthLink BC Health Connect Registry",
     Home = "Home",
     ImmunizationRecordBC = "Immunization Record BC",
@@ -128,6 +129,7 @@ export const enum Text {
     BcVaccineCard = "BC Vaccine Card",
     DeleteAccount = "Delete Account",
     Dependents = "Dependents",
+    DependentRecords = "Dependent records",
     DownloadClinicalDocument = "Download Clinical Document",
     DownloadDependentHistoricImmunizations = "Download Dependent Historic Immunizations",
     DownloadDependentRecommendedImmunizations = "Download Dependent Recommended Immunizations",
@@ -137,10 +139,13 @@ export const enum Text {
     EmailHealthGateway = "Email HealthGateway",
     Export = "Export",
     FilterHealthRecords = "Filter Health Records",
+    FindDoctor = "Find family doctor",
     FindYourHealthRecords = "Find your health records",
     HealthGatewayLogo = "Health Gateway Logo",
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLink BC",
+    HealthLinkBC811 = "HealthLink BC 8-1-1",
+    HealthServices = "Health services",
     HomeBreadcrumb = "Home Breadcrumb",
     ViewRecommendedImmunizations = "View Recommended Immunizations",
     ImmunizationScheduleExport = "Immunization Schedule Export",
@@ -158,6 +163,7 @@ export const enum Text {
     RemoveDependent = "Remove a Dependent",
     QuickLink = "Quicklink",
     RecoverAccount = "Recover Account",
+    RecordsManagement = "Records management",
     ReleaseNotes = "Release Notes",
     SendFeedback = "Send Feedback",
     Services = "Services",
@@ -208,13 +214,26 @@ export type LandingAccessLinkType =
     | AccessLinkType.RecordsManagement;
 
 export const LandingAccessLinkText: Record<LandingAccessLinkType, string> = {
-    [AccessLinkType.Call811]: "HealthLink BC 8-1-1",
-    [AccessLinkType.DependentRecords]: "Dependent records",
-    [AccessLinkType.FindDoctor]: "Find family doctor",
+    [AccessLinkType.Call811]: Text.HealthLinkBC811,
+    [AccessLinkType.DependentRecords]: Text.DependentRecords,
+    [AccessLinkType.FindDoctor]: Text.FindDoctor,
     [AccessLinkType.HealthRecords]: "Health records",
-    [AccessLinkType.RecordsManagement]: "Records management",
-    [AccessLinkType.HealthLinkBC]: "HealthLink BC",
-    [AccessLinkType.HealthServices]: "Health services",
+    [AccessLinkType.RecordsManagement]: Text.RecordsManagement,
+    [AccessLinkType.HealthLinkBC]: Text.HealthLinkBC,
+    [AccessLinkType.HealthServices]: Text.HealthServices,
+} as const;
+
+export const LandingAccessLinkDestination: Record<
+    LandingAccessLinkType,
+    string
+> = {
+    [AccessLinkType.Call811]: Destination.HealthLinkBC811,
+    [AccessLinkType.DependentRecords]: Destination.SupportGuide,
+    [AccessLinkType.FindDoctor]: Destination.HealthConnectRegistry,
+    [AccessLinkType.HealthRecords]: Destination.SupportGuide,
+    [AccessLinkType.RecordsManagement]: Destination.SupportGuide,
+    [AccessLinkType.HealthLinkBC]: Destination.HealthLinkBC,
+    [AccessLinkType.HealthServices]: Destination.SupportGuide,
 } as const;
 
 export const BcCancerPrograms = ["Breast", "Cervix", "Colon", "Lung"] as const;
