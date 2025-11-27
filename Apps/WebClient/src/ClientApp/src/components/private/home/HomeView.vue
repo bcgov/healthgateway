@@ -295,16 +295,12 @@ function handleClickHealthConnectCard(): void {
     trackingService.trackEvent({
         action: Action.ExternalLink,
         text: Text.HealthLinkBC,
-        destination: Destination.HealthLinkBC,
+        destination: Destination.HealthConnectRegistry,
         origin: Origin.Home,
         type: Type.HomeTile,
-        url: ExternalUrl.HealthLinkBC,
+        url: ExternalUrl.HealthConnectRegistry,
     });
-    window.open(
-        "https://www.healthlinkbc.ca/health-connect-registry",
-        undefined,
-        "noopener"
-    );
+    window.open(ExternalUrl.HealthConnectRegistry, undefined, "noopener");
 }
 
 function handleClickRemoveQuickLink(index: number): void {

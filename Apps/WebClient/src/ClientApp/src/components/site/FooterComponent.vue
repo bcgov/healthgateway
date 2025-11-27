@@ -109,7 +109,7 @@ const isFooterShown = computed(
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
                 <a
-                    href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway"
+                    :href="ExternalUrl.AbuutUs"
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"

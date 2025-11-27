@@ -74,14 +74,14 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-function trackProgramLinkClick(): void {
+function trackProgramLinkClick(url: string): void {
     trackingService.trackEvent({
         action: Action.ExternalLink,
         text: `${props.entry.title} Help`,
         origin: Origin.Timeline,
         type: Type.BcCancerScreening,
         destination: props.entry.bcCancerDestination,
-        url: props.entry.bcCancerUrl,
+        url: url,
     });
 }
 
@@ -139,7 +139,7 @@ function downloadFile(): void {
                     target="_blank"
                     rel="noopener"
                     class="text-link"
-                    @click="trackProgramLinkClick"
+                    @click="trackProgramLinkClick(programLink)"
                     >check the BC Cancer website</a
                 >
                 or talk to your care provider.
@@ -153,7 +153,7 @@ function downloadFile(): void {
                     target="_blank"
                     rel="noopener"
                     class="text-link"
-                    @click="trackProgramLinkClick"
+                    @click="trackProgramLinkClick(programLink)"
                     >Learn more about
                     {{ programDisplayName }}
                     screening</a

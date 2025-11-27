@@ -1,10 +1,11 @@
 # Developer Tooling Setup
 
-You should have Podman installed
+You should have Docker Desktop installed.
 
 ```console
-brew install podman-desktop
+brew install --cask docker
 ```
+After installation, start Docker Desktop and ensure it is running before executing any commands.
 
 ## Postgres
 
@@ -13,8 +14,8 @@ brew install podman-desktop
 To initialize the Health Gateway DB start the db container
 
 ```console
-podman compose up -d
-podman logs --follow gatewaydb
+docker compose up -d
+docker logs --follow gatewaydb
 ```
 
 Once the DB has started and you see a message like
@@ -45,7 +46,7 @@ SET ROLE hglocal;
 Remove the pgdata volume by executing
 
 ```console
-podman volume rm gatewaydb.local
+docker volume rm gatewaydb.local
 ```
 
 ## Redis
@@ -55,5 +56,5 @@ podman volume rm gatewaydb.local
 Remove the Redis volume by executing
 
 ```console
-podman volume rm gatewaycache.local
+docker volume rm gatewaycache.local
 ```
