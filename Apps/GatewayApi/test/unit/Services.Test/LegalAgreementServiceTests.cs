@@ -119,7 +119,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(legalAgreement);
 
-
             Mock<IMemoryCache> memoryCacheMock = new();
             object? cachedTos = cacheExists && legalAgreement != null ? GetTermsOfServiceModelResult(legalAgreement) : null;
 
