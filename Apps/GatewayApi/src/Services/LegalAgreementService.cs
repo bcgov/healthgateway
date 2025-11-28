@@ -84,7 +84,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<Guid?> GetActiveLegalAgreementId(LegalAgreementType type, CancellationToken ct = default)
         {
-            return (await legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct))?.Id;
+            return (await legalAgreementDelegate.GetActiveByAgreementTypeAsync(type, ct))?.Id;
         }
     }
 }
