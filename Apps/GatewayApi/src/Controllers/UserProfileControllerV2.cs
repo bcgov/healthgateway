@@ -263,7 +263,6 @@ namespace HealthGateway.GatewayApi.Controllers
         [Produces("application/json")]
         [ProducesResponseType<TermsOfServiceModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<TermsOfServiceModel> GetLastTermsOfService(CancellationToken ct)
         {
             return await this.legalAgreementService.GetActiveTermsOfServiceAsync(ct);

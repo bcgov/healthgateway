@@ -26,19 +26,59 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">The service logger.</param>
+    /// <param name="configuration">The Configuration to use.</param>
     /// <param name="legalAgreementDelegate">The injected legal agreement delegate.</param>
     /// <param name="mappingService">The injected mapping service.</param>
-    public class LegalAgreementService(ILegalAgreementDelegate legalAgreementDelegate, IGatewayApiMappingService mappingService) : ILegalAgreementService
+    /// <param name="memoryCache">The injected memory cache.</param>
+    public class LegalAgreementService(
+        ILogger<LegalAgreementService> logger,
+        IConfiguration configuration,
+        ILegalAgreementDelegate legalAgreementDelegate,
+        IGatewayApiMappingService mappingService,
+        IMemoryCache memoryCache) : ILegalAgreementService
     {
+        private const int DefaultCacheTtlSeconds = 3600;
+        private const string LegalAgreementTosCacheKey = "LegalAgreement:TermsOfService";
+        private readonly TimeSpan tosCacheTtl =
+            TimeSpan.FromSeconds(
+                configuration.GetSection("LegalAgreementService")
+                    .GetValue("CacheTTL", DefaultCacheTtlSeconds));
+
         /// <inheritdoc/>
         public async Task<RequestResult<TermsOfServiceModel>> GetActiveTermsOfServiceAsync(CancellationToken ct = default)
         {
+            if (memoryCache.TryGetValue(LegalAgreementTosCacheKey, out RequestResult<TermsOfServiceModel>? cachedTos)
+                && cachedTos is not null)
+            {
+                logger.LogDebug("Terms of Service returned from cache (Id: {Id})", cachedTos.ResourcePayload?.Id);
+                return cachedTos;
+            }
+
             LegalAgreement? legalAgreement = await legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct);
-            return legalAgreement == null
-                ? RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.LegalAgreementNotFound)
-                : RequestResultFactory.Success(mappingService.MapToTermsOfServiceModel(legalAgreement));
+
+            if (legalAgreement == null)
+            {
+                return RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.LegalAgreementNotFound);
+            }
+
+            RequestResult<TermsOfServiceModel> tos = RequestResultFactory.Success(mappingService.MapToTermsOfServiceModel(legalAgreement));
+            memoryCache.Set(
+                LegalAgreementTosCacheKey,
+                tos,
+                new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = this.tosCacheTtl,
+                    Size = 1,
+                });
+
+            logger.LogDebug("Terms of Service loaded from database and cached (Id: {Id})", tos.ResourcePayload?.Id);
+            return tos;
         }
 
         /// <inheritdoc/>
