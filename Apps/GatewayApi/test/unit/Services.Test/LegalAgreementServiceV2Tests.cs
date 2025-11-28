@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -27,6 +29,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Utils;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -41,14 +46,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetActiveTermsOfServiceAsync.
         /// </summary>
+        /// <param name="legalAgreementFound">The value indicating whether legal agreement was found or not.</param>
+        /// <param name="cacheExists">The value indicating whether to check cache or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetActiveTermsOfService()
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(null, true)]
+        public async Task ShouldGetActiveTermsOfService(bool? legalAgreementFound, bool cacheExists)
         {
             // Arrange
-            LegalAgreement? legalAgreement = GenerateLegalAgreement();
+            LegalAgreement? legalAgreement = GenerateLegalAgreement(legalAgreementFound is true || cacheExists);
             TermsOfServiceModel expected = MappingService.MapToTermsOfServiceModel(legalAgreement);
-            ILegalAgreementServiceV2 service = SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(legalAgreement);
+            ILegalAgreementServiceV2 service = SetupLegalAgreementService(legalAgreement, cacheExists);
 
             // Act
             TermsOfServiceModel actual = await service.GetActiveTermsOfServiceAsync();
@@ -66,7 +75,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             // Arrange
             LegalAgreement? legalAgreement = null; // This will cause a DatabaseException to be thrown.
-            ILegalAgreementServiceV2 service = SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(legalAgreement);
+            ILegalAgreementServiceV2 service = SetupLegalAgreementService(legalAgreement);
             Type expected = typeof(DatabaseException);
 
             // Act and Assert
@@ -88,7 +97,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             LegalAgreement? legalAgreement = GenerateLegalAgreement(legalAgreementFound);
             Guid? expected = legalAgreement?.Id;
-            ILegalAgreementServiceV2 service = SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(legalAgreement);
+            ILegalAgreementServiceV2 service = SetupLegalAgreementService(legalAgreement);
 
             // Act
             Guid? actual = await service.GetActiveLegalAgreementId(LegalAgreementType.TermsOfService);
@@ -110,18 +119,56 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 : null;
         }
 
-        private static ILegalAgreementServiceV2 SetupLegalAgreementServiceV2ForGetActiveLegalAgreementId(LegalAgreement? legalAgreement)
+        private static ILegalAgreementServiceV2 SetupLegalAgreementService(LegalAgreement? legalAgreement, bool cacheExists = false)
         {
             Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new();
-            legalAgreementDelegateMock.Setup(
-                    s => s.GetActiveByAgreementTypeAsync(
-                        It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
-                        It.IsAny<CancellationToken>()))
+            legalAgreementDelegateMock.Setup(s => s.GetActiveByAgreementTypeAsync(
+                    It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(legalAgreement);
 
+            Mock<IMemoryCache> memoryCacheMock = new();
+            object? cachedTos = cacheExists && legalAgreement != null ? GetTermsOfServiceModel(legalAgreement) : null;
+
+            memoryCacheMock.Setup(m => m.TryGetValue(
+                    It.Is<object>(key => (string)key == "LegalAgreement:TermsOfService"),
+                    out cachedTos))
+                .Returns(cacheExists);
+
+            if (!cacheExists)
+            {
+                Mock<ICacheEntry> cacheEntryMock = new();
+                cacheEntryMock.SetupAllProperties();
+                cacheEntryMock.Setup(e => e.Dispose());
+
+                memoryCacheMock
+                    .Setup(m => m.CreateEntry(It.IsAny<object>()))
+                    .Returns(cacheEntryMock.Object);
+            }
+
             return new LegalAgreementServiceV2(
+                new Mock<ILogger<LegalAgreementServiceV2>>().Object,
+                GetIConfiguration(),
                 legalAgreementDelegateMock.Object,
-                MappingService);
+                MappingService,
+                memoryCacheMock.Object);
+        }
+
+        private static IConfigurationRoot GetIConfiguration(int cacheTtl = 3600)
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "LegalAgreementService:CacheTTL", cacheTtl.ToString(CultureInfo.InvariantCulture) },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection([.. myConfiguration])
+                .Build();
+        }
+
+        private static TermsOfServiceModel? GetTermsOfServiceModel(LegalAgreement? legalAgreement = null)
+        {
+            return legalAgreement != null ? MappingService.MapToTermsOfServiceModel(legalAgreement) : null;
         }
     }
 }

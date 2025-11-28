@@ -219,7 +219,6 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("termsofservice")]
         [AllowAnonymous]
-        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public async Task<RequestResult<TermsOfServiceModel>> GetLastTermsOfService(CancellationToken ct)
         {
             return await this.legalAgreementService.GetActiveTermsOfServiceAsync(ct);
