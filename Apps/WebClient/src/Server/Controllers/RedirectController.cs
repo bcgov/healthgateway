@@ -38,6 +38,7 @@ namespace HealthGateway.WebClient.Server.Controllers
         [Route("/s/{oldPath}")]
         [Produces(MediaTypeNames.Text.Plain)]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Deferred")]
         public ActionResult MapRedirect(string oldPath)
         {
             var baseUrl = $"{this.Request.Scheme}://{this.Request.Host}";
