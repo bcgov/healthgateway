@@ -90,6 +90,7 @@ namespace HealthGateway.WebClient.Server
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Deferred")]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             this.startupConfig.UseContentSecurityPolicy(app);

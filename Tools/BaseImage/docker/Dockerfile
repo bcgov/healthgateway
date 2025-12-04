@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 ENV ASPNETCORE_ENVIRONMENT=Production
 RUN apt-get update -y && \
     apt-get install -y curl netcat-openbsd ca-certificates

@@ -314,6 +314,10 @@ dotnet_diagnostic.ca1859.severity = suggestion
 # CA1863: Cache a 'CompositeFormat' for repeated use in this formatting operation	
 dotnet_diagnostic.ca1863.severity = suggestion
 
+# CA1873: Evaluation of this argument may be expensive and unnecessary if logging is disabled
+dotnet_diagnostic.ca1873.severity = suggestion
+
+
 # CA2000: Dispose objects before losing scope
 dotnet_diagnostic.ca2000.severity = warning
 
