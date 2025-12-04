@@ -1,7 +1,8 @@
 {
     "homepage": {
         "showFederalProofOfVaccination": true,
-        "showRecommendationsLink": true
+        "showRecommendationsLink": true,
+        "showImmunizationRecordLink": true
     },
     "notificationCentre": {
         "enabled": true

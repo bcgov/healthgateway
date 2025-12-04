@@ -102,6 +102,8 @@ const showHealthConnectRegistry = computed<boolean>(
 );
 const showImmunizationRecord = computed(
     () =>
+        ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
+        ConfigUtil.isImmunizationRecordLinkEnabled() &&
         user.value.preferences[
             UserPreferenceType.HideImmunizationRecordQuickLink
         ]?.value === "true"
@@ -335,7 +337,7 @@ function hideModal(): void {
                             data-testid="immunization-record-filter"
                             name="immunization-record-filter"
                             value="immunization-record"
-                            text="Add Vaccines"
+                            text="Immunization Record"
                             color="primary"
                             :variant="isSelectedVariant('immunization-record')"
                         />
