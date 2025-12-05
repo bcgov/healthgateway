@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+    using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
     using Microsoft.JSInterop;
 
     /// <summary>
@@ -32,6 +33,9 @@ namespace HealthGateway.Admin.Client.Pages
     /// </summary>
     public partial class UserInfoPage : FluxorComponent
     {
+        [Inject]
+        private IWebAssemblyHostEnvironment AppEnv { get; set; } = default!;
+
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
