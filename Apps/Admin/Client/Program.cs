@@ -57,15 +57,17 @@ namespace HealthGateway.Admin.Client
         {
             WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            // 1. Load server-side OIDC config
+            // Load server-side client config.
+            // Blazor WebAssembly cannot load environment-specific appsettings.{ENV}.json from wwwroot,
+            // so environment-dependent values (OIDC, logging, feature flags) are provided by the server endpoint.
             string baseAddressString = builder.HostEnvironment.BaseAddress;
             Uri baseAddress = new(baseAddressString, UriKind.Absolute);
-            Uri clientOidcUri = new(baseAddress, "client-oidc.json");
+            Uri clientConfigUri = new(baseAddress, "client-config.json");
 
             using (HttpClient http = new())
             {
                 http.BaseAddress = baseAddress;
-                string json = await http.GetStringAsync(clientOidcUri);
+                string json = await http.GetStringAsync(clientConfigUri);
                 byte[] bytes = Encoding.UTF8.GetBytes(json);
                 using (MemoryStream ms = new(bytes))
                 {
@@ -112,7 +114,7 @@ namespace HealthGateway.Admin.Client
                 .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
-            bool enableReduxDevTools = builder.Configuration.GetValue("EnableReduxDevTools", false);
+            bool enableReduxDevTools = builder.Configuration.GetValue("Features:EnableReduxDevTools", false);
             Assembly currentAssembly = typeof(Program).Assembly;
             builder.Services.AddFluxor(options =>
             {

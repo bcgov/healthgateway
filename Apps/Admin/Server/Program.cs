@@ -125,8 +125,12 @@ namespace HealthGateway.Admin.Server
             app.MapRazorPages();
             app.MapControllers();
 
+            // Expose environment-dependent client configuration.
+            // Blazor WebAssembly cannot load appsettings.{Environment}.json from wwwroot,
+            // so the Admin.Client fetches its runtime config (OIDC, logging, feature flags)
+            // from this server endpoint instead.
             app.MapGet(
-                "/client-oidc.json",
+                "/client-config.json",
                 (IConfiguration config) =>
                 {
                     var payload = new
@@ -135,6 +139,11 @@ namespace HealthGateway.Admin.Server
                         {
                             Authority = config["OpenIdConnect:Authority"],
                             ClientId = config["OpenIdConnect:ClientId"],
+                        },
+                        Logging = config.GetSection("ClientLogging").Get<object>(),
+                        Features = new
+                        {
+                            EnableReduxDevTools = config.GetValue<bool>("ClientDiagnostics:EnableReduxDevTools"),
                         },
                     };
 
