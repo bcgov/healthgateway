@@ -45,7 +45,8 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="ShowRecommendationsLink">Toggles vaccination recommendation link.</param>
     public record HomepageSettings(
         bool ShowFederalProofOfVaccination,
-        bool ShowRecommendationsLink);
+        bool ShowRecommendationsLink,
+        bool ShowImmunizationRecordLink);
 
     /// <summary>
     /// Settings for the notification centre.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { saveAs } from "file-saver";
 import { computed, ref } from "vue";
+import { useRoute } from "vue-router";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -42,6 +43,10 @@ interface Props {
     hdid: string;
     isDependent?: boolean;
 }
+const route = useRoute();
+const defaultEntryTypeFromRoute = route.query.defaultEntryType as
+    | EntryType
+    | undefined;
 const props = withDefaults(defineProps<Props>(), {
     isDependent: false,
 });
@@ -70,7 +75,7 @@ const reportStore = useReportStore();
 const isLoading = ref(false);
 const isGeneratingReport = ref(false);
 const reportFormatType = ref(ReportFormatType.PDF);
-const selectedEntryType = ref<EntryType>();
+const selectedEntryType = ref<EntryType | undefined>(defaultEntryTypeFromRoute);
 const reportTypeOptions = ref<{ value: EntryType; title: string }[]>([]);
 const selectedStartDate = ref<StringISODate>("");
 const selectedEndDate = ref<StringISODate>("");

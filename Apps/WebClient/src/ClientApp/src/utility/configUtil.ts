@@ -75,4 +75,9 @@ export default abstract class ConfigUtil {
         }
         return false;
     }
+
+    public static isImmunizationRecordLinkEnabled() {
+        const config = ConfigUtil.getFeatureConfiguration();
+        return config.homepage.showImmunizationRecordLink;
+    }
 }

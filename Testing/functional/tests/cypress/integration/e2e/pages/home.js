@@ -1,10 +1,15 @@
 const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
+const downloadUrl = "/reports";
+const defaultTimeout = 60000;
 
 describe("Home Page", () => {
     beforeEach(() => {
         cy.configureSettings({
+            homepage: {
+                showImmunizationRecordLink: true,
+            },
             datasets: [
                 {
                     name: "specialAuthorityRequest",
@@ -50,6 +55,23 @@ describe("Home Page", () => {
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=timeline-record-count]").should("be.visible");
+    });
+
+    it("Home - Immunization Card link to Download Immunization", () => {
+        cy.intercept("GET", "**/Immunization*").as("getImmunizations");
+        cy.contains("[data-testid=card-button-title]", "Immunization Record")
+            .parents("[data-testid=immunization-record-card-button]")
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.url().should("include", downloadUrl);
+        cy.wait("@getImmunizations", { timeout: defaultTimeout });
+        cy.get("[data-testid=immunization-history-report-table]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
+            .last()
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
     });
 
     it("Home - Medication Card link to Health Records", () => {

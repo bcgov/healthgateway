@@ -204,7 +204,7 @@ namespace HealthGateway.WebClientTests.Services
                     FeatureToggleFilePath = featureToggleConfigurationPath,
                     FeatureToggleConfiguration = showFeatureToggleConfiguration
                         ? new FeatureToggleConfiguration(
-                            new HomepageSettings(true, true),
+                            new HomepageSettings(true, true, true),
                             new NotificationCentreSettings(true),
                             new TimelineSettings(true),
                             GetFeatureDatasetSettings(),
