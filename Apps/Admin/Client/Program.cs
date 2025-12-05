@@ -17,8 +17,10 @@ namespace HealthGateway.Admin.Client
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Net.Http;
     using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
@@ -54,6 +56,24 @@ namespace HealthGateway.Admin.Client
         public static async Task Main(string[] args)
         {
             WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+            // 1. Load server-side OIDC config
+            string baseAddressString = builder.HostEnvironment.BaseAddress;
+            Uri baseAddress = new(baseAddressString, UriKind.Absolute);
+            Uri clientOidcUri = new(baseAddress, "client-oidc.json");
+
+            using (HttpClient http = new())
+            {
+                http.BaseAddress = baseAddress;
+                string json = await http.GetStringAsync(clientOidcUri);
+                byte[] bytes = Encoding.UTF8.GetBytes(json);
+                using (MemoryStream ms = new(bytes))
+                {
+                    ms.Position = 0;
+                    builder.Configuration.AddJsonStream(ms);
+                }
+            }
+
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -74,37 +94,35 @@ namespace HealthGateway.Admin.Client
             WebAssemblyHost[] app = new WebAssemblyHost[1];
 
             // Configure Authentication and Authorization
-            builder.Services.AddOidcAuthentication(
-                    options =>
+            builder.Services.AddOidcAuthentication(options =>
+                {
+                    NavigationManager navigationManager = app[0].Services.GetRequiredService<NavigationManager>();
+                    Uri uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+
+                    // If there is an authProvider query string value then set the hint.
+                    if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("authProvider", out StringValues authProvider))
                     {
-                        NavigationManager navigationManager = app[0].Services.GetRequiredService<NavigationManager>();
-                        Uri uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+                        options.ProviderOptions.AdditionalProviderParameters.Add("kc_idp_hint", authProvider.ToString());
+                    }
 
-                        // If there is an authProvider query string value then set the hint.
-                        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("authProvider", out StringValues authProvider))
-                        {
-                            options.ProviderOptions.AdditionalProviderParameters.Add("kc_idp_hint", authProvider.ToString());
-                        }
-
-                        builder.Configuration.Bind("Oidc", options.ProviderOptions);
-                        options.ProviderOptions.ResponseType = "code";
-                        options.UserOptions.RoleClaim = "role";
-                    })
+                    builder.Configuration.Bind("Oidc", options.ProviderOptions);
+                    options.ProviderOptions.ResponseType = "code";
+                    options.UserOptions.RoleClaim = "role";
+                })
                 .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
             bool enableReduxDevTools = builder.Configuration.GetValue("EnableReduxDevTools", false);
             Assembly currentAssembly = typeof(Program).Assembly;
-            builder.Services.AddFluxor(
-                options =>
-                {
-                    options.ScanAssemblies(currentAssembly).UseRouting();
+            builder.Services.AddFluxor(options =>
+            {
+                options.ScanAssemblies(currentAssembly).UseRouting();
 
-                    if (enableReduxDevTools)
-                    {
-                        options.UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin");
-                    }
-                });
+                if (enableReduxDevTools)
+                {
+                    options.UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin");
+                }
+            });
 
             builder.Services.AddBlazoredLocalStorage();
 
