@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Client
             // so environment-dependent values (OIDC, logging, feature flags) are provided by the server endpoint.
             string baseAddressString = builder.HostEnvironment.BaseAddress;
             Uri baseAddress = new(baseAddressString, UriKind.Absolute);
-            Uri clientConfigUri = new(baseAddress, "client-config.json");
+            Uri clientConfigUri = new(baseAddress, "/v1/api/Configuration");
 
             using (HttpClient http = new())
             {
@@ -86,7 +86,7 @@ namespace HealthGateway.Admin.Client
             builder.Services.AddAutoMapper(typeof(Program));
 
             // Configure Logging
-            IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
+            IConfigurationSection loggerConfig = builder.Configuration.GetSection("ClientLogging");
             builder.Services
                 .AddLogging(loggingBuilder => loggingBuilder.AddConfiguration(loggerConfig));
 
@@ -107,14 +107,14 @@ namespace HealthGateway.Admin.Client
                         options.ProviderOptions.AdditionalProviderParameters.Add("kc_idp_hint", authProvider.ToString());
                     }
 
-                    builder.Configuration.Bind("Oidc", options.ProviderOptions);
+                    builder.Configuration.Bind("OpenIdConnect", options.ProviderOptions);
                     options.ProviderOptions.ResponseType = "code";
                     options.UserOptions.RoleClaim = "role";
                 })
                 .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
-            bool enableReduxDevTools = builder.Configuration.GetValue("Features:EnableReduxDevTools", false);
+            bool enableReduxDevTools = builder.Configuration.GetValue("EnableReduxDevTools", false);
             Assembly currentAssembly = typeof(Program).Assembly;
             builder.Services.AddFluxor(options =>
             {
