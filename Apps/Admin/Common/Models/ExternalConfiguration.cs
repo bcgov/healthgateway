@@ -38,5 +38,16 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets or sets the OpenIdConnect configuration.
         /// </summary>
         public OpenIdConnectConfiguration OpenIdConnect { get; set; } = new();
+
+        /// <summary>
+        /// Gets the ClientLoggingConfiguration configuration.
+        /// </summary>
+        public ClientLoggingConfiguration ClientLogging { get; init; } = new();
+
+        /// <summary>
+        /// Gets a value indicating whether gets the value indicating whether Redux DevTools are enabled
+        /// for the client application.
+        /// </summary>
+        public bool EnableReduxDevTools { get; init; }
     }
 }
