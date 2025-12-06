@@ -9,7 +9,7 @@
 </MudHidden>
 <HgPageHeading>User Info</HgPageHeading>
 <MudField Label="Environment" Variant="Variant.Outlined">
-    @AppEnv.Environment
+    @(ConfigurationState.Value.Result?.Environment ?? ConfigurationState.Value.Error?.Message)
 </MudField>
 <MudField Label="Auth Message" Variant="Variant.Outlined">
     @AuthMessage

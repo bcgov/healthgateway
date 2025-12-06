@@ -34,9 +34,6 @@ namespace HealthGateway.Admin.Client.Pages
     public partial class UserInfoPage : FluxorComponent
     {
         [Inject]
-        private IWebAssemblyHostEnvironment AppEnv { get; set; } = default!;
-
-        [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
         [Inject]

@@ -30,6 +30,12 @@ namespace HealthGateway.Admin.Common.Models
         public string? ClientIp { get; set; }
 
         /// <summary>
+        /// Gets or sets the server side environment that is running.
+        /// This value is populated at runtime.
+        /// </summary>
+        public string? Environment { get; set; }
+
+        /// <summary>
         /// Gets or sets features enabled for the application.
         /// </summary>
         public Dictionary<string, bool> Features { get; set; } = [];
