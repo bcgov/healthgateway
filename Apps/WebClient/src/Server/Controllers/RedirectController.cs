@@ -15,14 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Controllers
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net.Mime;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Utils;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -41,9 +36,9 @@ namespace HealthGateway.WebClient.Server.Controllers
         [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Deferred")]
         public ActionResult MapRedirect(string oldPath)
         {
-            var baseUrl = $"{this.Request.Scheme}://{this.Request.Host}";
+            string baseUrl = $"{this.Request.Scheme}://{this.Request.Host}";
 
-            string newPath = oldPath?.ToLower(CultureInfo.InvariantCulture) switch
+            string newPath = oldPath.ToLower(CultureInfo.InvariantCulture) switch
             {
                 "timeline" => "timeline",
                 "dependents" => "dependents",

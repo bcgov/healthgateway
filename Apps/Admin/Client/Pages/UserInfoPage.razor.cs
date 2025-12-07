@@ -25,7 +25,6 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-    using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
     using Microsoft.JSInterop;
 
     /// <summary>
