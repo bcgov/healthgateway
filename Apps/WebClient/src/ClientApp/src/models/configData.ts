@@ -77,6 +77,7 @@ export interface FeatureToggleConfiguration {
 export interface HomepageSettings {
     showFederalProofOfVaccination: boolean;
     showRecommendationsLink: boolean;
+    showImmunizationRecordLink: boolean;
 }
 
 export interface NotificationCentreSettings {
