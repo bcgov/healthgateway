@@ -2,7 +2,16 @@
     "homepage": {
         "showFederalProofOfVaccination": true,
         "showRecommendationsLink": false,
-        "showImmunizationRecordLink": true
+        "showImmunizationRecordLink": true,
+        "otherRecordSources": {
+            "enabled": false,
+            "sources": [
+                {
+                    "name": "accessMyHealth",
+                    "enabled": false
+                }
+            ]
+        }
     },
     "notificationCentre": {
         "enabled": true
@@ -85,15 +94,6 @@
             {
                 "name": "healthConnectRegistry",
                 "enabled": true
-            }
-        ]
-    },
-    "otherRecordSources": {
-        "enabled": false,
-        "sources": [
-            {
-                "name": "accessMyHealth",
-                "enabled": false
             }
         ]
     }

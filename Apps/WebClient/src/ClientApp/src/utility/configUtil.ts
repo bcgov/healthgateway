@@ -58,26 +58,26 @@ export default abstract class ConfigUtil {
 
     public static isOtherRecordSourcesFeatureEnabled() {
         const config = ConfigUtil.getFeatureConfiguration();
-        return config.otherRecordSources?.enabled;
+        return config.homepage?.otherRecordSources?.enabled ?? false;
     }
 
     public static isOtherRecordSourcesCardEnabled(cardName: CardName) {
         const config = ConfigUtil.getFeatureConfiguration();
-        if (
-            config.otherRecordSources?.enabled &&
-            config.otherRecordSources.sources
-        ) {
-            return config.otherRecordSources.sources.some(
+        const feature = config.homepage?.otherRecordSources;
+
+        if (feature?.enabled && feature.sources) {
+            return feature.sources.some(
                 (card) =>
                     card.name.toLowerCase() === cardName.toLowerCase() &&
                     card.enabled
             );
         }
+
         return false;
     }
 
     public static isImmunizationRecordLinkEnabled() {
         const config = ConfigUtil.getFeatureConfiguration();
-        return config.homepage.showImmunizationRecordLink;
+        return config.homepage?.showImmunizationRecordLink ?? false;
     }
 }
