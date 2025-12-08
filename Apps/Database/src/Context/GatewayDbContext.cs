@@ -16,12 +16,15 @@
 namespace HealthGateway.Database.Context
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
@@ -483,6 +486,29 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<AuditGroupCode>()
                 .Property(e => e.Code)
                 .HasConversion(auditGroupCodeConverter);
+
+            // Configure JSON mapping for BlockedAccess.DataSources to use string enums.
+            // Existing data in the jsonb column is stored as ["ClinicalDocument", "HealthVisit", ...],
+            // but EF Core's default JSON enum mapping expects numeric values (e.g., [1, 2, 3]).
+            // This converter ensures we serialize/deserialize using enum names so existing data continues to work.
+            JsonSerializerOptions dataSourceJsonOptions = new()
+            {
+                Converters =
+                {
+                    // Use string values for enums in JSON
+                    new JsonStringEnumConverter(),
+                },
+            };
+
+            ValueConverter<IList<DataSource>, string> dataSourcesConverter = new(
+                v => JsonSerializer.Serialize(v, dataSourceJsonOptions),
+                v => JsonSerializer.Deserialize<List<DataSource>>(v, dataSourceJsonOptions)
+                     ?? new List<DataSource>());
+
+            modelBuilder.Entity<BlockedAccess>()
+                .Property(e => e.DataSources)
+                .HasColumnType("jsonb")
+                .HasConversion(dataSourcesConverter);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
