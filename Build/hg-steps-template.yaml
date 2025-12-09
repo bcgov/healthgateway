@@ -92,7 +92,7 @@ steps:
 
   - script: |
       set -e
-      dotnet tool install --global dotnet-ef --version 7.0.14
+      dotnet tool install --global dotnet-ef --version 10.0.0
       pushd $(Build.SourcesDirectory)/Apps/DBMaintainer
       echo Creating Migration SQL Scripts
       dotnet ef migrations script --idempotent --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).sql --verbose
