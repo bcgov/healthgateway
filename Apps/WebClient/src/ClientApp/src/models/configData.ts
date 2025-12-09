@@ -71,13 +71,13 @@ export interface FeatureToggleConfiguration {
     covid19: Covid19Settings;
     dependents: DependentsSettings;
     services: ServicesSettings;
-    otherRecordSources: OtherRecordSourcesSettings;
 }
 
 export interface HomepageSettings {
     showFederalProofOfVaccination: boolean;
     showRecommendationsLink: boolean;
     showImmunizationRecordLink: boolean;
+    otherRecordSources: OtherRecordSourcesSettings;
 }
 
 export interface NotificationCentreSettings {

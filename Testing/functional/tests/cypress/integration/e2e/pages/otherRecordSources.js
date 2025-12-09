@@ -33,8 +33,10 @@ function expectCardVisibleWithUrl(type, expectedUrl) {
 describe("Other Record Sources Page", () => {
     it("Other record sources URL goes to Unauthorized when other record resouces feature is turned off", () => {
         cy.configureSettings({
-            otherRecordSources: {
-                enabled: false,
+            homepage: {
+                otherRecordSources: {
+                    enabled: false,
+                },
             },
         });
 
@@ -53,9 +55,11 @@ describe("Other Record Sources Page", () => {
 
     it("Cards are rendered and link to the correct URLs", () => {
         cy.configureSettings({
-            otherRecordSources: {
-                enabled: true,
-                sources: [{ name: "accessMyHealth", enabled: true }],
+            homepage: {
+                otherRecordSources: {
+                    enabled: true,
+                    sources: [{ name: "accessMyHealth", enabled: true }],
+                },
             },
         });
 
@@ -73,9 +77,11 @@ describe("Other Record Sources Page", () => {
 
     it("Access My Health card is not rendered when source is disabled", () => {
         cy.configureSettings({
-            otherRecordSources: {
-                enabled: true,
-                sources: [{ name: "accessMyHealth", enabled: false }],
+            homepage: {
+                otherRecordSources: {
+                    enabled: true,
+                    sources: [{ name: "accessMyHealth", enabled: false }],
+                },
             },
         });
 
