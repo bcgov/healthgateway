@@ -259,7 +259,7 @@ function handleClickImmunizationRecord(): void {
         action: Action.InternalLink,
         text: Text.ImmunizationRecord,
         origin: Origin.Home,
-        destination: Destination.Export,
+        destination: Destination.Download,
         dataset: Dataset.Immunizations,
         type: Type.HomeTile,
         url: InternalUrl.Export,
