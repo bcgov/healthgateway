@@ -52,8 +52,8 @@ describe("Breadcrumbs", () => {
         testPageBreadcrumb("/covid19", "breadcrumb-covid-19"));
     it("Breadcrumbs present on dependents", () =>
         testPageBreadcrumb("/dependents", "breadcrumb-dependents"));
-    it("Breadcrumbs present on reports", () =>
-        testPageBreadcrumb("/reports", "breadcrumb-export-records"));
+    it("Breadcrumbs present on download", () =>
+        testPageBreadcrumb("/reports", "breadcrumb-download-records"));
     it("Breadcrumbs present on profile", () =>
         testPageBreadcrumb("/profile", "breadcrumb-profile"));
     it("Breadcrumbs present on termsOfService", () =>

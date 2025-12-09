@@ -262,7 +262,7 @@ function handleClickImmunizationRecord(): void {
         destination: Destination.Download,
         dataset: Dataset.Immunizations,
         type: Type.HomeTile,
-        url: InternalUrl.Export,
+        url: InternalUrl.Reports,
     });
     router.push({
         path: "/reports",
@@ -504,14 +504,14 @@ watch(vaccineRecordState, () => {
                     @click="
                         trackingService.trackEvent({
                             action: Action.InternalLink,
-                            text: Text.ImmunizationScheduleExport,
+                            text: Text.ImmunizationBannerDownload,
                             origin: Origin.Home,
-                            destination: Destination.Export,
+                            destination: Destination.Download,
                             type: Type.InfoBanner,
-                            url: InternalUrl.ImmunizationScheduleExport,
+                            url: InternalUrl.Reports,
                         })
                     "
-                    >Export</router-link
+                    >Download</router-link
                 >
                 and
                 <router-link
