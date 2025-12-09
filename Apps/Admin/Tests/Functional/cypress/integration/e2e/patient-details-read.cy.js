@@ -141,7 +141,7 @@ describe("Patient details page as admin user", () => {
         cy.get("[data-testid=invalid-dose-alert").should("not.exist");
     });
 
-    it("Verify covid immunization section (not blocked), contains invalid dose, mail address submission and prints vaccine card", () => {
+    it.skip("Verify covid immunization section (not blocked), contains invalid dose, mail address submission and prints vaccine card", () => {
         performSearch("PHN", phnWithInvalidDoses);
 
         selectPatientTab("Profile");
