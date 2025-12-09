@@ -71,6 +71,7 @@ jobs:
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
+      - "Admin_Unauthorized_Tests"
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
@@ -92,6 +93,7 @@ jobs:
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
+      - "Admin_Authentication_Tests"
     strategy:
       parallel: 9
     timeoutInMinutes: 15
@@ -116,6 +118,7 @@ jobs:
     condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
       - "Admin_Seed"
+      - "Admin_Read_Tests"
     strategy:
       parallel: 5
     timeoutInMinutes: 15
@@ -186,6 +189,7 @@ jobs:
       vmImage: "ubuntu-latest"
     dependsOn:
       - "HG_Seed"
+      - "HG_Auth_Functional_Tests"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
       parallel: 9
