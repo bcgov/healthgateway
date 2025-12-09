@@ -71,13 +71,13 @@ function handleDependentsClick(): void {
     router.push({ path: "/dependents" });
 }
 
-function handleExportClick(): void {
+function handleDownloadClick(): void {
     trackingService.trackEvent({
         action: Action.InternalLink,
-        text: Text.Export,
-        destination: Destination.Export,
+        text: Text.Download,
+        destination: Destination.Download,
         type: Type.Sidebar,
-        url: InternalUrl.Export,
+        url: InternalUrl.Reports,
     });
     router.push({ path: "/reports" });
 }
@@ -193,9 +193,9 @@ watch(isSidebarOpen, (value: boolean) => {
             <v-list-item
                 v-show="userStore.userIsActive"
                 class="nav-hover"
-                title="Export"
+                title="Download"
                 data-testid="menu-btn-reports-link"
-                @click="handleExportClick"
+                @click="handleDownloadClick"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
