@@ -1,20 +1,30 @@
 FROM ubuntu:24.04
 ARG NODE_VERSION=v22.20.0
-ARG DOTNET_VERSION=8.0
-ARG SONARSCANNER_VERSION=8.0.0
+ARG DOTNET_VERSION=10.0
+ARG SONARSCANNER_VERSION=11.0.0
 ARG VAULT_VERSION=1.20.4
-ARG HELM_VERSION=v3.15.3
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI"
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     ca-certificates lsb-release git tzdata iputils-ping netcat-openbsd traceroute curl \
     apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils zip unzip \
-    dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential
+    default-jdk python3 g++ build-essential gpg && \
+    curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh \
+    -o /tmp/dotnet-install.sh && \
+    bash /tmp/dotnet-install.sh --channel ${DOTNET_VERSION} --install-dir /usr/share/dotnet && \
+    ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet && \
+    rm /tmp/dotnet-install.sh && \
+    curl -fsSL https://packages.redis.io/gpg | \
+    gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] \
+    https://packages.redis.io/deb $(lsb_release -cs) main" | \
+    tee /etc/apt/sources.list.d/redis.list && \
+    apt-get update && \
+    apt-get install -y -qq --no-install-recommends redis-tools
 
 RUN ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
@@ -38,7 +48,7 @@ RUN curl -sL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT
 chmod +x /opt/bin/vault 
 
 # Install Helm
-RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
 
 # Update environment variables
 ENV TARGETARCH=linux-x64
