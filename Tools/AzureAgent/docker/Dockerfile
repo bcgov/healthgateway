@@ -1,20 +1,19 @@
-FROM ubuntu:24.04
+FROM ubuntu:25.10
 ARG NODE_VERSION=v22.20.0
-ARG DOTNET_VERSION=8.0
-ARG SONARSCANNER_VERSION=8.0.0
+ARG DOTNET_VERSION=10.0
+ARG SONARSCANNER_VERSION=11.0.0
 ARG VAULT_VERSION=1.20.4
 ARG HELM_VERSION=v3.15.3
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI"
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     ca-certificates lsb-release git tzdata iputils-ping netcat-openbsd traceroute curl \
     apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils zip unzip \
-    dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential
+    dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential redis-tools
 
 RUN ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
