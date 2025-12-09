@@ -90,6 +90,15 @@ steps:
       arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
+  - task: DotNetCoreCLI@2
+    displayName: "Restore Database & DBMaintainer for EF"
+    condition: and(succeeded(), eq(variables['DBScripts'], true))
+    inputs:
+      command: "restore"
+      projects: |
+        $(Build.SourcesDirectory)/Apps/Database/src/Database.csproj
+        $(Build.SourcesDirectory)/Apps/DBMaintainer/DBMaintainer.csproj
+
   - script: |
       set -e
       dotnet tool install --global dotnet-ef --version 10.0.0
