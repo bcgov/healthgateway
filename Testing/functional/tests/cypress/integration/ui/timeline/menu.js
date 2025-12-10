@@ -118,7 +118,7 @@ describe("Menu System", () => {
         );
         cy.get("[data-testid=menu-btn-reports-link]").should(
             "have.text",
-            "Export"
+            "Download"
         );
         cy.get("[data-testid=navbar-toggle-button]").should("be.visible");
         cy.get("[data-testid=menu-btn-feedback-link]").should("be.visible");
