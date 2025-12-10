@@ -6,9 +6,9 @@
     <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.R4" Version="5.11.2" />
-    <PackageReference Include="Refit" Version="8.0.0" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="6.0.1" />
+    <PackageReference Include="Refit" Version="9.0.2" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />

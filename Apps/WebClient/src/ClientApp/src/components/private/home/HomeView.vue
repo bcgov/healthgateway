@@ -149,6 +149,13 @@ const showHealthConnectCardButton = computed(
 const showOtherRecordSourcesCardButton = computed(() =>
     ConfigUtil.isOtherRecordSourcesFeatureEnabled()
 );
+const showImmunizationRecordCardButton = computed(
+    () =>
+        ConfigUtil.isImmunizationRecordLinkEnabled() &&
+        ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
+        !preferenceImmunizationRecordHidden.value
+);
+
 const enabledQuickLinks = computed(
     () =>
         quickLinks.value?.filter((quickLink) =>
@@ -247,6 +254,22 @@ function handleClickHealthRecords(): void {
     router.push({ path: "/timeline" });
 }
 
+function handleClickImmunizationRecord(): void {
+    trackingService.trackEvent({
+        action: Action.InternalLink,
+        text: Text.ImmunizationRecord,
+        origin: Origin.Home,
+        destination: Destination.Download,
+        dataset: Dataset.Immunizations,
+        type: Type.HomeTile,
+        url: InternalUrl.Reports,
+    });
+    router.push({
+        path: "/reports",
+        query: { defaultEntryType: EntryType.Immunization },
+    });
+}
+
 function handleClickVaccineCard(): void {
     trackingService.trackEvent({
         action: Action.InternalLink,
@@ -330,6 +353,14 @@ function handleClickRemoveHealthConnectCard(): void {
 function handleClickRemoveRecommendations(): void {
     logger.debug("Removing Immunize BC card");
     setPreferenceValue(UserPreferenceType.HideRecommendationsQuickLink, "true");
+}
+
+function handleClickRemoveImmunizationRecord(): void {
+    logger.debug("Removing Immunization Record card");
+    setPreferenceValue(
+        UserPreferenceType.HideImmunizationRecordQuickLink,
+        "true"
+    );
 }
 
 function setPreferenceValue(preferenceType: string, value: string) {
@@ -473,14 +504,14 @@ watch(vaccineRecordState, () => {
                     @click="
                         trackingService.trackEvent({
                             action: Action.InternalLink,
-                            text: Text.ImmunizationScheduleExport,
+                            text: Text.ImmunizationBannerDownload,
                             origin: Origin.Home,
-                            destination: Destination.Export,
+                            destination: Destination.Download,
                             type: Type.InfoBanner,
-                            url: InternalUrl.ImmunizationScheduleExport,
+                            url: InternalUrl.Reports,
                         })
                     "
-                    >Export</router-link
+                    >Download</router-link
                 >
                 and
                 <router-link
@@ -531,6 +562,42 @@ watch(vaccineRecordState, () => {
                     View your available health records, including dispensed
                     medications, health visits, lab results, immunizations, and
                     more.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col
+            v-if="showImmunizationRecordCardButton"
+            :cols="columns"
+            class="d-flex"
+        >
+            <HgCardComponent
+                title="Immunization Record"
+                variant="outlined"
+                elevation="1"
+                border="thin grey-lighten-2"
+                data-testid="immunization-record-card-button"
+                class="flex-grow-1"
+                @click="handleClickImmunizationRecord()"
+            >
+                <template #icon>
+                    <v-icon
+                        icon="cloud-download"
+                        class="quick-link-icon"
+                        aria-label="Download icon"
+                        color="primary"
+                        size="small"
+                    />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveImmunizationRecord()"
+                    />
+                </template>
+                <p class="text-body-1">
+                    Download a record of your immunizations, including
+                    recommended vaccines.
                 </p>
             </HgCardComponent>
         </v-col>

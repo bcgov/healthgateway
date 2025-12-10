@@ -43,10 +43,39 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
     });
 
+    it("Home - Immunization Record Card button enabled", () => {
+        cy.configureSettings({
+            homepage: {
+                showImmunizationRecordLink: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+
+        setupStandardFixtures();
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.get("[data-testid=immunization-record-card-button]").should(
+            "be.visible"
+        );
+    });
+
     it("Home - Other Record Sources Card button enabled", () => {
         cy.configureSettings({
-            otherRecordSources: {
-                enabled: true,
+            homepage: {
+                otherRecordSources: {
+                    enabled: true,
+                },
             },
         });
 
@@ -120,10 +149,33 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]").should("not.exist");
     });
 
+    it("Home - Immunization Record Card button disabled", () => {
+        cy.configureSettings({
+            homepage: {
+                showImmunizationRecordLink: false,
+            },
+        });
+
+        setupStandardFixtures();
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.get("[data-testid=immunization-record-card-button]").should(
+            "not.exist"
+        );
+    });
+
     it("Home - Other Record Sources Card button disabled", () => {
         cy.configureSettings({
-            otherRecordSources: {
-                enabled: false,
+            homepage: {
+                otherRecordSources: {
+                    enabled: false,
+                },
             },
         });
 

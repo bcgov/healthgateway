@@ -154,7 +154,7 @@ namespace AccountDataAccessTest
             // Arrange
             const string reason = "Unit Test Block Access";
             bool commit = !changeFeedEnabled;
-            HashSet<DataSource> dataSources = datasourceExist ? [DataSource.Immunization, DataSource.Medication] : [];
+            IList<DataSource> dataSources = datasourceExist ? [DataSource.Immunization, DataSource.Medication] : [];
 
             BlockedAccess blockedAccess = new()
             {
@@ -195,10 +195,9 @@ namespace AccountDataAccessTest
 
             messageSenderMock.Verify(
                 s => s.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        me => AssertDataSourcesBlockedEvent(
-                            blockedAccess,
-                            me.Select(envelope => envelope.Content as DataSourcesBlockedEvent).First())),
+                    It.Is<IEnumerable<MessageEnvelope>>(me => AssertDataSourcesBlockedEvent(
+                        blockedAccess,
+                        me.Select(envelope => envelope.Content as DataSourcesBlockedEvent).First())),
                     It.IsAny<CancellationToken>()),
                 changeFeedEnabled ? Times.Once : Times.Never);
         }
@@ -307,7 +306,7 @@ namespace AccountDataAccessTest
                 .Build();
         }
 
-        private static IEnumerable<string> GetDataSourceValues(HashSet<DataSource> dataSources)
+        private static IEnumerable<string> GetDataSourceValues(IList<DataSource> dataSources)
         {
             return dataSources.Select(ds => EnumUtility.ToEnumString(ds));
         }
@@ -315,15 +314,13 @@ namespace AccountDataAccessTest
         private static BlockAccessMock SetupBlockAccessMock(BlockedAccess blockedAccess, bool changeFeedEnabled)
         {
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
-            blockedAccessDelegate.Setup(
-                    s => s.GetBlockedAccessAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            blockedAccessDelegate.Setup(s => s.GetBlockedAccessAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(
-                    s => s.GetDataSourcesAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            blockedAccessDelegate.Setup(s => s.GetDataSourcesAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess.DataSources);
 
             Mock<IMessageSender> messageSender = new();
@@ -358,34 +355,30 @@ namespace AccountDataAccessTest
 
             if (useCache)
             {
-                cacheProviderMock.Setup(
-                        s => s.GetOrSetAsync(
-                            It.IsAny<string>(),
-                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                            It.IsAny<TimeSpan>(),
-                            It.IsAny<CancellationToken>()))
+                cacheProviderMock.Setup(s => s.GetOrSetAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(dataSources);
             }
             else
             {
-                blockedAccessDelegateMock.Setup(
-                        s => s.GetDataSourcesAsync(
-                            It.IsAny<string>(),
-                            It.IsAny<CancellationToken>()))
+                blockedAccessDelegateMock.Setup(s => s.GetDataSourcesAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(dataSources);
 
-                cacheProviderMock.Setup(
-                        s => s.GetOrSetAsync(
-                            It.IsAny<string>(),
-                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                            It.IsAny<TimeSpan?>(), // TimeSpan? for consistency
-                            It.IsAny<CancellationToken>()))
-                    .Returns(
-                        (string _, Func<Task<IEnumerable<DataSource>?>> valueFactory, TimeSpan? _, CancellationToken _) =>
-                        {
-                            Task<IEnumerable<DataSource>?> task = valueFactory.Invoke();
-                            return task;
-                        });
+                cacheProviderMock.Setup(s => s.GetOrSetAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                        It.IsAny<TimeSpan?>(), // TimeSpan? for consistency
+                        It.IsAny<CancellationToken>()))
+                    .Returns((string _, Func<Task<IEnumerable<DataSource>?>> valueFactory, TimeSpan? _, CancellationToken _) =>
+                    {
+                        Task<IEnumerable<DataSource>?> task = valueFactory.Invoke();
+                        return task;
+                    });
             }
 
             return new PatientRepository(
@@ -401,10 +394,9 @@ namespace AccountDataAccessTest
         private static IPatientRepository SetupPatientRepositoryForGetBlockedAccess(BlockedAccess blockedAccess)
         {
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
-            blockedAccessDelegate.Setup(
-                    s => s.GetBlockedAccessAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            blockedAccessDelegate.Setup(s => s.GetBlockedAccessAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess);
 
             return new PatientRepository(
@@ -425,34 +417,30 @@ namespace AccountDataAccessTest
 
             if (useCache)
             {
-                cacheProviderMock.Setup(
-                        s => s.GetOrSetAsync(
-                            It.Is<string>(x => x.Contains(cacheKey)),
-                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                            It.IsAny<TimeSpan>(),
-                            It.IsAny<CancellationToken>()))
+                cacheProviderMock.Setup(s => s.GetOrSetAsync(
+                        It.Is<string>(x => x.Contains(cacheKey)),
+                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(dataSources);
             }
             else
             {
-                blockedAccessDelegateMock.Setup(
-                        s => s.GetDataSourcesAsync(
-                            It.IsAny<string>(),
-                            It.IsAny<CancellationToken>()))
+                blockedAccessDelegateMock.Setup(s => s.GetDataSourcesAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(dataSources);
 
-                cacheProviderMock.Setup(
-                        s => s.GetOrSetAsync(
-                            It.Is<string>(x => x.Contains(cacheKey)),
-                            It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                            It.IsAny<TimeSpan>(),
-                            It.IsAny<CancellationToken>()))
-                    .Returns(
-                        (string _, Func<Task<IEnumerable<DataSource>?>> valueFactory, TimeSpan? _, CancellationToken _) =>
-                        {
-                            Task<IEnumerable<DataSource>?> task = valueFactory.Invoke();
-                            return task;
-                        });
+                cacheProviderMock.Setup(s => s.GetOrSetAsync(
+                        It.Is<string>(x => x.Contains(cacheKey)),
+                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<CancellationToken>()))
+                    .Returns((string _, Func<Task<IEnumerable<DataSource>?>> valueFactory, TimeSpan? _, CancellationToken _) =>
+                    {
+                        Task<IEnumerable<DataSource>?> task = valueFactory.Invoke();
+                        return task;
+                    });
             }
 
             return new PatientRepository(
@@ -470,19 +458,17 @@ namespace AccountDataAccessTest
             ServiceCollection serviceCollection = [];
 
             Mock<ICacheProvider> cacheProviderMock = new();
-            cacheProviderMock.Setup(
-                    s => s.GetItemAsync<PatientModel>(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            cacheProviderMock.Setup(s => s.GetItemAsync<PatientModel>(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(
-                    s => s.GetDemographicsAsync(
-                        It.IsAny<OidType>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            clientRegistriesDelegate.Setup(s => s.GetDemographicsAsync(
+                    It.IsAny<OidType>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patient);
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
@@ -498,10 +484,9 @@ namespace AccountDataAccessTest
                 new Mock<ILogger<PhnEmpiStrategy>>().Object);
 
             Mock<IPatientIdentityApi> patientIdentityApiMock = new();
-            patientIdentityApiMock.Setup(
-                    s => s.GetPatientIdentityAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            patientIdentityApiMock.Setup(s => s.GetPatientIdentityAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientIdentity);
 
             HdidAllStrategy hdidAllStrategy = new(

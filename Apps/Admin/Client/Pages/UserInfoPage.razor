@@ -8,6 +8,9 @@
     <MudProgressLinear Color="Color.Primary" Indeterminate="@(ConfigurationState.Value.IsLoading)" Class="my-7" />
 </MudHidden>
 <HgPageHeading>User Info</HgPageHeading>
+<MudField Label="Environment" Variant="Variant.Outlined">
+    @(ConfigurationState.Value.Result?.Environment ?? ConfigurationState.Value.Error?.Message)
+</MudField>
 <MudField Label="Auth Message" Variant="Variant.Outlined">
     @AuthMessage
 </MudField>

@@ -45,7 +45,7 @@ namespace HealthGateway.Database.Models
         [MaxLength(5)]
         public string? PackageSize { get; set; }
 
-        [MaxLength(80)]
+        [MaxLength(4000)]
         public string? ProductInformation { get; set; }
 
         /// <summary>

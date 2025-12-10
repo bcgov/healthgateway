@@ -152,12 +152,11 @@ namespace HealthGateway.Admin.Tests.Services
             ];
 
             Mock<IDelegationDelegate> delegationDelegateMock = new();
-            delegationDelegateMock.Setup(
-                    s => s.GetProtectedDependentHdidsAsync(
-                        It.IsAny<int>(),
-                        It.IsAny<int>(),
-                        It.IsAny<SortDirection>(),
-                        It.IsAny<CancellationToken>()))
+            delegationDelegateMock.Setup(s => s.GetProtectedDependentHdidsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<SortDirection>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((int _, int _, SortDirection _, CancellationToken _) => (hdids, hdids.Count));
 
             PatientQuery query1 = new PatientDetailsQuery(Hdid: Hdid1, Source: PatientDetailSource.All);
@@ -195,12 +194,11 @@ namespace HealthGateway.Admin.Tests.Services
             ];
 
             Mock<IDelegationDelegate> delegationDelegateMock = new();
-            delegationDelegateMock.Setup(
-                    s => s.GetProtectedDependentHdidsAsync(
-                        It.IsAny<int>(),
-                        It.IsAny<int>(),
-                        It.IsAny<SortDirection>(),
-                        It.IsAny<CancellationToken>()))
+            delegationDelegateMock.Setup(s => s.GetProtectedDependentHdidsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<SortDirection>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((int _, int _, SortDirection _, CancellationToken _) => (hdids, hdids.Count));
 
             PatientQuery query1 = new PatientDetailsQuery(Hdid: Hdid1, Source: PatientDetailSource.All);
@@ -216,7 +214,7 @@ namespace HealthGateway.Admin.Tests.Services
 
         private static IAdminReportService SetupGetBlockedAccessReportMock()
         {
-            HashSet<DataSource> expected =
+            IList<DataSource> expected =
             [
                 DataSource.Immunization,
                 DataSource.Medication,

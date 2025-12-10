@@ -37,6 +37,6 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [Column(TypeName = "jsonb")]
-        public HashSet<DataSource> DataSources { get; set; } = [];
+        public IList<DataSource> DataSources { get; set; } = new List<DataSource>();
     }
 }

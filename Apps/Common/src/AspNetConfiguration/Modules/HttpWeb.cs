@@ -161,7 +161,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         options.ForwardedHeaders = ForwardedHeaders.All;
                         options.RequireHeaderSymmetry = false;
                         options.ForwardLimit = null;
-                        options.KnownNetworks.Clear();
+                        options.KnownIPNetworks.Clear();
                         options.KnownProxies.Clear();
                         foreach (IPAddress ip in proxyIPs)
                         {

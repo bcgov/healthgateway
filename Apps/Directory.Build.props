@@ -1,8 +1,8 @@
 <Project>
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <LangVersion>13.0</LangVersion>
+        <LangVersion>14.0</LangVersion>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <WarningLevel>4</WarningLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -10,7 +10,7 @@
         <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" ExcludeAssets="All" />
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="5.0.0" ExcludeAssets="All" />
         <!-- <PackageReference Include="SonarAnalyzer.CSharp" Version="9.12.0.78982">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>

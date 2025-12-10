@@ -59,7 +59,7 @@ namespace HealthGateway.DBMaintainer.Parsers
             PharmaCareDrugMapper mapper = new(fileDownload);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaCareDrug> records = [];
-            await foreach (PharmaCareDrug? record in csv.GetRecordsAsync<PharmaCareDrug>(ct))
+            await foreach (PharmaCareDrug record in csv.GetRecordsAsync<PharmaCareDrug>(ct))
             {
                 records.Add(record);
             }

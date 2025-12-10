@@ -30,6 +30,12 @@ namespace HealthGateway.Admin.Common.Models
         public string? ClientIp { get; set; }
 
         /// <summary>
+        /// Gets or sets the server side environment that is running.
+        /// This value is populated at runtime.
+        /// </summary>
+        public string? Environment { get; set; }
+
+        /// <summary>
         /// Gets or sets features enabled for the application.
         /// </summary>
         public Dictionary<string, bool> Features { get; set; } = [];
@@ -38,5 +44,16 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets or sets the OpenIdConnect configuration.
         /// </summary>
         public OpenIdConnectConfiguration OpenIdConnect { get; set; } = new();
+
+        /// <summary>
+        /// Gets the ClientLoggingConfiguration configuration.
+        /// </summary>
+        public ClientLoggingConfiguration ClientLogging { get; init; } = new();
+
+        /// <summary>
+        /// Gets a value indicating whether gets the value indicating whether Redux DevTools are enabled
+        /// for the client application.
+        /// </summary>
+        public bool EnableReduxDevTools { get; init; }
     }
 }

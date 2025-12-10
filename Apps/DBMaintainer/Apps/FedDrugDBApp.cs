@@ -15,13 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.DBMaintainer.Apps
 {
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -67,8 +71,41 @@ namespace HealthGateway.DBMaintainer.Apps
             await this.AddFileToDbAsync(downloadedFile, ct);
             this.Logger.LogInformation("Removing old Drug File from DB");
             this.RemoveOldFiles(downloadedFile);
-            this.Logger.LogInformation("Saving Entities to the database");
-            await this.DrugDbContext.SaveChangesAsync(ct);
+            try
+            {
+                this.Logger.LogInformation("Saving Entities to the database");
+                await this.DrugDbContext.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateException e)
+            {
+                this.Logger.LogError(e, "An error occurred while updating the database");
+                LogEntityStateForException(e);
+                throw;
+            }
         }
+
+        private static void LogEntityStateForException(DbUpdateException ex)
+        {
+            foreach (EntityEntry entry in ex.Entries)
+            {
+                Console.WriteLine($"[DB ERROR] Entity: {entry.Metadata.ClrType.Name}, State: {entry.State}");
+
+                foreach (var prop in entry.Properties)
+                {
+                    var value = prop.CurrentValue;
+                    if (value is string s)
+                    {
+                        var len = s.Length;
+                        var max = prop.Metadata.GetMaxLength(); // null if not set via data annotations or fluent
+
+                        Console.WriteLine(
+                            $"  Property {prop.Metadata.Name} = '{Truncate(s, 120)}' (len={len}, max={max?.ToString(CultureInfo.InvariantCulture) ?? "n/a"})");
+                    }
+                }
+            }
+        }
+
+        private static string Truncate(string value, int max)
+            => value.Length <= max ? value : string.Concat(value.AsSpan(0, max), "...");
     }
 }

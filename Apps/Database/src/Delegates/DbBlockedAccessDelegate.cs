@@ -66,6 +66,14 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
+            // Ensure the DataSources list remains logically unique.
+            // This property was previously a HashSet<DataSource>, which prevented duplicates automatically.
+            // Since EF Core JSON mapping now requires List<T>, duplicates could appear;
+            // apply Distinct() to remove them if present before saving.
+            blockedAccess.DataSources = blockedAccess.DataSources
+                .Distinct()
+                .ToList();
+
             if (blockedAccess.Version == 0)
             {
                 logger.LogDebug("Adding blocked access to DB for {Hdid}", blockedAccess.Hdid);

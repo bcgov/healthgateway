@@ -27,7 +27,6 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
     /// <param name="Services">Settings for services features.</param>
-    /// <param name="OtherRecordSources">Settings for other record sources features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         NotificationCentreSettings NotificationCentre,
@@ -35,17 +34,19 @@ namespace HealthGateway.WebClient.Server.Models
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
         DependentsSettings Dependents,
-        ServicesSettings Services,
-        OtherRecordSourcesSettings OtherRecordSources);
+        ServicesSettings Services);
 
     /// <summary>
     /// Settings for the home page.
     /// </summary>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
     /// <param name="ShowRecommendationsLink">Toggles vaccination recommendation link.</param>
+    /// <param name="OtherRecordSources">Settings for other record sources features.</param>
     public record HomepageSettings(
         bool ShowFederalProofOfVaccination,
-        bool ShowRecommendationsLink);
+        bool ShowRecommendationsLink,
+        bool ShowImmunizationRecordLink,
+        OtherRecordSourcesSettings OtherRecordSources);
 
     /// <summary>
     /// Settings for the notification centre.

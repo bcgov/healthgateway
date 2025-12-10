@@ -132,7 +132,14 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             blockedAccess.UpdatedBy = authenticatedUserId;
 
-            HashSet<DataSource> sources = command.DataSources.ToHashSet();
+            // Suppress IDE0305 ("Collection initialization can be simplified").
+            // Although C# collection expressions (e.g., [.. enumerable]) are valid,
+            // using ToList() here is more explicit and consistent with the rest of the codebase.
+            // It also makes the deduplication step (Distinct + ToList) clearer to readers.
+#pragma warning disable IDE0305
+            IList<DataSource> sources = command.DataSources
+                .Distinct()
+                .ToList();
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactions.

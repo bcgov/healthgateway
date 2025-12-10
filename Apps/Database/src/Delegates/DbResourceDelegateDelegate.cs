@@ -144,7 +144,7 @@ namespace HealthGateway.Database.Delegates
             return new()
             {
                 Payload = await dbContext.ResourceDelegate
-                    .Where(d => dependentArray.Contains(d.ResourceOwnerHdid))
+                    .Where(d => Enumerable.Contains(dependentArray, d.ResourceOwnerHdid))
                     .GroupBy(d => d.ResourceOwnerHdid)
                     .ToDictionaryAsync(g => g.Key, g => g.Count(), ct),
                 Status = DbStatusCode.Read,
@@ -225,11 +225,10 @@ namespace HealthGateway.Database.Delegates
                             Dependent = d.FirstOrDefault(),
                         })
                     .ToListAsync(ct)
-                : await dbQuery.Select(
-                        rd => new ResourceDelegateQueryResultItem
-                        {
-                            ResourceDelegate = rd,
-                        })
+                : await dbQuery.Select(rd => new ResourceDelegateQueryResultItem
+                    {
+                        ResourceDelegate = rd,
+                    })
                     .ToListAsync(ct);
 
             return new() { Items = items };

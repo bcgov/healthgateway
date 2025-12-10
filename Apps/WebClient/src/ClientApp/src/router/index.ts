@@ -182,7 +182,7 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.otherRecordSources.enabled,
+                config.homepage?.otherRecordSources?.enabled ?? false,
         },
     },
     {
