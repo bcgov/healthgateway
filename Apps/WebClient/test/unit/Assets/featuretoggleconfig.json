@@ -68,6 +68,7 @@
     "covid19": {
         "pcrTestEnabled": true,
         "publicCovid19": {
+            "vaccineCardEnabled": true,
             "showFederalProofOfVaccination": true
         },
         "proofOfVaccination": {
