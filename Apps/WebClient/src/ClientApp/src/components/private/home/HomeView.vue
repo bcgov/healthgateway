@@ -487,54 +487,6 @@ watch(vaccineRecordState, () => {
             </span>
         </template>
     </HgAlertComponent>
-    <HgAlertComponent
-        data-testid="immunization-tip-banner"
-        closable
-        type="info"
-        variant="outlined"
-    >
-        <template #default>
-            <span class="text-body-1">
-                Tip: Immunization schedule can be viewed in
-                <router-link
-                    id="exportRecordsLink"
-                    data-testid="export-records-link"
-                    class="text-link"
-                    to="/reports"
-                    @click="
-                        trackingService.trackEvent({
-                            action: Action.InternalLink,
-                            text: Text.ImmunizationBannerDownload,
-                            origin: Origin.Home,
-                            destination: Destination.Download,
-                            type: Type.InfoBanner,
-                            url: InternalUrl.Reports,
-                        })
-                    "
-                    >Download</router-link
-                >
-                and
-                <router-link
-                    id="dependentsLink"
-                    data-testid="dependents-link"
-                    class="text-link"
-                    to="/dependents"
-                    @click="
-                        trackingService.trackEvent({
-                            action: Action.InternalLink,
-                            text: Text.ImmunizationScheduleDependents,
-                            origin: Origin.Home,
-                            destination: Destination.Dependents,
-                            type: Type.InfoBanner,
-                            url: InternalUrl.ImmunizationScheduleDependents,
-                        })
-                    "
-                    >Dependents</router-link
-                >
-                menu items
-            </span>
-        </template>
-    </HgAlertComponent>
     <PageTitleComponent title="Home">
         <template #append>
             <AddQuickLinkComponent :disabled="isAddQuickLinkButtonDisabled" />
