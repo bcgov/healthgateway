@@ -100,6 +100,7 @@ export interface Covid19Settings {
 }
 
 export interface PublicCovid19Settings {
+    vaccineCardEnabled: boolean;
     showFederalProofOfVaccination: boolean;
 }
 

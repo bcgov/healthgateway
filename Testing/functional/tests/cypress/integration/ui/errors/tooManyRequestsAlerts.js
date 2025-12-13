@@ -106,6 +106,7 @@ describe("Public Vaccine Card Form", () => {
             statusCode: 429,
         });
         cy.configureSettings({
+            covid19: { publicCovid19: { vaccineCardEnabled: true } },
             datasets: [
                 {
                     name: "immunization",
@@ -136,6 +137,7 @@ describe("Public Vaccine Card Downloads", () => {
         cy.configureSettings({
             covid19: {
                 publicCovid19: {
+                    vaccineCardEnabled: true,
                     showFederalProofOfVaccination: true,
                 },
             },
