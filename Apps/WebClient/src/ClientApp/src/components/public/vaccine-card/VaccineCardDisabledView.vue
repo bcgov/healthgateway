@@ -26,6 +26,9 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
                     For more information, see the Ministry of Health
                     <a
                         href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations/covid-19-immunization#record"
+                        rel="noopener"
+                        target="_blank"
+                        class="text-link"
                         >COVID‑19 immunizations</a
                     >
                     page.
