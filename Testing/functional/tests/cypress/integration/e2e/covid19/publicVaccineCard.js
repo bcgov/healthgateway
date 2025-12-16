@@ -32,6 +32,7 @@ describe("Public Vaccine Card Result", () => {
         cy.configureSettings({
             covid19: {
                 publicCovid19: {
+                    vaccineCardEnabled: true,
                     showFederalProofOfVaccination: true,
                 },
             },
@@ -65,6 +66,7 @@ describe("Public Vaccine Card Result", () => {
         cy.configureSettings({
             covid19: {
                 publicCovid19: {
+                    vaccineCardEnabled: true,
                     showFederalProofOfVaccination: true,
                 },
             },
@@ -98,6 +100,7 @@ describe("Public Vaccine Card Downloads", () => {
         cy.configureSettings({
             covid19: {
                 publicCovid19: {
+                    vaccineCardEnabled: true,
                     showFederalProofOfVaccination: true,
                 },
             },

@@ -37,9 +37,9 @@ const ProfileView = () =>
     import(
         /* webpackChunkName: profile" */ "@/components/private/profile/ProfileView.vue"
     );
-const PublicVaccineCardView = () =>
+const PublicVaccineCardViewSelectorComponent = () =>
     import(
-        /* webpackChunkName: "vaccinationStatus" */ "@/components/public/vaccine-card/VaccineCardView.vue"
+        /* webpackChunkName: "vaccinationStatus" */ "@/components/public/vaccine-card/VaccineCardViewSelectorComponent.vue"
     );
 const RegistrationView = () =>
     import(
@@ -231,7 +231,7 @@ const routes = [
     },
     {
         path: Path.VaccineCard,
-        component: PublicVaccineCardView,
+        component: PublicVaccineCardViewSelectorComponent,
         meta: {
             validStates: [UserState.unauthenticated, UserState.registered],
         },
