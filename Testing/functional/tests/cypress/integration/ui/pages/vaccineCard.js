@@ -3,6 +3,13 @@ const vaccineCardUrl = "/vaccinecard";
 
 describe("Vaccine Card Page", () => {
     it("Landing Page - Vaccination Card - unauthenticated user", () => {
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    vaccineCardEnabled: true,
+                },
+            },
+        });
         cy.logout();
         cy.visit(vaccineCardUrl);
 
