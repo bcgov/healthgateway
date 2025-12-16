@@ -156,6 +156,8 @@ function addDependent(): void {
         dependentService
             .addDependent(userStore.hdid, {
                 ...dependent.value,
+                firstName: dependent.value.firstName.replace(/\s+/g, " "),
+                lastName: dependent.value.lastName.replace(/\s+/g, " "),
                 PHN: dependent.value.PHN.replace(/\D/g, ""),
             })
             .then(async () => {
