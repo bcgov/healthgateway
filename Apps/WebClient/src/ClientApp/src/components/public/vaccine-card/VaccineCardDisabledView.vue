@@ -1,5 +1,29 @@
 <script setup lang="ts">
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import {
+    Action,
+    Destination,
+    InternalUrl,
+    Origin,
+    Text,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
+
+function trackVaccineInfoLink(href: string) {
+    trackingService.trackEvent({
+        action: Action.ExternalLink,
+        text: Text.Covid19VaccineInformation,
+        destination: Destination.MohCovid19,
+        origin: Origin.VaccineCard,
+    });
+    window.open(href, "_blank", "noopener");
+}
 </script>
 
 <template>
@@ -26,9 +50,12 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
                     For more information, see the Ministry of Health
                     <a
                         href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations/covid-19-immunization#record"
-                        rel="noopener"
-                        target="_blank"
                         class="text-link"
+                        @click.prevent="
+                            trackVaccineInfoLink(
+                                'https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations/covid-19-immunization#record'
+                            )
+                        "
                         >COVID‑19 immunizations</a
                     >
                     page.
@@ -42,6 +69,14 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
                         variant="primary"
                         text="Log in with BC Services Card"
                         to="/login"
+                        @click="
+                            trackingService.trackEvent({
+                                action: Action.ButtonClick,
+                                text: Text.LoginVaccineCard,
+                                destination: Destination.Login,
+                                url: InternalUrl.Login,
+                            })
+                        "
                     />
                 </div>
             </div>
