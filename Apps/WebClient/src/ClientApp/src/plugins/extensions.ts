@@ -76,6 +76,8 @@ export const enum Destination {
     HealthConnectRegistry = "HealthLink BC Health Connect Registry",
     Home = "Home",
     ImmunizationRecordBC = "Immunization Record BC",
+    Login = "Login",
+    MohCovid19 = "MoH COVID-19",
     Profile = "Profile",
     Registration = "Registration",
     Services = "Services",
@@ -104,6 +106,7 @@ export const enum Origin {
     Profile = "Profile",
     ServicesPage = "Services Page",
     Timeline = "Timeline",
+    VaccineCard = "Vaccine Card",
 }
 
 export const enum Rating {
@@ -128,6 +131,7 @@ export const enum Text {
     AppRating = "App Rating",
     BcVaccineCard = "BC Vaccine Card",
     BcVaccineSchedule = "BC Vaccine Schedule",
+    Covid19VaccineInformation = "COVID-19 Vaccine Information",
     DeleteAccount = "Delete Account",
     Dependents = "Dependents",
     DependentRecords = "Dependent records",
@@ -158,6 +162,7 @@ export const enum Text {
     ImmunizationsHealthLinkBC = "Immunizations - HealthLink BC",
     Login = "Log in",
     LoginBCSC = "Log in with BCSC",
+    LoginVaccineCard = "Log in Vaccine Card",
     Logout = "Logout",
     OrganDonor = "Organ Donor",
     Register = "Register",
