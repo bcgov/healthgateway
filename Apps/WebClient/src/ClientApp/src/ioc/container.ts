@@ -6,7 +6,9 @@ interface IContainer {
 }
 
 class Container implements IContainer {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private readonly mappings = new Map<Identifier, (c: Container) => any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private readonly cachedMappings = new Map<Identifier, any>();
 
     public set<T>(key: Identifier, factory: (c: Container) => T): void {

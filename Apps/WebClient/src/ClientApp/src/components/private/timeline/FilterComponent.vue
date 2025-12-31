@@ -163,9 +163,9 @@ function getFormattedFilterCount(entryType: EntryType): string {
     <HgButtonComponent
         data-testid="filterDropdown"
         variant="secondary"
+        prepend-icon="filter"
         @click="showDialog"
     >
-        <v-icon class="mr-sm-2" icon="filter" />
         <span class="d-none d-sm-inline">Filter</span>
     </HgButtonComponent>
     <div class="d-flex justify-center">

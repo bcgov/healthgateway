@@ -151,7 +151,7 @@
             "editor.formatOnSave": false
         },
         "[vue][typescript][javascript]": {
-            "editor.formatOnSave": false,
+            "editor.formatOnSave": true,
             "editor.codeActionsOnSave": {
                 "source.addMissingImports": "explicit",
                 "source.fixAll.eslint": "explicit"

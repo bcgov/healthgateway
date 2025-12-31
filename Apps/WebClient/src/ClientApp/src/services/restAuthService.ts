@@ -47,12 +47,9 @@ export class RestAuthenticationService implements IAuthenticationService {
         keycloak.onReady = () => logger.verbose("Keycloak: onReady");
         keycloak.onAuthSuccess = () =>
             logger.verbose("Keycloak: onAuthSuccess");
-        keycloak.onAuthError = (error: {
-            error: string;
-            error_description?: string;
-        }) => {
-            logger.verbose(`Keycloak: onAuthError - ${error.error}`);
-            logger.error(error.error_description || "Unknown error");
+        keycloak.onAuthError = (errorData) => {
+            logger.verbose(`Keycloak: onAuthError - ${errorData?.error}`);
+            logger.error(errorData?.error_description || "Unknown error");
         };
         keycloak.onAuthRefreshSuccess = () =>
             logger.verbose("Keycloak: onAuthRefreshSuccess");

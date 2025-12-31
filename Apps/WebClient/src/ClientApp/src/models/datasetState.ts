@@ -29,8 +29,9 @@ export type PatientDataFileState = DatasetState<PatientDataFile | undefined>;
 export interface HospitalVisitState extends DatasetState<HospitalVisit[]> {
     queued: boolean;
 }
-export interface ImmunizationDatasetState
-    extends DatasetState<ImmunizationEvent[]> {
+export interface ImmunizationDatasetState extends DatasetState<
+    ImmunizationEvent[]
+> {
     recommendations: Recommendation[];
 }
 export interface LabResultState extends DatasetState<LaboratoryOrder[]> {

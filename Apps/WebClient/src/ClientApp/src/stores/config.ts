@@ -6,6 +6,7 @@ import {
     IdentityProviderConfiguration,
 } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import { HttpDelegate } from "@/services/httpDelegate";
 import { LoglevelLogger } from "@/services/loglevelLogger";
@@ -81,8 +82,10 @@ export const useConfigStore = defineStore("config", () => {
         try {
             const config = await configService.getConfiguration();
             setConfigurationLoaded(config);
-        } catch (error: any) {
-            setConfigurationError(error?.toString());
+        } catch (error: unknown) {
+            if (error instanceof ResultError) {
+                setConfigurationError(error?.toString());
+            }
             throw error;
         }
     }

@@ -7,6 +7,7 @@
 import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { FeatureToggleConfiguration } from "@/models/configData";
 import { UserState } from "@/router/index";
 import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
@@ -93,7 +94,9 @@ export const beforeEachGuard: NavigationGuard = async (
         routeIsOidcCallback?: boolean;
         stateless?: boolean;
         validStates?: UserState[];
-        requiredFeaturesEnabled?: (featureToggleConfig: any) => boolean;
+        requiredFeaturesEnabled?: (
+            featureToggleConfig: FeatureToggleConfiguration
+        ) => boolean;
     } = to.meta;
     if (meta === undefined) {
         next(Error("Route meta property is undefined"));

@@ -3,7 +3,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 
 import { useVuelidate } from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
-import VueDatePicker from "@vuepic/vue-datepicker";
+import { VueDatePicker } from "@vuepic/vue-datepicker";
 import { vMaska } from "maska/vue";
 import { computed, ref, watch } from "vue";
 
@@ -81,6 +81,7 @@ const validations = computed(() => ({
         date: helpers.withMessage("Invalid date", validateDateFormat),
     },
 }));
+const minJsDate = computed(() => props.minDate.toJSDate());
 const maxJsDate = computed(() => props.maxDate.toJSDate());
 
 const v$ = useVuelidate(validations, { textFieldValue });
@@ -130,17 +131,16 @@ watch(
         <template #append>
             <VueDatePicker
                 v-model="datePickerValue"
-                :max-date="maxJsDate"
-                :enable-time-picker="false"
+                :time-config="{ enableTimePicker: false }"
                 model-type="format"
-                format="yyyy-MM-dd"
+                :formats="{ month: 'LLLL', input: 'yyyy-MM-dd' }"
+                :min-date="minJsDate"
+                :max-date="maxJsDate"
                 auto-apply
-                month-name-format="long"
                 six-weeks="append"
-                :offset="16"
-                calendar-cell-class-name="rounded-circle"
                 :teleport="true"
-                :teleport-center="layoutStore.isMobile"
+                :centered="layoutStore.isMobile"
+                :floating="{ offset: 16 }"
             >
                 <template #trigger>
                     <HgIconButtonComponent icon="fas fa-calendar" />

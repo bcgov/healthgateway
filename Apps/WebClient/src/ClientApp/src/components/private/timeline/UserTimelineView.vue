@@ -67,9 +67,9 @@ function openNoteDialog(): void {
                 v-if="notesAreEnabled && !notesAreLoading"
                 data-testid="addNoteBtn"
                 variant="secondary"
+                prepend-icon="edit"
                 @click="openNoteDialog"
             >
-                <v-icon class="mr-sm-2" icon="edit" />
                 <span class="d-none d-sm-inline">Add a Note</span>
             </HgButtonComponent>
         </template>
