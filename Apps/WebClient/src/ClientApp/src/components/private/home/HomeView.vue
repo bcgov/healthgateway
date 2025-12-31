@@ -810,9 +810,11 @@ watch(vaccineRecordState, () => {
     }
 }
 .quick-link-icon {
-    height: 1.5em;
-    &-large {
-        height: 2.1em;
-    }
+    font-size: 1.25em;
+    width: 1.25em;
+    height: 1.25em;
+}
+.quick-link-icon-large {
+    height: 2.1em;
 }
 </style>
