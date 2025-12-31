@@ -47,9 +47,9 @@ export class RestSpecialAuthorityService implements ISpecialAuthorityService {
         }
 
         return this.http
-            .get<RequestResult<MedicationRequest[]>>(
-                `${this.baseUri}${this.SPECIAL_AUTHORITY_BASE_URI}/${hdid}`
-            )
+            .get<
+                RequestResult<MedicationRequest[]>
+            >(`${this.baseUri}${this.SPECIAL_AUTHORITY_BASE_URI}/${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestSpecialAuthorityService.getPatientMedicationRequest()`

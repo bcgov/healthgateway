@@ -345,7 +345,7 @@ const routes = [
 function scrollBehaviour(
     _to: RouteLocationNormalized,
     _from: RouteLocationNormalized,
-    savedPosition: any
+    savedPosition: unknown
 ) {
     if (savedPosition) {
         return savedPosition;

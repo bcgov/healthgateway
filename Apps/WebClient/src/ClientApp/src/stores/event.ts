@@ -11,8 +11,7 @@ export enum EventName {
 }
 
 export const useEventStore = defineStore("event", () => {
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    function emit(eventName: EventName, payload?: any): void {
+    function emit(eventName: EventName, _payload?: unknown): void {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         logger.debug(`Emitting event "${eventName}"`);
     }
@@ -20,6 +19,7 @@ export const useEventStore = defineStore("event", () => {
     function subscribe(
         this: ReturnType<typeof useEventStore>,
         eventName: EventName,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback: (payload: any) => void
     ): () => void {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

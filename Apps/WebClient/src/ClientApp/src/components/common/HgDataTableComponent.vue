@@ -4,6 +4,7 @@ import { computed, useSlots } from "vue";
 import ReportField from "@/models/reportField";
 
 interface Props {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     items: any[];
     fields: ReportField[];
     loading?: boolean;

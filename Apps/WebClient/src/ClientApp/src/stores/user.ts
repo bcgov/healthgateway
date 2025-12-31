@@ -158,7 +158,7 @@ export const useUserStore = defineStore("user", () => {
             ? userProfile.acceptedTermsOfService
             : false;
         user.value.hasTermsOfServiceUpdated = userProfile
-            ? userProfile.hasTermsOfServiceUpdated ?? false
+            ? (userProfile.hasTermsOfServiceUpdated ?? false)
             : false;
         user.value.lastLoginDateTime = userProfile?.lastLoginDateTime;
         user.value.lastLoginDateTimes = userProfile
