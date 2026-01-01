@@ -61,7 +61,7 @@ namespace HealthGateway.Admin.Client.Theme
                 Subtitle1 =
                 {
                     FontFamily = fontFamily,
-                    FontWeight = 700,
+                    FontWeight = "700",
                 },
                 Subtitle2 = { FontFamily = fontFamily },
                 Body1 = { FontFamily = fontFamily },

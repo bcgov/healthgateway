@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.Common
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
@@ -46,8 +47,19 @@ namespace HealthGateway.Admin.Client.Components.Common
         public string? PanelClass { get; set; }
 
         /// <summary>
+        /// Gets or sets the event callback that will be triggered when <see cref="MudTabs.ActivePanelIndex"/> has changed.
+        /// </summary>
+        [Parameter]
+        public EventCallback<int> ActivePanelIndexChanged { get; set; }
+
+        /// <summary>
         /// Gets the underlying MudBlazor component.
         /// </summary>
         public MudTabs MudComponent { get; private set; } = default!;
+
+        private async Task OnActivePanelIndexChanged(int index)
+        {
+            await this.ActivePanelIndexChanged.InvokeAsync(index);
+        }
     }
 }

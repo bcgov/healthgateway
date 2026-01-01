@@ -8,9 +8,11 @@
 <PageTitle>Health Gateway Admin Beta Access</PageTitle>
 <HgPageHeading>Beta Access</HgPageHeading>
 
-<HgTabs data-testid="beta-access-tabs">
+<HgTabs data-testid="beta-access-tabs"
+        ActivePanelIndexChanged="@OnTabChanged">
     <ChildContent>
-        <MudTabPanel Text="View" data-testid="view-tab">
+        <MudTabPanel Text="View"
+                     data-testid="view-tab">
             <HgBannerFeedback
                 Class="mt-3"
                 Severity="Severity.Error"
@@ -22,7 +24,8 @@
 
             <AllBetaAccessTable />
         </MudTabPanel>
-        <MudTabPanel Text="Search" data-testid="search-tab">
+        <MudTabPanel Text="Search"
+                     data-testid="search-tab">
             <HgBannerFeedback
                 Class="mt-3"
                 Severity="Severity.Error"
@@ -32,7 +35,9 @@
                 @SetUserAccessState.ErrorMessage
             </HgBannerFeedback>
 
-            <MudForm @ref="Form" id="query-controls" class="mt-3">
+            <MudForm @ref="Form"
+                     id="query-controls"
+                     class="mt-3">
                 <div class="d-flex align-start">
                     <HgTextField
                         T="string"
