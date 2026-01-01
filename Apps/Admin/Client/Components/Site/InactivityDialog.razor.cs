@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Client.Components.Site
         private int CountdownTicksRemaining { get; set; } = 60;
 
         [CascadingParameter]
-        private MudDialogInstance MudDialog { get; set; } = default!;
+        private IMudDialogInstance MudDialog { get; set; } = default!;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()

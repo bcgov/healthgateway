@@ -80,7 +80,7 @@ namespace HealthGateway.Admin.Client
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             // Register Refit Clients
-            RegisterRefitClients(builder);
+            builder.RegisterRefitClients();
 
             // Register AutoMapper and profiles in assembly
             builder.Services.AddAutoMapper(typeof(Program));
@@ -130,7 +130,6 @@ namespace HealthGateway.Admin.Client
 
             builder.Services.AddTransient<IAdminClientMappingService, AdminClientMappingService>();
             builder.Services.AddSingleton<IDateConversionService, DateConversionService>();
-            builder.Services.AddTransient<IKeyInterceptorService, KeyInterceptorService>();
 
             app[0] = builder.Build();
             await app[0].RunAsync();

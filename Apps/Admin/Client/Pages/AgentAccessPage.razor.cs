@@ -23,13 +23,13 @@ using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Components.AgentAccess;
-using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Store.AgentAccess;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using MudBlazor.Services;
 
 /// <summary>
 /// Backing logic for the agent provisioning page.
@@ -106,10 +106,9 @@ public partial class AgentAccessPage : FluxorComponent
     {
         if (firstRender)
         {
-            await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+            await this.KeyInterceptorService.SubscribeAsync(
                 "query-controls",
-                "query-input",
-                IKeyInterceptorService.EnterKey,
+                new("query-input", new KeyOptions("Enter", true)),
                 _ => this.SearchAsync());
         }
 
@@ -121,7 +120,7 @@ public partial class AgentAccessPage : FluxorComponent
     {
         if (disposing)
         {
-            this.KeyInterceptorService.Dispose();
+            await this.KeyInterceptorService.UnsubscribeAsync("query-controls");
         }
 
         await base.DisposeAsyncCore(disposing);

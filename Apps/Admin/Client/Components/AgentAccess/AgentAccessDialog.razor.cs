@@ -55,7 +55,7 @@ public partial class AgentAccessDialog : FluxorComponent
     ];
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;

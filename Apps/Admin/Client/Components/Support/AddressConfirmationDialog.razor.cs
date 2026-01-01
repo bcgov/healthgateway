@@ -80,7 +80,7 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
     public bool OutputCanadaAsEmptyString { get; set; }
 
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
     private IActionSubscriber ActionSubscriber { get; set; } = default!;
