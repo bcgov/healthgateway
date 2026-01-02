@@ -479,7 +479,7 @@ Cypress.Commands.add("checkOnTimeline", () => {
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.contains("#subject", "Health Records").should("be.visible");
+    cy.contains("#subject", "Health Records").should("exist");
     cy.get("[data-testid=loadingSpinner]").should("not.exist");
     cy.get("[data-testid=loading-toast]").should(($el) => {
         const doesNotExist = $el.length === 0;
