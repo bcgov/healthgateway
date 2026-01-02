@@ -48,7 +48,6 @@ namespace HealthGateway.Admin.Client.Components.Support
         {
             public DependentRow(PatientSupportDependentInfo model)
             {
-                this.Hdid = model.Hdid;
                 this.Phn = model.Phn;
                 this.Name = StringManipulator.JoinWithoutBlanks([model.FirstName, model.LastName]);
                 this.Birthdate = DateOnly.FromDateTime(model.Birthdate);
@@ -56,8 +55,6 @@ namespace HealthGateway.Admin.Client.Components.Support
                 this.Protected = model.Protected;
                 this.ExpiryDate = model.ExpiryDate;
             }
-
-            public string Hdid { get; } = string.Empty;
 
             public string Phn { get; } = string.Empty;
 

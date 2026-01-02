@@ -132,8 +132,9 @@ namespace HealthGateway.Admin.Client.Pages
         /// </summary>
         private void OnTabChanged(int index)
         {
-            if (index == 1) // Search
+            if (index == 1)
             {
+                // Search
                 this.PendingSearchInputEventSubscribe = true;
             }
             else

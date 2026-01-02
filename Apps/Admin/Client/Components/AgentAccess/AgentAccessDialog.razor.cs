@@ -114,9 +114,9 @@ public partial class AgentAccessDialog : FluxorComponent
         }
     }
 
-    private void UpdateRoles(IEnumerable<IdentityAccessRole> roles)
+    private void UpdateRoles(IEnumerable<IdentityAccessRole>? roles)
     {
         this.Agent.Roles.Clear();
-        this.Agent.Roles.UnionWith(roles);
+        this.Agent.Roles.UnionWith(roles ?? []);
     }
 }
