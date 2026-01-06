@@ -2,7 +2,7 @@ import {
     defineConfigWithVueTs,
     vueTsConfigs,
 } from "@vue/eslint-config-typescript";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
 import pluginVue from "eslint-plugin-vue";
@@ -39,10 +39,5 @@ export default defineConfigWithVueTs(
             },
         },
     },
-    eslintPluginPrettierRecommended,
-    {
-        rules: {
-            "prettier/prettier": "warn",
-        },
-    }
+    eslintConfigPrettier
 );
