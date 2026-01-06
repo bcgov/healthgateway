@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Swagger
 {
     using System.Diagnostics.CodeAnalysis;
-    using Microsoft.OpenApi.Models;
+    using Microsoft.OpenApi;
 
     /// <summary>
     /// Swagger Configuration.
