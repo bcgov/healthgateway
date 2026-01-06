@@ -20,7 +20,7 @@ namespace HealthGateway.CommonTests.Swagger
     using HealthGateway.CommonTests.Utils;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.AspNetCore.Mvc.Controllers;
-    using Microsoft.OpenApi.Models;
+    using Microsoft.OpenApi;
     using Swashbuckle.AspNetCore.SwaggerGen;
     using Xunit;
 
@@ -52,7 +52,7 @@ namespace HealthGateway.CommonTests.Swagger
             {
                 ActionDescriptor = actionDescriptor,
             };
-            OperationFilterContext filterContext = new(apiDescription, null, null, null);
+            OperationFilterContext filterContext = new(apiDescription, null, null, new(), null);
 
             filter.Apply(openApiOperation, filterContext);
 
@@ -68,7 +68,7 @@ namespace HealthGateway.CommonTests.Swagger
             AuthenticationRequirementsOperationFilter filter = new();
             OpenApiOperation openApiOperation = new();
             ApiDescription apiDescription = new();
-            OperationFilterContext filterContext = new(apiDescription, null, null, null);
+            OperationFilterContext filterContext = new(apiDescription, null, null, new(), null);
 
             filter.Apply(openApiOperation, filterContext);
 

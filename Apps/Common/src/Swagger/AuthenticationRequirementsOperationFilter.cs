@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Swagger
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
-    using Microsoft.OpenApi.Models;
+    using Microsoft.OpenApi;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
     /// <summary>
@@ -45,12 +45,7 @@ namespace HealthGateway.Common.Swagger
 
                 if ((controllerAuth && !methodAnonymous) || (!controllerAuth && methodAuth))
                 {
-                    OpenApiSecurityScheme securityScheme = new()
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" },
-                    };
-
-                    operation.Security.Add(new() { { securityScheme, Array.Empty<string>() } });
+                    operation.Security.Add(new() { { new("bearer", context.Document), [] } });
                 }
             }
         }
