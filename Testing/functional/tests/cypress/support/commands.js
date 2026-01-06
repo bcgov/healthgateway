@@ -333,18 +333,24 @@ Cypress.Commands.add(
                 .should("be.visible")
                 .should("have.text", "BC Services Card")
                 .click();
-            cy.url().should(
-                "contains",
-                "https://idtest.gov.bc.ca/login/entry#start"
+            cy.origin(
+                "https://idtest.gov.bc.ca",
+                { args: { username, password } },
+                ({ username, password }) => {
+                    cy.url().should(
+                        "contains",
+                        "https://idtest.gov.bc.ca/login/entry#start"
+                    );
+                    cy.get(
+                        "#tile_btn_test_with_username_password_device_div_id > h2"
+                    ).click();
+                    cy.get("#username").should("be.visible").type(username);
+                    cy.get("#password")
+                        .should("be.visible")
+                        .type(password, { log: false });
+                    cy.get("#submit-btn").click();
+                }
             );
-            cy.get(
-                "#tile_btn_test_with_username_password_device_div_id > h2"
-            ).click();
-            cy.get("#username").should("be.visible").type(username);
-            cy.get("#password")
-                .should("be.visible")
-                .type(password, { log: false });
-            cy.get("#submit-btn").click();
         } else {
             cy.log(`Authenticating as KeyCloak user ${username} using the UI`);
             cy.visit(path);
@@ -352,12 +358,20 @@ Cypress.Commands.add(
                 .should("be.visible")
                 .should("have.text", "KeyCloak")
                 .click();
-            cy.get("#kc-page-title", { timeout: 10000 }).should("be.visible");
-            cy.get("#username").should("be.visible").type(username);
-            cy.get("#password")
-                .should("be.visible")
-                .type(password, { log: false });
-            cy.get("#kc-login").click();
+            cy.origin(
+                "https://dev.loginproxy.gov.bc.ca",
+                { args: { username, password } },
+                ({ username, password }) => {
+                    cy.get("#kc-page-title", { timeout: 10000 }).should(
+                        "be.visible"
+                    );
+                    cy.get("#username").should("be.visible").type(username);
+                    cy.get("#password")
+                        .should("be.visible")
+                        .type(password, { log: false });
+                    cy.get("#kc-login").click();
+                }
+            );
         }
     }
 );
