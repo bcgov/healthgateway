@@ -6,11 +6,15 @@ function getConfig() {
         const realm = url.pathname.split("/").pop();
         const client = Cypress.env("keycloak_admin_client");
         const secret = Cypress.env("keycloak_admin_secret");
-        if (typeof client !== 'string' || !client) {
-            throw new Error("Configuration: keycloak_admin_client is missing or empty");
+        if (typeof client !== "string" || !client) {
+            throw new Error(
+                "Configuration: keycloak_admin_client is missing or empty"
+            );
         }
-        if (typeof secret !== 'string' || !secret) {
-            throw new Error("Configuration: keycloak_admin_secret is missing or empty");
+        if (typeof secret !== "string" || !secret) {
+            throw new Error(
+                "Configuration: keycloak_admin_secret is missing or empty"
+            );
         }
         const keycloakConfig = {
             baseUri: baseURI,

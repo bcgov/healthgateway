@@ -6,8 +6,8 @@
     "scripts": {
         "launch": "cypress open",
         "e2e": "cypress run --headless",
-        "lint": "eslint cypress --ext .js --max-warnings 0",
-        "lintfix": "eslint cypress --ext .js --fix"
+        "lint": "eslint cypress --ext .js --max-warnings 0 && prettier cypress --check",
+        "lintfix": "eslint cypress --ext .js --fix && prettier cypress --write"
     },
     "keywords": [],
     "author": "",
@@ -17,16 +17,11 @@
         "cy-verify-downloads": "^0.3.0",
         "cypress": "^15.8.2",
         "cypress-real-events": "^1.15.0",
-        "eslint": "^8.54.0",
-        "eslint-plugin-chai-friendly": "^0.7.2",
-        "eslint-plugin-cypress": "^2.15.1",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "eslint-plugin-promise": "^6.1.1",
-        "prettier": "2.6.2"
-    },
-    "dependencies": {
-        "eslint-config-prettier": "^8.8.0",
-        "eslint-config-standard": "^17.1.0"
+        "eslint": "^9.39.2",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-chai-friendly": "^1.1.0",
+        "eslint-plugin-cypress": "^5.2.1",
+        "eslint-plugin-prettier": "^5.5.4",
+        "prettier": "^3.7.4"
     }
 }
