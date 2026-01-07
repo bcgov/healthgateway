@@ -3,10 +3,6 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-function getDate(value) {
-    return new Date(value && value.trim().length !== 0 ? value.trim() : 0);
-}
-
 describe("Reports - Medication", () => {
     beforeEach(() => {
         cy.configureSettings({

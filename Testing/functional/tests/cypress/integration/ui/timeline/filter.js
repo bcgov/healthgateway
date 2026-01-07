@@ -1,8 +1,6 @@
 import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
-const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
-
 describe("Filters", () => {
     function testFilteredResultAlerts(filter, alert) {
         cy.get(`[data-testid=${alert}]`).should("not.exist");

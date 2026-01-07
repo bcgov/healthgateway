@@ -20,6 +20,8 @@
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-chai-friendly": "^1.1.0",
         "eslint-plugin-cypress": "^5.2.1",
+        "eslint-plugin-simple-import-sort": "^12.1.1",
+        "eslint-plugin-unused-imports": "^4.3.0",
         "mocha": "^11.7.5",
         "mocha-junit-reporter": "^2.2.1",
         "prettier": "^3.7.4"

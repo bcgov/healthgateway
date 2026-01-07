@@ -1,5 +1,4 @@
 import { AuthMethod } from "../../../support/constants";
-const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 const defaultTimeout = 60000;
 
 describe("Need to accept terms of service", () => {

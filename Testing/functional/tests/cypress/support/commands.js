@@ -70,22 +70,22 @@ function generateRandomString(length) {
     return text;
 }
 
-function loginWithKeycloakUICached(username, password, config, path = "/home") {
-    cy.session(
-        [`keycloak-${username}`, path], // unique key (array form allows multiple args)
-        () => {
-            // Call your full UI-based login function
-            loginWithKeycloakUI(username, password, config, path);
-        },
-        {
-            validate: () => {
-                // Minimal check that you're still authenticated
-                cy.visit(path, { failOnStatusCode: false });
-                cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
-            },
-        }
-    );
-}
+// function loginWithKeycloakUICached(username, password, config, path = "/home") {
+//     cy.session(
+//         [`keycloak-${username}`, path], // unique key (array form allows multiple args)
+//         () => {
+//             // Call your full UI-based login function
+//             loginWithKeycloakUI(username, password, config, path);
+//         },
+//         {
+//             validate: () => {
+//                 // Minimal check that you're still authenticated
+//                 cy.visit(path, { failOnStatusCode: false });
+//                 cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
+//             },
+//         }
+//     );
+// }
 
 function loginWithKeycloakUI(username, password, config, path = "/home") {
     const defaultPath = "/home";

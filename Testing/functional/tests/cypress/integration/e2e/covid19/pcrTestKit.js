@@ -1,10 +1,10 @@
 const { AuthMethod } = require("../../../support/constants");
+import { formatToDatePickerInput } from "../../../support/functions/datePicker";
 import {
     clickManualRegistrationButton,
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
-import { formatToDatePickerInput } from "../../../support/functions/datePicker";
 
 const landingPagePath = "/";
 

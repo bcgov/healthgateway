@@ -1,4 +1,4 @@
-import { AuthMethod, Dataset } from "../../../../support/constants";
+import { AuthMethod } from "../../../../support/constants";
 
 const authorizedDependentHdid = "162346565465464564565463257";
 const unauthorizedDependentHdid = "343222434345442257";
