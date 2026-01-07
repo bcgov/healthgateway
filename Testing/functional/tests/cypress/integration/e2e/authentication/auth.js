@@ -84,14 +84,26 @@ describe("Authentication", () => {
             .should("be.visible")
             .should("be.enabled")
             .click();
-        cy.get("#idirLogo", { timeout: 10000 }).should("be.visible");
-        cy.get("#user").should("be.visible").type(Cypress.env("idir.username"));
-        cy.get("#password")
-            .should("be.visible")
-            .type(Cypress.env("idir.password"), { log: false });
-        cy.get('input[name="btnSubmit"]').should("be.visible").click();
-        cy.url({ timeout: 10000 }).should("include", "idirLoggedIn");
-        cy.contains("h1", "403");
-        cy.contains("h2", "IDIR Login");
+
+        cy.origin(
+            "https://logontest7.gov.bc.ca",
+            {
+                args: {
+                    username: Cypress.env("idir.username"),
+                    password: Cypress.env("idir.password"),
+                },
+            },
+            ({ username, password }) => {
+                cy.get("#idirLogo", { timeout: 10000 }).should("be.visible");
+                cy.get("#user").should("be.visible").type(username);
+                cy.get("#password")
+                    .should("be.visible")
+                    .type(password, { log: false });
+                cy.get('input[name="btnSubmit"]').should("be.visible").click();
+                cy.url({ timeout: 10000 }).should("include", "idirLoggedIn");
+                cy.contains("h1", "403");
+                cy.contains("h2", "IDIR Login");
+            }
+        );
     });
 });

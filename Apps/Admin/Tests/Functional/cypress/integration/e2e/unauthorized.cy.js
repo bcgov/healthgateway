@@ -12,10 +12,21 @@ describe("Unauthorized", () => {
             .should("be.visible")
             .should("not.be.disabled")
             .click();
-        cy.get("#kc-page-title", { timeout: 10000 }).should("be.visible");
-        cy.get("#username").should("be.visible").type(username);
-        cy.get("#password").should("be.visible").type(password, { log: false });
-        cy.get("input[name=login]").should("be.visible").click();
-        cy.url().should("include", "/unauthorized");
+
+        cy.origin(
+            "https://dev.loginproxy.gov.bc.ca",
+            { args: { username, password } },
+            ({ username, password }) => {
+                cy.get("#kc-page-title", { timeout: 10000 }).should(
+                    "be.visible"
+                );
+                cy.get("#username").should("be.visible").type(username);
+                cy.get("#password")
+                    .should("be.visible")
+                    .type(password, { log: false });
+                cy.get("input[name=login]").should("be.visible").click();
+                cy.url().should("include", "/unauthorized");
+            }
+        );
     });
 });
