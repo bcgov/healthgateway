@@ -1,8 +1,3 @@
-import {
-    verifyProvincialDrug,
-    verifyFedDrug,
-} from "../../../support/functions/medication";
-
 describe("Medication Service", () => {
     beforeEach(() => {
         cy.readConfig().as("config");

@@ -1,3 +1,4 @@
+import { getTableRows } from "../../utilities/sharedUtilities";
 import {
     formatPhn,
     performSearch,
@@ -5,7 +6,6 @@ import {
     verifySingleSupportResult,
     verifySupportTableResults,
 } from "../../utilities/supportUtilities";
-import { getTableRows } from "../../utilities/sharedUtilities";
 
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailNotFound = "fakeemail_noresults@healthgateway.gov.bc.ca";

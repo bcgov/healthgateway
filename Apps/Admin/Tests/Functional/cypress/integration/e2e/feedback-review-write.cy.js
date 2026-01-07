@@ -10,18 +10,6 @@ function validateTableRowCount(tableSelector, count) {
         .should("have.length.gte", count);
 }
 
-function setupPatientDetailsAliases() {
-    cy.intercept("GET", "**/Support/Users*").as("getUsers");
-    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
-        "getPatientSupportDetails"
-    );
-}
-
-function waitForPatientDetailsDataLoad() {
-    cy.wait("@getUsers", { timeout: defaultTimeout });
-    cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
-}
-
 describe("Feedback Review", () => {
     beforeEach(() => {
         cy.login(

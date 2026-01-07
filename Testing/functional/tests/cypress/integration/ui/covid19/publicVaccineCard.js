@@ -10,10 +10,6 @@ const phnInput = `${phnField} input`;
 
 const vaccineCardUrl = "/vaccinecard";
 
-const dummyYear = "2021";
-const dummyMonth = "June";
-const dummyDay = "15";
-
 const fullyVaccinatedPhn = "9735361219";
 const fullyVaccinatedDob = "1994-JUN-09";
 const fullyVaccinatedDov = "2021-JAN-20";

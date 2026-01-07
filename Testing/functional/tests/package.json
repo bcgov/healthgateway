@@ -6,27 +6,24 @@
     "scripts": {
         "launch": "cypress open",
         "e2e": "cypress run",
-        "lint": "eslint cypress --ext .js --max-warnings 0",
-        "lintfix": "eslint cypress --ext .js --fix"
+        "lint": "eslint cypress --ext .js --max-warnings 0 && prettier cypress --check",
+        "lintfix": "eslint cypress --ext .js --fix && prettier cypress --write"
     },
     "author": "",
     "license": "Apache-2.0",
     "devDependencies": {
         "@cypress/skip-test": "^2.6.1",
-        "cy-verify-downloads": "^0.1.17",
-        "cypress": "^13.11.0",
-        "cypress-multi-reporters": "^1.6.4",
-        "eslint": "^8.54.0",
-        "eslint-config-prettier": "^8.10.0",
-        "eslint-config-standard": "^14.1.1",
-        "eslint-plugin-chai-friendly": "^0.7.4",
-        "eslint-plugin-cypress": "^2.15.2",
-        "eslint-plugin-import": "^2.29.1",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^4.0.0",
-        "eslint-plugin-promise": "^6.2.0",
-        "mocha": "^9.1.3",
+        "cy-verify-downloads": "^0.3.0",
+        "cypress": "^15.8.2",
+        "cypress-multi-reporters": "^2.0.5",
+        "eslint": "^9.39.2",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-chai-friendly": "^1.1.0",
+        "eslint-plugin-cypress": "^5.2.1",
+        "eslint-plugin-simple-import-sort": "^12.1.1",
+        "eslint-plugin-unused-imports": "^4.3.0",
+        "mocha": "^11.7.5",
         "mocha-junit-reporter": "^2.2.1",
-        "prettier": "2.5.1"
+        "prettier": "^3.7.4"
     }
 }

@@ -144,6 +144,7 @@
             "**/node_modules": true
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.useEditorConfig": true,
         "editor.formatOnSave": true,
         "editor.guides.bracketPairs": true,
         "[csharp]": {

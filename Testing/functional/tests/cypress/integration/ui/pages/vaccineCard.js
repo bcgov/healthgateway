@@ -1,4 +1,3 @@
-const homeUrl = "/";
 const vaccineCardUrl = "/vaccinecard";
 
 describe("Vaccine Card Page", () => {

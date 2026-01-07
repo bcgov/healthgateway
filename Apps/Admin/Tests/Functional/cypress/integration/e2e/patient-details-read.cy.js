@@ -1,5 +1,5 @@
-import { performSearch as search } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
+import { performSearch as search } from "../../utilities/supportUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const phnWithValidDoses = "9042146714";
@@ -101,7 +101,7 @@ function validatePrintVaccineCardSubmission() {
     cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=print-button]").click();
 
-    cy.wait("@getVaccineCard").then((interception) => {
+    cy.wait("@getVaccineCard").then((_interception) => {
         cy.verifyDownload("VaccineProof.pdf", {
             timeout: 60000,
             interval: 5000,

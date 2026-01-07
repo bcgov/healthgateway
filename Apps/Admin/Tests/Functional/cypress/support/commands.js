@@ -214,7 +214,7 @@ Cypress.Commands.add("validateTableLoad", (tableSelector) => {
 
 Cypress.Commands.add("disableServiceWorker", () => {
     cy.log("Unregistering ServiceWorker.");
-    cy.window().then((win) => {
+    cy.window().then((_win) => {
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.getRegistrations().then((registrations) => {
                 registrations.forEach((registration) => {

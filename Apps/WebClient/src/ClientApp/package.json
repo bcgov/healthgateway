@@ -6,8 +6,8 @@
         "dev": "vite",
         "build": "vue-tsc --noEmit && npm run lintcheck && vite build",
         "preview": "vite preview",
-        "lintcheck": "eslint src --max-warnings 0",
-        "lint": "eslint src --fix"
+        "lintcheck": "eslint src --max-warnings 0 && prettier src --check",
+        "lint": "eslint src --fix && prettier src --write"
     },
     "dependencies": {
         "@chenfengyuan/vue-countdown": "^2.1.3",
