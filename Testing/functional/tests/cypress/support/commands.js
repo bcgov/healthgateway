@@ -341,14 +341,17 @@ Cypress.Commands.add(
                         "contains",
                         "https://idtest.gov.bc.ca/login/entry#start"
                     );
+                    // within Cypress v14.0+, the idtest login page will load with display: none
+                    // requiring { force: true } to interact with any elements on that page
                     cy.get(
                         "#tile_btn_test_with_username_password_device_div_id > h2"
-                    ).click();
-                    cy.get("#username").should("be.visible").type(username);
-                    cy.get("#password")
-                        .should("be.visible")
-                        .type(password, { log: false });
-                    cy.get("#submit-btn").click();
+                    ).click({ force: true });
+                    cy.get("#username").type(username, { force: true });
+                    cy.get("#password").type(password, {
+                        log: false,
+                        force: true,
+                    });
+                    cy.get("#submit-btn").click({ force: true });
                 }
             );
         } else {

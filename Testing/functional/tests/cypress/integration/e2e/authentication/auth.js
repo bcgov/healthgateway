@@ -11,18 +11,22 @@ describe("Authentication", () => {
     });
 
     it("BCSC UI Login", () => {
-        skipOn("localhost");
         cy.login(
             Cypress.env("bcsc.username"),
             Cypress.env("bcsc.password"),
             AuthMethod.BCSC,
             "/home"
         );
-        cy.url().should("include", "/login/username");
+        cy.origin("https://idtest.gov.bc.ca", () => {
+            cy.url().should("include", "/login/username");
 
-        // Agree to terms
-        cy.get('input[type="checkbox"][name="accept"]').check({ force: true });
-        cy.get("button#btnSubmit").click();
+            // Agree to terms
+            cy.get('input[type="checkbox"][name="accept"]').check({
+                force: true,
+            });
+            cy.get("button#btnSubmit").click({ force: true });
+        });
+
         cy.url().should("include", "/home");
 
         cy.get("[data-testid=headerDropdownBtn]").click();
@@ -100,10 +104,11 @@ describe("Authentication", () => {
                     .should("be.visible")
                     .type(password, { log: false });
                 cy.get('input[name="btnSubmit"]').should("be.visible").click();
-                cy.url({ timeout: 10000 }).should("include", "idirLoggedIn");
-                cy.contains("h1", "403");
-                cy.contains("h2", "IDIR Login");
             }
         );
+
+        cy.url({ timeout: 10000 }).should("include", "idirLoggedIn");
+        cy.contains("h1", "403");
+        cy.contains("h2", "IDIR Login");
     });
 });
