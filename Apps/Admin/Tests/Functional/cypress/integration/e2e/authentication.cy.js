@@ -62,7 +62,7 @@ describe("Authentication", () => {
             .click();
 
         cy.origin(
-            "https://dev.loginproxy.gov.bc.ca",
+            "https://logontest7.gov.bc.ca",
             { args: { username, password } },
             ({ username, password }) => {
                 cy.log(`Authenticating as IDIR user ${username}`);
