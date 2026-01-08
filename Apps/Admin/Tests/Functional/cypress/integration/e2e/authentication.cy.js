@@ -17,13 +17,24 @@ describe("Authentication", () => {
             .click();
 
         cy.log(`Authenticating as IDIR user ${username}`);
-        cy.get("#social-idir")
-            .should("be.visible")
-            .should("not.be.disabled")
-            .click();
-        cy.get("#user").should("be.visible").type(username);
-        cy.get("#password").should("be.visible").type(password, { log: false });
-        cy.get("input[name=btnSubmit]").should("be.visible").click();
+        cy.origin("https://dev.loginproxy.gov.bc.ca", () => {
+            cy.get("#social-idir")
+                .should("be.visible")
+                .should("not.be.disabled")
+                .click();
+        });
+        cy.origin(
+            "https://logontest7.gov.bc.ca",
+            { args: { username, password } },
+            ({ username, password }) => {
+                cy.get("#user").should("be.visible").type(username);
+                cy.get("#password")
+                    .should("be.visible")
+                    .type(password, { log: false });
+                cy.get("input[name=btnSubmit]").should("be.visible").click();
+            }
+        );
+
         cy.url().should("include", "/dashboard");
         cy.log("Successfully logged in to admin dashboard.");
 
@@ -50,11 +61,20 @@ describe("Authentication", () => {
             .should("not.be.disabled")
             .click();
 
-        cy.log(`Authenticating as IDIR user ${username}`);
-        cy.get("#idirLogo").should("be.visible");
-        cy.get("#user").should("be.visible").type(username);
-        cy.get("#password").should("be.visible").type(password, { log: false });
-        cy.get("input[name=btnSubmit]").should("be.visible").click();
+        cy.origin(
+            "https://dev.loginproxy.gov.bc.ca",
+            { args: { username, password } },
+            ({ username, password }) => {
+                cy.log(`Authenticating as IDIR user ${username}`);
+                cy.get("#idirLogo").should("be.visible");
+                cy.get("#user").should("be.visible").type(username);
+                cy.get("#password")
+                    .should("be.visible")
+                    .type(password, { log: false });
+                cy.get("input[name=btnSubmit]").should("be.visible").click();
+            }
+        );
+
         cy.url().should("include", "/dashboard");
         cy.log("Successfully logged in to admin dashboard.");
 
