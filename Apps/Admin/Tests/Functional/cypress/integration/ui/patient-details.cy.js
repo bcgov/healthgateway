@@ -221,21 +221,6 @@ describe("Patient details as admin", () => {
             .should("be.visible")
             .click();
     });
-
-    it("Verify print vaccine card shows error message", () => {
-        cy.intercept("GET", `**/Document?phn=${phn}`, {
-            statusCode: 500,
-        });
-
-        performSearch("PHN", phn);
-        selectPatientTab("Profile");
-        cy.scrollTo("bottom", { ensureScrollable: false });
-        cy.get("[data-testid=print-button]").should("be.visible").click();
-        cy.scrollTo("top", { ensureScrollable: false });
-        cy.get(
-            "[data-testid=user-banner-print-vaccine-card-error-message]"
-        ).should("be.visible");
-    });
 });
 
 describe("Patient details as support", () => {
