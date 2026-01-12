@@ -18,7 +18,9 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using AutoMapper;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.Utils;
@@ -90,8 +92,28 @@ namespace HealthGateway.Immunization.Services
             VaccineStatus dest = mapper.Map<VaccineStatusResult, VaccineStatus>(source);
 
             dest.PersonalHealthNumber = personalHealthNumber;
+            if (source.FederalVaccineProof?.Data != null)
+            {
+                dest.FederalVaccineProof = new EncodedMedia
+                {
+                    Type = "application/pdf",
+                    Encoding = "base64",
+                    Data = GetGenericVaccineProof(),
+                };
+            }
 
             return dest;
+        }
+
+        private static string GetGenericVaccineProof()
+        {
+            const string resourceName = "HealthGateway.Immunization.Assets.VaccineProof.pdf";
+
+            Assembly? assembly = Assembly.GetAssembly(typeof(ImmunizationMappingService));
+            Stream resourceStream = assembly!.GetManifestResourceStream(resourceName) ?? throw new FileNotFoundException("Proof of vaccination not found.");
+            using MemoryStream memoryStream = new();
+            resourceStream.CopyTo(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
         }
     }
 }
