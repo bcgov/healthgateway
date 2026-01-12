@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Client.Components.Details
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
 
@@ -47,8 +46,6 @@ namespace HealthGateway.Admin.Client.Components.Details
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
         private string PatientName => StringManipulator.JoinWithoutBlanks([this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname]);
-
-        private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
         private VaccineDetails? VaccineDetails => this.PatientDetailsState.Value.VaccineDetails;
 

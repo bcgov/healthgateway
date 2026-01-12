@@ -18,20 +18,12 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Store.PatientDetails;
-    using HealthGateway.Admin.Client.Store.VaccineCard;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.JSInterop;
-    using MudBlazor;
-    using MailVaccineCardAddressConfirmationDialog = AddressConfirmationDialog<
-        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
-        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
 
     /// <summary>
     /// Backing logic for the COVID-19 immunization section.
@@ -59,117 +51,12 @@ namespace HealthGateway.Admin.Client.Components.Support
         [EditorRequired]
         public bool IsLoading { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets the patient's mailing address.
-        /// </summary>
-        [Parameter]
-        [EditorRequired]
-        public Address? MailAddress { get; set; }
-
-        [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-        [Inject]
-        private IDialogService Dialog { get; set; } = default!;
-
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
 
-        [Inject]
-        private IJSRuntime JsRuntime { get; set; } = default!;
-
-        [Inject]
-        private ISnackbar Snackbar { get; set; } = default!;
-
-        [Inject]
-        private IState<VaccineCardState> VaccineCardState { get; set; } = default!;
-
         private bool ContainsInvalidDoses => this.Data?.ContainsInvalidDoses ?? false;
 
-        private bool MailVaccineCardIsLoading => this.VaccineCardState.Value.MailVaccineCard.IsLoading;
-
-        private bool PrintVaccineCardIsLoading => this.VaccineCardState.Value.PrintVaccineCard.IsLoading;
-
         private IEnumerable<VaccineDoseRow> Rows => this.Data?.Doses.Select(d => new VaccineDoseRow(d)) ?? [];
-
-        private ReportModel? VaccineCardStateData => this.VaccineCardState.Value.PrintVaccineCard.Result;
-
-        /// <inheritdoc/>
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            this.ResetVaccineCardState();
-            this.ActionSubscriber.SubscribeToAction<VaccineCardActions.PrintVaccineCardSuccessAction>(this, this.PrintVaccineCard);
-            this.ActionSubscriber.SubscribeToAction<VaccineCardActions.MailVaccineCardSuccessAction>(this, this.DisplayMailVaccineCardSuccessful);
-        }
-
-        /// <inheritdoc/>
-        protected override async ValueTask DisposeAsyncCore(bool disposing)
-        {
-            if (disposing)
-            {
-                this.ActionSubscriber.UnsubscribeFromAllActions(this);
-            }
-
-            await base.DisposeAsyncCore(disposing);
-        }
-
-        private async Task DownloadReportAsync(ReportModel? report)
-        {
-            if (report != null)
-            {
-                await this.JsRuntime.InvokeAsync<object>("saveAsFile", report.FileName, report.Data);
-            }
-        }
-
-        private async Task OpenMailVaccineCardAddressConfirmationDialogAsync()
-        {
-            const string title = "Confirm Address";
-            DialogParameters parameters = new()
-            {
-                [nameof(MailVaccineCardAddressConfirmationDialog.ActionOnConfirm)] = (Action<Address>)this.MailVaccineCard,
-                [nameof(MailVaccineCardAddressConfirmationDialog.DefaultAddress)] = this.MailAddress,
-                [nameof(MailVaccineCardAddressConfirmationDialog.ConfirmButtonLabel)] = "Send",
-                [nameof(MailVaccineCardAddressConfirmationDialog.OutputCanadaAsEmptyString)] = true,
-            };
-            DialogOptions options = new()
-            {
-                BackdropClick = false,
-                FullWidth = true,
-                MaxWidth = MaxWidth.Small,
-            };
-            IDialogReference dialog = await this.Dialog
-                .ShowAsync<MailVaccineCardAddressConfirmationDialog>(
-                    title,
-                    parameters,
-                    options);
-            await dialog.Result;
-        }
-
-        private void DisplayMailVaccineCardSuccessful(VaccineCardActions.MailVaccineCardSuccessAction action)
-        {
-            this.Snackbar.Add("BC Vaccine Card mailed successfully.", Severity.Success);
-        }
-
-        private void PrintVaccineCard(VaccineCardActions.PrintVaccineCardSuccessAction action)
-        {
-            Task.Run(async () => await this.DownloadReportAsync(this.VaccineCardStateData));
-        }
-
-        private void ResetVaccineCardState()
-        {
-            this.Dispatcher.Dispatch(new VaccineCardActions.ResetStateAction());
-        }
-
-        private void MailVaccineCard(Address address)
-        {
-            this.Dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardAction { Phn = this.Phn, MailAddress = address });
-        }
-
-        private void Print()
-        {
-            this.Dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardAction { Phn = this.Phn });
-        }
 
         private void Refresh()
         {
