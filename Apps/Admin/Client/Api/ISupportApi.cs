@@ -19,9 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Admin.Common.Models.CovidSupport;
 using HealthGateway.Common.Data.Constants;
-using HealthGateway.Common.Data.Models;
 using Refit;
 
 /// <summary>
@@ -69,22 +67,6 @@ public interface ISupportApi
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Put("/{hdid}/BlockAccess")]
     Task BlockAccessAsync(string hdid, BlockAccessRequest request);
-
-    /// <summary>
-    /// Triggers the process to physically mail the Vaccine Card document.
-    /// </summary>
-    /// <param name="request">The mail document request.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Post("/Patient/Document")]
-    Task MailVaccineCardAsync(MailDocumentRequest request);
-
-    /// <summary>
-    /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
-    /// </summary>
-    /// <param name="phn">The personal health number that matches the document to retrieve.</param>
-    /// <returns>The encoded immunization document.</returns>
-    [Get("/Patient/Document?phn={phn}")]
-    Task<ReportModel> RetrieveVaccineRecordAsync(string phn);
 
     /// <summary>
     /// Requests a refresh of cached health data for a specified personal health number (PHN) and system source.
