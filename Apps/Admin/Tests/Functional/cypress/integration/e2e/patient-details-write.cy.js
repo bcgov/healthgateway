@@ -1,5 +1,5 @@
-import { performSearch as search } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
+import { performSearch as search } from "../../utilities/supportUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const switchName = "Immunization";

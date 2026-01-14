@@ -4,7 +4,6 @@
 @using HealthGateway.Admin.Client.Components.Details
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
-@using HealthGateway.Admin.Client.Store.VaccineCard
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Patient Details</PageTitle>
@@ -31,15 +30,6 @@
     DataTestId="user-banner-feedback-error-message"
     Class="mb-4">
     @PatientSupportState.Value.Error?.Message
-</HgBannerFeedback>
-
-<HgBannerFeedback
-    Severity="Severity.Error"
-    IsEnabled="HasPrintVaccineCardError"
-    TResetAction="VaccineCardActions.ResetStateAction"
-    DataTestId="user-banner-print-vaccine-card-error-message"
-    Class="mb-4">
-    @VaccineCardState.Value.PrintVaccineCard.Error?.Message
 </HgBannerFeedback>
 
 <HgBannerFeedback

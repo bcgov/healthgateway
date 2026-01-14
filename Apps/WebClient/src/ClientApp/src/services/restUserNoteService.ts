@@ -45,9 +45,9 @@ export class RestUserNoteService implements IUserNoteService {
         }
 
         return this.http
-            .getWithCors<RequestResult<UserNote[]>>(
-                `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`
-            )
+            .getWithCors<
+                RequestResult<UserNote[]>
+            >(`${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(`Error in RestUserNoteService.getNotes()`);
                 throw ErrorTranslator.internalNetworkError(

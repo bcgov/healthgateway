@@ -48,9 +48,9 @@ export class RestClinicalDocumentService implements IClinicalDocumentService {
         }
 
         return this.http
-            .getWithCors<RequestResult<ClinicalDocument[]>>(
-                `${this.baseUri}${this.BASE_URI}/${hdid}`
-            )
+            .getWithCors<
+                RequestResult<ClinicalDocument[]>
+            >(`${this.baseUri}${this.BASE_URI}/${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestClinicalDocumentService.getRecords()`
@@ -77,9 +77,9 @@ export class RestClinicalDocumentService implements IClinicalDocumentService {
         }
 
         return this.http
-            .getWithCors<RequestResult<EncodedMedia>>(
-                `${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}`
-            )
+            .getWithCors<
+                RequestResult<EncodedMedia>
+            >(`${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestClinicalDocumentService.getFile()`

@@ -35,7 +35,7 @@ using MudBlazor;
 public partial class DelegateDialog : FluxorComponent
 {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; } = default!;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;

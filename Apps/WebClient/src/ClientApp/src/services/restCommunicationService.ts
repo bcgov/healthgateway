@@ -30,9 +30,9 @@ export class RestCommunicationService implements ICommunicationService {
         type: CommunicationType
     ): Promise<RequestResult<Communication | null>> {
         return this.http
-            .getWithCors<RequestResult<Communication | null>>(
-                `${this.baseUri}${this.BASE_URI}/${type}`
-            )
+            .getWithCors<
+                RequestResult<Communication | null>
+            >(`${this.baseUri}${this.BASE_URI}/${type}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestCommunicationService.getActive()`

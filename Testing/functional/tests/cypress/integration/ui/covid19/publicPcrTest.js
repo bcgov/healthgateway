@@ -1,10 +1,9 @@
+import { monthNames } from "../../../support/constants";
 import {
     clickManualRegistrationButton,
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
-
-import { monthNames } from "../../../support/constants";
 
 const landingPagePath = "/";
 const pcrTestUrl = "/pcrtest";

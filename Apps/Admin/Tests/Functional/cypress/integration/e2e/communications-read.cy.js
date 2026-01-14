@@ -1,7 +1,5 @@
 import { getTodayPlusDaysDate } from "../../utilities/sharedUtilities";
 
-const defaultTimeout = 60000;
-
 describe("Communications", () => {
     beforeEach(() => {
         cy.login(

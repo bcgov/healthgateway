@@ -1,8 +1,6 @@
 import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
-const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-
 describe("Immunization History Report", () => {
     let sensitiveDocText =
         "The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off.";

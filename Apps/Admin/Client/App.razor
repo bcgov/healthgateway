@@ -5,9 +5,11 @@
 <PageTitle>Health Gateway Admin</PageTitle>
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly">
+    <Router AppAssembly="@typeof(App).Assembly"
+            NotFoundPage="typeof(Pages.NotFound)">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(DefaultLayout)">
+            <AuthorizeRouteView RouteData="@routeData"
+                                DefaultLayout="@typeof(DefaultLayout)">
                 <NotAuthorized>
                     @if (!context.User.Identity!.IsAuthenticated)
                     {
@@ -17,7 +19,8 @@
                                 new Dictionary<string, object?>
                                 {
                                     ["returnUrl"] = NavigationManager.Uri,
-                                }), replace: true);
+                                }),
+                            replace: true);
                     }
                     else
                     {
@@ -29,11 +32,5 @@
                 </Authorizing>
             </AuthorizeRouteView>
         </Found>
-        <NotFound>
-            <LayoutView Layout="@typeof(DefaultLayout)">
-                <PageTitle>Not Found</PageTitle>
-                <p class="text-center" role="alert">Sorry, there's nothing at this address.</p>
-            </LayoutView>
-        </NotFound>
     </Router>
 </CascadingAuthenticationState>

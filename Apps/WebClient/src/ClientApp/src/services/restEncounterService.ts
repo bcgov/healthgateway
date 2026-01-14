@@ -45,9 +45,9 @@ export class RestEncounterService implements IEncounterService {
         }
 
         return this.http
-            .getWithCors<RequestResult<Encounter[]>>(
-                `${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`
-            )
+            .getWithCors<
+                RequestResult<Encounter[]>
+            >(`${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestEncounterService.getPatientEncounters()`

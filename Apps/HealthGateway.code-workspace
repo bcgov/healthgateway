@@ -144,6 +144,7 @@
             "**/node_modules": true
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.useEditorConfig": true,
         "editor.formatOnSave": true,
         "editor.guides.bracketPairs": true,
         "[csharp]": {
@@ -151,7 +152,7 @@
             "editor.formatOnSave": false
         },
         "[vue][typescript][javascript]": {
-            "editor.formatOnSave": false,
+            "editor.formatOnSave": true,
             "editor.codeActionsOnSave": {
                 "source.addMissingImports": "explicit",
                 "source.fixAll.eslint": "explicit"

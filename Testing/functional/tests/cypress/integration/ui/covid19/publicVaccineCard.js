@@ -10,10 +10,6 @@ const phnInput = `${phnField} input`;
 
 const vaccineCardUrl = "/vaccinecard";
 
-const dummyYear = "2021";
-const dummyMonth = "June";
-const dummyDay = "15";
-
 const fullyVaccinatedPhn = "9735361219";
 const fullyVaccinatedDob = "1994-JUN-09";
 const fullyVaccinatedDov = "2021-JAN-20";
@@ -40,6 +36,7 @@ function populateDatePicker(selector, dateValue) {
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
         cy.configureSettings({
+            covid19: { publicCovid19: { vaccineCardEnabled: true } },
             datasets: [{ name: "immunization", enabled: true }],
         });
         cy.logout();
@@ -107,6 +104,7 @@ describe("Public Vaccine Card Downloads", () => {
         cy.configureSettings({
             covid19: {
                 publicCovid19: {
+                    vaccineCardEnabled: true,
                     showFederalProofOfVaccination: true,
                 },
             },
@@ -195,6 +193,11 @@ describe("Public Vaccine Card Downloads", () => {
 describe("Public Vaccine Card Downloads When showFederalProofOfVaccination Disabled", () => {
     it("Save Image When showFederalProofOfVaccination Disabled", () => {
         cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    vaccineCardEnabled: true,
+                },
+            },
             datasets: [
                 {
                     name: "immunization",

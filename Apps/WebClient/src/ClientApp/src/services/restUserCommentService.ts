@@ -47,9 +47,9 @@ export class RestUserCommentService implements IUserCommentService {
         }
 
         return this.http
-            .getWithCors<RequestResult<UserComment[]>>(
-                `${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment/Entry?parentEntryId=${parentEntryId}`
-            )
+            .getWithCors<
+                RequestResult<UserComment[]>
+            >(`${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment/Entry?parentEntryId=${parentEntryId}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestUserCommentService.getCommentsForEntry()`
@@ -75,9 +75,9 @@ export class RestUserCommentService implements IUserCommentService {
         }
 
         return this.http
-            .getWithCors<RequestResult<Dictionary<UserComment[]>>>(
-                `${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment`
-            )
+            .getWithCors<
+                RequestResult<Dictionary<UserComment[]>>
+            >(`${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestUserCommentService.getCommentsForProfile()`

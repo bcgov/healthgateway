@@ -53,9 +53,9 @@ export class RestLaboratoryService implements ILaboratoryService {
         }
 
         return this.http
-            .getWithCors<RequestResult<Covid19LaboratoryOrderResult>>(
-                `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
-            )
+            .getWithCors<
+                RequestResult<Covid19LaboratoryOrderResult>
+            >(`${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestLaboratoryService.getCovid19LaboratoryOrders()`
@@ -86,9 +86,9 @@ export class RestLaboratoryService implements ILaboratoryService {
         }
 
         return this.http
-            .getWithCors<RequestResult<LaboratoryOrderResult>>(
-                `${this.baseUri}${this.LABORATORY_BASE_URI}/LaboratoryOrders?hdid=${hdid}`
-            )
+            .getWithCors<
+                RequestResult<LaboratoryOrderResult>
+            >(`${this.baseUri}${this.LABORATORY_BASE_URI}/LaboratoryOrders?hdid=${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestLaboratoryService.getLaboratoryOrders()`
@@ -119,9 +119,9 @@ export class RestLaboratoryService implements ILaboratoryService {
         }
 
         return this.http
-            .getWithCors<RequestResult<LaboratoryReport>>(
-                `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}&isCovid19=${isCovid19}`
-            )
+            .getWithCors<
+                RequestResult<LaboratoryReport>
+            >(`${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}&isCovid19=${isCovid19}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestLaboratoryService.getReportDocument()`

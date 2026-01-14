@@ -24,7 +24,6 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Authorization;
-    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
@@ -39,6 +38,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.Extensions.Primitives;
     using Microsoft.JSInterop;
     using MudBlazor;
+    using MudBlazor.Services;
 
     /// <summary>
     /// Backing logic for the Support page.
@@ -131,10 +131,9 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (firstRender)
             {
-                await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+                await this.KeyInterceptorService.SubscribeAsync(
                     "query-controls",
-                    "query-input",
-                    IKeyInterceptorService.EnterKey,
+                    new("query-input", new KeyOptions("Enter", true)),
                     _ => this.SearchAsync());
             }
 
@@ -146,7 +145,7 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (disposing)
             {
-                this.KeyInterceptorService.Dispose();
+                await this.KeyInterceptorService.UnsubscribeAsync("query-controls");
             }
 
             await base.DisposeAsyncCore(disposing);

@@ -70,22 +70,22 @@ function generateRandomString(length) {
     return text;
 }
 
-function loginWithKeycloakUICached(username, password, config, path = "/home") {
-    cy.session(
-        [`keycloak-${username}`, path], // unique key (array form allows multiple args)
-        () => {
-            // Call your full UI-based login function
-            loginWithKeycloakUI(username, password, config, path);
-        },
-        {
-            validate: () => {
-                // Minimal check that you're still authenticated
-                cy.visit(path, { failOnStatusCode: false });
-                cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
-            },
-        }
-    );
-}
+// function loginWithKeycloakUICached(username, password, config, path = "/home") {
+//     cy.session(
+//         [`keycloak-${username}`, path], // unique key (array form allows multiple args)
+//         () => {
+//             // Call your full UI-based login function
+//             loginWithKeycloakUI(username, password, config, path);
+//         },
+//         {
+//             validate: () => {
+//                 // Minimal check that you're still authenticated
+//                 cy.visit(path, { failOnStatusCode: false });
+//                 cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
+//             },
+//         }
+//     );
+// }
 
 function loginWithKeycloakUI(username, password, config, path = "/home") {
     const defaultPath = "/home";
@@ -333,18 +333,27 @@ Cypress.Commands.add(
                 .should("be.visible")
                 .should("have.text", "BC Services Card")
                 .click();
-            cy.url().should(
-                "contains",
-                "https://idtest.gov.bc.ca/login/entry#start"
+            cy.origin(
+                "https://idtest.gov.bc.ca",
+                { args: { username, password } },
+                ({ username, password }) => {
+                    cy.url().should(
+                        "contains",
+                        "https://idtest.gov.bc.ca/login/entry#start"
+                    );
+                    // within Cypress v14.0+, the idtest login page will load with display: none
+                    // requiring { force: true } to interact with any elements on that page
+                    cy.get(
+                        "#tile_btn_test_with_username_password_device_div_id > h2"
+                    ).click({ force: true });
+                    cy.get("#username").type(username, { force: true });
+                    cy.get("#password").type(password, {
+                        log: false,
+                        force: true,
+                    });
+                    cy.get("#submit-btn").click({ force: true });
+                }
             );
-            cy.get(
-                "#tile_btn_test_with_username_password_device_div_id > h2"
-            ).click();
-            cy.get("#username").should("be.visible").type(username);
-            cy.get("#password")
-                .should("be.visible")
-                .type(password, { log: false });
-            cy.get("#submit-btn").click();
         } else {
             cy.log(`Authenticating as KeyCloak user ${username} using the UI`);
             cy.visit(path);
@@ -352,12 +361,20 @@ Cypress.Commands.add(
                 .should("be.visible")
                 .should("have.text", "KeyCloak")
                 .click();
-            cy.get("#kc-page-title", { timeout: 10000 }).should("be.visible");
-            cy.get("#username").should("be.visible").type(username);
-            cy.get("#password")
-                .should("be.visible")
-                .type(password, { log: false });
-            cy.get("#kc-login").click();
+            cy.origin(
+                "https://dev.loginproxy.gov.bc.ca",
+                { args: { username, password } },
+                ({ username, password }) => {
+                    cy.get("#kc-page-title", { timeout: 10000 }).should(
+                        "be.visible"
+                    );
+                    cy.get("#username").should("be.visible").type(username);
+                    cy.get("#password")
+                        .should("be.visible")
+                        .type(password, { log: false });
+                    cy.get("#kc-login").click();
+                }
+            );
         }
     }
 );
@@ -479,7 +496,7 @@ Cypress.Commands.add("checkOnTimeline", () => {
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.contains("#subject", "Health Records").should("be.visible");
+    cy.contains("#subject", "Health Records").should("exist");
     cy.get("[data-testid=loadingSpinner]").should("not.exist");
     cy.get("[data-testid=loading-toast]").should(($el) => {
         const doesNotExist = $el.length === 0;

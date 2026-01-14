@@ -24,7 +24,6 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Components.AgentAudit;
     using HealthGateway.Admin.Client.Components.Delegation;
     using HealthGateway.Admin.Client.Models;
-    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.Delegation;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
@@ -33,6 +32,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
+    using MudBlazor.Services;
 
     /// <summary>
     /// Backing logic for the Delegation page.
@@ -107,10 +107,9 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (firstRender)
             {
-                await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+                await this.KeyInterceptorService.SubscribeAsync(
                     "query-controls",
-                    "query-input",
-                    IKeyInterceptorService.EnterKey,
+                    new("query-input", new KeyOptions("Enter", true)),
                     _ => this.SearchAsync());
             }
 
@@ -122,7 +121,7 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (disposing)
             {
-                this.KeyInterceptorService.Dispose();
+                await this.KeyInterceptorService.UnsubscribeAsync("query-controls");
             }
 
             await base.DisposeAsyncCore(disposing);

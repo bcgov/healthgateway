@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store;
     using HealthGateway.Admin.Client.Store.BetaAccess;
     using HealthGateway.Admin.Common.Models;
@@ -28,6 +27,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Validations;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
+    using MudBlazor.Services;
 
     /// <summary>
     /// Backing logic for the Beta Access page.
@@ -65,6 +65,10 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<UserBetaAccess> SearchResultBetaAccess =>
             this.BetaAccessState.Value.SearchResult == null ? [] : [this.BetaAccessState.Value.SearchResult];
 
+        private bool PendingSearchInputEventSubscribe { get; set; }
+
+        private bool PendingSearchInputEventUnsubscribe { get; set; }
+
         /// <inheritdoc/>
         protected override void OnInitialized()
         {
@@ -75,13 +79,21 @@ namespace HealthGateway.Admin.Client.Pages
         /// <inheritdoc/>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (firstRender)
+            if (this.PendingSearchInputEventSubscribe)
             {
-                await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+                await this.KeyInterceptorService.SubscribeAsync(
                     "query-controls",
-                    "query-input",
-                    IKeyInterceptorService.EnterKey,
+                    new("query-input", new KeyOptions("Enter", true)),
                     _ => this.GetUserAccessAsync());
+
+                this.PendingSearchInputEventSubscribe = false;
+            }
+
+            if (this.PendingSearchInputEventUnsubscribe)
+            {
+                await this.KeyInterceptorService.UnsubscribeAsync("query-controls");
+
+                this.PendingSearchInputEventUnsubscribe = false;
             }
 
             await base.OnAfterRenderAsync(firstRender);
@@ -92,7 +104,7 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (disposing)
             {
-                this.KeyInterceptorService.Dispose();
+                await this.KeyInterceptorService.UnsubscribeAsync("query-controls");
             }
 
             await base.DisposeAsyncCore(disposing);
@@ -112,6 +124,22 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.Dispatcher.Dispatch(new BetaAccessActions.GetUserAccessAction { Email = StringManipulator.StripWhitespace(this.QueryParameter) });
+            }
+        }
+
+        /// <summary>
+        /// Registers or unregisters an event handler for the keydown event on the Search tab's input field.
+        /// </summary>
+        private void OnTabChanged(int index)
+        {
+            if (index == 1)
+            {
+                // Search
+                this.PendingSearchInputEventSubscribe = true;
+            }
+            else
+            {
+                this.PendingSearchInputEventUnsubscribe = true;
             }
         }
     }

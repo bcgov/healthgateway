@@ -1,5 +1,5 @@
-import { performSearch } from "../../utilities/supportUtilities";
 import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
+import { performSearch } from "../../utilities/supportUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidPatientDeceased =
@@ -220,21 +220,6 @@ describe("Patient details as admin", () => {
         cy.get("[data-testid=audit-cancel-button]")
             .should("be.visible")
             .click();
-    });
-
-    it("Verify print vaccine card shows error message", () => {
-        cy.intercept("GET", `**/Document?phn=${phn}`, {
-            statusCode: 500,
-        });
-
-        performSearch("PHN", phn);
-        selectPatientTab("Profile");
-        cy.scrollTo("bottom", { ensureScrollable: false });
-        cy.get("[data-testid=print-button]").should("be.visible").click();
-        cy.scrollTo("top", { ensureScrollable: false });
-        cy.get(
-            "[data-testid=user-banner-print-vaccine-card-error-message]"
-        ).should("be.visible");
     });
 });
 

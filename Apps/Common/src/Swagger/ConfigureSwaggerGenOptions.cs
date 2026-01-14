@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Swagger
     using Asp.Versioning.ApiExplorer;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
-    using Microsoft.OpenApi.Models;
+    using Microsoft.OpenApi;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
     /// <inheritdoc/>
@@ -55,7 +55,6 @@ namespace HealthGateway.Common.Swagger
         /// <inheritdoc/>
         public void Configure(SwaggerGenOptions options)
         {
-            options.OperationFilter<SwaggerDefaultValues>();
             options.IgnoreObsoleteActions();
             options.IgnoreObsoleteProperties();
 

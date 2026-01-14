@@ -1,3 +1,5 @@
+import { KeycloakUserInfo } from "keycloak-js";
+
 import { BetaFeature } from "@/constants/betaFeature";
 import { DataSource } from "@/constants/dataSource";
 import { Dictionary } from "@/models/baseTypes";
@@ -23,7 +25,7 @@ export default class User {
     public betaFeatures: BetaFeature[] = [];
 }
 
-export interface OidcUserInfo {
+export interface OidcUserInfo extends KeycloakUserInfo {
     email_verified: string;
     family_name: string;
     given_name: string;

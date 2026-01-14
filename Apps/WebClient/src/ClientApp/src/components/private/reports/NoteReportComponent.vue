@@ -18,7 +18,7 @@ import DateSortUtility from "@/utility/dateSortUtility";
 interface Props {
     hdid: string;
     filter: ReportFilter;
-    isDependent: boolean;
+    isDependent?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     isDependent: false,

@@ -10,7 +10,6 @@
     <ItemGroup>
         <PackageReference Include="libphonenumber-csharp" Version="9.0.20" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />

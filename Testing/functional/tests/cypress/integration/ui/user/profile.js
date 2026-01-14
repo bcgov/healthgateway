@@ -63,7 +63,7 @@ describe("User Profile", () => {
         );
         cy.readFile(
             "cypress/fixtures/UserProfileService/userProfile.json",
-            (err, data) => {
+            (err, _data) => {
                 if (err) {
                     throw err;
                 }
@@ -163,7 +163,7 @@ describe("User Profile", () => {
         cy.get("[data-testid=smsOptOutMessage]").should("be.visible");
         cy.readFile(
             "cypress/fixtures/UserProfileService/userProfile.json",
-            (err, data) => {
+            (err, _data) => {
                 if (err) {
                     throw err;
                 }

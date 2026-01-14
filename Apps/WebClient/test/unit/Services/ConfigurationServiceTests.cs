@@ -208,7 +208,7 @@ namespace HealthGateway.WebClientTests.Services
                             new NotificationCentreSettings(true),
                             new TimelineSettings(true),
                             GetFeatureDatasetSettings(),
-                            new Covid19Settings(true, new PublicCovid19Settings(true), new ProofOfVaccinationSettings(false)),
+                            new Covid19Settings(true, new PublicCovid19Settings(true, true), new ProofOfVaccinationSettings(false)),
                             new DependentsSettings(true, true, [new("note", false)]),
                             new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]))
                         : null,

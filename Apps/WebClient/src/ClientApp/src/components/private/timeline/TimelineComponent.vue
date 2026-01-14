@@ -432,7 +432,7 @@ function datasetIsLoading(entryType: EntryType): boolean {
     }
 }
 
-function fetchDataset(entryType: EntryType): Promise<any> {
+function fetchDataset(entryType: EntryType): Promise<unknown> {
     switch (entryType) {
         case EntryType.ClinicalDocument:
             return clinicalDocumentStore.retrieveClinicalDocuments(props.hdid);
@@ -461,11 +461,11 @@ function fetchDataset(entryType: EntryType): Promise<any> {
     }
 }
 
-function fetchTimelineData(): Promise<any> {
+function fetchTimelineData(): Promise<unknown> {
     const blockedEntryTypes: EntryType[] = [];
     const patientDataEntryTypes = [...entryTypeToPatientDataTypeMap.keys()];
     const patientDataEntryTypesToRequest = [];
-    const promises: Promise<any>[] = [];
+    const promises: Promise<unknown>[] = [];
     for (const entryType of props.entryTypes) {
         if (canAccessDataset(entryType)) {
             if (patientDataEntryTypes.includes(entryType)) {
@@ -760,7 +760,12 @@ setPageFromDate(linearDate.value);
                     <component
                         :is="getComponentForEntry(entry.type)"
                         v-for="(entry, index) in dateGroup.entries"
-                        :ref="(el: Element) => index === 0 ? setDateGroupRef(dateGroup.key, el) : undefined"
+                        :ref="
+                            (el: Element) =>
+                                index === 0
+                                    ? setDateGroupRef(dateGroup.key, el)
+                                    : undefined
+                        "
                         :key="entry.type + '-' + entry.id"
                         :datekey="dateGroup.key"
                         :entry="entry"

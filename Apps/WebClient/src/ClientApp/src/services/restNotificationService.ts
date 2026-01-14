@@ -34,9 +34,9 @@ export class RestNotificationService implements INotificationService {
         }
 
         return this.http
-            .getWithCors<Notification[]>(
-                `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`
-            )
+            .getWithCors<
+                Notification[]
+            >(`${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestNotificationService.getNotifications()`

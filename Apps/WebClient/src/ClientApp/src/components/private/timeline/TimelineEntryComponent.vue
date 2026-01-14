@@ -175,7 +175,7 @@ watch(
                                 </span>
                                 <v-icon
                                     v-if="commentCount > 0"
-                                    class="pa-2"
+                                    class="pa-1"
                                     icon="far fa-comment"
                                     size="x-small"
                                     data-testid="commentIcon"

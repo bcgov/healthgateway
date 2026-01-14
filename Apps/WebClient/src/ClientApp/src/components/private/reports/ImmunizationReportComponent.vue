@@ -12,7 +12,7 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import { Action, Destination, Origin, Text } from "@/plugins/extensions";
+import { Action, Destination, Origin, Text, Type } from "@/plugins/extensions";
 import {
     ILogger,
     IReportService,
@@ -191,12 +191,13 @@ function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value && isRecommendationEmpty.value);
 }
 
-function trackLink(href: string, destination: Destination) {
+function trackLink(href: string, text: Text, destination: Destination) {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.ExternalLink,
+        action: Action.ExternalLink,
+        text: text,
         destination: destination,
-        origin: Origin.Exports,
+        origin: Origin.Download,
+        type: Type.Immunizations,
     });
     window.open(href, "_blank", "noopener");
 }
@@ -230,8 +231,28 @@ immunizationStore
         >
             <template v-if="!hideImmunizations">
                 <h4 class="text-h6 font-weight-bold mb-2">
-                    Immunization History
+                    Immunization Record
                 </h4>
+                <p>
+                    Health Gateway shows immunizations from public health
+                    clinics and pharmacies in B.C. If you got vaccinated at a
+                    pharmacy, try searching your medications, too.
+                </p>
+                <p>
+                    You can add or update immunizations by visiting
+                    <a
+                        href="https://www.immunizationrecord.gov.bc.ca/"
+                        class="text-link"
+                        @click.prevent="
+                            trackLink(
+                                'https://www.immunizationrecord.gov.bc.ca/',
+                                Text.ImmunizationRecordDownload,
+                                Destination.ImmunizationRecordBC
+                            )
+                        "
+                        >immunizationrecord.gov.bc.ca</a
+                    >.
+                </p>
                 <p v-if="isEmpty && !isLoading">No records found.</p>
                 <HgDataTableComponent
                     v-if="!isEmpty || isLoading"
@@ -284,11 +305,11 @@ immunizationStore
                             @click.prevent="
                                 trackLink(
                                     'https://www.healthlinkbc.ca/health-library/immunizations/schedules',
-                                    Destination.PublicHealthImmunizationSchedule
+                                    Text.BcVaccineSchedule,
+                                    Destination.ImmunizationSchedule
                                 )
                             "
-                        >
-                            BC Vaccine Schedule</a
+                            >BC Vaccine Schedule</a
                         >. For more information, please visit
                         <a
                             href="https://www.healthlinkbc.ca/health-library/immunizations"
@@ -296,11 +317,11 @@ immunizationStore
                             @click.prevent="
                                 trackLink(
                                     'https://www.healthlinkbc.ca/health-library/immunizations',
-                                    Destination.BcGovImmunizations
+                                    Text.ImmunizationsHealthLinkBC,
+                                    Destination.ImmunizationsHealthLinkBC
                                 )
                             "
-                        >
-                            Immunizations | HealthLink BC</a
+                            >Immunizations | HealthLink BC</a
                         >.
                     </p>
                 </template>

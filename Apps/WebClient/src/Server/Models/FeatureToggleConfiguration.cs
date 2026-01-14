@@ -41,6 +41,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// </summary>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
     /// <param name="ShowRecommendationsLink">Toggles vaccination recommendation link.</param>
+    /// <param name="ShowImmunizationRecordLink">Toggles immunization record link.</param>
     /// <param name="OtherRecordSources">Settings for other record sources features.</param>
     public record HomepageSettings(
         bool ShowFederalProofOfVaccination,
@@ -85,8 +86,10 @@ namespace HealthGateway.WebClient.Server.Models
     /// <summary>
     /// Settings for public covid19 feature.
     /// </summary>
+    /// <param name="VaccineCardEnabled">Toggles vaccine card page.</param>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
     public record PublicCovid19Settings(
+        bool VaccineCardEnabled,
         bool ShowFederalProofOfVaccination);
 
     /// <summary>

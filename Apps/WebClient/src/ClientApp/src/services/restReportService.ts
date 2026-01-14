@@ -27,10 +27,9 @@ export class RestReportService implements IReportService {
         reportRequest: ReportRequest
     ): Promise<RequestResult<Report>> {
         return this.http
-            .post<RequestResult<Report>>(
-                `${this.baseUri}${this.REPORT_BASE_URI}`,
-                reportRequest
-            )
+            .post<
+                RequestResult<Report>
+            >(`${this.baseUri}${this.REPORT_BASE_URI}`, reportRequest)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestReportService.generateReport()`

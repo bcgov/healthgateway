@@ -254,7 +254,7 @@ function openExternalLink(type: string, url?: string) {
             <v-col
                 xs="false"
                 lg="7"
-                class="d-none d-lg-block text-center col-7"
+                class="d-none d-lg-block text-center col-7 pa-0"
             >
                 <v-img
                     src="@/assets/images/landing/landing-top.png"

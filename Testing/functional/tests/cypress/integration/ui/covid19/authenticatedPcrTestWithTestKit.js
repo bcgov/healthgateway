@@ -1,9 +1,9 @@
 import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 import {
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
-import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const pcrTestUrl = "/pcrtest/222BAAB1-8C6E-4FA1-86ED-C4E3517A16A2";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
