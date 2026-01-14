@@ -249,7 +249,7 @@ function handleClickHealthRecords(): void {
         origin: Origin.Home,
         destination: Destination.HealthRecords,
         type: Type.HomeTile,
-        url: InternalUrl.HealthRecords,
+        url: InternalUrl.Timeline,
     });
     router.push({ path: "/timeline" });
 }
@@ -288,7 +288,7 @@ function handleClickOrganDonorCard(): void {
         origin: Origin.Home,
         destination: Destination.Services,
         type: Type.HomeTile,
-        url: InternalUrl.OrganDonor,
+        url: InternalUrl.Services,
     });
     router.push({ path: "/services" });
 }
@@ -399,7 +399,7 @@ function handleClickQuickLink(index: number): void {
             destination: `${EventDataUtility.getDataset(
                 detailsCollection[0].type
             )} Timeline`,
-            url: InternalUrl.QuickLink,
+            url: InternalUrl.Timeline,
         });
     }
 
