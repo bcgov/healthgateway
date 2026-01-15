@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-const defaultTimeout = 60000;
+const defaultTimeout = 60001;
 
 describe("Need to accept terms of service", () => {
     it("Validate accept terms of service", () => {
