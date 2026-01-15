@@ -7,8 +7,10 @@ pr:
   paths:
     include:
       - Apps/Admin
-#      - Apps/Common
-#      - Apps/Database
+    #      - Apps/Common
+    #      - Apps/Database
+    exclude:
+      - Apps/Admin/Tests/Functional
 
 trigger: none
 
