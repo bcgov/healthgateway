@@ -6,7 +6,7 @@ const phnWithValidDoses = "9042146714";
 const phnWithInvalidDoses = "9735352535";
 const phnWithBlockedImmunizations = "9873659643";
 const switchName = "Immunization";
-const defaultTimeout = 60001;
+const defaultTimeout = 60000;
 
 function setupPatientDetailsAliases() {
     cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
