@@ -21,20 +21,21 @@ namespace HealthGateway.WebClient.Server.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Redirects Salesforce requests to the correct HG endpoint.
+    /// Redirects requests for deprecated routes to the correct HG endpoint.
     /// </summary>
+    [Route("/")]
     public class RedirectController : Controller
     {
         /// <summary>
-        /// Redirects the URL to the correct Health Gateway endpoint.
+        /// Redirects Salesforce routes to the correct Health Gateway endpoint.
         /// </summary>
-        /// <param name="oldPath">The path under /s that we want to redirect.</param>
+        /// <param name="oldPath">The path segment after /s/ that we want to redirect.</param>
         /// <returns>A redirect.</returns>
-        [Route("/s/{oldPath}")]
+        [Route("s/{oldPath}")]
         [Produces(MediaTypeNames.Text.Plain)]
         [ApiExplorerSettings(IgnoreApi = true)]
         [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Deferred")]
-        public ActionResult MapRedirect(string oldPath)
+        public ActionResult MapSalesforceRedirect(string oldPath)
         {
             string baseUrl = $"{this.Request.Scheme}://{this.Request.Host}";
 

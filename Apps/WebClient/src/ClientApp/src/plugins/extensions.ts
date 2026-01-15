@@ -268,7 +268,7 @@ export const enum ExternalUrl {
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
     HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
-    OrganDonorRegistration = "http://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
+    OrganDonorRegistration = "https://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
     ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
     SupportGuide = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
     TermsOfService = "https://www.healthgateway.gov.bc.ca/termsOfService",
@@ -284,7 +284,4 @@ export const enum InternalUrl {
     Registration = "./Registration",
     Reports = "./reports",
     Services = "./services",
-    HealthRecords = Timeline,
-    OrganDonor = Services,
-    QuickLink = Timeline,
 }
