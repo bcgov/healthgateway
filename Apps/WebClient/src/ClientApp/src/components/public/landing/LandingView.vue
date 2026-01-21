@@ -578,7 +578,7 @@ function openExternalLink(type: string, url?: string) {
                             not all.
                         </p>
                         <a
-                            :href="ExternalUrl.YourHealthInformationUrl"
+                            :href="ExternalUrl.YourHealthInformation"
                             target="_blank"
                             rel="noopener"
                             class="text-link"
@@ -589,7 +589,7 @@ function openExternalLink(type: string, url?: string) {
                                     origin: Origin.Landing,
                                     destination: Destination.SupportGuide,
                                     type: Type.Landing,
-                                    url: ExternalUrl.YourHealthInformationUrl,
+                                    url: ExternalUrl.YourHealthInformation,
                                 })
                             "
                         >
