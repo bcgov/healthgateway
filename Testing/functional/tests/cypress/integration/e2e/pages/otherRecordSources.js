@@ -4,14 +4,14 @@ const PATH = "/otherRecordSources";
 const UNAUTHORIZED_URL = "/unauthorized";
 
 const LINK_CASES = {
-    AccessMyHealth: "https://www.phsa.ca/",
+    AccessMyHealth: "https://dev.vpp.patientportal.ca-1.healtheintent.com/",
     MyHealth:
         "https://www.islandhealth.ca/our-services/virtual-care-services/myhealth",
     MyHealthPortal: "https://www.interiorhealth.ca/myhealthportal",
     HealthElife:
         "https://www.northernhealth.ca/services/digital-health/healthelife",
     MyHealthKey:
-        "https://www.northernhealth.ca/services/digital-health/healthelife",
+        "https://www.northernhealth.ca/services/digital-health/myhealthkey",
     FraserHealth:
         "https://www.fraserhealth.ca/patients-and-visitors/request-a-health-record",
 };
