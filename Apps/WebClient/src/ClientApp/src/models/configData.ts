@@ -44,6 +44,8 @@ export interface WebClientConfiguration {
     logLevel: string;
     // Gets or sets the Webclient timeout values.
     timeouts: TimeOutsConfiguration;
+    // Gets or sets the URL for the Access My Health portal.
+    accessMyHealthUrl?: string;
     // Gets or sets the URL for the beta application.
     betaUrl?: string;
     // Gets or sets the ExternalURLs used by the Webclient.

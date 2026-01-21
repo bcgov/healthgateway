@@ -40,6 +40,11 @@ namespace HealthGateway.WebClient.Server.Models
         public TimeOutsConfiguration Timeouts { get; set; } = new();
 
         /// <summary>
+        /// Gets or sets the URL for the Access My Health portal.
+        /// </summary>
+        public Uri? AccessMyHealthUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the URL for the beta application.
         /// </summary>
         public Uri? BetaUrl { get; set; }
