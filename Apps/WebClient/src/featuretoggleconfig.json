@@ -4,11 +4,11 @@
         "showRecommendationsLink": false,
         "showImmunizationRecordLink": true,
         "otherRecordSources": {
-            "enabled": false,
+            "enabled": true,
             "sources": [
                 {
                     "name": "accessMyHealth",
-                    "enabled": false
+                    "enabled": true
                 }
             ]
         }

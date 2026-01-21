@@ -89,55 +89,55 @@ const ALL_TILES = [
         type: AccessLinkType.AccessMyHealth,
         name: "AccessMyHealth",
         description:
-            "Check your health records from care received through Provincial Health Services, Vancouver Coastal Health, or Providence Health. This includes visit summaries, test results and more.",
-        link: "https://www.phsa.ca/",
+            "Find health records from care received at Vancouver Coastal Health, Providence Health Care and Provincial Health Services Authority. This may include upcoming appointments, lab results, imaging reports, clinical notes and more.",
         logoUri: new URL(
             "@/assets/images/home/other/access-my-health.svg",
             import.meta.url
         ).href,
-        linkText: "Open Access My Health",
+        linkText: "Open AccessMyHealth",
+        bottomText: "You won’t need to log in again",
         active: true,
     },
     {
         section: TileSection.OtherRecordSources,
         type: AccessLinkType.MyHealth,
-        name: "My Health",
+        name: "MyHealth",
         description:
-            "Find health records from care received at Island Health facilities across Vancouver Island and Gulf Islands.  This may include diagnostics results, upcoming appointments, and provider-authored notes.",
+            "Find health records from care received at Island Health facilities across Vancouver Island and Gulf Islands.  This may include diagnostic results, upcoming appointments, and provider-authored notes.",
         link: "https://www.islandhealth.ca/our-services/virtual-care-services/myhealth",
         logoUri: new URL(
             "@/assets/images/home/other/island-health.svg",
             import.meta.url
         ).href,
-        linkText: "Go to MyHeath",
+        linkText: "Go to MyHealth",
         active: true,
     },
     {
         section: TileSection.OtherRecordSources,
         type: AccessLinkType.MyHealthPortal,
-        name: "MyHealth Portal",
+        name: "MyHealthPortal",
         description:
-            "Find records from care you received in Kelowna, Kamloops, or other areas in the BC Interior. This may include lab results, diagnostic imaging reports, provider reports, appointment details and visit history.",
+            "Find records from care received in Kelowna, Kamloops, or other areas in the B.C. Interior. This may include lab results, diagnostic imaging reports, provider reports, appointment details and visit history.",
         link: "https://www.interiorhealth.ca/myhealthportal",
         logoUri: new URL(
             "@/assets/images/home/other/interior-health.svg",
             import.meta.url
         ).href,
-        linkText: "Go to MyHealth Portal",
+        linkText: "Go to MyHealthPortal",
         active: true,
     },
     {
         section: TileSection.OtherRecordSources,
         type: AccessLinkType.HealthElife,
-        name: "Health Elife",
+        name: "HealthElife",
         description:
-            "Find records from care you received at a Northern Health hospital or urgent care centre. This may include lab results, imaging reports, visit summaries, and upcoming appointments.",
+            "Find records from care received at a Northern Health hospital or urgent care centre. This may include lab results, imaging reports, visit summaries, and upcoming appointments.",
         link: "https://www.northernhealth.ca/services/digital-health/healthelife",
         logoUri: new URL(
             "@/assets/images/home/other/northern-health.svg",
             import.meta.url
         ).href,
-        linkText: "Go to HealthEfile",
+        linkText: "Go to HealthElife",
         active: true,
     },
     {
@@ -145,8 +145,8 @@ const ALL_TILES = [
         type: AccessLinkType.MyHealthKey,
         name: "myhealthkey",
         description:
-            "Find records from care you received at a Northern Health primary care clinic, such as a family doctor or nurse practitioner. This may include appointment bookings, visit notes, and lab shared with your provider.",
-        link: "https://www.northernhealth.ca/services/digital-health/healthelife",
+            "Find records from care received at a Northern Health primary care clinic, such as a family doctor or nurse practitioner. This may include appointment bookings, visit notes, and reports shared with your provider.",
+        link: "https://www.northernhealth.ca/services/digital-health/myhealthkey",
         logoUri: new URL(
             "@/assets/images/home/other/northern-health.svg",
             import.meta.url
