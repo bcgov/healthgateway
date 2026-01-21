@@ -295,10 +295,12 @@ function handleClickOrganDonorCard(): void {
 
 function handleClickOtherRecordSources(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.ExternalLink,
-        destination: Destination.OtherRecordSources,
+        action: Action.InternalLink,
+        text: Text.OtherRecordSources,
         origin: Origin.Home,
+        destination: Destination.RecordSources,
+        type: Type.HomeTile,
+        url: InternalUrl.OtherRecordSources,
     });
     router.push({ path: "/otherRecordSources" });
 }

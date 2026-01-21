@@ -9,9 +9,30 @@ import {
     getOtherRecordSourcesLinks,
 } from "@/constants/accessLinks";
 import { CardName } from "@/constants/cardName";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import { InfoTile } from "@/models/infoTile";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    Origin,
+    ResourceLinkDestination,
+    ResourceLinkText,
+    ResourceLinkType,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
+import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
 import { useGrid } from "@/utility/useGrid";
+
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -23,6 +44,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
 ];
 
 const { columns } = useGrid();
+
+const configStore = useConfigStore();
+
+const webClientConfig = computed(() => configStore.webConfig);
 
 const showAccessMyHealthCard = computed(() =>
     ConfigUtil.isOtherRecordSourcesCardEnabled(CardName.AccessMyHealth)
@@ -36,28 +61,41 @@ const otherRecordSourcesLinks = computed(() => {
             : true
     );
 });
+
+function trackOtherRecordSourceClick(tile: InfoTile) {
+    const resourceLinkType = tile.type as ResourceLinkType;
+
+    if (!(resourceLinkType in ResourceLinkText)) {
+        logger.warn(
+            `openExternalLink: unsupported resource link type: ${tile.type}`
+        );
+        return;
+    }
+
+    trackingService.trackEvent({
+        action: Action.ExternalLink,
+        text: ResourceLinkText[resourceLinkType],
+        origin: Origin.Landing,
+        destination: ResourceLinkDestination[resourceLinkType],
+        type: Type.RecordSourceTile,
+        url:
+            tile.type === AccessLinkType.AccessMyHealth
+                ? webClientConfig.value.accessMyHealthUrl
+                : tile.link,
+    });
+}
 </script>
 
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
     <PageTitleComponent title="Other record sources" />
     <p>
-        Your digital health record starts at the place where you get care.
         Health Gateway helps bring your records together in one place. It
-        connects to many record sources, but not all. If your records aren’t
-        showing up in Health Gateway, they may be available through other
-        trusted websites. Not sure where to go?
-        <a
-            href="https://www.healthlinkbc.ca/health-library/health-features/your-health-information"
-            target="_blank"
-            rel="noopener"
-            class="text-link"
-        >
-            Learn more about where your records can be found besides Health
-            Gateway </a
-        >.
+        connects to many record sources, but not all. Included below are trusted
+        regional patient websites where you can find more records and health
+        services.
     </p>
-    <div class="mt-6 mt-md-8">
+    <div class="mt-4 mt-md-6">
         <v-row>
             <v-col
                 v-for="tile in otherRecordSourcesLinks"
@@ -84,12 +122,45 @@ const otherRecordSourcesLinks = computed(() => {
                             rel="noopener"
                             target="_blank"
                             class="text-link"
-                            :href="tile.link"
+                            :href="
+                                tile.type === AccessLinkType.AccessMyHealth
+                                    ? webClientConfig.accessMyHealthUrl
+                                    : tile.link
+                            "
                             :data-testid="`other-record-sources-link-${tile.type}`"
+                            @click="trackOtherRecordSourceClick(tile)"
                             >{{ tile.linkText }}</a
                         >
+                        <div
+                            v-if="tile.bottomText"
+                            class="text-body-2 font-weight-bold mt-2"
+                        >
+                            {{ tile.bottomText }}
+                        </div>
                     </div>
                 </HgCardComponent>
+            </v-col>
+        </v-row>
+        <v-row class="mt-6">
+            <v-col cols="12" class="pt-2 text-body-2">
+                For more information on these websites and more
+                <a
+                    :href="ExternalUrl.YourHealthInformation"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.ExternalLink,
+                            text: Text.HealthLinkBC,
+                            origin: Origin.RecordSources,
+                            destination: Destination.HealthLinkBC,
+                            url: ExternalUrl.YourHealthInformation,
+                        })
+                    "
+                >
+                    visit HealthLink BC </a
+                >.
             </v-col>
         </v-row>
     </div>
