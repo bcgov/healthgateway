@@ -62,7 +62,12 @@ const otherRecordSourcesLinks = computed(() => {
     );
 });
 
-function trackOtherRecordSourceClick(tile: InfoTile) {
+function handleRecordSourceCardClick(tile: InfoTile): void {
+    trackRecordSourceLinkClick(tile, Action.CardClick);
+    window.open(tile.link, undefined, "noopener");
+}
+
+function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
     const resourceLinkType = tile.type as ResourceLinkType;
 
     if (!(resourceLinkType in ResourceLinkText)) {
@@ -73,7 +78,7 @@ function trackOtherRecordSourceClick(tile: InfoTile) {
     }
 
     trackingService.trackEvent({
-        action: Action.ExternalLink,
+        action: action,
         text: ResourceLinkText[resourceLinkType],
         origin: Origin.OtherRecordSources,
         destination: ResourceLinkDestination[resourceLinkType],
@@ -112,6 +117,7 @@ function trackOtherRecordSourceClick(tile: InfoTile) {
                     fill-body
                     :title="tile.name"
                     :data-testid="`other-record-sources-card-${tile.type}`"
+                    @click="handleRecordSourceCardClick(tile)"
                 >
                     <template #icon>
                         <img v-if="tile.logoUri" :src="tile.logoUri" />
@@ -128,7 +134,12 @@ function trackOtherRecordSourceClick(tile: InfoTile) {
                                     : tile.link
                             "
                             :data-testid="`other-record-sources-link-${tile.type}`"
-                            @click="trackOtherRecordSourceClick(tile)"
+                            @click.stop="
+                                trackRecordSourceLinkClick(
+                                    tile,
+                                    Action.ExternalLink
+                                )
+                            "
                             >{{ tile.linkText }}</a
                         >
                         <div
