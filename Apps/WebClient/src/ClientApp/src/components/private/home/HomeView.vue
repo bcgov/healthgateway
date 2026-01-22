@@ -777,8 +777,9 @@ watch(vaccineRecordState, () => {
                             </div>
                             <p class="text-body-1 mb-0">
                                 Some health records may not appear in Health
-                                Gateway. Learn about other trusted websites to
-                                find where your records may be.
+                                Gateway. Learn about other trusted regional
+                                patient websites to help you find your health
+                                records.
                             </p>
                         </div>
                     </div>
