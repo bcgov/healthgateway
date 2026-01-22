@@ -28,6 +28,7 @@ export const enum Action {
     View = "View",
     Visit = "Visit",
     ButtonClick = "button_click",
+    CardClick = "card_click",
     Download = "download",
     Email = "email",
     InternalLink = "internal_link",

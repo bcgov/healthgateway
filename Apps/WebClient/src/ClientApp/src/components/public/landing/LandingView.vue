@@ -185,26 +185,26 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
     }
 }
 
-function openExternalLink(type: string, url?: string) {
-    if (!url) return;
-    window.open(url, "_blank", "noopener");
+function openExternalLink(tile: InfoTile, action: Action) {
+    if (!tile.link) return;
+    window.open(tile.link, "_blank", "noopener");
 
-    const landingAccessLinkType = type as LandingAccessLinkType;
+    const landingAccessLinkType = tile.type as LandingAccessLinkType;
 
     if (!(landingAccessLinkType in LandingAccessLinkText)) {
         logger.warn(
-            `openExternalLink: unsupported landing access link type: ${type}`
+            `openExternalLink: unsupported landing access link type: ${tile.type}`
         );
         return;
     }
 
     trackingService.trackEvent({
-        action: Action.ExternalLink,
+        action: action,
         text: LandingAccessLinkText[landingAccessLinkType],
         origin: Origin.Landing,
         destination: LandingAccessLinkDestination[landingAccessLinkType],
         type: Type.Landing,
-        url: url,
+        url: tile.link,
     });
 }
 </script>
@@ -506,6 +506,7 @@ function openExternalLink(type: string, url?: string) {
                             smAndDown ? 'pb-12' : 'pb-6',
                         ]"
                         :data-testid="`mobile-access-card-${tile.type}`"
+                        @click="openExternalLink(tile, Action.CardClick)"
                     >
                         <div
                             class="flex-grow-1"
@@ -514,7 +515,7 @@ function openExternalLink(type: string, url?: string) {
                             <TileComponent :tile="tile" />
                         </div>
                         <v-card-actions
-                            class="justify-center"
+                            class="justify-center no-card-press-zone"
                             :class="xs ? 'pb-1' : 'pb-0'"
                         >
                             <HgButtonComponent
@@ -523,7 +524,9 @@ function openExternalLink(type: string, url?: string) {
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.type, tile.link)"
+                                @click.stop="
+                                    openExternalLink(tile, Action.ExternalLink)
+                                "
                             />
                         </v-card-actions>
                     </v-card>
@@ -543,18 +546,23 @@ function openExternalLink(type: string, url?: string) {
                         rounded="md"
                         class="h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm"
                         :data-testid="`access-card-${tile.type}`"
+                        @click="openExternalLink(tile, Action.CardClick)"
                     >
                         <div class="flex-grow-1">
                             <TileComponent :tile="tile" />
                         </div>
-                        <v-card-actions class="justify-center pt-4">
+                        <v-card-actions
+                            class="justify-center pt-4 no-card-press-zone"
+                        >
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.type, tile.link)"
+                                @click.stop="
+                                    openExternalLink(tile, Action.ExternalLink)
+                                "
                             />
                         </v-card-actions>
                     </v-card>
@@ -639,6 +647,7 @@ function openExternalLink(type: string, url?: string) {
                             smAndDown ? 'pb-12' : 'pb-6',
                         ]"
                         :data-testid="`mobile-health-services-card-${tile.type}`"
+                        @click="openExternalLink(tile, Action.CardClick)"
                     >
                         <div
                             class="flex-grow-1"
@@ -647,7 +656,7 @@ function openExternalLink(type: string, url?: string) {
                             <TileComponent :tile="tile" />
                         </div>
                         <v-card-actions
-                            class="justify-center"
+                            class="justify-center no-card-press-zone"
                             :class="xs ? 'pb-1' : 'pb-0'"
                         >
                             <HgButtonComponent
@@ -656,7 +665,9 @@ function openExternalLink(type: string, url?: string) {
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`mobile-read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.type, tile.link)"
+                                @click.stop="
+                                    openExternalLink(tile, Action.ExternalLink)
+                                "
                             />
                         </v-card-actions>
                     </v-card>
@@ -676,18 +687,23 @@ function openExternalLink(type: string, url?: string) {
                         rounded="md"
                         class="h-100 d-flex flex-column text-start pa-5 pa-lg-4 border-sm"
                         :data-testid="`managed-health-card-${tile.type}`"
+                        @click="openExternalLink(tile, Action.CardClick)"
                     >
                         <div class="flex-grow-1">
                             <TileComponent :tile="tile" />
                         </div>
-                        <v-card-actions class="justify-center pt-4">
+                        <v-card-actions
+                            class="justify-center pt-4 no-card-press-zone"
+                        >
                             <HgButtonComponent
                                 text="Read more"
                                 variant="secondary"
                                 :uppercase="false"
                                 :aria-label="`Read more about ${tile.name}`"
                                 :data-testid="`read-more-button-${tile.type}`"
-                                @click="openExternalLink(tile.type, tile.link)"
+                                @click.stop="
+                                    openExternalLink(tile, Action.ExternalLink)
+                                "
                             />
                         </v-card-actions>
                     </v-card>
@@ -718,5 +734,12 @@ function openExternalLink(type: string, url?: string) {
     &.device-preview-md {
         max-height: 412px;
     }
+}
+
+:deep(.v-card:has(.no-card-press-zone :active) .v-card__overlay),
+:deep(.v-card:has(.no-card-press-zone :active) .v-card__underlay),
+:deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__overlay),
+:deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__underlay) {
+    opacity: 0 !important;
 }
 </style>
