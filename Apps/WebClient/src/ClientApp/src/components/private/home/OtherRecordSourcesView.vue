@@ -75,7 +75,7 @@ function trackOtherRecordSourceClick(tile: InfoTile) {
     trackingService.trackEvent({
         action: Action.ExternalLink,
         text: ResourceLinkText[resourceLinkType],
-        origin: Origin.RecordSources,
+        origin: Origin.OtherRecordSources,
         destination: ResourceLinkDestination[resourceLinkType],
         type: Type.RecordSourceTile,
         url:
@@ -153,7 +153,7 @@ function trackOtherRecordSourceClick(tile: InfoTile) {
                         trackingService.trackEvent({
                             action: Action.ExternalLink,
                             text: Text.HealthLinkBC,
-                            origin: Origin.RecordSources,
+                            origin: Origin.OtherRecordSources,
                             destination: Destination.HealthLinkBC,
                             url: ExternalUrl.YourHealthInformation,
                         })
