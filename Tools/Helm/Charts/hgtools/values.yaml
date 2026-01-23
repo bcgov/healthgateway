@@ -17,12 +17,9 @@ vault:
   authPath: auth/k8s-gold
   engine: nonprod
 
-
 images:
   webclient:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/webclient
-  landing:
-    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/landing
   gatewayapi:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/gatewayapi
   patient:
