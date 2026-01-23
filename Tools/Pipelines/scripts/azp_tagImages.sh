@@ -16,7 +16,6 @@ else
 fi
 
 oc tag ${ImageRepo}webclient:${RELEASE_ARTIFACTS_WEBCLIENTIMAGE_BUILDNUMBER} webclient:$tag
-oc tag ${ImageRepo}landing:${RELEASE_ARTIFACTS_LANDINGIMAGE_BUILDNUMBER} landing:$tag
 oc tag ${ImageRepo}admin:${RELEASE_ARTIFACTS_ADMINBLAZORIMAGE_BUILDNUMBER} admin:$tag
 oc tag ${ImageRepo}clinicaldocument:${RELEASE_ARTIFACTS_CLINICALDOCUMENTIMAGE_BUILDNUMBER} clinicaldocument:$tag
 oc tag ${ImageRepo}encounter:${RELEASE_ARTIFACTS_ENCOUNTERSERVICEIMAGE_BUILDNUMBER} encounter:$tag
