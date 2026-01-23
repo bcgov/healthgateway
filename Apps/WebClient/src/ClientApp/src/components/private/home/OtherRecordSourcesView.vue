@@ -63,8 +63,16 @@ const otherRecordSourcesLinks = computed(() => {
 });
 
 function handleRecordSourceCardClick(tile: InfoTile): void {
+    const url =
+        tile.type === AccessLinkType.AccessMyHealth
+            ? webClientConfig.value.accessMyHealthUrl
+            : tile.link;
+
+    if (!url) return;
+
+    window.open(url, "_blank", "noopener");
+
     trackRecordSourceLinkClick(tile, Action.CardClick);
-    window.open(tile.link, undefined, "noopener");
 }
 
 function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
