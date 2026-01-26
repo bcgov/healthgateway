@@ -99,11 +99,6 @@ const showFederalCardButton = computed(
         configStore.webConfig.featureToggleConfiguration.homepage
             .showFederalProofOfVaccination
 );
-const preferenceVaccineCardHidden = computed(
-    () =>
-        user.value.preferences[UserPreferenceType.HideVaccineCardQuickLink]
-            ?.value === "true"
-);
 const preferenceOrganDonorHidden = computed(
     () =>
         user.value.preferences[UserPreferenceType.HideOrganDonorQuickLink]
@@ -132,9 +127,6 @@ const showRecommendationsCardButton = computed(
             .showRecommendationsLink &&
         ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
         !preferenceRecommendationsLinkHidden.value
-);
-const showVaccineCardButton = computed(
-    () => !preferenceVaccineCardHidden.value
 );
 const showOrganDonorCardButton = computed(
     () =>
@@ -202,7 +194,6 @@ const isAddQuickLinkButtonDisabled = computed(
                 ) === undefined
         ).length === 0 &&
         !preferenceImmunizationRecordHidden.value &&
-        !preferenceVaccineCardHidden.value &&
         !preferenceOrganDonorHidden.value &&
         !preferenceHealthConnectHidden.value &&
         !preferenceRecommendationsLinkHidden.value
@@ -270,17 +261,6 @@ function handleClickImmunizationRecord(): void {
     });
 }
 
-function handleClickVaccineCard(): void {
-    trackingService.trackEvent({
-        action: Action.InternalLink,
-        text: Text.BcVaccineCard,
-        origin: Origin.Home,
-        destination: Destination.BcVaccineCard,
-        type: Type.HomeTile,
-    });
-    router.push({ path: "/covid19" });
-}
-
 function handleClickOrganDonorCard(): void {
     trackingService.trackEvent({
         action: Action.InternalLink,
@@ -332,11 +312,6 @@ function handleClickRemoveQuickLink(index: number): void {
     logger.debug("Removing quick link");
     const quickLink = enabledQuickLinks.value[index];
     removeQuickLink(quickLink);
-}
-
-function handleClickRemoveVaccineCardQuickLink(): void {
-    logger.debug("Removing vaccine card quick link");
-    setPreferenceValue(UserPreferenceType.HideVaccineCardQuickLink, "true");
 }
 
 function handleClickRemoveOrganDonorQuickLink(): void {
@@ -676,37 +651,6 @@ watch(vaccineRecordState, () => {
                 <p class="text-body-1">
                     Download and print your Federal Proof of Vaccination
                     Certificate (PVC) for domestic and international travel.
-                </p>
-            </HgCardComponent>
-        </v-col>
-        <v-col
-            v-if="showVaccineCardButton && false"
-            :cols="columns"
-            class="d-flex"
-        >
-            <HgCardComponent
-                title="BC Vaccine Card"
-                variant="outlined"
-                elevation="1"
-                border="thin grey-lighten-2"
-                data-testid="bc-vaccine-card-card"
-                class="flex-grow-1"
-                @click="handleClickVaccineCard()"
-            >
-                <template #icon>
-                    <v-icon icon="check-circle" color="success" />
-                </template>
-                <template #menu-items>
-                    <v-list-item
-                        data-testid="remove-quick-link-button"
-                        title="Remove"
-                        @click.stop="handleClickRemoveVaccineCardQuickLink()"
-                    />
-                </template>
-                <p class="text-body-1">
-                    View, download and print your BC Vaccine Card. Present this
-                    card as proof of vaccination at some BC businesses, services
-                    and events.
                 </p>
             </HgCardComponent>
         </v-col>

@@ -328,41 +328,6 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.configureSettings({});
-
-    setupStandardFixtures();
-
-    cy.intercept("PUT", "**/UserProfile/*/preference?api-version=2.0", {
-        statusCode,
-    });
-    cy.intercept("POST", "**/UserProfile/*/preference?api-version=2.0", {
-        statusCode,
-    });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/home"
-    );
-
-    cy.get("[data-testid=bc-vaccine-card-card]").within(() => {
-        cy.get("[data-testid=card-menu-button]")
-            .should("be.visible", "be.enabled")
-            .click();
-        cy.document()
-            .find("[data-testid=remove-quick-link-button]")
-            .should("be.visible")
-            .click();
-    });
-
-    if (statusCode === tooManyRequestsStatusCode) {
-        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
-    } else {
-        cy.get("[data-testid=errorBanner]").should("be.visible");
-    }
-}
-
 function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
@@ -493,11 +458,6 @@ describe("Error Alerts", () => {
         testRemoveQuickLinkError();
     });
 
-    // AB#16941 - Skip test as Vaccine Card removed from home page.
-    it.skip("Error Hiding Vaccine Card Quick Link", () => {
-        testHideVaccineCardQuickLinkError();
-    });
-
     it("Error Editing SMS Number", () => {
         testEditSmsError();
     });
@@ -537,11 +497,6 @@ describe("429 Alerts", () => {
 
     it("429 Error Removing Quick Link", () => {
         testRemoveQuickLinkError(429);
-    });
-
-    // AB#16941 - Skip test as Vaccine Card removed from home page.
-    it.skip("429 Error Hiding Vaccine Card Quick Link", () => {
-        testHideVaccineCardQuickLinkError(429);
     });
 
     it("429 Error Editing SMS Number", () => {
