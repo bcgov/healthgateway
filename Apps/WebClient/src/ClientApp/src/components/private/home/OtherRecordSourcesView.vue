@@ -162,7 +162,7 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
         </v-row>
         <v-row class="mt-6">
             <v-col cols="12" class="pt-2 text-body-2">
-                For more information on these websites and more
+                For more information on these websites and more visit
                 <a
                     :href="ExternalUrl.YourHealthInformation"
                     target="_blank"
@@ -178,7 +178,7 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
                         })
                     "
                 >
-                    visit HealthLink BC </a
+                    HealthLink BC</a
                 >.
             </v-col>
         </v-row>
