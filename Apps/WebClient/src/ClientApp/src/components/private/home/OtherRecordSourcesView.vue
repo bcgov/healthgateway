@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ref } from "vue";
 
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import ExternalLinkConfirmationDialog from "@/components/site/ExternalLinkConfirmationDialog.vue";
 import {
     AccessLinkType,
     getOtherRecordSourcesLinks,
@@ -28,6 +30,10 @@ import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
 import { useGrid } from "@/utility/useGrid";
+
+const isExternalLinkDialogOpen = ref(false);
+const pendingAction = ref<Action>(Action.CardClick);
+const pendingTile = ref<InfoTile | undefined>(undefined);
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
@@ -62,20 +68,49 @@ const otherRecordSourcesLinks = computed(() => {
     );
 });
 
-function handleRecordSourceCardClick(tile: InfoTile): void {
-    const url =
-        tile.type === AccessLinkType.AccessMyHealth
-            ? webClientConfig.value.accessMyHealthUrl
-            : tile.link;
+function cancelExternalNavigation(): void {
+    pendingTile.value = undefined;
+    isExternalLinkDialogOpen.value = false;
+}
+
+function getRecordSourceUrl(tile: InfoTile): string | undefined {
+    return tile.type === AccessLinkType.AccessMyHealth
+        ? webClientConfig.value.accessMyHealthUrl
+        : tile.link;
+}
+
+function handleRecordSourceClick(tile: InfoTile, action: Action): void {
+    // AccessMyHealth tile prompts dialog
+    if (tile.type === AccessLinkType.AccessMyHealth) {
+        pendingTile.value = tile;
+        pendingAction.value = action;
+        isExternalLinkDialogOpen.value = true;
+        return;
+    }
+
+    // All other tiles: open immediately
+    const url = getRecordSourceUrl(tile);
+    if (!url) return;
+
+    window.open(url, "_blank", "noopener");
+    trackRecordSourceClick(tile, action, url);
+}
+
+function confirmExternalNavigation(): void {
+    const tile = pendingTile.value;
+    if (!tile) return;
+
+    const url = getRecordSourceUrl(tile);
 
     if (!url) return;
 
     window.open(url, "_blank", "noopener");
+    trackRecordSourceClick(tile, pendingAction.value, url);
 
-    trackRecordSourceLinkClick(tile, Action.CardClick);
+    cancelExternalNavigation();
 }
 
-function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
+function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
     const resourceLinkType = tile.type as ResourceLinkType;
 
     if (!(resourceLinkType in ResourceLinkText)) {
@@ -91,10 +126,7 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
         origin: Origin.OtherRecordSources,
         destination: ResourceLinkDestination[resourceLinkType],
         type: Type.RecordSourceTile,
-        url:
-            tile.type === AccessLinkType.AccessMyHealth
-                ? webClientConfig.value.accessMyHealthUrl
-                : tile.link,
+        url: url,
     });
 }
 </script>
@@ -102,6 +134,18 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
     <PageTitleComponent title="Other record sources" />
+    <ExternalLinkConfirmationDialog
+        v-model="isExternalLinkDialogOpen"
+        title="Sign in with BC Services Card"
+        :body="[
+            'You can use your BC Services Card to sign into your AccessMyHealth account.',
+            'You must have at least one record in AccessMyHealth to sign in.',
+        ]"
+        confirm-label="Sign in"
+        cancel-label="Do not sign in"
+        @confirm="confirmExternalNavigation"
+        @cancel="cancelExternalNavigation"
+    />
     <p>
         Health Gateway helps bring your records together in one place. It
         connects to many record sources, but not all. Included below are trusted
@@ -125,7 +169,7 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
                     fill-body
                     :title="tile.name"
                     :data-testid="`other-record-sources-card-${tile.type}`"
-                    @click="handleRecordSourceCardClick(tile)"
+                    @click="handleRecordSourceClick(tile, Action.CardClick)"
                 >
                     <template #icon>
                         <img v-if="tile.logoUri" :src="tile.logoUri" />
@@ -133,29 +177,17 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
                     <p class="text-body-1">{{ tile.description }}</p>
                     <div class="mt-auto pt-3 text-start">
                         <a
-                            rel="noopener"
-                            target="_blank"
                             class="text-link"
-                            :href="
-                                tile.type === AccessLinkType.AccessMyHealth
-                                    ? webClientConfig.accessMyHealthUrl
-                                    : tile.link
-                            "
+                            role="link"
                             :data-testid="`other-record-sources-link-${tile.type}`"
-                            @click.stop="
-                                trackRecordSourceLinkClick(
+                            @click.prevent.stop="
+                                handleRecordSourceClick(
                                     tile,
                                     Action.ExternalLink
                                 )
                             "
                             >{{ tile.linkText }}</a
                         >
-                        <div
-                            class="text-body-2 mt-2"
-                            :class="{ 'font-weight-bold': !!tile.bottomText }"
-                        >
-                            {{ tile.bottomText ?? "\u00A0" }}
-                        </div>
                     </div>
                 </HgCardComponent>
             </v-col>
