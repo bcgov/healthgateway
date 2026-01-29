@@ -39,7 +39,9 @@ setTimeout(() => {
             You signed out of your account
         </h1>
         <p class="text-body-1">
-            It's a good idea to close all browser windows.
+            This does not sign out of any other accounts. It is recommended that
+            you sign out of all other accounts and close all browser windows to
+            protect your health information.
         </p>
     </div>
 </template>
