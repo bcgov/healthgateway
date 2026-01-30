@@ -105,6 +105,10 @@ const PcrTestKitRegistrationView = () =>
     import(
         /* webpackChunkName: "pcrTest" */ "@/components/public/pcr-test-kit-registration/PcrTestKitRegistrationView.vue"
     );
+const VppLoginView = () =>
+    import(
+        /* webpackChunkName: "vppLogin" */ "@/components/authentication/VppLoginView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -323,6 +327,13 @@ const routes = [
         component: AcceptTermsOfServiceView,
         meta: {
             validStates: [UserState.acceptTermsOfService],
+        },
+    },
+    {
+        path: Path.VppLogin,
+        component: VppLoginView,
+        meta: {
+            validStates: [UserState.unauthenticated],
         },
     },
     {

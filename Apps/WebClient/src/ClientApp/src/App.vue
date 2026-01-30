@@ -18,11 +18,13 @@ const authStore = useAuthStore();
 
 const hideErrorAlerts = computed(() => currentPathMatches(Path.Root));
 const isHeaderVisible = computed(
-    () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
+    () =>
+        !currentPathMatches(Path.LoginCallback, Path.VaccineCard, Path.VppLogin)
 );
 const isCommunicationVisible = computed(
     () =>
         !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
+        !currentPathMatches(Path.LoginCallback, Path.VppLogin) &&
         !route.path
             .toLowerCase()
             .startsWith(Path.PcrTestKitRegistration.toLowerCase())
@@ -32,7 +34,8 @@ const isFooterVisible = computed(
         !currentPathMatches(
             Path.LoginCallback,
             Path.Registration,
-            Path.VaccineCard
+            Path.VaccineCard,
+            Path.VppLogin
         )
 );
 
@@ -51,7 +54,9 @@ function currentPathMatches(...paths: string[]): boolean {
         <NotificationCentreComponent v-if="authStore.oidcIsAuthenticated" />
         <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
-            <router-view v-if="currentPathMatches(Path.VaccineCard)" />
+            <router-view
+                v-if="currentPathMatches(Path.VaccineCard, Path.VppLogin)"
+            />
             <v-container v-else fluid class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
