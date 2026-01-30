@@ -22,4 +22,5 @@ export enum Path {
     Unauthorized = "/unauthorized",
     VaccineCard = "/vaccinecard",
     ValidateEmail = "/validateEmail",
+    VppLogin = "/vppLogin",
 }
