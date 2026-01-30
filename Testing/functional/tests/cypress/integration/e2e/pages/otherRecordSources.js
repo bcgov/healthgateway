@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 
 const PATH = "/otherRecordSources";
 const UNAUTHORIZED_URL = "/unauthorized";

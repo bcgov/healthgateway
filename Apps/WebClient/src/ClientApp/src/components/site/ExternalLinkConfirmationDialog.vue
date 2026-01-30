@@ -78,12 +78,14 @@ function confirm(): void {
                 <v-card-actions class="justify-end border-t-sm px-4 py-3">
                     <HgButtonComponent
                         variant="secondary"
+                        :uppercase="false"
                         :text="props.cancelLabel"
                         data-testid="external-link-confirmation-dialog-cancel-button"
                         @click="cancel"
                     />
                     <HgButtonComponent
                         variant="primary"
+                        :uppercase="false"
                         :text="props.confirmLabel"
                         data-testid="external-link-confirmation-dialog-proceed-button"
                         @click="confirm"
