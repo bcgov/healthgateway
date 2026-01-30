@@ -1,12 +1,37 @@
 <script setup lang="ts">
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import {
+    Action,
+    Destination,
+    EventData,
+    Origin,
+    Type,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
+
+type DialogBodyLine =
+    | string
+    | {
+          prefix?: string;
+          text: string;
+          href: string;
+          suffix?: string;
+          ariaLabel?: string;
+      };
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const props = withDefaults(
     defineProps<{
         modelValue: boolean;
+        origin: Origin;
         title?: string;
-        body?: string[];
+        body?: DialogBodyLine[];
         confirmLabel?: string;
         cancelLabel?: string;
     }>(),
@@ -28,14 +53,32 @@ function close(): void {
     emit("update:modelValue", false);
 }
 
-function cancel(): void {
+function cancel(text: string): void {
     emit("cancel");
     close();
+    trackExternalLinkDialogAction(text);
 }
 
-function confirm(): void {
+function confirm(text: string): void {
     emit("confirm");
     close();
+    trackExternalLinkDialogAction(text);
+}
+
+function trackExternalLinkDialogAction(text: string, url?: string): void {
+    const data: EventData = {
+        action: Action.ButtonClick,
+        text,
+        destination: Destination.AccessMyHealth,
+        origin: props.origin,
+        type: Type.RecordSourceTile,
+    };
+
+    if (url) {
+        data.url = url;
+    }
+
+    trackingService.trackEvent(data);
 }
 </script>
 
@@ -71,7 +114,33 @@ function confirm(): void {
                             :class="{ 'mb-1': i < props.body.length - 1 }"
                             :data-testid="`external-link-confirmation-dialog-body-${i}`"
                         >
-                            {{ line }}
+                            <template v-if="typeof line === 'string'">
+                                {{ line }}
+                            </template>
+                            <template v-else>
+                                <span v-if="line.prefix">{{
+                                    line.prefix
+                                }}</span>
+                                <a
+                                    :href="line.href"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="hg-text-link"
+                                    :aria-label="line.ariaLabel ?? line.text"
+                                    :data-testid="`external-link-confirmation-dialog-link-${i}`"
+                                    @click="
+                                        trackExternalLinkDialogAction(
+                                            line.text,
+                                            line.href
+                                        )
+                                    "
+                                >
+                                    {{ line.text }}
+                                </a>
+                                <span v-if="line.suffix">{{
+                                    line.suffix
+                                }}</span>
+                            </template>
                         </div>
                     </div>
                 </v-card-text>
@@ -81,14 +150,14 @@ function confirm(): void {
                         :uppercase="false"
                         :text="props.cancelLabel"
                         data-testid="external-link-confirmation-dialog-cancel-button"
-                        @click="cancel"
+                        @click="cancel(props.cancelLabel)"
                     />
                     <HgButtonComponent
                         variant="primary"
                         :uppercase="false"
                         :text="props.confirmLabel"
                         data-testid="external-link-confirmation-dialog-proceed-button"
-                        @click="confirm"
+                        @click="confirm(props.confirmLabel)"
                     />
                 </v-card-actions>
             </v-card>

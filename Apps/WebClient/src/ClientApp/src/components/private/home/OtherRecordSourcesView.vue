@@ -32,7 +32,7 @@ import ConfigUtil from "@/utility/configUtil";
 import { useGrid } from "@/utility/useGrid";
 
 const isExternalLinkDialogOpen = ref(false);
-const pendingAction = ref<Action>(Action.CardClick);
+const pendingAction = ref<Action | undefined>(undefined);
 const pendingTile = ref<InfoTile | undefined>(undefined);
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -98,14 +98,15 @@ function handleRecordSourceClick(tile: InfoTile, action: Action): void {
 
 function confirmExternalNavigation(): void {
     const tile = pendingTile.value;
-    if (!tile) return;
+    const action = pendingAction.value;
+
+    if (!tile || !action) return;
 
     const url = getRecordSourceUrl(tile);
-
     if (!url) return;
 
     window.open(url, "_blank", "noopener");
-    trackRecordSourceClick(tile, pendingAction.value, url);
+    trackRecordSourceClick(tile, action, url);
 
     cancelExternalNavigation();
 }
@@ -136,13 +137,19 @@ function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
     <PageTitleComponent title="Other record sources" />
     <ExternalLinkConfirmationDialog
         v-model="isExternalLinkDialogOpen"
-        title="Sign in with BC Services Card"
+        title="Open AccessMyHealth"
         :body="[
-            'You can use your BC Services Card to sign into your AccessMyHealth account.',
-            'You must have at least one record in AccessMyHealth to sign in.',
+            'This will sign you into AccessMyHealth directly. You must have at least one record in AccessMyHealth for this to work.',
+            {
+                prefix: 'To find out more, visit ',
+                text: ExternalUrl.AccessMyHealth,
+                href: ExternalUrl.AccessMyHealth,
+                suffix: '.',
+            },
         ]"
         confirm-label="Sign in"
-        cancel-label="Do not sign in"
+        cancel-label="Cancel"
+        :origin="Origin.AccessMyHealthDialog"
         @confirm="confirmExternalNavigation"
         @cancel="cancelExternalNavigation"
     />

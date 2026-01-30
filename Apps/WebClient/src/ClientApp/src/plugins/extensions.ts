@@ -103,6 +103,7 @@ export const enum Format {
 }
 
 export const enum Origin {
+    AccessMyHealthDialog = "Access My Health Dialog",
     Breadcrumb = "Breadcrumb",
     Dependents = "Dependents",
     Download = "Download",
@@ -140,6 +141,7 @@ export const enum Text {
     AppRating = "App Rating",
     BcVaccineCard = "BC Vaccine Card",
     BcVaccineSchedule = "BC Vaccine Schedule",
+    Cancel = "Cancel",
     Covid19VaccineInformation = "COVID-19 Vaccine Information",
     DeleteAccount = "Delete Account",
     Dependents = "Dependents",
@@ -191,6 +193,7 @@ export const enum Text {
     ReleaseNotes = "Release Notes",
     SendFeedback = "Send Feedback",
     Services = "Services",
+    SignIn = "Sign in",
     SupportGuide = "Support Guide",
     TermsOfService = "Terms of Service",
     TimelineMissingImmunizations = "Timeline - Missing Immunizations Fill In Online Form",
@@ -307,6 +310,7 @@ export const enum EmailUrl {
 
 export const enum ExternalUrl {
     AbuutUs = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway",
+    AccessMyHealth = "https://www.accessmyhealth.ca",
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
     HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
