@@ -38,6 +38,7 @@
     <EmbeddedResource Include="Assets\docs\AdminFeedback.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20220519.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20220607.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20260204.html" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
