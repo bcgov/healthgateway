@@ -75,21 +75,23 @@ function getRecordSourceUrl(tile: InfoTile): string | undefined {
         : tile.link;
 }
 
-function handleRecordSourceClick(tile: InfoTile, action: Action): void {
+function handleRecordSourceClick(tile: InfoTile, text: Text): void {
+    const url = getRecordSourceUrl(tile);
+    if (!url) return;
+
+    // Always track the tile click
+    trackRecordSourceClick(tile, text, url);
+
     // AccessMyHealth tile prompts dialog
     if (tile.type === AccessLinkType.AccessMyHealth) {
         pendingTile.value = tile;
-        pendingAction.value = action;
+        pendingAction.value = Action.ExternalLink;
         isExternalLinkDialogOpen.value = true;
         return;
     }
 
     // All other tiles: open immediately
-    const url = getRecordSourceUrl(tile);
-    if (!url) return;
-
     window.open(url, "_blank", "noopener");
-    trackRecordSourceClick(tile, action, url);
 }
 
 function cancelExternalNavigation(): void {
@@ -129,7 +131,7 @@ function confirmExternalNavigation(): void {
     isExternalLinkDialogOpen.value = false;
 }
 
-function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
+function trackRecordSourceClick(tile: InfoTile, text: Text, url: string) {
     const resourceLinkType = tile.type as ResourceLinkType;
 
     if (!(resourceLinkType in ResourceLinkText)) {
@@ -140,8 +142,8 @@ function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
     }
 
     trackingService.trackEvent({
-        action: action,
-        text: ResourceLinkText[resourceLinkType],
+        action: Action.ExternalLink,
+        text: text,
         origin: Origin.OtherRecordSources,
         destination: ResourceLinkDestination[resourceLinkType],
         type: Type.RecordSourceTile,
@@ -196,7 +198,9 @@ function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
                     fill-body
                     :title="tile.name"
                     :data-testid="`other-record-sources-card-${tile.type}`"
-                    @click="handleRecordSourceClick(tile, Action.CardClick)"
+                    @click="
+                        handleRecordSourceClick(tile, Text.AccessMyHealthTile)
+                    "
                 >
                     <template #icon>
                         <img v-if="tile.logoUri" :src="tile.logoUri" />
@@ -210,7 +214,7 @@ function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
                             @click.prevent.stop="
                                 handleRecordSourceClick(
                                     tile,
-                                    Action.ExternalLink
+                                    Text.AccessMyHealthURL
                                 )
                             "
                             >{{ tile.linkText }}</a

@@ -141,6 +141,8 @@ export const enum Text {
     AccessMyHealthDialogCancel = "AccessMyHealth Dialog Cancel",
     AccessMyHealthDialogUrl = "AccessMyHealth Dialog URL",
     AccessMyHealthDialogSignin = "AccessMyHealth Dialog Sign in",
+    AccessMyHealthTile = "AccessMyHealth Tile",
+    AccessMyHealthURL = "AccessMyHealth URL",
     AddDependent = "Add a Dependent",
     AddNote = "Add a Note",
     AppRating = "App Rating",
