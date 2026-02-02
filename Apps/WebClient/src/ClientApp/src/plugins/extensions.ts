@@ -74,6 +74,7 @@ export const enum Destination {
     Export = "Export",
     FraserHealthRecordRequest = "Fraser Health Record Request",
     HealthElife = "HealthElife",
+    HealthGateway = "Health Gateway",
     HealthLinkBC = "HealthLink BC",
     HealthLinkBC811 = "HealthLink BC 8-1-1",
     HealthConnectRegistry = "HealthLink BC Health Connect Registry",
@@ -116,6 +117,7 @@ export const enum Origin {
     ServicesPage = "Services Page",
     Timeline = "Timeline",
     VaccineCard = "Vaccine Card",
+    VPPLoginPage = "VPP Login Page",
 }
 
 export const enum Rating {
@@ -142,6 +144,7 @@ export const enum Text {
     AddDependent = "Add a Dependent",
     AddNote = "Add a Note",
     AppRating = "App Rating",
+    BackToAccessMyHealth = "Back to AccessMyHealth",
     BcVaccineCard = "BC Vaccine Card",
     BcVaccineSchedule = "BC Vaccine Schedule",
     Cancel = "Cancel",
@@ -163,7 +166,9 @@ export const enum Text {
     FindYourHealthRecords = "Find your health records",
     FraserHealthRequest = "Fraser Health Request",
     HealthElife = "HealthElife",
+    HealthGatewayHome = "Health Gateway Home",
     HealthGatewayLogo = "Health Gateway Logo",
+    HealthGatewayInfo = "Health Gateway Info",
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLink BC",
     HealthLinkBC811 = "HealthLink BC 8-1-1",
@@ -233,6 +238,7 @@ export const enum Type {
     RecordSourceTile = "Record Source Tile",
     ServiceTile = "Service Tile",
     Sidebar = "Sidebar",
+    VPPLogin = "VPP Login",
 }
 
 export const OriginType: Partial<Record<Origin, Type>> = {
@@ -321,6 +327,7 @@ export const enum ExternalUrl {
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
     HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
+    HealthGateway = "https://www.healthgateway.gov.bc.ca",
     OrganDonorRegistration = "https://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
     ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
     SupportGuide = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
