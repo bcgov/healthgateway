@@ -5,10 +5,10 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
     Action,
-    Destination,
+    createLinkEventData,
     EventData,
+    ExternalUrl,
     Origin,
-    Type,
 } from "@/plugins/extensions";
 import { ITrackingService } from "@/services/interfaces";
 
@@ -16,8 +16,9 @@ type DialogBodyLine =
     | string
     | {
           prefix?: string;
-          text: string;
-          href: string;
+          text: string; // UI-visible text
+          trackingText: string; // Snowplow EventData.text
+          href: ExternalUrl;
           suffix?: string;
           ariaLabel?: string;
       };
@@ -53,30 +54,28 @@ function close(): void {
     emit("update:modelValue", false);
 }
 
-function cancel(text: string): void {
+function cancel(): void {
     emit("cancel");
     close();
-    trackExternalLinkDialogAction(text);
+    // Caller-specific logic must be handled in the @cancel handler.
 }
 
-function confirm(text: string): void {
+function confirm(): void {
     emit("confirm");
     close();
-    trackExternalLinkDialogAction(text);
+    // Caller-specific logic must be handled in the @confirm handler.
 }
 
-function trackExternalLinkDialogAction(text: string, url?: string): void {
-    const data: EventData = {
-        action: Action.ButtonClick,
-        text,
-        destination: Destination.AccessMyHealth,
-        origin: props.origin,
-        type: Type.RecordSourceTile,
-    };
-
-    if (url) {
-        data.url = url;
+function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
+    if (!url) {
+        return;
     }
+    const data: EventData = createLinkEventData(
+        text,
+        props.origin,
+        Action.ExternalLink,
+        url
+    );
 
     trackingService.trackEvent(data);
 }
@@ -130,7 +129,7 @@ function trackExternalLinkDialogAction(text: string, url?: string): void {
                                     :data-testid="`external-link-confirmation-dialog-link-${i}`"
                                     @click="
                                         trackExternalLinkDialogAction(
-                                            line.text,
+                                            line.trackingText,
                                             line.href
                                         )
                                     "
@@ -150,14 +149,14 @@ function trackExternalLinkDialogAction(text: string, url?: string): void {
                         :uppercase="false"
                         :text="props.cancelLabel"
                         data-testid="external-link-confirmation-dialog-cancel-button"
-                        @click="cancel(props.cancelLabel)"
+                        @click="cancel()"
                     />
                     <HgButtonComponent
                         variant="primary"
                         :uppercase="false"
                         :text="props.confirmLabel"
                         data-testid="external-link-confirmation-dialog-proceed-button"
-                        @click="confirm(props.confirmLabel)"
+                        @click="confirm()"
                     />
                 </v-card-actions>
             </v-card>

@@ -19,6 +19,7 @@ import {
     Action,
     Destination,
     ExternalUrl,
+    InternalUrl,
     Origin,
     ResourceLinkDestination,
     ResourceLinkText,
@@ -68,11 +69,6 @@ const otherRecordSourcesLinks = computed(() => {
     );
 });
 
-function cancelExternalNavigation(): void {
-    pendingTile.value = undefined;
-    isExternalLinkDialogOpen.value = false;
-}
-
 function getRecordSourceUrl(tile: InfoTile): string | undefined {
     return tile.type === AccessLinkType.AccessMyHealth
         ? webClientConfig.value.accessMyHealthUrl
@@ -96,6 +92,19 @@ function handleRecordSourceClick(tile: InfoTile, action: Action): void {
     trackRecordSourceClick(tile, action, url);
 }
 
+function cancelExternalNavigation(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.AccessMyHealthDialogCancel,
+        origin: Origin.OtherRecordSources,
+        type: Type.RecordSourceTile,
+        url: InternalUrl.OtherRecordSources,
+    });
+
+    pendingTile.value = undefined;
+    isExternalLinkDialogOpen.value = false;
+}
+
 function confirmExternalNavigation(): void {
     const tile = pendingTile.value;
     const action = pendingAction.value;
@@ -106,9 +115,18 @@ function confirmExternalNavigation(): void {
     if (!url) return;
 
     window.open(url, "_blank", "noopener");
-    trackRecordSourceClick(tile, action, url);
 
-    cancelExternalNavigation();
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.AccessMyHealthDialogSignin,
+        origin: Origin.OtherRecordSources,
+        destination: Destination.AccessMyHealth,
+        type: Type.RecordSourceTile,
+        url,
+    });
+
+    pendingTile.value = undefined;
+    isExternalLinkDialogOpen.value = false;
 }
 
 function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
@@ -143,13 +161,15 @@ function trackRecordSourceClick(tile: InfoTile, action: Action, url: string) {
             {
                 prefix: 'To find out more, visit ',
                 text: ExternalUrl.AccessMyHealth,
+                trackingText: Text.AccessMyHealthDialogUrl,
                 href: ExternalUrl.AccessMyHealth,
                 suffix: '.',
             },
         ]"
         confirm-label="Sign in"
         cancel-label="Cancel"
-        :origin="Origin.AccessMyHealthDialog"
+        :origin="Origin.OtherRecordSources"
+        :tracking-text="Text.AccessMyHealthDialogUrl"
         @confirm="confirmExternalNavigation"
         @cancel="cancelExternalNavigation"
     />

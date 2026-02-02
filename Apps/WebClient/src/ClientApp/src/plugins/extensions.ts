@@ -136,6 +136,9 @@ export const enum Text {
     Request = "Request",
     AboutUs = "About Us",
     AccessMyHealth = "AccessMyHealth",
+    AccessMyHealthDialogCancel = "AccessMyHealth Dialog Cancel",
+    AccessMyHealthDialogUrl = "AccessMyHealth Dialog URL",
+    AccessMyHealthDialogSignin = "AccessMyHealth Dialog Sign in",
     AddDependent = "Add a Dependent",
     AddNote = "Add a Note",
     AppRating = "App Rating",
@@ -231,6 +234,10 @@ export const enum Type {
     ServiceTile = "Service Tile",
     Sidebar = "Sidebar",
 }
+
+export const OriginType: Partial<Record<Origin, Type>> = {
+    [Origin.OtherRecordSources]: Type.RecordSourceTile,
+} as const;
 
 export type LandingAccessLinkType =
     | AccessLinkType.Call811
@@ -331,4 +338,34 @@ export const enum InternalUrl {
     Registration = "./Registration",
     Reports = "./reports",
     Services = "./services",
+}
+
+export type ExternalLinkConfirmationDialogType = AccessLinkType.AccessMyHealth;
+
+export const ExternalLinkConfirmationDialogText: Record<
+    ExternalLinkConfirmationDialogType,
+    string
+> = {
+    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealthDialogUrl,
+} as const;
+
+export const ExternalUrlDestination: Partial<Record<ExternalUrl, Destination>> =
+    {
+        [ExternalUrl.AccessMyHealth]: Destination.AccessMyHealth,
+    } as const;
+
+export function createLinkEventData(
+    text: string,
+    origin: Origin,
+    action: Action,
+    url?: ExternalUrl
+): EventData {
+    return {
+        action,
+        text,
+        destination: url ? (ExternalUrlDestination[url] ?? url) : undefined,
+        origin,
+        type: OriginType[origin],
+        url,
+    };
 }
