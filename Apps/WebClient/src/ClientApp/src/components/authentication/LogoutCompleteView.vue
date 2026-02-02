@@ -38,10 +38,12 @@ setTimeout(() => {
         >
             You signed out of your account
         </h1>
+        <p class="text-body-1 mb-4">
+            This does not sign out of any other accounts.
+        </p>
         <p class="text-body-1">
-            This does not sign out of any other accounts. It is recommended that
-            you sign out of all other accounts and close all browser windows to
-            protect your health information.
+            It is recommended that you sign out of all other accounts and close
+            all browser windows to protect your health information.
         </p>
     </div>
 </template>
