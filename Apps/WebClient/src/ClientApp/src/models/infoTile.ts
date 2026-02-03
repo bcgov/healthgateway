@@ -8,5 +8,4 @@ export interface InfoTile {
     link?: string;
     linkText?: string;
     section?: string;
-    bottomText?: string;
 }

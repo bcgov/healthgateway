@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ref } from "vue";
 
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import ExternalLinkConfirmationDialog from "@/components/site/ExternalLinkConfirmationDialog.vue";
 import {
     AccessLinkType,
     getOtherRecordSourcesLinks,
@@ -17,6 +19,7 @@ import {
     Action,
     Destination,
     ExternalUrl,
+    InternalUrl,
     Origin,
     ResourceLinkDestination,
     ResourceLinkText,
@@ -28,6 +31,10 @@ import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
 import { useGrid } from "@/utility/useGrid";
+
+const isExternalLinkDialogOpen = ref(false);
+const pendingAction = ref<Action | undefined>(undefined);
+const pendingTile = ref<InfoTile | undefined>(undefined);
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
@@ -62,20 +69,69 @@ const otherRecordSourcesLinks = computed(() => {
     );
 });
 
-function handleRecordSourceCardClick(tile: InfoTile): void {
-    const url =
-        tile.type === AccessLinkType.AccessMyHealth
-            ? webClientConfig.value.accessMyHealthUrl
-            : tile.link;
+function getRecordSourceUrl(tile: InfoTile): string | undefined {
+    return tile.type === AccessLinkType.AccessMyHealth
+        ? webClientConfig.value.accessMyHealthUrl
+        : tile.link;
+}
 
+function handleRecordSourceClick(tile: InfoTile, text: Text): void {
+    const url = getRecordSourceUrl(tile);
+    if (!url) return;
+
+    // Always track the tile click
+    trackRecordSourceClick(tile, text, url);
+
+    // AccessMyHealth tile prompts dialog
+    if (tile.type === AccessLinkType.AccessMyHealth) {
+        pendingTile.value = tile;
+        pendingAction.value = Action.ExternalLink;
+        isExternalLinkDialogOpen.value = true;
+        return;
+    }
+
+    // All other tiles: open immediately
+    window.open(url, "_blank", "noopener");
+}
+
+function cancelExternalNavigation(): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.AccessMyHealthDialogCancel,
+        origin: Origin.OtherRecordSources,
+        type: Type.RecordSourceTile,
+        url: InternalUrl.OtherRecordSources,
+    });
+
+    pendingTile.value = undefined;
+    isExternalLinkDialogOpen.value = false;
+}
+
+function confirmExternalNavigation(): void {
+    const tile = pendingTile.value;
+    const action = pendingAction.value;
+
+    if (!tile || !action) return;
+
+    const url = getRecordSourceUrl(tile);
     if (!url) return;
 
     window.open(url, "_blank", "noopener");
 
-    trackRecordSourceLinkClick(tile, Action.CardClick);
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: Text.AccessMyHealthDialogSignin,
+        origin: Origin.OtherRecordSources,
+        destination: Destination.AccessMyHealth,
+        type: Type.RecordSourceTile,
+        url,
+    });
+
+    pendingTile.value = undefined;
+    isExternalLinkDialogOpen.value = false;
 }
 
-function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
+function trackRecordSourceClick(tile: InfoTile, text: Text, url: string) {
     const resourceLinkType = tile.type as ResourceLinkType;
 
     if (!(resourceLinkType in ResourceLinkText)) {
@@ -86,15 +142,12 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
     }
 
     trackingService.trackEvent({
-        action: action,
-        text: ResourceLinkText[resourceLinkType],
+        action: Action.ExternalLink,
+        text: text,
         origin: Origin.OtherRecordSources,
         destination: ResourceLinkDestination[resourceLinkType],
         type: Type.RecordSourceTile,
-        url:
-            tile.type === AccessLinkType.AccessMyHealth
-                ? webClientConfig.value.accessMyHealthUrl
-                : tile.link,
+        url: url,
     });
 }
 </script>
@@ -102,6 +155,26 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
     <PageTitleComponent title="Other record sources" />
+    <ExternalLinkConfirmationDialog
+        v-model="isExternalLinkDialogOpen"
+        title="Open AccessMyHealth"
+        :body="[
+            'This will sign you into AccessMyHealth directly. You must have at least one record in AccessMyHealth for this to work.',
+            {
+                prefix: 'To find out more, visit ',
+                text: ExternalUrl.AccessMyHealth,
+                trackingText: Text.AccessMyHealthDialogUrl,
+                href: ExternalUrl.AccessMyHealth,
+                suffix: '.',
+            },
+        ]"
+        confirm-label="Sign in"
+        cancel-label="Cancel"
+        :origin="Origin.OtherRecordSources"
+        :tracking-text="Text.AccessMyHealthDialogUrl"
+        @confirm="confirmExternalNavigation"
+        @cancel="cancelExternalNavigation"
+    />
     <p>
         Health Gateway helps bring your records together in one place. It
         connects to many record sources, but not all. Included below are trusted
@@ -125,7 +198,9 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
                     fill-body
                     :title="tile.name"
                     :data-testid="`other-record-sources-card-${tile.type}`"
-                    @click="handleRecordSourceCardClick(tile)"
+                    @click="
+                        handleRecordSourceClick(tile, Text.AccessMyHealthTile)
+                    "
                 >
                     <template #icon>
                         <img v-if="tile.logoUri" :src="tile.logoUri" />
@@ -133,29 +208,17 @@ function trackRecordSourceLinkClick(tile: InfoTile, action: Action) {
                     <p class="text-body-1">{{ tile.description }}</p>
                     <div class="mt-auto pt-3 text-start">
                         <a
-                            rel="noopener"
-                            target="_blank"
                             class="text-link"
-                            :href="
-                                tile.type === AccessLinkType.AccessMyHealth
-                                    ? webClientConfig.accessMyHealthUrl
-                                    : tile.link
-                            "
+                            role="link"
                             :data-testid="`other-record-sources-link-${tile.type}`"
-                            @click.stop="
-                                trackRecordSourceLinkClick(
+                            @click.prevent.stop="
+                                handleRecordSourceClick(
                                     tile,
-                                    Action.ExternalLink
+                                    Text.AccessMyHealthURL
                                 )
                             "
                             >{{ tile.linkText }}</a
                         >
-                        <div
-                            class="text-body-2 mt-2"
-                            :class="{ 'font-weight-bold': !!tile.bottomText }"
-                        >
-                            {{ tile.bottomText ?? "\u00A0" }}
-                        </div>
                     </div>
                 </HgCardComponent>
             </v-col>

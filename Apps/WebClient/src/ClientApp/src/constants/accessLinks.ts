@@ -95,7 +95,6 @@ const ALL_TILES = [
             import.meta.url
         ).href,
         linkText: "Open AccessMyHealth",
-        bottomText: "You won’t need to log in again",
         active: true,
     },
     {
