@@ -137,7 +137,6 @@ export const enum Text {
     Page = "Page",
     Request = "Request",
     AboutUs = "About Us",
-    AccessMyHealth = "AccessMyHealth",
     AccessMyHealthDialogCancel = "AccessMyHealth Dialog Cancel",
     AccessMyHealthDialogUrl = "AccessMyHealth Dialog URL",
     AccessMyHealthDialogSignin = "AccessMyHealth Dialog Sign in",
@@ -166,8 +165,10 @@ export const enum Text {
     FilterHealthRecords = "Filter Health Records",
     FindDoctor = "Find family doctor",
     FindYourHealthRecords = "Find your health records",
-    FraserHealthRequest = "Fraser Health Request",
-    HealthElife = "HealthElife",
+    FraserHealthRequestTile = "Fraser Health Request Tile",
+    FraserHealthRequestURL = "Fraser Health Request URL",
+    HealthElifeTile = "HealthElife Tile",
+    HealthElifeURL = "HealthElife URL",
     HealthGatewayHome = "Health Gateway Home",
     HealthGatewayLogo = "Health Gateway Logo",
     HealthGatewayInfo = "Health Gateway Info",
@@ -186,9 +187,12 @@ export const enum Text {
     LoginBCSC = "Log in with BCSC",
     LoginVaccineCard = "Log in Vaccine Card",
     Logout = "Logout",
-    MyHealth = "MyHealth",
-    MyHealthKey = "myhealthkey",
-    MyHealthPortal = "MyHealthPortal",
+    MyHealthTile = "MyHealth Tile",
+    MyHealthURL = "MyHealth URL",
+    MyHealthKeyTile = "myhealthkey Tile",
+    MyHealthKeyURL = "myhealthkey URL",
+    MyHealthPortalTile = "MyHealthPortal Tile",
+    MyHealthPortalURL = "MyHealthPortal URL",
     OrganDonor = "Organ Donor",
     OtherRecordSources = "Other Record Sources",
     Register = "Register",
@@ -287,16 +291,25 @@ export type ResourceLinkType =
     | AccessLinkType.MyHealthKey
     | AccessLinkType.FraserHealth;
 
-export const ResourceLinkText: Record<ResourceLinkType, string> = {
-    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealth,
-    [AccessLinkType.MyHealth]: Text.MyHealth,
-    [AccessLinkType.MyHealthPortal]: Text.MyHealthPortal,
-    [AccessLinkType.HealthElife]: Text.HealthElife,
-    [AccessLinkType.MyHealthKey]: Text.MyHealthKey,
-    [AccessLinkType.FraserHealth]: Text.FraserHealthRequest,
+export const ResourceLinkTileText: Record<ResourceLinkType, Text> = {
+    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealthTile,
+    [AccessLinkType.MyHealth]: Text.MyHealthTile,
+    [AccessLinkType.MyHealthPortal]: Text.MyHealthPortalTile,
+    [AccessLinkType.HealthElife]: Text.HealthElifeTile,
+    [AccessLinkType.MyHealthKey]: Text.MyHealthKeyTile,
+    [AccessLinkType.FraserHealth]: Text.FraserHealthRequestTile,
 } as const;
 
-export const ResourceLinkDestination: Record<ResourceLinkType, string> = {
+export const ResourceLinkUrlText: Record<ResourceLinkType, Text> = {
+    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealthURL,
+    [AccessLinkType.MyHealth]: Text.MyHealthURL,
+    [AccessLinkType.MyHealthPortal]: Text.MyHealthPortalURL,
+    [AccessLinkType.HealthElife]: Text.HealthElifeURL,
+    [AccessLinkType.MyHealthKey]: Text.MyHealthKeyURL,
+    [AccessLinkType.FraserHealth]: Text.FraserHealthRequestURL,
+} as const;
+
+export const ResourceLinkDestination: Record<ResourceLinkType, Destination> = {
     [AccessLinkType.AccessMyHealth]: Destination.AccessMyHealth,
     [AccessLinkType.MyHealth]: Destination.MyHealth,
     [AccessLinkType.MyHealthPortal]: Destination.MyHealthPortal,
