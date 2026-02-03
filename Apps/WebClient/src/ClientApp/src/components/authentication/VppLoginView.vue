@@ -95,6 +95,7 @@ function trackNavigationClick(
                     <a
                         :href="ExternalUrl.HealthGateway"
                         class="text-link"
+                        data-testid="click-hgw-link"
                         @click.prevent="
                             trackNavigationClick(
                                 Action.ExternalLink,
@@ -112,7 +113,7 @@ function trackNavigationClick(
                         variant="link"
                         text="Go back to AccessMyHealth"
                         :uppercase="false"
-                        data-testid="do-not-sign-in-button"
+                        data-testid="go-back-button"
                         @click="openAccessMyHealth()"
                     />
                     <HgButtonComponent
