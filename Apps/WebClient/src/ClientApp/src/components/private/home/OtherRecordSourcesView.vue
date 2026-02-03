@@ -22,8 +22,9 @@ import {
     InternalUrl,
     Origin,
     ResourceLinkDestination,
-    ResourceLinkText,
+    ResourceLinkTileText,
     ResourceLinkType,
+    ResourceLinkUrlText,
     Text,
     Type,
 } from "@/plugins/extensions";
@@ -69,20 +70,37 @@ const otherRecordSourcesLinks = computed(() => {
     );
 });
 
+type RecordSourceClickKind = "tile" | "link";
+
 function getRecordSourceUrl(tile: InfoTile): string | undefined {
     return tile.type === AccessLinkType.AccessMyHealth
         ? webClientConfig.value.accessMyHealthUrl
         : tile.link;
 }
 
-function handleRecordSourceClick(tile: InfoTile, text: Text): void {
+function handleRecordSourceClick(
+    tile: InfoTile,
+    kind: RecordSourceClickKind
+): void {
+    const resourceLinkType = tile.type as ResourceLinkType;
+
+    const textMap =
+        kind === "tile" ? ResourceLinkTileText : ResourceLinkUrlText;
+
+    if (!(resourceLinkType in textMap)) {
+        logger.warn(
+            `handleRecordSourceClick(${kind}): unsupported resource link type: ${tile.type}`
+        );
+        return;
+    }
+
     const url = getRecordSourceUrl(tile);
     if (!url) return;
 
-    // Always track the tile click
-    trackRecordSourceClick(tile, text, url);
+    // Always track the click
+    trackRecordSourceClick(tile, textMap[resourceLinkType], url);
 
-    // AccessMyHealth tile prompts dialog
+    // AccessMyHealth prompts dialog
     if (tile.type === AccessLinkType.AccessMyHealth) {
         pendingTile.value = tile;
         pendingAction.value = Action.ExternalLink;
@@ -90,8 +108,16 @@ function handleRecordSourceClick(tile: InfoTile, text: Text): void {
         return;
     }
 
-    // All other tiles: open immediately
+    // Everything else opens immediately
     window.open(url, "_blank", "noopener");
+}
+
+function handleRecordSourceTileClick(tile: InfoTile): void {
+    handleRecordSourceClick(tile, "tile");
+}
+
+function handleRecordSourceLinkClick(tile: InfoTile): void {
+    handleRecordSourceClick(tile, "link");
 }
 
 function cancelExternalNavigation(): void {
@@ -131,12 +157,12 @@ function confirmExternalNavigation(): void {
     isExternalLinkDialogOpen.value = false;
 }
 
-function trackRecordSourceClick(tile: InfoTile, text: Text, url: string) {
+function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
     const resourceLinkType = tile.type as ResourceLinkType;
 
-    if (!(resourceLinkType in ResourceLinkText)) {
+    if (!(resourceLinkType in ResourceLinkDestination)) {
         logger.warn(
-            `openExternalLink: unsupported resource link type: ${tile.type}`
+            `trackRecordSourceClick: unsupported resource link type for ResourceLinkDestination: ${tile.type}`
         );
         return;
     }
@@ -198,9 +224,7 @@ function trackRecordSourceClick(tile: InfoTile, text: Text, url: string) {
                     fill-body
                     :title="tile.name"
                     :data-testid="`other-record-sources-card-${tile.type}`"
-                    @click="
-                        handleRecordSourceClick(tile, Text.AccessMyHealthTile)
-                    "
+                    @click="handleRecordSourceTileClick(tile)"
                 >
                     <template #icon>
                         <img v-if="tile.logoUri" :src="tile.logoUri" />
@@ -212,10 +236,7 @@ function trackRecordSourceClick(tile: InfoTile, text: Text, url: string) {
                             role="link"
                             :data-testid="`other-record-sources-link-${tile.type}`"
                             @click.prevent.stop="
-                                handleRecordSourceClick(
-                                    tile,
-                                    Text.AccessMyHealthURL
-                                )
+                                handleRecordSourceLinkClick(tile)
                             "
                             >{{ tile.linkText }}</a
                         >
