@@ -107,7 +107,7 @@ const PcrTestKitRegistrationView = () =>
     );
 const VppLoginView = () =>
     import(
-        /* webpackChunkName: "vppLogin" */ "@/components/authentication/VppLoginView.vue"
+        /* webpackChunkName: "vppLogin" */ "@/components/public/vpp/VppLoginView.vue"
     );
 
 export enum UserState {
