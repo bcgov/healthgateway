@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -14,19 +12,12 @@ import {
     Type,
 } from "@/plugins/extensions";
 import { ITrackingService } from "@/services/interfaces";
-import { useConfigStore } from "@/stores/config";
-
-const configStore = useConfigStore();
-const webClientConfig = computed(() => configStore.webConfig);
 
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
 
 function openAccessMyHealth() {
-    const url: string | undefined = webClientConfig.value.accessMyHealthUrl;
-    if (!url) return;
-
     trackNavigationClick(
         Action.ExternalLink,
         Text.BackToAccessMyHealth,
@@ -34,7 +25,17 @@ function openAccessMyHealth() {
         ExternalUrl.AccessMyHealth
     );
 
-    window.location.assign(url);
+    window.location.assign(ExternalUrl.AccessMyHealth);
+}
+
+function openHealthGatewayInfo(): void {
+    trackNavigationClick(
+        Action.ExternalLink,
+        Text.HealthGatewayInfo,
+        Destination.HealthGateway,
+        ExternalUrl.HealthGateway
+    );
+    window.open(ExternalUrl.HealthGateway, "_blank", "noopener");
 }
 
 function openHgHome() {
@@ -96,29 +97,22 @@ function trackNavigationClick(
                         :href="ExternalUrl.HealthGateway"
                         class="text-link"
                         data-testid="click-hgw-link"
-                        @click.prevent="
-                            trackNavigationClick(
-                                Action.ExternalLink,
-                                Text.HealthGatewayInfo,
-                                Destination.HealthGateway,
-                                ExternalUrl.HealthGateway
-                            )
-                        "
+                        @click.prevent="openHealthGatewayInfo"
                         >here</a
                     >.
                 </p>
-
                 <div class="d-flex flex-column flex-sm-row ga-2 justify-center">
                     <HgButtonComponent
                         variant="link"
                         text="Go back to AccessMyHealth"
                         :uppercase="false"
                         data-testid="go-back-button"
+                        :data-url="ExternalUrl.AccessMyHealth"
                         @click="openAccessMyHealth()"
                     />
                     <HgButtonComponent
                         variant="link"
-                        text="Sign into Healthgateway"
+                        text="Sign into Health Gateway"
                         :uppercase="false"
                         data-testid="sign-in-button"
                         @click="openHgHome()"
