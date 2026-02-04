@@ -4,11 +4,11 @@
         "showRecommendationsLink": false,
         "showImmunizationRecordLink": true,
         "otherRecordSources": {
-            "enabled": false,
+            "enabled": true,
             "sources": [
                 {
                     "name": "accessMyHealth",
-                    "enabled": false
+                    "enabled": true
                 }
             ]
         }
@@ -68,6 +68,7 @@
     "covid19": {
         "pcrTestEnabled": false,
         "publicCovid19": {
+            "vaccineCardEnabled": false,
             "showFederalProofOfVaccination": true
         },
         "proofOfVaccination": {

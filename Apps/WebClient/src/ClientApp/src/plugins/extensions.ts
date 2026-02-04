@@ -28,6 +28,7 @@ export const enum Action {
     View = "View",
     Visit = "Visit",
     ButtonClick = "button_click",
+    CardClick = "card_click",
     Download = "download",
     Email = "email",
     InternalLink = "internal_link",
@@ -65,12 +66,15 @@ export const enum Destination {
     ImmunizationSchedule = "Immunization Schedule",
     ImmunizationsHealthLinkBC = "Immunizations - HealthLink BC",
     OrganDonorRegistration = "Organ Donor Registration",
-    OtherRecordSources = "Other Record Sources",
     PrimaryCare = "Primary Care",
+    AccessMyHealth = "AccessMyHealth",
     AddressChangeBC = "Address Change BC",
     Dependents = "Dependents",
     Download = "Download",
     Export = "Export",
+    FraserHealthRecordRequest = "Fraser Health Record Request",
+    HealthElife = "HealthElife",
+    HealthGateway = "Health Gateway",
     HealthLinkBC = "HealthLink BC",
     HealthLinkBC811 = "HealthLink BC 8-1-1",
     HealthConnectRegistry = "HealthLink BC Health Connect Registry",
@@ -78,7 +82,11 @@ export const enum Destination {
     ImmunizationRecordBC = "Immunization Record BC",
     Login = "Login",
     MohCovid19 = "MoH COVID-19",
+    MyHealth = "MyHealth",
+    MyHealthKey = "myhealthkey",
+    MyHealthPortal = "MyHealthPortal",
     Profile = "Profile",
+    RecordSources = "Record Sources",
     Registration = "Registration",
     Services = "Services",
     SupportEmail = "Support Email",
@@ -96,6 +104,7 @@ export const enum Format {
 }
 
 export const enum Origin {
+    AccessMyHealthDialog = "Access My Health Dialog",
     Breadcrumb = "Breadcrumb",
     Dependents = "Dependents",
     Download = "Download",
@@ -103,10 +112,12 @@ export const enum Origin {
     Home = "Home",
     ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
     Landing = "Landing",
+    OtherRecordSources = "Other Record Sources",
     Profile = "Profile",
     ServicesPage = "Services Page",
     Timeline = "Timeline",
     VaccineCard = "Vaccine Card",
+    VPPLoginPage = "VPP Login Page",
 }
 
 export const enum Rating {
@@ -126,11 +137,18 @@ export const enum Text {
     Page = "Page",
     Request = "Request",
     AboutUs = "About Us",
+    AccessMyHealthDialogCancel = "AccessMyHealth Dialog Cancel",
+    AccessMyHealthDialogUrl = "AccessMyHealth Dialog URL",
+    AccessMyHealthDialogSignin = "AccessMyHealth Dialog Sign in",
+    AccessMyHealthTile = "AccessMyHealth Tile",
+    AccessMyHealthURL = "AccessMyHealth URL",
     AddDependent = "Add a Dependent",
     AddNote = "Add a Note",
     AppRating = "App Rating",
+    BackToAccessMyHealth = "Back to AccessMyHealth",
     BcVaccineCard = "BC Vaccine Card",
     BcVaccineSchedule = "BC Vaccine Schedule",
+    Cancel = "Cancel",
     Covid19VaccineInformation = "COVID-19 Vaccine Information",
     DeleteAccount = "Delete Account",
     Dependents = "Dependents",
@@ -147,7 +165,13 @@ export const enum Text {
     FilterHealthRecords = "Filter Health Records",
     FindDoctor = "Find family doctor",
     FindYourHealthRecords = "Find your health records",
+    FraserHealthRequestTile = "Fraser Health Request Tile",
+    FraserHealthRequestURL = "Fraser Health Request URL",
+    HealthElifeTile = "HealthElife Tile",
+    HealthElifeURL = "HealthElife URL",
+    HealthGatewayHome = "Health Gateway Home",
     HealthGatewayLogo = "Health Gateway Logo",
+    HealthGatewayInfo = "Health Gateway Info",
     HealthRecords = "Health Records",
     HealthLinkBC = "HealthLink BC",
     HealthLinkBC811 = "HealthLink BC 8-1-1",
@@ -163,7 +187,14 @@ export const enum Text {
     LoginBCSC = "Log in with BCSC",
     LoginVaccineCard = "Log in Vaccine Card",
     Logout = "Logout",
+    MyHealthTile = "MyHealth Tile",
+    MyHealthURL = "MyHealth URL",
+    MyHealthKeyTile = "myhealthkey Tile",
+    MyHealthKeyURL = "myhealthkey URL",
+    MyHealthPortalTile = "MyHealthPortal Tile",
+    MyHealthPortalURL = "MyHealthPortal URL",
     OrganDonor = "Organ Donor",
+    OtherRecordSources = "Other Record Sources",
     Register = "Register",
     RegisterDependent = "Register a Dependent",
     RegisterOrganDonorDecision = "Register Organ Donor Decision",
@@ -176,6 +207,7 @@ export const enum Text {
     ReleaseNotes = "Release Notes",
     SendFeedback = "Send Feedback",
     Services = "Services",
+    SignIn = "Sign in",
     SupportGuide = "Support Guide",
     TermsOfService = "Terms of Service",
     TimelineMissingImmunizations = "Timeline - Missing Immunizations Fill In Online Form",
@@ -209,9 +241,15 @@ export const enum Type {
     Notes = "Notes",
     OrganDonor = "Organ Donor",
     Profile = "Profile",
+    RecordSourceTile = "Record Source Tile",
     ServiceTile = "Service Tile",
     Sidebar = "Sidebar",
+    VPPLogin = "VPP Login",
 }
+
+export const OriginType: Partial<Record<Origin, Type>> = {
+    [Origin.OtherRecordSources]: Type.RecordSourceTile,
+} as const;
 
 export type LandingAccessLinkType =
     | AccessLinkType.Call811
@@ -245,6 +283,41 @@ export const LandingAccessLinkDestination: Record<
     [AccessLinkType.HealthServices]: Destination.SupportGuide,
 } as const;
 
+export type ResourceLinkType =
+    | AccessLinkType.AccessMyHealth
+    | AccessLinkType.MyHealth
+    | AccessLinkType.MyHealthPortal
+    | AccessLinkType.HealthElife
+    | AccessLinkType.MyHealthKey
+    | AccessLinkType.FraserHealth;
+
+export const ResourceLinkTileText: Record<ResourceLinkType, Text> = {
+    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealthTile,
+    [AccessLinkType.MyHealth]: Text.MyHealthTile,
+    [AccessLinkType.MyHealthPortal]: Text.MyHealthPortalTile,
+    [AccessLinkType.HealthElife]: Text.HealthElifeTile,
+    [AccessLinkType.MyHealthKey]: Text.MyHealthKeyTile,
+    [AccessLinkType.FraserHealth]: Text.FraserHealthRequestTile,
+} as const;
+
+export const ResourceLinkUrlText: Record<ResourceLinkType, Text> = {
+    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealthURL,
+    [AccessLinkType.MyHealth]: Text.MyHealthURL,
+    [AccessLinkType.MyHealthPortal]: Text.MyHealthPortalURL,
+    [AccessLinkType.HealthElife]: Text.HealthElifeURL,
+    [AccessLinkType.MyHealthKey]: Text.MyHealthKeyURL,
+    [AccessLinkType.FraserHealth]: Text.FraserHealthRequestURL,
+} as const;
+
+export const ResourceLinkDestination: Record<ResourceLinkType, Destination> = {
+    [AccessLinkType.AccessMyHealth]: Destination.AccessMyHealth,
+    [AccessLinkType.MyHealth]: Destination.MyHealth,
+    [AccessLinkType.MyHealthPortal]: Destination.MyHealthPortal,
+    [AccessLinkType.HealthElife]: Destination.HealthElife,
+    [AccessLinkType.MyHealthKey]: Destination.MyHealthKey,
+    [AccessLinkType.FraserHealth]: Destination.FraserHealthRecordRequest,
+} as const;
+
 export const BcCancerPrograms = ["Breast", "Cervix", "Colon", "Lung"] as const;
 export type BcCancerProgram = (typeof BcCancerPrograms)[number];
 
@@ -265,14 +338,16 @@ export const enum EmailUrl {
 
 export const enum ExternalUrl {
     AbuutUs = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway",
+    AccessMyHealth = "https://www.accessmyhealth.ca",
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
     HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
-    OrganDonorRegistration = "http://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
+    HealthGateway = "https://www.healthgateway.gov.bc.ca",
+    OrganDonorRegistration = "https://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
     ReleaseNotes = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/release-notes",
     SupportGuide = "https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide",
     TermsOfService = "https://www.healthgateway.gov.bc.ca/termsOfService",
-    YourHealthInformationUrl = "https://www.healthlinkbc.ca/health-library/health-features/your-health-information",
+    YourHealthInformation = "https://www.healthlinkbc.ca/health-library/health-features/your-health-information",
 }
 
 export const enum InternalUrl {
@@ -280,11 +355,39 @@ export const enum InternalUrl {
     Dependents = "./dependents",
     Home = "./home",
     Login = "./login",
+    OtherRecordSources = "./otherRecordSources",
     Profile = "./profile",
     Registration = "./Registration",
     Reports = "./reports",
     Services = "./services",
-    HealthRecords = Timeline,
-    OrganDonor = Services,
-    QuickLink = Timeline,
+}
+
+export type ExternalLinkConfirmationDialogType = AccessLinkType.AccessMyHealth;
+
+export const ExternalLinkConfirmationDialogText: Record<
+    ExternalLinkConfirmationDialogType,
+    string
+> = {
+    [AccessLinkType.AccessMyHealth]: Text.AccessMyHealthDialogUrl,
+} as const;
+
+export const ExternalUrlDestination: Partial<Record<ExternalUrl, Destination>> =
+    {
+        [ExternalUrl.AccessMyHealth]: Destination.AccessMyHealth,
+    } as const;
+
+export function createLinkEventData(
+    text: string,
+    origin: Origin,
+    action: Action,
+    url?: ExternalUrl
+): EventData {
+    return {
+        action,
+        text,
+        destination: url ? (ExternalUrlDestination[url] ?? url) : undefined,
+        origin,
+        type: OriginType[origin],
+        url,
+    };
 }

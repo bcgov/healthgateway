@@ -249,7 +249,7 @@ function handleClickHealthRecords(): void {
         origin: Origin.Home,
         destination: Destination.HealthRecords,
         type: Type.HomeTile,
-        url: InternalUrl.HealthRecords,
+        url: InternalUrl.Timeline,
     });
     router.push({ path: "/timeline" });
 }
@@ -288,17 +288,19 @@ function handleClickOrganDonorCard(): void {
         origin: Origin.Home,
         destination: Destination.Services,
         type: Type.HomeTile,
-        url: InternalUrl.OrganDonor,
+        url: InternalUrl.Services,
     });
     router.push({ path: "/services" });
 }
 
 function handleClickOtherRecordSources(): void {
     trackingService.trackEvent({
-        action: Action.Visit,
-        text: Text.ExternalLink,
-        destination: Destination.OtherRecordSources,
+        action: Action.InternalLink,
+        text: Text.OtherRecordSources,
         origin: Origin.Home,
+        destination: Destination.RecordSources,
+        type: Type.HomeTile,
+        url: InternalUrl.OtherRecordSources,
     });
     router.push({ path: "/otherRecordSources" });
 }
@@ -399,7 +401,7 @@ function handleClickQuickLink(index: number): void {
             destination: `${EventDataUtility.getDataset(
                 detailsCollection[0].type
             )} Timeline`,
-            url: InternalUrl.QuickLink,
+            url: InternalUrl.Timeline,
         });
     }
 
@@ -775,8 +777,9 @@ watch(vaccineRecordState, () => {
                             </div>
                             <p class="text-body-1 mb-0">
                                 Some health records may not appear in Health
-                                Gateway. Learn about other trusted websites to
-                                find where your records may be.
+                                Gateway. Learn about other trusted regional
+                                patient websites to help you find your health
+                                records.
                             </p>
                         </div>
                     </div>

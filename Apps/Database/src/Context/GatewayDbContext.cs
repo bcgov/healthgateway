@@ -974,6 +974,17 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = DateTime.ParseExact("06/07/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = DateTime.ParseExact("06/07/2022 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
+                    },
+                    new LegalAgreement // Complete overhaul of the Terms of Service
+                    {
+                        Id = Guid.Parse("8d713fb0-5d94-425f-996a-f2eabb54847c"),
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
+                        LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20260204.html"),
+                        EffectiveDate = DateTime.ParseExact("02/04/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = DateTime.ParseExact("02/01/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = DateTime.ParseExact("02/01/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                     });
         }
 

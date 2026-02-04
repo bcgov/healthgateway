@@ -18,6 +18,8 @@ trigger:
   paths:
     include:
       - Apps/Admin
+    exclude:
+      - Apps/Admin/Tests/Functional
 
 extends:
   template: /Build/hg.yaml
