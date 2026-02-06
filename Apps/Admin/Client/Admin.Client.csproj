@@ -18,15 +18,15 @@
     <PackageReference Include="Fluxor.Blazor.Web" Version="6.9.0" />
     <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.9.0" />
     <PackageReference Include="MudBlazor" Version="8.15.0" />
-    <PackageReference Include="Refit" Version="9.0.2" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.0" />
+    <PackageReference Include="Refit" Version="10.0.1" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.2" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="../../stylecop.json" />
