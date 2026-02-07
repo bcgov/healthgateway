@@ -1,4 +1,4 @@
-import { CardName } from "@/constants/cardName";
+import { CardNames } from "@/constants/cardNames";
 import { EntryType } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
 import {
@@ -39,7 +39,7 @@ export default abstract class ConfigUtil {
         return ConfigUtil.isDatasetEnabled(datasetName) && !disabledByOverride;
     }
 
-    public static isServiceEnabled(serviceName: ServiceName) {
+    public static isServiceEnabled(serviceName: ServiceName): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         if (config.services?.enabled && config.services.services) {
             return config.services.services.some(
@@ -51,24 +51,26 @@ export default abstract class ConfigUtil {
         return false;
     }
 
-    public static isServicesFeatureEnabled() {
+    public static isServicesFeatureEnabled(): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         return config.services?.enabled;
     }
 
-    public static isOtherRecordSourcesFeatureEnabled() {
+    public static isOtherRecordSourcesFeatureEnabled(): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         return config.homepage?.otherRecordSources?.enabled ?? false;
     }
 
-    public static isOtherRecordSourcesCardEnabled(cardName: CardName) {
+    public static isOtherRecordSourcesCardEnabled(
+        cardNames: CardNames
+    ): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         const feature = config.homepage?.otherRecordSources;
 
         if (feature?.enabled && feature.sources) {
             return feature.sources.some(
                 (card) =>
-                    card.name.toLowerCase() === cardName.toLowerCase() &&
+                    card.name.toLowerCase() === cardNames.toLowerCase() &&
                     card.enabled
             );
         }
@@ -76,7 +78,7 @@ export default abstract class ConfigUtil {
         return false;
     }
 
-    public static isImmunizationRecordLinkEnabled() {
+    public static isImmunizationRecordLinkEnabled(): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         return config.homepage?.showImmunizationRecordLink ?? false;
     }
