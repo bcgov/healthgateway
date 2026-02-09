@@ -68,7 +68,7 @@
     "covid19": {
         "pcrTestEnabled": false,
         "publicCovid19": {
-            "vaccineCardEnabled": false,
+            "vaccineCardEnabled": true,
             "showFederalProofOfVaccination": true
         },
         "proofOfVaccination": {
@@ -97,5 +97,20 @@
                 "enabled": true
             }
         ]
+    },
+    "profile": {
+        "notifications": {
+            "enabled": true,
+            "type": [
+                {
+                    "name": "bcCancerScreening",
+                    "enabled": true,
+                    "preferences": {
+                        "email": true,
+                        "sms": true
+                    }
+                }
+            ]
+        }
     }
 }

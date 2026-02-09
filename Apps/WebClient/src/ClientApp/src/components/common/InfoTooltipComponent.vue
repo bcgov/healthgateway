@@ -6,12 +6,14 @@ interface Props {
     size?: string;
     maxWidth?: number;
     tooltipTestid?: string;
+    contentClass?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
     text: undefined,
     size: "small",
     maxWidth: 300,
     tooltipTestid: undefined,
+    contentClass: undefined,
 });
 
 const openedFromClick = ref(false);
@@ -49,6 +51,7 @@ onBeforeUnmount(() => {
         :model-value="openedFromClick || openedFromHover"
         :open-on-click="false"
         :open-on-hover="false"
+        :content-class="contentClass"
     >
         <template #activator="{ props: slotProps }">
             <v-icon
