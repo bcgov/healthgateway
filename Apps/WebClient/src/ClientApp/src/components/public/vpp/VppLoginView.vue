@@ -35,7 +35,7 @@ function openHealthGatewayInfo(): void {
         Destination.HealthGateway,
         ExternalUrl.HealthGateway
     );
-    window.open(ExternalUrl.HealthGateway, "_blank", "noopener");
+    window.location.assign(ExternalUrl.HealthGateway);
 }
 
 function openHgHome() {
@@ -85,26 +85,27 @@ function trackNavigationClick(
                 class="vpp-login-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
                 <p class="text-center">
-                    <strong>You are opening Health Gateway</strong>
+                    <strong>Do you want to open Health Gateway?</strong>
                 </p>
                 <p class="text-center mb-4">
-                    As you are already signed into AccessMyHealth, you may go
-                    directly to your Health Gateway records.
+                    You are currently signed into AccessMyHealth. If you wish to
+                    continue, you will open Health Gateway in this window.
                 </p>
                 <p class="text-center">
-                    For more information about Health Gateway, click
+                    Health Gateway may contain more health records and
+                    information.
                     <a
                         :href="ExternalUrl.HealthGateway"
                         class="text-link"
                         data-testid="click-hgw-link"
                         @click.prevent="openHealthGatewayInfo"
-                        >here</a
-                    >.
+                        >Learn more.</a
+                    >
                 </p>
                 <div class="d-flex flex-column flex-sm-row ga-2 justify-center">
                     <HgButtonComponent
                         variant="link"
-                        text="Go back to AccessMyHealth"
+                        text="Cancel"
                         :uppercase="false"
                         data-testid="go-back-button"
                         :data-url="ExternalUrl.AccessMyHealth"
@@ -112,7 +113,7 @@ function trackNavigationClick(
                     />
                     <HgButtonComponent
                         variant="link"
-                        text="Sign into Health Gateway"
+                        text="Continue to Health Gateway"
                         :uppercase="false"
                         data-testid="sign-in-button"
                         @click="openHgHome()"
