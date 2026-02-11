@@ -119,6 +119,10 @@ function trackNavigationClick(
                         @click="openHgHome()"
                     />
                 </div>
+                <p class="text-center mt-8 text-body-2 font-italic">
+                    Please remember to sign out and close both windows when you
+                    are done.
+                </p>
             </div>
         </div>
     </div>
