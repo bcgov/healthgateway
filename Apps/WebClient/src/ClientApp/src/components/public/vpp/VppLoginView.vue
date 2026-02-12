@@ -20,7 +20,7 @@ const trackingService = container.get<ITrackingService>(
 function openAccessMyHealth() {
     trackNavigationClick(
         Action.ExternalLink,
-        Text.BackToAccessMyHealth,
+        Text.Cancel,
         Destination.AccessMyHealth,
         ExternalUrl.AccessMyHealth
     );
@@ -31,7 +31,7 @@ function openAccessMyHealth() {
 function openHealthGatewayInfo(): void {
     trackNavigationClick(
         Action.ExternalLink,
-        Text.HealthGatewayInfo,
+        Text.LearnMore,
         Destination.HealthGateway,
         ExternalUrl.HealthGateway
     );
@@ -43,7 +43,7 @@ function openHgHome() {
 
     trackNavigationClick(
         Action.InternalLink,
-        Text.HealthGatewayHome,
+        Text.ContinueToHealthGateway,
         Destination.HealthGateway,
         InternalUrl.Home
     );
@@ -107,7 +107,8 @@ function trackNavigationClick(
                         variant="link"
                         text="Cancel"
                         :uppercase="false"
-                        data-testid="go-back-button"
+                        class="text-body-1"
+                        data-testid="cancel-button"
                         :data-url="ExternalUrl.AccessMyHealth"
                         @click="openAccessMyHealth()"
                     />
@@ -115,7 +116,8 @@ function trackNavigationClick(
                         variant="link"
                         text="Continue to Health Gateway"
                         :uppercase="false"
-                        data-testid="sign-in-button"
+                        class="text-body-1"
+                        data-testid="continue-to-hgw-button"
                         @click="openHgHome()"
                     />
                 </div>

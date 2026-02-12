@@ -7,7 +7,9 @@ describe("VPP Login View", () => {
     it('Sign in button navigates to "/login" (same origin)', () => {
         cy.visit(PATH);
 
-        cy.get('[data-testid="sign-in-button"]').should("be.visible").click();
+        cy.get('[data-testid="continue-to-hgw-button"]')
+            .should("be.visible")
+            .click();
         cy.location("pathname", { timeout: 10000 }).should("eq", "/login");
     });
 
@@ -38,6 +40,6 @@ describe("VPP Login View", () => {
                 });
         });
 
-        cy.get('[data-testid="go-back-button"]').should("be.visible");
+        cy.get('[data-testid="cancel-button"]').should("be.visible");
     });
 });
