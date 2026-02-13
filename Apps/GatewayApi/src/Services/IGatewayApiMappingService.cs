@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
@@ -115,5 +116,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         WebAlert MapToWebAlert(PhsaWebAlert source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        IList<UserProfileNotificationSettingModel> MapToUserProfileNotificationSettingModels(
+            IReadOnlyList<UserProfileNotificationSetting> source);
     }
 }

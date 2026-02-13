@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using System.Collections.Generic;
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -155,6 +156,13 @@ namespace HealthGateway.GatewayApi.Services
         public WebAlert MapToWebAlert(PhsaWebAlert source)
         {
             return mapper.Map<PhsaWebAlert, WebAlert>(source);
+        }
+
+        /// <inheritdoc/>
+        public IList<UserProfileNotificationSettingModel> MapToUserProfileNotificationSettingModels(
+            IReadOnlyList<UserProfileNotificationSetting> source)
+        {
+            return mapper.Map<IReadOnlyList<UserProfileNotificationSetting>, IList<UserProfileNotificationSettingModel>>(source);
         }
     }
 }

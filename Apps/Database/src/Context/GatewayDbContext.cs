@@ -92,6 +92,7 @@ namespace HealthGateway.Database.Context
         public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
         public DbSet<BetaFeatureAccess> BetaFeatureAccess { get; set; } = null!;
+        public DbSet<UserProfileNotificationSetting> UserProfileNotificationSetting { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -510,6 +511,25 @@ namespace HealthGateway.Database.Context
                 .HasColumnType("jsonb")
                 .HasConversion(dataSourcesConverter);
 
+            ValueConverter<ProfileNotificationType, string> profileNotificationTypeCodeConverter = new(
+                v => EnumUtility.ToEnumString(v, false),
+                v => EnumUtility.ToEnum<ProfileNotificationType>(v, false));
+
+            modelBuilder.Entity<ProfileNotificationTypeCode>()
+                .Property(e => e.Code)
+                .HasConversion(profileNotificationTypeCodeConverter);
+
+            modelBuilder.Entity<UserProfileNotificationSetting>()
+                .Property(e => e.NotificationTypeCode)
+                .HasConversion(profileNotificationTypeCodeConverter);
+
+            modelBuilder.Entity<UserProfileNotificationSetting>()
+                .HasOne<ProfileNotificationTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(p => p.Code)
+                .HasForeignKey(p => p.NotificationTypeCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -524,6 +544,7 @@ namespace HealthGateway.Database.Context
             this.SeedApplicationSettings(modelBuilder);
             this.SeedAuditGroupCodes(modelBuilder);
             this.SeedBetaFeatureCodes(modelBuilder);
+            this.SeedProfileNotificationType(modelBuilder);
         }
 
         /// <summary>
@@ -1392,6 +1413,25 @@ namespace HealthGateway.Database.Context
                     {
                         Code = BetaFeature.Salesforce,
                         Description = "Salesforce Beta Feature Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Profile Notification Types.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedProfileNotificationType(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProfileNotificationTypeCode>()
+                .HasData(
+                    new ProfileNotificationTypeCode
+                    {
+                        Code = ProfileNotificationType.BcCancerScreening,
+                        Description = "BC Cancer Screening notification",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
