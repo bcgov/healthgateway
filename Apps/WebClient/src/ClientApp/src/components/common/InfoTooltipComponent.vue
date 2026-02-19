@@ -59,6 +59,9 @@ onBeforeUnmount(() => {
                 icon="far fa-circle-question"
                 color="primary"
                 :size="size"
+                :data-testid="
+                    tooltipTestid ? `${tooltipTestid}-icon` : undefined
+                "
                 @click="handleClick"
                 @mouseenter="openedFromHover = true"
                 @mouseleave="openedFromHover = false"

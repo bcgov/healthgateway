@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch, watchEffect } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
@@ -48,36 +48,17 @@ const notificationPreferencesByType = computed(
         )
 );
 
-function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
-    return ConfigUtil.isProfileNotificationTypeEnabled(type);
-}
-
 const channelState = reactive<
     Record<string, { emailEnabled: boolean; smsEnabled: boolean }>
 >({});
 
 const enabledNotificationPreferences = computed<NotificationPreference[]>(() =>
     getNotificationPreferenceTypes()
-        .filter((def) => isNotificationTypeEnabled(def.type))
-        .map((def) => {
-            if (!channelState[def.id]) {
-                const prefs =
-                    notificationPreferencesByType.value.get(def.type) ?? [];
-                channelState[def.id] = {
-                    emailEnabled: prefs.includes(
-                        ProfileNotificationPreference.Email
-                    ),
-                    smsEnabled: prefs.includes(
-                        ProfileNotificationPreference.Sms
-                    ),
-                };
-            }
-
-            return {
-                ...def,
-                enabled: true,
-            };
-        })
+        .filter((definition) => isNotificationTypeEnabled(definition.type))
+        .map((definition) => ({
+            ...definition,
+            enabled: true,
+        }))
 );
 
 const hasEnabledNotificationPreferences = computed(
@@ -110,6 +91,10 @@ const hasAnyChannelEnabled = computed(
     () => showEmailColumn.value || showSmsColumn.value
 );
 
+function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
+    return ConfigUtil.isProfileNotificationTypeEnabled(type);
+}
+
 function buildNotificationPreferences(
     rowId: string
 ): ProfileNotificationPreference[] {
@@ -125,6 +110,19 @@ function buildNotificationPreferences(
     }
 
     return preferences;
+}
+
+async function saveNotificationPreferences(
+    type: ProfileNotificationType,
+    preferences: ProfileNotificationPreference[]
+): Promise<void> {
+    const notificationSetting: UserProfileNotificationSettingModel = {
+        type: getUserProfileNotificationType(type), // "bcCancerScreening" to "BcCancerScreening"
+        emailEnabled: preferences.includes(ProfileNotificationPreference.Email),
+        smsEnabled: preferences.includes(ProfileNotificationPreference.Sms),
+    };
+
+    await userStore.updateNotificationSettings(notificationSetting);
 }
 
 async function handleChannelToggle(
@@ -169,19 +167,9 @@ async function handleChannelToggle(
     }
 }
 
-async function saveNotificationPreferences(
-    type: ProfileNotificationType,
-    preferences: ProfileNotificationPreference[]
-): Promise<void> {
-    const notificationSetting: UserProfileNotificationSettingModel = {
-        type: getUserProfileNotificationType(type), // "bcCancerScreening" to "BcCancerScreening"
-        emailEnabled: preferences.includes(ProfileNotificationPreference.Email),
-        smsEnabled: preferences.includes(ProfileNotificationPreference.Sms),
-    };
-
-    await userStore.updateNotificationSettings(notificationSetting);
-}
-
+// When the email channel becomes disabled (no email or not verified),
+// force all email toggles in the UI state to false so users cannot
+// have email notifications enabled while the channel is unavailable.
 watch(isEmailChannelDisabled, (disabled) => {
     if (disabled) {
         Object.values(channelState).forEach(
@@ -190,11 +178,37 @@ watch(isEmailChannelDisabled, (disabled) => {
     }
 });
 
+// When the SMS channel becomes disabled (no phone or not verified),
+// force all SMS toggles in the UI state to false so users cannot
+// have SMS notifications enabled while the channel is unavailable.
 watch(isSmsChannelDisabled, (disabled) => {
     if (disabled) {
         Object.values(channelState).forEach(
             (state) => (state.smsEnabled = false)
         );
+    }
+});
+
+// Ensure channelState is initialized for each enabled notification type.
+// This keeps the UI switch state in sync with the user's saved preferences.
+// Runs immediately and whenever the enabled notification rows or
+// underlying preference data change.
+watchEffect(() => {
+    const rows = enabledNotificationPreferences.value;
+    const prefsMap = notificationPreferencesByType.value;
+
+    for (const row of rows) {
+        if (!channelState[row.id]) {
+            const enabledPrefs = prefsMap.get(row.type) ?? [];
+            channelState[row.id] = {
+                emailEnabled: enabledPrefs.includes(
+                    ProfileNotificationPreference.Email
+                ),
+                smsEnabled: enabledPrefs.includes(
+                    ProfileNotificationPreference.Sms
+                ),
+            };
+        }
     }
 });
 </script>
@@ -229,24 +243,26 @@ watch(isSmsChannelDisabled, (disabled) => {
                     data-testid="profile-notification-preferences-header"
                 >
                     <v-col
+                        data-testid="profile-notification-preferences-header-type"
                         :cols="hasAnyChannelEnabled ? 8 : 12"
                         :class="['py-0', hasAnyChannelEnabled ? 'pe-2' : '']"
                         >Notification Type</v-col
                     >
                     <v-col
                         v-if="showEmailColumn"
+                        data-testid="profile-notification-preferences-header-email"
                         :cols="showSmsColumn ? 2 : 4"
                         class="py-0 text-center"
                         >Email</v-col
                     >
                     <v-col
                         v-if="showSmsColumn"
+                        data-testid="profile-notification-preferences-header-sms"
                         :cols="showEmailColumn ? 2 : 4"
                         class="py-0 text-center"
                         >Text (SMS)</v-col
                     >
                 </v-row>
-
                 <v-row
                     v-for="item in enabledNotificationPreferences"
                     :key="item.id"
@@ -259,7 +275,11 @@ watch(isSmsChannelDisabled, (disabled) => {
                         :class="['py-0', hasAnyChannelEnabled ? 'pe-2' : '']"
                     >
                         <div class="d-flex align-center">
-                            <span>{{ item.label }}</span>
+                            <span
+                                :data-testid="`profile-notification-preferences-${item.id}-label-value`"
+                            >
+                                {{ item.label }}
+                            </span>
                             <InfoTooltipComponent
                                 :tooltip-testid="`info-tooltip-${item.id}`"
                                 class="ml-2"
@@ -284,6 +304,7 @@ watch(isSmsChannelDisabled, (disabled) => {
                             density="compact"
                             hide-details
                             inset
+                            :data-testid="`profile-notification-preferences-${item.id}-email-value`"
                             :disabled="isEmailChannelDisabled"
                             @update:model-value="
                                 handleChannelToggle(item, 'email', $event)
@@ -302,6 +323,7 @@ watch(isSmsChannelDisabled, (disabled) => {
                             density="compact"
                             hide-details
                             inset
+                            :data-testid="`profile-notification-preferences-${item.id}-sms-value`"
                             :disabled="isSmsChannelDisabled"
                             @update:model-value="
                                 handleChannelToggle(item, 'sms', $event)
@@ -310,7 +332,6 @@ watch(isSmsChannelDisabled, (disabled) => {
                     </v-col>
                 </v-row>
             </template>
-
             <p
                 v-else
                 class="mb-0"
@@ -319,7 +340,6 @@ watch(isSmsChannelDisabled, (disabled) => {
                 No notification options are currently available.
             </p>
         </v-container>
-
         <v-divider class="my-4" />
     </div>
 </template>
