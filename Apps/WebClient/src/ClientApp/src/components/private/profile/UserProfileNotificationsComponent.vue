@@ -6,19 +6,18 @@ import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import {
     getNotificationPreferenceTypes,
+    getUserProfileNotificationSettings,
+    getUserProfileNotificationType,
     ProfileNotificationPreference,
     ProfileNotificationType,
 } from "@/constants/profileNotifications";
 import { NotificationPreference } from "@/models/notificationPreference";
+import { UserProfileNotificationSettingModel } from "@/models/userProfile";
 import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
 
 type NotificationChannel = "email" | "sms";
-
-const props = defineProps<{
-    notificationSettings?: UserProfileNotificationSettings[];
-}>();
 
 const userStore = useUserStore();
 
@@ -35,13 +34,17 @@ const isEmailChannelDisabled = computed(
 
 const isSmsChannelDisabled = computed(() => !sms.value || !smsVerified.value);
 
+const uiNotificationSettings = computed<UserProfileNotificationSettings[]>(() =>
+    getUserProfileNotificationSettings(userStore.user.notificationSettings)
+);
+
 const notificationPreferencesByType = computed(
     () =>
         new Map(
-            props.notificationSettings?.map((setting) => [
+            uiNotificationSettings.value.map((setting) => [
                 setting.type,
-                setting.preferences,
-            ]) ?? []
+                setting.preferences ?? [],
+            ])
         )
 );
 
@@ -156,7 +159,7 @@ async function handleChannelToggle(
         buildNotificationPreferences(item.id);
 
     try {
-        await persistNotificationPreferences(item.type, preferences);
+        await saveNotificationPreferences(item.type, preferences);
     } catch {
         state.emailEnabled = previousEmailEnabled;
         state.smsEnabled = previousSmsEnabled;
@@ -166,15 +169,17 @@ async function handleChannelToggle(
     }
 }
 
-async function persistNotificationPreferences(
-    _type: ProfileNotificationType,
-    _preferences: ProfileNotificationPreference[]
+async function saveNotificationPreferences(
+    type: ProfileNotificationType,
+    preferences: ProfileNotificationPreference[]
 ): Promise<void> {
-    // TODO: Replace with real service call
-    // await UserProfileService.updateNotificationPreferences(type, preferences);
+    const notificationSetting: UserProfileNotificationSettingModel = {
+        type: getUserProfileNotificationType(type), // "bcCancerScreening" to "BcCancerScreening"
+        emailEnabled: preferences.includes(ProfileNotificationPreference.Email),
+        smsEnabled: preferences.includes(ProfileNotificationPreference.Sms),
+    };
 
-    // Placeholder async so it compiles and behaves like a real call
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await userStore.updateNotificationSettings(notificationSetting);
 }
 
 watch(isEmailChannelDisabled, (disabled) => {

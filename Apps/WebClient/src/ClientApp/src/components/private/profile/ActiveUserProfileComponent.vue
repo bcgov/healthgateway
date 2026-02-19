@@ -36,8 +36,8 @@ const formattedLoginDateTimes = computed(() =>
     </p>
     <UserProfileEmailComponent @email-updated="emit('email-updated', $event)" />
     <UserProfileSmsComponent />
-    <UserProfileNotificationsComponent v-if="true" />
     <UserProfileAddressComponent />
+    <UserProfileNotificationsComponent />
     {{
         /* AB#16941 - Hide login history as that was not in Sales Force Implementation */ ""
     }}
