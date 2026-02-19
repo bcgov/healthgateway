@@ -52,6 +52,7 @@ namespace HealthGateway.GatewayApi.Controllers
         private readonly ILegalAgreementServiceV2 legalAgreementService;
         private readonly IUserValidationService userValidationService;
         private readonly IRegistrationService registrationService;
+        private readonly IUserProfileNotificationSettingService notificationSettingService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileControllerV2"/> class.
@@ -64,6 +65,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="legalAgreementService">The injected legal agreement service.</param>
         /// <param name="userValidationService">The injected user validation service.</param>
         /// <param name="registrationService">The injected registration service.</param>
+        /// <param name="notificationSettingService">The injected user profile notification setting service.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
         public UserProfileControllerV2(
             IUserProfileServiceV2 userProfileService,
@@ -73,7 +75,8 @@ namespace HealthGateway.GatewayApi.Controllers
             IUserPreferenceServiceV2 userPreferenceService,
             ILegalAgreementServiceV2 legalAgreementService,
             IUserValidationService userValidationService,
-            IRegistrationService registrationService)
+            IRegistrationService registrationService,
+            IUserProfileNotificationSettingService notificationSettingService)
         {
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
@@ -83,6 +86,7 @@ namespace HealthGateway.GatewayApi.Controllers
             this.legalAgreementService = legalAgreementService;
             this.userValidationService = userValidationService;
             this.registrationService = registrationService;
+            this.notificationSettingService = notificationSettingService;
         }
 
         /// <summary>
@@ -496,6 +500,40 @@ namespace HealthGateway.GatewayApi.Controllers
         public async Task<bool> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
             return await this.userValidationService.IsPhoneNumberValidAsync(phoneNumber, ct);
+        }
+
+        /// <summary>
+        /// Updates a user's profile notification settings.
+        /// </summary>
+        /// <param name="hdid">The user's HDID.</param>
+        /// <param name="model">
+        /// The notification setting model containing the notification type and updated delivery channel values.
+        /// </param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>An HTTP 200 OK result.</returns>
+        /// <response code="200">The notification settings were updated successfully.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
+        /// <response code="403">
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="500">Internal server error.</response>
+        [HttpPut]
+        [Route("{hdid}/notificationsettings")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> UpdateNotificationSettings(
+            string hdid,
+            [FromBody] UserProfileNotificationSettingModel model,
+            CancellationToken ct)
+        {
+            await this.notificationSettingService.UpdateAsync(hdid, model, ct);
+            return this.Ok();
         }
     }
 }

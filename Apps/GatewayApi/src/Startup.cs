@@ -109,6 +109,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IMessagingVerificationService, MessagingVerificationService>();
             services.AddTransient<IJobService, JobService>();
             services.AddTransient<IDataAccessService, DataAccessService>();
+            services.AddTransient<IUserProfileNotificationSettingService, UserProfileNotificationSettingService>();
 
             // Add delegates
             services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
@@ -127,6 +128,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
             services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<IUserProfileNotificationSettingDelegate, DbUserProfileNotificationSettingDelegate>();
 
             // Add API Clients
             CDogsConfig cdogsConfig = new();
@@ -174,17 +176,16 @@ namespace HealthGateway.GatewayApi
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(
-                async (context, next) =>
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE")
                 {
-                    if (context.Request.Method == "TRACE")
-                    {
-                        context.Response.StatusCode = 405;
-                        return;
-                    }
+                    context.Response.StatusCode = 405;
+                    return;
+                }
 
-                    await next.Invoke();
-                });
+                await next.Invoke();
+            });
         }
     }
 }

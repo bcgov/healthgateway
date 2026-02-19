@@ -34,6 +34,8 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="patientRepository">The injected patient repository.</param>
     /// <param name="userPreferenceService">The injected user preference service.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
+    /// <param name="notificationSettingService">The injected user profile notification setting service.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
     public class UserProfileModelService(
         IApplicationSettingsService applicationSettingsService,
         ILegalAgreementServiceV2 legalAgreementService,
@@ -41,7 +43,8 @@ namespace HealthGateway.GatewayApi.Services
         IMessagingVerificationDelegate messageVerificationDelegate,
         IPatientRepository patientRepository,
         IUserPreferenceServiceV2 userPreferenceService,
-        IUserProfileDelegate userProfileDelegate) : IUserProfileModelService
+        IUserProfileDelegate userProfileDelegate,
+        IUserProfileNotificationSettingService notificationSettingService) : IUserProfileModelService
     {
         /// <inheritdoc/>
         public async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, int userProfileHistoryRecordLimit, CancellationToken ct = default)
@@ -69,6 +72,8 @@ namespace HealthGateway.GatewayApi.Services
             userProfileModel.BlockedDataSources = await patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
             userProfileModel.Preferences = await userPreferenceService.GetUserPreferencesAsync(userProfileModel.HdId, ct);
             userProfileModel.LastLoginDateTimes = [userProfile.LastLoginDateTime, .. historyCollection.Select(h => h.LastLoginDateTime)];
+
+            userProfileModel.NotificationSettings = await notificationSettingService.GetAsync(userProfile.HdId, ct);
 
             return userProfileModel;
         }
