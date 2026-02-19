@@ -35,19 +35,24 @@ export function getUserProfileNotificationSettings(
     settings: UserProfileNotificationSettingModel[] | undefined
 ): UserProfileNotificationSettings[] {
     return (settings ?? [])
-        .map((s) => {
-            const uiType = getProfileNotificationType(s.type); // "BcCancerScreening" to "bcCancerScreening"
-            if (!uiType) return null;
+        .map((setting) => {
+            const profileNotificationType = getProfileNotificationType(
+                setting.type
+            ); // "BcCancerScreening" to "bcCancerScreening"
+            if (!profileNotificationType) return null;
 
             const preferences: ProfileNotificationPreference[] = [];
-            if (s.emailEnabled)
+            if (setting.emailEnabled)
                 preferences.push(ProfileNotificationPreference.Email);
-            if (s.smsEnabled)
+            if (setting.smsEnabled)
                 preferences.push(ProfileNotificationPreference.Sms);
 
-            return { type: uiType, preferences };
+            return { type: profileNotificationType, preferences };
         })
-        .filter((x): x is UserProfileNotificationSettings => x !== null);
+        .filter(
+            (result): result is UserProfileNotificationSettings =>
+                result !== null
+        );
 }
 
 export function getUserProfileNotificationType(

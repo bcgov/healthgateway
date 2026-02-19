@@ -58,23 +58,24 @@ const channelState = reactive<
 
 const enabledNotificationPreferences = computed<NotificationPreference[]>(() =>
     getNotificationPreferenceTypes()
-        .filter((def) => isNotificationTypeEnabled(def.type))
-        .map((def) => {
-            if (!channelState[def.id]) {
-                const prefs =
-                    notificationPreferencesByType.value.get(def.type) ?? [];
-                channelState[def.id] = {
-                    emailEnabled: prefs.includes(
+        .filter((definition) => isNotificationTypeEnabled(definition.type))
+        .map((definition) => {
+            if (!channelState[definition.id]) {
+                const enabledPreferences =
+                    notificationPreferencesByType.value.get(definition.type) ??
+                    [];
+                channelState[definition.id] = {
+                    emailEnabled: enabledPreferences.includes(
                         ProfileNotificationPreference.Email
                     ),
-                    smsEnabled: prefs.includes(
+                    smsEnabled: enabledPreferences.includes(
                         ProfileNotificationPreference.Sms
                     ),
                 };
             }
 
             return {
-                ...def,
+                ...definition,
                 enabled: true,
             };
         })
