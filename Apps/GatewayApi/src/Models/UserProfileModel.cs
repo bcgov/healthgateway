@@ -107,5 +107,10 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the beta features available to the user.
         /// </summary>
         public IEnumerable<BetaFeature> BetaFeatures { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the notification settings.
+        /// </summary>
+        public IList<UserProfileNotificationSettingModel> NotificationSettings { get; set; } = [];
     }
 }

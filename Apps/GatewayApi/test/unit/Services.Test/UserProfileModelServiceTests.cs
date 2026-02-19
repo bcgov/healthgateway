@@ -91,6 +91,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ],
                 BetaFeatures = [GatewayApi.Constants.BetaFeature.Salesforce],
                 BlockedDataSources = blockedDataSources,
+                NotificationSettings = [],
             };
 
             IUserProfileModelService service = SetupUserProfileModelServiceForBuildUserProfileModel(
@@ -185,7 +186,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
             Mock<IPatientRepository>? patientRepositoryMock = null,
             Mock<IUserPreferenceServiceV2>? userPreferenceServiceMock = null,
-            Mock<IUserProfileDelegate>? userProfileDelegateMock = null)
+            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<IUserProfileNotificationSettingService>? userProfileNotificationSettingServiceMock = null)
         {
             userProfileDelegateMock ??= new();
             userPreferenceServiceMock ??= new();
@@ -193,6 +195,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegateMock ??= new();
             applicationSettingsServiceMock ??= new();
             patientRepositoryMock ??= new();
+            userProfileNotificationSettingServiceMock ??= new();
 
             return new UserProfileModelService(
                 applicationSettingsServiceMock.Object,
@@ -201,15 +204,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
                 userPreferenceServiceMock.Object,
-                userProfileDelegateMock.Object);
+                userProfileDelegateMock.Object,
+                userProfileNotificationSettingServiceMock.Object);
         }
 
         private static Mock<IApplicationSettingsService> SetupApplicationSettingsServiceMock(DateTime latestTourChangeDateTime)
         {
             Mock<IApplicationSettingsService> applicationSettingsServiceMock = new();
-            applicationSettingsServiceMock.Setup(
-                    s => s.GetLatestTourChangeDateTimeAsync(
-                        It.IsAny<CancellationToken>()))
+            applicationSettingsServiceMock.Setup(s => s.GetLatestTourChangeDateTimeAsync(
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(latestTourChangeDateTime);
 
             return applicationSettingsServiceMock;
@@ -218,10 +221,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static Mock<ILegalAgreementServiceV2> SetupLegalAgreementServiceMock(Guid latestTermsOfServiceId)
         {
             Mock<ILegalAgreementServiceV2> legalAgreementServiceMock = new();
-            legalAgreementServiceMock.Setup(
-                    s => s.GetActiveLegalAgreementId(
-                        It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
-                        It.IsAny<CancellationToken>()))
+            legalAgreementServiceMock.Setup(s => s.GetActiveLegalAgreementId(
+                    It.Is<LegalAgreementType>(x => x == LegalAgreementType.TermsOfService),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(latestTermsOfServiceId);
 
             return legalAgreementServiceMock;
@@ -233,18 +235,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
 
-            messagingVerificationDelegateMock.Setup(
-                    s => s.GetLastForUserAsync(
-                        It.IsAny<string>(),
-                        It.Is<string>(x => x == MessagingVerificationType.Email),
-                        It.IsAny<CancellationToken>()))
+            messagingVerificationDelegateMock.Setup(s => s.GetLastForUserAsync(
+                    It.IsAny<string>(),
+                    It.Is<string>(x => x == MessagingVerificationType.Email),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(emailAddressInvite);
 
-            messagingVerificationDelegateMock.Setup(
-                    s => s.GetLastForUserAsync(
-                        It.IsAny<string>(),
-                        It.Is<string>(x => x == MessagingVerificationType.Sms),
-                        It.IsAny<CancellationToken>()))
+            messagingVerificationDelegateMock.Setup(s => s.GetLastForUserAsync(
+                    It.IsAny<string>(),
+                    It.Is<string>(x => x == MessagingVerificationType.Sms),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(smsNumberInvite);
 
             return messagingVerificationDelegateMock;
@@ -253,10 +253,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static Mock<IPatientRepository> SetupPatientRepositoryMock(IEnumerable<DataSource> dataSources)
         {
             Mock<IPatientRepository> patientRepositoryMock = new();
-            patientRepositoryMock.Setup(
-                    s => s.GetDataSourcesAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<CancellationToken>()))
+            patientRepositoryMock.Setup(s => s.GetDataSourcesAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dataSources);
 
             return patientRepositoryMock;
@@ -266,10 +265,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Dictionary<string, UserPreferenceModel> userPreferences)
         {
             Mock<IUserPreferenceServiceV2> userPreferenceServiceMock = new();
-            userPreferenceServiceMock.Setup(
-                    s => s.GetUserPreferencesAsync(
-                        It.Is<string>(x => x == Hdid),
-                        It.IsAny<CancellationToken>()))
+            userPreferenceServiceMock.Setup(s => s.GetUserPreferencesAsync(
+                    It.Is<string>(x => x == Hdid),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userPreferences);
 
             return userPreferenceServiceMock;
@@ -279,14 +277,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IList<UserProfileHistory> userProfileHistoryList)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(
-                    s => s.GetUserProfileHistoryListAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<int>(),
-                        It.IsAny<CancellationToken>()))
+            userProfileDelegateMock.Setup(s => s.GetUserProfileHistoryListAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfileHistoryList);
 
             return userProfileDelegateMock;
+        }
+
+        private static Mock<IUserProfileNotificationSettingService> SetupUserProfileNotificationSettingServiceMock(IList<UserProfileNotificationSettingModel>? notificationSettingModels = null)
+        {
+            Mock<IUserProfileNotificationSettingService> notificationSettingServiceMock = new();
+
+            notificationSettingServiceMock.Setup(s => s.GetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(notificationSettingModels ?? []);
+
+            return notificationSettingServiceMock;
         }
 
         private static IUserProfileModelService SetupUserProfileModelServiceForBuildUserProfileModel(
@@ -323,6 +332,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock =
                 SetupMessagingVerificationDelegateMock(emailAddressVerification, smsNumberVerification);
             Mock<IPatientRepository> patientRepositoryMock = SetupPatientRepositoryMock(blockedDataSources);
+            Mock<IUserProfileNotificationSettingService> userProfileNotificationSettingServiceMock = SetupUserProfileNotificationSettingServiceMock();
 
             return GetUserProfileModelService(
                 applicationSettingsServiceMock,
@@ -330,7 +340,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationDelegateMock,
                 patientRepositoryMock,
                 userPreferenceServiceMock,
-                userProfileDelegateMock);
+                userProfileDelegateMock,
+                userProfileNotificationSettingServiceMock);
         }
     }
 }

@@ -20,7 +20,7 @@ const trackingService = container.get<ITrackingService>(
 function openAccessMyHealth() {
     trackNavigationClick(
         Action.ExternalLink,
-        Text.BackToAccessMyHealth,
+        Text.Cancel,
         Destination.AccessMyHealth,
         ExternalUrl.AccessMyHealth
     );
@@ -31,11 +31,11 @@ function openAccessMyHealth() {
 function openHealthGatewayInfo(): void {
     trackNavigationClick(
         Action.ExternalLink,
-        Text.HealthGatewayInfo,
+        Text.LearnMore,
         Destination.HealthGateway,
         ExternalUrl.HealthGateway
     );
-    window.open(ExternalUrl.HealthGateway, "_blank", "noopener");
+    window.location.assign(ExternalUrl.HealthGateway);
 }
 
 function openHgHome() {
@@ -43,7 +43,7 @@ function openHgHome() {
 
     trackNavigationClick(
         Action.InternalLink,
-        Text.HealthGatewayHome,
+        Text.ContinueToHealthGateway,
         Destination.HealthGateway,
         InternalUrl.Home
     );
@@ -85,39 +85,46 @@ function trackNavigationClick(
                 class="vpp-login-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
                 <p class="text-center">
-                    <strong>You are opening Health Gateway</strong>
+                    <strong>Do you want to open Health Gateway?</strong>
                 </p>
                 <p class="text-center mb-4">
-                    As you are already signed into AccessMyHealth, you may go
-                    directly to your Health Gateway records.
+                    You are currently signed into AccessMyHealth. If you wish to
+                    continue, you will open Health Gateway in this window.
                 </p>
                 <p class="text-center">
-                    For more information about Health Gateway, click
+                    Health Gateway may contain more health records and
+                    information.
                     <a
                         :href="ExternalUrl.HealthGateway"
                         class="text-link"
                         data-testid="click-hgw-link"
                         @click.prevent="openHealthGatewayInfo"
-                        >here</a
-                    >.
+                        >Learn more.</a
+                    >
                 </p>
                 <div class="d-flex flex-column flex-sm-row ga-2 justify-center">
                     <HgButtonComponent
                         variant="link"
-                        text="Go back to AccessMyHealth"
+                        text="Cancel"
                         :uppercase="false"
-                        data-testid="go-back-button"
+                        class="text-body-1"
+                        data-testid="cancel-button"
                         :data-url="ExternalUrl.AccessMyHealth"
                         @click="openAccessMyHealth()"
                     />
                     <HgButtonComponent
                         variant="link"
-                        text="Sign into Health Gateway"
+                        text="Continue to Health Gateway"
                         :uppercase="false"
-                        data-testid="sign-in-button"
+                        class="text-body-1"
+                        data-testid="continue-to-hgw-button"
                         @click="openHgHome()"
                     />
                 </div>
+                <p class="text-center mt-8 text-body-2 font-italic">
+                    Please remember to sign out and close both windows when you
+                    are done.
+                </p>
             </div>
         </div>
     </div>
