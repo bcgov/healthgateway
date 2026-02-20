@@ -1,0 +1,26 @@
+{
+    "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+    "acceptedTermsOfService": true,
+    "email": "nobody@heathgateway.gov.bc.ca",
+    "isEmailVerified": true,
+    "smsNumber": "2506715000",
+    "isSMSNumberVerified": true,
+    "hasTermsOfServiceUpdated": false,
+    "lastLoginDateTime": "2021-11-23T05:55:14Z",
+    "lastLoginDateTimes": [
+        "2021-11-23T05:55:14Z",
+        "2021-11-22T05:49:47Z",
+        "2021-11-21T05:49:16Z"
+    ],
+    "closedDateTime": null,
+    "preferences": {},
+    "hasTourUpdated": true,
+    "blockedDataSources": [],
+    "notificationSettings": [
+        {
+            "type": "BcCancerScreening",
+            "emailEnabled": true,
+            "smsEnabled": true
+        }
+    ]
+}
