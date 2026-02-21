@@ -49,6 +49,19 @@ export default interface UserProfile {
 
     // Beta features available to the user
     betaFeatures?: BetaFeature[];
+
+    // Profile notification settings for the user
+    notificationSettings: UserProfileNotificationSettingModel[];
+}
+
+export enum UserProfileNotificationType {
+    BcCancerScreening = "BcCancerScreening",
+}
+
+export interface UserProfileNotificationSettingModel {
+    type: UserProfileNotificationType;
+    emailEnabled: boolean;
+    smsEnabled: boolean;
 }
 
 export interface CreateUserRequest {

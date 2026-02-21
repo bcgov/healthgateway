@@ -34,7 +34,8 @@ namespace HealthGateway.WebClient.Server.Models
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
         DependentsSettings Dependents,
-        ServicesSettings Services);
+        ServicesSettings Services,
+        ProfileSettings Profile);
 
     /// <summary>
     /// Settings for the home page.
@@ -145,6 +146,42 @@ namespace HealthGateway.WebClient.Server.Models
     public record SourceSettings(
         string Name,
         bool Enabled);
+
+    /// <summary>
+    /// Settings for profile features.
+    /// </summary>
+    /// <param name="Notifications">Settings for profile notifications.</param>
+    public record ProfileSettings(
+        ProfileNotificationSettings Notifications);
+
+    /// <summary>
+    /// Settings for profile notifications.
+    /// </summary>
+    /// <param name="Enabled">Toggles profile notifications.</param>
+    /// <param name="Type">Notification types.</param>
+    public record ProfileNotificationSettings(
+        bool Enabled,
+        ProfileNotificationTypeSettings[] Type);
+
+    /// <summary>
+    /// Settings for a notification type.
+    /// </summary>
+    /// <param name="Name">Notification type name.</param>
+    /// <param name="Enabled">Toggles notification type.</param>
+    /// <param name="Preferences">Delivery channel preferences.</param>
+    public record ProfileNotificationTypeSettings(
+        string Name,
+        bool Enabled,
+        NotificationPreferenceSettings Preferences);
+
+    /// <summary>
+    /// Notification delivery preferences.
+    /// </summary>
+    /// <param name="Email">Email notification enabled.</param>
+    /// <param name="Sms">SMS notification enabled.</param>
+    public record NotificationPreferenceSettings(
+        bool Email,
+        bool Sms);
 
 #pragma warning restore CA1819
 }

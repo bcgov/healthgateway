@@ -33,7 +33,10 @@ import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
 import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
-import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import UserProfile, {
+    CreateUserRequest,
+    UserProfileNotificationSettingModel,
+} from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { EventData } from "@/plugins/extensions";
@@ -143,6 +146,10 @@ export interface IUserProfileService {
     ): Promise<UserPreference>;
     updateAcceptedTerms(hdid: string, termsOfServiceId: string): Promise<void>;
     isPhoneNumberValid(phoneNumber: string): Promise<boolean>;
+    updateNotificationSettings(
+        hdid: string,
+        notificationSetting: UserProfileNotificationSettingModel
+    ): Promise<void>;
 }
 
 export interface IUserFeedbackService {

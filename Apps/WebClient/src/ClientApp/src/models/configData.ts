@@ -73,6 +73,7 @@ export interface FeatureToggleConfiguration {
     covid19: Covid19Settings;
     dependents: DependentsSettings;
     services: ServicesSettings;
+    profile: ProfileSettings;
 }
 
 export interface HomepageSettings {
@@ -134,6 +135,25 @@ export interface OtherRecordSourcesSettings {
 export interface SourceSettings {
     name: string;
     enabled: boolean;
+}
+
+export interface ProfileSettings {
+    notifications: ProfileNotificationSettings;
+}
+
+export interface ProfileNotificationSettings {
+    enabled: boolean;
+    type: ProfileNotificationTypeSettings[];
+}
+
+export interface ProfileNotificationTypeSettings {
+    name: string;
+    enabled: boolean;
+    preferences: NotificationPreferenceSettings;
+}
+export interface NotificationPreferenceSettings {
+    email: boolean;
+    sms: boolean;
 }
 
 // Various timeout values used by the VUE WebClient application.

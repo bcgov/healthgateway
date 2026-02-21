@@ -210,7 +210,8 @@ namespace HealthGateway.WebClientTests.Services
                             GetFeatureDatasetSettings(),
                             new Covid19Settings(true, new PublicCovid19Settings(true, true), new ProofOfVaccinationSettings(false)),
                             new DependentsSettings(true, true, [new("note", false)]),
-                            new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]))
+                            new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]),
+                            GetDefaultProfileSettings())
                         : null,
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
@@ -229,6 +230,31 @@ namespace HealthGateway.WebClientTests.Services
                 new("bcCancerScreening", true), new("clinicalDocument", true), new("covid19TestResult", true), new("diagnosticImaging", true), new("healthVisit", true),
                 new("hospitalVisit", true), new("immunization", true), new("labResult", true), new("medication", true), new("note", true), new("specialAuthorityRequest", true),
             ];
+        }
+
+        private static ProfileSettings GetDefaultProfileSettings()
+        {
+            NotificationPreferenceSettings preferences = new(
+                true,
+                false);
+
+            ProfileNotificationTypeSettings bcCancer = new(
+                "bcCancerScreening",
+                true,
+                preferences);
+
+            ProfileNotificationTypeSettings[] types = new[]
+            {
+                bcCancer,
+            };
+
+            ProfileNotificationSettings notifications = new(
+                true,
+                types);
+
+            ProfileSettings profile = new(notifications);
+
+            return profile;
         }
     }
 }

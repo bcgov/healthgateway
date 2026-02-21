@@ -5,7 +5,10 @@ import { HttpError, ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
-import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import UserProfile, {
+    CreateUserRequest,
+    UserProfileNotificationSettingModel,
+} from "@/models/userProfile";
 import {
     IHttpDelegate,
     ILogger,
@@ -362,5 +365,12 @@ export class RestUserProfileService implements IUserProfileService {
                 );
                 return result;
             });
+    }
+
+    public updateNotificationSettings(
+        _hdid: string,
+        _notificationSetting: UserProfileNotificationSettingModel
+    ): Promise<void> {
+        return Promise.reject(new Error("Not implemented."));
     }
 }

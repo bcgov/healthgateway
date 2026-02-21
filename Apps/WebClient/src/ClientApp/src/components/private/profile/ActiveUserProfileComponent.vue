@@ -5,6 +5,7 @@ import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.v
 import UserProfileAddressComponent from "@/components/private/profile/UserProfileAddressComponent.vue";
 import UserProfileEmailComponent from "@/components/private/profile/UserProfileEmailComponent.vue";
 import UserProfileManageAccountComponent from "@/components/private/profile/UserProfileManageAccountComponent.vue";
+import UserProfileNotificationsComponent from "@/components/private/profile/UserProfileNotificationsComponent.vue";
 import UserProfileSmsComponent from "@/components/private/profile/UserProfileSmsComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { useAppStore } from "@/stores/app";
@@ -36,6 +37,7 @@ const formattedLoginDateTimes = computed(() =>
     <UserProfileEmailComponent @email-updated="emit('email-updated', $event)" />
     <UserProfileSmsComponent />
     <UserProfileAddressComponent />
+    <UserProfileNotificationsComponent />
     {{
         /* AB#16941 - Hide login history as that was not in Sales Force Implementation */ ""
     }}
