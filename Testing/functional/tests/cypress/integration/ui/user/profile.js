@@ -318,11 +318,67 @@ describe("User Profile - Validate Address", () => {
 });
 
 describe("User Profile Notification Settings", () => {
-    it("Featuretoggle - Verify profile notification section is not visible", () => {
+    const notificationId = "bc-cancer-screening";
+
+    const sel = {
+        header: "[data-testid=profile-notification-preferences-label]",
+        label: `[data-testid=profile-notification-preferences-${notificationId}-label-value]`,
+        email: `[data-testid=profile-notification-preferences-${notificationId}-email-value]`,
+        sms: `[data-testid=profile-notification-preferences-${notificationId}-sms-value]`,
+        empty: "[data-testid=profile-notification-preferences-empty]",
+    };
+
+    function buildUserProfileFixture(overrides = {}) {
+        return {
+            hdId: "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            acceptedTermsOfService: true,
+            email: overrides.email ?? "nobody@healthgateway.gov.bc.ca",
+            isEmailVerified: overrides.isEmailVerified ?? true,
+            smsNumber: overrides.smsNumber ?? "2506715000",
+            isSMSNumberVerified: overrides.isSMSNumberVerified ?? true,
+            hasTermsOfServiceUpdated: false,
+            lastLoginDateTime: "2021-11-23T05:55:14Z",
+            lastLoginDateTimes: [
+                "2021-11-23T05:55:14Z",
+                "2021-11-22T05:49:47Z",
+                "2021-11-21T05:49:16Z",
+            ],
+            closedDateTime: null,
+            preferences: {},
+            hasTourUpdated: true,
+            blockedDataSources: [],
+            notificationSettings: [
+                {
+                    type: "BcCancerScreening",
+                    emailEnabled: overrides.emailEnabled ?? true,
+                    smsEnabled: overrides.smsEnabled ?? true,
+                },
+            ],
+        };
+    }
+
+    function login() {
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
+    }
+
+    function assertSwitch(selector, { enabled, checked }) {
+        cy.get(selector)
+            .should("be.visible")
+            .find('input[type="checkbox"]')
+            .should(enabled ? "be.enabled" : "be.disabled")
+            .and(checked ? "be.checked" : "not.be.checked");
+    }
+
+    beforeEach(() => {
         cy.configureSettings({
             profile: {
                 notifications: {
-                    enabled: false,
+                    enabled: true,
                     type: [
                         {
                             name: "bcCancerScreening",
@@ -333,57 +389,40 @@ describe("User Profile Notification Settings", () => {
                 },
             },
         });
-
-        setupStandardFixtures();
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Section hidden => nothing in this feature should render
-        cy.get("[data-testid=profile-notification-preferences-label]").should(
-            "not.exist"
-        );
     });
 
-    it("Featuretoggle - Verify profile notification BC Cancer Screening is not visible", () => {
+    // -------------------------------------------------------
+    // Feature Toggle Tests
+    // -------------------------------------------------------
+    it("Featuretoggle - profile notification section is not visible", () => {
+        cy.configureSettings({
+            profile: { notifications: { enabled: false } },
+        });
+
+        setupStandardFixtures();
+        login();
+
+        cy.get(sel.header).should("not.exist");
+    });
+
+    it("Featuretoggle - profile notification BC Cancer Screening type is not visible", () => {
         cy.configureSettings({
             profile: {
                 notifications: {
                     enabled: true,
-                    type: [
-                        {
-                            name: "bcCancerScreening",
-                            enabled: false,
-                            preferences: { email: true, sms: true },
-                        },
-                    ],
+                    type: [{ name: "bcCancerScreening", enabled: false }],
                 },
             },
         });
 
         setupStandardFixtures();
+        login();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Section visible but no enabled types => empty message
-        cy.get("[data-testid=profile-notification-preferences-label]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=profile-notification-preferences-empty]").should(
-            "be.visible"
-        );
+        cy.get(sel.header).should("be.visible");
+        cy.get(sel.empty).should("be.visible");
     });
 
-    it("Featuretoggle - Verify profile notification BC Cancer Screening Email Preference is not visible", () => {
+    it("Featuretoggle - profile notification BC Cancer Screening Sms preference is visible but Email preference is not", () => {
         cy.configureSettings({
             profile: {
                 notifications: {
@@ -400,27 +439,14 @@ describe("User Profile Notification Settings", () => {
         });
 
         setupStandardFixtures();
+        login();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Row exists, but email column/switch should not render
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-label-value]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-email-value]"
-        ).should("not.exist");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-sms-value]"
-        ).should("be.visible", "be.enabled");
+        cy.get(sel.label).should("be.visible");
+        cy.get(sel.email).should("not.exist");
+        cy.get(sel.sms).should("be.visible");
     });
 
-    it("Featuretoggle - Verify profile notification BC Cancer Screening Sms Preference is not visible", () => {
+    it("Featuretoggle - profile notification BC Cancer Screening Email preference is visible but Sms preference is not", () => {
         cy.configureSettings({
             profile: {
                 notifications: {
@@ -437,143 +463,112 @@ describe("User Profile Notification Settings", () => {
         });
 
         setupStandardFixtures();
+        login();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Row exists, but sms column/switch should not render
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-label-value]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-email-value]"
-        ).should("be.visible", "be.enabled");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-sms-value]"
-        ).should("not.exist");
+        cy.get(sel.label).should("be.visible");
+        cy.get(sel.email).should("be.visible");
+        cy.get(sel.sms).should("not.exist");
     });
 
-    it("Displays notification preferences when email and SMS are verified and preferences are on", () => {
-        cy.configureSettings({
+    // -------------------------------------------------------
+    // Verification matrix:
+    // Covers all combinations of email/SMS verification state
+    // and persisted notification preferences (on/off).
+    // Ensures UI correctly enables/disables and checks/unchecks switches
+    // based on verification + saved settings.
+    // -------------------------------------------------------
+    const scenarios = [
+        {
+            name: "Displays notification preferences when email and SMS are verified and preferences are on",
             profile: {
-                notifications: {
-                    enabled: true,
-                    type: [
-                        {
-                            name: "bcCancerScreening",
-                            enabled: true,
-                            preferences: { email: true, sms: true },
-                        },
-                    ],
-                },
+                isEmailVerified: true,
+                isSMSNumberVerified: true,
+                emailEnabled: true,
+                smsEnabled: true,
             },
-        });
-
-        setupStandardFixtures({
-            userProfileFixture:
-                "UserProfileService/userProfileNotificationSettingVerified.json",
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Row exists, both email/sms column/switch should render and checked
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-label-value]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-email-value]"
-        ).should("be.visible", "be.enabled", "be.checked");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-sms-value]"
-        ).should("be.visible", "be.enabled", "be.checked");
-    });
-
-    it("Displays notification preferences when email and SMS are verified but preferences are off", () => {
-        cy.configureSettings({
+            email: { enabled: true, checked: true },
+            sms: { enabled: true, checked: true },
+        },
+        {
+            name: "Displays notification preferences when email and SMS are verified but preferences are off",
             profile: {
-                notifications: {
-                    enabled: true,
-                    type: [
-                        {
-                            name: "bcCancerScreening",
-                            enabled: true,
-                            preferences: { email: true, sms: true },
-                        },
-                    ],
-                },
+                isEmailVerified: true,
+                isSMSNumberVerified: true,
+                emailEnabled: false,
+                smsEnabled: false,
             },
-        });
-
-        setupStandardFixtures({
-            userProfileFixture:
-                "UserProfileService/userProfileNotificationSettingPreferencesOff.json",
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Row exists, both email/sms column/switch should render and not be checked
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-label-value]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-email-value]"
-        ).should("be.visible", "be.enabled", "not.be.checked");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-sms-value]"
-        ).should("be.visible", "be.enabled", "not.be.checked");
-    });
-
-    it("Disables notification preferences when email and SMS are not verified", () => {
-        cy.configureSettings({
+            email: { enabled: true, checked: false },
+            sms: { enabled: true, checked: false },
+        },
+        {
+            name: "Displays notification preferences when email is verified and preferences are on but sms is not verified",
             profile: {
-                notifications: {
-                    enabled: true,
-                    type: [
-                        {
-                            name: "bcCancerScreening",
-                            enabled: true,
-                            preferences: { email: true, sms: true },
-                        },
-                    ],
-                },
+                isEmailVerified: true,
+                isSMSNumberVerified: false,
+                emailEnabled: true,
+                smsEnabled: true,
             },
+            email: { enabled: true, checked: true },
+            sms: { enabled: false, checked: true },
+        },
+        {
+            name: "Displays notification preferences when email is verified and preferences are off but sms is not verified",
+            profile: {
+                isEmailVerified: true,
+                isSMSNumberVerified: false,
+                emailEnabled: false,
+                smsEnabled: true,
+            },
+            email: { enabled: true, checked: false },
+            sms: { enabled: false, checked: true },
+        },
+        {
+            name: "Displays notification preferences when sms is verified and preferences are on but email is not verified",
+            profile: {
+                isEmailVerified: false,
+                isSMSNumberVerified: true,
+                emailEnabled: true,
+                smsEnabled: true,
+            },
+            email: { enabled: false, checked: true },
+            sms: { enabled: true, checked: true },
+        },
+        {
+            name: "Displays notification preferences when sms is verified and preferences are off but email is not verified",
+            profile: {
+                isEmailVerified: false,
+                isSMSNumberVerified: true,
+                emailEnabled: true,
+                smsEnabled: false,
+            },
+            email: { enabled: false, checked: true },
+            sms: { enabled: true, checked: false },
+        },
+        {
+            name: "Disables notification preferences when email and SMS are not verified",
+            profile: {
+                isEmailVerified: false,
+                isSMSNumberVerified: false,
+                emailEnabled: true,
+                smsEnabled: true,
+            },
+            email: { enabled: false, checked: true },
+            sms: { enabled: false, checked: true },
+        },
+    ];
+
+    scenarios.forEach((scenario) => {
+        it(scenario.name, () => {
+            setupStandardFixtures({
+                userProfileBody: buildUserProfileFixture(scenario.profile),
+            });
+
+            login();
+
+            cy.get(sel.label).should("be.visible");
+
+            assertSwitch(sel.email, scenario.email);
+            assertSwitch(sel.sms, scenario.sms);
         });
-
-        setupStandardFixtures({
-            userProfileFixture:
-                "UserProfileService/userProfileNotificationSettingUnverified.json",
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-
-        // Row exists, both email/sms column/switch should render but are disabled
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-label-value]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-email-value]"
-        ).should("be.visible", "not.be.enabled");
-        cy.get(
-            "[data-testid=profile-notification-preferences-bc-cancer-screening-sms-value]"
-        ).should("be.visible", "not.be.enabled");
     });
 });

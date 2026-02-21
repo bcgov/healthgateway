@@ -37,6 +37,7 @@ export function setupStandardFixtures(options = {}) {
         notificationFixture = defaultNotificationFixture,
         patientFixture = defaultPatientFixture,
         userProfileFixture = defaultUserProfileFixture,
+        userProfileBody = undefined,
         userProfileStatusCode = defaultUserProfileStatusCode,
     } = options;
 
@@ -48,6 +49,7 @@ export function setupStandardFixtures(options = {}) {
     setupUserProfileFixture({
         hdid: userProfileHdid,
         userProfileFixture: userProfileFixture,
+        userProfileBody,
         statusCode: userProfileStatusCode,
     });
 
@@ -98,18 +100,24 @@ export function setupUserProfileFixture(options = {}) {
     const {
         hdid = defaultHdid,
         userProfileFixture = defaultUserProfileFixture,
+        userProfileBody = undefined,
         statusCode = defaultUserProfileStatusCode,
     } = options;
 
-    if (statusCode === 200) {
-        cy.intercept("GET", `**/UserProfile/${hdid}?api-version=2.0`, {
-            fixture: userProfileFixture,
-        });
-    } else {
-        cy.intercept("GET", `**/UserProfile/${hdid}?api-version=2.0`, {
-            statusCode,
-        });
+    const url = `**/UserProfile/${hdid}?api-version=2.0`;
+
+    if (statusCode !== 200) {
+        cy.intercept("GET", url, { statusCode });
+        return;
     }
+
+    // Only used when explicitly provided
+    if (userProfileBody !== undefined) {
+        cy.intercept("GET", url, { statusCode: 200, body: userProfileBody });
+        return;
+    }
+
+    cy.intercept("GET", url, { fixture: userProfileFixture });
 }
 
 export function setupNotificationFixture(options = {}) {
