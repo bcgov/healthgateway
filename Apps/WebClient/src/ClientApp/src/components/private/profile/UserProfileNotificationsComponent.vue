@@ -95,6 +95,32 @@ function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
     return ConfigUtil.isProfileNotificationTypeEnabled(type);
 }
 
+function isEmailPreferenceEnabledForType(
+    type: ProfileNotificationType
+): boolean {
+    return ConfigUtil.isProfileNotificationPreferenceEnabled(
+        type,
+        ProfileNotificationPreference.Email
+    );
+}
+
+function isSmsPreferenceEnabledForType(type: ProfileNotificationType): boolean {
+    return ConfigUtil.isProfileNotificationPreferenceEnabled(
+        type,
+        ProfileNotificationPreference.Sms
+    );
+}
+
+function isEmailToggleDisabledForType(type: ProfileNotificationType): boolean {
+    return (
+        isEmailChannelDisabled.value || !isEmailPreferenceEnabledForType(type)
+    );
+}
+
+function isSmsToggleDisabledForType(type: ProfileNotificationType): boolean {
+    return isSmsChannelDisabled.value || !isSmsPreferenceEnabledForType(type);
+}
+
 function buildNotificationPreferences(
     rowId: string
 ): ProfileNotificationPreference[] {
@@ -198,6 +224,7 @@ watchEffect(() => {
     const prefsMap = notificationPreferencesByType.value;
 
     for (const row of rows) {
+        // Initialize once
         if (!channelState[row.id]) {
             const enabledPrefs = prefsMap.get(row.type) ?? [];
             channelState[row.id] = {
@@ -208,6 +235,22 @@ watchEffect(() => {
                     ProfileNotificationPreference.Sms
                 ),
             };
+        }
+
+        // Force off if feature toggle disables that preference for this type
+        if (!isEmailPreferenceEnabledForType(row.type)) {
+            channelState[row.id].emailEnabled = false;
+        }
+        if (!isSmsPreferenceEnabledForType(row.type)) {
+            channelState[row.id].smsEnabled = false;
+        }
+
+        // Force off if channel is unavailable (not configured/verified)
+        if (isEmailChannelDisabled.value) {
+            channelState[row.id].emailEnabled = false;
+        }
+        if (isSmsChannelDisabled.value) {
+            channelState[row.id].smsEnabled = false;
         }
     }
 });
@@ -306,7 +349,7 @@ watchEffect(() => {
                             hide-details
                             inset
                             :data-testid="`profile-notification-preferences-${item.id}-email-value`"
-                            :disabled="isEmailChannelDisabled"
+                            :disabled="isEmailToggleDisabledForType(item.type)"
                             @update:model-value="
                                 handleChannelToggle(item, 'email', $event)
                             "
@@ -325,7 +368,7 @@ watchEffect(() => {
                             hide-details
                             inset
                             :data-testid="`profile-notification-preferences-${item.id}-sms-value`"
-                            :disabled="isSmsChannelDisabled"
+                            :disabled="isSmsToggleDisabledForType(item.type)"
                             @update:model-value="
                                 handleChannelToggle(item, 'sms', $event)
                             "

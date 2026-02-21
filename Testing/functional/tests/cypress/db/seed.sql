@@ -81,7 +81,7 @@ VALUES (
 	null,
 	current_timestamp, 
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
-	null,
+	'6046719015',
 	'1995',
 	'iOS'
 );
@@ -175,12 +175,12 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'8d713fb0-5d94-425f-996a-f2eabb54847c', 
-	null,
+	'fakeemail@healthgateway.gov.bc.ca',
 	null,
 	null,
 	current_timestamp, 
 	'KtBm7JYegayKpx5fjwM2RUGZf79JOnNC21NhUrIAzmg=',
-	null,
+	'6046719015',
 	'1988',
 	'Mobile'
 );
