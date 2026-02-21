@@ -19,16 +19,30 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
+    using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
+    /// <param name="notificationSettingDelegate">The injected user profile notification setting service.</param>
+    /// <param name="mappingService">The injected gateway api mapping service.</param>
+    /// <param name="messageSender">The injected message sender.</param>
+    /// <param name="configuration">The injected application's configuration.</param>
     public class UserProfileNotificationSettingService(
         IUserProfileNotificationSettingDelegate notificationSettingDelegate,
-        IGatewayApiMappingService mappingService)
+        IGatewayApiMappingService mappingService,
+        IMessageSender messageSender,
+        IConfiguration configuration)
         : IUserProfileNotificationSettingService
     {
+        private readonly ChangeFeedOptions changeFeedConfiguration =
+            configuration
+                .GetSection(ChangeFeedOptions.ChangeFeed)
+                .Get<ChangeFeedOptions>() ?? new();
+
         /// <inheritdoc/>
         public async Task<IList<UserProfileNotificationSettingModel>> GetAsync(
             string hdid,
