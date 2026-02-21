@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
@@ -95,6 +95,32 @@ function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
     return ConfigUtil.isProfileNotificationTypeEnabled(type);
 }
 
+function isEmailPreferenceEnabledForType(
+    type: ProfileNotificationType
+): boolean {
+    return ConfigUtil.isProfileNotificationPreferenceEnabled(
+        type,
+        ProfileNotificationPreference.Email
+    );
+}
+
+function isSmsPreferenceEnabledForType(type: ProfileNotificationType): boolean {
+    return ConfigUtil.isProfileNotificationPreferenceEnabled(
+        type,
+        ProfileNotificationPreference.Sms
+    );
+}
+
+function isEmailToggleDisabledForType(type: ProfileNotificationType): boolean {
+    return (
+        isEmailChannelDisabled.value || !isEmailPreferenceEnabledForType(type)
+    );
+}
+
+function isSmsToggleDisabledForType(type: ProfileNotificationType): boolean {
+    return isSmsChannelDisabled.value || !isSmsPreferenceEnabledForType(type);
+}
+
 function buildNotificationPreferences(
     rowId: string
 ): ProfileNotificationPreference[] {
@@ -167,28 +193,6 @@ async function handleChannelToggle(
     }
 }
 
-// When the email channel becomes disabled (no email or not verified),
-// force all email toggles in the UI state to false so users cannot
-// have email notifications enabled while the channel is unavailable.
-watch(isEmailChannelDisabled, (disabled) => {
-    if (disabled) {
-        Object.values(channelState).forEach(
-            (state) => (state.emailEnabled = false)
-        );
-    }
-});
-
-// When the SMS channel becomes disabled (no phone or not verified),
-// force all SMS toggles in the UI state to false so users cannot
-// have SMS notifications enabled while the channel is unavailable.
-watch(isSmsChannelDisabled, (disabled) => {
-    if (disabled) {
-        Object.values(channelState).forEach(
-            (state) => (state.smsEnabled = false)
-        );
-    }
-});
-
 // Ensure channelState is initialized for each enabled notification type.
 // This keeps the UI switch state in sync with the user's saved preferences.
 // Runs immediately and whenever the enabled notification rows or
@@ -198,6 +202,7 @@ watchEffect(() => {
     const prefsMap = notificationPreferencesByType.value;
 
     for (const row of rows) {
+        // Initialize once
         if (!channelState[row.id]) {
             const enabledPrefs = prefsMap.get(row.type) ?? [];
             channelState[row.id] = {
@@ -208,6 +213,14 @@ watchEffect(() => {
                     ProfileNotificationPreference.Sms
                 ),
             };
+        }
+
+        // Force off if feature toggle disables that preference for this type
+        if (!isEmailPreferenceEnabledForType(row.type)) {
+            channelState[row.id].emailEnabled = false;
+        }
+        if (!isSmsPreferenceEnabledForType(row.type)) {
+            channelState[row.id].smsEnabled = false;
         }
     }
 });
@@ -306,7 +319,7 @@ watchEffect(() => {
                             hide-details
                             inset
                             :data-testid="`profile-notification-preferences-${item.id}-email-value`"
-                            :disabled="isEmailChannelDisabled"
+                            :disabled="isEmailToggleDisabledForType(item.type)"
                             @update:model-value="
                                 handleChannelToggle(item, 'email', $event)
                             "
@@ -325,7 +338,7 @@ watchEffect(() => {
                             hide-details
                             inset
                             :data-testid="`profile-notification-preferences-${item.id}-sms-value`"
-                            :disabled="isSmsChannelDisabled"
+                            :disabled="isSmsToggleDisabledForType(item.type)"
                             @update:model-value="
                                 handleChannelToggle(item, 'sms', $event)
                             "
