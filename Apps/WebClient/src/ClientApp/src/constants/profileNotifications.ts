@@ -46,7 +46,12 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
         id: "bc-cancer-screening",
         type: ProfileNotificationType.BcCancerScreening,
         label: "Eligible BC Cancer Screening Letters",
-        tooltip: "Learn more about BC Cancer notifications here.",
+        tooltip: {
+            text: "Learn more about BC Cancer notifications ",
+            linkText: "here",
+            href: "/not-found",
+            suffix: ".",
+        },
     },
 ] as const satisfies ReadonlyArray<NotificationPreferenceType>;
 

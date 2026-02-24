@@ -29,8 +29,9 @@ describe("User Profile Notification Settings", () => {
             `[data-testid=profile-notification-preferences-${id}-email-value]`,
         sms: (id) =>
             `[data-testid=profile-notification-preferences-${id}-sms-value]`,
-        tooltipIcon: (id) => `[data-testid=info-tooltip-${id}-icon]`,
         tooltip: (id) => `[data-testid=info-tooltip-${id}]`,
+        tooltipIcon: (id) => `[data-testid=info-tooltip-${id}-icon]`,
+        tooltipLink: (id) => `[data-testid=info-tooltip-${id}-link]`,
     };
 
     function assertSwitch(id, channel, { enabled, checked }) {
@@ -86,7 +87,13 @@ describe("User Profile Notification Settings", () => {
             .filter(":visible")
             .first()
             .click();
+
         cy.get(sel.tooltip(notificationId)).should("be.visible");
+
+        cy.get(sel.tooltipLink(notificationId))
+            .should("be.visible")
+            .and("have.attr", "href")
+            .and("include", "/not-found");
 
         assertSwitch(notificationId, "email", {
             enabled: true,

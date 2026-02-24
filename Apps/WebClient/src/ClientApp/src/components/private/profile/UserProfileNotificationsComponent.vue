@@ -2,7 +2,7 @@
 import { computed, reactive, ref, watchEffect } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
-import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
+import InteractiveInfoTooltipComponent from "@/components/common/InteractiveInfoTooltipComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import {
     getNotificationPreferenceTypes,
@@ -91,10 +91,10 @@ const requiresContactVerification = computed(() => {
     const hasEmail = !!email.value;
     const hasSms = !!sms.value;
 
-    const emailUnverified = hasEmail && !emailVerified.value;
-    const smsUnverified = hasSms && !smsVerified.value;
+    const emailNeedsAction = !hasEmail || (hasEmail && !emailVerified.value);
+    const smsNeedsAction = !hasSms || (hasSms && !smsVerified.value);
 
-    return emailUnverified || smsUnverified;
+    return emailNeedsAction || smsNeedsAction;
 });
 
 const hasAnyChannelEnabled = computed(
@@ -304,17 +304,23 @@ watchEffect(() => {
                             >
                                 {{ item.label }}
                             </span>
-                            <InfoTooltipComponent
-                                :data-testid="`info-tooltip-${item.id}-icon`"
+                            <InteractiveInfoTooltipComponent
+                                :icon-testid="`info-tooltip-${item.id}-icon`"
                                 :tooltip-testid="`info-tooltip-${item.id}`"
-                                class="ml-2"
-                                size="x-small"
-                                content-class="bg-primary text-white"
                             >
-                                <p>
-                                    {{ item.tooltip }}
+                                <p class="mb-0">
+                                    {{ item.tooltip.text }}
+                                    <a
+                                        :href="item.tooltip.href"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="text-white text-decoration-underline"
+                                        :data-testid="`info-tooltip-${item.id}-link`"
+                                    >
+                                        {{ item.tooltip.linkText }} </a
+                                    >{{ item.tooltip.suffix }}
                                 </p>
-                            </InfoTooltipComponent>
+                            </InteractiveInfoTooltipComponent>
                         </div>
                     </v-col>
                     <v-col
