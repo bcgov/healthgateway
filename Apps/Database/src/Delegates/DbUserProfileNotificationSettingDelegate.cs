@@ -37,7 +37,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task UpdateAsync(UserProfileNotificationSetting notificationSetting, CancellationToken ct = default)
+        public async Task UpdateAsync(UserProfileNotificationSetting notificationSetting, bool commit = true, CancellationToken ct = default)
         {
             if (notificationSetting.Version == 0)
             {
@@ -48,7 +48,10 @@ namespace HealthGateway.Database.Delegates
                 dbContext.UserProfileNotificationSetting.Update(notificationSetting);
             }
 
-            await dbContext.SaveChangesAsync(ct);
+            if (commit)
+            {
+                await dbContext.SaveChangesAsync(ct);
+            }
         }
     }
 }
