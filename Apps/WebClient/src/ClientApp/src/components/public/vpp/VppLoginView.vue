@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -84,13 +85,9 @@ function trackNavigationClick(
             <div
                 class="vpp-login-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
-                <p class="text-center">
-                    <strong>Do you want to open Health Gateway?</strong>
-                </p>
-                <p class="text-center mb-4">
-                    You are currently signed into AccessMyHealth. If you wish to
-                    continue, you will open Health Gateway in this window.
-                </p>
+                <h2 class="text-center text-h6 font-weight-bold mb-4">
+                    Do you want to open Health Gateway?
+                </h2>
                 <p class="text-center">
                     Health Gateway may contain more health records and
                     information.
@@ -102,9 +99,21 @@ function trackNavigationClick(
                         >Learn more.</a
                     >
                 </p>
+                <p class="text-center mb-4">
+                    You are currently signed into AccessMyHealth. If you wish to
+                    continue, you will open Health Gateway in this window.
+                </p>
+                <HgAlertComponent
+                    type="warning"
+                    data-testid="signout-close-windows-warning"
+                    variant="outlined"
+                >
+                    Please remember to sign out and close both windows when you
+                    are done.
+                </HgAlertComponent>
                 <div class="d-flex flex-column flex-sm-row ga-2 justify-center">
                     <HgButtonComponent
-                        variant="link"
+                        variant="secondary"
                         text="Cancel"
                         :uppercase="false"
                         class="text-body-1"
@@ -113,7 +122,7 @@ function trackNavigationClick(
                         @click="openAccessMyHealth()"
                     />
                     <HgButtonComponent
-                        variant="link"
+                        variant="primary"
                         text="Continue to Health Gateway"
                         :uppercase="false"
                         class="text-body-1"
@@ -121,10 +130,6 @@ function trackNavigationClick(
                         @click="openHgHome()"
                     />
                 </div>
-                <p class="text-center mt-8 text-body-2 font-italic">
-                    Please remember to sign out and close both windows when you
-                    are done.
-                </p>
             </div>
         </div>
     </div>
