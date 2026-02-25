@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive, ref, watch, watchEffect } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import InteractiveInfoTooltipComponent from "@/components/common/InteractiveInfoTooltipComponent.vue";
@@ -203,6 +203,43 @@ async function handleChannelToggle(
     }
 }
 
+// When a contact channel (email or SMS) becomes invalid (deleted or unverified),
+// automatically turn OFF any enabled notification preferences for that channel
+// and persist the updated settings to the backend.
+//
+// This enforces the business rule that notifications cannot remain enabled
+// if the corresponding contact method is missing or unverified.
+watch(
+    [isEmailChannelDisabled, isSmsChannelDisabled],
+    async ([emailDisabled, smsDisabled]) => {
+        const rows = enabledNotificationPreferences.value;
+
+        for (const row of rows) {
+            const state = channelState[row.id];
+            if (!state) continue;
+
+            let changed = false;
+
+            if (emailDisabled && state.emailEnabled) {
+                state.emailEnabled = false;
+                changed = true;
+            }
+
+            if (smsDisabled && state.smsEnabled) {
+                state.smsEnabled = false;
+                changed = true;
+            }
+
+            if (changed) {
+                await saveNotificationPreferences(
+                    row.type,
+                    buildNotificationPreferences(row.id)
+                );
+            }
+        }
+    }
+);
+
 // Ensure channelState is initialized for each enabled notification type.
 // This keeps the UI switch state in sync with the user's saved preferences.
 // Runs immediately and whenever the enabled notification rows or
@@ -230,6 +267,14 @@ watchEffect(() => {
             channelState[row.id].emailEnabled = false;
         }
         if (!isSmsPreferenceEnabledForType(row.type)) {
+            channelState[row.id].smsEnabled = false;
+        }
+
+        // Force off if contact channel is missing or unverified
+        if (isEmailChannelDisabled.value) {
+            channelState[row.id].emailEnabled = false;
+        }
+        if (isSmsChannelDisabled.value) {
             channelState[row.id].smsEnabled = false;
         }
     }
