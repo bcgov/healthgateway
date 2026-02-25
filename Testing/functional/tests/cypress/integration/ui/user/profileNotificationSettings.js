@@ -234,7 +234,7 @@ describe("User Profile Notification Settings", () => {
                 smsEnabled: true,
             },
             email: { enabled: true, checked: true },
-            sms: { enabled: false, checked: true },
+            sms: { enabled: false, checked: false }, // was true
         },
         {
             name: "Displays notification preferences when email is verified and preferences are off but sms is not verified",
@@ -245,7 +245,7 @@ describe("User Profile Notification Settings", () => {
                 smsEnabled: true,
             },
             email: { enabled: true, checked: false },
-            sms: { enabled: false, checked: true },
+            sms: { enabled: false, checked: false }, // was true
         },
         {
             name: "Displays notification preferences when sms is verified and preferences are on but email is not verified",
@@ -255,7 +255,7 @@ describe("User Profile Notification Settings", () => {
                 emailEnabled: true,
                 smsEnabled: true,
             },
-            email: { enabled: false, checked: true },
+            email: { enabled: false, checked: false }, // was true
             sms: { enabled: true, checked: true },
         },
         {
@@ -266,7 +266,7 @@ describe("User Profile Notification Settings", () => {
                 emailEnabled: true,
                 smsEnabled: false,
             },
-            email: { enabled: false, checked: true },
+            email: { enabled: false, checked: false }, // was true
             sms: { enabled: true, checked: false },
         },
         {
@@ -277,8 +277,8 @@ describe("User Profile Notification Settings", () => {
                 emailEnabled: true,
                 smsEnabled: true,
             },
-            email: { enabled: false, checked: true },
-            sms: { enabled: false, checked: true },
+            email: { enabled: false, checked: false }, // was true
+            sms: { enabled: false, checked: false }, // was true
         },
     ];
 
@@ -421,5 +421,42 @@ describe("User Profile Notification Settings", () => {
                 cy.get(verificationMessageSel).should("not.exist");
             }
         });
+    });
+
+    // -------------------------------------------------------
+    // Show error component scenario
+    // -------------------------------------------------------
+    it("Displays error when updating email preferences on toggle", () => {
+        setupStandardFixtures({
+            userProfileBody: buildUserProfileFixture({
+                isEmailVerified: true,
+                isSMSNumberVerified: true,
+                emailEnabled: false,
+                smsEnabled: false,
+            }),
+        });
+
+        login();
+
+        cy.get(notificationSel.label).should("be.visible");
+        cy.get(notificationSel.email).should("be.visible");
+
+        cy.intercept("PUT", "**/UserProfile/*/notificationsettings*", {
+            statusCode: 500,
+        }).as("updateNotificationSettingsFail");
+
+        toggleSwitch("email");
+
+        cy.wait("@updateNotificationSettingsFail")
+            .its("response.statusCode")
+            .should("eq", 500);
+
+        cy.get(
+            "[data-testid=profile-notification-preferences-save-error]"
+        ).should("be.visible");
+
+        cy.get(notificationSel.email)
+            .find('input[type="checkbox"]')
+            .should("not.be.checked");
     });
 });

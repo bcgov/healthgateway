@@ -19,9 +19,9 @@ const props = withDefaults(defineProps<Props>(), {
         location="bottom"
         offset="8"
     >
-        <template #activator="{ props: menuProps }">
+        <template #activator="{ props: activatorProps }">
             <v-icon
-                v-bind="menuProps"
+                v-bind="activatorProps"
                 icon="far fa-circle-question"
                 color="primary"
                 size="x-small"
@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
 
         <v-card
             class="bg-primary text-white pa-3"
-            :style="{ maxWidth: `${props.maxWidth}px` }"
+            :max-width="props.maxWidth"
             :data-testid="props.tooltipTestid"
         >
             <slot />

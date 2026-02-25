@@ -79,12 +79,12 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
-                model.EmailEnabled
+                model.EmailEnabled && !string.IsNullOrEmpty(userProfile.Email)
                     ? new[] { NotificationTargets.BcCancer }
                     : [];
 
             IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
-                model.SmsEnabled
+                model.SmsEnabled && !string.IsNullOrEmpty(userProfile.SmsNumber)
                     ? new[] { NotificationTargets.BcCancer }
                     : [];
 
@@ -92,7 +92,6 @@ namespace HealthGateway.GatewayApi.Services
                 [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
 
             await notificationSettingDelegate.UpdateAsync(setting, false, ct);
-
             await messageSender.SendAsync(events, ct);
         }
     }
