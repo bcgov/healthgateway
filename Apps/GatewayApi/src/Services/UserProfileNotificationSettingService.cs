@@ -19,14 +19,23 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
 
     /// <inheritdoc/>
+    /// <param name="profileDelegate">The injected user profile delelgate.</param>
+    /// <param name="notificationSettingDelegate">The injected user profile notification setting delegate.</param>
+    /// <param name="mappingService">The injected gateway api mapping service.</param>
+    /// <param name="messageSender">The injected message sender.</param>
     public class UserProfileNotificationSettingService(
+        IUserProfileDelegate profileDelegate,
         IUserProfileNotificationSettingDelegate notificationSettingDelegate,
-        IGatewayApiMappingService mappingService)
+        IGatewayApiMappingService mappingService,
+        IMessageSender messageSender)
         : IUserProfileNotificationSettingService
     {
         /// <inheritdoc/>
@@ -45,6 +54,8 @@ namespace HealthGateway.GatewayApi.Services
             UserProfileNotificationSettingModel model,
             CancellationToken ct = default)
         {
+            UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
+
             IReadOnlyList<UserProfileNotificationSetting> existing =
                 await notificationSettingDelegate.GetAsync(hdid, ct);
 
@@ -67,7 +78,21 @@ namespace HealthGateway.GatewayApi.Services
                 setting.SmsEnabled = model.SmsEnabled;
             }
 
-            await notificationSettingDelegate.UpdateAsync(setting, ct);
+            IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
+                model.EmailEnabled && !string.IsNullOrEmpty(userProfile.Email)
+                    ? new[] { NotificationTargets.BcCancer }
+                    : [];
+
+            IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
+                model.SmsEnabled && !string.IsNullOrEmpty(userProfile.SmsNumber)
+                    ? new[] { NotificationTargets.BcCancer }
+                    : [];
+
+            MessageEnvelope[] events =
+                [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
+
+            await notificationSettingDelegate.UpdateAsync(setting, false, ct);
+            await messageSender.SendAsync(events, ct);
         }
     }
 }

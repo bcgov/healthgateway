@@ -40,8 +40,9 @@ namespace HealthGateway.Database.Delegates
         /// Adds or updates the user profile notification object to the DB.
         /// </summary>
         /// <param name="notificationSetting">The user profile notification setting object to add or update.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateAsync(UserProfileNotificationSetting notificationSetting, CancellationToken ct = default);
+        Task UpdateAsync(UserProfileNotificationSetting notificationSetting, bool commit = true, CancellationToken ct = default);
     }
 }

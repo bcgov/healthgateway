@@ -13,7 +13,6 @@ describe("User Profile", () => {
         cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
             body: true,
         });
-        cy.configureSettings({});
 
         cy.login(
             Cypress.env("keycloak.username"),
