@@ -15,10 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models.Events;
@@ -27,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.Models;
 
     /// <inheritdoc/>
-    /// <param name="profileDelegate">The injected user profile delelgate.</param>
+    /// <param name="profileDelegate">The injected user profile delegate.</param>
     /// <param name="notificationSettingDelegate">The injected user profile notification setting delegate.</param>
     /// <param name="mappingService">The injected gateway api mapping service.</param>
     /// <param name="messageSender">The injected message sender.</param>
@@ -79,20 +81,56 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
-                model.EmailEnabled && !string.IsNullOrEmpty(userProfile.Email)
-                    ? new[] { NotificationTargets.BcCancer }
-                    : [];
+                GetTargets(
+                    model.Type,
+                    model.EmailEnabled,
+                    !string.IsNullOrEmpty(userProfile.Email));
 
             IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
-                model.SmsEnabled && !string.IsNullOrEmpty(userProfile.SmsNumber)
-                    ? new[] { NotificationTargets.BcCancer }
-                    : [];
+                GetTargets(
+                    model.Type,
+                    model.SmsEnabled,
+                    !string.IsNullOrEmpty(userProfile.SmsNumber));
 
             MessageEnvelope[] events =
                 [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
 
             await notificationSettingDelegate.UpdateAsync(setting, false, ct);
             await messageSender.SendAsync(events, ct);
+        }
+
+        /// <summary>
+        /// Resolves the notification targets for a given profile notification type and channel state.
+        /// </summary>
+        /// <param name="type">The profile notification type.</param>
+        /// <param name="enabled">Indicates whether the notification channel is enabled.</param>
+        /// <param name="hasChannelValue">
+        /// Indicates whether the user has a valid value for the channel (e.g., email address or SMS number).
+        /// </param>
+        /// <returns>
+        /// A collection containing the resolved <see cref="NotificationTargets"/> when enabled and valid;
+        /// otherwise, an empty collection.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the provided notification type is not supported.
+        /// </exception>
+        private static IReadOnlyCollection<NotificationTargets> GetTargets(
+            ProfileNotificationType type,
+            bool enabled,
+            bool hasChannelValue)
+        {
+            if (!enabled || !hasChannelValue)
+            {
+                return [];
+            }
+
+            NotificationTargets target = type switch
+            {
+                ProfileNotificationType.BcCancerScreening => NotificationTargets.BcCancer,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported notification type"),
+            };
+
+            return [target];
         }
     }
 }
