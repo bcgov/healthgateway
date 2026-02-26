@@ -9,6 +9,7 @@ interface Props {
     class?: string;
     border?: boolean | "top" | "end" | "bottom" | "start";
     variant?: "flat" | "tonal" | "outlined" | "text" | "plain" | "elevated";
+    centerContent?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,6 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
     class: "d-print-none mb-4",
     border: false,
     variant: "flat",
+    centerContent: false,
 });
 
 const backgroundClass = computed(() => {
@@ -49,6 +51,7 @@ const backgroundClass = computed(() => {
             (props.variant === 'text' && props.type === 'warning')
                 ? backgroundClass
                 : '',
+            props.centerContent ? 'hg-alert--center-content' : '',
             props.class,
         ]"
         :type="type"
@@ -143,5 +146,27 @@ const backgroundClass = computed(() => {
     margin-bottom: 0.5rem !important;
     min-height: auto !important;
     height: auto !important;
+}
+
+/*
+ * Opt-in: vertically center icon + wrapped text (no-title case can look misaligned).
+ * Enabled via the centerContent prop.
+ */
+.hg-alert--center-content {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.hg-alert--center-content :deep(.v-alert__prepend),
+.hg-alert--center-content :deep(.v-alert__content) {
+    align-self: center !important;
+}
+
+.hg-alert--center-content :deep(.v-alert__content) {
+    padding-block: 0 !important;
+}
+
+.hg-alert--center-content :deep(.v-alert__prepend svg) {
+    display: block !important;
 }
 </style>

@@ -37,6 +37,7 @@ function clearTooManyRequestsError(): void {
         type="error"
         closable
         variant="outlined"
+        :center-content="true"
         @click:close="clearTooManyRequestsError"
     >
         Unable to complete action as the site is too busy. Please try again
@@ -48,6 +49,7 @@ function clearTooManyRequestsError(): void {
         type="warning"
         closable
         variant="outlined"
+        :center-content="true"
         @click:close="clearTooManyRequestsWarning"
     >
         We are unable to complete all actions because the site is too busy.

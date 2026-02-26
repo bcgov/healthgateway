@@ -176,6 +176,7 @@ function resetFeedback(): void {
                         v-if="isSuccessWithoutEmail"
                         type="warning"
                         variant="text"
+                        :center-content="true"
                     >
                         <template #text>
                             We won't be able to respond to your message unless
