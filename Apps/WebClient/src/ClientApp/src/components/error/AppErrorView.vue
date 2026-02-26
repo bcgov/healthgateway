@@ -38,6 +38,7 @@ const isTooManyRequests = computed(
                             type="warning"
                             data-testid="app-warning"
                             variant="outlined"
+                            :center-content="true"
                         >
                             We are unable to complete all actions because the
                             site is too busy. Please try again later.
@@ -47,6 +48,7 @@ const isTooManyRequests = computed(
                             type="error"
                             data-testid="app-error"
                             variant="outlined"
+                            :center-content="true"
                         >
                             Unable to load application. Please try refreshing
                             the page or come back later.

@@ -107,6 +107,7 @@ function trackNavigationClick(
                     type="warning"
                     data-testid="signout-close-windows-warning"
                     variant="outlined"
+                    :center-content="true"
                 >
                     Please remember to sign out and close both windows when you
                     are done.
