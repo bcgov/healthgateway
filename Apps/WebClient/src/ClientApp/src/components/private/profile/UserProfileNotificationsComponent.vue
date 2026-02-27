@@ -11,17 +11,26 @@ import {
     ProfileNotificationPreference,
     ProfileNotificationType,
 } from "@/constants/profileNotifications";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { ResultError } from "@/models/errors";
 import { NotificationPreference } from "@/models/notificationPreference";
 import { UserProfileNotificationSettingModel } from "@/models/userProfile";
 import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
+import { ILogger } from "@/services/interfaces";
+import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
 
 type NotificationChannel = "email" | "sms";
 
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const errorStore = useErrorStore();
 const userStore = useUserStore();
 
 const saveError = ref<string | null>(null);
+
+const savingState = reactive<Record<string, boolean>>({});
 
 const email = computed(() => userStore.user.email);
 const emailVerified = computed(() => userStore.user.verifiedEmail);
@@ -154,6 +163,7 @@ async function saveNotificationPreferences(
         smsEnabled: preferences.includes(ProfileNotificationPreference.Sms),
     };
 
+    // Let errors bubble up so the caller can roll back UI state.
     await userStore.updateNotificationSettings(notificationSetting);
 }
 
@@ -164,6 +174,11 @@ async function handleChannelToggle(
 ): Promise<void> {
     const normalizedValue: boolean = newValue ?? false;
 
+    // Prevent rapid repeated toggles while a save is in-flight for this row.
+    if (savingState[item.id]) {
+        return;
+    }
+
     saveError.value = null;
 
     const state = channelState[item.id];
@@ -171,8 +186,7 @@ async function handleChannelToggle(
         return;
     }
 
-    // Because v-model may already have applied newValue by the time this runs,
-    // compute the "previous" value using newValue.
+    // Compute previous values safely using the event payload
     const previousEmailEnabled =
         channel === "email" ? !normalizedValue : state.emailEnabled;
     const previousSmsEnabled =
@@ -188,14 +202,28 @@ async function handleChannelToggle(
     const preferences: ProfileNotificationPreference[] =
         buildNotificationPreferences(item.id);
 
+    savingState[item.id] = true;
+
     try {
         await saveNotificationPreferences(item.type, preferences);
-    } catch {
+    } catch (err: unknown) {
+        // Roll back UI state
         state.emailEnabled = previousEmailEnabled;
         state.smsEnabled = previousSmsEnabled;
 
+        const resultError = err as ResultError | undefined;
+        logger.error(resultError?.message ?? String(err));
+
+        if (resultError?.statusCode === 429) {
+            saveError.value = null;
+            errorStore.setTooManyRequestsError("page");
+            return;
+        }
+
         saveError.value =
             "An unexpected error has occurred. Please try again later.";
+    } finally {
+        savingState[item.id] = false;
     }
 }
 
@@ -211,6 +239,10 @@ watch(
         const rows = enabledNotificationPreferences.value;
 
         for (const row of rows) {
+            if (savingState[row.id]) {
+                continue;
+            }
+
             const state = channelState[row.id];
             if (!state) continue;
 
@@ -227,10 +259,26 @@ watch(
             }
 
             if (changed) {
-                await saveNotificationPreferences(
-                    row.type,
-                    buildNotificationPreferences(row.id)
-                );
+                try {
+                    const promise = saveNotificationPreferences(
+                        row.type,
+                        buildNotificationPreferences(row.id)
+                    );
+                    await promise;
+                } catch (err: unknown) {
+                    const resultError = err as ResultError | undefined;
+                    logger.error(resultError?.message ?? String(err));
+
+                    if (resultError?.statusCode === 429) {
+                        saveError.value = null;
+                        errorStore.setTooManyRequestsError("page");
+                        return;
+                    }
+
+                    saveError.value =
+                        "An unexpected error has occurred. Please try again later.";
+                    return;
+                }
             }
         }
     }
@@ -245,7 +293,7 @@ watchEffect(() => {
     const prefsMap = notificationPreferencesByType.value;
 
     for (const row of rows) {
-        // Initialize once
+        // Initialize channel state once
         if (!channelState[row.id]) {
             const enabledPrefs = prefsMap.get(row.type) ?? [];
             channelState[row.id] = {
@@ -258,10 +306,16 @@ watchEffect(() => {
             };
         }
 
+        // Initialize saving state once
+        if (savingState[row.id] === undefined) {
+            savingState[row.id] = false;
+        }
+
         // Force off if feature toggle disables that preference for this type
         if (!isEmailPreferenceEnabledForType(row.type)) {
             channelState[row.id].emailEnabled = false;
         }
+
         if (!isSmsPreferenceEnabledForType(row.type)) {
             channelState[row.id].smsEnabled = false;
         }
@@ -270,6 +324,7 @@ watchEffect(() => {
         if (isEmailChannelDisabled.value) {
             channelState[row.id].emailEnabled = false;
         }
+
         if (isSmsChannelDisabled.value) {
             channelState[row.id].smsEnabled = false;
         }
@@ -381,7 +436,8 @@ watchEffect(() => {
                                 inset
                                 :data-testid="`profile-notification-preferences-${item.id}-email-value`"
                                 :disabled="
-                                    isEmailToggleDisabledForType(item.type)
+                                    isEmailToggleDisabledForType(item.type) ||
+                                    savingState[item.id]
                                 "
                                 @update:model-value="
                                     handleChannelToggle(item, 'email', $event)
@@ -402,7 +458,8 @@ watchEffect(() => {
                                 inset
                                 :data-testid="`profile-notification-preferences-${item.id}-sms-value`"
                                 :disabled="
-                                    isSmsToggleDisabledForType(item.type)
+                                    isSmsToggleDisabledForType(item.type) ||
+                                    savingState[item.id]
                                 "
                                 @update:model-value="
                                     handleChannelToggle(item, 'sms', $event)

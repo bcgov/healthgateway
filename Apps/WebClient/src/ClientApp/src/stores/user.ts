@@ -438,7 +438,11 @@ export const useUserStore = defineStore("user", () => {
             .updateNotificationSettings(user.value.hdid, notificationSetting)
             .then(retrieveProfile)
             .catch((resultError: ResultError) => {
-                setUserError(resultError.message);
+                handleError(
+                    resultError,
+                    ErrorType.Update,
+                    ErrorSourceType.Profile
+                );
                 throw resultError;
             });
     }
