@@ -459,4 +459,41 @@ describe("User Profile Notification Settings", () => {
             .find('input[type="checkbox"]')
             .should("not.be.checked");
     });
+
+    // -------------------------------------------------------
+    // Show 429 Too Many Requests scenario
+    // -------------------------------------------------------
+    it("Displays too many requests banner when updating email preferences returns 429", () => {
+        setupStandardFixtures({
+            userProfileBody: buildUserProfileFixture({
+                isEmailVerified: true,
+                isSMSNumberVerified: true,
+                emailEnabled: false,
+                smsEnabled: false,
+            }),
+        });
+
+        login();
+
+        cy.get(notificationSel.label).should("be.visible");
+        cy.get(notificationSel.email).should("be.visible");
+
+        cy.intercept("PUT", "**/UserProfile/*/notificationsettings*", {
+            statusCode: 429,
+        }).as("updateNotificationSettings429");
+
+        toggleSwitch("email");
+
+        cy.wait("@updateNotificationSettings429")
+            .its("response.statusCode")
+            .should("eq", 429);
+
+        // Banner (TooManyRequestsComponent) should show
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+
+        // Toggle should rollback to previous state (still unchecked)
+        cy.get(notificationSel.email)
+            .find('input[type="checkbox"]')
+            .should("not.be.checked");
+    });
 });
