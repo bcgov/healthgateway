@@ -97,10 +97,6 @@ const requiresContactVerification = computed(() => {
     return emailNeedsAction || smsNeedsAction;
 });
 
-const hasAnyChannelEnabled = computed(
-    () => showEmailColumn.value || showSmsColumn.value
-);
-
 function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
     return ConfigUtil.isProfileNotificationTypeEnabled(type);
 }
@@ -305,116 +301,124 @@ watchEffect(() => {
         </HgAlertComponent>
         <v-divider class="my-4" />
         <v-container class="pa-0">
-            <template v-if="hasEnabledNotificationPreferences">
-                <v-row
-                    no-gutters
-                    class="font-weight-bold mb-2"
-                    data-testid="profile-notification-preferences-header"
+            <!-- Key change: constrain width so Email/SMS don't drift on 4K/5K -->
+            <v-sheet max-width="720" class="pa-0">
+                <template v-if="hasEnabledNotificationPreferences">
+                    <v-row
+                        no-gutters
+                        class="font-weight-bold mb-2"
+                        data-testid="profile-notification-preferences-header"
+                    >
+                        <v-col
+                            data-testid="profile-notification-preferences-header-type"
+                            cols="8"
+                            class="py-0 pe-2"
+                        >
+                            Notification Type
+                        </v-col>
+                        <v-col
+                            v-if="showEmailColumn"
+                            data-testid="profile-notification-preferences-header-email"
+                            cols="2"
+                            class="py-0 text-center"
+                        >
+                            Email
+                        </v-col>
+                        <v-col
+                            v-if="showSmsColumn"
+                            data-testid="profile-notification-preferences-header-sms"
+                            cols="2"
+                            class="py-0 text-center"
+                        >
+                            Text (SMS)
+                        </v-col>
+                    </v-row>
+                    <v-row
+                        v-for="item in enabledNotificationPreferences"
+                        :key="item.id"
+                        no-gutters
+                        align="center"
+                        :data-testid="`profile-notification-preferences-row-${item.id}`"
+                    >
+                        <v-col cols="8" class="py-0 pe-2">
+                            <div class="d-flex align-center">
+                                <span
+                                    :data-testid="`profile-notification-preferences-${item.id}-label-value`"
+                                >
+                                    {{ item.label }}
+                                </span>
+                                <InteractiveInfoTooltipComponent
+                                    :icon-testid="`info-tooltip-${item.id}-icon`"
+                                    :tooltip-testid="`info-tooltip-${item.id}`"
+                                >
+                                    <p class="mb-0">
+                                        {{ item.tooltip.text }}
+                                        <a
+                                            :href="item.tooltip.href"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-white text-decoration-underline"
+                                            :data-testid="`info-tooltip-${item.id}-link`"
+                                        >
+                                            {{ item.tooltip.linkText }}
+                                        </a>
+                                        {{ item.tooltip.suffix }}
+                                    </p>
+                                </InteractiveInfoTooltipComponent>
+                            </div>
+                        </v-col>
+                        <v-col
+                            v-if="showEmailColumn"
+                            cols="2"
+                            class="py-0 d-flex justify-center"
+                        >
+                            <v-switch
+                                v-model="channelState[item.id].emailEnabled"
+                                color="primary"
+                                class="hg-switch"
+                                density="compact"
+                                hide-details
+                                inset
+                                :data-testid="`profile-notification-preferences-${item.id}-email-value`"
+                                :disabled="
+                                    isEmailToggleDisabledForType(item.type)
+                                "
+                                @update:model-value="
+                                    handleChannelToggle(item, 'email', $event)
+                                "
+                            />
+                        </v-col>
+                        <v-col
+                            v-if="showSmsColumn"
+                            cols="2"
+                            class="py-0 d-flex justify-center"
+                        >
+                            <v-switch
+                                v-model="channelState[item.id].smsEnabled"
+                                color="primary"
+                                class="hg-switch"
+                                density="compact"
+                                hide-details
+                                inset
+                                :data-testid="`profile-notification-preferences-${item.id}-sms-value`"
+                                :disabled="
+                                    isSmsToggleDisabledForType(item.type)
+                                "
+                                @update:model-value="
+                                    handleChannelToggle(item, 'sms', $event)
+                                "
+                            />
+                        </v-col>
+                    </v-row>
+                </template>
+                <p
+                    v-else
+                    class="mb-0"
+                    data-testid="profile-notification-preferences-empty"
                 >
-                    <v-col
-                        data-testid="profile-notification-preferences-header-type"
-                        :cols="hasAnyChannelEnabled ? 8 : 12"
-                        :class="['py-0', hasAnyChannelEnabled ? 'pe-2' : '']"
-                        >Notification Type</v-col
-                    >
-                    <v-col
-                        v-if="showEmailColumn"
-                        data-testid="profile-notification-preferences-header-email"
-                        :cols="showSmsColumn ? 2 : 4"
-                        class="py-0 text-center"
-                        >Email</v-col
-                    >
-                    <v-col
-                        v-if="showSmsColumn"
-                        data-testid="profile-notification-preferences-header-sms"
-                        :cols="showEmailColumn ? 2 : 4"
-                        class="py-0 text-center"
-                        >Text (SMS)</v-col
-                    >
-                </v-row>
-                <v-row
-                    v-for="item in enabledNotificationPreferences"
-                    :key="item.id"
-                    no-gutters
-                    align="center"
-                    :data-testid="`profile-notification-preferences-row-${item.id}`"
-                >
-                    <v-col
-                        :cols="hasAnyChannelEnabled ? 8 : 12"
-                        :class="['py-0', hasAnyChannelEnabled ? 'pe-2' : '']"
-                    >
-                        <div class="d-flex align-center">
-                            <span
-                                :data-testid="`profile-notification-preferences-${item.id}-label-value`"
-                            >
-                                {{ item.label }}
-                            </span>
-                            <InteractiveInfoTooltipComponent
-                                :icon-testid="`info-tooltip-${item.id}-icon`"
-                                :tooltip-testid="`info-tooltip-${item.id}`"
-                            >
-                                <p class="mb-0">
-                                    {{ item.tooltip.text }}
-                                    <a
-                                        :href="item.tooltip.href"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="text-white text-decoration-underline"
-                                        :data-testid="`info-tooltip-${item.id}-link`"
-                                    >
-                                        {{ item.tooltip.linkText }} </a
-                                    >{{ item.tooltip.suffix }}
-                                </p>
-                            </InteractiveInfoTooltipComponent>
-                        </div>
-                    </v-col>
-                    <v-col
-                        v-if="showEmailColumn"
-                        :cols="showSmsColumn ? 2 : 4"
-                        class="py-0 d-flex justify-center"
-                    >
-                        <v-switch
-                            v-model="channelState[item.id].emailEnabled"
-                            color="primary"
-                            class="hg-switch"
-                            density="compact"
-                            hide-details
-                            inset
-                            :data-testid="`profile-notification-preferences-${item.id}-email-value`"
-                            :disabled="isEmailToggleDisabledForType(item.type)"
-                            @update:model-value="
-                                handleChannelToggle(item, 'email', $event)
-                            "
-                        />
-                    </v-col>
-                    <v-col
-                        v-if="showSmsColumn"
-                        :cols="showEmailColumn ? 2 : 4"
-                        class="py-0 d-flex justify-center"
-                    >
-                        <v-switch
-                            v-model="channelState[item.id].smsEnabled"
-                            color="primary"
-                            class="hg-switch"
-                            density="compact"
-                            hide-details
-                            inset
-                            :data-testid="`profile-notification-preferences-${item.id}-sms-value`"
-                            :disabled="isSmsToggleDisabledForType(item.type)"
-                            @update:model-value="
-                                handleChannelToggle(item, 'sms', $event)
-                            "
-                        />
-                    </v-col>
-                </v-row>
-            </template>
-            <p
-                v-else
-                class="mb-0"
-                data-testid="profile-notification-preferences-empty"
-            >
-                No notification options are currently available.
-            </p>
+                    No notification options are currently available.
+                </p>
+            </v-sheet>
         </v-container>
         <v-divider class="my-4" />
     </div>
