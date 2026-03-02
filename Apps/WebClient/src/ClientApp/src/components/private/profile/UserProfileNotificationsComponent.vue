@@ -172,7 +172,7 @@ async function handleChannelToggle(
     channel: NotificationChannel,
     newValue: boolean | null
 ): Promise<void> {
-    const normalizedValue: boolean = newValue ?? false;
+    const newChannelEnabled: boolean = newValue ?? false;
 
     // Prevent rapid repeated toggles while a save is in-flight for this row.
     if (savingState[item.id]) {
@@ -188,15 +188,15 @@ async function handleChannelToggle(
 
     // Compute previous values safely using the event payload
     const previousEmailEnabled =
-        channel === "email" ? !normalizedValue : state.emailEnabled;
+        channel === "email" ? !newChannelEnabled : state.emailEnabled;
     const previousSmsEnabled =
-        channel === "sms" ? !normalizedValue : state.smsEnabled;
+        channel === "sms" ? !newChannelEnabled : state.smsEnabled;
 
     // Ensure state reflects the intended new value
     if (channel === "email") {
-        state.emailEnabled = normalizedValue;
+        state.emailEnabled = newChannelEnabled;
     } else {
-        state.smsEnabled = normalizedValue;
+        state.smsEnabled = newChannelEnabled;
     }
 
     const preferences: ProfileNotificationPreference[] =
@@ -355,7 +355,7 @@ watchEffect(() => {
             {{ saveError }}
         </HgAlertComponent>
         <v-divider class="my-4" />
-        <v-container class="pa-0">
+        <v-container fluid class="pa-0">
             <!-- Key change: constrain width so Email/SMS don't drift on 4K/5K -->
             <v-sheet max-width="720" class="pa-0">
                 <template v-if="hasEnabledNotificationPreferences">
