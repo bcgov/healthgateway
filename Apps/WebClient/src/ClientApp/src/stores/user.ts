@@ -275,15 +275,8 @@ export const useUserStore = defineStore("user", () => {
     function updateUserEmail(emailAddress: string): Promise<void> {
         return userProfileService
             .updateEmail(user.value.hdid, emailAddress)
-            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
-                if (resultError.statusCode !== 409) {
-                    handleError(
-                        resultError,
-                        ErrorType.Update,
-                        ErrorSourceType.User
-                    );
-                }
+                setUserError(resultError.message);
                 throw resultError;
             });
     }
@@ -354,12 +347,9 @@ export const useUserStore = defineStore("user", () => {
         return setUserPreference(preference);
     }
 
-    function validateEmail(inviteKey: string): Promise<boolean> {
+    function validateEmail(inviteKey: string) {
         return userProfileService
             .validateEmail(user.value.hdid, inviteKey)
-            .then((result: boolean) => {
-                return retrieveProfile().then(() => result);
-            })
             .catch((resultError: ResultError) => {
                 if (resultError.statusCode !== 409) {
                     handleError(
