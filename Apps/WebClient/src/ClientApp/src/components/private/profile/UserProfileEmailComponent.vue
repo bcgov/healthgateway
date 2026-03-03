@@ -7,15 +7,12 @@ import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
 import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { isTooManyRequestsError } from "@/models/errors";
 import { Action, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
-import { useErrorStore } from "@/stores/error";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 import ValidationUtil from "@/utility/validationUtil";
@@ -28,7 +25,6 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
-const errorStore = useErrorStore();
 const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
@@ -88,46 +84,24 @@ function sendUserEmailUpdate(): void {
         text: Text.VerifyEmailAddress,
         type: Type.Profile,
     });
+
     loadingStore.applyLoader(
         Loader.UserProfile,
         "updateUserEmail",
         userStore
             .updateUserEmail(inputValue.value)
             .then(() => {
-                userStore
-                    .retrieveProfile()
-                    .then(() => {
-                        isEmailEditable.value = false;
-                        v$.value.$reset();
-                        emit("email-updated", email.value);
-                    })
-                    .catch((error) => {
-                        if (isTooManyRequestsError(error)) {
-                            errorStore.setTooManyRequestsWarning("page");
-                        } else {
-                            errorStore.addError(
-                                ErrorType.Retrieve,
-                                ErrorSourceType.Profile,
-                                undefined
-                            );
-                        }
-                    });
+                isEmailEditable.value = false;
+                v$.value.$reset();
+                emit("email-updated", email.value);
             })
             .catch((err) => {
-                logger.error(err);
-                if (err.statusCode === 429) {
-                    errorStore.setTooManyRequestsError("page");
-                } else {
-                    errorStore.addError(
-                        ErrorType.Update,
-                        ErrorSourceType.Profile,
-                        undefined
-                    );
-                }
+                logger.error(
+                    `sendUserEmailUpdate failed: ${JSON.stringify(err)}`
+                );
             })
     );
 }
-
 watch(email, (value) => (inputValue.value = value));
 </script>
 
