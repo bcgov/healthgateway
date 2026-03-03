@@ -32,7 +32,7 @@ loadingStore.applyLoader(
     "verifyingEmailAddress",
     userStore
         .validateEmail(props.inviteKey)
-        .then((result) => {
+        .then((result: boolean) => {
             isVerified.value = result;
         })
         .catch((resultError: ResultError) => {
