@@ -7,12 +7,11 @@ import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
 import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { isTooManyRequestsError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import { Action, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
@@ -88,46 +87,28 @@ function sendUserEmailUpdate(): void {
         text: Text.VerifyEmailAddress,
         type: Type.Profile,
     });
+
     loadingStore.applyLoader(
         Loader.UserProfile,
         "updateUserEmail",
         userStore
             .updateUserEmail(inputValue.value)
             .then(() => {
-                userStore
-                    .retrieveProfile()
-                    .then(() => {
-                        isEmailEditable.value = false;
-                        v$.value.$reset();
-                        emit("email-updated", email.value);
-                    })
-                    .catch((error) => {
-                        if (isTooManyRequestsError(error)) {
-                            errorStore.setTooManyRequestsWarning("page");
-                        } else {
-                            errorStore.addError(
-                                ErrorType.Retrieve,
-                                ErrorSourceType.Profile,
-                                undefined
-                            );
-                        }
-                    });
+                isEmailEditable.value = false;
+                v$.value.$reset();
+                emit("email-updated", email.value);
             })
             .catch((err) => {
-                logger.error(err);
-                if (err.statusCode === 429) {
+                const resultError = err as ResultError | undefined;
+                logger.error(resultError?.message ?? String(err));
+
+                if (resultError?.statusCode === 429) {
                     errorStore.setTooManyRequestsError("page");
-                } else {
-                    errorStore.addError(
-                        ErrorType.Update,
-                        ErrorSourceType.Profile,
-                        undefined
-                    );
+                    return;
                 }
             })
     );
 }
-
 watch(email, (value) => (inputValue.value = value));
 </script>
 
