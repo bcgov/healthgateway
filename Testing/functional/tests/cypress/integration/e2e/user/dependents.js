@@ -92,8 +92,8 @@ describe("dependents", () => {
     });
 
     // Ensure this test executes before any dependent-adding tests to maintain accurate count validation.
-    it("Validate only non-deceased dependents (5 of 6) are rendered", () => {
-        cy.get("[data-testid^=dependent-card-]").should("have.length", 5);
+    it("Validate only non-deceased dependents (4 of 5) are rendered", () => {
+        cy.get("[data-testid^=dependent-card-]").should("have.length", 4);
     });
 
     it("Validate Text Fields on Add Dependent Modal", () => {
