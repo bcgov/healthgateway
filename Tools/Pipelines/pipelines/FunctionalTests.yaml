@@ -52,6 +52,13 @@ jobs:
     dependsOn: "Admin_Seed"
     timeoutInMinutes: 5
     steps:
+      - task: Cache@2
+        displayName: Cache npm (Admin Unauthorized Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
         displayName: "Run Admin Unauthorized Functional Tests"
         inputs:
@@ -64,6 +71,7 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
   - job: "Admin_Authentication_Tests"
     displayName: "Admin Authentication Functional Tests"
     pool:
@@ -74,6 +82,13 @@ jobs:
       - "Admin_Unauthorized_Tests"
     timeoutInMinutes: 5
     steps:
+      - task: Cache@2
+        displayName: Cache npm (Admin Authentication Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
         displayName: "Run Admin Authentication Functional Tests"
         inputs:
@@ -86,6 +101,7 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
   - job: "Admin_Read_Tests"
     displayName: "Admin Read Functional Tests"
     pool:
@@ -98,6 +114,13 @@ jobs:
       parallel: 9
     timeoutInMinutes: 15
     steps:
+      - task: Cache@2
+        displayName: Cache npm (Admin Read Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
         displayName: "Run Admin Read Functional Tests"
         inputs:
@@ -110,6 +133,7 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
 
   - job: "Admin_Write_Tests"
     displayName: "Admin Write Functional Tests"
@@ -123,6 +147,13 @@ jobs:
       parallel: 5
     timeoutInMinutes: 15
     steps:
+      - task: Cache@2
+        displayName: Cache npm (Admin Write Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
         displayName: "Run Write Admin Functional Tests"
         inputs:
@@ -135,6 +166,7 @@ jobs:
           KEYCLOAK_PW: $(keycloak.pw)
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
 
   - job: "HG_Seed"
     displayName: "Re-seed DB and PHSA data for Functional Tests"
@@ -165,6 +197,13 @@ jobs:
     dependsOn: "HG_Seed"
     timeoutInMinutes: 5
     steps:
+      - task: Cache@2
+        displayName: Cache npm (HG Auth Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Testing/functional/tests/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
         displayName: "Run HG Auth Functional Tests"
         inputs:
@@ -182,6 +221,7 @@ jobs:
           KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
 
   - job: "HG_Functional_Tests"
     displayName: "HG Functional Tests"
@@ -195,6 +235,13 @@ jobs:
       parallel: 9
     timeoutInMinutes: 15
     steps:
+      - task: Cache@2
+        displayName: Cache npm (HG Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Testing/functional/tests/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
         displayName: "Run HG Functional Tests"
         inputs:
@@ -212,3 +259,4 @@ jobs:
           KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
