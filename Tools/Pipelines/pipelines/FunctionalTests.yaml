@@ -50,8 +50,11 @@ jobs:
       vmImage: "ubuntu-latest"
     condition: and(succeeded(), eq(variables['Admin'], true))
     dependsOn: "Admin_Seed"
-    timeoutInMinutes: 5
+    timeoutInMinutes: 10
     steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
       - task: Cache@2
         displayName: Cache npm (Admin Unauthorized Functional)
         inputs:
@@ -80,8 +83,11 @@ jobs:
     dependsOn:
       - "Admin_Seed"
       - "Admin_Unauthorized_Tests"
-    timeoutInMinutes: 5
+    timeoutInMinutes: 10
     steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
       - task: Cache@2
         displayName: Cache npm (Admin Authentication Functional)
         inputs:
@@ -114,6 +120,9 @@ jobs:
       parallel: 9
     timeoutInMinutes: 15
     steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
       - task: Cache@2
         displayName: Cache npm (Admin Read Functional)
         inputs:
@@ -147,6 +156,9 @@ jobs:
       parallel: 5
     timeoutInMinutes: 15
     steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
       - task: Cache@2
         displayName: Cache npm (Admin Write Functional)
         inputs:
@@ -195,8 +207,11 @@ jobs:
       vmImage: "ubuntu-latest"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     dependsOn: "HG_Seed"
-    timeoutInMinutes: 5
+    timeoutInMinutes: 10
     steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
       - task: Cache@2
         displayName: Cache npm (HG Auth Functional)
         inputs:
@@ -235,6 +250,9 @@ jobs:
       parallel: 9
     timeoutInMinutes: 15
     steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
       - task: Cache@2
         displayName: Cache npm (HG Functional)
         inputs:
