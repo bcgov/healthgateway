@@ -15,7 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System.Collections.Generic;
     using AutoMapper;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Medication.Models.Salesforce;
@@ -33,6 +35,12 @@ namespace HealthGateway.Medication.Services
         public MedicationStatement MapToMedicationStatement(MedicationResult source)
         {
             return mapper.Map<MedicationResult, MedicationStatement>(source);
+        }
+
+        /// <inheritdoc/>
+        public IList<MedicationActiveIngredient> MapToMedicationActiveIngredient(ICollection<ActiveIngredient> source)
+        {
+            return mapper.Map<IList<MedicationActiveIngredient>>(source);
         }
     }
 }

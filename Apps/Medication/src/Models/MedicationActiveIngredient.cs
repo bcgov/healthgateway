@@ -13,24 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Medication.Models
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-
     /// <summary>
-    /// The entity representing a row in the Federal Government
-    /// Active Ingredient file.
+    /// Contains active ingredient information for a medication.
     /// </summary>
-    public class ActiveIngredient : AuditableEntity
+    public class MedicationActiveIngredient
     {
-        /// <summary>
-        /// Gets or sets the active ingredient id.
-        /// </summary>
-        [Column("ActiveIngredientId")]
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Gets or sets the active ingredient code.
         /// </summary>
@@ -39,90 +28,66 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the ingredient.
         /// </summary>
-        [MaxLength(240)]
         public string? Ingredient { get; set; }
 
         /// <summary>
         /// Gets or sets the ingredient in French.
         /// </summary>
-        [MaxLength(400)]
         public string? IngredientFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the ingredient supplied indicator.
         /// </summary>
-        [MaxLength(1)]
         public string? IngredientSuppliedInd { get; set; }
 
         /// <summary>
         /// Gets or sets the strength.
         /// </summary>
-        [MaxLength(20)]
         public string? Strength { get; set; }
 
         /// <summary>
         /// Gets or sets the strength unit.
         /// </summary>
-        [MaxLength(40)]
         public string? StrengthUnit { get; set; }
 
         /// <summary>
-        /// Gets or sets the strengthunit in French.
+        /// Gets or sets the strength unit in French.
         /// </summary>
-        [MaxLength(80)]
         public string? StrengthUnitFrench { get; set; }
 
         /// <summary>
         /// Gets or sets the strength type.
         /// </summary>
-        [MaxLength(40)]
         public string? StrengthType { get; set; }
 
         /// <summary>
-        /// Gets or sets the strengthtype in French.
+        /// Gets or sets the strength type in French.
         /// </summary>
-        [MaxLength(80)]
         public string? StrengthTypeFrench { get; set; }
 
         /// <summary>
-        /// Gets or sets the Dosage value.
+        /// Gets or sets the dosage value.
         /// </summary>
-        [MaxLength(20)]
         public string? DosageValue { get; set; }
 
         /// <summary>
         /// Gets or sets the base.
         /// </summary>
-        [MaxLength(1)]
         public string? Base { get; set; }
 
         /// <summary>
         /// Gets or sets the dosage unit.
         /// </summary>
-        [MaxLength(40)]
         public string? DosageUnit { get; set; }
 
         /// <summary>
         /// Gets or sets the dosage unit in French.
         /// </summary>
-        [MaxLength(80)]
         public string? DosageUnitFrench { get; set; }
 
         /// <summary>
-        /// Gets or sets the Notes.
+        /// Gets or sets the notes.
         /// </summary>
-        [MaxLength(2000)]
         public string? Notes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Drug Product foreign key.
-        /// </summary>
-        [Required]
-        public Guid DrugProductId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the related DrugProduct.
-        /// </summary>
-        public virtual DrugProduct DrugProduct { get; set; } = null!;
     }
 }

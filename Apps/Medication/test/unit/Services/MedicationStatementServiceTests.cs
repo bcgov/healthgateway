@@ -275,11 +275,14 @@ namespace HealthGateway.MedicationTests.Services
                     {
                         PharmaceuticalForm = "PharmaceuticalForm",
                     },
-                    ActiveIngredient = new ActiveIngredient
-                    {
-                        Strength = "strength",
-                        StrengthUnit = "strengthunit",
-                    },
+                    ActiveIngredients =
+                    [
+                        new ActiveIngredient
+                        {
+                            Strength = "strength",
+                            StrengthUnit = "strengthunit",
+                        },
+                    ],
                     Company = new Company
                     {
                         CompanyName = "Company",

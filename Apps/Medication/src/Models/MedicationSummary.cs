@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Contains information about a medication prescription or pharmacist assessment.
     /// </summary>
@@ -76,7 +78,8 @@ namespace HealthGateway.Medication.Models
         public bool? PrescriptionProvided { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the pharmacist assessment redirected the patient to another health care provider.
+        /// Gets or sets a value indicating whether the pharmacist assessment redirected the patient to another health care
+        /// provider.
         /// </summary>
         public bool? RedirectedToHealthCareProvider { get; set; }
 
@@ -94,5 +97,10 @@ namespace HealthGateway.Medication.Models
         /// Gets a value indicating whether this is a pharmacist assessment.
         /// </summary>
         public bool IsPharmacistAssessment => !string.IsNullOrEmpty(this.PharmacyAssessmentTitle);
+
+        /// <summary>
+        /// Gets or sets the active ingredients associated with the medication.
+        /// </summary>
+        public IList<MedicationActiveIngredient> ActiveIngredients { get; set; } = [];
     }
 }

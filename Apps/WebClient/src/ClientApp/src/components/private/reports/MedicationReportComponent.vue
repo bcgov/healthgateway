@@ -39,7 +39,6 @@ interface MedicationRow {
     subtitle: string;
     practitioner: string;
     quantity: string;
-    strength: string;
     form: string;
     manufacturer: string;
 }
@@ -71,10 +70,6 @@ const fields: ReportField[] = [
     {
         key: "quantity",
         title: "Quantity",
-    },
-    {
-        key: "strength",
-        title: "Strength",
     },
     {
         key: "form",
@@ -126,9 +121,6 @@ const items = computed(() =>
             x.medicationSummary.quantity === undefined
                 ? ""
                 : x.medicationSummary.quantity.toString(),
-        strength:
-            (x.medicationSummary.strength ?? "") +
-                (x.medicationSummary.strengthUnit ?? "") || notFoundText,
         form: x.medicationSummary.form || notFoundText,
         manufacturer: x.medicationSummary.manufacturer || notFoundText,
     }))

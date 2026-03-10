@@ -171,9 +171,12 @@ namespace HealthGateway.Medication.Services
                 {
                     mdSummary.BrandName = drug.BrandName;
                     mdSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
-                    mdSummary.Strength = drug.ActiveIngredient?.Strength ?? string.Empty;
-                    mdSummary.StrengthUnit = drug.ActiveIngredient?.StrengthUnit ?? string.Empty;
                     mdSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
+
+                    if (drug.ActiveIngredients is { Count: > 0 })
+                    {
+                        mdSummary.ActiveIngredients = this.mappingService.MapToMedicationActiveIngredient(drug.ActiveIngredients);
+                    }
                 }
                 else if (provincialDrugInfo.TryGetValue(din, out PharmaCareDrug? provincialDrug))
                 {
