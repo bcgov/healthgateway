@@ -1,6 +1,7 @@
 import { EntryType } from "@/constants/entryType";
 import MedicationSummary from "@/models//medicationSummary";
 import { DateWrapper } from "@/models/dateWrapper";
+import MedicationActiveIngredient from "@/models/medicationActiveIngredient";
 import MedicationStatement from "@/models/medicationStatement";
 import Pharmacy from "@/models/pharmacy";
 import TimelineEntry from "@/models/timeline/timelineEntry";
@@ -104,13 +105,12 @@ class MedicationViewModel {
     public genericName?: string;
     public quantity?: number;
     public form?: string;
-    public strength?: string;
-    public strengthUnit?: string;
     public manufacturer?: string;
     public isPin!: boolean;
     public title: string;
     public subtitle: string;
     public isPharmacistAssessment!: boolean;
+    public activeIngredients: MedicationActiveIngredient[];
 
     constructor(model: MedicationSummary) {
         this.din = model.din ?? "";
@@ -118,12 +118,11 @@ class MedicationViewModel {
         this.genericName = model.genericName;
         this.quantity = model.quantity;
         this.form = model.form;
-        this.strength = model.strength;
-        this.strengthUnit = model.strengthUnit;
         this.manufacturer = model.manufacturer;
         this.isPin = model.isPin;
         this.title = model.title;
         this.subtitle = model.subtitle;
         this.isPharmacistAssessment = model.isPharmacistAssessment;
+        this.activeIngredients = model.activeIngredients ?? [];
     }
 }

@@ -264,7 +264,7 @@ function downloadReport(): void {
                 throw {
                     message: "Unable to download export record.",
                     statusCode: 500,
-                    traceId: "",
+                    traceId: "report-download-missing-payload",
                 } as ResultError;
             }
 
@@ -279,7 +279,7 @@ function downloadReport(): void {
                 throw {
                     message: "Unable to download export record.",
                     statusCode: 500,
-                    traceId: "",
+                    traceId: "report-download-missing-data",
                 } as ResultError;
             }
 
@@ -294,7 +294,7 @@ function downloadReport(): void {
                     message:
                         "The PDF report is too large to generate. Please reduce the date range or filters.",
                     statusCode: 413,
-                    traceId: "",
+                    traceId: "report-download-pdf-too-large",
                 } as ResultError;
             }
 
@@ -309,7 +309,7 @@ function downloadReport(): void {
                 errorStore.addError(
                     ErrorType.Download,
                     ErrorSourceType.ExportRecords,
-                    err.traceId
+                    err.traceId ?? ""
                 );
             }
         })
