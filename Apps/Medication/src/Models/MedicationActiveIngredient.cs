@@ -21,73 +21,23 @@ namespace HealthGateway.Medication.Models
     public class MedicationActiveIngredient
     {
         /// <summary>
-        /// Gets or sets the active ingredient code.
+        /// Gets the active ingredient code.
         /// </summary>
-        public int ActiveIngredientCode { get; set; }
+        public int ActiveIngredientCode { get; init; }
 
         /// <summary>
-        /// Gets or sets the ingredient.
+        /// Gets the ingredient.
         /// </summary>
-        public string? Ingredient { get; set; }
+        public string? Ingredient { get; init; }
 
         /// <summary>
-        /// Gets or sets the ingredient in French.
+        /// Gets the strength.
         /// </summary>
-        public string? IngredientFrench { get; set; }
+        public string? Strength { get; init; }
 
         /// <summary>
-        /// Gets or sets the ingredient supplied indicator.
+        /// Gets the strength unit.
         /// </summary>
-        public string? IngredientSuppliedInd { get; set; }
-
-        /// <summary>
-        /// Gets or sets the strength.
-        /// </summary>
-        public string? Strength { get; set; }
-
-        /// <summary>
-        /// Gets or sets the strength unit.
-        /// </summary>
-        public string? StrengthUnit { get; set; }
-
-        /// <summary>
-        /// Gets or sets the strength unit in French.
-        /// </summary>
-        public string? StrengthUnitFrench { get; set; }
-
-        /// <summary>
-        /// Gets or sets the strength type.
-        /// </summary>
-        public string? StrengthType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the strength type in French.
-        /// </summary>
-        public string? StrengthTypeFrench { get; set; }
-
-        /// <summary>
-        /// Gets or sets the dosage value.
-        /// </summary>
-        public string? DosageValue { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base.
-        /// </summary>
-        public string? Base { get; set; }
-
-        /// <summary>
-        /// Gets or sets the dosage unit.
-        /// </summary>
-        public string? DosageUnit { get; set; }
-
-        /// <summary>
-        /// Gets or sets the dosage unit in French.
-        /// </summary>
-        public string? DosageUnitFrench { get; set; }
-
-        /// <summary>
-        /// Gets or sets the notes.
-        /// </summary>
-        public string? Notes { get; set; }
+        public string? StrengthUnit { get; init; }
     }
 }

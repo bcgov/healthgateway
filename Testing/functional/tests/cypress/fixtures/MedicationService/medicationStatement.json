@@ -127,18 +127,8 @@
                     {
                         "activeIngredientCode": 1,
                         "ingredient": "ZOPICLONE",
-                        "ingredientFrench": "",
-                        "ingredientSuppliedInd": "",
                         "strength": "7.5",
-                        "strengthUnit": "MG",
-                        "strengthUnitFrench": "",
-                        "strengthType": "",
-                        "strengthTypeFrench": "",
-                        "dosageValue": "",
-                        "base": "",
-                        "dosageUnit": "",
-                        "dosageUnitFrench": "",
-                        "notes": ""
+                        "strengthUnit": "MG"
                     }
                 ]
             },
@@ -178,18 +168,8 @@
                     {
                         "activeIngredientCode": 1,
                         "ingredient": "ZOPICLONE",
-                        "ingredientFrench": "",
-                        "ingredientSuppliedInd": "",
                         "strength": "7.5",
-                        "strengthUnit": "MG",
-                        "strengthUnitFrench": "",
-                        "strengthType": "",
-                        "strengthTypeFrench": "",
-                        "dosageValue": "",
-                        "base": "",
-                        "dosageUnit": "",
-                        "dosageUnitFrench": "",
-                        "notes": ""
+                        "strengthUnit": "MG"
                     }
                 ]
             },
@@ -263,18 +243,8 @@
                     {
                         "activeIngredientCode": 1,
                         "ingredient": "ZOPICLONE",
-                        "ingredientFrench": "",
-                        "ingredientSuppliedInd": "",
                         "strength": "7.5",
-                        "strengthUnit": "MG",
-                        "strengthUnitFrench": "",
-                        "strengthType": "",
-                        "strengthTypeFrench": "",
-                        "dosageValue": "",
-                        "base": "",
-                        "dosageUnit": "",
-                        "dosageUnitFrench": "",
-                        "notes": ""
+                        "strengthUnit": "MG"
                     }
                 ]
             }

@@ -62,6 +62,20 @@ const reportComponentMap = new Map<EntryType, unknown>([
     [EntryType.SpecialAuthorityRequest, SpecialAuthorityRequestReportComponent],
 ]);
 
+const reportErrorSourceMap = new Map<EntryType, ErrorSourceType>([
+    [EntryType.Covid19TestResult, ErrorSourceType.Covid19LaboratoryReport],
+    [EntryType.HealthVisit, ErrorSourceType.HealthVisitReport],
+    [EntryType.HospitalVisit, ErrorSourceType.HospitalVisitReport],
+    [EntryType.Immunization, ErrorSourceType.ImmunizationReport],
+    [EntryType.LabResult, ErrorSourceType.LaboratoryReport],
+    [EntryType.Medication, ErrorSourceType.MedicationReport],
+    [EntryType.Note, ErrorSourceType.NoteReport],
+    [
+        EntryType.SpecialAuthorityRequest,
+        ErrorSourceType.SpecialAuthorityRequestReport,
+    ],
+]);
+
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
@@ -209,6 +223,17 @@ function showConfirmationModal(type: ReportFormatType): void {
     messageModal.value?.showModal();
 }
 
+function getReportErrorSource(): ErrorSourceType {
+    if (!selectedEntryType.value) {
+        return ErrorSourceType.ExportRecords;
+    }
+
+    return (
+        reportErrorSourceMap.get(selectedEntryType.value) ??
+        ErrorSourceType.ExportRecords
+    );
+}
+
 /**
  * Converts a Base64-encoded string into a Blob for file download.
  *
@@ -323,7 +348,7 @@ function downloadReport(): void {
             } else {
                 errorStore.addError(
                     ErrorType.Download,
-                    ErrorSourceType.ExportRecords,
+                    getReportErrorSource(),
                     err.traceId ?? ""
                 );
             }
