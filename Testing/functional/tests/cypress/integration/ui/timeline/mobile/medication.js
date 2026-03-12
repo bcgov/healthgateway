@@ -55,7 +55,11 @@ describe("Medication", () => {
             cy.contains("[data-testid=medication-quantity]", "30").should(
                 "be.visible"
             );
-            cy.contains("[data-testid=medication-strength]", "7.5").should(
+            cy.contains(
+                "[data-testid=medication-ingredient-0]",
+                "ZOPICLONE"
+            ).should("be.visible");
+            cy.contains("[data-testid=medication-strength-0]", "7.5MG").should(
                 "be.visible"
             );
             cy.contains("[data-testid=medication-form]", "TABLET").should(
@@ -73,7 +77,9 @@ describe("Medication", () => {
             cy.contains(
                 "[data-testid=medication-pharmacy-name]",
                 "VQJWMQUFRYKPT"
-            ).should("be.visible");
+            )
+                .scrollIntoView()
+                .should("be.visible");
             cy.contains(
                 "[data-testid=medication-pharmacy-address]",
                 "ZBFKMFYUDPJAFJUPPFXNEQ"
@@ -123,7 +129,10 @@ describe("Medication", () => {
             );
 
             cy.get("[data-testid=medication-quantity]").should("not.exist");
-            cy.get("[data-testid=medication-strength]").should("not.exist");
+
+            cy.get("[data-testid=medication-ingredient-0]").should("not.exist");
+            cy.get("[data-testid=medication-strength-0]").should("not.exist");
+
             cy.get("[data-testid=medication-form]").should("not.exist");
             cy.get("[data-testid=medication-manufacturer]").should("not.exist");
             cy.contains(
@@ -176,7 +185,10 @@ describe("Medication", () => {
             );
 
             cy.get("[data-testid=medication-quantity]").should("not.exist");
-            cy.get("[data-testid=medication-strength]").should("not.exist");
+
+            cy.get("[data-testid=medication-ingredient-0]").should("not.exist");
+            cy.get("[data-testid=medication-strength-0]").should("not.exist");
+
             cy.get("[data-testid=medication-form]").should("not.exist");
             cy.get("[data-testid=medication-manufacturer]").should("not.exist");
             cy.contains(

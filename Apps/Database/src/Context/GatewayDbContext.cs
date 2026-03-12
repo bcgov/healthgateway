@@ -195,6 +195,17 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<DrugProduct>()
                 .HasIndex(p => p.DrugIdentificationNumber);
 
+            // DrugProduct has many ActiveIngredients
+            modelBuilder.Entity<DrugProduct>()
+                .HasMany(dp => dp.ActiveIngredients)
+                .WithOne(ai => ai.DrugProduct)
+                .HasForeignKey(ai => ai.DrugProductId);
+
+            // ActiveIngredient must allow many rows per DrugProduct
+            modelBuilder.Entity<ActiveIngredient>()
+                .HasIndex(ai => ai.DrugProductId)
+                .IsUnique(false);
+
             // Create index on DIN/PIN
             modelBuilder.Entity<PharmaCareDrug>()
                 .HasIndex(p => p.DinPin);

@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.MapProfiles
 {
     using System;
     using AutoMapper;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using Pharmacy = HealthGateway.Medication.Models.ODR.Pharmacy;
@@ -37,15 +38,16 @@ namespace HealthGateway.Medication.MapProfiles
                 .ForMember(dest => dest.PrescriptionIdentifier, opt => opt.MapFrom(src => src.PrescriptionNumber))
                 .ForMember(
                     dest => dest.MedicationSummary,
-                    opt => opt.MapFrom(
-                        src =>
-                            new MedicationSummary
-                            {
-                                Din = src.Din,
-                                Quantity = src.Quantity,
-                                GenericName = src.GenericName,
-                                BrandName = "Unknown brand name",
-                            }));
+                    opt => opt.MapFrom(src =>
+                        new MedicationSummary
+                        {
+                            Din = src.Din,
+                            Quantity = src.Quantity,
+                            GenericName = src.GenericName,
+                            BrandName = "Unknown brand name",
+                        }));
+
+            this.CreateMap<ActiveIngredient, MedicationActiveIngredient>();
 
             this.CreateMap<Pharmacy, Models.Pharmacy>()
                 .ForMember(dest => dest.AddressLine1, opt => opt.MapFrom(src => src.Address.Line1))
