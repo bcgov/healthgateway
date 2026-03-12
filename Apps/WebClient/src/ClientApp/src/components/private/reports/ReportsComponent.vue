@@ -219,7 +219,7 @@ function showConfirmationModal(type: ReportFormatType): void {
 function base64ToBlob(base64: string, mimeType: string): Blob {
     const byteCharacters = atob(base64);
     const sliceSize = 1024;
-    const byteArrays: Uint8Array[] = [];
+    const byteArrays: BlobPart[] = [];
 
     for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
         const slice = byteCharacters.slice(offset, offset + sliceSize);
@@ -260,9 +260,19 @@ function downloadReport(): void {
     reportComponent.value
         .generateReport(reportFormatType.value, headerData.value)
         .then((result: RequestResult<Report>) => {
+            // Prefer the backend error if report generation failed.
+            // This preserves the actual CDOGS/report service failure message
+            // instead of masking it as a generic missing-payload error.
+            if (result.resultError) {
+                throw ResultError.fromModel(result.resultError);
+            }
+
             if (!result.resourcePayload) {
                 throw {
-                    message: "Unable to download export record.",
+                    message: `Unable to download the ${
+                        entryTypeMap.get(selectedEntryType.value!)?.name ??
+                        "selected"
+                    } report.`,
                     statusCode: 500,
                     traceId: "report-download-missing-payload",
                 } as ResultError;
@@ -277,7 +287,10 @@ function downloadReport(): void {
             // existing error handling and user messaging is triggered.
             if (!base64Data) {
                 throw {
-                    message: "Unable to download export record.",
+                    message: `Unable to download the ${
+                        entryTypeMap.get(selectedEntryType.value!)?.name ??
+                        "selected"
+                    } report.`,
                     statusCode: 500,
                     traceId: "report-download-missing-data",
                 } as ResultError;
@@ -291,8 +304,10 @@ function downloadReport(): void {
                 estimateBase64SizeInBytes(base64Data) > 25 * 1024 * 1024
             ) {
                 throw {
-                    message:
-                        "The PDF report is too large to generate. Please reduce the date range or filters.",
+                    message: `The ${
+                        entryTypeMap.get(selectedEntryType.value!)?.name ??
+                        "selected"
+                    } PDF report is too large to generate. Please reduce the date range or apply additional filters and try again.`,
                     statusCode: 413,
                     traceId: "report-download-pdf-too-large",
                 } as ResultError;

@@ -72,10 +72,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();
-            cdogsDelegateMock.Setup(
-                    s => s.GenerateReportAsync(
-                        It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName),
-                        It.IsAny<CancellationToken>()))
+            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(
+                    It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResult);
 
             IReportService service = new ReportService(cdogsDelegateMock.Object);
@@ -107,6 +106,40 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Act and Assert
             FileNotFoundException exception = await Assert.ThrowsAsync<FileNotFoundException>(() => service.GetReportAsync(reportRequest));
             Assert.Equal(expected, exception.Message);
+        }
+
+        [Fact]
+        public async Task ShouldReturnErrorWhenReportPayloadIsNull()
+        {
+            // Arrange
+            RequestResult<ReportModel> cdogsResult = new()
+            {
+                ResourcePayload = null,
+                ResultStatus = ResultType.Success,
+            };
+
+            ReportRequestModel reportRequest = new()
+            {
+                Data = JsonDocument.Parse("{}").RootElement,
+                Template = TemplateType.Medication,
+                Type = ReportFormatType.Pdf,
+            };
+
+            Mock<ICDogsDelegate> cdogsDelegateMock = new();
+            cdogsDelegateMock
+                .Setup(s => s.GenerateReportAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cdogsResult);
+
+            IReportService service = new ReportService(cdogsDelegateMock.Object);
+
+            // Act
+            RequestResult<ReportModel> actualResult = await service.GetReportAsync(reportRequest);
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal("Report generation failed or timed out.", actualResult.ResultError.ResultMessage);
+            Assert.Null(actualResult.ResourcePayload);
         }
     }
 }
