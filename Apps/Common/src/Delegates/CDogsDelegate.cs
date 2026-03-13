@@ -63,6 +63,7 @@ namespace HealthGateway.Common.Delegates
 
             try
             {
+                this.logger.LogDebug("Generating report using CDOGS");
                 HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request, ct);
 
                 activity?.AddBaggage("ResponseStatusCode", response.StatusCode.ToString());
@@ -100,10 +101,9 @@ namespace HealthGateway.Common.Delegates
 
                 return retVal;
             }
-#pragma warning disable CA1031
             catch (OperationCanceledException ex) when (!ct.IsCancellationRequested)
             {
-                this.logger.LogError(ex, "CDOGS request timed out.");
+                this.logger.LogError(ex, "CDOGS request timed out");
 
                 retVal.ResultError = new RequestResultError
                 {
@@ -113,6 +113,7 @@ namespace HealthGateway.Common.Delegates
 
                 return retVal;
             }
+#pragma warning disable CA1031
             catch (Exception ex)
 #pragma warning restore CA1031
             {

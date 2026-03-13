@@ -46,7 +46,6 @@ namespace HealthGateway.GatewayApi.Services
             CancellationToken ct = default)
         {
             string reportName = $"HealthGateway{reportRequest.Template}Report";
-            string templateContent = ReadTemplate(reportRequest.Template, reportRequest.Type);
 
             CDogsRequestModel cdogsRequest = new()
             {
@@ -59,7 +58,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
                 Template = new CDogsTemplateModel
                 {
-                    Content = templateContent,
+                    Content = ReadTemplate(reportRequest.Template, reportRequest.Type),
                     FileType = GetTemplateExtension(reportRequest.Type),
                 },
             };
