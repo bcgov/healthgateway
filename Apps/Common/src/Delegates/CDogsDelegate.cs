@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -62,44 +63,69 @@ namespace HealthGateway.Common.Delegates
 
             try
             {
-                this.logger.LogDebug("Generating report using CDOGS");
                 HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request, ct);
-                byte[] payload = await response.Content.ReadAsByteArrayAsync(ct);
+
                 activity?.AddBaggage("ResponseStatusCode", response.StatusCode.ToString());
 
-                if (response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
-                    retVal.ResultStatus = ResultType.Success;
-                    retVal.ResourcePayload = new ReportModel
-                    {
-                        Data = Convert.ToBase64String(payload),
-                        FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}",
-                    };
-                    retVal.TotalResultCount = 1;
-                }
-                else
-                {
-                    this.logger.LogWarning("Error generating report using CDOGS: {Payload}", payload);
+                    string errorBody = await response.Content.ReadAsStringAsync(ct);
+
+                    this.logger.LogWarning(
+                        "CDOGS report generation failed. StatusCode: {StatusCode}. Body: {Body}",
+                        response.StatusCode,
+                        errorBody);
+
                     retVal.ResultError = new RequestResultError
                     {
-                        ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}",
+                        ResultMessage = $"CDOGS returned HTTP {(int)response.StatusCode}: {errorBody}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                     };
+
+                    return retVal;
                 }
+
+                await using Stream stream = await response.Content.ReadAsStreamAsync(ct);
+                using MemoryStream ms = new();
+
+                await stream.CopyToAsync(ms, ct);
+
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = new ReportModel
+                {
+                    Data = Convert.ToBase64String(ms.ToArray()),
+                    FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}",
+                };
+                retVal.TotalResultCount = 1;
+
+                return retVal;
             }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning disable CA1031
+            catch (OperationCanceledException ex) when (!ct.IsCancellationRequested)
             {
-                this.logger.LogError(e, "Error generating report using CDOGS");
+                this.logger.LogError(ex, "CDOGS request timed out.");
+
                 retVal.ResultError = new RequestResultError
                 {
-                    ResultMessage = $"Exception generating report: {e}",
+                    ResultMessage = "CDOGS request timed out.",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                 };
-            }
 
-            return retVal;
+                return retVal;
+            }
+            catch (Exception ex)
+#pragma warning restore CA1031
+            {
+                this.logger.LogError(ex, "Exception generating report using CDOGS");
+
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception generating report using CDOGS: {ex.Message}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
+                };
+
+                return retVal;
+            }
         }
     }
 }
