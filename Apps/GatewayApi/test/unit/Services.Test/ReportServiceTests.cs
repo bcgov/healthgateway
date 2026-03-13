@@ -109,13 +109,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         [Fact]
-        public async Task ShouldReturnErrorWhenReportPayloadIsNull()
+        public async Task ShouldReturnDelegateResultWhenReportPayloadIsNull()
         {
             // Arrange
             RequestResult<ReportModel> cdogsResult = new()
             {
                 ResourcePayload = null,
-                ResultStatus = ResultType.Success,
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = "CDOGS returned HTTP 500: test error",
+                    ErrorCode = "test-error-code",
+                },
             };
 
             ReportRequestModel reportRequest = new()
@@ -136,10 +141,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<ReportModel> actualResult = await service.GetReportAsync(reportRequest);
 
             // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResultError);
-            Assert.Equal("Report generation failed or timed out.", actualResult.ResultError.ResultMessage);
-            Assert.Null(actualResult.ResourcePayload);
+            actualResult.ShouldDeepEqual(cdogsResult);
         }
     }
 }

@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.CDogs;
@@ -47,6 +46,7 @@ namespace HealthGateway.GatewayApi.Services
             CancellationToken ct = default)
         {
             string reportName = $"HealthGateway{reportRequest.Template}Report";
+
             CDogsRequestModel cdogsRequest = new()
             {
                 Data = reportRequest.Data,
@@ -63,22 +63,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
             };
 
-            RequestResult<ReportModel> result =
-                await this.cdogsDelegate.GenerateReportAsync(cdogsRequest, ct);
-
-            if (result.ResourcePayload == null)
-            {
-                return new RequestResult<ReportModel>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Report generation failed or timed out.",
-                    },
-                };
-            }
-
-            return result;
+            return await this.cdogsDelegate.GenerateReportAsync(cdogsRequest, ct);
         }
 
         private static string GetTemplateExtension(ReportFormatType formatType)
