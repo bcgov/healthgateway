@@ -154,7 +154,7 @@ function formatPhone(phoneNumber: string | undefined): string {
                 class="mt-2"
             >
                 <v-col cols="12">
-                    <div class="font-weight-bold mb-1">Active ingredients</div>
+                    <div class="font-weight-bold mb-1">Active Ingredients</div>
                     <v-sheet max-width="720">
                         <v-table density="compact" class="border rounded">
                             <thead class="bg-grey-lighten-4">
