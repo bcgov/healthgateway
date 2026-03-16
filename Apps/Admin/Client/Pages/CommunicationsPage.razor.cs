@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Client.Pages;
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
@@ -56,8 +55,7 @@ public partial class CommunicationsPage : FluxorComponent
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
-    [SuppressMessage("Minor Code Smell", "S3459:Unassigned members should be removed", Justification = "Assigned in .razor file")]
-    private HgTabs? Tabs { get; set; }
+    private int ActivePanelIndex { get; set; }
 
     private bool BroadcastsLoading => this.BroadcastsState.Value.IsLoading;
 
@@ -101,7 +99,7 @@ public partial class CommunicationsPage : FluxorComponent
         this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.Mobile);
 
     private CommunicationType? SelectedCommunicationType =>
-        this.Tabs?.MudComponent.ActivePanelIndex switch
+        this.ActivePanelIndex switch
         {
             1 => CommunicationType.Banner,
             2 => CommunicationType.InApp,
@@ -130,6 +128,11 @@ public partial class CommunicationsPage : FluxorComponent
     {
         this.Dispatcher.Dispatch(new BroadcastsActions.ResetStateAction());
         this.Dispatcher.Dispatch(new CommunicationsActions.ResetStateAction());
+    }
+
+    private void OnTabChanged(int index)
+    {
+        this.ActivePanelIndex = index;
     }
 
     private async Task CreateBroadcastAsync()
