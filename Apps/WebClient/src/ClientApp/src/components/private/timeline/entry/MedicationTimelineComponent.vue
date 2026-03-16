@@ -154,13 +154,13 @@ function formatPhone(phoneNumber: string | undefined): string {
                 class="mt-2"
             >
                 <v-col cols="12">
-                    <div class="font-weight-bold mb-1">Active Ingredients</div>
+                    <div class="font-weight-bold mb-4">Active ingredients</div>
                     <v-sheet max-width="720">
                         <v-table density="compact" class="border rounded">
                             <thead class="bg-grey-lighten-4">
                                 <tr>
                                     <th class="text-left">Ingredient</th>
-                                    <th class="text-right">Strength</th>
+                                    <th class="text-left">Strength</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -176,7 +176,7 @@ function formatPhone(phoneNumber: string | undefined): string {
                                         {{ ingredient.ingredient || "N/A" }}
                                     </td>
                                     <td
-                                        class="text-right"
+                                        class="text-left"
                                         :data-testid="`medication-strength-${ingredientIndex}`"
                                     >
                                         {{
@@ -196,7 +196,7 @@ function formatPhone(phoneNumber: string | undefined): string {
                 <v-col :cols="cols">
                     <DisplayFieldComponent
                         data-testid="medication-pharmacy-name"
-                        name="Filled At"
+                        name="Filled at"
                         name-class="font-weight-bold"
                         :value="entry.pharmacy.name"
                     />
@@ -229,7 +229,7 @@ function formatPhone(phoneNumber: string | undefined): string {
             <v-divider class="my-4" />
             <DisplayFieldComponent
                 data-testid="medication-directions"
-                name="Directions for Use"
+                name="Directions for use"
                 name-class="font-weight-bold"
                 :value="entry.directions"
             />
