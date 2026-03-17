@@ -146,7 +146,7 @@ watch(email, (value) => (inputValue.value = value));
             v-if="!inputValue && email"
             data-testid="emailOptOutMessage"
             class="pt-0"
-            type="error"
+            type="warning"
             variant="text"
             text="Removing your email address will disable future email
                 communications from the Health Gateway."

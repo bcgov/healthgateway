@@ -30,7 +30,8 @@ const maskString = "(###) ###-####";
 const mask = new Mask({ mask: maskString });
 const maskOptions = {
     mask: maskString,
-    onMaska: (detail: MaskaDetail) => (rawValue.value = detail.unmasked),
+    onMaska: (detail: MaskaDetail) =>
+        (inputPhoneNumber.value = detail.unmasked),
 };
 
 const userProfileService = container.get<IUserProfileService>(
@@ -46,24 +47,26 @@ const userStore = useUserStore();
 const isSmsEditable = ref(false);
 
 const verified = computed(() => userStore.user.verifiedSms);
-const rawStoreValue = computed(() => userStore.user.sms);
-const maskedStoreValue = computed(() => mask.masked(rawStoreValue.value));
+const storePhoneNumber = computed(() => userStore.user.sms);
+const maskedStorePhoneNumber = computed(() =>
+    mask.masked(storePhoneNumber.value)
+);
 
-const rawValue = ref(rawStoreValue.value);
-const maskedValue = ref(maskedStoreValue.value);
+const inputPhoneNumber = ref(storePhoneNumber.value);
+const maskedInputPhoneNumber = ref(maskedStorePhoneNumber.value);
 
 const verifySmsDialog = ref<InstanceType<typeof VerifySmsDialogComponent>>();
 
 const inputErrorMessages = computed(() =>
     !isSmsEditable.value
         ? []
-        : ValidationUtil.getErrorMessages(v$.value.rawValue)
+        : ValidationUtil.getErrorMessages(v$.value.inputPhoneNumber)
 );
 const validations = computed(() => ({
-    rawValue: {
+    inputPhoneNumber: {
         newSMSNumber: helpers.withMessage(
             "New SMS number must be different from the previous one",
-            not(sameAs(rawStoreValue))
+            not(sameAs(storePhoneNumber))
         ),
         sms: helpers.withMessage(
             "Valid SMS number is required",
@@ -72,12 +75,12 @@ const validations = computed(() => ({
     },
 }));
 
-const v$ = useVuelidate(validations, { rawValue });
+const v$ = useVuelidate(validations, { inputPhoneNumber });
 
 async function validPhoneNumberFormat(
     value: string
 ): Promise<boolean | undefined> {
-    if (value === rawStoreValue.value || !value) {
+    if (value === storePhoneNumber.value || !value) {
         return true;
     }
 
@@ -94,17 +97,17 @@ async function validPhoneNumberFormat(
 
 function makeSmsEditable(): void {
     isSmsEditable.value = true;
-    v$.value.rawValue.$touch();
+    v$.value.inputPhoneNumber.$touch();
 }
 
 function cancelSmsEdit(): void {
     isSmsEditable.value = false;
-    maskedValue.value = maskedStoreValue.value;
+    maskedInputPhoneNumber.value = maskedStorePhoneNumber.value;
 }
 
 function saveSmsEdit(): void {
     v$.value.$touch();
-    if (v$.value.rawValue.$invalid !== true) {
+    if (v$.value.inputPhoneNumber.$invalid !== true) {
         updateSms();
     }
 }
@@ -118,13 +121,13 @@ function updateSms(): void {
         Loader.UserProfile,
         "updateSms",
         userProfileService
-            .updateSmsNumber(userStore.hdid, rawValue.value)
+            .updateSmsNumber(userStore.hdid, inputPhoneNumber.value)
             .then(refreshProfile)
             .then(() => {
                 isSmsEditable.value = false;
                 v$.value.$reset();
 
-                if (rawStoreValue.value) {
+                if (storePhoneNumber.value) {
                     verifySms();
                 }
             })
@@ -169,7 +172,13 @@ function refreshProfile(): Promise<void> {
     });
 }
 
-watch(maskedStoreValue, (value) => (maskedValue.value = value));
+watch(
+    maskedStorePhoneNumber,
+    (value) => (maskedInputPhoneNumber.value = value)
+);
+watch(maskedInputPhoneNumber, (value) => {
+    inputPhoneNumber.value = value ? PhoneUtil.stripPhoneMask(value) : "";
+});
 </script>
 
 <template>
@@ -187,7 +196,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
     </SectionHeaderComponent>
     <v-sheet :max-width="400">
         <v-text-field
-            v-model="maskedValue"
+            v-model="maskedInputPhoneNumber"
             v-maska="maskOptions"
             data-testid="smsNumberInput"
             :class="{ 'mb-4': inputErrorMessages.length > 0 }"
@@ -202,7 +211,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
         >
             <template #append-inner>
                 <v-progress-circular
-                    v-if="v$.rawValue.$pending"
+                    v-if="v$.inputPhoneNumber.$pending"
                     color="info"
                     indeterminate
                     size="24"
@@ -212,10 +221,10 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
     </v-sheet>
     <div v-if="isSmsEditable" class="mb-4">
         <HgAlertComponent
-            v-if="!rawValue && rawStoreValue"
+            v-if="!inputPhoneNumber && storePhoneNumber"
             data-testid="smsOptOutMessage"
             class="pt-0"
-            type="error"
+            type="warning"
             variant="text"
             text="Removing your phone number will disable future SMS communications
                 from the Health Gateway."
@@ -233,8 +242,8 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
             variant="primary"
             text="Save"
             :disabled="
-                rawValue === rawStoreValue ||
-                !ValidationUtil.isValid(v$.rawValue)
+                inputPhoneNumber === storePhoneNumber ||
+                !ValidationUtil.isValid(v$.inputPhoneNumber)
             "
             @click="saveSmsEdit"
         />
@@ -250,7 +259,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
                 horizontal
             />
             <DisplayFieldComponent
-                v-else-if="!rawStoreValue"
+                v-else-if="!storePhoneNumber"
                 name="Status"
                 value="Opted Out"
                 value-class="text-medium-emphasis"
@@ -267,7 +276,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
             />
         </div>
         <HgButtonComponent
-            v-if="!verified && rawStoreValue"
+            v-if="!verified && storePhoneNumber"
             data-testid="verifySMSBtn"
             class="mb-4"
             variant="secondary"
@@ -277,7 +286,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
     </template>
     <VerifySmsDialogComponent
         ref="verifySmsDialog"
-        :sms-number="rawStoreValue"
+        :sms-number="storePhoneNumber"
         @verified="handleSmsVerified"
     />
 </template>
