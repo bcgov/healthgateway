@@ -75,7 +75,6 @@ namespace HealthGateway.Medication.Controllers
         /// <summary>
         /// Gets medication summary by DIN.
         /// </summary>
-        /// <param name="hdid">The patient's HDID.</param>
         /// <param name="din">The Drug Identification Number (DIN) to look up.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The medication summary for the specified DIN.</returns>
@@ -85,7 +84,7 @@ namespace HealthGateway.Medication.Controllers
         [ProducesResponseType<MedicationSummary>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [AllowAnonymous]
-        public async Task<MedicationSummary> GetMedicationSummary(string hdid, string din, CancellationToken ct)
+        public async Task<MedicationSummary> GetMedicationSummary(string din, CancellationToken ct)
         {
             return await this.medicationStatementService.GetMedicationSummaryAsync(din, ct);
         }
