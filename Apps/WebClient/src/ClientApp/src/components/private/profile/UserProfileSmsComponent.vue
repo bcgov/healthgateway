@@ -224,7 +224,7 @@ watch(maskedInputPhoneNumber, (value) => {
             v-if="!inputPhoneNumber && storePhoneNumber"
             data-testid="smsOptOutMessage"
             class="pt-0"
-            type="error"
+            type="warning"
             variant="text"
             text="Removing your phone number will disable future SMS communications
                 from the Health Gateway."
