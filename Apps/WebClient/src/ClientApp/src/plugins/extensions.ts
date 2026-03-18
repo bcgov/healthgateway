@@ -340,6 +340,8 @@ export const enum ExternalUrl {
     AccessMyHealth = "https://www.accessmyhealth.ca",
     AddressChangeBC = "https://www.addresschange.gov.bc.ca",
     ImmunizationRecordBC = "https://www.immunizationrecord.gov.bc.ca",
+    ImmunizationSchedule = "https://www.healthlinkbc.ca/health-library/immunizations/schedules",
+    Immunizations = "https://www.healthlinkbc.ca/health-library/immunizations",
     HealthConnectRegistry = "https://www.healthlinkbc.ca/find-care/health-connect-registry",
     HealthGateway = "https://www.healthgateway.gov.bc.ca",
     OrganDonorRegistration = "https://www.transplant.bc.ca/organ-donation/register-as-an-organ-donor/register-your-decision",
