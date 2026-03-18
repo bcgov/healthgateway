@@ -12,7 +12,14 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import { Action, Destination, Origin, Text, Type } from "@/plugins/extensions";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
 import {
     ILogger,
     IReportService,
@@ -191,15 +198,16 @@ function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value && isRecommendationEmpty.value);
 }
 
-function trackLink(href: string, text: Text, destination: Destination) {
+function trackLink(url: ExternalUrl, text: Text, destination: Destination) {
     trackingService.trackEvent({
         action: Action.ExternalLink,
         text: text,
         destination: destination,
         origin: Origin.Download,
         type: Type.Immunizations,
+        url: url,
     });
-    window.open(href, "_blank", "noopener");
+    window.open(url, "_blank", "noopener");
 }
 
 watch(isLoading, () => {
@@ -241,11 +249,11 @@ immunizationStore
                 <p>
                     You can add or update immunizations by visiting
                     <a
-                        href="https://www.immunizationrecord.gov.bc.ca/"
+                        :href="ExternalUrl.ImmunizationRecordBC"
                         class="text-link"
                         @click.prevent="
                             trackLink(
-                                'https://www.immunizationrecord.gov.bc.ca/',
+                                ExternalUrl.ImmunizationRecordBC,
                                 Text.ImmunizationRecordDownload,
                                 Destination.ImmunizationRecordBC
                             )
@@ -300,11 +308,11 @@ immunizationStore
                     <p>
                         Recommended immunizations are based on the
                         <a
-                            href="https://www.healthlinkbc.ca/health-library/immunizations/schedules"
+                            :href="ExternalUrl.ImmunizationSchedule"
                             class="text-link"
                             @click.prevent="
                                 trackLink(
-                                    'https://www.healthlinkbc.ca/health-library/immunizations/schedules',
+                                    ExternalUrl.ImmunizationSchedule,
                                     Text.BcVaccineSchedule,
                                     Destination.ImmunizationSchedule
                                 )
@@ -312,11 +320,11 @@ immunizationStore
                             >BC Vaccine Schedule</a
                         >. For more information, please visit
                         <a
-                            href="https://www.healthlinkbc.ca/health-library/immunizations"
+                            :href="ExternalUrl.Immunizations"
                             class="text-link"
                             @click.prevent="
                                 trackLink(
-                                    'https://www.healthlinkbc.ca/health-library/immunizations',
+                                    ExternalUrl.Immunizations,
                                     Text.ImmunizationsHealthLinkBC,
                                     Destination.ImmunizationsHealthLinkBC
                                 )
