@@ -1,3 +1,5 @@
+import MedicationActiveIngredient from "@/models/medicationActiveIngredient";
+
 // Medication model
 export default interface MedicationSummary {
     // Drug Identification Number for the medication.
@@ -30,4 +32,6 @@ export default interface MedicationSummary {
     subtitle: string;
     // Is Pharmacist Assessment
     isPharmacistAssessment: boolean;
+    // Active Ingredients
+    activeIngredients: MedicationActiveIngredient[];
 }

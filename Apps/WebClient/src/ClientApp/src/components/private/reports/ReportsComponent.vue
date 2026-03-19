@@ -62,6 +62,20 @@ const reportComponentMap = new Map<EntryType, unknown>([
     [EntryType.SpecialAuthorityRequest, SpecialAuthorityRequestReportComponent],
 ]);
 
+const reportErrorSourceMap = new Map<EntryType, ErrorSourceType>([
+    [EntryType.Covid19TestResult, ErrorSourceType.Covid19LaboratoryReport],
+    [EntryType.HealthVisit, ErrorSourceType.HealthVisitReport],
+    [EntryType.HospitalVisit, ErrorSourceType.HospitalVisitReport],
+    [EntryType.Immunization, ErrorSourceType.ImmunizationReport],
+    [EntryType.LabResult, ErrorSourceType.LaboratoryReport],
+    [EntryType.Medication, ErrorSourceType.MedicationReport],
+    [EntryType.Note, ErrorSourceType.NoteReport],
+    [
+        EntryType.SpecialAuthorityRequest,
+        ErrorSourceType.SpecialAuthorityRequestReport,
+    ],
+]);
+
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
@@ -209,6 +223,56 @@ function showConfirmationModal(type: ReportFormatType): void {
     messageModal.value?.showModal();
 }
 
+function getReportErrorSource(): ErrorSourceType {
+    if (!selectedEntryType.value) {
+        return ErrorSourceType.ExportRecords;
+    }
+
+    return (
+        reportErrorSourceMap.get(selectedEntryType.value) ??
+        ErrorSourceType.ExportRecords
+    );
+}
+
+/**
+ * Converts a Base64-encoded string into a Blob for file download.
+ *
+ * The Base64 string is decoded and processed in small slices to avoid
+ * large memory allocations when handling large files (e.g., PDF exports).
+ * The resulting byte arrays are combined into a Blob of the specified MIME type.
+ */
+function base64ToBlob(base64: string, mimeType: string): Blob {
+    const byteCharacters = atob(base64);
+    const sliceSize = 1024;
+    const byteArrays: BlobPart[] = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array<number>(slice.length);
+
+        for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        byteArrays.push(new Uint8Array(byteNumbers));
+    }
+
+    return new Blob(byteArrays, { type: mimeType });
+}
+
+/**
+ * Estimates the original binary size (in bytes) of a Base64-encoded string.
+ *
+ * Base64 encoding increases size by roughly 33%. This calculation reverses
+ * that expansion and adjusts for any "=" padding characters at the end of
+ * the string. Used to detect large payloads before attempting Blob conversion
+ * in the browser.
+ */
+function estimateBase64SizeInBytes(base64: string): number {
+    const padding = base64.match(/=*$/)?.[0].length ?? 0;
+    return Math.floor((base64.length * 3) / 4) - padding;
+}
+
 function downloadReport(): void {
     if (!selectedEntryType.value || !reportComponent.value) {
         return;
@@ -221,16 +285,61 @@ function downloadReport(): void {
     reportComponent.value
         .generateReport(reportFormatType.value, headerData.value)
         .then((result: RequestResult<Report>) => {
+            // Prefer the backend error if report generation failed.
+            // This preserves the actual CDOGS/report service failure message
+            // instead of masking it as a generic missing-payload error.
+            if (result.resultError) {
+                throw ResultError.fromModel(result.resultError);
+            }
+
+            if (!result.resourcePayload) {
+                throw {
+                    message: `Unable to download the ${
+                        entryTypeMap.get(selectedEntryType.value!)?.name ??
+                        "selected"
+                    } report.`,
+                    statusCode: 500,
+                    traceId: "report-download-missing-payload",
+                } as ResultError;
+            }
+
             const mimeType =
                 reportMimeTypeMap.get(reportFormatType.value) ?? "";
-            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-            fetch(downloadLink).then((res) =>
-                res
-                    .blob()
-                    .then((blob) =>
-                        saveAs(blob, result.resourcePayload.fileName)
-                    )
-            );
+            const base64Data = result.resourcePayload.data;
+
+            // Defensive check: report generation returned successfully but no file data
+            // was included in the response payload. Treat this as a download failure so
+            // existing error handling and user messaging is triggered.
+            if (!base64Data) {
+                throw {
+                    message: `Unable to download the ${
+                        entryTypeMap.get(selectedEntryType.value!)?.name ??
+                        "selected"
+                    } report.`,
+                    statusCode: 500,
+                    traceId: "report-download-missing-data",
+                } as ResultError;
+            }
+
+            // Guard against extremely large PDF downloads. Large base64 payloads
+            // can exhaust browser memory during Blob conversion, so block PDFs
+            // estimated to exceed ~25 MB.
+            if (
+                reportFormatType.value === ReportFormatType.PDF &&
+                estimateBase64SizeInBytes(base64Data) > 25 * 1024 * 1024
+            ) {
+                throw {
+                    message: `The ${
+                        entryTypeMap.get(selectedEntryType.value!)?.name ??
+                        "selected"
+                    } PDF report is too large to generate. Please reduce the date range or apply additional filters and try again.`,
+                    statusCode: 413,
+                    traceId: "report-download-pdf-too-large",
+                } as ResultError;
+            }
+
+            const blob = base64ToBlob(base64Data, mimeType);
+            saveAs(blob, result.resourcePayload.fileName);
         })
         .catch((err: ResultError) => {
             logger.error(err.message);
@@ -239,8 +348,8 @@ function downloadReport(): void {
             } else {
                 errorStore.addError(
                     ErrorType.Download,
-                    ErrorSourceType.ExportRecords,
-                    err.traceId
+                    getReportErrorSource(),
+                    err.traceId ?? ""
                 );
             }
         })

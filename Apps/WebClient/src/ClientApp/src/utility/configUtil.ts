@@ -1,5 +1,9 @@
-import { CardName } from "@/constants/cardName";
+import { CardNames } from "@/constants/cardNames";
 import { EntryType } from "@/constants/entryType";
+import {
+    ProfileNotificationPreference,
+    ProfileNotificationType,
+} from "@/constants/profileNotifications";
 import { ServiceName } from "@/constants/serviceName";
 import {
     FeatureToggleConfiguration,
@@ -39,7 +43,7 @@ export default abstract class ConfigUtil {
         return ConfigUtil.isDatasetEnabled(datasetName) && !disabledByOverride;
     }
 
-    public static isServiceEnabled(serviceName: ServiceName) {
+    public static isServiceEnabled(serviceName: ServiceName): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         if (config.services?.enabled && config.services.services) {
             return config.services.services.some(
@@ -51,17 +55,19 @@ export default abstract class ConfigUtil {
         return false;
     }
 
-    public static isServicesFeatureEnabled() {
+    public static isServicesFeatureEnabled(): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         return config.services?.enabled;
     }
 
-    public static isOtherRecordSourcesFeatureEnabled() {
+    public static isOtherRecordSourcesFeatureEnabled(): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         return config.homepage?.otherRecordSources?.enabled ?? false;
     }
 
-    public static isOtherRecordSourcesCardEnabled(cardName: CardName) {
+    public static isOtherRecordSourcesCardEnabled(
+        cardName: CardNames
+    ): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         const feature = config.homepage?.otherRecordSources;
 
@@ -76,8 +82,54 @@ export default abstract class ConfigUtil {
         return false;
     }
 
-    public static isImmunizationRecordLinkEnabled() {
+    public static isImmunizationRecordLinkEnabled(): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
         return config.homepage?.showImmunizationRecordLink ?? false;
+    }
+
+    public static isProfileNotificationsFeatureEnabled(): boolean {
+        const config = ConfigUtil.getFeatureConfiguration();
+        return config.profile?.notifications?.enabled ?? false;
+    }
+
+    public static isProfileNotificationTypeEnabled(
+        notificationType: ProfileNotificationType
+    ): boolean {
+        const config = ConfigUtil.getFeatureConfiguration();
+        const feature = config.profile?.notifications;
+
+        if (feature?.enabled && feature.type) {
+            return feature.type.some(
+                (typeSetting) =>
+                    typeSetting.name.toLowerCase() ===
+                        notificationType.toLowerCase() && typeSetting.enabled
+            );
+        }
+
+        return false;
+    }
+
+    public static isProfileNotificationPreferenceEnabled(
+        notificationType: ProfileNotificationType,
+        preference: ProfileNotificationPreference
+    ): boolean {
+        const config = ConfigUtil.getFeatureConfiguration();
+        const notifications = config.profile?.notifications;
+
+        if (!notifications?.enabled || !notifications.type) {
+            return false;
+        }
+
+        const typeSetting = notifications.type.find(
+            (typeSetting) =>
+                typeSetting.name.toLowerCase() ===
+                    notificationType.toLowerCase() && typeSetting.enabled
+        );
+
+        if (!typeSetting || !typeSetting.preferences) {
+            return false;
+        }
+
+        return Boolean(typeSetting.preferences[preference]);
     }
 }

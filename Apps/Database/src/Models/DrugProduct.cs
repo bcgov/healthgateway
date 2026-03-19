@@ -135,11 +135,6 @@ namespace HealthGateway.Database.Models
         public virtual Company? Company { get; set; }
 
         /// <summary>
-        /// Gets or sets the ActiveIngredient.
-        /// </summary>
-        public virtual ActiveIngredient? ActiveIngredient { get; set; }
-
-        /// <summary>
         /// Gets or sets the Form.
         /// </summary>
         public virtual Form? Form { get; set; }
@@ -158,6 +153,11 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Route.
         /// </summary>
         public virtual Route? Route { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ActiveIngredients.
+        /// </summary>
+        public virtual ICollection<ActiveIngredient> ActiveIngredients { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the related statuses.

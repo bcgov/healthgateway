@@ -43,7 +43,7 @@ namespace HealthGateway.Database.Delegates
 
             IList<DrugProduct> drugProducts = await dbContext.DrugProduct
                 .Include(c => c.Company)
-                .Include(a => a.ActiveIngredient)
+                .Include(a => a.ActiveIngredients)
                 .Include(f => f.Form)
                 .Where(dp => uniqueDrugIdentifiers.Contains(dp.DrugIdentificationNumber))
                 .ToListAsync(ct);

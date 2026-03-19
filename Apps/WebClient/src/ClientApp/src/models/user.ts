@@ -5,6 +5,7 @@ import { DataSource } from "@/constants/dataSource";
 import { Dictionary } from "@/models/baseTypes";
 import { StringISODateTime } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
+import { UserProfileNotificationSettingModel } from "@/models/userProfile";
 
 export default class User {
     public hdid = "";
@@ -23,6 +24,7 @@ export default class User {
     public hasTourUpdated = false;
     public blockedDataSources: DataSource[] = [];
     public betaFeatures: BetaFeature[] = [];
+    public notificationSettings: UserProfileNotificationSettingModel[] = [];
 }
 
 export interface OidcUserInfo extends KeycloakUserInfo {

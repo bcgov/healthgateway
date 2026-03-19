@@ -4,14 +4,9 @@ import {
     getTabButtonSelector,
 } from "../../../support/functions/dependent";
 
-// JENNIFER TESTFOUR
+// JENNIFER T
 const dependent1 = {
     hdid: "162346565465464564565463257",
-};
-
-// MICHAEL TESTERTWO
-const dependent2 = {
-    hdid: "BNV554213556",
 };
 
 // ROMIL SWAN
@@ -186,9 +181,11 @@ describe("Reports", () => {
             });
     });
 
-    // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+    // AB#16921 - Test skipped until ODR fixes dependent test data for medications.
+    // When this functionality is enabled, create a ticket to update the test data
+    // and re-enable this test.
     it.skip("Validate Medication Report", () => {
-        const hdid = dependent2.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -226,9 +223,11 @@ describe("Reports", () => {
         cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
-    // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+    // AB#16921 - Test skipped until ODR fixes dependent test data for health visits.
+    // When this functionality is enabled, create a ticket to update the test data
+    // and re-enable this test.
     it.skip("Validate MSP Visits Report", () => {
-        const hdid = dependent2.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");

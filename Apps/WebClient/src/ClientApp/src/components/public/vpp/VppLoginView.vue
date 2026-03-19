@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -20,7 +21,7 @@ const trackingService = container.get<ITrackingService>(
 function openAccessMyHealth() {
     trackNavigationClick(
         Action.ExternalLink,
-        Text.BackToAccessMyHealth,
+        Text.Cancel,
         Destination.AccessMyHealth,
         ExternalUrl.AccessMyHealth
     );
@@ -31,11 +32,11 @@ function openAccessMyHealth() {
 function openHealthGatewayInfo(): void {
     trackNavigationClick(
         Action.ExternalLink,
-        Text.HealthGatewayInfo,
+        Text.LearnMore,
         Destination.HealthGateway,
         ExternalUrl.HealthGateway
     );
-    window.open(ExternalUrl.HealthGateway, "_blank", "noopener");
+    window.location.assign(ExternalUrl.HealthGateway);
 }
 
 function openHgHome() {
@@ -43,7 +44,7 @@ function openHgHome() {
 
     trackNavigationClick(
         Action.InternalLink,
-        Text.HealthGatewayHome,
+        Text.ContinueToHealthGateway,
         Destination.HealthGateway,
         InternalUrl.Home
     );
@@ -84,37 +85,49 @@ function trackNavigationClick(
             <div
                 class="vpp-login-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
+                <h2 class="text-center text-h6 font-weight-bold mb-4">
+                    Do you want to open Health Gateway?
+                </h2>
                 <p class="text-center">
-                    <strong>You are opening Health Gateway</strong>
-                </p>
-                <p class="text-center mb-4">
-                    As you are already signed into AccessMyHealth, you may go
-                    directly to your Health Gateway records.
-                </p>
-                <p class="text-center">
-                    For more information about Health Gateway, click
+                    Health Gateway may contain more health records and
+                    information.
                     <a
                         :href="ExternalUrl.HealthGateway"
                         class="text-link"
                         data-testid="click-hgw-link"
                         @click.prevent="openHealthGatewayInfo"
-                        >here</a
-                    >.
+                        >Learn more.</a
+                    >
                 </p>
+                <p class="text-center mb-4">
+                    You are currently signed into AccessMyHealth. If you wish to
+                    continue, you will open Health Gateway in this window.
+                </p>
+                <HgAlertComponent
+                    type="warning"
+                    data-testid="signout-close-windows-warning"
+                    variant="outlined"
+                    :center-content="true"
+                >
+                    Please remember to sign out and close both windows when you
+                    are done.
+                </HgAlertComponent>
                 <div class="d-flex flex-column flex-sm-row ga-2 justify-center">
                     <HgButtonComponent
-                        variant="link"
-                        text="Go back to AccessMyHealth"
+                        variant="secondary"
+                        text="Cancel"
                         :uppercase="false"
-                        data-testid="go-back-button"
+                        class="text-body-1"
+                        data-testid="cancel-button"
                         :data-url="ExternalUrl.AccessMyHealth"
                         @click="openAccessMyHealth()"
                     />
                     <HgButtonComponent
-                        variant="link"
-                        text="Sign into Health Gateway"
+                        variant="primary"
+                        text="Continue to Health Gateway"
                         :uppercase="false"
-                        data-testid="sign-in-button"
+                        class="text-body-1"
+                        data-testid="continue-to-hgw-button"
                         @click="openHgHome()"
                     />
                 </div>

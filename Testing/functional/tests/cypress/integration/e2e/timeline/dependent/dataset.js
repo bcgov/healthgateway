@@ -189,9 +189,13 @@ describe("Dependent Timeline Datasets", () => {
     });
 
     describe("Validate health visits on dependent timeline", () => {
-        // Michael Testertwo
-        const hdid = "BNV554213556";
-        // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+        // AB#17029 Switched user to Jennifer T fromn Michael Testertwo
+        // Jennifer T
+        const hdid = "162346565465464564565463257";
+
+        // AB#16921 - Test skipped until ODR fixes dependent test data for health visits.
+        // When this functionality is enabled, create a ticket to update the test data
+        // and re-enable this test.
         it.skip("Enabled HealthVisit dataset should be present", () => {
             enabledDatasetShouldBePresent(Dataset.HealthVisit, hdid);
         });
@@ -207,10 +211,13 @@ describe("Dependent Timeline Datasets", () => {
     });
 
     describe("Validate medications on dependent timeline", () => {
-        // Michael Testertwo
-        const hdid = "BNV554213556";
+        // AB#17029 Switched user to Jennifer T fromn Michael Testertwo
+        // Jennifer T
+        const hdid = "162346565465464564565463257";
 
-        // AB#16921 - test should be skipped until ODR fixes test data for this dependent
+        // AB#16921 - Test skipped until ODR fixes dependent test data for medications.
+        // When this functionality is enabled, create a ticket to update the test data
+        // and re-enable this test.
         it.skip("Enabled Medication dataset should be present", () => {
             enabledDatasetShouldBePresent(Dataset.Medication, hdid);
         });

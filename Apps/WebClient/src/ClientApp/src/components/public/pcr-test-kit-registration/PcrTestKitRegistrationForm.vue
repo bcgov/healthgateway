@@ -392,6 +392,7 @@ if (!props.serialNumber) {
         variant="outlined"
         class="d-print-none"
         :text="errorMessage"
+        :center-content="true"
     />
     <v-row>
         <v-col>

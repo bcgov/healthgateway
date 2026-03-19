@@ -85,23 +85,26 @@ namespace HealthGateway.CommonTests.Delegates
         public async Task ShouldReturnErrorForGenerateReportAsyncHttpError()
         {
             const HttpStatusCode statusCode = HttpStatusCode.Forbidden;
+            const string errorBody = "{\"error\":\"forbidden\"}";
 
             RequestResult<ReportModel> expectedResult = new()
             {
                 ResultError = new RequestResultError
                 {
-                    ResultMessage = $"Unable to connect to CDogs API, HTTP Error {statusCode}",
+                    ResultMessage = $"CDOGS returned HTTP {(int)statusCode}: {errorBody}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                 },
             };
 
             using HttpResponseMessage httpResponseMessage = new();
             httpResponseMessage.StatusCode = statusCode;
-            httpResponseMessage.Content = new ByteArrayContent([]);
+            httpResponseMessage.Content = new StringContent(errorBody, Encoding.UTF8, "application/json");
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>())).ReturnsAsync(httpResponseMessage);
+            mockCdogsApi
+                .Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(httpResponseMessage);
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
@@ -138,6 +141,38 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.NotNull(actualResult.ResultError);
             Assert.Equal(expectedResult.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);
             Assert.StartsWith(expectedResult.ResultError.ResultMessage, actualResult.ResultError?.ResultMessage, StringComparison.InvariantCulture);
+        }
+
+        /// <summary>
+        /// GenerateReportAsync - Handle OperationCanceledException.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldReturnErrorForGenerateReportAsyncTimeout()
+        {
+            RequestResult<ReportModel> expectedResult = new()
+            {
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = "CDOGS request timed out.",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
+                },
+            };
+
+            Mock<ILogger<CDogsDelegate>> mockLogger = new();
+            Mock<ICDogsApi> mockCdogsApi = new();
+            mockCdogsApi
+                .Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new OperationCanceledException());
+
+            ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
+
+            CDogsRequestModel request = GetRequestModel();
+            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request);
+
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(expectedResult.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);
+            Assert.Equal(expectedResult.ResultError.ResultMessage, actualResult.ResultError?.ResultMessage);
         }
 
         private static CDogsRequestModel GetRequestModel(string reportName = "Test Report", string fileType = "pdf")

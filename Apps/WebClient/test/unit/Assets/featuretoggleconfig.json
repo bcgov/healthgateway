@@ -97,5 +97,20 @@
                 "enabled": true
             }
         ]
+    },
+    "profile": {
+        "notifications": {
+            "enabled": true,
+            "type": [
+                {
+                    "name": "bcCancerScreening",
+                    "enabled": true,
+                    "preferences": {
+                        "email": true,
+                        "sms": false
+                    }
+                }
+            ]
+        }
     }
 }

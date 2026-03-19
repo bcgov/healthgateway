@@ -119,5 +119,10 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public Guid DrugProductId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related DrugProduct.
+        /// </summary>
+        public virtual DrugProduct DrugProduct { get; set; } = null!;
     }
 }

@@ -4,7 +4,10 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
-import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import UserProfile, {
+    CreateUserRequest,
+    UserProfileNotificationSettingModel,
+} from "@/models/userProfile";
 import {
     IHttpDelegate,
     ILogger,
@@ -278,6 +281,30 @@ export class RestUserProfileServiceV2 implements IUserProfileService {
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestUserProfileService.isPhoneNumberValid()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
+    }
+
+    public updateNotificationSettings(
+        hdid: string,
+        notificationSetting: UserProfileNotificationSettingModel
+    ): Promise<void> {
+        const headers: Dictionary<string> = {};
+        headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
+
+        return this.http
+            .put<void>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/notificationsettings?api-version=${this.API_VERSION}`,
+                notificationSetting,
+                headers
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestUserProfileService.updateNotificationSettings()`
                 );
                 throw ErrorTranslator.internalNetworkError(
                     err,

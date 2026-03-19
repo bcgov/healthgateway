@@ -18,6 +18,7 @@ TRUNCATE gateway."AgentAudit" CASCADE;
 TRUNCATE gateway."BlockedAccess" CASCADE;
 TRUNCATE gateway."BetaFeatureAccess" CASCADE;
 TRUNCATE gateway."Outbox" CASCADE;
+TRUNCATE gateway."UserProfileNotificationSetting" CASCADE;
 
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -81,7 +82,7 @@ VALUES (
 	null,
 	current_timestamp, 
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
-	null,
+	'6046719015',
 	'1995',
 	'iOS'
 );
@@ -175,12 +176,12 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'8d713fb0-5d94-425f-996a-f2eabb54847c', 
-	null,
+	'fakeemail@healthgateway.gov.bc.ca',
 	null,
 	null,
 	current_timestamp, 
 	'KtBm7JYegayKpx5fjwM2RUGZf79JOnNC21NhUrIAzmg=',
-	null,
+	'6046719015',
 	'1988',
 	'Mobile'
 );
@@ -839,28 +840,6 @@ VALUES (
 	current_timestamp, 
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
-);
-/* Dependent PHN:9874307208 (BNV554213556), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
-INSERT INTO gateway."ResourceDelegate"(
-	"ResourceOwnerHdid", 
-	"ProfileHdid", 
-	"ReasonCode", 
-	"CreatedBy", 
-	"CreatedDateTime", 
-	"UpdatedBy", 
-	"UpdatedDateTime", 
-	"ReasonObjectType", 
-	"ReasonObject")
-VALUES (
-	'BNV554213556', 
-	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
-	'Guardian', 
-	'System', 
-	current_timestamp, 
-	'System', 
-	current_timestamp, 
-	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
-	'"2023-03-27T00:00:00"'
 );
 /* Dependent PHN:9872868095 (727302800477298080), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
 INSERT INTO gateway."ResourceDelegate"(

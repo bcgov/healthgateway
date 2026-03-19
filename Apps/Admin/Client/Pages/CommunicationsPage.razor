@@ -27,7 +27,8 @@
 
 @if (BroadcastsLoaded || BroadcastsLoading || CommunicationsLoaded || CommunicationsLoading)
 {
-    <HgTabs @ref="@Tabs" data-testid="banner-tabs">
+    <HgTabs data-testid="banner-tabs"
+            ActivePanelIndexChanged="@OnTabChanged">
         <Header>
             <HgButton EndIcon="fas fa-plus"
                       TopMargin="@Breakpoint.Always"

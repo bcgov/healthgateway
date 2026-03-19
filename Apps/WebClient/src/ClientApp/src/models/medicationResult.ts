@@ -28,7 +28,7 @@ class DrugProduct {
     public pediatricFlag?: string;
     public productCategorization?: string;
 
-    public activeIngredient?: ActiveIngredient;
+    public activeIngredients: ActiveIngredient[] = [];
     public form?: Form;
     public company?: Company;
 }

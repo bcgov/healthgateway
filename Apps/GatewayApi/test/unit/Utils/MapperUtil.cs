@@ -31,22 +31,22 @@ namespace HealthGateway.GatewayApiTests.Utils
         /// <returns>A configured AutoMapper.</returns>
         public static IMapper InitializeAutoMapper()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile<CommunicationProfile>();
-                    cfg.AddProfile<DependentInformationProfile>();
-                    cfg.AddProfile<DependentProfile>();
-                    cfg.AddProfile<FeedbackProfile>();
-                    cfg.AddProfile<PatientDetailsProfile>();
-                    cfg.AddProfile<RatingProfile>();
-                    cfg.AddProfile<TermsOfServiceProfile>();
-                    cfg.AddProfile<UserCommentProfile>();
-                    cfg.AddProfile<UserNoteProfile>();
-                    cfg.AddProfile<UserPreferenceProfile>();
-                    cfg.AddProfile<UserProfileProfile>();
-                    cfg.AddProfile<WebAlertProfile>();
-                });
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.AddProfile<CommunicationProfile>();
+                cfg.AddProfile<DependentInformationProfile>();
+                cfg.AddProfile<DependentProfile>();
+                cfg.AddProfile<FeedbackProfile>();
+                cfg.AddProfile<PatientDetailsProfile>();
+                cfg.AddProfile<RatingProfile>();
+                cfg.AddProfile<TermsOfServiceProfile>();
+                cfg.AddProfile<UserCommentProfile>();
+                cfg.AddProfile<UserNoteProfile>();
+                cfg.AddProfile<UserPreferenceProfile>();
+                cfg.AddProfile<UserProfileProfile>();
+                cfg.AddProfile<WebAlertProfile>();
+                cfg.AddProfile<UserProfileNotificationSettingProfile>();
+            });
 
             return config.CreateMapper();
         }

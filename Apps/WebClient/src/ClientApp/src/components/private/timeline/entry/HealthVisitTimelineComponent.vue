@@ -101,6 +101,7 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
             text="Health visits are shown for the past 6 years only. You may wish
                 to export and save older records so you still have them when the
                 calendar year changes."
+            :center-content="true"
         />
     </TimelineEntryComponent>
 </template>

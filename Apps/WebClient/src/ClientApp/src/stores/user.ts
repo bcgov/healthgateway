@@ -16,7 +16,9 @@ import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
-import UserProfile from "@/models/userProfile";
+import UserProfile, {
+    UserProfileNotificationSettingModel,
+} from "@/models/userProfile";
 import {
     ILogger,
     IPatientService,
@@ -177,6 +179,8 @@ export const useUserStore = defineStore("user", () => {
         user.value.hasSms = Boolean(userProfile?.smsNumber);
         user.value.verifiedSms = userProfile?.isSMSNumberVerified === true;
         user.value.hasTourUpdated = userProfile?.hasTourUpdated === true;
+        user.value.notificationSettings =
+            userProfile?.notificationSettings ?? [];
 
         logger.verbose(`User: ${JSON.stringify(user.value)}`);
 
@@ -271,8 +275,15 @@ export const useUserStore = defineStore("user", () => {
     function updateUserEmail(emailAddress: string): Promise<void> {
         return userProfileService
             .updateEmail(user.value.hdid, emailAddress)
+            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
-                setUserError(resultError.message);
+                if (resultError.statusCode !== 409) {
+                    handleError(
+                        resultError,
+                        ErrorType.Update,
+                        ErrorSourceType.User
+                    );
+                }
                 throw resultError;
             });
     }
@@ -343,9 +354,12 @@ export const useUserStore = defineStore("user", () => {
         return setUserPreference(preference);
     }
 
-    function validateEmail(inviteKey: string) {
+    function validateEmail(inviteKey: string): Promise<boolean> {
         return userProfileService
             .validateEmail(user.value.hdid, inviteKey)
+            .then((result: boolean) => {
+                return retrieveProfile().then(() => result);
+            })
             .catch((resultError: ResultError) => {
                 if (resultError.statusCode !== 409) {
                     handleError(
@@ -427,6 +441,22 @@ export const useUserStore = defineStore("user", () => {
             });
     }
 
+    function updateNotificationSettings(
+        notificationSetting: UserProfileNotificationSettingModel
+    ): Promise<void> {
+        return userProfileService
+            .updateNotificationSettings(user.value.hdid, notificationSetting)
+            .then(retrieveProfile)
+            .catch((resultError: ResultError) => {
+                handleError(
+                    resultError,
+                    ErrorType.Update,
+                    ErrorSourceType.Profile
+                );
+                throw resultError;
+            });
+    }
+
     return {
         user,
         hdid,
@@ -457,5 +487,6 @@ export const useUserStore = defineStore("user", () => {
         updateAcceptedTerms,
         clearUserData,
         setOidcUserInfo,
+        updateNotificationSettings,
     };
 });

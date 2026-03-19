@@ -21,7 +21,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -120,8 +120,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DrugProductId")
-                        .IsUnique();
+                    b.HasIndex("DrugProductId");
 
                     b.ToTable("ActiveIngredient", "gateway");
                 });
@@ -2698,6 +2697,56 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("PharmaceuticalStd", "gateway");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.ProfileNotificationTypeCode", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("ProfileNotificationTypeCode", "gateway");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "BcCancerScreening",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "BC Cancer Screening notification",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        });
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.ProgramTypeCode", b =>
                 {
                     b.Property<string>("ProgramCode")
@@ -3718,6 +3767,61 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("UserProfileHistory", "gateway");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserProfileNotificationSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EmailEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Hdid")
+                        .IsRequired()
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)")
+                        .HasColumnName("UserProfileId");
+
+                    b.Property<string>("NotificationTypeCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("SmsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NotificationTypeCode");
+
+                    b.HasIndex("Hdid", "NotificationTypeCode")
+                        .IsUnique();
+
+                    b.ToTable("UserProfileNotificationSetting", "gateway");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3772,11 +3876,13 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
-                        .WithOne("ActiveIngredient")
-                        .HasForeignKey("HealthGateway.Database.Models.ActiveIngredient", "DrugProductId")
+                    b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
+                        .WithMany("ActiveIngredients")
+                        .HasForeignKey("DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DrugProduct");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.AgentAudit", b =>
@@ -4113,6 +4219,15 @@ namespace HealthGateway.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserProfileNotificationSetting", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.ProfileNotificationTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("NotificationTypeCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
@@ -4129,7 +4244,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
                 {
-                    b.Navigation("ActiveIngredient");
+                    b.Navigation("ActiveIngredients");
 
                     b.Navigation("Company");
 

@@ -6,6 +6,7 @@ import ProtectiveWordComponent from "@/components/site/ProtectiveWordComponent.v
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
+import MedicationStatement from "@/models/medicationStatement";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -40,11 +41,15 @@ interface MedicationRow {
     practitioner: string;
     quantity: string;
     strength: string;
+    check_din: string;
     form: string;
     manufacturer: string;
 }
 
 const notFoundText = "Not Found";
+const checkDinText = "Check DIN";
+const checkDinUrl = "https://health-products.canada.ca/dpd-bdpp/";
+
 const fields: ReportField[] = [
     {
         key: "date",
@@ -116,32 +121,118 @@ const visibleRecords = computed(() =>
         )
 );
 const items = computed(() =>
-    visibleRecords.value.map<MedicationRow>((x) => ({
-        date: DateWrapper.fromIsoDate(x.dispensedDate).format(),
-        din_pin: x.medicationSummary.din,
-        title: x.medicationSummary.title,
-        subtitle: x.medicationSummary.subtitle || notFoundText,
-        practitioner: x.practitionerSurname ?? "",
-        quantity:
-            x.medicationSummary.quantity === undefined
-                ? ""
-                : x.medicationSummary.quantity.toString(),
-        strength:
-            (x.medicationSummary.strength ?? "") +
-                (x.medicationSummary.strengthUnit ?? "") || notFoundText,
-        form: x.medicationSummary.form || notFoundText,
-        manufacturer: x.medicationSummary.manufacturer || notFoundText,
-    }))
+    visibleRecords.value.map<MedicationRow>((x) => {
+        const formatted = formatActiveIngredients(x);
+
+        return {
+            date: DateWrapper.fromIsoDate(x.dispensedDate).format(),
+            din_pin: x.medicationSummary.din,
+            title: x.medicationSummary.title,
+            subtitle: x.medicationSummary.subtitle || notFoundText,
+            practitioner: x.practitionerSurname ?? "",
+            quantity:
+                x.medicationSummary.quantity === undefined
+                    ? ""
+                    : x.medicationSummary.quantity.toString(),
+            strength: formatted.strength,
+            check_din: formatted.check_din,
+            form: x.medicationSummary.form || notFoundText,
+            manufacturer: x.medicationSummary.manufacturer || notFoundText,
+        };
+    })
 );
+
+function formatActiveIngredients(
+    record: MedicationStatement,
+    reportFormatType?: ReportFormatType
+): {
+    strength: string;
+    check_din: string;
+} {
+    const activeIngredients = record.medicationSummary.activeIngredients ?? [];
+
+    const formattedIngredients = activeIngredients
+        .map((ingredient) => {
+            const ingredientText = ingredient.ingredient?.trim() ?? "";
+            const strengthText = ingredient.strength?.trim() ?? "";
+            const strengthUnitText = ingredient.strengthUnit?.trim() ?? "";
+            const combinedStrength =
+                `${strengthText}${strengthUnitText}`.trim();
+
+            if (!ingredientText && !combinedStrength) {
+                return "";
+            }
+
+            if (activeIngredients.length === 1) {
+                return combinedStrength;
+            }
+
+            return `${ingredientText} ${combinedStrength}`.trim();
+        })
+        .filter((value) => value.length > 0);
+
+    if (formattedIngredients.length === 0) {
+        return {
+            strength: notFoundText,
+            check_din: "",
+        };
+    }
+
+    const result = formattedIngredients.join(", ");
+
+    if (result.length > 120) {
+        logger.debug(`Overflow reportFormatType: ${reportFormatType}`);
+
+        if (
+            reportFormatType === ReportFormatType.XLSX ||
+            reportFormatType === ReportFormatType.CSV
+        ) {
+            return {
+                strength: `${checkDinText} (${checkDinUrl})`,
+                check_din: "",
+            };
+        }
+
+        return {
+            strength: "",
+            check_din: checkDinText,
+        };
+    }
+
+    return {
+        strength: result,
+        check_din: "",
+    };
+}
 
 function generateReport(
     reportFormatType: ReportFormatType,
     headerData: ReportHeader
 ): Promise<RequestResult<Report>> {
+    const records = visibleRecords.value.map<MedicationRow>((x) => {
+        const formatted = formatActiveIngredients(x, reportFormatType);
+
+        return {
+            date: DateWrapper.fromIsoDate(x.dispensedDate).format(),
+            din_pin: x.medicationSummary.din,
+            title: x.medicationSummary.title,
+            subtitle: x.medicationSummary.subtitle || notFoundText,
+            practitioner: x.practitionerSurname ?? "",
+            quantity:
+                x.medicationSummary.quantity === undefined
+                    ? ""
+                    : x.medicationSummary.quantity.toString(),
+            strength: formatted.strength,
+            check_din: formatted.check_din,
+            form: x.medicationSummary.form || notFoundText,
+            manufacturer: x.medicationSummary.manufacturer || notFoundText,
+        };
+    });
+
     return reportService.generateReport({
         data: {
             header: headerData,
-            records: items.value,
+            records,
         },
         template: TemplateType.Medication,
         type: reportFormatType,
@@ -179,7 +270,21 @@ medicationStore
                 density="compact"
                 :loading="medicationsAreLoading"
                 data-testid="medication-history-report-table"
-            />
+            >
+                <template #item-strength="{ item }">
+                    <a
+                        v-if="item.check_din === checkDinText"
+                        :href="checkDinUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {{ checkDinText }}
+                    </a>
+                    <span v-else>
+                        {{ item.strength }}
+                    </span>
+                </template>
+            </HgDataTableComponent>
         </section>
         <ProtectiveWordComponent ref="protectiveWordModal" :hdid="hdid" />
     </div>

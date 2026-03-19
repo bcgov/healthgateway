@@ -234,6 +234,7 @@ async function onSubmit(): Promise<void> {
             isSMSNumberVerified: false,
             preferences: {},
             lastLoginDateTimes: [],
+            notificationSettings: [],
         });
 
         await router.push({

@@ -24,6 +24,7 @@ namespace HealthGateway.Medication.Controllers
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -69,6 +70,23 @@ namespace HealthGateway.Medication.Controllers
         public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null, CancellationToken ct = default)
         {
             return await this.medicationStatementService.GetMedicationStatementsAsync(hdid, protectiveWord, ct);
+        }
+
+        /// <summary>
+        /// Gets medication summary by DIN.
+        /// </summary>
+        /// <param name="din">The Drug Identification Number (DIN) to look up.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The medication summary for the specified DIN.</returns>
+        /// <response code="200">Returns the medication summary for the specified DIN.</response>
+        [HttpGet("summary/{din}")]
+        [Produces("application/json")]
+        [ProducesResponseType<MedicationSummary>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [AllowAnonymous]
+        public async Task<MedicationSummary> GetMedicationSummary(string din, CancellationToken ct)
+        {
+            return await this.medicationStatementService.GetMedicationSummaryAsync(din, ct);
         }
     }
 }

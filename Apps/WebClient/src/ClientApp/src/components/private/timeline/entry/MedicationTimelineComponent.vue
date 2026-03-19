@@ -27,6 +27,13 @@ const entryIcon = computed<string | undefined>(
     () => entryTypeMap.get(EntryType.Medication)?.icon
 );
 
+function formatIngredientStrength(
+    strength?: string,
+    strengthUnit?: string
+): string {
+    return `${strength ?? ""}${strengthUnit ?? ""}`;
+}
+
 function formatPhone(phoneNumber: string | undefined): string {
     return PhoneUtil.formatPhone(phoneNumber);
 }
@@ -127,14 +134,6 @@ function formatPhone(phoneNumber: string | undefined): string {
                 </v-col>
                 <v-col :cols="cols">
                     <DisplayFieldComponent
-                        data-testid="medication-strength"
-                        name="Strength"
-                        name-class="font-weight-bold"
-                        :value="`${entry.medication.strength}${entry.medication.strengthUnit}`"
-                    />
-                </v-col>
-                <v-col :cols="cols">
-                    <DisplayFieldComponent
                         data-testid="medication-form"
                         name="Form"
                         name-class="font-weight-bold"
@@ -150,11 +149,54 @@ function formatPhone(phoneNumber: string | undefined): string {
                     />
                 </v-col>
             </v-row>
+            <v-row
+                v-if="entry.medication.activeIngredients?.length"
+                class="mt-2"
+            >
+                <v-col cols="12">
+                    <div class="font-weight-bold mb-4">Active ingredients</div>
+                    <v-sheet max-width="720">
+                        <v-table density="compact" class="border rounded">
+                            <thead class="bg-grey-lighten-4">
+                                <tr>
+                                    <th class="text-left">Ingredient</th>
+                                    <th class="text-left">Strength</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(
+                                        ingredient, ingredientIndex
+                                    ) in entry.medication.activeIngredients"
+                                    :key="ingredient.activeIngredientCode"
+                                >
+                                    <td
+                                        :data-testid="`medication-ingredient-${ingredientIndex}`"
+                                    >
+                                        {{ ingredient.ingredient || "N/A" }}
+                                    </td>
+                                    <td
+                                        class="text-left"
+                                        :data-testid="`medication-strength-${ingredientIndex}`"
+                                    >
+                                        {{
+                                            formatIngredientStrength(
+                                                ingredient.strength,
+                                                ingredient.strengthUnit
+                                            )
+                                        }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-table>
+                    </v-sheet>
+                </v-col>
+            </v-row>
             <v-row>
                 <v-col :cols="cols">
                     <DisplayFieldComponent
                         data-testid="medication-pharmacy-name"
-                        name="Filled At"
+                        name="Filled at"
                         name-class="font-weight-bold"
                         :value="entry.pharmacy.name"
                     />
@@ -187,7 +229,7 @@ function formatPhone(phoneNumber: string | undefined): string {
             <v-divider class="my-4" />
             <DisplayFieldComponent
                 data-testid="medication-directions"
-                name="Directions for Use"
+                name="Directions for use"
                 name-class="font-weight-bold"
                 :value="entry.directions"
             />

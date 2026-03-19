@@ -41,9 +41,12 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetReportAsync(ReportRequestModel reportRequest, CancellationToken ct = default)
+        public async Task<RequestResult<ReportModel>> GetReportAsync(
+            ReportRequestModel reportRequest,
+            CancellationToken ct = default)
         {
             string reportName = $"HealthGateway{reportRequest.Template}Report";
+
             CDogsRequestModel cdogsRequest = new()
             {
                 Data = reportRequest.Data,

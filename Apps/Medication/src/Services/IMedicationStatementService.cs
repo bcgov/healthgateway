@@ -34,5 +34,13 @@ namespace HealthGateway.Medication.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of medication statements wrapped in a RequestResult.</returns>
         Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatementsAsync(string hdid, string? protectiveWord, CancellationToken ct = default);
+
+        /// <summary>
+        /// Gets medication summary by din.
+        /// </summary>
+        /// <param name="din">The Drug Identification Number (DIN) to look up.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of medication statements.</returns>
+        Task<MedicationSummary> GetMedicationSummaryAsync(string din, CancellationToken ct = default);
     }
 }

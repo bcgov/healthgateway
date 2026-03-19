@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System.Collections.Generic;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Medication.Models.Salesforce;
@@ -33,5 +35,10 @@ namespace HealthGateway.Medication.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         MedicationStatement MapToMedicationStatement(MedicationResult source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        IList<MedicationActiveIngredient> MapToMedicationActiveIngredient(ICollection<ActiveIngredient> source);
     }
 }

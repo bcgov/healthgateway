@@ -1,3 +1,3 @@
-export enum CardName {
+export enum CardNames {
     AccessMyHealth = "accessMyHealth",
 }

@@ -10,7 +10,7 @@ import {
     AccessLinkType,
     getOtherRecordSourcesLinks,
 } from "@/constants/accessLinks";
-import { CardName } from "@/constants/cardName";
+import { CardNames } from "@/constants/cardNames";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import BreadcrumbItem from "@/models/breadcrumbItem";
@@ -58,7 +58,7 @@ const configStore = useConfigStore();
 const webClientConfig = computed(() => configStore.webConfig);
 
 const showAccessMyHealthCard = computed(() =>
-    ConfigUtil.isOtherRecordSourcesCardEnabled(CardName.AccessMyHealth)
+    ConfigUtil.isOtherRecordSourcesCardEnabled(CardNames.AccessMyHealth)
 );
 
 const otherRecordSourcesLinks = computed(() => {

@@ -27,6 +27,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -143,6 +144,58 @@ namespace HealthGateway.Medication.Services
             return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
         }
 
+        /// <inheritdoc/>
+        public async Task<MedicationSummary> GetMedicationSummaryAsync(string din, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(din) || !din.All(char.IsDigit))
+            {
+                throw new InvalidInputException("DIN must be numeric.");
+            }
+
+            string drugIdentificationNumber = din.PadLeft(8, '0');
+            List<string> drugIdentifiers = [drugIdentificationNumber];
+
+            IList<DrugProduct> drugProducts = await this.drugLookupDelegate.GetDrugProductsByDinAsync(drugIdentifiers, ct);
+            Dictionary<string, DrugProduct> federalDrugInfo = drugProducts.ToDictionary(p => p.DrugIdentificationNumber, p => p);
+
+            Dictionary<string, PharmaCareDrug> provincialDrugInfo = [];
+            if (!federalDrugInfo.ContainsKey(drugIdentificationNumber))
+            {
+                IList<PharmaCareDrug> pharmaCareDrugs =
+                    await this.drugLookupDelegate.GetPharmaCareDrugsByDinAsync(drugIdentifiers, ct);
+
+                provincialDrugInfo = pharmaCareDrugs.ToDictionary(p => p.DinPin, p => p);
+            }
+
+            MedicationSummary medicationSummary = new()
+            {
+                Din = drugIdentificationNumber,
+            };
+
+            if (federalDrugInfo.TryGetValue(drugIdentificationNumber, out DrugProduct? drug))
+            {
+                medicationSummary.BrandName = drug.BrandName;
+                medicationSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
+                medicationSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
+
+                if (drug.ActiveIngredients is { Count: > 0 })
+                {
+                    medicationSummary.ActiveIngredients = this.mappingService.MapToMedicationActiveIngredient(drug.ActiveIngredients);
+                }
+            }
+            else if (provincialDrugInfo.TryGetValue(drugIdentificationNumber, out PharmaCareDrug? provincialDrug))
+            {
+                medicationSummary.IsPin = true;
+                medicationSummary.BrandName = provincialDrug.BrandName;
+                medicationSummary.Form = provincialDrug.DosageForm ?? string.Empty;
+                medicationSummary.PharmacyAssessmentTitle = provincialDrug.PharmacyAssessmentTitle ?? string.Empty;
+                medicationSummary.PrescriptionProvided = provincialDrug.PrescriptionProvided;
+                medicationSummary.RedirectedToHealthCareProvider = provincialDrug.RedirectedToHealthCareProvider;
+            }
+
+            return medicationSummary;
+        }
+
         private async Task PopulateMedicationSummaryAsync(List<MedicationSummary> medSummaries, CancellationToken ct = default)
         {
             using Activity? activity = ActivitySource.StartActivity();
@@ -171,9 +224,12 @@ namespace HealthGateway.Medication.Services
                 {
                     mdSummary.BrandName = drug.BrandName;
                     mdSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
-                    mdSummary.Strength = drug.ActiveIngredient?.Strength ?? string.Empty;
-                    mdSummary.StrengthUnit = drug.ActiveIngredient?.StrengthUnit ?? string.Empty;
                     mdSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
+
+                    if (drug.ActiveIngredients is { Count: > 0 })
+                    {
+                        mdSummary.ActiveIngredients = this.mappingService.MapToMedicationActiveIngredient(drug.ActiveIngredients);
+                    }
                 }
                 else if (provincialDrugInfo.TryGetValue(din, out PharmaCareDrug? provincialDrug))
                 {
