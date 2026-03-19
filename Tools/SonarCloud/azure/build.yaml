@@ -78,6 +78,21 @@ jobs:
         enabled: "true"
 
       - script: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+        displayName: "Install ReportGenerator"
+
+      - script: |
+          reportgenerator \
+            -reports:"$(Build.SourcesDirectory)/Apps/**/TestResults/coverage.opencover.xml" \
+            -targetdir:"$(Build.SourcesDirectory)/CoverageReport" \
+            -reporttypes:Cobertura
+        displayName: "Merge coverage reports"
+
+      - script: |
+          ls -lh $(Build.SourcesDirectory)/CoverageReport
+        displayName: "Confirm merged coverage report"
+
+      - script: |
           echo "Coverage file location:"
           find $(Build.SourcesDirectory) -name "coverage.opencover.xml" -exec ls -lh --time-style=long-iso {} \;
         displayName: "Confirm location of coverage.opencover.xml"
