@@ -153,6 +153,45 @@ function buildNotificationPreferences(
     return preferences;
 }
 
+function disableInvalidChannels(
+    rowId: string,
+    emailDisabled: boolean,
+    smsDisabled: boolean
+): boolean {
+    const state = channelState[rowId];
+    if (!state) {
+        return false;
+    }
+
+    let changed = false;
+
+    if (emailDisabled && state.emailEnabled) {
+        state.emailEnabled = false;
+        changed = true;
+    }
+
+    if (smsDisabled && state.smsEnabled) {
+        state.smsEnabled = false;
+        changed = true;
+    }
+
+    return changed;
+}
+
+function handleSaveNotificationPreferencesError(err: unknown): void {
+    const resultError = err as ResultError | undefined;
+    logger.error(resultError?.message ?? String(err));
+
+    if (resultError?.statusCode === 429) {
+        saveError.value = null;
+        errorStore.setTooManyRequestsError("page");
+        return;
+    }
+
+    saveError.value =
+        "An unexpected error has occurred. Please try again later.";
+}
+
 async function saveNotificationPreferences(
     type: ProfileNotificationType,
     preferences: ProfileNotificationPreference[]
@@ -227,58 +266,53 @@ async function handleChannelToggle(
     }
 }
 
+async function syncDisabledChannelsForRow(
+    row: NotificationPreference,
+    emailDisabled: boolean,
+    smsDisabled: boolean
+): Promise<boolean> {
+    if (savingState[row.id]) {
+        return true;
+    }
+
+    const changed = disableInvalidChannels(row.id, emailDisabled, smsDisabled);
+    if (!changed) {
+        return true;
+    }
+
+    try {
+        await saveNotificationPreferences(
+            row.type,
+            buildNotificationPreferences(row.id)
+        );
+        return true;
+    } catch (err: unknown) {
+        handleSaveNotificationPreferencesError(err);
+
+        const resultError = err as ResultError | undefined;
+        return resultError?.statusCode !== 429;
+    }
+}
+
 // When a contact channel (email or SMS) becomes invalid (deleted or unverified),
 // automatically turn OFF any enabled notification preferences for that channel
 // and persist the updated settings to the backend.
 //
 // This enforces the business rule that notifications cannot remain enabled
 // if the corresponding contact method is missing or unverified.
+
 watch(
     [isEmailChannelDisabled, isSmsChannelDisabled],
     async ([emailDisabled, smsDisabled]) => {
-        const rows = enabledNotificationPreferences.value;
+        for (const row of enabledNotificationPreferences.value) {
+            const shouldContinue = await syncDisabledChannelsForRow(
+                row,
+                emailDisabled,
+                smsDisabled
+            );
 
-        for (const row of rows) {
-            if (savingState[row.id]) {
-                continue;
-            }
-
-            const state = channelState[row.id];
-            if (!state) continue;
-
-            let changed = false;
-
-            if (emailDisabled && state.emailEnabled) {
-                state.emailEnabled = false;
-                changed = true;
-            }
-
-            if (smsDisabled && state.smsEnabled) {
-                state.smsEnabled = false;
-                changed = true;
-            }
-
-            if (changed) {
-                try {
-                    const promise = saveNotificationPreferences(
-                        row.type,
-                        buildNotificationPreferences(row.id)
-                    );
-                    await promise;
-                } catch (err: unknown) {
-                    const resultError = err as ResultError | undefined;
-                    logger.error(resultError?.message ?? String(err));
-
-                    if (resultError?.statusCode === 429) {
-                        saveError.value = null;
-                        errorStore.setTooManyRequestsError("page");
-                        return;
-                    }
-
-                    saveError.value =
-                        "An unexpected error has occurred. Please try again later.";
-                    return;
-                }
+            if (!shouldContinue) {
+                return;
             }
         }
     }
