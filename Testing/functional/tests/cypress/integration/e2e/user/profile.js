@@ -29,9 +29,13 @@ describe("User Profile Notification Settings", () => {
             `[data-testid=profile-notification-preferences-${id}-email-value]`,
         sms: (id) =>
             `[data-testid=profile-notification-preferences-${id}-sms-value]`,
-        tooltip: (id) => `[data-testid=info-tooltip-${id}]`,
-        tooltipIcon: (id) => `[data-testid=info-tooltip-${id}-icon]`,
-        tooltipLink: (id) => `[data-testid=info-tooltip-${id}-link]`,
+        learnMore: (id) =>
+            `[data-testid=profile-notification-preferences-${id}-learn-more]`,
+        modal: "[data-testid=information-modal]",
+        modalParagraph: (index) =>
+            `[data-testid=information-modal-paragraph-${index}]`,
+        modalClose: "[data-testid=message-modal-close-button]",
+        modalOk: "[data-testid=generic-message-ok-btn]",
     };
 
     function assertSwitch(id, channel, { enabled, checked }) {
@@ -83,18 +87,6 @@ describe("User Profile Notification Settings", () => {
         cy.get(sel.header).should("be.visible");
         cy.get(sel.label(notificationId)).should("be.visible");
 
-        cy.get(sel.tooltipIcon(notificationId))
-            .filter(":visible")
-            .first()
-            .click();
-
-        cy.get(sel.tooltip(notificationId)).should("be.visible");
-
-        cy.get(sel.tooltipLink(notificationId))
-            .should("be.visible")
-            .and("have.attr", "href")
-            .and("include", "/not-found");
-
         assertSwitch(notificationId, "email", {
             enabled: true,
             checked: false,
@@ -113,6 +105,38 @@ describe("User Profile Notification Settings", () => {
 
         assertSwitch(notificationId, "email", { enabled: true, checked: true });
         assertSwitch(notificationId, "sms", { enabled: false, checked: false });
+
+        cy.get(sel.learnMore(notificationId))
+            .should("be.visible")
+            .and("contain.text", "LEARN MORE")
+            .click();
+
+        cy.get(sel.modal).should("be.visible");
+        cy.contains(
+            "[data-testid=information-modal]",
+            "BC Cancer Screening Letters"
+        ).should("be.visible");
+        cy.get(sel.modalParagraph(0))
+            .should("be.visible")
+            .and("contain.text", "Cancer Screening Programs");
+        cy.get(sel.modalParagraph(1))
+            .should("be.visible")
+            .and(
+                "contain.text",
+                "Cancer Screening Program letters are available on Health Gateway."
+            );
+        cy.get(sel.modalParagraph(2))
+            .should("be.visible")
+            .and(
+                "contain.text",
+                "For more information about BC Cancer Program Letters visit"
+            );
+        cy.get("[data-testid=information-modal-link-2-3]")
+            .should("be.visible")
+            .and("have.attr", "href", "https://screeningbc.ca/contact");
+
+        cy.get(sel.modalOk).should("be.visible").click();
+        cy.get(sel.modal).should("not.exist");
     });
 
     it("Deleting email disables only email notification preferences", () => {
