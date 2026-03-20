@@ -93,9 +93,13 @@ function validateDatasetAccess() {
             .should("be.visible")
             .type(auditBlockReason);
 
+        cy.intercept("PUT", "**/Support/*/BlockAccess*").as("blockAccess");
+
         cy.get("[data-testid=audit-confirm-button]")
             .should("be.visible")
             .click({ force: true });
+
+        cy.wait("@blockAccess", { timeout: defaultTimeout });
 
         cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
             "be.checked"
@@ -139,9 +143,13 @@ function validateDatasetAccess() {
             .should("be.visible")
             .type(auditUnblockReason);
 
+        cy.intercept("PUT", "**/Support/*/BlockAccess*").as("blockAccess");
+
         cy.get("[data-testid=audit-confirm-button]")
             .should("be.visible")
             .click({ force: true });
+
+        cy.wait("@blockAccess", { timeout: defaultTimeout });
 
         cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
             "not.be.checked"
