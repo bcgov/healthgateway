@@ -1,14 +1,13 @@
 import { ProfileNotificationType } from "@/constants/profileNotifications";
+import { InformationModalContent } from "@/models/informationModal";
 
-export interface TooltipContent {
-    text: string;
-    linkText?: string;
-    href?: string;
-    suffix?: string;
+export interface NotificationModalConfig {
+    buttonText: string;
+    content: InformationModalContent;
 }
 export interface NotificationPreferenceType {
     id: string;
     type: ProfileNotificationType;
     label: string;
-    tooltip: TooltipContent;
+    modal: NotificationModalConfig;
 }
