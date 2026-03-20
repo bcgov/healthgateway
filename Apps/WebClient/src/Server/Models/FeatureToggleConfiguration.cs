@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
     /// <param name="Services">Settings for services features.</param>
+    /// <param name="Profile">Settings for profile features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         NotificationCentreSettings NotificationCentre,
