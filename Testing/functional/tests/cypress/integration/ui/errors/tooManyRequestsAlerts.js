@@ -647,7 +647,7 @@ describe("Dependents", () => {
         lastName: "Testfive ", // Add end space to ensure field is trimmed
         wrongLastName: "Testfive2",
         invalidDoB: "2007-Aug-05",
-        doB: "2014-Mar-15",
+        doB: "2025-Mar-15",
         testDate: "2020-Mar-21",
         phn: "9874307168",
         hdid: "645645767756756767",
@@ -657,7 +657,7 @@ describe("Dependents", () => {
     const alternativeDependent = {
         firstName: "Sammy",
         lastName: "Testfivey",
-        doB: "2014-Mar-15",
+        doB: "2025-Mar-15",
         testDate: "2020-Mar-21",
         phn: "9735361219",
         hdid: "645645767756756767",
