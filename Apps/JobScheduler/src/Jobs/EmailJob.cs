@@ -113,10 +113,10 @@ namespace HealthGateway.JobScheduler.Jobs
             MimeMessage msg = new();
             msg.From.Add(new MailboxAddress("Health Gateway", email.From));
             msg.To.Add(MailboxAddress.Parse(email.To));
-            msg.Subject = email.Subject;
+            msg.Subject = email.Subject!;
             msg.Body = new TextPart(email.FormatCode == EmailFormat.Html ? TextFormat.Html : TextFormat.Plain)
             {
-                Text = email.Body,
+                Text = email.Body!,
             };
             return msg;
         }
