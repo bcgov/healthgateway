@@ -152,7 +152,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
     }
 
     return Math.abs(num) > 999
-        ? parseFloat(
+        ? Number.parseFloat(
               ((Math.round(num / 100) * 100) / 1000).toFixed(1)
           ).toString() + "K"
         : num.toString();

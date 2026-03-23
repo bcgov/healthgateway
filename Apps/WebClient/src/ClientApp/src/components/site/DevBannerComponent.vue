@@ -6,7 +6,7 @@ import { useLayoutStore } from "@/stores/layout";
 
 const layoutStore = useLayoutStore();
 
-const host = ref(window.location.hostname.toLocaleUpperCase());
+const host = ref(globalThis.location.hostname.toLocaleUpperCase());
 
 const isProduction = computed(
     () =>

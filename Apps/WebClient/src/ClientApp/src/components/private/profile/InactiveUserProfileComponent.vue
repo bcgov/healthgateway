@@ -28,7 +28,7 @@ const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const timeForDeletion = ref(-1);
-const intervalHandler = ref(0);
+const intervalHandler = ref<ReturnType<typeof setInterval>>();
 
 const timeForDeletionString = computed(() => {
     if (userStore.userIsActive) {
@@ -84,7 +84,7 @@ function calculateTimeForDeletion(): void {
 }
 
 calculateTimeForDeletion();
-intervalHandler.value = window.setInterval(
+intervalHandler.value = globalThis.setInterval(
     () => calculateTimeForDeletion(),
     1000
 );

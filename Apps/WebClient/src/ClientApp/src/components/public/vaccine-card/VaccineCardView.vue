@@ -172,7 +172,7 @@ function handleSubmit(): void {
         });
         logger.debug("Vaccine card calling retrieve vaccine status.");
         retrieveVaccineStatus(
-            phn.value.replace(/\s/g, ""),
+            phn.value.replaceAll(/\s/g, ""),
             dateOfBirth.value,
             dateOfVaccine.value
         )
@@ -220,7 +220,7 @@ function downloadImage(): void {
 
 function downloadPdf(): void {
     retrievePublicVaccineRecord(
-        phn.value.replace(/\s/g, ""),
+        phn.value.replaceAll(/\s/g, ""),
         dateOfBirth.value,
         dateOfVaccine.value
     ).catch((err) => logger.error(`Error loading public record data: ${err}`));
