@@ -107,10 +107,10 @@ namespace HealthGateway.JobScheduler.Jobs
             msg.From.Add(new MailboxAddress("HG Feedback", email.From));
             msg.ReplyTo.Add(MailboxAddress.Parse(userEmail));
             msg.To.Add(MailboxAddress.Parse(email.To));
-            msg.Subject = email.Subject;
+            msg.Subject = email.Subject!;
             msg.Body = new TextPart(TextFormat.Html)
             {
-                Text = email.Body,
+                Text = email.Body!,
             };
 
             return msg;
