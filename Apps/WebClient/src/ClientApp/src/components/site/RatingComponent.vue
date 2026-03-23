@@ -41,7 +41,7 @@ function showDialog(): void {
         configStore.webConfig?.timeouts.logoutRedirect
     );
     const autoSkip =
-        isNaN(autoSkipConfigValue) || autoSkipConfigValue <= 0
+        Number.isNaN(autoSkipConfigValue) || autoSkipConfigValue <= 0
             ? 10000
             : autoSkipConfigValue;
     setTimeout(() => {

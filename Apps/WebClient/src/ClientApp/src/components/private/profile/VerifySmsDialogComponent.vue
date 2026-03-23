@@ -85,7 +85,7 @@ function setResendTimeout(): void {
 }
 
 function verifySms(): void {
-    smsVerificationCode.value = smsVerificationCode.value.replace(/\D/g, "");
+    smsVerificationCode.value = smsVerificationCode.value.replaceAll(/\D/g, "");
     isLoading.value = true;
     userProfileService
         .validateSms(user.value.hdid, smsVerificationCode.value)
@@ -131,12 +131,12 @@ function sendUserSmsUpdate(): void {
 
 function getTimeout(): number {
     let resendTime: IDateWrapper;
-    if (!smsResendDateTime.value) {
+    if (smsResendDateTime.value) {
+        resendTime = smsResendDateTime.value;
+    } else {
         const now = DateWrapper.now();
         userStore.updateSmsResendDateTime(now);
         resendTime = now;
-    } else {
-        resendTime = smsResendDateTime.value;
     }
     resendTime = resendTime.add(
         configStore.webConfig.timeouts.resendSMS * 60 * 1000

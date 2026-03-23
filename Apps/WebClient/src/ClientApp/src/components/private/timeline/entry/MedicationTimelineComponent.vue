@@ -159,8 +159,12 @@ function formatPhone(phoneNumber: string | undefined): string {
                         <v-table density="compact" class="border rounded">
                             <thead class="bg-grey-lighten-4">
                                 <tr>
-                                    <th class="text-left">Ingredient</th>
-                                    <th class="text-left">Strength</th>
+                                    <th scope="col" class="text-left">
+                                        Ingredient
+                                    </th>
+                                    <th scope="col" class="text-left">
+                                        Strength
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>

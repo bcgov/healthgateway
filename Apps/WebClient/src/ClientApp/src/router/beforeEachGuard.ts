@@ -99,7 +99,7 @@ export const beforeEachGuard: NavigationGuard = async (
         ) => boolean;
     } = to.meta;
     if (meta === undefined) {
-        next(Error("Route meta property is undefined"));
+        next(new Error("Route meta property is undefined"));
         return;
     }
 

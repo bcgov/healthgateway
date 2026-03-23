@@ -48,7 +48,7 @@ export default class ReportFilter implements IReportFilter {
     }
 
     public allowsMedication(medicationName: string): boolean {
-        return !this.medications.some((x) => x === medicationName);
+        return !this.medications.includes(medicationName);
     }
 
     public hasActiveFilter(): boolean {
@@ -79,15 +79,11 @@ export default class ReportFilter implements IReportFilter {
 }
 
 export class ReportFilterBuilder {
-    private _startDate: StringISODate | null;
-    private _endDate: StringISODate | null;
-    private _medications: string[];
+    private _startDate: StringISODate | null = null;
+    private _endDate: StringISODate | null = null;
+    private _medications: string[] = [];
 
-    private constructor() {
-        this._endDate = null;
-        this._startDate = null;
-        this._medications = [];
-    }
+    private constructor() {}
 
     public get startDate(): StringISODate | null {
         return this._startDate;

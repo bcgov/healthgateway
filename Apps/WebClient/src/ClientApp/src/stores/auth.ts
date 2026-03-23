@@ -77,10 +77,10 @@ export const useAuthStore = defineStore("auth", () => {
             userStore.setOidcUserInfo(userInfo);
             handleSuccessfulAuthentication(tokenDetails);
             logger.verbose("Successfully signed in");
-        } catch (errorRaised) {
+        } catch (error) {
             logger.verbose("Failed to sign in");
-            setError(errorRaised);
-            throw errorRaised;
+            setError(error);
+            throw error;
         }
     }
 
@@ -110,7 +110,7 @@ export const useAuthStore = defineStore("auth", () => {
         httpDelegate.setAuthorizationHeader(tokenDetails.accessToken);
         setAuthenticated(tokenDetails);
         const refreshTimeMilliseconds = tokenDetails.refreshTokenTime * 1000;
-        const currentTimeMilliseconds = new Date().getTime();
+        const currentTimeMilliseconds = Date.now();
         const accessTokenDuration =
             refreshTimeMilliseconds - currentTimeMilliseconds;
         if (accessTokenDuration > 0) {

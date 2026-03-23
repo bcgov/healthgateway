@@ -90,13 +90,13 @@ namespace HealthGateway.DBMaintainer.Apps
             {
                 Console.WriteLine($"[DB ERROR] Entity: {entry.Metadata.ClrType.Name}, State: {entry.State}");
 
-                foreach (var prop in entry.Properties)
+                foreach (PropertyEntry prop in entry.Properties)
                 {
-                    var value = prop.CurrentValue;
+                    object? value = prop.CurrentValue;
                     if (value is string s)
                     {
-                        var len = s.Length;
-                        var max = prop.Metadata.GetMaxLength(); // null if not set via data annotations or fluent
+                        int len = s.Length;
+                        int? max = prop.Metadata.GetMaxLength(); // null if not set via data annotations or fluent
 
                         Console.WriteLine(
                             $"  Property {prop.Metadata.Name} = '{Truncate(s, 120)}' (len={len}, max={max?.ToString(CultureInfo.InvariantCulture) ?? "n/a"})");
@@ -106,6 +106,8 @@ namespace HealthGateway.DBMaintainer.Apps
         }
 
         private static string Truncate(string value, int max)
-            => value.Length <= max ? value : string.Concat(value.AsSpan(0, max), "...");
+        {
+            return value.Length <= max ? value : string.Concat(value.AsSpan(0, max), "...");
+        }
     }
 }

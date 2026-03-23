@@ -31,7 +31,7 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
             model.prescriberFirstName,
             model.prescriberLastName,
         ]
-            .filter((s) => Boolean(s))
+            .filter(Boolean)
             .join(" ");
         this.effectiveDate = model.effectiveDate
             ? DateWrapper.fromIsoDate(model.effectiveDate)

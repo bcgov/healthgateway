@@ -62,7 +62,7 @@ watch(
 eventStore.subscribe(EventName.OpenFullscreenTimelineEntry, openDialog);
 eventStore.subscribe(EventName.UpdateTimelineEntry, handleEntryUpdate);
 
-window.onpopstate = (event: PopStateEvent) => {
+globalThis.onpopstate = (event: PopStateEvent) => {
     isVisible.value = false;
     event.preventDefault();
 };

@@ -12,7 +12,7 @@ export default abstract class ValidationUtil {
      */
     public static validatePhn(phn: string, ignoreWhitespace = true): boolean {
         if (ignoreWhitespace) {
-            phn = phn.replace(/\s/g, "");
+            phn = phn.replaceAll(/\s/g, "");
         }
 
         if (!/^\d{10}$/.test(phn)) {
@@ -24,11 +24,11 @@ export default abstract class ValidationUtil {
             let digit: number;
             let checksum = 0;
             for (let i = 1; i < 9; i++) {
-                digit = parseInt(phn[i]);
+                digit = Number.parseInt(phn[i]);
                 checksum += (digit * PHNsigDigits[i - 1]) % 11;
             }
             checksum = 11 - (checksum % 11);
-            ok = parseInt(phn[9]) === checksum;
+            ok = Number.parseInt(phn[9]) === checksum;
         }
 
         return ok;
