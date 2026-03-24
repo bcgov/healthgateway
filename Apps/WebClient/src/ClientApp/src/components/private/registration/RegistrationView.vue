@@ -219,7 +219,7 @@ async function onSubmit(): Promise<void> {
 
     submitStatus.value = "PENDING";
     if (smsNumber.value) {
-        smsNumber.value = smsNumber.value.replace(/\D+/g, "");
+        smsNumber.value = smsNumber.value.replaceAll(/\D+/g, "");
     }
 
     try {

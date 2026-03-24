@@ -126,10 +126,6 @@ export default abstract class ConfigUtil {
                     notificationType.toLowerCase() && typeSetting.enabled
         );
 
-        if (!typeSetting || !typeSetting.preferences) {
-            return false;
-        }
-
-        return Boolean(typeSetting.preferences[preference]);
+        return Boolean(typeSetting?.preferences?.[preference]);
     }
 }

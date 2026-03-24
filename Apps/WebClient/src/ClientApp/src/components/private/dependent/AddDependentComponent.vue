@@ -91,7 +91,7 @@ const isDependentAlreadyAdded = computed(() =>
     dependentStore.dependents.some(
         (d) =>
             d.dependentInformation.PHN ===
-            dependent.value.PHN.replace(/\s/g, "")
+            dependent.value.PHN.replaceAll(/\s/g, "")
     )
 );
 const isLoading = computed(() => loadingStore.isLoading(Loader.AddDependent));
@@ -156,9 +156,9 @@ function addDependent(): void {
         dependentService
             .addDependent(userStore.hdid, {
                 ...dependent.value,
-                firstName: dependent.value.firstName.replace(/\s+/g, " "),
-                lastName: dependent.value.lastName.replace(/\s+/g, " "),
-                PHN: dependent.value.PHN.replace(/\D/g, ""),
+                firstName: dependent.value.firstName.replaceAll(/\s+/g, " "),
+                lastName: dependent.value.lastName.replaceAll(/\s+/g, " "),
+                PHN: dependent.value.PHN.replaceAll(/\D/g, ""),
             })
             .then(async () => {
                 errorType.value = null;

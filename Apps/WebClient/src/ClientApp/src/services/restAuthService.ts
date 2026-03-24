@@ -93,7 +93,7 @@ export class RestAuthenticationService implements IAuthenticationService {
         });
 
         // if keycloak.login() doesn't cause a redirect, something is terribly wrong
-        throw Error("Redirect to Keycloak login page failed");
+        throw new Error("Redirect to Keycloak login page failed");
     }
 
     public signOut(): Promise<void> {
@@ -111,7 +111,7 @@ export class RestAuthenticationService implements IAuthenticationService {
             return null;
         }
 
-        const currentTime = Math.ceil(new Date().getTime() / 1000);
+        const currentTime = Math.ceil(Date.now() / 1000);
         const tokenExpiryTime = this.keycloak.tokenParsed?.exp ?? currentTime;
         const timeSkew = this.keycloak.timeSkew ?? 0;
 

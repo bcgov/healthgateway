@@ -11,11 +11,11 @@ export default class ClinicalDocumentTimelineEntry extends TimelineEntry {
     public documentType: string;
     public facilityName: string;
     public discipline: string;
-    private readonly getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: ClinicalDocument,
-        getComments: (entyId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null
     ) {
         super(
             model.id,

@@ -10,6 +10,6 @@ export default abstract class PhoneUtil {
         phoneNumber: string | null | undefined
     ): string {
         phoneNumber = phoneNumber ?? "";
-        return phoneNumber.replace(/\D/g, "");
+        return phoneNumber.replaceAll(/\D/g, "");
     }
 }

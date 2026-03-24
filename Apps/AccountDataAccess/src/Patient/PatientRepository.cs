@@ -137,9 +137,10 @@ namespace HealthGateway.AccountDataAccess.Patient
             // using ToList() here is more explicit and consistent with the rest of the codebase.
             // It also makes the deduplication step (Distinct + ToList) clearer to readers.
 #pragma warning disable IDE0305
-            IList<DataSource> sources = command.DataSources
+            List<DataSource> sources = command.DataSources
                 .Distinct()
                 .ToList();
+#pragma warning restore IDE0305
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactions.
