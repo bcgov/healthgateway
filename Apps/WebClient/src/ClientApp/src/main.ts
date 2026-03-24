@@ -28,7 +28,7 @@ configStore
     .retrieve()
     .then(initializeServices)
     .then(async () => {
-        if (window.location.pathname !== "/loginCallback") {
+        if (globalThis.location.pathname !== "/loginCallback") {
             const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
             // Services are not available until after the services are initialized
             const authStore = useAuthStore();

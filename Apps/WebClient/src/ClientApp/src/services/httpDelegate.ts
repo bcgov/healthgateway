@@ -28,7 +28,7 @@ export class HttpDelegate implements IHttpDelegate {
         url: string,
         headers: Dictionary<string> = {}
     ): Promise<T> {
-        headers["Access-Control-Allow-Origin"] = window.location.origin;
+        headers["Access-Control-Allow-Origin"] = globalThis.location.origin;
         return this.get(url, headers);
     }
 

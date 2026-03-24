@@ -109,7 +109,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="query">The query criteria.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        public Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query, CancellationToken ct = default);
+        Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query, CancellationToken ct = default);
     }
 
     public record ResourceDelegateQuery

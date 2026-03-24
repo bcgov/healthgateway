@@ -25,16 +25,16 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets the notification type these delivery channel settings apply to.
         /// </summary>
-        public ProfileNotificationType Type { get; init; }
+        public required ProfileNotificationType Type { get; init; }
 
         /// <summary>
         /// Gets a value indicating whether email notifications are enabled for the specified notification type.
         /// </summary>
-        public bool EmailEnabled { get; init; }
+        public required bool EmailEnabled { get; init; }
 
         /// <summary>
         /// Gets a value indicating whether SMS notifications are enabled for the specified notification type.
         /// </summary>
-        public bool SmsEnabled { get; init; }
+        public required bool SmsEnabled { get; init; }
     }
 }

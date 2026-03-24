@@ -195,11 +195,11 @@ const isAddQuickLinkButtonDisabled = computed(
         [...entryTypeMap.values()].filter(
             (details) =>
                 ConfigUtil.isDatasetEnabled(details.type) &&
-                enabledQuickLinks.value.find(
+                !enabledQuickLinks.value.some(
                     (existingLink) =>
                         existingLink.filter.modules.length === 1 &&
                         existingLink.filter.modules[0] === details.moduleName
-                ) === undefined
+                )
         ).length === 0 &&
         !preferenceImmunizationRecordHidden.value &&
         !preferenceVaccineCardHidden.value &&

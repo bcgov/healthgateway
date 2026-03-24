@@ -35,7 +35,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="address">The address where the Vaccine Proof should be mailed.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, CancellationToken ct = default);
+        Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, CancellationToken ct = default);
 
         /// <summary>
         /// Initiates the creation of a Vaccine Proof for later retrieval.
@@ -44,7 +44,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="request">The vaccination data to be used for generating the Vaccine Proof.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, CancellationToken ct = default);
+        Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the generated Vaccine Proof directly.
@@ -52,6 +52,6 @@ namespace HealthGateway.Common.Delegates
         /// <param name="assetUri">The uri to fetch the asset.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A report model containing the generated Vaccine Proof document.</returns>
-        public Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri, CancellationToken ct = default);
+        Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri, CancellationToken ct = default);
     }
 }

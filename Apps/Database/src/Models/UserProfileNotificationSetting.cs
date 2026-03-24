@@ -50,13 +50,13 @@ namespace HealthGateway.Database.Models
         public ProfileNotificationType NotificationTypeCode { get; init; }
 
         /// <summary>
-        /// Gets and sets a value indicating whether email notifications
+        /// Gets or sets a value indicating whether email notifications
         /// are enabled for this notification type.
         /// </summary>
         public bool EmailEnabled { get; set; }
 
         /// <summary>
-        /// Gets and sets a value indicating whether SMS notifications
+        /// Gets or sets a value indicating whether SMS notifications
         /// are enabled for this notification type.
         /// </summary>
         public bool SmsEnabled { get; set; }

@@ -38,9 +38,9 @@ const email = computed(() => userStore.user.email);
 const emailVerified = computed(() => userStore.user.verifiedEmail);
 const emailVerificationSent = computed(() => userStore.user.verifiedEmail);
 const inputErrorMessages = computed(() =>
-    !isEmailEditable.value
-        ? []
-        : ValidationUtil.getErrorMessages(v$.value.inputValue)
+    isEmailEditable.value
+        ? ValidationUtil.getErrorMessages(v$.value.inputValue)
+        : []
 );
 const validations = computed(() => ({
     inputValue: {
@@ -104,7 +104,6 @@ function sendUserEmailUpdate(): void {
 
                 if (resultError?.statusCode === 429) {
                     errorStore.setTooManyRequestsError("page");
-                    return;
                 }
             })
     );
