@@ -15,11 +15,11 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
     public admitDateTime: DateWrapper;
     public endDateTime?: DateWrapper;
 
-    private readonly getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: HospitalVisit,
-        getComments: (entyId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null
     ) {
         super(
             model.encounterId,
