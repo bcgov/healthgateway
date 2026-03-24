@@ -20,11 +20,11 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public prescriptionProvided?: boolean;
     public redirectedToHealthCareProvider?: boolean;
 
-    private readonly getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: MedicationStatement,
-        getComments: (entyId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null
     ) {
         super(
             model.prescriptionIdentifier,
