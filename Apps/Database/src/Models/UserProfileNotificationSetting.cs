@@ -60,5 +60,10 @@ namespace HealthGateway.Database.Models
         /// are enabled for this notification type.
         /// </summary>
         public bool SmsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets the user profile.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; init; } = null!;
     }
 }

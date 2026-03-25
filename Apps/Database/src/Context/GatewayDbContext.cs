@@ -535,6 +535,12 @@ namespace HealthGateway.Database.Context
                 .HasConversion(profileNotificationTypeCodeConverter);
 
             modelBuilder.Entity<UserProfileNotificationSetting>()
+                .HasOne(notificationSetting => notificationSetting.UserProfile)
+                .WithMany(userProfile => userProfile.NotificationSettings)
+                .HasForeignKey(notificationSetting => notificationSetting.Hdid)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserProfileNotificationSetting>()
                 .HasOne<ProfileNotificationTypeCode>()
                 .WithMany()
                 .HasPrincipalKey(p => p.Code)

@@ -103,5 +103,10 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the available beta features for this user.
         /// </summary>
         public virtual ICollection<BetaFeatureCode>? BetaFeatureCodes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification settings for this user.
+        /// </summary>
+        public virtual ICollection<UserProfileNotificationSetting> NotificationSettings { get; set; } = [];
     }
 }
