@@ -531,7 +531,7 @@ namespace HealthGateway.Database.Context
                 .HasConversion(profileNotificationTypeCodeConverter);
 
             modelBuilder.Entity<UserProfileNotificationSetting>()
-                .Property(e => e.NotificationTypeCode)
+                .Property(e => e.NotificationType)
                 .HasConversion(profileNotificationTypeCodeConverter);
 
             modelBuilder.Entity<UserProfileNotificationSetting>()
@@ -544,7 +544,7 @@ namespace HealthGateway.Database.Context
                 .HasOne<ProfileNotificationTypeCode>()
                 .WithMany()
                 .HasPrincipalKey(p => p.Code)
-                .HasForeignKey(p => p.NotificationTypeCode)
+                .HasForeignKey(p => p.NotificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Initial seed data
