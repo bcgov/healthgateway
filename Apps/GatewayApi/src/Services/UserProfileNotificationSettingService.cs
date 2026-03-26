@@ -62,14 +62,14 @@ namespace HealthGateway.GatewayApi.Services
                 await notificationSettingDelegate.GetAsync(hdid, ct);
 
             UserProfileNotificationSetting? setting =
-                existing.SingleOrDefault(x => x.NotificationTypeCode == model.Type);
+                existing.SingleOrDefault(x => x.NotificationType == model.Type);
 
             if (setting is null)
             {
                 setting = new UserProfileNotificationSetting
                 {
                     Hdid = hdid,
-                    NotificationTypeCode = model.Type,
+                    NotificationType = model.Type,
                     EmailEnabled = model.EmailEnabled,
                     SmsEnabled = model.SmsEnabled,
                 };

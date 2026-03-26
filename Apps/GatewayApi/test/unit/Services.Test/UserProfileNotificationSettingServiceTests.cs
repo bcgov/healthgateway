@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 {
                     Id = Guid.NewGuid(),
                     Hdid = Hdid,
-                    NotificationTypeCode = ProfileNotificationType.BcCancerScreening,
+                    NotificationType = ProfileNotificationType.BcCancerScreening,
                     EmailEnabled = true,
                     SmsEnabled = true,
                 },
@@ -127,7 +127,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     {
                         Id = Guid.NewGuid(),
                         Hdid = Hdid,
-                        NotificationTypeCode = ProfileNotificationType.BcCancerScreening,
+                        NotificationType = ProfileNotificationType.BcCancerScreening,
                         EmailEnabled = true,
                         SmsEnabled = true,
                     },
@@ -159,7 +159,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 It.Is<UserProfileNotificationSetting>(x => x.Hdid == expectedHdid
                                                            && x.EmailEnabled == expectedEmailEnabled
                                                            && x.SmsEnabled == expectedSmsEnabled
-                                                           && x.NotificationTypeCode == expectedType),
+                                                           && x.NotificationType == expectedType),
                 false,
                 It.IsAny<CancellationToken>()));
 
