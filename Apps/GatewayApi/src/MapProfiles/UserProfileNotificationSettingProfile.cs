@@ -31,7 +31,9 @@ namespace HealthGateway.GatewayApi.MapProfiles
         public UserProfileNotificationSettingProfile()
         {
             this.CreateMap<UserProfileNotificationSetting, UserProfileNotificationSettingModel>()
-                .ForMember(d => d.Type, o => o.MapFrom(s => s.NotificationType));
+                .ForMember(d => d.Type, o => o.MapFrom(s => s.NotificationType))
+                .ForMember(d => d.EmailEnabled, o => o.MapFrom(s => s.EmailEnabled ?? false))
+                .ForMember(d => d.SmsEnabled, o => o.MapFrom(s => s.SmsEnabled ?? false));
         }
     }
 }

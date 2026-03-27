@@ -31,6 +31,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Utils;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Shouldly;
     using Xunit;
@@ -77,18 +78,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             ];
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            notificationSettingDelegateMock.Setup(s => s.GetAsync(
-                    Hdid,
-                    It.IsAny<CancellationToken>()))
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notificationSettings);
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             Mock<IMessageSender> messageSenderMock = new();
 
-            IUserProfileNotificationSettingService service = GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
 
             // Act
-            IList<UserProfileNotificationSettingModel> actual = await service.GetAsync(Hdid, CancellationToken.None);
+            IList<UserProfileNotificationSettingModel> actual =
+                await service.GetAsync(Hdid, CancellationToken.None);
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
@@ -118,7 +120,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
 
             IReadOnlyList<UserProfileNotificationSetting> notificationSettings = notificationSettingExists
                 ?
@@ -142,39 +146,227 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            notificationSettingDelegateMock.Setup(s => s.GetAsync(
-                    Hdid,
-                    It.IsAny<CancellationToken>()))
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notificationSettings);
 
             Mock<IMessageSender> messageSenderMock = new();
 
-            IUserProfileNotificationSettingService service = GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
 
             // Act
             await service.UpdateAsync(Hdid, notificationSettingModel, CancellationToken.None);
 
-            // Verify
-            notificationSettingDelegateMock.Verify(v => v.UpdateAsync(
-                It.Is<UserProfileNotificationSetting>(x => x.Hdid == expectedHdid
-                                                           && x.EmailEnabled == expectedEmailEnabled
-                                                           && x.SmsEnabled == expectedSmsEnabled
-                                                           && x.NotificationType == expectedType),
-                false,
-                It.IsAny<CancellationToken>()));
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(x =>
+                        x.Hdid == expectedHdid &&
+                        x.EmailEnabled == expectedEmailEnabled &&
+                        x.SmsEnabled == expectedSmsEnabled &&
+                        x.NotificationType == expectedType),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
 
             messageSenderMock.Verify(
                 m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
+                        envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
                     CancellationToken.None),
                 Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateAsync updates only email when sms is not provided.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateAsyncUpdatesOnlyEmailWhenSmsNotProvided()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            IReadOnlyList<UserProfileNotificationSetting> notificationSettings =
+            [
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Hdid = Hdid,
+                    NotificationType = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = false,
+                    SmsEnabled = true,
+                },
+            ];
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(notificationSettings);
+
+            Mock<IMessageSender> messageSenderMock = new();
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+
+            UserProfileNotificationSettingModel model = new()
+            {
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = true,
+                SmsEnabled = null,
+            };
+
+            // Act
+            await service.UpdateAsync(Hdid, model, CancellationToken.None);
+
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(x =>
+                        x.Hdid == Hdid &&
+                        x.NotificationType == ProfileNotificationType.BcCancerScreening &&
+                        x.EmailEnabled == true &&
+                        x.SmsEnabled == true),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            messageSenderMock.Verify(
+                m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), CancellationToken.None),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateAsync updates only sms when email is not provided.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateAsyncUpdatesOnlySmsWhenEmailNotProvided()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            IReadOnlyList<UserProfileNotificationSetting> notificationSettings =
+            [
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Hdid = Hdid,
+                    NotificationType = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = true,
+                    SmsEnabled = true,
+                },
+            ];
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(notificationSettings);
+
+            Mock<IMessageSender> messageSenderMock = new();
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+
+            UserProfileNotificationSettingModel model = new()
+            {
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = null,
+                SmsEnabled = false,
+            };
+
+            // Act
+            await service.UpdateAsync(Hdid, model, CancellationToken.None);
+
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(x =>
+                        x.Hdid == Hdid &&
+                        x.NotificationType == ProfileNotificationType.BcCancerScreening &&
+                        x.EmailEnabled == true &&
+                        x.SmsEnabled == false),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            messageSenderMock.Verify(
+                m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), CancellationToken.None),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateAsync does nothing when no values are provided.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateAsyncDoesNothingWhenNoValuesProvided()
+        {
+            // Arrange
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            Mock<IMessageSender> messageSenderMock = new();
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+
+            UserProfileNotificationSettingModel model = new()
+            {
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = null,
+                SmsEnabled = null,
+            };
+
+            // Act
+            await service.UpdateAsync(Hdid, model, CancellationToken.None);
+
+            // Assert
+            profileDelegateMock.Verify(
+                x => x.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            notificationSettingDelegateMock.Verify(
+                x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            notificationSettingDelegateMock.Verify(
+                x => x.UpdateAsync(It.IsAny<UserProfileNotificationSetting>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            messageSenderMock.Verify(
+                x => x.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()),
+                Times.Never);
         }
 
         [Theory]
         [InlineData("test@healthgateway.gov.bc.ca", true, 1)]
         [InlineData("test@healthgateway.gov.bc.ca", false, 0)]
         [InlineData(null, false, 0)]
-        public async Task UpdateAsyncSetsEmailTargetsCorrectly(string? email, bool emailEnabled, int expectedEmailTargetCount)
+        public async Task UpdateAsyncSetsEmailTargetsCorrectly(
+            string? email,
+            bool emailEnabled,
+            int expectedEmailTargetCount)
         {
             // Arrange
             const ProfileNotificationType expectedType = ProfileNotificationType.BcCancerScreening;
@@ -226,7 +418,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData("6046715000", true, 1)]
         [InlineData("6046715000", false, 0)]
         [InlineData(null, false, 0)]
-        public async Task UpdateAsyncSetsSmsTargetsCorrectly(string? smsNumber, bool smsEnabled, int expectedSmsTargetCount)
+        public async Task UpdateAsyncSetsSmsTargetsCorrectly(
+            string? smsNumber,
+            bool smsEnabled,
+            int expectedSmsTargetCount)
         {
             // Arrange
             const ProfileNotificationType expectedType = ProfileNotificationType.BcCancerScreening;
@@ -313,7 +508,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfileNotificationSettingModel model = new()
             {
                 Type = ProfileNotificationType.BcCancerScreening,
-                EmailEnabled = false, // hit: !enabled
+                EmailEnabled = false,
                 SmsEnabled = false,
             };
 
@@ -336,7 +531,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfile userProfile = new()
             {
                 HdId = Hdid,
-                Email = null, // hit: !hasChannelValue
+                Email = null,
                 SmsNumber = SmsNumber,
             };
 
@@ -377,36 +572,36 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// UpdateAsync throw NotFoundException.
+        /// UpdateAsync throws NotFoundException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task UpdateAsyncThrowsNotFoundException()
         {
             // Arrange
-            const ProfileNotificationType expectedType = ProfileNotificationType.BcCancerScreening;
-            const bool expectedEmailEnabled = true;
-            const bool expectedSmsEnabled = false;
-
             UserProfileNotificationSettingModel notificationSettingModel = new()
             {
-                Type = expectedType,
-                EmailEnabled = expectedEmailEnabled,
-                SmsEnabled = expectedSmsEnabled,
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = true,
+                SmsEnabled = false,
             };
 
             UserProfile? userProfile = null;
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
             Mock<IMessageSender> messageSenderMock = new();
 
-            IUserProfileNotificationSettingService service = GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
 
             // Act and Assert
-            await Assert.ThrowsAsync<NotFoundException>(async () => { await service.UpdateAsync(Hdid, notificationSettingModel, CancellationToken.None); });
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
+                await service.UpdateAsync(Hdid, notificationSettingModel, CancellationToken.None));
         }
 
         /// <summary>
@@ -449,7 +644,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             // Act and Assert
-            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await service.UpdateAsync(Hdid, model, CancellationToken.None));
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await service.UpdateAsync(Hdid, model, CancellationToken.None));
         }
 
         private static IUserProfileNotificationSettingService GetNotificationSettingService(
@@ -462,6 +658,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messageSenderMock ??= new();
 
             return new UserProfileNotificationSettingService(
+                new Mock<ILogger<UserProfileNotificationSettingService>>().Object,
                 profileDelegateMock.Object,
                 notificationSettingDelegateMock.Object,
                 MappingService,
