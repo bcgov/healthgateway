@@ -61,7 +61,8 @@ namespace HealthGateway.GatewayApi.Services
         {
             if (!model.EmailEnabled.HasValue && !model.SmsEnabled.HasValue)
             {
-                logger.LogWarning("UpdateNotificationSettings called with no values for hdid {Hdid}", hdid);
+                string sanitizedHdid = hdid?.Replace("\r", string.Empty).Replace("\n", string.Empty);
+                logger.LogWarning("UpdateNotificationSettings called with no values for hdid {Hdid}", sanitizedHdid);
                 return;
             }
 
