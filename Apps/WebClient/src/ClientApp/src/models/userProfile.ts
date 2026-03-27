@@ -60,8 +60,8 @@ export enum UserProfileNotificationType {
 
 export interface UserProfileNotificationSettingModel {
     type: UserProfileNotificationType;
-    emailEnabled: boolean;
-    smsEnabled: boolean;
+    emailEnabled?: boolean | null;
+    smsEnabled?: boolean | null;
 }
 
 export interface CreateUserRequest {

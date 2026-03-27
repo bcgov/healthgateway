@@ -27,13 +27,16 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    /// <param name="logger">Injected Logger Provider.</param>
     /// <param name="profileDelegate">The injected user profile delegate.</param>
     /// <param name="notificationSettingDelegate">The injected user profile notification setting delegate.</param>
     /// <param name="mappingService">The injected gateway api mapping service.</param>
     /// <param name="messageSender">The injected message sender.</param>
     public class UserProfileNotificationSettingService(
+        ILogger<UserProfileNotificationSettingService> logger,
         IUserProfileDelegate profileDelegate,
         IUserProfileNotificationSettingDelegate notificationSettingDelegate,
         IGatewayApiMappingService mappingService,
@@ -56,41 +59,43 @@ namespace HealthGateway.GatewayApi.Services
             UserProfileNotificationSettingModel model,
             CancellationToken ct = default)
         {
+            if (!model.EmailEnabled.HasValue && !model.SmsEnabled.HasValue)
+            {
+                logger.LogWarning("UpdateNotificationSettings called with no values for hdid {Hdid}", hdid);
+                return;
+            }
+
             UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             IReadOnlyList<UserProfileNotificationSetting> existing =
                 await notificationSettingDelegate.GetAsync(hdid, ct);
 
-            UserProfileNotificationSetting? setting =
-                existing.SingleOrDefault(x => x.NotificationType == model.Type);
-
-            if (setting is null)
-            {
-                setting = new UserProfileNotificationSetting
+            UserProfileNotificationSetting setting =
+                existing.SingleOrDefault(x => x.NotificationType == model.Type) ?? new UserProfileNotificationSetting
                 {
                     Hdid = hdid,
                     NotificationType = model.Type,
-                    EmailEnabled = model.EmailEnabled,
-                    SmsEnabled = model.SmsEnabled,
                 };
-            }
-            else
+
+            if (model.EmailEnabled.HasValue)
             {
-                setting.EmailEnabled = model.EmailEnabled;
-                setting.SmsEnabled = model.SmsEnabled;
+                setting.EmailEnabled = model.EmailEnabled.Value;
+            }
+
+            if (model.SmsEnabled.HasValue)
+            {
+                setting.SmsEnabled = model.SmsEnabled.Value;
             }
 
             IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
-                GetTargets(
-                    model.Type,
-                    model.EmailEnabled,
-                    !string.IsNullOrEmpty(userProfile.Email));
+                model.EmailEnabled.HasValue
+                    ? GetTargets(model.Type, model.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email))
+                    : [];
 
             IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
-                GetTargets(
-                    model.Type,
-                    model.SmsEnabled,
-                    !string.IsNullOrEmpty(userProfile.SmsNumber));
+                model.SmsEnabled.HasValue
+                    ? GetTargets(model.Type, model.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber))
+                    : [];
 
             MessageEnvelope[] events =
                 [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
