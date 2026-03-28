@@ -59,16 +59,6 @@ namespace HealthGateway.GatewayApi.Services
             UserProfileNotificationSettingModel model,
             CancellationToken ct = default)
         {
-            if (!model.EmailEnabled.HasValue && !model.SmsEnabled.HasValue)
-            {
-                string sanitizedHdid = hdid
-                    .Replace("\r", string.Empty, StringComparison.Ordinal)
-                    .Replace("\n", string.Empty, StringComparison.Ordinal);
-
-                logger.LogWarning("UpdateNotificationSettings called with no values for hdid {Hdid}", sanitizedHdid);
-                return;
-            }
-
             UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             IReadOnlyList<UserProfileNotificationSetting> existing =
