@@ -47,9 +47,11 @@ describe("User Profile Notification Settings", () => {
     function toggleSwitch(id, channel) {
         const selector = channel === "email" ? sel.email(id) : sel.sms(id);
 
-        // Click the Vuetify switch track directly because the data-testid is applied
-        // to the v-input wrapper, not the actual interactive element.
-        cy.get(selector).find(".v-switch__track").click({ force: true });
+        cy.get(selector)
+            .scrollIntoView()
+            .should("be.visible")
+            .find(".v-switch__track")
+            .click({ force: true });
     }
 
     beforeEach(() => {
@@ -73,8 +75,9 @@ describe("User Profile Notification Settings", () => {
     });
 
     it("Displays profile notification section and updates preferences on toggle", () => {
+        // UI profileNotificatonSettngs is using keycloak.username
         cy.login(
-            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.hthgtwy20.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/profile"
@@ -99,7 +102,7 @@ describe("User Profile Notification Settings", () => {
             enabled: true,
             checked: false,
         });
-        assertSwitch(notificationId, "sms", { enabled: false, checked: false });
+        assertSwitch(notificationId, "sms", { enabled: true, checked: false });
 
         cy.intercept("PUT", "**/UserProfile/*/notificationsettings*").as(
             "updateNotificationSettings"
@@ -112,7 +115,7 @@ describe("User Profile Notification Settings", () => {
             .should("eq", 200);
 
         assertSwitch(notificationId, "email", { enabled: true, checked: true });
-        assertSwitch(notificationId, "sms", { enabled: false, checked: false });
+        assertSwitch(notificationId, "sms", { enabled: true, checked: false });
     });
 
     it("Deleting email disables only email notification preferences", () => {

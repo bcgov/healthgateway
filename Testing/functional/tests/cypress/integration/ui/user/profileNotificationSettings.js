@@ -94,9 +94,11 @@ describe("User Profile Notification Settings", () => {
         const selector =
             channel === "email" ? notificationSel.email : notificationSel.sms;
 
-        // Click the Vuetify switch track directly because the data-testid is applied
-        // to the v-input wrapper, not the actual interactive element.
-        cy.get(selector).find(".v-switch__track").click({ force: true });
+        cy.get(selector)
+            .scrollIntoView()
+            .should("be.visible")
+            .find(".v-switch__track")
+            .click({ force: true });
     }
 
     describe("Payload mapping", () => {
