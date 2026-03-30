@@ -235,8 +235,12 @@ async function saveNotificationPreferences(
 ): Promise<void> {
     const notificationSetting: UserProfileNotificationSettingModel = {
         type: getUserProfileNotificationType(type), // "bcCancerScreening" to "BcCancerScreening"
-        emailEnabled: preferences.includes(ProfileNotificationPreference.Email),
-        smsEnabled: preferences.includes(ProfileNotificationPreference.Sms),
+        emailEnabled: isEmailPreferenceEnabledForType(type)
+            ? preferences.includes(ProfileNotificationPreference.Email)
+            : null,
+        smsEnabled: isSmsPreferenceEnabledForType(type)
+            ? preferences.includes(ProfileNotificationPreference.Sms)
+            : null,
     };
 
     // Let errors bubble up so the caller can roll back UI state.
@@ -337,7 +341,6 @@ async function syncDisabledChannelsForRow(
 //
 // This enforces the business rule that notifications cannot remain enabled
 // if the corresponding contact method is missing or unverified.
-
 watch(
     [isEmailChannelDisabled, isSmsChannelDisabled],
     async ([emailDisabled, smsDisabled]) => {
