@@ -47,8 +47,8 @@ namespace HealthGateway.CommonTests.Messaging
             // Arrange
             IList<MessageEnvelope> messages =
             [
-                new MessageEnvelope(new AccountCreatedEvent(Hdid1, this.DateTime), Hdid1) { CreatedOn = this.DateTime },
-                new MessageEnvelope(new AccountClosedEvent(Hdid2, this.DateTime), Hdid2) { CreatedOn = this.DateTime },
+                new(new AccountCreatedEvent(Hdid1, this.DateTime), Hdid1) { CreatedOn = this.DateTime },
+                new(new AccountClosedEvent(Hdid2, this.DateTime), Hdid2) { CreatedOn = this.DateTime },
             ];
 
             StoreAsyncSetup setup = GetStoreAsyncSetup();
@@ -69,7 +69,7 @@ namespace HealthGateway.CommonTests.Messaging
             Mocks mocks = new(new(), new());
 
             ICollection<IEnumerable<MessageEnvelope>> storedMessagesCollection = [];
-            mocks.OutboxStore.Setup(m => m.StoreAsync(Capture.In(storedMessagesCollection), It.IsAny<CancellationToken>()));
+            mocks.OutboxStore.Setup(m => m.StoreAsync(Capture.In(storedMessagesCollection), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
 
             return new StoreAsyncSetup(GetOutboxMessageSender(mocks), storedMessagesCollection);
         }

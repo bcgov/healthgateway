@@ -32,8 +32,10 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
     using HealthGateway.JobScheduler.AspNetConfiguration.Modules;
+    using Healthgateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
+    using HealthGateway.JobScheduler.Models;
     using HealthGateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -82,19 +84,22 @@ namespace HealthGateway.JobScheduler
             string? requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string? userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
 
-            services.AddAuthorization(
-                options =>
-                {
-                    options.AddPolicy(
-                        "AdminUserPolicy",
-                        policy =>
-                        {
-                            policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.RequireClaim(userRoleClaimType, requiredUserRole);
-                            policy.RequireAssertion(ctx => ctx.User.HasClaim(userRoleClaimType, requiredUserRole));
-                        });
-                });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    "AdminUserPolicy",
+                    policy =>
+                    {
+                        policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireClaim(userRoleClaimType, requiredUserRole);
+                        policy.RequireAssertion(ctx => ctx.User.HasClaim(userRoleClaimType, requiredUserRole));
+                    });
+            });
+
+            // Bind configuration
+            services.Configure<NotificationBackfillOptions>(
+                this.startupConfig.Configuration.GetSection(NotificationBackfillOptions.OptionsConfigurationSectionKey));
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
@@ -135,11 +140,9 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IAdminFeedbackJob, AdminFeedbackJob>();
 
             // Enable Hangfire
-            services.AddHangfire(
-                config =>
-                    config.UsePostgreSqlStorage(
-                        c =>
-                            c.UseNpgsqlConnection(this.configuration.GetConnectionString("GatewayConnection"))));
+            services.AddHangfire(config =>
+                config.UsePostgreSqlStorage(c =>
+                    c.UseNpgsqlConnection(this.configuration.GetConnectionString("GatewayConnection"))));
 
             // Add processing server as IHostedService
             services.AddHangfireServer(opts => { opts.Queues = new[] { "default", AzureServiceBusSettings.OutboxQueueName }; });
@@ -165,20 +168,19 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.UseAuth(app);
             this.startupConfig.EnrichTracing(app);
 
-            app.UseEndpoints(
-                endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MapHangfireDashboard(
-                            string.Empty,
-                            new DashboardOptions
-                            {
-                                DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
-                                AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
-                                Authorization = [], // Very important to set this, or Authorization won't work.
-                            })
-                        .RequireAuthorization("AdminUserPolicy");
-                });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHangfireDashboard(
+                        string.Empty,
+                        new DashboardOptions
+                        {
+                            DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
+                            AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
+                            Authorization = [], // Very important to set this, or Authorization won't work.
+                        })
+                    .RequireAuthorization("AdminUserPolicy");
+            });
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DbMigrationsJob>(j => j.MigrateAsync(CancellationToken.None));
@@ -192,6 +194,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJobAsync<OneTimeJob>(this.configuration, "OneTime", j => j.ProcessAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmailsAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<AssignBetaFeatureAccessJob>(this.configuration, AssignBetaFeatureAccessJob.JobKey, j => j.ProcessAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<NotificationBackfillJob>(this.configuration, NotificationBackfillOptions.JobConfigurationSectionKey, j => j.ProcessAsync(CancellationToken.None));
         }
     }
 }

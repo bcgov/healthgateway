@@ -18,48 +18,41 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Constants;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// The user profile notification setting model.
+    /// Stores the current resumable state for a logical job.
+    /// One row per job name.
     /// </summary>
-    [Index(nameof(Hdid), nameof(NotificationType), IsUnique = true)]
-    public class UserProfileNotificationSetting : AuditableEntity
+    [Index(nameof(Hdid), nameof(JobName), IsUnique = true)]
+    public class UserJobState : AuditableEntity
     {
         /// <summary>
-        /// Gets the unique identifier for this notification setting.
+        /// Gets the generated identifier.
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; init; }
 
         /// <summary>
-        /// Gets the unique HDID that identifies the user
-        /// to whom these notification settings apply.
+        /// Gets the short unique job name.
+        /// Example: NotificationBackfill.
+        /// </summary>
+        [Required]
+        [MaxLength(50)]
+        public string JobName { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Gets the HDID for this run.
         /// </summary>
         [Column("UserProfileId")]
         [MaxLength(52)]
         public string Hdid { get; init; } = null!;
 
         /// <summary>
-        /// Gets the notification type for which these
-        /// delivery channel settings apply.
+        /// Gets or sets the processed date time for this run.
         /// </summary>
-        [MaxLength(50)]
-        public ProfileNotificationType NotificationType { get; init; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether email notifications
-        /// are enabled for this notification type.
-        /// </summary>
-        public bool? EmailEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether SMS notifications
-        /// are enabled for this notification type.
-        /// </summary>
-        public bool? SmsEnabled { get; set; }
+        public DateTime ProcessedDateTime { get; set; }
 
         /// <summary>
         /// Gets the user profile.
