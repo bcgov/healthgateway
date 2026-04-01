@@ -35,7 +35,7 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; init; }
 
         /// <summary>
-        /// Gets the unique Health Data ID (HDID) of the user
+        /// Gets the unique HDID that identifies the user
         /// to whom these notification settings apply.
         /// </summary>
         [Column("UserProfileId")]
