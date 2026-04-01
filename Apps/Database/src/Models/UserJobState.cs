@@ -24,7 +24,7 @@ namespace HealthGateway.Database.Models
     /// Stores the current resumable state for a logical job.
     /// One row per job name.
     /// </summary>
-    [Index(nameof(ProcessedHdid), nameof(JobName), IsUnique = true)]
+    [Index(nameof(Hdid), nameof(JobName), IsUnique = true)]
     public class UserJobState : AuditableEntity
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; init; }
+        public Guid Id { get; init; }
 
         /// <summary>
         /// Gets the short unique job name.
@@ -43,11 +43,11 @@ namespace HealthGateway.Database.Models
         public string JobName { get; init; } = string.Empty;
 
         /// <summary>
-        /// Gets the processed HDID for this run.
+        /// Gets the HDID for this run.
         /// </summary>
         [Column("UserProfileId")]
         [MaxLength(52)]
-        public string ProcessedHdid { get; init; } = null!;
+        public string Hdid { get; init; } = null!;
 
         /// <summary>
         /// Gets or sets the processed date time for this run.

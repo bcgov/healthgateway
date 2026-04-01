@@ -214,7 +214,7 @@ namespace Healthgateway.JobScheduler.Jobs
             return new UserJobState
             {
                 JobName = options.Value.JobName,
-                ProcessedHdid = hdid,
+                Hdid = hdid,
                 ProcessedDateTime = processedDateTime,
             };
         }
@@ -271,7 +271,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         .All(ns => ns.EmailEnabled == null))
                 .Where(x =>
                     !dbContext.UserJobState.Any(js =>
-                        js.ProcessedHdid == x.HdId &&
+                        js.Hdid == x.HdId &&
                         js.JobName == options.Value.JobName))
                 .OrderByDescending(x => x.LastLoginDateTime)
                 .ThenBy(x => x.HdId);

@@ -551,7 +551,7 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<UserJobState>()
                 .HasOne(x => x.UserProfile)
                 .WithMany(x => x.UserJobStates)
-                .HasForeignKey(x => x.ProcessedHdid)
+                .HasForeignKey(x => x.Hdid)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Initial seed data

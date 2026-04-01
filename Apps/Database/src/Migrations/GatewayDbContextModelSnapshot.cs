@@ -3476,11 +3476,9 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserJobState", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -3490,6 +3488,12 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Hdid")
+                        .IsRequired()
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)")
+                        .HasColumnName("UserProfileId");
+
                     b.Property<string>("JobName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -3497,12 +3501,6 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("ProcessedDateTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ProcessedHdid")
-                        .IsRequired()
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)")
-                        .HasColumnName("UserProfileId");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -3520,7 +3518,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProcessedHdid", "JobName")
+                    b.HasIndex("Hdid", "JobName")
                         .IsUnique();
 
                     b.ToTable("UserJobState", "gateway");
@@ -4251,7 +4249,7 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
                         .WithMany("UserJobStates")
-                        .HasForeignKey("ProcessedHdid")
+                        .HasForeignKey("Hdid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
