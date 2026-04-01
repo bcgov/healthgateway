@@ -24,13 +24,21 @@ using System.Threading.Tasks;
 /// Enables storing messages in an outbox table and forward later to a messaging middleware,
 /// implementing a Transactional Outbox reliable messaging transport pattern.
 /// </summary>
-internal interface IOutboxStore
+public interface IOutboxStore
 {
     /// <summary>
     /// Store messages in a transactional outbox store.
     /// </summary>
     /// <param name="messages">The messages to store.</param>
+    /// <param name="commit">Whether to commit outbox changes immediately or defer to the caller's transaction.</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>Awaitable task.</returns>
-    Task StoreAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default);
+    Task StoreAsync(IEnumerable<MessageEnvelope> messages, bool commit = true, CancellationToken ct = default);
+
+    /// <summary>
+    /// Dispatches any outbox messages not sent.
+    /// </summary>
+    /// <param name="ct">A cancellation token.</param>
+    /// <returns>Awaitable task.</returns>
+    Task DispatchOutboxItemsAsync(CancellationToken ct = default);
 }
