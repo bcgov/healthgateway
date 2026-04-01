@@ -93,6 +93,7 @@ namespace HealthGateway.Database.Context
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
         public DbSet<BetaFeatureAccess> BetaFeatureAccess { get; set; } = null!;
         public DbSet<UserProfileNotificationSetting> UserProfileNotificationSetting { get; set; } = null!;
+        public DbSet<UserJobState> UserJobState { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -546,6 +547,12 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(p => p.Code)
                 .HasForeignKey(p => p.NotificationType)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserJobState>()
+                .HasOne(x => x.UserProfile)
+                .WithMany(x => x.UserJobStates)
+                .HasForeignKey(x => x.ProcessedHdid)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
