@@ -31,7 +31,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Utils;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Shouldly;
     using Xunit;
@@ -704,7 +703,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messageSenderMock ??= new();
 
             return new UserProfileNotificationSettingService(
-                new Mock<ILogger<UserProfileNotificationSettingService>>().Object,
                 profileDelegateMock.Object,
                 notificationSettingDelegateMock.Object,
                 MappingService,
