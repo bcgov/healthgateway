@@ -280,7 +280,7 @@ describe("User Profile Notification Settings", () => {
         });
     });
 
-    describe("Default notification configuration", () => {
+    describe("Notification preferences - feature toggles, verification, and UI behavior", () => {
         beforeEach(() => {
             cy.configureSettings({
                 profile: {
@@ -402,124 +402,228 @@ describe("User Profile Notification Settings", () => {
 
         // -------------------------------------------------------
         // Verification message visibility matrix:
-        // Shows ONLY when at least one provided channel is unverified.
-        // (Provided = email exists and/or smsNumber exists.)
+        // Verifies the exact message shown based on which notification
+        // channels are visible and which visible channels require verification.
         // -------------------------------------------------------
         const verificationMessageSel =
             "[data-testid=profile-notification-preferences-verification-message]";
 
         const verificationMessageScenarios = [
             {
-                name: "Hides verification message when email and SMS are verified",
+                name: "Hides verification message when email and SMS are visible and both are verified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: true, sms: true },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
                     email: "nobody@healthgateway.gov.bc.ca",
                     isEmailVerified: true,
                     smsNumber: "2506715000",
                     isSMSNumberVerified: true,
                 },
-                shouldShow: false,
+                expectedMessage: null,
             },
             {
-                name: "Shows verification message when email is unverified but SMS is verified",
+                name: "Shows combined verification message when email and SMS are visible and email is unverified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: true, sms: true },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
                     email: "nobody@healthgateway.gov.bc.ca",
                     isEmailVerified: false,
                     smsNumber: "2506715000",
                     isSMSNumberVerified: true,
                 },
-                shouldShow: true,
+                expectedMessage:
+                    "You must verify your email address and cell number to receive notifications.",
             },
             {
-                name: "Shows verification message when SMS is unverified but email is verified",
+                name: "Shows combined verification message when email and SMS are visible and sms is unverified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: true, sms: true },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
                     email: "nobody@healthgateway.gov.bc.ca",
                     isEmailVerified: true,
                     smsNumber: "2506715000",
                     isSMSNumberVerified: false,
                 },
-                shouldShow: true,
+                expectedMessage:
+                    "You must verify your email address and cell number to receive notifications.",
             },
             {
-                name: "Shows verification message when email and SMS are unverified",
+                name: "Shows combined verification message when email and SMS are visible and both are unverified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: true, sms: true },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
                     email: "nobody@healthgateway.gov.bc.ca",
                     isEmailVerified: false,
                     smsNumber: "2506715000",
                     isSMSNumberVerified: false,
                 },
-                shouldShow: true,
+                expectedMessage:
+                    "You must verify your email address and cell number to receive notifications.",
             },
             {
-                name: "Shows verification message when only email exists and is unverified (SMS opted out)",
+                name: "Hides verification message when only email is visible and email is verified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: true, sms: false },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
                     email: "nobody@healthgateway.gov.bc.ca",
-                    isEmailVerified: false,
-                    smsNumber: undefined,
-                    // isSMSNumberVerified irrelevant when smsNumber is undefined
-                    isSMSNumberVerified: true,
-                },
-                shouldShow: true,
-            },
-            {
-                name: "Shows verification message when only email exists and is verified (SMS opted out)",
-                profile: {
-                    email: "nobody@healthgateway.gov.bc.ca",
-                    isEmailVerified: true,
-                    smsNumber: undefined,
-                    // isSMSNumberVerified irrelevant when smsNumber is undefined
-                    isSMSNumberVerified: true,
-                },
-                shouldShow: true,
-            },
-            {
-                name: "Shows verification message when only SMS exists and is unverified (email opted out)",
-                profile: {
-                    email: undefined,
-                    // isEmailVerified irrelevant when email is undefined
                     isEmailVerified: true,
                     smsNumber: "2506715000",
                     isSMSNumberVerified: false,
                 },
-                shouldShow: true,
+                expectedMessage: null,
             },
             {
-                name: "Shows verification message when only SMS exists and is verified (email opted out)",
+                name: "Shows email verification message when only email is visible and email is unverified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: true, sms: false },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
-                    email: undefined,
-                    // isEmailVerified irrelevant when email is undefined
-                    isEmailVerified: true,
+                    email: "nobody@healthgateway.gov.bc.ca",
+                    isEmailVerified: false,
                     smsNumber: "2506715000",
                     isSMSNumberVerified: true,
                 },
-                shouldShow: true,
+                expectedMessage:
+                    "You must verify your email address to receive notifications.",
             },
             {
-                name: "Shows verification message when neither email nor SMS exists (both opted out)",
+                name: "Hides verification message when only sms is visible and sms is verified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: false, sms: true },
+                                },
+                            ],
+                        },
+                    },
+                },
                 profile: {
-                    email: undefined,
-                    // isEmailVerified irrelevant when email is undefined
-                    isEmailVerified: true,
-                    smsNumber: undefined,
-                    // isSMSNumberVerified irrelevant when smsNumber is undefined
+                    email: "nobody@healthgateway.gov.bc.ca",
+                    isEmailVerified: false,
+                    smsNumber: "2506715000",
                     isSMSNumberVerified: true,
                 },
-                shouldShow: true,
+                expectedMessage: null,
+            },
+            {
+                name: "Shows sms verification message when only sms is visible and sms is unverified",
+                settings: {
+                    profile: {
+                        notifications: {
+                            enabled: true,
+                            type: [
+                                {
+                                    name: "bcCancerScreening",
+                                    enabled: true,
+                                    preferences: { email: false, sms: true },
+                                },
+                            ],
+                        },
+                    },
+                },
+                profile: {
+                    email: "nobody@healthgateway.gov.bc.ca",
+                    isEmailVerified: true,
+                    smsNumber: "2506715000",
+                    isSMSNumberVerified: false,
+                },
+                expectedMessage:
+                    "You must verify your cell number to receive notifications.",
             },
         ];
 
         verificationMessageScenarios.forEach((scenario) => {
             it(scenario.name, () => {
+                cy.configureSettings(scenario.settings);
+
                 setupStandardFixtures({
                     userProfileBody: buildUserProfileFixture(scenario.profile),
                 });
 
                 login();
 
-                // sanity: section is present
                 cy.get(notificationSel.header).should("be.visible");
 
-                if (scenario.shouldShow) {
-                    cy.get(verificationMessageSel).should("be.visible");
+                if (scenario.expectedMessage) {
+                    cy.get(verificationMessageSel)
+                        .should("be.visible")
+                        .and("have.text", scenario.expectedMessage);
                 } else {
                     cy.get(verificationMessageSel).should("not.exist");
                 }

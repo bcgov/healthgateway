@@ -97,13 +97,41 @@ const showSmsColumn = computed(() =>
 );
 
 const requiresContactVerification = computed(() => {
-    const hasEmail = !!email.value;
-    const hasSms = !!sms.value;
+    const emailNeedsAction =
+        showEmailColumn.value && (!email.value || !emailVerified.value);
 
-    const emailNeedsAction = !hasEmail || (hasEmail && !emailVerified.value);
-    const smsNeedsAction = !hasSms || (hasSms && !smsVerified.value);
+    const smsNeedsAction =
+        showSmsColumn.value && (!sms.value || !smsVerified.value);
 
     return emailNeedsAction || smsNeedsAction;
+});
+
+const verificationMessage = computed(() => {
+    if (
+        requiresContactVerification.value &&
+        showEmailColumn.value &&
+        showSmsColumn.value
+    ) {
+        return "You must verify your email address and cell number to receive notifications.";
+    }
+
+    if (
+        requiresContactVerification.value &&
+        showEmailColumn.value &&
+        !showSmsColumn.value
+    ) {
+        return "You must verify your email address to receive notifications.";
+    }
+
+    if (
+        requiresContactVerification.value &&
+        !showEmailColumn.value &&
+        showSmsColumn.value
+    ) {
+        return "You must verify your cell number to receive notifications.";
+    }
+
+    return null;
 });
 
 function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
@@ -375,12 +403,11 @@ watchEffect(() => {
             data-testid="profile-notification-preferences-label"
         />
         <p
-            v-if="requiresContactVerification"
+            v-if="verificationMessage"
             class="mt-2"
             data-testid="profile-notification-preferences-verification-message"
         >
-            You must verify your email address and cell number to receive
-            notifications.
+            {{ verificationMessage }}
         </p>
         <HgAlertComponent
             v-if="saveError"
