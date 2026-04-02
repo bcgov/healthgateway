@@ -18,7 +18,6 @@ TRUNCATE gateway."AgentAudit" CASCADE;
 TRUNCATE gateway."BlockedAccess" CASCADE;
 TRUNCATE gateway."BetaFeatureAccess" CASCADE;
 TRUNCATE gateway."Outbox" CASCADE;
-TRUNCATE gateway."UserProfileNotificationSetting" CASCADE;
 
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -1758,4 +1757,76 @@ VALUES (
 		current_timestamp - INTERVAL '2 day', 
 		'System', 
 		current_timestamp - INTERVAL '2 day'
+);
+
+/* User hthgtwy20 */
+INSERT INTO gateway."UserProfileNotificationSetting" (
+    "Id",
+    "UserProfileId",
+    "NotificationType",
+    "EmailEnabled",
+    "SmsEnabled",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime"
+)
+VALUES (
+    gen_random_uuid(),
+    'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
+    'BcCancerScreening',
+    false,
+    false,
+    'System',
+    CURRENT_TIMESTAMP,
+    'System',
+    CURRENT_TIMESTAMP
+);
+
+/* hthgtwy03 */
+INSERT INTO gateway."UserProfileNotificationSetting" (
+    "Id",
+    "UserProfileId",
+    "NotificationType",
+    "EmailEnabled",
+    "SmsEnabled",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime"
+)
+VALUES (
+    gen_random_uuid(),
+    'R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ',
+    'BcCancerScreening',
+    false,
+    false,
+    'System',
+    CURRENT_TIMESTAMP,
+    'System',
+    CURRENT_TIMESTAMP
+);
+
+/* protected */
+INSERT INTO gateway."UserProfileNotificationSetting" (
+    "Id",
+    "UserProfileId",
+    "NotificationType",
+    "EmailEnabled",
+    "SmsEnabled",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime"
+)
+VALUES (
+    gen_random_uuid(),
+    'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',
+    'BcCancerScreening',
+    false,
+    false,
+    'System',
+    CURRENT_TIMESTAMP,
+    'System',
+    CURRENT_TIMESTAMP
 );

@@ -54,26 +54,29 @@ public class DbOutboxStore : IOutboxStore
     }
 
     /// <inheritdoc/>
-    public async Task StoreAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
+    public async Task StoreAsync(IEnumerable<MessageEnvelope> messages, bool commit = true, CancellationToken ct = default)
     {
         this.logger.LogDebug("Storing messages in the DB");
-        IEnumerable<OutboxItem> outboxItems = messages.Select(
-            m => new OutboxItem
+        IEnumerable<OutboxItem> outboxItems = messages.Select(m => new OutboxItem
+        {
+            Content = Encoding.UTF8.GetString(m.Content.Serialize()),
+            Metadata = new OutboxItemMetadata
             {
-                Content = Encoding.UTF8.GetString(m.Content.Serialize()),
-                Metadata = new OutboxItemMetadata
-                {
-                    CreatedOn = m.CreatedOn,
-                    Type = m.MessageType,
-                    SessionId = m.SessionId,
-                    AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
-                },
-            });
+                CreatedOn = m.CreatedOn,
+                Type = m.MessageType,
+                SessionId = m.SessionId,
+                AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
+            },
+        });
         this.outboxDelegate.Enqueue(outboxItems);
-        await this.outboxDelegate.CommitAsync(ct);
 
-        this.logger.LogDebug("Scheduling background job to dispatch messages");
-        this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItemsAsync(CancellationToken.None));
+        if (commit)
+        {
+            await this.outboxDelegate.CommitAsync(ct);
+
+            this.logger.LogDebug("Scheduling background job to dispatch messages");
+            this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItemsAsync(CancellationToken.None));
+        }
     }
 
     /// <summary>
@@ -91,12 +94,11 @@ public class DbOutboxStore : IOutboxStore
         {
             IEnumerable<OutboxItem> pendingItems = await this.outboxDelegate.DequeueAsync(ct);
 
-            IEnumerable<MessageEnvelope> messages = pendingItems.Select(
-                i =>
-                {
-                    MessageBase message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
-                    return new MessageEnvelope(message, i.Metadata.SessionId);
-                });
+            IEnumerable<MessageEnvelope> messages = pendingItems.Select(i =>
+            {
+                MessageBase message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
+                return new MessageEnvelope(message, i.Metadata.SessionId);
+            });
             await this.messageSender.SendAsync(messages, ct);
             await this.outboxDelegate.CommitAsync(ct);
         }

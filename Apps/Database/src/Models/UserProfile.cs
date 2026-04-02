@@ -105,6 +105,11 @@ namespace HealthGateway.Database.Models
         public virtual ICollection<BetaFeatureCode>? BetaFeatureCodes { get; set; }
 
         /// <summary>
+        /// Gets or sets the user job states for this user.
+        /// </summary>
+        public virtual ICollection<UserJobState> UserJobStates { get; set; } = [];
+
+        /// <summary>
         /// Gets or sets the notification settings for this user.
         /// </summary>
         public virtual ICollection<UserProfileNotificationSetting> NotificationSettings { get; set; } = [];

@@ -27,16 +27,13 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    /// <param name="logger">Injected Logger Provider.</param>
     /// <param name="profileDelegate">The injected user profile delegate.</param>
     /// <param name="notificationSettingDelegate">The injected user profile notification setting delegate.</param>
     /// <param name="mappingService">The injected gateway api mapping service.</param>
     /// <param name="messageSender">The injected message sender.</param>
     public class UserProfileNotificationSettingService(
-        ILogger<UserProfileNotificationSettingService> logger,
         IUserProfileDelegate profileDelegate,
         IUserProfileNotificationSettingDelegate notificationSettingDelegate,
         IGatewayApiMappingService mappingService,
