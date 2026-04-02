@@ -40,38 +40,43 @@ namespace Healthgateway.JobScheduler.Jobs
     /// <param name="outboxStore">The outbox store to use.</param>
     /// <param name="backgroundJobClient">Hangfire background job client.</param>
     /// <param name="logger">The logger to use.</param>
-    /// <param name="options">The notification backfill options to use.</param>
+    /// <param name="optionsMonitor">The monitor used to access the current notification backfill options.</param>
     public class NotificationBackfillJob(
         GatewayDbContext dbContext,
         IOutboxStore outboxStore,
         IBackgroundJobClient backgroundJobClient,
         ILogger<NotificationBackfillJob> logger,
-        IOptions<NotificationBackfillOptions> options)
+        IOptionsMonitor<NotificationBackfillOptions> optionsMonitor)
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
+        private NotificationBackfillOptions options = null!;
 
         /// <summary>
         /// Processes user profiles in batches to pre-populate notification settings for a specific notification type.
-        /// Maintains job-level and run-level state, supports resume via last processed user profile ID,
-        /// and ensures transactional inserts per batch.
+        /// Uses UserJobState tracking to ensure users are processed only once per job.
+        /// Each batch is processed transactionally, and corresponding notification events
+        /// are generated and dispatched via the outbox after a successful commit.
         /// </summary>
+        /// <param name="optionsName">The name of the configuration section used to bind the job options.</param>
         /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async Task ProcessAsync(CancellationToken ct = default)
+        public async Task ProcessAsync(string optionsName, CancellationToken ct = default)
         {
+            this.options = optionsMonitor.Get(optionsName);
+
             // Skip execution if the job is disabled via configuration
-            if (!options.Value.Enabled)
+            if (!this.options.Enabled)
             {
-                logger.LogInformation("Job {JobName} is disabled", options.Value.JobName);
+                logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
                 return;
             }
 
-            logger.LogInformation("Job {JobName} started", options.Value.JobName);
+            logger.LogInformation("Job {JobName} started", this.options.JobName);
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             ProfileNotificationType notificationType =
-                Enum.Parse<ProfileNotificationType>(options.Value.NotificationType);
+                Enum.Parse<ProfileNotificationType>(this.options.NotificationType);
 
             try
             {
@@ -84,7 +89,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
                 logger.LogInformation(
                     "Job {JobName} finished in {ElapsedMs} ms for {Count} profiles",
-                    options.Value.JobName,
+                    this.options.JobName,
                     stopwatch.ElapsedMilliseconds,
                     userProfilesToBackfill.Count);
             }
@@ -95,7 +100,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 logger.LogError(
                     ex,
                     "Job {JobName} run failed after {ElapsedMs} ms",
-                    options.Value.JobName,
+                    this.options.JobName,
                     stopwatch.ElapsedMilliseconds);
                 throw;
             }
@@ -150,19 +155,19 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             // Build email targets only when EmailEnabled is configured
             IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
-                options.Value.EmailEnabled.HasValue
+                this.options.EmailEnabled.HasValue
                     ? GetTargets(
                         notificationType,
-                        options.Value.EmailEnabled.Value,
+                        this.options.EmailEnabled.Value,
                         !string.IsNullOrEmpty(userProfile.Email))
                     : [];
 
             // Build SMS targets only when SmsEnabled is configured
             IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
-                options.Value.SmsEnabled.HasValue
+                this.options.SmsEnabled.HasValue
                     ? GetTargets(
                         notificationType,
-                        options.Value.SmsEnabled.Value,
+                        this.options.SmsEnabled.Value,
                         !string.IsNullOrEmpty(userProfile.SmsNumber))
                     : [];
 
@@ -192,8 +197,8 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 Hdid = hdid,
                 NotificationType = notificationType,
-                EmailEnabled = options.Value.EmailEnabled,
-                SmsEnabled = options.Value.SmsEnabled,
+                EmailEnabled = this.options.EmailEnabled,
+                SmsEnabled = this.options.SmsEnabled,
             };
         }
 
@@ -213,7 +218,7 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             return new UserJobState
             {
-                JobName = options.Value.JobName,
+                JobName = this.options.JobName,
                 Hdid = hdid,
                 ProcessedDateTime = processedDateTime,
             };
@@ -246,9 +251,13 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <summary>
         /// Retrieves the next batch of user profiles eligible for notification backfill.
         /// Selection criteria:
-        /// - User has a valid contact channel (Email or SMS based on configuration)
-        /// - No existing notification setting for the specified type, or only null values
-        /// - Has not already been processed for this job
+        /// - Channel is determined by <c>UseSmsChannel</c>:
+        ///   - When false: selects users with a non-empty Email
+        ///   - When true: selects users with a non-empty SmsNumber
+        /// - No existing notification setting for the specified type, or only null values for the selected channel:
+        ///   - When false: EmailEnabled is null
+        ///   - When true: SmsEnabled is null
+        /// - User has not already been processed for this job (no matching UserJobState for Hdid and JobName)
         /// Results are ordered by most recent login (descending) with HDID as a tie-breaker
         /// to ensure deterministic batching.
         /// </summary>
@@ -260,7 +269,7 @@ namespace Healthgateway.JobScheduler.Jobs
             IQueryable<UserProfile> query = dbContext.UserProfile
                 .AsNoTracking()
                 .Where(x =>
-                    options.Value.UseSmsChannel
+                    this.options.UseSmsChannel
                         ? !string.IsNullOrWhiteSpace(x.SmsNumber)
                         : !string.IsNullOrWhiteSpace(x.Email))
                 .Where(x =>
@@ -268,16 +277,19 @@ namespace Healthgateway.JobScheduler.Jobs
                         .Where(ns =>
                             ns.Hdid == x.HdId &&
                             ns.NotificationType == notificationType)
-                        .All(ns => ns.EmailEnabled == null))
+                        .All(ns =>
+                            this.options.UseSmsChannel
+                                ? ns.SmsEnabled == null
+                                : ns.EmailEnabled == null))
                 .Where(x =>
                     !dbContext.UserJobState.Any(js =>
                         js.Hdid == x.HdId &&
-                        js.JobName == options.Value.JobName))
+                        js.JobName == this.options.JobName))
                 .OrderByDescending(x => x.LastLoginDateTime)
                 .ThenBy(x => x.HdId);
 
             return await query
-                .Take(options.Value.BatchSize)
+                .Take(this.options.BatchSize)
                 .ToListAsync(ct);
         }
 
@@ -377,15 +389,15 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             bool updated = false;
 
-            if (existing.EmailEnabled == null && options.Value.EmailEnabled.HasValue)
+            if (existing.EmailEnabled == null && this.options.EmailEnabled.HasValue)
             {
-                existing.EmailEnabled = options.Value.EmailEnabled.Value;
+                existing.EmailEnabled = this.options.EmailEnabled.Value;
                 updated = true;
             }
 
-            if (existing.SmsEnabled == null && options.Value.SmsEnabled.HasValue)
+            if (existing.SmsEnabled == null && this.options.SmsEnabled.HasValue)
             {
-                existing.SmsEnabled = options.Value.SmsEnabled.Value;
+                existing.SmsEnabled = this.options.SmsEnabled.Value;
                 updated = true;
             }
 
@@ -410,7 +422,7 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             if (userProfilesToBackfill.Count == 0)
             {
-                logger.LogInformation("Job {JobName} no records to process", options.Value.JobName);
+                logger.LogInformation("Job {JobName} no records to process", this.options.JobName);
                 return;
             }
 
@@ -451,7 +463,7 @@ namespace Healthgateway.JobScheduler.Jobs
             // Log batch summary
             logger.LogInformation(
                 "Job {JobName} processed {TotalProfiles} profiles. Inserted {InsertCount}. Updated {UpdateCount}",
-                options.Value.JobName,
+                this.options.JobName,
                 userProfilesToBackfill.Count,
                 result.RowsToInsert.Count,
                 result.UpdatedCount);
