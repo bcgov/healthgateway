@@ -21,16 +21,6 @@ namespace HealthGateway.JobScheduler.Models
     public class NotificationBackfillOptions
     {
         /// <summary>
-        /// The section key to use when binding this object by JobScheduler (top-level section).
-        /// </summary>
-        public const string JobConfigurationSectionKey = "NotificationBackfill";
-
-        /// <summary>
-        /// The section key to use when binding the Options object (nested section).
-        /// </summary>
-        public const string OptionsConfigurationSectionKey = "NotificationBackfill:Options";
-
-        /// <summary>
         /// Gets or sets a value indicating whether the job is enabled.
         /// </summary>
         public bool Enabled { get; set; } = true;

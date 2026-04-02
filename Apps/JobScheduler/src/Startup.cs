@@ -99,7 +99,8 @@ namespace HealthGateway.JobScheduler
 
             // Bind configuration
             services.Configure<NotificationBackfillOptions>(
-                this.startupConfig.Configuration.GetSection(NotificationBackfillOptions.OptionsConfigurationSectionKey));
+                "NotificationEmailBackfill",
+                this.startupConfig.Configuration.GetSection("NotificationEmailBackfill:Options"));
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
@@ -145,7 +146,7 @@ namespace HealthGateway.JobScheduler
                     c.UseNpgsqlConnection(this.configuration.GetConnectionString("GatewayConnection"))));
 
             // Add processing server as IHostedService
-            services.AddHangfireServer(opts => { opts.Queues = new[] { "default", AzureServiceBusSettings.OutboxQueueName }; });
+            services.AddHangfireServer(opts => { opts.Queues = ["default", AzureServiceBusSettings.OutboxQueueName]; });
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
@@ -194,7 +195,10 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJobAsync<OneTimeJob>(this.configuration, "OneTime", j => j.ProcessAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmailsAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<AssignBetaFeatureAccessJob>(this.configuration, AssignBetaFeatureAccessJob.JobKey, j => j.ProcessAsync(CancellationToken.None));
-            SchedulerHelper.ScheduleJobAsync<NotificationBackfillJob>(this.configuration, NotificationBackfillOptions.JobConfigurationSectionKey, j => j.ProcessAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<NotificationBackfillJob>(
+                this.configuration,
+                "NotificationEmailBackfill",
+                j => j.ProcessAsync("NotificationEmailBackfill", CancellationToken.None));
         }
     }
 }
