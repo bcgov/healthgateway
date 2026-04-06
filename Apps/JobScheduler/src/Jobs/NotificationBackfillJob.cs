@@ -96,13 +96,9 @@ namespace Healthgateway.JobScheduler.Jobs
             catch (Exception ex)
             {
                 stopwatch.Stop();
-
-                logger.LogError(
-                    ex,
-                    "Job {JobName} run failed after {ElapsedMs} ms",
-                    this.options.JobName,
-                    stopwatch.ElapsedMilliseconds);
-                throw;
+                throw new InvalidOperationException(
+                    $"Job {this.options.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
+                    ex);
             }
         }
 
