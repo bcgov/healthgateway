@@ -352,7 +352,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             notificationSettingDelegateMock
                 .Setup(x => x.GetAsync(Hdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<UserProfileNotificationSetting>());
+                .ReturnsAsync([]);
 
             notificationSettingDelegateMock
                 .Setup(x => x.UpdateAsync(
