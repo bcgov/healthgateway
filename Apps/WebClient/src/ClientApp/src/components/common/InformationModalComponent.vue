@@ -151,7 +151,7 @@ function handleClick(
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 :data-testid="`information-modal-link-${paragraphIndex}-${segmentIndex}`"
-                                @click.prevent="
+                                @click="
                                     handleClick(
                                         segment.analyticsText,
                                         segment.analyticsOrigin,
