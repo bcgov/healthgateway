@@ -2,7 +2,8 @@
 import { computed, reactive, ref, watch, watchEffect } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
-import InteractiveInfoTooltipComponent from "@/components/common/InteractiveInfoTooltipComponent.vue";
+import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import InformationModalComponent from "@/components/common/InformationModalComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import {
     getNotificationPreferenceTypes,
@@ -14,10 +15,12 @@ import {
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
+import { InformationModalContent } from "@/models/informationModal";
 import { NotificationPreference } from "@/models/notificationPreference";
 import { UserProfileNotificationSettingModel } from "@/models/userProfile";
 import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
-import { ILogger } from "@/services/interfaces";
+import { Action, Text, Type } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
@@ -25,10 +28,18 @@ import ConfigUtil from "@/utility/configUtil";
 type NotificationChannel = "email" | "sms";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const errorStore = useErrorStore();
 const userStore = useUserStore();
 
 const saveError = ref<string | null>(null);
+const learnMoreModal = ref<InstanceType<typeof InformationModalComponent>>();
+const selectedModalContent = ref<InformationModalContent>({
+    title: "",
+    paragraphs: [],
+});
 
 const savingState = reactive<Record<string, boolean>>({});
 
@@ -96,6 +107,17 @@ const showSmsColumn = computed(() =>
     )
 );
 
+function showInformationModal(item: NotificationPreference, text: Text): void {
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text: text,
+        type: Type.Notifications,
+    });
+
+    selectedModalContent.value = item.modal.content;
+    learnMoreModal.value?.showModal();
+}
+
 const requiresContactVerification = computed(() => {
     const emailNeedsAction =
         showEmailColumn.value && (!email.value || !emailVerified.value);
@@ -106,32 +128,14 @@ const requiresContactVerification = computed(() => {
     return emailNeedsAction || smsNeedsAction;
 });
 
+// NOTE: Simplified to a single message per current business decision.
+// Previous logic supported channel-specific messaging if needed again.
 const verificationMessage = computed(() => {
-    if (
-        requiresContactVerification.value &&
-        showEmailColumn.value &&
-        showSmsColumn.value
-    ) {
-        return "You must verify your email address and cell number to receive notifications.";
+    if (!requiresContactVerification.value) {
+        return null;
     }
 
-    if (
-        requiresContactVerification.value &&
-        showEmailColumn.value &&
-        !showSmsColumn.value
-    ) {
-        return "You must verify your email address to receive notifications.";
-    }
-
-    if (
-        requiresContactVerification.value &&
-        !showEmailColumn.value &&
-        showSmsColumn.value
-    ) {
-        return "You must verify your cell number to receive notifications.";
-    }
-
-    return null;
+    return "You must verify your contact information to receive notifications.";
 });
 
 function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
@@ -220,6 +224,30 @@ function handleSaveNotificationPreferencesError(err: unknown): void {
         "An unexpected error has occurred. Please try again later.";
 }
 
+function trackNotificationToggle(
+    item: NotificationPreference,
+    channel: NotificationChannel,
+    enabled: boolean
+): void {
+    let text: Text;
+
+    if (channel === "email") {
+        text = enabled
+            ? Text.ScreeningEmailToggledOn
+            : Text.ScreeningEmailToggledOff;
+    } else {
+        text = enabled
+            ? Text.ScreeningSmsToggledOn
+            : Text.ScreeningSmsToggledOff;
+    }
+
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text,
+        type: Type.Notifications,
+    });
+}
+
 async function saveNotificationPreferences(
     type: ProfileNotificationType,
     preferences: ProfileNotificationPreference[]
@@ -269,6 +297,8 @@ async function handleChannelToggle(
     } else {
         state.smsEnabled = newChannelEnabled;
     }
+
+    trackNotificationToggle(item, channel, newChannelEnabled);
 
     const preferences: ProfileNotificationPreference[] =
         buildNotificationPreferences(item.id);
@@ -421,16 +451,17 @@ watchEffect(() => {
         <v-divider class="my-4" />
         <v-container fluid class="pa-0">
             <!-- Key change: constrain width so Email/SMS don't drift on 4K/5K -->
-            <v-sheet max-width="720" class="pa-0">
+            <v-sheet max-width="960" class="pa-0">
                 <template v-if="hasEnabledNotificationPreferences">
                     <v-row
+                        v-if="$vuetify.display.smAndUp"
                         no-gutters
                         class="font-weight-bold mb-2"
                         data-testid="profile-notification-preferences-header"
                     >
                         <v-col
                             data-testid="profile-notification-preferences-header-type"
-                            cols="8"
+                            cols="6"
                             class="py-0 pe-2"
                         >
                             Notification Type
@@ -438,7 +469,7 @@ watchEffect(() => {
                         <v-col
                             v-if="showEmailColumn"
                             data-testid="profile-notification-preferences-header-email"
-                            cols="2"
+                            cols="1"
                             class="py-0 text-center"
                         >
                             Email
@@ -446,7 +477,7 @@ watchEffect(() => {
                         <v-col
                             v-if="showSmsColumn"
                             data-testid="profile-notification-preferences-header-sms"
-                            cols="2"
+                            cols="1"
                             class="py-0 text-center"
                         >
                             Text (SMS)
@@ -457,40 +488,30 @@ watchEffect(() => {
                         :key="item.id"
                         no-gutters
                         align="center"
+                        class="mb-4 mb-sm-0"
                         :data-testid="`profile-notification-preferences-row-${item.id}`"
                     >
-                        <v-col cols="8" class="py-0 pe-2">
+                        <v-col
+                            cols="12"
+                            sm="6"
+                            class="py-0 pe-sm-2 mb-2 mb-sm-0"
+                        >
                             <div class="d-flex align-center">
                                 <span
                                     :data-testid="`profile-notification-preferences-${item.id}-label-value`"
                                 >
                                     {{ item.label }}
                                 </span>
-                                <InteractiveInfoTooltipComponent
-                                    :icon-testid="`info-tooltip-${item.id}-icon`"
-                                    :tooltip-testid="`info-tooltip-${item.id}`"
-                                >
-                                    <p class="mb-0">
-                                        {{ item.tooltip.text }}
-                                        <a
-                                            :href="item.tooltip.href"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="text-white text-decoration-underline"
-                                            :data-testid="`info-tooltip-${item.id}-link`"
-                                        >
-                                            {{ item.tooltip.linkText }}
-                                        </a>
-                                        {{ item.tooltip.suffix }}
-                                    </p>
-                                </InteractiveInfoTooltipComponent>
                             </div>
                         </v-col>
+
                         <v-col
                             v-if="showEmailColumn"
-                            cols="2"
-                            class="py-0 d-flex justify-center"
+                            cols="6"
+                            sm="1"
+                            class="py-0 d-flex flex-column flex-sm-row align-center justify-center mb-2 mb-sm-0"
                         >
+                            <span class="d-sm-none mb-1">Email</span>
                             <v-switch
                                 v-model="channelState[item.id].emailEnabled"
                                 color="primary"
@@ -508,11 +529,14 @@ watchEffect(() => {
                                 "
                             />
                         </v-col>
+
                         <v-col
                             v-if="showSmsColumn"
-                            cols="2"
-                            class="py-0 d-flex justify-center"
+                            cols="6"
+                            sm="1"
+                            class="py-0 d-flex flex-column flex-sm-row align-center justify-center mb-2 mb-sm-0"
                         >
+                            <span class="d-sm-none mb-1">Text (SMS)</span>
                             <v-switch
                                 v-model="channelState[item.id].smsEnabled"
                                 color="primary"
@@ -530,6 +554,31 @@ watchEffect(() => {
                                 "
                             />
                         </v-col>
+                        <v-col
+                            cols="12"
+                            sm="auto"
+                            class="py-0 pt-2 pt-sm-0 ps-0 ps-sm-3 d-flex justify-center justify-sm-start"
+                        >
+                            <v-sheet
+                                v-if="
+                                    item.type ===
+                                    ProfileNotificationType.BcCancerScreening
+                                "
+                                class="d-flex align-center"
+                            >
+                                <HgButtonComponent
+                                    variant="secondary"
+                                    text="LEARN MORE"
+                                    :data-testid="`profile-notification-preferences-${item.id}-learn-more`"
+                                    @click="
+                                        showInformationModal(
+                                            item,
+                                            Text.ScreeningNotificationsLearnMore
+                                        )
+                                    "
+                                />
+                            </v-sheet>
+                        </v-col>
                     </v-row>
                 </template>
                 <p
@@ -543,6 +592,11 @@ watchEffect(() => {
         </v-container>
         <v-divider class="my-4" />
     </div>
+    <InformationModalComponent
+        ref="learnMoreModal"
+        :content="selectedModalContent"
+        ok-only
+    />
 </template>
 
 <style lang="scss" scoped>

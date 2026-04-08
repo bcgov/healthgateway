@@ -84,6 +84,7 @@ describe("User Profile Notification Settings", () => {
 
     function assertSwitch(selector, { enabled, checked }) {
         cy.get(selector)
+            .scrollIntoView()
             .should("be.visible")
             .find('input[type="checkbox"]')
             .should(enabled ? "be.enabled" : "be.disabled")
@@ -139,6 +140,7 @@ describe("User Profile Notification Settings", () => {
                 "updateNotificationSettings"
             );
 
+            cy.log("Toggle sms switch");
             toggleSwitch("sms");
 
             cy.wait("@updateNotificationSettings").then(
@@ -184,6 +186,7 @@ describe("User Profile Notification Settings", () => {
                 "updateNotificationSettings"
             );
 
+            cy.log("Toggle email switch");
             toggleSwitch("email");
 
             cy.wait("@updateNotificationSettings").then(
@@ -395,15 +398,18 @@ describe("User Profile Notification Settings", () => {
 
                 cy.get(notificationSel.label).should("be.visible");
 
+                cy.log("Assert email switch after login");
                 assertSwitch(notificationSel.email, scenario.email);
+                cy.log("Assert sms switch after login");
                 assertSwitch(notificationSel.sms, scenario.sms);
             });
         });
 
         // -------------------------------------------------------
         // Verification message visibility matrix:
-        // Verifies the exact message shown based on which notification
-        // channels are visible and which visible channels require verification.
+        // Verifies when the generic verification message is shown
+        // based on which notification channels are visible and
+        // whether any visible channel is unverified.
         // -------------------------------------------------------
         const verificationMessageSel =
             "[data-testid=profile-notification-preferences-verification-message]";
@@ -434,7 +440,7 @@ describe("User Profile Notification Settings", () => {
                 expectedMessage: null,
             },
             {
-                name: "Shows combined verification message when email and SMS are visible and email is unverified",
+                name: "Shows verification message when email and SMS are visible and email is unverified",
                 settings: {
                     profile: {
                         notifications: {
@@ -456,10 +462,10 @@ describe("User Profile Notification Settings", () => {
                     isSMSNumberVerified: true,
                 },
                 expectedMessage:
-                    "You must verify your email address and cell number to receive notifications.",
+                    "You must verify your contact information to receive notifications.",
             },
             {
-                name: "Shows combined verification message when email and SMS are visible and sms is unverified",
+                name: "Shows verification message when email and SMS are visible and sms is unverified",
                 settings: {
                     profile: {
                         notifications: {
@@ -481,10 +487,10 @@ describe("User Profile Notification Settings", () => {
                     isSMSNumberVerified: false,
                 },
                 expectedMessage:
-                    "You must verify your email address and cell number to receive notifications.",
+                    "You must verify your contact information to receive notifications.",
             },
             {
-                name: "Shows combined verification message when email and SMS are visible and both are unverified",
+                name: "Shows verification message when email and SMS are visible and both are unverified",
                 settings: {
                     profile: {
                         notifications: {
@@ -506,7 +512,7 @@ describe("User Profile Notification Settings", () => {
                     isSMSNumberVerified: false,
                 },
                 expectedMessage:
-                    "You must verify your email address and cell number to receive notifications.",
+                    "You must verify your contact information to receive notifications.",
             },
             {
                 name: "Hides verification message when only email is visible and email is verified",
@@ -533,7 +539,7 @@ describe("User Profile Notification Settings", () => {
                 expectedMessage: null,
             },
             {
-                name: "Shows email verification message when only email is visible and email is unverified",
+                name: "Shows verification message when only email is visible and email is unverified",
                 settings: {
                     profile: {
                         notifications: {
@@ -555,7 +561,7 @@ describe("User Profile Notification Settings", () => {
                     isSMSNumberVerified: true,
                 },
                 expectedMessage:
-                    "You must verify your email address to receive notifications.",
+                    "You must verify your contact information to receive notifications.",
             },
             {
                 name: "Hides verification message when only sms is visible and sms is verified",
@@ -582,7 +588,7 @@ describe("User Profile Notification Settings", () => {
                 expectedMessage: null,
             },
             {
-                name: "Shows sms verification message when only sms is visible and sms is unverified",
+                name: "Shows verification message when only sms is visible and sms is unverified",
                 settings: {
                     profile: {
                         notifications: {
@@ -604,7 +610,7 @@ describe("User Profile Notification Settings", () => {
                     isSMSNumberVerified: false,
                 },
                 expectedMessage:
-                    "You must verify your cell number to receive notifications.",
+                    "You must verify your contact information to receive notifications.",
             },
         ];
 
@@ -652,6 +658,7 @@ describe("User Profile Notification Settings", () => {
                 statusCode: 500,
             }).as("updateNotificationSettingsFail");
 
+            cy.log("Toggle email switch");
             toggleSwitch("email");
 
             cy.wait("@updateNotificationSettingsFail")
@@ -689,6 +696,7 @@ describe("User Profile Notification Settings", () => {
                 statusCode: 429,
             }).as("updateNotificationSettings429");
 
+            cy.log("Toggle email switch");
             toggleSwitch("email");
 
             cy.wait("@updateNotificationSettings429")
