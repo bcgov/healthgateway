@@ -3,7 +3,19 @@ import { ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { InformationModalContent } from "@/models/informationModal";
+import {
+    Action,
+    Destination,
+    ExternalUrl,
+    InternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 
 interface Props {
     content: InformationModalContent;
@@ -22,12 +34,16 @@ withDefaults(defineProps<Props>(), {
     okText: "OK",
 });
 
+defineExpose({ showModal, hideModal });
+
 const emit = defineEmits<{
     (e: "submit"): void;
     (e: "cancel"): void;
 }>();
 
-defineExpose({ showModal, hideModal });
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const isVisible = ref(false);
 
@@ -47,6 +63,25 @@ function handleSubmit(): void {
 function handleCancel(): void {
     hideModal();
     emit("cancel");
+}
+
+function handleClick(
+    text?: Text,
+    origin?: Origin,
+    destination?: Destination,
+    type?: Type,
+    url?: ExternalUrl | InternalUrl
+): void {
+    if (!text) return;
+
+    trackingService.trackEvent({
+        action: Action.ExternalLink,
+        text,
+        origin,
+        destination,
+        type,
+        url,
+    });
 }
 </script>
 
@@ -116,6 +151,15 @@ function handleCancel(): void {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 :data-testid="`information-modal-link-${paragraphIndex}-${segmentIndex}`"
+                                @click.prevent="
+                                    handleClick(
+                                        segment.analyticsText,
+                                        segment.analyticsOrigin,
+                                        segment.analyticsDestination,
+                                        segment.analyticsType,
+                                        segment.analysticsUrl
+                                    )
+                                "
                             >
                                 {{ segment.text }}
                             </a>

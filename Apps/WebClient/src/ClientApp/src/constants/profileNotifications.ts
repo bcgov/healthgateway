@@ -4,7 +4,13 @@ import {
     UserProfileNotificationType,
 } from "@/models/userProfile";
 import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
-import { ExternalUrl } from "@/plugins/extensions";
+import {
+    Destination,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
 
 /**
  * Represents backend-supported notification types.
@@ -50,13 +56,13 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
         modal: {
             buttonText: "Learn More",
             content: {
-                title: "BC Cancer Screening Letters",
+                title: "BC Cancer Screening Program Letters",
                 paragraphs: [
                     {
                         segments: [
                             {
-                                type: "bold",
-                                value: "Cancer Screening Programs",
+                                type: "text",
+                                value: "Cancer screening program letters are available on Health Gateway. Health Gateway can email you when new letters are added that show you need follow-up or when you are due to screen again.",
                             },
                         ],
                     },
@@ -64,7 +70,7 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
                         segments: [
                             {
                                 type: "text",
-                                value: "Cancer Screening Program letters are available on Health Gateway. An email and/or text (SMS) message can be sent to you through Health Gateway when letters for follow-up or reminders for screening are available to view.",
+                                value: "Signing up for email notifications will not change the paper letters that will be mailed to you.",
                             },
                         ],
                     },
@@ -72,24 +78,19 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
                         segments: [
                             {
                                 type: "text",
-                                value: "For more information about ",
-                            },
-                            {
-                                type: "bold",
-                                value: "BC Cancer Program Letters",
-                            },
-                            {
-                                type: "text",
-                                value: " visit ",
+                                value: "For more information about BC Cancer Program Letters visit ",
                             },
                             {
                                 type: "link",
-                                text: "screeningbc/contact",
+                                text: "screeningbc.ca/contact",
                                 href: ExternalUrl.ScreeningContact,
-                            },
-                            {
-                                type: "text",
-                                value: ".",
+                                analyticsText:
+                                    Text.ScreeningNotificationsContactLink,
+                                analyticsOrigin: Origin.Profile,
+                                analyticsDestination:
+                                    Destination.ScreeningContact,
+                                analyticsType: Type.Notifications,
+                                analysticsUrl: ExternalUrl.ScreeningContact,
                             },
                         ],
                     },

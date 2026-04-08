@@ -91,23 +91,28 @@ describe("User Profile Notification Settings", () => {
         cy.get(sel.header).should("be.visible");
         cy.get(sel.label(notificationId)).should("be.visible");
 
+        cy.log("Assert email switch before toggle");
         assertSwitch(notificationId, "email", {
             enabled: true,
             checked: false,
         });
+        cy.log("Assert sms switch before toggle");
         assertSwitch(notificationId, "sms", { enabled: false, checked: false });
 
         cy.intercept("PUT", "**/UserProfile/*/notificationsettings*").as(
             "updateNotificationSettings"
         );
 
+        cy.log("Toggle email switch");
         toggleSwitch(notificationId, "email");
 
         cy.wait("@updateNotificationSettings")
             .its("response.statusCode")
             .should("eq", 200);
 
+        cy.log("Assert email switch after toggle");
         assertSwitch(notificationId, "email", { enabled: true, checked: true });
+        cy.log("Assert sms switch after toggle");
         assertSwitch(notificationId, "sms", { enabled: false, checked: false });
 
         cy.get(sel.learnMore(notificationId))
@@ -119,25 +124,37 @@ describe("User Profile Notification Settings", () => {
         cy.get(sel.modal).should("be.visible");
         cy.contains(
             "[data-testid=information-modal]",
-            "BC Cancer Screening Letters"
+            "BC Cancer Screening Program Letters"
         ).should("be.visible");
+
         cy.get(sel.modalParagraph(0))
             .should("be.visible")
-            .and("contain.text", "Cancer Screening Programs");
+            .and(
+                "contain.text",
+                "Cancer screening program letters are available on Health Gateway."
+            )
+            .and(
+                "contain.text",
+                "Health Gateway can email you when new letters are added"
+            );
+
         cy.get(sel.modalParagraph(1))
             .should("be.visible")
             .and(
                 "contain.text",
-                "Cancer Screening Program letters are available on Health Gateway."
+                "Signing up for email notifications will not change the paper letters that will be mailed to you."
             );
+
         cy.get(sel.modalParagraph(2))
             .should("be.visible")
             .and(
                 "contain.text",
                 "For more information about BC Cancer Program Letters visit"
             );
-        cy.get("[data-testid=information-modal-link-2-3]")
+
+        cy.get("[data-testid=information-modal-link-2-1]")
             .should("be.visible")
+            .and("contain.text", "screeningbc.ca/contact")
             .and(
                 "have.attr",
                 "href",
@@ -156,10 +173,12 @@ describe("User Profile Notification Settings", () => {
             "/profile"
         );
 
+        cy.log("Assert email switch before delete");
         assertSwitch(notificationId, "email", {
             enabled: true,
             checked: false,
         });
+        cy.log("Assert sms switch before delete");
         assertSwitch(notificationId, "sms", { enabled: true, checked: false });
 
         cy.get("[data-testid=editEmailBtn]").click();
@@ -167,10 +186,12 @@ describe("User Profile Notification Settings", () => {
         cy.get("[data-testid=editEmailSaveBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
 
+        cy.log("Assert email switch after delete");
         assertSwitch(notificationId, "email", {
             enabled: false,
             checked: false,
         });
+        cy.log("Assert sms switch after delete");
         assertSwitch(notificationId, "sms", { enabled: true, checked: false });
     });
 
@@ -182,10 +203,12 @@ describe("User Profile Notification Settings", () => {
             "/profile"
         );
 
+        cy.log("Assert email switch before delete");
         assertSwitch(notificationId, "email", {
             enabled: true,
             checked: false,
         });
+        cy.log("Assert sms switch before delete");
         assertSwitch(notificationId, "sms", { enabled: true, checked: false });
 
         cy.get("[data-testid=editSMSBtn]").click();
@@ -193,10 +216,12 @@ describe("User Profile Notification Settings", () => {
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
 
+        cy.log("Assert email switch after dekete");
         assertSwitch(notificationId, "email", {
             enabled: true,
             checked: false,
         });
+        cy.log("Assert sms switch after delete");
         assertSwitch(notificationId, "sms", { enabled: false, checked: false });
     });
 });
