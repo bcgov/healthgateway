@@ -266,7 +266,8 @@ function base64ToBlob(base64: string, mimeType: string): Blob {
  * in the browser.
  */
 function estimateBase64SizeInBytes(base64: string): number {
-    const padding = base64.match(/=*$/)?.[0].length ?? 0;
+    const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0;
+
     return Math.floor((base64.length * 3) / 4) - padding;
 }
 
