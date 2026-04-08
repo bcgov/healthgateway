@@ -19,14 +19,7 @@ import { InformationModalContent } from "@/models/informationModal";
 import { NotificationPreference } from "@/models/notificationPreference";
 import { UserProfileNotificationSettingModel } from "@/models/userProfile";
 import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
-import {
-    Action,
-    Destination,
-    ExternalUrl,
-    Origin,
-    Text,
-    Type,
-} from "@/plugins/extensions";
+import { Action, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
@@ -114,19 +107,11 @@ const showSmsColumn = computed(() =>
     )
 );
 
-function showInformationModal(
-    item: NotificationPreference,
-    text: Text,
-    destination: Destination,
-    url: ExternalUrl
-): void {
+function showInformationModal(item: NotificationPreference, text: Text): void {
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: text,
-        origin: Origin.Profile,
-        destination: destination,
         type: Type.Notifications,
-        url: url,
     });
 
     selectedModalContent.value = item.modal.content;
@@ -143,32 +128,14 @@ const requiresContactVerification = computed(() => {
     return emailNeedsAction || smsNeedsAction;
 });
 
+// NOTE: Simplified to a single message per current business decision.
+// Previous logic supported channel-specific messaging if needed again.
 const verificationMessage = computed(() => {
-    if (
-        requiresContactVerification.value &&
-        showEmailColumn.value &&
-        showSmsColumn.value
-    ) {
-        return "You must verify your email address and cell number to receive notifications.";
+    if (!requiresContactVerification.value) {
+        return null;
     }
 
-    if (
-        requiresContactVerification.value &&
-        showEmailColumn.value &&
-        !showSmsColumn.value
-    ) {
-        return "You must verify your email address to receive notifications.";
-    }
-
-    if (
-        requiresContactVerification.value &&
-        !showEmailColumn.value &&
-        showSmsColumn.value
-    ) {
-        return "You must verify your cell number to receive notifications.";
-    }
-
-    return null;
+    return "You must verify your contact information to receive notifications.";
 });
 
 function isNotificationTypeEnabled(type: ProfileNotificationType): boolean {
@@ -257,6 +224,30 @@ function handleSaveNotificationPreferencesError(err: unknown): void {
         "An unexpected error has occurred. Please try again later.";
 }
 
+function trackNotificationToggle(
+    item: NotificationPreference,
+    channel: NotificationChannel,
+    enabled: boolean
+): void {
+    let text: Text;
+
+    if (channel === "email") {
+        text = enabled
+            ? Text.ScreeningEmailToggledOn
+            : Text.ScreeningEmailToggledOff;
+    } else {
+        text = enabled
+            ? Text.ScreeningSmsToggledOn
+            : Text.ScreeningSmsToggledOff;
+    }
+
+    trackingService.trackEvent({
+        action: Action.ButtonClick,
+        text,
+        type: Type.Notifications,
+    });
+}
+
 async function saveNotificationPreferences(
     type: ProfileNotificationType,
     preferences: ProfileNotificationPreference[]
@@ -306,6 +297,8 @@ async function handleChannelToggle(
     } else {
         state.smsEnabled = newChannelEnabled;
     }
+
+    trackNotificationToggle(item, channel, newChannelEnabled);
 
     const preferences: ProfileNotificationPreference[] =
         buildNotificationPreferences(item.id);
@@ -580,9 +573,7 @@ watchEffect(() => {
                                     @click="
                                         showInformationModal(
                                             item,
-                                            Text.ScreeningNotificationsLearnMore,
-                                            Destination.ScreeningContact,
-                                            ExternalUrl.ScreeningContact
+                                            Text.ScreeningNotificationsLearnMore
                                         )
                                     "
                                 />
