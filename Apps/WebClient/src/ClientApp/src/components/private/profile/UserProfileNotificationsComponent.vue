@@ -58,6 +58,18 @@ const uiNotificationSettings = computed<UserProfileNotificationSettings[]>(() =>
     getUserProfileNotificationSettings(userStore.user.notificationSettings)
 );
 
+const notificationGrid = computed(() => {
+    const email = showEmailColumn.value ? 1 : 0;
+    const sms = showSmsColumn.value ? 1 : 0;
+
+    return {
+        type: 4,
+        email,
+        sms,
+        action: 2,
+    };
+});
+
 const notificationPreferencesByType = computed(
     () =>
         new Map(
@@ -460,40 +472,50 @@ watchEffect(() => {
                         data-testid="profile-notification-preferences-header"
                     >
                         <v-col
-                            data-testid="profile-notification-preferences-header-type"
+                            :sm="notificationGrid.type"
                             cols="6"
+                            data-testid="profile-notification-preferences-header-type"
                             class="py-0 pe-2"
                         >
                             Notification Type
                         </v-col>
+
                         <v-col
                             v-if="showEmailColumn"
+                            :sm="notificationGrid.email"
+                            cols="2"
                             data-testid="profile-notification-preferences-header-email"
-                            cols="1"
-                            class="py-0 text-center"
+                            class="py-0 d-flex align-start justify-start"
                         >
                             Email
                         </v-col>
+
                         <v-col
                             v-if="showSmsColumn"
+                            :sm="notificationGrid.sms"
+                            cols="2"
                             data-testid="profile-notification-preferences-header-sms"
-                            cols="1"
-                            class="py-0 text-center"
+                            class="py-0 d-flex align-start justify-start"
                         >
-                            Text (SMS)
+                            <span>Text<br />(SMS)</span>
                         </v-col>
+
+                        <v-col
+                            :sm="notificationGrid.action"
+                            cols="2"
+                            class="py-0"
+                        />
                     </v-row>
                     <v-row
                         v-for="item in enabledNotificationPreferences"
                         :key="item.id"
                         no-gutters
-                        align="center"
                         class="mb-4 mb-sm-0"
                         :data-testid="`profile-notification-preferences-row-${item.id}`"
                     >
                         <v-col
                             cols="12"
-                            sm="6"
+                            :sm="notificationGrid.type"
                             class="py-0 pe-sm-2 mb-2 mb-sm-0"
                         >
                             <div class="d-flex align-center">
@@ -508,14 +530,16 @@ watchEffect(() => {
                         <v-col
                             v-if="showEmailColumn"
                             cols="6"
-                            sm="1"
-                            class="py-0 d-flex flex-column flex-sm-row align-center justify-center mb-2 mb-sm-0"
+                            :sm="notificationGrid.email"
+                            class="py-0 d-flex flex-column flex-sm-row align-start align-sm-start justify-start mb-2 mb-sm-0"
                         >
-                            <span class="d-sm-none mb-1">Email</span>
+                            <span class="d-sm-none mb-1 w-100 text-left"
+                                >Email</span
+                            >
                             <v-switch
                                 v-model="channelState[item.id].emailEnabled"
                                 color="primary"
-                                class="hg-switch"
+                                class="hg-switch ma-0 d-flex justify-start"
                                 density="compact"
                                 hide-details
                                 inset
@@ -529,18 +553,19 @@ watchEffect(() => {
                                 "
                             />
                         </v-col>
-
                         <v-col
                             v-if="showSmsColumn"
                             cols="6"
-                            sm="1"
-                            class="py-0 d-flex flex-column flex-sm-row align-center justify-center mb-2 mb-sm-0"
+                            :sm="notificationGrid.sms"
+                            class="py-0 d-flex flex-column flex-sm-row align-start align-sm-start justify-start mb-2 mb-sm-0"
                         >
-                            <span class="d-sm-none mb-1">Text (SMS)</span>
+                            <span class="d-sm-none mb-1 w-100 text-left"
+                                >Text (SMS)</span
+                            >
                             <v-switch
                                 v-model="channelState[item.id].smsEnabled"
                                 color="primary"
-                                class="hg-switch"
+                                class="hg-switch ma-0 d-flex justify-start"
                                 density="compact"
                                 hide-details
                                 inset
@@ -556,8 +581,8 @@ watchEffect(() => {
                         </v-col>
                         <v-col
                             cols="12"
-                            sm="auto"
-                            class="py-0 pt-2 pt-sm-0 ps-0 ps-sm-3 d-flex justify-center justify-sm-start"
+                            :sm="notificationGrid.action"
+                            class="py-0 pt-2 pt-sm-0 ps-0 ps-sm-3 d-flex justify-start"
                         >
                             <v-sheet
                                 v-if="
