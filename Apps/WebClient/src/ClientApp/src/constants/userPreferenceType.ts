@@ -1,9 +1,6 @@
 export default abstract class UserPreferenceType {
     public static readonly QuickLinks = "quickLinks";
 
-    public static readonly HideVaccineCardQuickLink =
-        "hideVaccineCardQuickLink";
-
     public static readonly HideImmunizationRecordQuickLink =
         "hideImmunizationRecordQuickLink";
 

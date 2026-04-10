@@ -58,7 +58,6 @@ export const enum Dataset {
 }
 
 export const enum Destination {
-    BcVaccineCard = "BC Vaccine Card",
     BookVaccine = "Book a Vaccine",
     HealthGatewayBeta = "Health Gateway Beta",
     HealthRecords = "Health Records",
@@ -146,7 +145,6 @@ export const enum Text {
     AddDependent = "Add a Dependent",
     AddNote = "Add a Note",
     AppRating = "App Rating",
-    BcVaccineCard = "BC Vaccine Card",
     BcVaccineSchedule = "BC Vaccine Schedule",
     Cancel = "Cancel",
     Covid19VaccineInformation = "COVID-19 Vaccine Information",

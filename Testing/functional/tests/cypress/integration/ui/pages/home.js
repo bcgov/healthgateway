@@ -2,7 +2,6 @@ import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const homeUrl = "/home";
-const covid19Url = "/covid19";
 const timelineUrl = "/timeline";
 const otherRecordSourcesUrl = "/otherRecordSources";
 
@@ -19,8 +18,6 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        // AB#16941 - Vaccine Card has been removed from Home
-        // cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
@@ -93,26 +90,6 @@ describe("Authenticated User - Home Page", () => {
             .click();
 
         cy.url().should("include", otherRecordSourcesUrl);
-    });
-
-    // AB#16941 - Skip test as Vaccine Card has been removed from Home
-    it.skip("Home - Link to COVID-19 page", () => {
-        cy.configureSettings({});
-
-        setupStandardFixtures();
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homeUrl
-        );
-
-        cy.get("[data-testid=bc-vaccine-card-card]")
-            .should("be.visible")
-            .click();
-
-        cy.url().should("include", covid19Url);
     });
 
     it("Home - Link to timeline page", () => {

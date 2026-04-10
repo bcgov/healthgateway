@@ -131,11 +131,6 @@ export const useUserStore = defineStore("user", () => {
         if (userProfile) {
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
-                UserPreferenceType.HideVaccineCardQuickLink,
-                "false"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
                 UserPreferenceType.HideOrganDonorQuickLink,
                 "false"
             );
