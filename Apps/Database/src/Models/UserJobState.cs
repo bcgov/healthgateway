@@ -52,7 +52,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the processed date time for this run.
         /// </summary>
-        public DateTime ProcessedDateTime { get; set; }
+        public DateTime ProcessedDateTime { get; init; }
 
         /// <summary>
         /// Gets the user profile.

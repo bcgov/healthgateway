@@ -30,6 +30,7 @@ namespace HealthGateway.Database.Context
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using BetaFeature = HealthGateway.Database.Constants.BetaFeature;
 
@@ -518,10 +519,23 @@ namespace HealthGateway.Database.Context
                 v => JsonSerializer.Deserialize<List<DataSource>>(v, dataSourceJsonOptions)
                      ?? new List<DataSource>());
 
+            ValueComparer<IList<DataSource>> dataSourcesComparer = new(
+                (left, right) =>
+                    JsonSerializer.Serialize(left, dataSourceJsonOptions) ==
+                    JsonSerializer.Serialize(right, dataSourceJsonOptions),
+                value =>
+                    JsonSerializer.Serialize(value, dataSourceJsonOptions).GetHashCode(),
+                value =>
+                    JsonSerializer.Deserialize<List<DataSource>>(
+                        JsonSerializer.Serialize(value, dataSourceJsonOptions),
+                        dataSourceJsonOptions)
+                    ?? new List<DataSource>());
+
             modelBuilder.Entity<BlockedAccess>()
                 .Property(e => e.DataSources)
                 .HasColumnType("jsonb")
-                .HasConversion(dataSourcesConverter);
+                .HasConversion(dataSourcesConverter)
+                .Metadata.SetValueComparer(dataSourcesComparer);
 
             ValueConverter<ProfileNotificationType, string> profileNotificationTypeCodeConverter = new(
                 v => EnumUtility.ToEnumString(v, false),
