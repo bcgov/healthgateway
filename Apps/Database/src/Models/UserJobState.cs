@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Models
         public string Hdid { get; init; } = null!;
 
         /// <summary>
-        /// Gets or sets the processed date time for this run.
+        /// Gets the processed date time for this run.
         /// </summary>
         public DateTime ProcessedDateTime { get; init; }
 
