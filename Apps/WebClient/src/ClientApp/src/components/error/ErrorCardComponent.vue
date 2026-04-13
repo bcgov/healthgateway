@@ -64,7 +64,7 @@ async function copyToClipboard() {
 <template>
     <TooManyRequestsComponent />
     <HgAlertComponent
-        v-show="isShowing"
+        :model-value="isShowing"
         :title="errorTitle"
         type="error"
         data-testid="errorBanner"
