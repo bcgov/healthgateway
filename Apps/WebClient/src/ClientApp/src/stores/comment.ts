@@ -38,11 +38,11 @@ export const useCommentStore = defineStore("comment", () => {
     );
 
     function getEntryComments(entryId: string): UserComment[] | null {
-        if (comments.value[entryId] !== undefined) {
-            return comments.value[entryId];
-        } else {
+        if (comments.value[entryId] === undefined) {
             return null;
         }
+
+        return comments.value[entryId];
     }
 
     function entryHasComments(entryId: string): boolean {
@@ -60,10 +60,10 @@ export const useCommentStore = defineStore("comment", () => {
     }
 
     function addComment(userComment: UserComment) {
-        if (comments.value[userComment.parentEntryId] !== undefined) {
-            comments.value[userComment.parentEntryId].push(userComment);
-        } else {
+        if (comments.value[userComment.parentEntryId] === undefined) {
             comments.value[userComment.parentEntryId] = [userComment];
+        } else {
+            comments.value[userComment.parentEntryId].push(userComment);
         }
 
         comments.value[userComment.parentEntryId].sort(commentsSort);
@@ -146,11 +146,12 @@ export const useCommentStore = defineStore("comment", () => {
         return commentService
             .createComment(hdid, comment)
             .then((result) => {
-                if (result !== undefined) {
-                    addComment(result);
-                } else {
+                if (result === undefined) {
                     logger.debug(`Comment creation return undefined!`);
+                } else {
+                    addComment(result);
                 }
+
                 return result;
             })
             .catch((error: ResultError) => {

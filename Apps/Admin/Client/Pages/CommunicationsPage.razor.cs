@@ -20,7 +20,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
-using HealthGateway.Admin.Client.Components.Common;
 using HealthGateway.Admin.Client.Components.Communications;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Client.Store.Broadcasts;

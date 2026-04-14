@@ -6,6 +6,6 @@ export default abstract class DependentUtil {
     ): string {
         const firstName = dependentInfo?.firstname;
         const lastInitial = dependentInfo?.lastname?.slice(0, 1);
-        return [firstName, lastInitial].filter((s) => Boolean(s)).join(" ");
+        return [firstName, lastInitial].filter(Boolean).join(" ");
     }
 }

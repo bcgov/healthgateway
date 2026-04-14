@@ -62,7 +62,7 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         this.programKey = this.programName
             .trim()
             .toLowerCase()
-            .replace(/\s+/g, " ");
+            .replaceAll(/\s+/g, " ");
 
         const program =
             programDisplayNameMap[this.programKey] ?? this.programName;

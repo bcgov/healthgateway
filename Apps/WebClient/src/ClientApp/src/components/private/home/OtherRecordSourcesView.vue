@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
@@ -227,7 +226,11 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
                     @click="handleRecordSourceTileClick(tile)"
                 >
                     <template #icon>
-                        <img v-if="tile.logoUri" :src="tile.logoUri" />
+                        <img
+                            v-if="tile.logoUri"
+                            :src="tile.logoUri"
+                            :alt="tile.name"
+                        />
                     </template>
                     <p class="text-body-1">{{ tile.description }}</p>
                     <div class="mt-auto pt-3 text-start">

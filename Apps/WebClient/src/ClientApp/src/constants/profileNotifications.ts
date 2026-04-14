@@ -4,6 +4,13 @@ import {
     UserProfileNotificationType,
 } from "@/models/userProfile";
 import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
+import {
+    Destination,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
 
 /**
  * Represents backend-supported notification types.
@@ -34,7 +41,7 @@ export enum ProfileNotificationPreference {
  * - id: UI identifier (kebab-case; used as stable key in components)
  * - type: Backend notification type (must match ProfileNotificationType)
  * - label: Display text shown in the profile page
- * - tooltip: Help text shown in the info tooltip
+ * - modal: Help text shown in the information modal
  *
  * IMPORTANT:
  * - Every ProfileNotificationType must have a corresponding entry here.
@@ -45,12 +52,50 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
     {
         id: "bc-cancer-screening",
         type: ProfileNotificationType.BcCancerScreening,
-        label: "Eligible BC Cancer Screening Letters",
-        tooltip: {
-            text: "Learn more about BC Cancer notifications ",
-            linkText: "here",
-            href: "/not-found",
-            suffix: ".",
+        label: "BC Cancer Screening Letters",
+        modal: {
+            buttonText: "Learn More",
+            content: {
+                title: "BC Cancer Screening Program Letters",
+                paragraphs: [
+                    {
+                        segments: [
+                            {
+                                type: "text",
+                                value: "Cancer screening program letters are available on Health Gateway. Health Gateway can email you when new letters are added that show you need follow-up or when you are due to screen again.",
+                            },
+                        ],
+                    },
+                    {
+                        segments: [
+                            {
+                                type: "text",
+                                value: "Signing up for email notifications will not change the paper letters that will be mailed to you.",
+                            },
+                        ],
+                    },
+                    {
+                        segments: [
+                            {
+                                type: "text",
+                                value: "For more information about BC Cancer Program Letters visit ",
+                            },
+                            {
+                                type: "link",
+                                text: "screeningbc.ca/contact",
+                                href: ExternalUrl.ScreeningContact,
+                                analyticsText:
+                                    Text.ScreeningNotificationsContactLink,
+                                analyticsOrigin: Origin.Profile,
+                                analyticsDestination:
+                                    Destination.ScreeningContact,
+                                analyticsType: Type.Notifications,
+                                analysticsUrl: ExternalUrl.ScreeningContact,
+                            },
+                        ],
+                    },
+                ],
+            },
         },
     },
 ] as const satisfies ReadonlyArray<NotificationPreferenceType>;

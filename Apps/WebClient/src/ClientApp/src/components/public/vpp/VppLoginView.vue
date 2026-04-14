@@ -26,7 +26,7 @@ function openAccessMyHealth() {
         ExternalUrl.AccessMyHealth
     );
 
-    window.location.assign(ExternalUrl.AccessMyHealth);
+    globalThis.location.assign(ExternalUrl.AccessMyHealth);
 }
 
 function openHealthGatewayInfo(): void {
@@ -36,11 +36,11 @@ function openHealthGatewayInfo(): void {
         Destination.HealthGateway,
         ExternalUrl.HealthGateway
     );
-    window.location.assign(ExternalUrl.HealthGateway);
+    globalThis.location.assign(ExternalUrl.HealthGateway);
 }
 
 function openHgHome() {
-    const baseUrl = window.location.origin;
+    const baseUrl = globalThis.location.origin;
 
     trackNavigationClick(
         Action.InternalLink,
@@ -49,7 +49,7 @@ function openHgHome() {
         InternalUrl.Home
     );
 
-    window.location.assign(`${baseUrl}/login`);
+    globalThis.location.assign(`${baseUrl}/login`);
 }
 
 function trackNavigationClick(

@@ -32,8 +32,8 @@ using Xunit.Abstractions;
 public class WebAppFixture : IAsyncLifetime
 {
     private readonly ServiceCollection testRelatedServices = new();
-    private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder().WithImage("docker.io/postgres:15").Build();
-    private readonly RedisContainer redisContainer = new RedisBuilder().WithImage("docker.io/redis:7.0").Build();
+    private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder("docker.io/postgres:15").Build();
+    private readonly RedisContainer redisContainer = new RedisBuilder("docker.io/redis:7.0").Build();
 
     public IServiceCollection Services => this.testRelatedServices;
 
@@ -43,18 +43,17 @@ public class WebAppFixture : IAsyncLifetime
         IAlbaHost host = await AlbaHost.For<TProgram>(
             builder =>
             {
-                builder.ConfigureServices(
-                    (_, services) =>
+                builder.ConfigureServices((_, services) =>
+                {
+                    // add test specific dependencies
+                    foreach (ServiceDescriptor service in this.testRelatedServices)
                     {
-                        // add test specific dependencies
-                        foreach (ServiceDescriptor service in this.testRelatedServices)
-                        {
-                            services.Add(service);
-                        }
+                        services.Add(service);
+                    }
 
-                        // set logging to xunit output
-                        services.AddLogging(loggingBuilder => loggingBuilder.AddXUnit(output));
-                    });
+                    // set logging to xunit output
+                    services.AddLogging(loggingBuilder => loggingBuilder.AddXUnit(output));
+                });
 
                 // override the db connection string
                 Dictionary<string, string?> configOverrides = new(configurationSettings ?? Enumerable.Empty<KeyValuePair<string, string?>>())
@@ -63,16 +62,15 @@ public class WebAppFixture : IAsyncLifetime
                     { "RedisConnection", this.redisContainer.GetConnectionString() },
                 };
                 // set or override configuration settings
-                builder.ConfigureAppConfiguration(
-                    (_, configBuilder) =>
+                builder.ConfigureAppConfiguration((_, configBuilder) =>
+                {
+                    string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
+                    configBuilder.AddInMemoryCollection(configOverrides);
+                    if (!string.IsNullOrEmpty(secretsPath))
                     {
-                        string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
-                        configBuilder.AddInMemoryCollection(configOverrides);
-                        if (!string.IsNullOrEmpty(secretsPath))
-                        {
-                            configBuilder.AddJsonFile(secretsPath);
-                        }
-                    });
+                        configBuilder.AddJsonFile(secretsPath);
+                    }
+                });
             },
             extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());
         return host;

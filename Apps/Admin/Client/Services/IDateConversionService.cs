@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Services
         /// </summary>
         /// <param name="utcDateTime">A UTC DateTime instance.</param>
         /// <returns>A DateTime instance in the configured timezone.</returns>
-        public DateTime ConvertFromUtc(DateTime utcDateTime);
+        DateTime ConvertFromUtc(DateTime utcDateTime);
 
         /// <summary>
         /// Converts a nullable UTC datetime values to the system configured timezone.
@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="utcDateTime">Nullable utcDateTime.</param>
         /// <param name="returnNowIfNull">If utcDateTime is null, this flag can be used to return now.</param>
         /// <returns>DateTime converted or null if returnNowIfNull is false else will return now.</returns>
-        public DateTime? ConvertFromUtc(DateTime? utcDateTime, bool returnNowIfNull = false);
+        DateTime? ConvertFromUtc(DateTime? utcDateTime, bool returnNowIfNull = false);
 
         /// <summary>
         /// Converts UTC datetime values to the system configured timezone and formats to a short date and time.
@@ -43,6 +43,6 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="utcDateTime">A UTC DateTime instance.</param>
         /// <param name="fallbackString">In the event utcDateTime is null, provide a fallback string to return.</param>
         /// <returns>The short formatted date and time string.</returns>
-        public string ConvertToShortFormatFromUtc(DateTime? utcDateTime, string fallbackString = "-");
+        string ConvertToShortFormatFromUtc(DateTime? utcDateTime, string fallbackString = "-");
     }
 }

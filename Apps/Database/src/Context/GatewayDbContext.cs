@@ -30,6 +30,7 @@ namespace HealthGateway.Database.Context
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using BetaFeature = HealthGateway.Database.Constants.BetaFeature;
 
@@ -93,6 +94,7 @@ namespace HealthGateway.Database.Context
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
         public DbSet<BetaFeatureAccess> BetaFeatureAccess { get; set; } = null!;
         public DbSet<UserProfileNotificationSetting> UserProfileNotificationSetting { get; set; } = null!;
+        public DbSet<UserJobState> UserJobState { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -517,10 +519,23 @@ namespace HealthGateway.Database.Context
                 v => JsonSerializer.Deserialize<List<DataSource>>(v, dataSourceJsonOptions)
                      ?? new List<DataSource>());
 
+            ValueComparer<IList<DataSource>> dataSourcesComparer = new(
+                (left, right) =>
+                    JsonSerializer.Serialize(left, dataSourceJsonOptions) ==
+                    JsonSerializer.Serialize(right, dataSourceJsonOptions),
+                value =>
+                    JsonSerializer.Serialize(value, dataSourceJsonOptions).GetHashCode(),
+                value =>
+                    JsonSerializer.Deserialize<List<DataSource>>(
+                        JsonSerializer.Serialize(value, dataSourceJsonOptions),
+                        dataSourceJsonOptions)
+                    ?? new List<DataSource>());
+
             modelBuilder.Entity<BlockedAccess>()
                 .Property(e => e.DataSources)
                 .HasColumnType("jsonb")
-                .HasConversion(dataSourcesConverter);
+                .HasConversion(dataSourcesConverter)
+                .Metadata.SetValueComparer(dataSourcesComparer);
 
             ValueConverter<ProfileNotificationType, string> profileNotificationTypeCodeConverter = new(
                 v => EnumUtility.ToEnumString(v, false),
@@ -531,15 +546,27 @@ namespace HealthGateway.Database.Context
                 .HasConversion(profileNotificationTypeCodeConverter);
 
             modelBuilder.Entity<UserProfileNotificationSetting>()
-                .Property(e => e.NotificationTypeCode)
+                .Property(e => e.NotificationType)
                 .HasConversion(profileNotificationTypeCodeConverter);
+
+            modelBuilder.Entity<UserProfileNotificationSetting>()
+                .HasOne(notificationSetting => notificationSetting.UserProfile)
+                .WithMany(userProfile => userProfile.NotificationSettings)
+                .HasForeignKey(notificationSetting => notificationSetting.Hdid)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserProfileNotificationSetting>()
                 .HasOne<ProfileNotificationTypeCode>()
                 .WithMany()
                 .HasPrincipalKey(p => p.Code)
-                .HasForeignKey(p => p.NotificationTypeCode)
+                .HasForeignKey(p => p.NotificationType)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserJobState>()
+                .HasOne(x => x.UserProfile)
+                .WithMany(x => x.UserJobStates)
+                .HasForeignKey(x => x.Hdid)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

@@ -463,12 +463,12 @@ function fetchDataset(entryType: EntryType): Promise<unknown> {
 
 function fetchTimelineData(): Promise<unknown> {
     const blockedEntryTypes: EntryType[] = [];
-    const patientDataEntryTypes = [...entryTypeToPatientDataTypeMap.keys()];
+    const patientDataEntryTypes = new Set(entryTypeToPatientDataTypeMap.keys());
     const patientDataEntryTypesToRequest = [];
     const promises: Promise<unknown>[] = [];
     for (const entryType of props.entryTypes) {
         if (canAccessDataset(entryType)) {
-            if (patientDataEntryTypes.includes(entryType)) {
+            if (patientDataEntryTypes.has(entryType)) {
                 patientDataEntryTypesToRequest.push(
                     entryTypeToPatientDataTypeMap.get(
                         entryType

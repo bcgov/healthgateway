@@ -18,6 +18,7 @@ import NoteReportComponent from "@/components/private/reports/NoteReportComponen
 import SpecialAuthorityRequestReportComponent from "@/components/private/reports/SpecialAuthorityRequestReportComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -136,11 +137,7 @@ const medicationOptions = computed(() =>
         .reduce<MedicationSummary[]>(
             (accumulator: MedicationSummary[], current) => {
                 const med = current.medicationSummary;
-                if (
-                    accumulator.findIndex(
-                        (x) => x.brandName === med.brandName
-                    ) < 0
-                ) {
+                if (!accumulator.some((x) => x.brandName === med.brandName)) {
                     accumulator.push(med);
                 }
                 return accumulator;
@@ -211,7 +208,7 @@ function updateFilter(): void {
 function convertEmptyStringDateToNull(
     date: StringISODate | null
 ): string | null {
-    return !date ? null : date;
+    return date || null;
 }
 
 function toggleAdvanced(): void {
@@ -269,7 +266,14 @@ function base64ToBlob(base64: string, mimeType: string): Blob {
  * in the browser.
  */
 function estimateBase64SizeInBytes(base64: string): number {
-    const padding = base64.match(/=*$/)?.[0].length ?? 0;
+    let padding = 0;
+
+    if (base64.endsWith("==")) {
+        padding = 2;
+    } else if (base64.endsWith("=")) {
+        padding = 1;
+    }
+
     return Math.floor((base64.length * 3) / 4) - padding;
 }
 
@@ -293,14 +297,15 @@ function downloadReport(): void {
             }
 
             if (!result.resourcePayload) {
-                throw {
-                    message: `Unable to download the ${
+                throw new ResultError(
+                    ServiceCode.Report,
+                    `Unable to download the ${
                         entryTypeMap.get(selectedEntryType.value!)?.name ??
                         "selected"
                     } report.`,
-                    statusCode: 500,
-                    traceId: "report-download-missing-payload",
-                } as ResultError;
+                    "report-download-missing-payload",
+                    500
+                );
             }
 
             const mimeType =
@@ -311,14 +316,15 @@ function downloadReport(): void {
             // was included in the response payload. Treat this as a download failure so
             // existing error handling and user messaging is triggered.
             if (!base64Data) {
-                throw {
-                    message: `Unable to download the ${
+                throw new ResultError(
+                    ServiceCode.Report,
+                    `Unable to download the ${
                         entryTypeMap.get(selectedEntryType.value!)?.name ??
                         "selected"
                     } report.`,
-                    statusCode: 500,
-                    traceId: "report-download-missing-data",
-                } as ResultError;
+                    "report-download-missing-data",
+                    500
+                );
             }
 
             // Guard against extremely large PDF downloads. Large base64 payloads
@@ -328,14 +334,15 @@ function downloadReport(): void {
                 reportFormatType.value === ReportFormatType.PDF &&
                 estimateBase64SizeInBytes(base64Data) > 25 * 1024 * 1024
             ) {
-                throw {
-                    message: `The ${
+                throw new ResultError(
+                    ServiceCode.Report,
+                    `The ${
                         entryTypeMap.get(selectedEntryType.value!)?.name ??
                         "selected"
                     } PDF report is too large to generate. Please reduce the date range or apply additional filters and try again.`,
-                    statusCode: 413,
-                    traceId: "report-download-pdf-too-large",
-                } as ResultError;
+                    "report-download-pdf-too-large",
+                    413
+                );
             }
 
             const blob = base64ToBlob(base64Data, mimeType);
@@ -369,7 +376,7 @@ function trackDownload(): void {
 }
 
 function replaceSpaceWithDash(source: string): string {
-    return source.replace(/ /g, "-");
+    return source.replaceAll(" ", "-");
 }
 
 const reportIsEnabled = props.isDependent

@@ -24,7 +24,7 @@ namespace HealthGateway.Database.Models
     /// <summary>
     /// The user profile notification setting model.
     /// </summary>
-    [Index(nameof(Hdid), nameof(NotificationTypeCode), IsUnique = true)]
+    [Index(nameof(Hdid), nameof(NotificationType), IsUnique = true)]
     public class UserProfileNotificationSetting : AuditableEntity
     {
         /// <summary>
@@ -35,7 +35,7 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; init; }
 
         /// <summary>
-        /// Gets the unique Health Data ID (HDID) of the user
+        /// Gets the unique HDID that identifies the user
         /// to whom these notification settings apply.
         /// </summary>
         [Column("UserProfileId")]
@@ -43,22 +43,27 @@ namespace HealthGateway.Database.Models
         public string Hdid { get; init; } = null!;
 
         /// <summary>
-        /// Gets the notification type code for which these
+        /// Gets the notification type for which these
         /// delivery channel settings apply.
         /// </summary>
         [MaxLength(50)]
-        public ProfileNotificationType NotificationTypeCode { get; init; }
+        public ProfileNotificationType NotificationType { get; init; }
 
         /// <summary>
-        /// Gets and sets a value indicating whether email notifications
+        /// Gets or sets a value indicating whether email notifications
         /// are enabled for this notification type.
         /// </summary>
-        public bool EmailEnabled { get; set; }
+        public bool? EmailEnabled { get; set; }
 
         /// <summary>
-        /// Gets and sets a value indicating whether SMS notifications
+        /// Gets or sets a value indicating whether SMS notifications
         /// are enabled for this notification type.
         /// </summary>
-        public bool SmsEnabled { get; set; }
+        public bool? SmsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets the user profile.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; init; } = null!;
     }
 }

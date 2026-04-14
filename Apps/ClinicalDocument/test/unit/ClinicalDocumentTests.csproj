@@ -19,7 +19,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DeepEqual" Version="5.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="10.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="10.0.3" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.9.3" />
@@ -32,4 +32,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ClinicalDocument.csproj" />
   </ItemGroup>
+  <Target Name="CopyKeyDerivationAssembly" BeforeTargets="VSTest">
+    <ItemGroup>
+      <KeyDerivationDll Include="$(PkgMicrosoft_AspNetCore_Cryptography_KeyDerivation)/lib/**/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(KeyDerivationDll)"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true"
+      Condition="'@(KeyDerivationDll)' != ''" />
+  </Target>  
 </Project>

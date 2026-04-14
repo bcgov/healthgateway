@@ -58,9 +58,9 @@ const maskedInputPhoneNumber = ref(maskedStorePhoneNumber.value);
 const verifySmsDialog = ref<InstanceType<typeof VerifySmsDialogComponent>>();
 
 const inputErrorMessages = computed(() =>
-    !isSmsEditable.value
-        ? []
-        : ValidationUtil.getErrorMessages(v$.value.inputPhoneNumber)
+    isSmsEditable.value
+        ? ValidationUtil.getErrorMessages(v$.value.inputPhoneNumber)
+        : []
 );
 const validations = computed(() => ({
     inputPhoneNumber: {

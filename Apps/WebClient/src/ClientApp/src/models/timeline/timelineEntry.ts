@@ -95,13 +95,13 @@ export default abstract class TimelineEntry {
     }
 
     private commentApplies(keyword: string): boolean {
-        if (this.comments !== null) {
-            return this.comments.some((comment) =>
-                comment.text.toUpperCase().includes(keyword.toUpperCase())
-            );
-        } else {
+        if (this.comments === null) {
             return false;
         }
+
+        return this.comments.some((comment) =>
+            comment.text.toUpperCase().includes(keyword.toUpperCase())
+        );
     }
 
     private entryTypeApplies(entryTypes: Set<EntryType>): boolean {

@@ -74,11 +74,6 @@ const enabledQuickLinkFilter = computed(() =>
 const isAddButtonEnabled = computed(
     () => selectedQuickLinks.value.length > 0 && !isLoading.value
 );
-const showVaccineCard = computed(
-    () =>
-        user.value.preferences[UserPreferenceType.HideVaccineCardQuickLink]
-            ?.value === "true"
-);
 const showRecommendationsDialog = computed(
     () =>
         ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
@@ -178,10 +173,6 @@ async function handleSubmit(): Promise<void> {
             updateSelectedUserPreference(
                 "health-connect-registry",
                 UserPreferenceType.HideHealthConnectRegistryQuickLink
-            ),
-            updateSelectedUserPreference(
-                "bc-vaccine-card",
-                UserPreferenceType.HideVaccineCardQuickLink
             ),
             updateSelectedUserPreference(
                 "immunization-record",
@@ -320,16 +311,6 @@ function hideModal(): void {
                             :variant="
                                 isSelectedVariant('health-connect-registry')
                             "
-                        />
-                        <v-chip
-                            v-if="showVaccineCard"
-                            id="bc-vaccine-card-filter"
-                            data-testid="bc-vaccine-card-filter"
-                            name="bc-vaccine-card-filter"
-                            value="bc-vaccine-card"
-                            text="BC Vaccine Card"
-                            color="primary"
-                            :variant="isSelectedVariant('bc-vaccine-card')"
                         />
                         <v-chip
                             v-if="showImmunizationRecord"

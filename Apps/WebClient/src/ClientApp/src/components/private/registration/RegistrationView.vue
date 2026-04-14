@@ -219,7 +219,7 @@ async function onSubmit(): Promise<void> {
 
     submitStatus.value = "PENDING";
     if (smsNumber.value) {
-        smsNumber.value = smsNumber.value.replace(/\D+/g, "");
+        smsNumber.value = smsNumber.value.replaceAll(/\D+/g, "");
     }
 
     try {
@@ -277,6 +277,10 @@ loadTermsOfService();
             <h4 class="text-h6 text-grey mb-3">
                 Communication Preferences (Optional)
             </h4>
+            <p class="text-body-2 mb-4 text-medium-emphasis">
+                Choose how you would like to receive updates. Preferences can be
+                changed anytime in your profile.
+            </p>
             <div>
                 <v-checkbox
                     id="emailCheckbox"
@@ -286,7 +290,7 @@ loadTermsOfService();
                     @change="onEmailOptout($event)"
                 />
                 <em class="text-body-2">
-                    Receive application and health record updates
+                    Enter your email to receive updates when available.
                 </em>
                 <v-text-field
                     id="emailInput"
@@ -318,7 +322,8 @@ loadTermsOfService();
                     @change="onSMSOptout($event)"
                 />
                 <em class="text-body-2">
-                    Receive health record updates only
+                    Enter your phone number to receive text updates when
+                    available.
                 </em>
                 <v-text-field
                     id="smsNumberInput"

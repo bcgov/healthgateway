@@ -3474,6 +3474,56 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("UserFeedbackTag", "gateway");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserJobState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Hdid")
+                        .IsRequired()
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)")
+                        .HasColumnName("UserProfileId");
+
+                    b.Property<string>("JobName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("ProcessedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Hdid", "JobName")
+                        .IsUnique();
+
+                    b.ToTable("UserJobState", "gateway");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.UserLoginClientTypeCode", b =>
                 {
                     b.Property<string>("UserLoginClientCode")
@@ -3781,7 +3831,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("EmailEnabled")
+                    b.Property<bool?>("EmailEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Hdid")
@@ -3790,12 +3840,12 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(52)")
                         .HasColumnName("UserProfileId");
 
-                    b.Property<string>("NotificationTypeCode")
+                    b.Property<string>("NotificationType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<bool>("SmsEnabled")
+                    b.Property<bool?>("SmsEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("UpdatedBy")
@@ -3814,9 +3864,9 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NotificationTypeCode");
+                    b.HasIndex("NotificationType");
 
-                    b.HasIndex("Hdid", "NotificationTypeCode")
+                    b.HasIndex("Hdid", "NotificationType")
                         .IsUnique();
 
                     b.ToTable("UserProfileNotificationSetting", "gateway");
@@ -4195,6 +4245,17 @@ namespace HealthGateway.Database.Migrations
                     b.Navigation("UserFeedback");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserJobState", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany("UserJobStates")
+                        .HasForeignKey("Hdid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.UserLoginClientTypeCode", null)
@@ -4221,11 +4282,19 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfileNotificationSetting", b =>
                 {
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
+                        .WithMany("NotificationSettings")
+                        .HasForeignKey("Hdid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HealthGateway.Database.Models.ProfileNotificationTypeCode", null)
                         .WithMany()
-                        .HasForeignKey("NotificationTypeCode")
+                        .HasForeignKey("NotificationType")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
@@ -4270,6 +4339,10 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
+                    b.Navigation("NotificationSettings");
+
+                    b.Navigation("UserJobStates");
+
                     b.Navigation("Verifications");
                 });
 #pragma warning restore 612, 618

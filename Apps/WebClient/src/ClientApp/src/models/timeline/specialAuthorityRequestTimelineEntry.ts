@@ -13,11 +13,11 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
     public expiryDate?: DateWrapper;
     public referenceNumber: string;
 
-    private readonly getComments: (entyId: string) => UserComment[] | null;
+    private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: MedicationRequest,
-        getComments: (entyId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null
     ) {
         super(
             model.referenceNumber,
@@ -31,7 +31,7 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
             model.prescriberFirstName,
             model.prescriberLastName,
         ]
-            .filter((s) => Boolean(s))
+            .filter(Boolean)
             .join(" ");
         this.effectiveDate = model.effectiveDate
             ? DateWrapper.fromIsoDate(model.effectiveDate)

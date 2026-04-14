@@ -14,7 +14,7 @@ const configStore = useConfigStore();
 
 function getRedirectTimeout() {
     const configValue = Number(configStore.webConfig?.timeouts.logoutRedirect);
-    if (isNaN(configValue) || configValue <= 0) {
+    if (Number.isNaN(configValue) || configValue <= 0) {
         logger.warn(
             `Logout redirect timeout is invalid: ${configValue}, using default value of 10000ms`
         );
