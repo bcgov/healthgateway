@@ -52,53 +52,22 @@ namespace Healthgateway.JobScheduler.Jobs
         private NotificationBackfillOptions options = null!;
 
         /// <summary>
-        /// Processes user profiles in batches to pre-populate notification settings for a specific notification type.
+        /// Processes notification backfill for all configured channels (Email and SMS).
+        /// Each channel is executed sequentially using its corresponding configuration.
         /// Uses UserJobState tracking to ensure users are processed only once per job.
         /// Each batch is processed transactionally, and corresponding notification events
         /// are generated and dispatched via the outbox after a successful commit.
         /// </summary>
-        /// <param name="optionsName">The name of the configuration section used to bind the job options.</param>
         /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async Task ProcessAsync(string optionsName, CancellationToken ct = default)
+        public async Task ProcessAsync(CancellationToken ct = default)
         {
-            this.options = optionsMonitor.Get(optionsName);
+            bool emailHasMore = await this.ProcessAsync("NotificationEmailBackfill", ct);
 
-            // Skip execution if the job is disabled via configuration
-            if (!this.options.Enabled)
+            if (!emailHasMore)
             {
-                logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
-                return;
-            }
-
-            logger.LogInformation("Job {JobName} started", this.options.JobName);
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            ProfileNotificationType notificationType =
-                Enum.Parse<ProfileNotificationType>(this.options.NotificationType);
-
-            try
-            {
-                // Gets user profile that require notification settings to be created/updated
-                List<UserProfile> userProfilesToBackfill = await this.GetNextUserProfilesAsync(notificationType, ct);
-
-                await this.UpsertUserProfileNotificationSettingsAsync(notificationType, userProfilesToBackfill, ct);
-
-                stopwatch.Stop();
-
-                logger.LogInformation(
-                    "Job {JobName} finished in {ElapsedMs} ms for {Count} profiles",
-                    this.options.JobName,
-                    stopwatch.ElapsedMilliseconds,
-                    userProfilesToBackfill.Count);
-            }
-            catch (Exception ex)
-            {
-                stopwatch.Stop();
-                throw new InvalidOperationException(
-                    $"Job {this.options.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
-                    ex);
+                await this.ProcessAsync("NotificationSmsBackfill", ct);
             }
         }
 
@@ -135,6 +104,58 @@ namespace Healthgateway.JobScheduler.Jobs
             };
 
             return [target];
+        }
+
+        /// <summary>
+        /// Processes user profiles in batches to pre-populate notification settings for a specific notification type.
+        /// Uses UserJobState tracking to ensure users are processed only once per job.
+        /// Each batch is processed transactionally, and corresponding notification events
+        /// are generated and dispatched via the outbox after a successful commit.
+        /// </summary>
+        /// <param name="optionsName">The name of the configuration section used to bind the job options.</param>
+        /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        private async Task<bool> ProcessAsync(string optionsName, CancellationToken ct = default)
+        {
+            this.options = optionsMonitor.Get(optionsName);
+
+            if (!this.options.Enabled)
+            {
+                logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
+                return false;
+            }
+
+            logger.LogInformation("Job {JobName} started", this.options.JobName);
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            ProfileNotificationType notificationType =
+                Enum.Parse<ProfileNotificationType>(this.options.NotificationType);
+
+            List<UserProfile> userProfilesToBackfill;
+
+            try
+            {
+                userProfilesToBackfill = await this.GetNextUserProfilesAsync(notificationType, ct);
+
+                await this.UpsertUserProfileNotificationSettingsAsync(notificationType, userProfilesToBackfill, ct);
+
+                stopwatch.Stop();
+
+                logger.LogInformation(
+                    "Job {JobName} finished in {ElapsedMs} ms for {Count} profiles",
+                    this.options.JobName,
+                    stopwatch.ElapsedMilliseconds,
+                    userProfilesToBackfill.Count);
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                throw new InvalidOperationException(
+                    $"Job {this.options.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
+                    ex);
+            }
+
+            return userProfilesToBackfill.Count == this.options.BatchSize;
         }
 
         /// <summary>
@@ -236,6 +257,7 @@ namespace Healthgateway.JobScheduler.Jobs
             CancellationToken ct)
         {
             List<UserProfileNotificationSetting> existingSettings = await dbContext.UserProfileNotificationSetting
+                .AsTracking()
                 .Where(ns =>
                     hdids.Contains(ns.Hdid) &&
                     ns.NotificationType == notificationType)
@@ -250,6 +272,12 @@ namespace Healthgateway.JobScheduler.Jobs
         /// - Channel is determined by <c>UseSmsChannel</c>:
         ///   - When false: selects users with a non-empty Email
         ///   - When true: selects users with a non-empty SmsNumber
+        /// - Optional SMS-only filters:
+        ///   - When <c>UseSmsChannel</c> is true and <c>LastLoginAfterDate</c> is set:
+        ///     selects only users with <c>LastLoginDateTime</c> greater than the configured value
+        ///   - When <c>UseSmsChannel</c> is true and <c>TermsOfServiceId</c> is set:
+        ///     selects only users whose accepted Terms of Service has an effective date
+        ///     on or after the configured Terms of Service effective date and on or before now
         /// - No existing notification setting for the specified type, or only null values for the selected channel:
         ///   - When false: EmailEnabled is null
         ///   - When true: SmsEnabled is null
@@ -260,23 +288,61 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="notificationType">The notification type being processed.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>A list of user profiles to process in the next batch.</returns>
-        private async Task<List<UserProfile>> GetNextUserProfilesAsync(ProfileNotificationType notificationType, CancellationToken ct)
+        private async Task<List<UserProfile>> GetNextUserProfilesAsync(
+            ProfileNotificationType notificationType,
+            CancellationToken ct)
         {
             IQueryable<UserProfile> query = dbContext.UserProfile
                 .AsNoTracking()
                 .Where(x =>
                     this.options.UseSmsChannel
-                        ? !string.IsNullOrWhiteSpace(x.SmsNumber)
-                        : !string.IsNullOrWhiteSpace(x.Email))
-                .Where(x =>
-                    dbContext.UserProfileNotificationSetting
-                        .Where(ns =>
-                            ns.Hdid == x.HdId &&
-                            ns.NotificationType == notificationType)
-                        .All(ns =>
-                            this.options.UseSmsChannel
-                                ? ns.SmsEnabled == null
-                                : ns.EmailEnabled == null))
+                        ? x.SmsNumber != null && x.SmsNumber != string.Empty
+                        : x.Email != null && x.Email != string.Empty);
+
+            if (this.options is { UseSmsChannel: true, LastLoginAfterDate: not null })
+            {
+                DateTime lastLoginAfterDate = this.options.LastLoginAfterDate.Value.ToUniversalTime();
+                query = query.Where(x => x.LastLoginDateTime > lastLoginAfterDate);
+            }
+
+            if (this.options is { UseSmsChannel: true, TermsOfServiceId: not null })
+            {
+                DateTime minimumEffectiveDate =
+                    await this.GetMinimumTermsOfServiceEffectiveDateAsync(this.options.TermsOfServiceId.Value, ct);
+
+                DateTime now = DateTime.UtcNow;
+
+                List<Guid> validTermsOfServiceIds = await dbContext.LegalAgreement
+                    .AsNoTracking()
+                    .Where(x =>
+                        x.EffectiveDate != null &&
+                        x.EffectiveDate >= minimumEffectiveDate &&
+                        x.EffectiveDate <= now)
+                    .Select(x => x.Id)
+                    .ToListAsync(ct);
+
+                query = query.Where(x =>
+                    validTermsOfServiceIds.Contains(x.TermsOfServiceId));
+            }
+
+            if (this.options.UseSmsChannel)
+            {
+                query = query.Where(x =>
+                    !dbContext.UserProfileNotificationSetting.Any(ns =>
+                        ns.Hdid == x.HdId &&
+                        ns.NotificationType == notificationType &&
+                        ns.SmsEnabled != null));
+            }
+            else
+            {
+                query = query.Where(x =>
+                    !dbContext.UserProfileNotificationSetting.Any(ns =>
+                        ns.Hdid == x.HdId &&
+                        ns.NotificationType == notificationType &&
+                        ns.EmailEnabled != null));
+            }
+
+            query = query
                 .Where(x =>
                     !dbContext.UserJobState.Any(js =>
                         js.Hdid == x.HdId &&
@@ -287,6 +353,30 @@ namespace Healthgateway.JobScheduler.Jobs
             return await query
                 .Take(this.options.BatchSize)
                 .ToListAsync(ct);
+        }
+
+        /// <summary>
+        /// Gets the effective date for the configured Terms of Service identifier.
+        /// </summary>
+        /// <param name="termsOfServiceId">The configured Terms of Service identifier.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The effective date for the configured Terms of Service.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the configured Terms of Service is not found or has no effective date.
+        /// </exception>
+        private async Task<DateTime> GetMinimumTermsOfServiceEffectiveDateAsync(Guid termsOfServiceId, CancellationToken ct)
+        {
+            LegalAgreement? agreement = await dbContext.LegalAgreement
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == termsOfServiceId, ct);
+
+            if (agreement?.EffectiveDate == null)
+            {
+                throw new InvalidOperationException(
+                    $"Configured TermsOfServiceId '{termsOfServiceId}' was not found or has no effective date.");
+            }
+
+            return agreement.EffectiveDate.Value;
         }
 
         /// <summary>
@@ -338,9 +428,9 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             DateTime processedDateTime = DateTime.UtcNow;
 
-            List<UserProfileNotificationSetting> notificationSettingsToInsert = [];
-            List<UserJobState> jobStatesToInsert = [];
-            List<MessageEnvelope> notificationEvents = [];
+            List<UserProfileNotificationSetting> notificationSettingsToInsert = new(userProfilesToBackfill.Count);
+            List<UserJobState> jobStatesToInsert = new(userProfilesToBackfill.Count);
+            List<MessageEnvelope> notificationEvents = new(userProfilesToBackfill.Count);
             int updatedCount = 0;
 
             foreach (UserProfile userProfile in userProfilesToBackfill)
@@ -422,47 +512,68 @@ namespace Healthgateway.JobScheduler.Jobs
                 return;
             }
 
-            // Begin transaction to ensure atomic batch processing
-            await using IDbContextTransaction transaction =
-                await dbContext.Database.BeginTransactionAsync(ct);
+            // Disable automatic change detection to improve performance when processing large batches.
+            // EF Core will not scan tracked entities on each Add/Update; changes are still persisted
+            // when SaveChangesAsync is called.
+            dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 
-            // Extract HDIDs for lookup
-            List<string> hdids = [.. userProfilesToBackfill.Select(x => x.HdId)];
-
-            // Retrieve existing settings keyed by HDID for efficient access
-            Dictionary<string, UserProfileNotificationSetting> existingSettingsByHdid =
-                await this.GetExistingSettingsByHdidAsync(notificationType, hdids, ct);
-
-            // Determine inserts, updates, and events for this batch
-            NotificationBackfillBatchResult result = this.ProcessBatch(
-                notificationType,
-                userProfilesToBackfill,
-                existingSettingsByHdid);
-
-            // Persist new settings and enqueue outbox events
-            await this.PersistBatchAsync(result, ct);
-
-            // Save all changes within the transaction
-            await dbContext.SaveChangesAsync(ct);
-
-            // Commit transaction after successful persistence
-            await transaction.CommitAsync(ct);
-
-            // Dispatch events after commit (outbox pattern)
-            if (result.Events.Count != 0)
+            try
             {
-                logger.LogDebug("Dispatching events after commit");
-                backgroundJobClient.Enqueue<DbOutboxStore>(store =>
-                    store.DispatchOutboxItemsAsync(CancellationToken.None));
-            }
+                // Begin transaction to ensure atomic batch processing
+                await using IDbContextTransaction transaction =
+                    await dbContext.Database.BeginTransactionAsync(ct);
 
-            // Log batch summary
-            logger.LogInformation(
-                "Job {JobName} processed {TotalProfiles} profiles. Inserted {InsertCount}. Updated {UpdateCount}",
-                this.options.JobName,
-                userProfilesToBackfill.Count,
-                result.RowsToInsert.Count,
-                result.UpdatedCount);
+                // Extract HDIDs for lookup
+                List<string> hdids = [.. userProfilesToBackfill.Select(x => x.HdId)];
+
+                // Retrieve existing settings keyed by HDID for efficient access
+                Dictionary<string, UserProfileNotificationSetting> existingSettingsByHdid =
+                    await this.GetExistingSettingsByHdidAsync(notificationType, hdids, ct);
+
+                // Determine inserts, updates, and events for this batch
+                NotificationBackfillBatchResult result = this.ProcessBatch(
+                    notificationType,
+                    userProfilesToBackfill,
+                    existingSettingsByHdid);
+
+                // Persist new settings and enqueue outbox events
+                await this.PersistBatchAsync(result, ct);
+
+                // Detect updates made to tracked existing entities
+                dbContext.ChangeTracker.DetectChanges();
+
+                // Save all changes within the transaction
+                await dbContext.SaveChangesAsync(ct);
+
+                // Commit transaction after successful persistence
+                await transaction.CommitAsync(ct);
+
+                // Clears all tracked entities from the DbContext to release memory and prevent
+                // accumulation of tracked state across batches.
+                dbContext.ChangeTracker.Clear();
+
+                // Dispatch events after commit (outbox pattern)
+                if (result.Events.Count != 0)
+                {
+                    logger.LogDebug("Dispatching events after commit");
+                    backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                        store.DispatchOutboxItemsAsync(CancellationToken.None));
+                }
+
+                // Log batch summary
+                logger.LogInformation(
+                    "Job {JobName} processed {TotalProfiles} profiles. Inserted {InsertCount}. Updated {UpdateCount}",
+                    this.options.JobName,
+                    userProfilesToBackfill.Count,
+                    result.RowsToInsert.Count,
+                    result.UpdatedCount);
+            }
+            finally
+            {
+                // Re-enable automatic change detection to restore default EF Core behavior
+                // for any subsequent operations using this DbContext.
+                dbContext.ChangeTracker.AutoDetectChangesEnabled = true;
+            }
         }
 
         private sealed record NotificationBackfillBatchResult(
