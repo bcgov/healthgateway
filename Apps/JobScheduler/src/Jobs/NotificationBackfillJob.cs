@@ -52,6 +52,22 @@ namespace Healthgateway.JobScheduler.Jobs
         private NotificationBackfillOptions options = null!;
 
         /// <summary>
+        /// Processes notification backfill for all configured channels (Email and SMS).
+        /// Each channel is executed sequentially using its corresponding configuration.
+        /// Uses UserJobState tracking to ensure users are processed only once per job.
+        /// Each batch is processed transactionally, and corresponding notification events
+        /// are generated and dispatched via the outbox after a successful commit.
+        /// </summary>
+        /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public async Task ProcessAsync(CancellationToken ct = default)
+        {
+            await this.ProcessAsync("NotificationEmailBackfill", ct);
+            await this.ProcessAsync("NotificationSmsBackfill", ct);
+        }
+
+        /// <summary>
         /// Processes user profiles in batches to pre-populate notification settings for a specific notification type.
         /// Uses UserJobState tracking to ensure users are processed only once per job.
         /// Each batch is processed transactionally, and corresponding notification events
@@ -60,8 +76,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="optionsName">The name of the configuration section used to bind the job options.</param>
         /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async Task ProcessAsync(string optionsName, CancellationToken ct = default)
+        private async Task ProcessAsync(string optionsName, CancellationToken ct = default)
         {
             this.options = optionsMonitor.Get(optionsName);
 
@@ -250,6 +265,12 @@ namespace Healthgateway.JobScheduler.Jobs
         /// - Channel is determined by <c>UseSmsChannel</c>:
         ///   - When false: selects users with a non-empty Email
         ///   - When true: selects users with a non-empty SmsNumber
+        /// - Optional SMS-only filters:
+        ///   - When <c>UseSmsChannel</c> is true and <c>LastLoginAfterDate</c> is set:
+        ///     selects only users with <c>LastLoginDateTime</c> greater than the configured value
+        ///   - When <c>UseSmsChannel</c> is true and <c>TermsOfServiceId</c> is set:
+        ///     selects only users whose accepted Terms of Service has an effective date
+        ///     on or after the configured Terms of Service effective date and on or before now
         /// - No existing notification setting for the specified type, or only null values for the selected channel:
         ///   - When false: EmailEnabled is null
         ///   - When true: SmsEnabled is null
@@ -260,14 +281,39 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="notificationType">The notification type being processed.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>A list of user profiles to process in the next batch.</returns>
-        private async Task<List<UserProfile>> GetNextUserProfilesAsync(ProfileNotificationType notificationType, CancellationToken ct)
+        private async Task<List<UserProfile>> GetNextUserProfilesAsync(
+            ProfileNotificationType notificationType,
+            CancellationToken ct)
         {
             IQueryable<UserProfile> query = dbContext.UserProfile
                 .AsNoTracking()
                 .Where(x =>
                     this.options.UseSmsChannel
                         ? !string.IsNullOrWhiteSpace(x.SmsNumber)
-                        : !string.IsNullOrWhiteSpace(x.Email))
+                        : !string.IsNullOrWhiteSpace(x.Email));
+
+            if (this.options is { UseSmsChannel: true, LastLoginAfterDate: not null })
+            {
+                DateTime lastLoginAfterDate = this.options.LastLoginAfterDate.Value.ToUniversalTime();
+                query = query.Where(x => x.LastLoginDateTime > lastLoginAfterDate);
+            }
+
+            if (this.options is { UseSmsChannel: true, TermsOfServiceId: not null })
+            {
+                DateTime minimumEffectiveDate =
+                    await this.GetMinimumTermsOfServiceEffectiveDateAsync(this.options.TermsOfServiceId.Value, ct);
+
+                DateTime now = DateTime.UtcNow;
+
+                query = query.Where(x =>
+                    dbContext.LegalAgreement.Any(la =>
+                        la.Id == x.TermsOfServiceId &&
+                        la.EffectiveDate != null &&
+                        la.EffectiveDate >= minimumEffectiveDate &&
+                        la.EffectiveDate <= now));
+            }
+
+            query = query
                 .Where(x =>
                     dbContext.UserProfileNotificationSetting
                         .Where(ns =>
@@ -287,6 +333,30 @@ namespace Healthgateway.JobScheduler.Jobs
             return await query
                 .Take(this.options.BatchSize)
                 .ToListAsync(ct);
+        }
+
+        /// <summary>
+        /// Gets the effective date for the configured Terms of Service identifier.
+        /// </summary>
+        /// <param name="termsOfServiceId">The configured Terms of Service identifier.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The effective date for the configured Terms of Service.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the configured Terms of Service is not found or has no effective date.
+        /// </exception>
+        private async Task<DateTime> GetMinimumTermsOfServiceEffectiveDateAsync(Guid termsOfServiceId, CancellationToken ct)
+        {
+            LegalAgreement? agreement = await dbContext.LegalAgreement
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == termsOfServiceId, ct);
+
+            if (agreement?.EffectiveDate == null)
+            {
+                throw new InvalidOperationException(
+                    $"Configured TermsOfServiceId '{termsOfServiceId}' was not found or has no effective date.");
+            }
+
+            return agreement.EffectiveDate.Value;
         }
 
         /// <summary>
