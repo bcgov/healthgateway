@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Models
 {
+    using System;
+
     /// <summary>
     /// Configuration options for the notification backfill job.
     /// </summary>
@@ -57,5 +59,18 @@ namespace HealthGateway.JobScheduler.Models
         /// A value of null indicates the setting has not been set or processed.
         /// </summary>
         public bool? SmsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum last login date/time required for processing.
+        /// When null, no last login cutoff is applied.
+        /// </summary>
+        public DateTime? LastLoginAfterDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Terms of Service identifier used as the minimum agreement
+        /// baseline for SMS backfill processing.
+        /// When null, no Terms of Service cutoff is applied.
+        /// </summary>
+        public Guid? TermsOfServiceId { get; set; }
     }
 }
