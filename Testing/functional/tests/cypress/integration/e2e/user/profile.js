@@ -55,8 +55,8 @@ describe("User Profile Notification Settings", () => {
         cy.get(selector)
             .scrollIntoView()
             .should("be.visible")
-            .find(".v-switch__track")
-            .click({ force: true });
+            .find("input[type='checkbox']")
+            .click();
     }
 
     beforeEach(() => {
