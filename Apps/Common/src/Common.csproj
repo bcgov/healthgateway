@@ -46,6 +46,8 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
+    <!-- Specify version of transitive dependency System.Security.Cryptography.Xml to avoid a vulnerability in 10.0.0 -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" />
     <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
     <PackageReference Include="System.ServiceModel.Http" Version="10.0.652802" />
     <PackageReference Include="System.ServiceModel.NetTcp" Version="10.0.652802" />
