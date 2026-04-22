@@ -20,4 +20,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
+    <ItemGroup>
+        <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-rvv3-g6hj-g44x" />
+    </ItemGroup>
 </Project>
