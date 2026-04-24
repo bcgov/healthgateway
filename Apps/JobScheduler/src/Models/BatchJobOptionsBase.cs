@@ -15,32 +15,34 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Models
 {
+    using System;
+
     /// <summary>
-    /// Configuration options for the notification backfill job.
+    /// Base configuration options for batch jobs that process user data in chunks.
+    /// Provides common settings for enabling/disabling execution, identifying the job,
+    /// controlling batch size, and optionally filtering records by last login date.
     /// </summary>
-    public class NotificationBackfillOptions : BatchJobOptionsBase
+    public class BatchJobOptionsBase
     {
         /// <summary>
-        /// Gets or sets the notification type to backfill.
+        /// Gets or sets a value indicating whether the job is enabled.
         /// </summary>
-        public string NotificationType { get; set; } = string.Empty;
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether to target users with a valid SMS number
-        /// instead of valid email when selecting user profiles for processing.
+        /// Gets or sets the short logical job name.
         /// </summary>
-        public bool UseSmsChannel { get; set; }
+        public string JobName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value indicating whether email notifications are enabled.
-        /// A value of null indicates the setting has not been set or processed.
+        /// Gets or sets the batch size.
         /// </summary>
-        public bool? EmailEnabled { get; set; }
+        public int BatchSize { get; set; } = 1000;
 
         /// <summary>
-        /// Gets or sets a value indicating whether SMS notifications are enabled.
-        /// A value of null indicates the setting has not been set or processed.
+        /// Gets or sets the minimum last login date/time required for processing.
+        /// When null, no last login cutoff is applied.
         /// </summary>
-        public bool? SmsEnabled { get; set; }
+        public DateTime LastLoginAfterDate { get; set; }
     }
 }

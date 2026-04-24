@@ -32,7 +32,6 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
     using HealthGateway.JobScheduler.AspNetConfiguration.Modules;
-    using Healthgateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
     using HealthGateway.JobScheduler.Models;
@@ -100,7 +99,10 @@ namespace HealthGateway.JobScheduler
             // Bind configuration
             services.Configure<NotificationBackfillOptions>(
                 "NotificationEmailBackfill",
-                this.startupConfig.Configuration.GetSection("NotificationEmailBackfill:Options"));
+                this.startupConfig.Configuration.GetSection("NotificationBackfill:Email:Options"));
+            services.Configure<NotificationBackfillOptions>(
+                "NotificationSmsBackfill",
+                this.startupConfig.Configuration.GetSection("NotificationBackfill:Sms:Options"));
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
@@ -197,8 +199,8 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJobAsync<AssignBetaFeatureAccessJob>(this.configuration, AssignBetaFeatureAccessJob.JobKey, j => j.ProcessAsync(CancellationToken.None));
             SchedulerHelper.ScheduleJobAsync<NotificationBackfillJob>(
                 this.configuration,
-                "NotificationEmailBackfill",
-                j => j.ProcessAsync("NotificationEmailBackfill", CancellationToken.None));
+                "NotificationBackfill",
+                j => j.ProcessAsync(CancellationToken.None));
         }
     }
 }
