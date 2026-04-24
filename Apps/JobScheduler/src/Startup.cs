@@ -103,6 +103,9 @@ namespace HealthGateway.JobScheduler
             services.Configure<NotificationBackfillOptions>(
                 "NotificationSmsBackfill",
                 this.startupConfig.Configuration.GetSection("NotificationBackfill:Sms:Options"));
+            services.Configure<ClearSmsNumberOptions>(
+                "ClearSmsNumber",
+                this.startupConfig.Configuration.GetSection("ClearSmsNumber:Options"));
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
@@ -200,6 +203,10 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJobAsync<NotificationBackfillJob>(
                 this.configuration,
                 "NotificationBackfill",
+                j => j.ProcessAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<ClearSmsNumberJob>(
+                this.configuration,
+                "ClearSmsNumber",
                 j => j.ProcessAsync(CancellationToken.None));
         }
     }
