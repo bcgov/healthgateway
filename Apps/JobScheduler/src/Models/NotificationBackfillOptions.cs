@@ -42,5 +42,15 @@ namespace HealthGateway.JobScheduler.Models
         /// A value of null indicates the setting has not been set or processed.
         /// </summary>
         public bool? SmsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delay in seconds before this channel is processed.
+        /// </summary>
+        public int ChannelDelaySeconds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum number of previously processed records required before applying the delay.
+        /// </summary>
+        public int MinPreviousChannelProcessedCount { get; set; } = 1000;
     }
 }

@@ -62,7 +62,17 @@ namespace HealthGateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public async Task ProcessAsync(CancellationToken ct = default)
         {
-            await this.ProcessChannelAsync(NotificationEmailBackfillOptionsName, ct);
+            int emailProcessedCount = await this.ProcessChannelAsync(NotificationEmailBackfillOptionsName, ct);
+
+            if (emailProcessedCount >= this.options.MinPreviousChannelProcessedCount && this.options.ChannelDelaySeconds > 0)
+            {
+                logger.LogInformation(
+                    "Waiting {DelaySeconds} seconds before SMS backfill because Email processed {ProcessedCount} profiles",
+                    this.options.ChannelDelaySeconds,
+                    emailProcessedCount);
+                await Task.Delay(TimeSpan.FromSeconds(this.options.ChannelDelaySeconds), ct);
+            }
+
             await this.ProcessChannelAsync(NotificationSmsBackfillOptionsName, ct);
         }
 
@@ -111,8 +121,10 @@ namespace HealthGateway.JobScheduler.Jobs
         /// (e.g., NotificationEmailBackfill or NotificationSmsBackfill).
         /// </param>
         /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        private async Task ProcessChannelAsync(string optionsName, CancellationToken ct = default)
+        /// <returns>
+        /// The number of user profiles processed in the current batch.
+        /// </returns
+        private async Task<int> ProcessChannelAsync(string optionsName, CancellationToken ct = default)
         {
             this.options = optionsMonitor.Get(optionsName);
 
@@ -120,7 +132,7 @@ namespace HealthGateway.JobScheduler.Jobs
             if (!this.options.Enabled)
             {
                 logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
-                return;
+                return 0;
             }
 
             logger.LogInformation("Job {JobName} started", this.options.JobName);
@@ -142,11 +154,15 @@ namespace HealthGateway.JobScheduler.Jobs
 
                 stopwatch.Stop();
 
+                int count = userProfilesToBackfill.Count;
+
                 logger.LogInformation(
                     "Job {JobName} finished in {ElapsedMs} ms for {Count} profiles",
                     this.options.JobName,
                     stopwatch.ElapsedMilliseconds,
-                    userProfilesToBackfill.Count);
+                    count);
+
+                return count;
             }
             catch (Exception ex)
             {
