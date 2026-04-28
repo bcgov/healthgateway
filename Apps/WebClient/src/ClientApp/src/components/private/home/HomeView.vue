@@ -66,6 +66,8 @@ const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
 const { columns } = useGrid();
 
+const showSmsRemoved = ref<boolean>();
+
 const sensitiveDocumentDownloadModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 const vaccineRecordResultModal =
@@ -120,6 +122,11 @@ const preferenceHealthConnectHidden = computed(
         user.value.preferences[
             UserPreferenceType.HideHealthConnectRegistryQuickLink
         ]?.value === "true"
+);
+const preferenceShowSmsRemoved = computed(
+    () =>
+        user.value.preferences[UserPreferenceType.ShowSmsRemoved]?.value ===
+        "true"
 );
 const showRecommendationsCardButton = computed(
     () =>
@@ -423,6 +430,11 @@ watch(vaccineRecordState, () => {
         stopAuthenticatedVaccineRecordDownload(user.value.hdid);
     }
 });
+
+if (preferenceShowSmsRemoved.value) {
+    showSmsRemoved.value = true;
+    setPreferenceValue(UserPreferenceType.ShowSmsRemoved, "false");
+}
 </script>
 
 <template>
@@ -431,7 +443,7 @@ watch(vaccineRecordState, () => {
         :text="vaccineRecordStatusMessage"
     />
     <HgAlertComponent
-        v-if="unverifiedEmail || unverifiedSms"
+        v-if="unverifiedEmail || unverifiedSms || showSmsRemoved"
         data-testid="incomplete-profile-banner"
         closable
         type="info"
@@ -439,7 +451,36 @@ watch(vaccineRecordState, () => {
         variant="outlined"
     >
         <template #default>
-            <span class="text-body-1">
+            <p
+                v-if="showSmsRemoved"
+                class="text-body-1"
+                data-testid="sms-removed-message"
+            >
+                We see you haven't logged in for a while &mdash; please review
+                your
+                <router-link
+                    id="profilePageLink"
+                    data-testid="profile-page-link"
+                    class="text-link"
+                    to="/profile"
+                    @click="
+                        trackingService.trackEvent({
+                            action: Action.InternalLink,
+                            text: Text.VerifyContactInformation,
+                            origin: Origin.Home,
+                            destination: Destination.Profile,
+                            type: Type.InfoBanner,
+                            url: InternalUrl.Profile,
+                        })
+                    "
+                    >notification preferences</router-link
+                >.
+            </p>
+            <p
+                v-else
+                class="text-body-1"
+                data-testid="unverified-email-sms-message"
+            >
                 Your email or cell phone number has not been verified. You can
                 use the Health Gateway without verified contact information,
                 however, you will not receive notifications. Visit the
@@ -461,7 +502,7 @@ watch(vaccineRecordState, () => {
                     >Profile Page</router-link
                 >
                 to complete your verification.
-            </span>
+            </p>
         </template>
     </HgAlertComponent>
     <PageTitleComponent title="Home">
