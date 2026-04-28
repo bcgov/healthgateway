@@ -119,7 +119,7 @@ VALUES (
 	'Web'
 );
 
-/* Labratory Queued - Keycloak User (hthgtwy09) */
+/* Labratory Queued - Keycloak User (hthgtwy09) and Clear SMS Number Job */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -138,16 +138,16 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
 	'System', 
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'System', 
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'8d713fb0-5d94-425f-996a-f2eabb54847c', 
 	null,
 	null,
 	null,
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null,
+	'6046719015',
 	'1967',
 	null
 );
@@ -218,7 +218,7 @@ VALUES (
 	'Android'
 );
 
-/* PHN: 9735352535 used for admin covid assessment and blocked dataset tests */
+/* PHN: 9735352535 (hthgtwy06) used for admin covid assessment and blocked dataset tests and for User Preferences: showSmsRemoved */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -237,14 +237,14 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
 	'System', 
-	current_timestamp - INTERVAL '1000 day',  
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'System', 
-	current_timestamp - INTERVAL '1000 day',   
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',  
 	'8d713fb0-5d94-425f-996a-f2eabb54847c', 
 	null,
 	null,
 	null,
-	current_timestamp - INTERVAL '1000 day',  
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	null,
@@ -773,6 +773,24 @@ VALUES (
 	current_timestamp, 
 	'quickLinks', 
 	'[{"name":"Medications","filter":{"modules":["Medication"]}},{"name":"My Notes","filter":{"modules":["Note"]}}]'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'showSmsRemoved', 
+	'true'
 );
 
 /* Add Resource Delegates */
