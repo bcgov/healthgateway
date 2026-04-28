@@ -1,8 +1,4 @@
-﻿import {
-    NavigationGuard,
-    NavigationGuardNext,
-    RouteLocationNormalizedLoaded,
-} from "vue-router";
+﻿import { NavigationGuard, RouteLocationNormalizedLoaded } from "vue-router";
 
 import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
@@ -75,8 +71,7 @@ function calculateUserState(): UserState {
 
 export const beforeEachGuard: NavigationGuard = async (
     to: RouteLocationNormalizedLoaded,
-    from: RouteLocationNormalizedLoaded,
-    next: NavigationGuardNext
+    from: RouteLocationNormalizedLoaded
 ) => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const configStore = useConfigStore();
@@ -99,13 +94,11 @@ export const beforeEachGuard: NavigationGuard = async (
         ) => boolean;
     } = to.meta;
     if (meta === undefined) {
-        next(new Error("Route meta property is undefined"));
-        return;
+        throw new Error("Route meta property is undefined");
     }
 
     if (meta.routeIsOidcCallback || meta.stateless) {
-        next();
-        return;
+        return true;
     }
 
     await authStore.checkStatus();
@@ -123,8 +116,7 @@ export const beforeEachGuard: NavigationGuard = async (
             ));
 
     if (isValidState && requiredFeaturesEnabled) {
-        next();
-        return;
+        return true;
     }
 
     // If the route does not accept the state, go to one of the default locations
@@ -134,9 +126,8 @@ export const beforeEachGuard: NavigationGuard = async (
     );
 
     if (defaultPath === Path.Login) {
-        next({ path: defaultPath, query: { redirect: to.path } });
-        return;
+        return { path: defaultPath, query: { redirect: to.path } };
     }
 
-    next({ path: defaultPath });
+    return { path: defaultPath };
 };

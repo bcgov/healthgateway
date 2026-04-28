@@ -253,7 +253,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
             fileState.data !== undefined
         ) {
             logger.debug("Patient data file found stored, not querying!");
-            return Promise.resolve(patientDataFile(fileId)!);
+            return Promise.resolve(fileState.data);
         }
         patientDataFileMapUtil.setStateRequested(
             patientDataFilesMap.value,
