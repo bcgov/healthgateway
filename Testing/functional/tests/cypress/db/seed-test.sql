@@ -119,7 +119,7 @@ VALUES (
 	'Web'
 );
 
-/* Labratory Queued - Keycloak User (hthgtwy09) */
+/* Laboratory Queued - Keycloak User (hthgtwy09) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -138,16 +138,16 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
 	'System', 
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'System', 
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 
 	null,
 	null,
 	null,
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null,
+	'6046719015',
 	'1967',
 	null
 );
@@ -237,14 +237,14 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
 	'System', 
-	current_timestamp - INTERVAL '1000 day',  
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'System', 
-	current_timestamp - INTERVAL '1000 day',   
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',   
 	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
 	null,
 	null,
 	null,
-	current_timestamp - INTERVAL '1000 day',  
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	null,
@@ -773,6 +773,24 @@ VALUES (
 	current_timestamp, 
 	'quickLinks', 
 	'[{"name":"Medications","filter":{"modules":["Medication"]}},{"name":"My Notes","filter":{"modules":["Note"]}}]'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'showSmsRemoved', 
+	'true'
 );
 
 /* Add Resource Delegates */
@@ -1721,4 +1739,26 @@ VALUES (
 		current_timestamp - INTERVAL '2 day', 
 		'System', 
 		current_timestamp - INTERVAL '2 day'
+);
+
+INSERT INTO gateway."UserJobState" (
+    "Id",
+    "JobName",
+    "UserProfileId",
+    "ProcessedDateTime",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime"
+)
+
+VALUES (
+    gen_random_uuid(),
+    'ClearSmsNumber',
+    'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',
+    current_timestamp,
+    'System',
+    current_timestamp,
+    'System',
+    current_timestamp
 );

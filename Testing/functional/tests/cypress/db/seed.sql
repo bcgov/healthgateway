@@ -119,7 +119,7 @@ VALUES (
 	'Web'
 );
 
-/* Labratory Queued - Keycloak User (hthgtwy09) and Clear SMS Number Job */
+/* Laboratory Queued - Keycloak User (hthgtwy09) and Clear SMS Number Job */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -1847,4 +1847,26 @@ VALUES (
     CURRENT_TIMESTAMP,
     'System',
     CURRENT_TIMESTAMP
+);
+
+INSERT INTO gateway."UserJobState" (
+    "Id",
+    "JobName",
+    "UserProfileId",
+    "ProcessedDateTime",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime"
+)
+
+VALUES (
+    gen_random_uuid(),
+    'ClearSmsNumber',
+    'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',
+    current_timestamp,
+    'System',
+    current_timestamp,
+    'System',
+    current_timestamp
 );
