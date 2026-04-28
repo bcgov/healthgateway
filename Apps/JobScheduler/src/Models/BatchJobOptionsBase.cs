@@ -43,6 +43,6 @@ namespace HealthGateway.JobScheduler.Models
         /// Gets or sets the minimum last login date/time required for processing.
         /// When null, no last login cutoff is applied.
         /// </summary>
-        public DateTime LastLoginAfterDate { get; set; }
+        public DateTime? LastLoginAfterDate { get; set; }
     }
 }
