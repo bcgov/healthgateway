@@ -144,13 +144,16 @@ namespace HealthGateway.JobScheduler.Jobs
                 return;
             }
 
+            DateTime cutoffDate = this.clearSmsNumberOptions.LastLoginAfterDate?.ToUniversalTime()
+                                  ?? throw new InvalidOperationException("LastLoginAfterDate must be configured for ClearSmsNumberJob");
+
             logger.LogInformation("Job {JobName} started", this.clearSmsNumberOptions.JobName);
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             try
             {
                 List<UserProfile> userProfiles = await this.GetNextUserProfilesBeforeCutoffAsync(
-                    this.clearSmsNumberOptions.LastLoginAfterDate,
+                    cutoffDate,
                     this.clearSmsNumberOptions.JobName,
                     this.clearSmsNumberOptions.BatchSize,
                     ct);

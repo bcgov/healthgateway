@@ -298,8 +298,6 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <returns>A list of user profiles to process in the next batch.</returns>
         private async Task<List<UserProfile>> GetNextUserProfilesAsync(ProfileNotificationType notificationType, CancellationToken ct)
         {
-            DateTime cutoffDate = this.options.LastLoginAfterDate.ToUniversalTime();
-
             IQueryable<UserProfile> query = dbContext.UserProfile
                 .AsNoTracking();
 
@@ -324,6 +322,9 @@ namespace HealthGateway.JobScheduler.Jobs
 
             if (this.options.UseSmsChannel)
             {
+                DateTime cutoffDate = this.options.LastLoginAfterDate?.ToUniversalTime()
+                                      ?? throw new InvalidOperationException(
+                                          $"LastLoginAfterDate must be configured for job {this.options.JobName}.");
                 query = query
                     .Where(x => x.LastLoginDateTime >= cutoffDate);
             }
