@@ -1398,6 +1398,41 @@ VALUES (
 	'fakeemail@healthgateway.gov.bc.ca'
 );
 
+/* Keycloak User (hthgtwy06) used for User Preferences: showSmsRemoved */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:05:00Z',
+	'System',
+	TIMESTAMP WITH TIME ZONE '2022-12-31T08:00:00Z',
+	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',
+	true,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	TIMESTAMP WITH TIME ZONE '2023-01-01T00:05:00Z',
+	'2506715000',
+	'654321',
+	'SMS',
+	false,
+	0
+);
+
 /* Keycloak User (hthgtwy20) */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
