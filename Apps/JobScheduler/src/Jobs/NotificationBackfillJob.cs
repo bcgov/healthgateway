@@ -123,7 +123,7 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
         /// <returns>
         /// The number of user profiles processed in the current batch.
-        /// </returns
+        /// </returns>
         private async Task<int> ProcessChannelAsync(string optionsName, CancellationToken ct = default)
         {
             this.options = optionsMonitor.Get(optionsName);
