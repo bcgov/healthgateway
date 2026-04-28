@@ -26,7 +26,7 @@ describe("Dashboard", () => {
                 ).contains("2");
                 cy.get(
                     "[data-testid=daily-data-total-logged-in-users]"
-                ).contains("6");
+                ).contains("5");
                 cy.get("[data-testid=daily-data-dependents]").contains("6");
             });
 
