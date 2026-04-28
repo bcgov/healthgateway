@@ -18,27 +18,12 @@ namespace HealthGateway.JobScheduler.Models
     /// <summary>
     /// Configuration options for the notification backfill job.
     /// </summary>
-    public class NotificationBackfillOptions
+    public class NotificationBackfillOptions : BatchJobOptionsBase
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the job is enabled.
-        /// </summary>
-        public bool Enabled { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the short logical job name.
-        /// </summary>
-        public string JobName { get; set; } = "NotificationBackfill";
-
         /// <summary>
         /// Gets or sets the notification type to backfill.
         /// </summary>
         public string NotificationType { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the batch size.
-        /// </summary>
-        public int BatchSize { get; set; } = 1000;
 
         /// <summary>
         /// Gets or sets a value indicating whether to target users with a valid SMS number
@@ -57,5 +42,15 @@ namespace HealthGateway.JobScheduler.Models
         /// A value of null indicates the setting has not been set or processed.
         /// </summary>
         public bool? SmsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delay in seconds before this channel is processed.
+        /// </summary>
+        public int ChannelDelaySeconds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum number of previously processed records required before applying the delay.
+        /// </summary>
+        public int MinPreviousChannelProcessedCount { get; set; } = 1000;
     }
 }

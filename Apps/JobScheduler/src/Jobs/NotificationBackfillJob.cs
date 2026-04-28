@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
@@ -49,57 +49,31 @@ namespace Healthgateway.JobScheduler.Jobs
         IOptionsMonitor<NotificationBackfillOptions> optionsMonitor)
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
+        private const string NotificationEmailBackfillOptionsName = "NotificationEmailBackfill";
+        private const string NotificationSmsBackfillOptionsName = "NotificationSmsBackfill";
         private NotificationBackfillOptions options = null!;
 
         /// <summary>
-        /// Processes user profiles in batches to pre-populate notification settings for a specific notification type.
-        /// Uses UserJobState tracking to ensure users are processed only once per job.
-        /// Each batch is processed transactionally, and corresponding notification events
-        /// are generated and dispatched via the outbox after a successful commit.
+        /// Executes notification backfill for both email and SMS channels sequentially.
+        /// Email backfill runs first, followed by SMS backfill.
         /// </summary>
-        /// <param name="optionsName">The name of the configuration section used to bind the job options.</param>
         /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async Task ProcessAsync(string optionsName, CancellationToken ct = default)
+        public async Task ProcessAsync(CancellationToken ct = default)
         {
-            this.options = optionsMonitor.Get(optionsName);
+            int emailProcessedCount = await this.ProcessChannelAsync(NotificationEmailBackfillOptionsName, ct);
 
-            // Skip execution if the job is disabled via configuration
-            if (!this.options.Enabled)
+            if (emailProcessedCount >= this.options.MinPreviousChannelProcessedCount && this.options.ChannelDelaySeconds > 0)
             {
-                logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
-                return;
-            }
-
-            logger.LogInformation("Job {JobName} started", this.options.JobName);
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            ProfileNotificationType notificationType =
-                Enum.Parse<ProfileNotificationType>(this.options.NotificationType);
-
-            try
-            {
-                // Gets user profile that require notification settings to be created/updated
-                List<UserProfile> userProfilesToBackfill = await this.GetNextUserProfilesAsync(notificationType, ct);
-
-                await this.UpsertUserProfileNotificationSettingsAsync(notificationType, userProfilesToBackfill, ct);
-
-                stopwatch.Stop();
-
                 logger.LogInformation(
-                    "Job {JobName} finished in {ElapsedMs} ms for {Count} profiles",
-                    this.options.JobName,
-                    stopwatch.ElapsedMilliseconds,
-                    userProfilesToBackfill.Count);
+                    "Waiting {DelaySeconds} seconds before SMS backfill because Email processed {ProcessedCount} profiles",
+                    this.options.ChannelDelaySeconds,
+                    emailProcessedCount);
+                await Task.Delay(TimeSpan.FromSeconds(this.options.ChannelDelaySeconds), ct);
             }
-            catch (Exception ex)
-            {
-                stopwatch.Stop();
-                throw new InvalidOperationException(
-                    $"Job {this.options.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
-                    ex);
-            }
+
+            await this.ProcessChannelAsync(NotificationSmsBackfillOptionsName, ct);
         }
 
         /// <summary>
@@ -135,6 +109,68 @@ namespace Healthgateway.JobScheduler.Jobs
             };
 
             return [target];
+        }
+
+        /// <summary>
+        /// Processes notification backfill for a single channel configuration (email or SMS).
+        /// Loads configuration by name, retrieves eligible user profiles, and performs
+        /// insert/update operations along with event generation in a transactional batch.
+        /// </summary>
+        /// <param name="optionsName">
+        /// The configuration key used to bind <see cref="NotificationBackfillOptions"/>
+        /// (e.g., NotificationEmailBackfill or NotificationSmsBackfill).
+        /// </param>
+        /// <param name="ct">Cancellation token used to stop processing gracefully.</param>
+        /// <returns>
+        /// The number of user profiles processed in the current batch.
+        /// </returns>
+        private async Task<int> ProcessChannelAsync(string optionsName, CancellationToken ct = default)
+        {
+            this.options = optionsMonitor.Get(optionsName);
+
+            // Skip execution if the job is disabled via configuration
+            if (!this.options.Enabled)
+            {
+                logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
+                return 0;
+            }
+
+            logger.LogInformation("Job {JobName} started", this.options.JobName);
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            if (!Enum.TryParse(this.options.NotificationType, true, out ProfileNotificationType notificationType))
+            {
+                throw new InvalidOperationException(
+                    $"Invalid notification type '{this.options.NotificationType}' " +
+                    $"for job {this.options.JobName}.");
+            }
+
+            try
+            {
+                // Gets user profile that require notification settings to be created/updated
+                List<UserProfile> userProfilesToBackfill = await this.GetNextUserProfilesAsync(notificationType, ct);
+
+                await this.UpsertUserProfileNotificationSettingsAsync(notificationType, userProfilesToBackfill, ct);
+
+                stopwatch.Stop();
+
+                int count = userProfilesToBackfill.Count;
+
+                logger.LogInformation(
+                    "Job {JobName} finished in {ElapsedMs} ms for {Count} profiles",
+                    this.options.JobName,
+                    stopwatch.ElapsedMilliseconds,
+                    count);
+
+                return count;
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+                throw new InvalidOperationException(
+                    $"Job {this.options.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
+                    ex);
+            }
         }
 
         /// <summary>
@@ -263,7 +299,9 @@ namespace Healthgateway.JobScheduler.Jobs
         private async Task<List<UserProfile>> GetNextUserProfilesAsync(ProfileNotificationType notificationType, CancellationToken ct)
         {
             IQueryable<UserProfile> query = dbContext.UserProfile
-                .AsNoTracking()
+                .AsNoTracking();
+
+            query = query
                 .Where(x =>
                     this.options.UseSmsChannel
                         ? !string.IsNullOrWhiteSpace(x.SmsNumber)
@@ -280,7 +318,18 @@ namespace Healthgateway.JobScheduler.Jobs
                 .Where(x =>
                     !dbContext.UserJobState.Any(js =>
                         js.Hdid == x.HdId &&
-                        js.JobName == this.options.JobName))
+                        js.JobName == this.options.JobName));
+
+            if (this.options.UseSmsChannel)
+            {
+                DateTime cutoffDate = this.options.LastLoginAfterDate?.ToUniversalTime()
+                                      ?? throw new InvalidOperationException(
+                                          $"LastLoginAfterDate must be configured for job {this.options.JobName}.");
+                query = query
+                    .Where(x => x.LastLoginDateTime >= cutoffDate);
+            }
+
+            query = query
                 .OrderByDescending(x => x.LastLoginDateTime)
                 .ThenBy(x => x.HdId);
 
