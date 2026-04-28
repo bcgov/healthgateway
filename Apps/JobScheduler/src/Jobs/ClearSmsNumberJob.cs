@@ -124,8 +124,8 @@ namespace HealthGateway.JobScheduler.Jobs
         private void ValidateCutoffMatchesNotificationBackfill()
         {
             this.notificationBackfillOptions = notificationBackfillOptionsMonitor.Get(NotificationSmsBackfillOptionsName);
-            DateTime clearSmsNumberCutoff = this.clearSmsNumberOptions.LastLoginAfterDate.ToUniversalTime();
-            DateTime notificationBackfillCutoff = this.notificationBackfillOptions.LastLoginAfterDate.ToUniversalTime();
+            DateTime? clearSmsNumberCutoff = this.clearSmsNumberOptions.LastLoginAfterDate?.ToUniversalTime();
+            DateTime? notificationBackfillCutoff = this.notificationBackfillOptions.LastLoginAfterDate?.ToUniversalTime();
 
             if (clearSmsNumberCutoff != notificationBackfillCutoff)
             {
