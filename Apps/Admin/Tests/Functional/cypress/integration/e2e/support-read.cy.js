@@ -38,7 +38,7 @@ describe("Support", () => {
         verifySearchInput("Hdid", hdid);
 
         performSearch("SMS", sms);
-        verifySupportTableResults(hdid, phn, 2);
+        verifySupportTableResults(hdid, phn, 3);
         verifySearchInput("Sms", sms);
 
         performSearch("Email", email);
