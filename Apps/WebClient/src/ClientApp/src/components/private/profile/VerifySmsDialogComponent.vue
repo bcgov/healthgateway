@@ -58,7 +58,9 @@ const errorMessages = computed(() =>
 );
 
 function showDialog(): void {
-    getTimeout();
+    if (smsResendDateTime.value === undefined) {
+        sendUserSmsUpdate();
+    }
     isVisible.value = true;
 }
 
@@ -130,15 +132,11 @@ function sendUserSmsUpdate(): void {
 }
 
 function getTimeout(): number {
-    let resendTime: IDateWrapper;
-    if (smsResendDateTime.value) {
-        resendTime = smsResendDateTime.value;
-    } else {
-        const now = DateWrapper.now();
-        userStore.updateSmsResendDateTime(now);
-        resendTime = now;
+    if (smsResendDateTime.value === undefined) {
+        return 0;
     }
-    resendTime = resendTime.add(
+
+    const resendTime = smsResendDateTime.value.add(
         configStore.webConfig.timeouts.resendSMS * 60 * 1000
     );
     return resendTime.diff(DateWrapper.now()).milliseconds;
