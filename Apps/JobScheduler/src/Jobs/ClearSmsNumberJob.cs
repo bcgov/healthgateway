@@ -47,8 +47,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private const string ClearSmsNumberOptionsName = "ClearSmsNumber";
         private const string NotificationSmsBackfillOptionsName = "NotificationSmsBackfill";
 
-        private ClearSmsNumberOptions clearSmsNumberOptions = null!;
-        private NotificationBackfillOptions notificationBackfillOptions = null!;
+        private ClearSmsNumberOptions options = null!;
 
         /// <summary>
         /// Executes the SMS cleanup workflow by clearing SmsNumber for eligible user profiles.
@@ -58,7 +57,15 @@ namespace HealthGateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public async Task ProcessAsync(CancellationToken ct = default)
         {
-            this.clearSmsNumberOptions = clearSmsNumberOptionsMonitor.Get(ClearSmsNumberOptionsName);
+            this.options = clearSmsNumberOptionsMonitor.Get(ClearSmsNumberOptionsName);
+
+            // Skip execution if the job is disabled via configuration
+            if (!this.options.Enabled)
+            {
+                logger.LogInformation("Job {JobName} is disabled", this.options.JobName);
+                return;
+            }
+
             this.ValidateCutoffMatchesNotificationBackfill();
             await this.ClearSmsNumbersAsync(ct);
         }
@@ -123,39 +130,45 @@ namespace HealthGateway.JobScheduler.Jobs
         /// </exception>
         private void ValidateCutoffMatchesNotificationBackfill()
         {
-            this.notificationBackfillOptions = notificationBackfillOptionsMonitor.Get(NotificationSmsBackfillOptionsName);
-            DateTime? clearSmsNumberCutoff = this.clearSmsNumberOptions.LastLoginAfterDate?.ToUniversalTime();
-            DateTime? notificationBackfillCutoff = this.notificationBackfillOptions.LastLoginAfterDate?.ToUniversalTime();
+            NotificationBackfillOptions notificationBackfillOptions = notificationBackfillOptionsMonitor.Get(NotificationSmsBackfillOptionsName);
+
+            if (!this.options.LastLoginAfterDate.HasValue)
+            {
+                throw new InvalidOperationException(
+                    $"{this.options.JobName}: LastLoginAfterDate must be configured.");
+            }
+
+            if (!notificationBackfillOptions.LastLoginAfterDate.HasValue)
+            {
+                throw new InvalidOperationException(
+                    $"{notificationBackfillOptions.JobName}: LastLoginAfterDate must be configured.");
+            }
+
+            DateTime clearSmsNumberCutoff = this.options.LastLoginAfterDate.Value.ToUniversalTime();
+            DateTime notificationBackfillCutoff = notificationBackfillOptions.LastLoginAfterDate.Value.ToUniversalTime();
 
             if (clearSmsNumberCutoff != notificationBackfillCutoff)
             {
                 throw new InvalidOperationException(
-                    $"Cutoff mismatch: {ClearSmsNumberOptionsName} ({clearSmsNumberCutoff:o}) " +
-                    $"!= {NotificationSmsBackfillOptionsName} ({notificationBackfillCutoff:o}).");
+                    $"Cutoff mismatch: {this.options.JobName} ({clearSmsNumberCutoff:o}) " +
+                    $"!= {notificationBackfillOptions.JobName} ({notificationBackfillCutoff:o}).");
             }
         }
 
         private async Task ClearSmsNumbersAsync(CancellationToken ct)
         {
-            // Skip execution if the job is disabled via configuration
-            if (!this.clearSmsNumberOptions.Enabled)
-            {
-                logger.LogInformation("Job {JobName} is disabled", this.clearSmsNumberOptions.JobName);
-                return;
-            }
-
-            DateTime cutoffDate = this.clearSmsNumberOptions.LastLoginAfterDate?.ToUniversalTime()
-                                  ?? throw new InvalidOperationException("LastLoginAfterDate must be configured for ClearSmsNumberJob");
-
-            logger.LogInformation("Job {JobName} started", this.clearSmsNumberOptions.JobName);
+            logger.LogInformation("Job {JobName} started", this.options.JobName);
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             try
             {
+                // LastLoginAfterDate is validated by ValidateCutoffMatchesNotificationBackfill().
+                DateTime cutoffDate = this.options.LastLoginAfterDate!.Value.ToUniversalTime();
+
                 List<UserProfile> userProfiles = await this.GetNextUserProfilesBeforeCutoffAsync(
                     cutoffDate,
-                    this.clearSmsNumberOptions.JobName,
-                    this.clearSmsNumberOptions.BatchSize,
+                    this.options.JobName,
+                    this.options.BatchSize,
                     ct);
 
                 if (userProfiles.Count > 0)
@@ -171,7 +184,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     foreach (UserProfile userProfile in userProfiles)
                     {
                         userProfile.SmsNumber = null;
-                        jobStatesToInsert.Add(CreateUserJobState(userProfile.HdId, this.clearSmsNumberOptions.JobName, processedDateTime));
+                        jobStatesToInsert.Add(CreateUserJobState(userProfile.HdId, this.options.JobName, processedDateTime));
                         preferencesToInsert.Add(CreateUserPreference(userProfile.HdId, "showSmsRemoved", "true"));
                     }
 
@@ -186,7 +199,7 @@ namespace HealthGateway.JobScheduler.Jobs
 
                 logger.LogInformation(
                     "Job {JobName} cleared SMS numbers for {Count} profiles in {ElapsedMs} ms",
-                    this.clearSmsNumberOptions.JobName,
+                    this.options.JobName,
                     userProfiles.Count,
                     stopwatch.ElapsedMilliseconds);
             }
@@ -194,7 +207,7 @@ namespace HealthGateway.JobScheduler.Jobs
             {
                 stopwatch.Stop();
                 throw new InvalidOperationException(
-                    $"Job {this.clearSmsNumberOptions.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
+                    $"Job {this.options.JobName} run failed after {stopwatch.ElapsedMilliseconds} ms.",
                     ex);
             }
         }
