@@ -278,7 +278,7 @@ watch(maskedInputPhoneNumber, (value) => {
             />
         </div>
         <HgAlertComponent
-            v-if="showVerifiedSmsMessage"
+            v-if="showVerifiedSmsMessage && verified"
             data-testid="verified-sms-message"
             class="pt-0"
             type="success"
