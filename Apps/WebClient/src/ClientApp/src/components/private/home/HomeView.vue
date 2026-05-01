@@ -459,8 +459,8 @@ if (preferenceShowSmsRemoved.value) {
                 We see you haven't logged in for a while &mdash; please review
                 your
                 <router-link
-                    id="profilePageLink"
-                    data-testid="profile-page-link"
+                    id="profilePreferencesLink"
+                    data-testid="profile-preferences-link"
                     class="text-link"
                     to="/profile"
                     @click="
