@@ -20,18 +20,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Hangfire;
+    using Hangfire.Common;
+    using Hangfire.States;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Messaging;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Providers;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -58,6 +62,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ValidateEmail(bool changeFeedEnabled)
         {
             // Arrange
+            const string email = "fakeemail@healthgateway.gov.bc.ca";
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification verificationByInviteKey = new()
             {
@@ -68,15 +73,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Validated = false,
                 Email = new Email
                 {
-                    To = "fakeemail@healthgateway.gov.bc.ca",
+                    To = email,
                 },
             };
 
-            UserProfile userProfileMock = new();
+            UserProfile userProfileMock = new()
+            {
+                Email = email,
+            };
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
+            Mock<IJobService> jobServiceMock = new();
+            Mock<IUserProfileNotificationSettingService> userProfileNotificationSettingServiceMock = new();
+            Mock<IBackgroundJobClient> backgroundJobClientMock = new();
 
             IUserEmailService service = GetUserEmailService(
                 userProfileMock,
@@ -84,7 +94,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationDelegateMock,
                 userProfileDelegateMock: userProfileDelegateMock,
                 notificationSettingsServiceMock: notificationSettingsServiceMock,
-                messageSenderMock: messageSenderMock,
+                jobServiceMock: jobServiceMock,
+                userProfileNotificationSettingServiceMock: userProfileNotificationSettingServiceMock,
+                backgroundJobClientMock: backgroundJobClientMock,
                 changeFeedEnabled: changeFeedEnabled);
 
             // Act
@@ -93,6 +105,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert
             Assert.Equal(ResultType.Success, actual.ResultStatus);
 
+            // Verify
             messagingVerificationDelegateMock
                 .Verify(
                     s => s.UpdateAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
@@ -103,17 +116,39 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
-            notificationSettingsServiceMock
-                .Verify(
-                    s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-
-            messageSenderMock.Verify(
-                m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    CancellationToken.None),
+            jobServiceMock.Verify(
+                v => v.NotifyEmailVerificationAsync(
+                    It.Is<string>(s => s == HdIdMock),
+                    It.Is<string>(s => s == email),
+                    It.Is<bool>(b => b == false),
+                    It.IsAny<CancellationToken>()),
                 changeFeedEnabled ? Times.Once : Times.Never);
+
+            userProfileNotificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    HdIdMock,
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Single().Type == ProfileNotificationType.BcCancerScreening &&
+                        models.Single().EmailEnabled == true &&
+                        models.Single().SmsEnabled == null),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            backgroundJobClientMock.Verify(
+                v => v.Create(
+                    It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
+                    It.IsAny<EnqueuedState>()),
+                Times.Once);
+
+            jobServiceMock.Verify(
+                v => v.QueueNotificationSettingsRequestAsync(
+                    It.IsAny<UserProfile>(),
+                    It.Is<string?>(s => s == email),
+                    It.Is<string?>(s => s == null),
+                    It.Is<string?>(s => s == null),
+                    It.IsAny<CancellationToken>()),
+                Times.Once());
         }
 
         /// <summary>
@@ -173,14 +208,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// ValidateEmailAsync returns error when updating user profile to the database.
+        /// ValidateEmailAsync returns not found error when updating user profile to the database.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ValidateEmailReturnsError()
+        public async Task ValidateEmailReturnsErrorWhenUserProfileUpdateNotFound()
         {
             // Arrange
-            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.Error }; // Should cause error to be returned.
+            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.NotFound }; // Should cause error to be returned.
 
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification verificationByInviteKey = new()
@@ -204,7 +239,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Assert
             Assert.Equal(ResultType.Error, actual.ResultStatus);
-            Assert.Equal(ErrorMessages.CannotPerformAction, actual.ResultError?.ResultMessage);
+            Assert.Equal(ErrorMessages.UserProfileNotFound, actual.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -273,6 +308,26 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
         }
 
+        private static Mock<IGatewayDbContextTransactionProvider> GetTransactionProviderMock()
+        {
+            Mock<IGatewayDbContextTransactionProvider> transactionProviderMock = new();
+            Mock<IDbContextTransaction> transactionMock = new();
+
+            transactionProviderMock
+                .Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(transactionMock.Object);
+
+            transactionProviderMock
+                .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            transactionMock
+                .Setup(x => x.CommitAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            return transactionProviderMock;
+        }
+
         private static IUserEmailService GetUserEmailService(
             UserProfile? userProfile,
             MessagingVerification? verificationByInviteKey,
@@ -280,9 +335,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             MessagingVerification? lastVerificationForUser = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
-            Mock<IMessageSender>? messageSenderMock = null,
             bool changeFeedEnabled = false,
-            DbResult<UserProfile>? updateUserProfileResult = null)
+            DbResult<UserProfile>? updateUserProfileResult = null,
+            Mock<IJobService>? jobServiceMock = null,
+            Mock<IUserProfileNotificationSettingService>? userProfileNotificationSettingServiceMock = null,
+            Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
         {
             updateUserProfileResult ??= new DbResult<UserProfile> { Status = DbStatusCode.Updated };
             messagingVerificationDelegateMock ??= new();
@@ -296,7 +354,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(updateUserProfileResult);
 
             notificationSettingsServiceMock ??= new();
-            messageSenderMock ??= new();
+            userProfileNotificationSettingServiceMock ??= new();
+            jobServiceMock ??= new();
+            backgroundJobClientMock ??= new();
+            transactionProviderMock ??= GetTransactionProviderMock();
 
             return new UserEmailService(
                 new Mock<ILogger<UserEmailService>>().Object,
@@ -304,8 +365,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileDelegateMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 notificationSettingsServiceMock.Object,
-                GetConfiguration(changeFeedEnabled),
-                messageSenderMock.Object);
+                userProfileNotificationSettingServiceMock.Object,
+                jobServiceMock.Object,
+                backgroundJobClientMock.Object,
+                transactionProviderMock.Object,
+                GetConfiguration(changeFeedEnabled));
         }
 
         private static IConfiguration GetConfiguration(bool changeFeedEnabled)

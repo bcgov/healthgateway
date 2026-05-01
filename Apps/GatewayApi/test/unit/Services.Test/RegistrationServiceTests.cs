@@ -117,7 +117,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert and Verify
             actual.ShouldDeepEqual(expected);
 
-            VerifyPushNotificationSettings(jobServiceMock);
+            VerifyQueueNotificationSettingsRequest(jobServiceMock);
             VerifyNotifyEmailVerification(jobServiceMock, expectedNotifyEmailVerificationTimes);
             VerifyNotifyAccountCreation(jobServiceMock, expectedNotifyAccountCreationTimes);
             VerifySendEmail(jobServiceMock, expectedSendEmailTimes);
@@ -183,14 +183,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 v => v.NotifyEmailVerificationAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
+                    It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
         }
 
-        private static void VerifyPushNotificationSettings(Mock<IJobService> jobServiceMock, Times? times = null)
+        private static void VerifyQueueNotificationSettingsRequest(Mock<IJobService> jobServiceMock, Times? times = null)
         {
             jobServiceMock.Verify(
-                v => v.PushNotificationSettingsToPhsaAsync(
+                v => v.QueueNotificationSettingsRequestAsync(
                     It.IsAny<UserProfile>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -362,21 +363,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IMessagingVerificationService> messagingVerificationServiceMock = new();
 
-            messagingVerificationServiceMock.Setup(
-                    s => s.AddEmailVerificationAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            messagingVerificationServiceMock.Setup(s => s.AddEmailVerificationAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(emailVerification);
 
-            messagingVerificationServiceMock.Setup(
-                    s => s.AddSmsVerificationAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            messagingVerificationServiceMock.Setup(s => s.AddSmsVerificationAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(smsVerification);
 
             return messagingVerificationServiceMock;
@@ -385,12 +384,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static Mock<IPatientDetailsService> SetupPatientDetailsServiceMock(PatientDetails patientDetails)
         {
             Mock<IPatientDetailsService> patientDetailsServiceMock = new();
-            patientDetailsServiceMock.Setup(
-                    s => s.GetPatientAsync(
-                        It.Is<string>(x => x == Hdid),
-                        It.IsAny<PatientIdentifierType>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            patientDetailsServiceMock.Setup(s => s.GetPatientAsync(
+                    It.Is<string>(x => x == Hdid),
+                    It.IsAny<PatientIdentifierType>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientDetails);
 
             return patientDetailsServiceMock;
@@ -405,21 +403,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             if (insertProfileResult != null)
             {
-                userProfileDelegateMock.Setup(
-                        s => s.InsertUserProfileAsync(
-                            It.IsAny<UserProfile>(),
-                            It.IsAny<bool>(),
-                            It.IsAny<CancellationToken>()))
+                userProfileDelegateMock.Setup(s => s.InsertUserProfileAsync(
+                        It.IsAny<UserProfile>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(insertProfileResult);
             }
 
             if (updateProfileResult != null)
             {
-                userProfileDelegateMock.Setup(
-                        s => s.UpdateAsync(
-                            It.IsAny<UserProfile>(),
-                            It.IsAny<bool>(),
-                            It.IsAny<CancellationToken>()))
+                userProfileDelegateMock.Setup(s => s.UpdateAsync(
+                        It.IsAny<UserProfile>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(updateProfileResult);
             }
 
@@ -430,11 +426,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IUserProfileModelService> userProfileModelServiceMock = new();
 
-            userProfileModelServiceMock.Setup(
-                    s => s.BuildUserProfileModelAsync(
-                        It.IsAny<UserProfile>(),
-                        It.IsAny<int>(),
-                        It.IsAny<CancellationToken>()))
+            userProfileModelServiceMock.Setup(s => s.BuildUserProfileModelAsync(
+                    It.IsAny<UserProfile>(),
+                    It.IsAny<int>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfileModel);
 
             return userProfileModelServiceMock;

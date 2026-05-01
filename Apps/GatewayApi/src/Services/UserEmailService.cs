@@ -22,6 +22,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
+    using Hangfire;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -31,14 +32,15 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Providers;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -54,9 +56,12 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ILogger<UserEmailService> logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileNotificationSettingService profileNotificationSettingService;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly ChangeFeedOptions changeFeedConfiguration;
-        private readonly IMessageSender messageSender;
+        private readonly IJobService jobService;
+        private readonly IBackgroundJobClient backgroundJobClient;
+        private readonly IGatewayDbContextTransactionProvider transactionProvider;
         private readonly EmailTemplateConfig emailTemplateConfig;
 
         /// <summary>
@@ -67,25 +72,38 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
+        /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
+        /// <param name="jobService">The job service.</param>
+        /// <param name="backgroundJobClient">Hangfire background job client.</param>
+        /// <param name="transactionProvider">
+        /// Provides database transaction and persistence operations for the current request
+        /// scope.
+        /// </param>
         /// <param name="configuration">Configuration settings.</param>
-        /// <param name="messageSender">The message sender.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public UserEmailService(
             ILogger<UserEmailService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IUserProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
-            IConfiguration configuration,
-            IMessageSender messageSender)
+            IUserProfileNotificationSettingService profileNotificationSettingService,
+            IJobService jobService,
+            IBackgroundJobClient backgroundJobClient,
+            IGatewayDbContextTransactionProvider transactionProvider,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
+            this.profileNotificationSettingService = profileNotificationSettingService;
             this.emailVerificationExpirySeconds = configuration.GetSection(WebClientConfigSection).GetValue(EmailConfigExpirySecondsKey, 5);
 
-            this.messageSender = messageSender;
+            this.jobService = jobService;
+            this.backgroundJobClient = backgroundJobClient;
+            this.transactionProvider = transactionProvider;
             this.changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>() ?? new();
             this.emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
         }
@@ -153,24 +171,49 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
+            // Begin transaction for all database updates
+            await using IDbContextTransaction transaction =
+                await this.transactionProvider.BeginTransactionAsync(ct);
+
             matchingVerification.Validated = true;
             await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
 
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, true, ct);
-            if (dbResult.Status != DbStatusCode.Updated)
+            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, false, ct);
+            if (dbResult.Status == DbStatusCode.NotFound)
             {
-                return RequestResultFactory.ServiceError<bool>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.CannotPerformAction);
+                return RequestResultFactory.ServiceError<bool>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
             }
 
             if (this.changeFeedConfiguration.Notifications.Enabled)
             {
-                MessageEnvelope[] events = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid)];
-                await this.messageSender.SendAsync(events, ct);
+                await this.jobService.NotifyEmailVerificationAsync(hdid, matchingVerification.Email!.To, false, ct);
             }
 
-            // Update the notification settings
-            await this.notificationSettingsService.QueueNotificationSettingsAsync(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber), ct);
+            // Enable default user profile notification settings after successful verification
+            UserProfileNotificationSettingModel[] notificationSettingModels =
+            [
+                new()
+                {
+                    Type = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = true,
+                    SmsEnabled = null,
+                },
+            ];
+
+            await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
+
+            // Persist changes within transaction
+            await this.transactionProvider.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            // Dispatch outbox events after commit
+            this.logger.LogDebug("Dispatching events after commit");
+            this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                store.DispatchOutboxItemsAsync(ct));
+
+            // Update notification settings after commit
+            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
 
             // Verification verified
             return new RequestResult<bool>

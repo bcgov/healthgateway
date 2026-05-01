@@ -32,12 +32,12 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="profileDelegate">The injected user profile delegate.</param>
     /// <param name="notificationSettingDelegate">The injected user profile notification setting delegate.</param>
     /// <param name="mappingService">The injected gateway api mapping service.</param>
-    /// <param name="messageSender">The injected message sender.</param>
+    /// <param name="outboxStore">The outbox store to use.</param>
     public class UserProfileNotificationSettingService(
         IUserProfileDelegate profileDelegate,
         IUserProfileNotificationSettingDelegate notificationSettingDelegate,
         IGatewayApiMappingService mappingService,
-        IMessageSender messageSender)
+        IOutboxStore outboxStore)
         : IUserProfileNotificationSettingService
     {
         /// <inheritdoc/>
@@ -56,43 +56,68 @@ namespace HealthGateway.GatewayApi.Services
             UserProfileNotificationSettingModel model,
             CancellationToken ct = default)
         {
-            UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
+            await this.UpdateAsync(hdid, [model], ct: ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateAsync(
+            string hdid,
+            IReadOnlyCollection<UserProfileNotificationSettingModel> models,
+            bool commit = true,
+            CancellationToken ct = default)
+        {
+            UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct)
+                                      ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             IReadOnlyList<UserProfileNotificationSetting> existing =
                 await notificationSettingDelegate.GetAsync(hdid, ct);
 
-            UserProfileNotificationSetting setting =
-                existing.SingleOrDefault(x => x.NotificationType == model.Type) ?? new UserProfileNotificationSetting
+            List<NotificationTargets> emailNotificationTargets = [];
+            List<NotificationTargets> smsNotificationTargets = [];
+
+            foreach (UserProfileNotificationSettingModel model in models)
+            {
+                UserProfileNotificationSetting setting =
+                    existing.SingleOrDefault(x => x.NotificationType == model.Type) ?? new UserProfileNotificationSetting
+                    {
+                        Hdid = hdid,
+                        NotificationType = model.Type,
+                    };
+
+                if (model.EmailEnabled.HasValue)
                 {
-                    Hdid = hdid,
-                    NotificationType = model.Type,
-                };
+                    setting.EmailEnabled = model.EmailEnabled.Value;
 
-            if (model.EmailEnabled.HasValue)
-            {
-                setting.EmailEnabled = model.EmailEnabled.Value;
+                    emailNotificationTargets.AddRange(
+                        GetTargets(model.Type, model.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email)));
+                }
+
+                if (model.SmsEnabled.HasValue)
+                {
+                    setting.SmsEnabled = model.SmsEnabled.Value;
+
+                    smsNotificationTargets.AddRange(
+                        GetTargets(model.Type, model.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber)));
+                }
+
+                await notificationSettingDelegate.UpdateAsync(setting, false, ct);
             }
-
-            if (model.SmsEnabled.HasValue)
-            {
-                setting.SmsEnabled = model.SmsEnabled.Value;
-            }
-
-            IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
-                model.EmailEnabled.HasValue
-                    ? GetTargets(model.Type, model.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email))
-                    : [];
-
-            IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
-                model.SmsEnabled.HasValue
-                    ? GetTargets(model.Type, model.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber))
-                    : [];
 
             MessageEnvelope[] events =
-                [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
+            [
+                new(
+                    new NotificationChannelPreferencesChangedEvent(
+                        hdid,
+                        userProfile.SmsNumber,
+                        smsNotificationTargets,
+                        userProfile.Email,
+                        emailNotificationTargets),
+                    hdid),
+            ];
 
-            await notificationSettingDelegate.UpdateAsync(setting, false, ct);
-            await messageSender.SendAsync(events, ct);
+            // When commit is false, the caller is responsible for saving changes
+            // and committing any active transaction.
+            await outboxStore.StoreAsync(events, commit, ct);
         }
 
         /// <summary>
