@@ -48,59 +48,69 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldNotifyAccountCreation()
         {
             // Arrange
-            (IJobService service, Mock<IMessageSender> messageSenderMock) = SetupMessageSenderMock();
+            (IJobService service, Mock<IMessageSender> messageSenderMock) = SetupNotifyEventMock();
 
             // Act
             await service.NotifyAccountCreationAsync(Hdid);
 
             // Verify
-            messageSenderMock.Verify(
-                v => v.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is AccountCreatedEvent),
-                    It.IsAny<CancellationToken>()));
+            messageSenderMock.Verify(v => v.SendAsync(
+                It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is AccountCreatedEvent),
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
-        /// NotifyEmailVerificationAsync.
+        /// Verifies that NotifyEmailVerificationAsync enqueues a notification event
+        /// and correctly passes the <c>shouldCommit</c> flag to the outbox store.
         /// </summary>
+        /// <param name="shouldCommit">
+        /// Indicates whether the outbox operation should immediately commit and schedule dispatch,
+        /// or defer committing for an external transaction to complete.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldNotifyEmailVerification()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldNotifyEmailVerification(bool shouldCommit)
         {
             // Arrange
-            (IJobService service, Mock<IMessageSender> messageSenderMock) = SetupMessageSenderMock();
+            (IJobService service, Mock<IOutboxStore> outboxStoreMock) = SetupNotifyVerificationMock();
 
             // Act
-            await service.NotifyEmailVerificationAsync(Hdid, EmailAddress);
+            await service.NotifyEmailVerificationAsync(Hdid, EmailAddress, shouldCommit);
 
             // Verify
-            messageSenderMock.Verify(
-                v => v.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    It.IsAny<CancellationToken>()));
+            outboxStoreMock.Verify(v => v.StoreAsync(
+                It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                shouldCommit,
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
-        /// NotifySmsVerificationAsyn.
+        /// Verifies that NotifySmsVerificationAsync enqueues a notification event
+        /// and correctly passes the <c>shouldCommit</c> flag to the outbox store.
         /// </summary>
+        /// <param name="shouldCommit">
+        /// Indicates whether the outbox operation should immediately commit and schedule dispatch,
+        /// or defer committing for an external transaction to complete.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldNotifySmsVerification()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldNotifySmsVerification(bool shouldCommit)
         {
             // Arrange
-            (IJobService service, Mock<IMessageSender> messageSenderMock) = SetupMessageSenderMock();
+            (IJobService service, Mock<IOutboxStore> outboxStoreMock) = SetupNotifyVerificationMock();
 
             // Act
-            await service.NotifySmsVerificationAsync(Hdid, SmsNumber);
+            await service.NotifySmsVerificationAsync(Hdid, SmsNumber, shouldCommit);
 
             // Verify
-            messageSenderMock.Verify(
-                v => v.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    It.IsAny<CancellationToken>()));
+            outboxStoreMock.Verify(v => v.StoreAsync(
+                It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                shouldCommit,
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
@@ -121,11 +131,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             await service.SendEmailAsync(email, shouldCommit);
 
             // Verify
-            emailQueueServiceMock.Verify(
-                v => v.QueueNewEmailAsync(
-                    It.IsAny<Email>(),
-                    It.Is<bool>(x => x == shouldCommit),
-                    It.IsAny<CancellationToken>()));
+            emailQueueServiceMock.Verify(v => v.QueueNewEmailAsync(
+                It.IsAny<Email>(),
+                It.Is<bool>(x => x == shouldCommit),
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
@@ -148,13 +157,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             await service.SendEmailAsync(EmailAddress, emailTemplate, shouldCommit);
 
             // Verify
-            emailQueueServiceMock.Verify(
-                v => v.QueueNewEmailAsync(
-                    It.IsAny<string>(),
-                    It.Is<string>(x => x == emailTemplate),
-                    It.IsAny<Dictionary<string, string>>(),
-                    It.Is<bool>(x => x == shouldCommit),
-                    It.IsAny<CancellationToken>()));
+            emailQueueServiceMock.Verify(v => v.QueueNewEmailAsync(
+                It.IsAny<string>(),
+                It.Is<string>(x => x == emailTemplate),
+                It.IsAny<Dictionary<string, string>>(),
+                It.Is<bool>(x => x == shouldCommit),
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
@@ -162,20 +170,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldQueueNotificationSettingsAsync()
+        public async Task ShouldQueueNotificationSettingsRequestAsync()
         {
             // Arrange
             (IJobService service, Mock<INotificationSettingsService> notificationSettingsServiceMock) = SetupPushNotificationSettingsMock();
             UserProfile userProfile = new();
 
             // Act
-            await service.PushNotificationSettingsToPhsaAsync(userProfile, EmailAddress, SmsNumber, SmsVerificationCode);
+            await service.QueueNotificationSettingsRequestAsync(userProfile, EmailAddress, SmsNumber, SmsVerificationCode);
 
             // Verify
-            notificationSettingsServiceMock.Verify(
-                v => v.QueueNotificationSettingsAsync(
-                    It.IsAny<NotificationSettingsRequest>(),
-                    It.IsAny<CancellationToken>()));
+            notificationSettingsServiceMock.Verify(v => v.QueueNotificationSettingsAsync(
+                It.IsAny<NotificationSettingsRequest>(),
+                It.IsAny<CancellationToken>()));
         }
 
         private static IConfigurationRoot GetIConfiguration()
@@ -194,17 +201,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static IJobService GetJobService(
             Mock<IEmailQueueService>? emailQueueServiceMock = null,
             Mock<IMessageSender>? messageSenderMock = null,
-            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null)
+            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
+            Mock<IOutboxStore>? outboxStoreMock = null)
         {
             emailQueueServiceMock ??= new();
             messageSenderMock ??= new();
             notificationSettingsServiceMock ??= new();
+            outboxStoreMock ??= new();
 
             return new JobService(
                 GetIConfiguration(),
                 emailQueueServiceMock.Object,
                 messageSenderMock.Object,
-                notificationSettingsServiceMock.Object);
+                notificationSettingsServiceMock.Object,
+                outboxStoreMock.Object);
         }
 
         private static SendEmailMock SetupSendEmailMock()
@@ -215,12 +225,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, emailQueueServiceMock);
         }
 
-        private static NotifyEventMock SetupMessageSenderMock()
+        private static NotifyEventMock SetupNotifyEventMock()
         {
             Mock<IMessageSender> messageSenderMock = new();
             IJobService service = GetJobService(messageSenderMock: messageSenderMock);
 
             return new(service, messageSenderMock);
+        }
+
+        private static NotifyVerificationMock SetupNotifyVerificationMock()
+        {
+            Mock<IOutboxStore> outboxStoreMock = new();
+            IJobService service = GetJobService(outboxStoreMock: outboxStoreMock);
+
+            return new(service, outboxStoreMock);
         }
 
         private static PushNotificationSettingsMock SetupPushNotificationSettingsMock()
@@ -234,6 +252,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private sealed record NotifyEventMock(
             IJobService Service,
             Mock<IMessageSender> MessageSenderMock);
+
+        private sealed record NotifyVerificationMock(
+            IJobService Service,
+            Mock<IOutboxStore> OutboxStoreMock);
 
         private sealed record SendEmailMock(
             IJobService Service,

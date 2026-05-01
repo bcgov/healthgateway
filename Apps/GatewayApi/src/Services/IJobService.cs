@@ -37,18 +37,20 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The hdid associated with the email.</param>
         /// <param name="email">The email associated with the verification.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task NotifyEmailVerificationAsync(string hdid, string email, CancellationToken ct = default);
+        Task NotifyEmailVerificationAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Notifies sms verification was successful.
         /// </summary>
         /// <param name="hdid">The hdid associated with the email.</param>
         /// <param name="smsNumber">The sms associated with the verification.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task NotifySmsVerificationAsync(string hdid, string smsNumber, CancellationToken ct = default);
+        Task NotifySmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Queues email to be sent.
@@ -78,6 +80,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="smsVerificationCode">The code used to validate the ownership of the number.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task PushNotificationSettingsToPhsaAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default);
+        Task QueueNotificationSettingsRequestAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default);
     }
 }

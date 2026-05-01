@@ -153,11 +153,11 @@ namespace HealthGateway.GatewayApi.Services
             // notify email verification was successful
             if (isEmailVerified && this.notificationsChangeFeedEnabled)
             {
-                await jobService.NotifyEmailVerificationAsync(profile.HdId, requestedEmail, ct);
+                await jobService.NotifyEmailVerificationAsync(profile.HdId, requestedEmail, ct: ct);
             }
 
             // queue notification settings job
-            await jobService.PushNotificationSettingsToPhsaAsync(profile, profile.Email, requestedSmsNumber, smsVerificationCode, ct);
+            await jobService.QueueNotificationSettingsRequestAsync(profile, profile.Email, requestedSmsNumber, smsVerificationCode, ct);
         }
     }
 }

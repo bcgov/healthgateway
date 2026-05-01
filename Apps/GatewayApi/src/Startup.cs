@@ -30,6 +30,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Providers;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
@@ -129,6 +130,9 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
             services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
             services.AddTransient<IUserProfileNotificationSettingDelegate, DbUserProfileNotificationSettingDelegate>();
+
+            // Abstraction for DbContext transaction and persistence operations
+            services.AddScoped<IGatewayDbContextTransactionProvider, GatewayDbContextTransactionProvider>();
 
             // Add API Clients
             CDogsConfig cdogsConfig = new();

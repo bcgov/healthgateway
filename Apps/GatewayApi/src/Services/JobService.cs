@@ -33,7 +33,13 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="emailQueueService">The injected service to queue emails.</param>
     /// <param name="messageSender">The injected message sender.</param>
     /// <param name="notificationSettingsService">The injected notifications settings service.</param>
-    public class JobService(IConfiguration configuration, IEmailQueueService emailQueueService, IMessageSender messageSender, INotificationSettingsService notificationSettingsService) : IJobService
+    /// <param name="outboxStore">The outbox store to use.</param>
+    public class JobService(
+        IConfiguration configuration,
+        IEmailQueueService emailQueueService,
+        IMessageSender messageSender,
+        INotificationSettingsService notificationSettingsService,
+        IOutboxStore outboxStore) : IJobService
     {
         private readonly EmailTemplateConfig emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
 
@@ -45,17 +51,25 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task NotifyEmailVerificationAsync(string hdid, string email, CancellationToken ct = default)
+        public async Task NotifyEmailVerificationAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default)
         {
-            IEnumerable<MessageEnvelope> messages = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, email), hdid)];
-            await messageSender.SendAsync(messages, ct);
+            MessageEnvelope[] messages =
+            [
+                new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, email), hdid),
+            ];
+
+            await outboxStore.StoreAsync(messages, shouldCommit, ct);
         }
 
         /// <inheritdoc/>
-        public async Task NotifySmsVerificationAsync(string hdid, string smsNumber, CancellationToken ct = default)
+        public async Task NotifySmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default)
         {
-            IEnumerable<MessageEnvelope> messages = [new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsNumber), hdid)];
-            await messageSender.SendAsync(messages, ct);
+            MessageEnvelope[] messages =
+            [
+                new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsNumber), hdid),
+            ];
+
+            await outboxStore.StoreAsync(messages, shouldCommit, ct);
         }
 
         /// <inheritdoc/>
@@ -72,7 +86,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task PushNotificationSettingsToPhsaAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default)
+        public async Task QueueNotificationSettingsRequestAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default)
         {
             NotificationSettingsRequest notificationSettingsRequest = new(userProfile, email, smsNumber) { SmsVerificationCode = smsVerificationCode };
             await notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);

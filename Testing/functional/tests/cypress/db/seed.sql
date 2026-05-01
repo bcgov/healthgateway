@@ -1219,74 +1219,74 @@ VALUES (
     'Processed'
 );
 
-/* Registered HealthGateway User - Keycloak User (healthgateway) */
+/* Registered HealthGateway User - Keycloak User (healthgateway) - active activation */
 INSERT INTO gateway."MessagingVerification"(
-	"MessagingVerificationId", 
-	"CreatedBy", 
-	"CreatedDateTime", 
-	"UpdatedBy", 
-	"UpdatedDateTime", 
-	"HdId", 
-	"Validated", 
-	"EmailId", 
-	"InviteKey", 
-	"ExpireDate", 
-	"SMSNumber", 
-	"SMSValidationCode", 
-	"VerificationType", 
-	"Deleted", 
-	"VerificationAttempts")
+    "MessagingVerificationId",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime",
+    "HdId",
+    "Validated",
+    "EmailId",
+    "InviteKey",
+    "ExpireDate",
+    "SMSNumber",
+    "SMSValidationCode",
+    "VerificationType",
+    "Deleted",
+    "VerificationAttempts")
 VALUES (
-	uuid_generate_v4(),
-	'System',
-	now(),
-	'System',
-	now(),
-	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
-	true,
-	null,
-	'00000000-0000-0000-0000-000000000000',
-	now()+INTERVAL '1 day',
-	'2506715000',
-	'654321',
-	'SMS',
-	false,
-	0
+    uuid_generate_v4(),
+    'System',
+    timezone('utc', now()),
+    'System',
+    timezone('utc', now()),
+    'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    false,
+    null,
+    '00000000-0000-0000-0000-000000000000',
+    timezone('utc', now()) + INTERVAL '1 day',
+    '2506715000',
+    '123456',
+    'SMS',
+    false,
+    0
 );
 
-/* Registered HealthGateway User - Keycloak User (healthgateway) */
+/* Registered HealthGateway User - Keycloak User (healthgateway) - deleted verification */
 INSERT INTO gateway."MessagingVerification"(
-	"MessagingVerificationId", 
-	"CreatedBy", 
-	"CreatedDateTime", 
-	"UpdatedBy", 
-	"UpdatedDateTime", 
-	"HdId", 
-	"Validated", 
-	"EmailId", 
-	"InviteKey", 
-	"ExpireDate", 
-	"SMSNumber", 
-	"SMSValidationCode", 
-	"VerificationType", 
-	"Deleted", 
-	"VerificationAttempts")
+    "MessagingVerificationId",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime",
+    "HdId",
+    "Validated",
+    "EmailId",
+    "InviteKey",
+    "ExpireDate",
+    "SMSNumber",
+    "SMSValidationCode",
+    "VerificationType",
+    "Deleted",
+    "VerificationAttempts")
 VALUES (
-	uuid_generate_v4(),
-	'System',
-	now()- INTERVAL '1 hour',
-	'System',
-	now()- INTERVAL '1 hour',
-	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
-	false,
-	null,
-	'00000000-0000-0000-0000-000000000000',
-	now()+INTERVAL '1 day',
-	'2506715000',
-	'123456',
-	'SMS',
-	false,
-	0
+    uuid_generate_v4(),
+    'System',
+    timezone('utc', now()) - INTERVAL '6 days',
+    'System',
+    timezone('utc', now()) - INTERVAL '6 days',
+    'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    true,
+    null,
+    '00000000-0000-0000-0000-000000000000',
+    timezone('utc', now()) - INTERVAL '5 days',
+    '2506715000',
+    '123456',
+    'SMS',
+    true,
+    0
 );
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -1326,7 +1326,7 @@ VALUES (
 	'nobody@healthgateway.gov.bc.ca'
 );
 
-/* Registered HealthGateway User - Keycloak User (healthgateway) */
+/* Registered HealthGateway User - Keycloak User (protected) */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
 	"CreatedBy", 
