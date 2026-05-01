@@ -556,7 +556,7 @@ namespace HealthGateway.JobScheduler.Jobs
             {
                 logger.LogDebug("Dispatching events after commit");
                 backgroundJobClient.Enqueue<DbOutboxStore>(store =>
-                    store.DispatchOutboxItemsAsync(CancellationToken.None));
+                    store.DispatchOutboxItemsAsync(ct));
             }
 
             // Log batch summary
