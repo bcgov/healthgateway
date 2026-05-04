@@ -135,21 +135,21 @@ describe("User Profile Notification Settings", () => {
             )
             .and(
                 "contain.text",
-                "Health Gateway can email you when new letters are added"
+                "Health Gateway can email and/or text (SMS) you when new letters are added that show you need follow-up or when you are due to screen again."
             );
 
         cy.get(sel.modalParagraph(1))
             .should("be.visible")
             .and(
                 "contain.text",
-                "Signing up for email notifications will not change the paper letters that will be mailed to you."
+                "Choosing to receive email and/or text (SMS) notifications will not change the paper letters that will be mailed to you."
             );
 
         cy.get(sel.modalParagraph(2))
             .should("be.visible")
             .and(
                 "contain.text",
-                "For more information about BC Cancer Program Letters visit"
+                "For more information about BC Cancer Screening Program letters, visit"
             );
 
         cy.get("[data-testid=information-modal-link-2-1]")
