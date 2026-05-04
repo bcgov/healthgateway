@@ -62,7 +62,7 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
                         segments: [
                             {
                                 type: "text",
-                                value: "Cancer screening program letters are available on Health Gateway. Health Gateway can email you when new letters are added that show you need follow-up or when you are due to screen again.",
+                                value: "Cancer screening program letters are available on Health Gateway. Health Gateway can email and/or text (SMS) you when new letters are added that show you need follow-up or when you are due to screen again.",
                             },
                         ],
                     },
@@ -70,7 +70,7 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
                         segments: [
                             {
                                 type: "text",
-                                value: "Signing up for email notifications will not change the paper letters that will be mailed to you.",
+                                value: "Choosing to receive email and/or text (SMS) notifications will not change the paper letters that will be mailed to you.",
                             },
                         ],
                     },
@@ -78,7 +78,7 @@ export const NOTIFICATION_PREFERENCE_TYPES = [
                         segments: [
                             {
                                 type: "text",
-                                value: "For more information about BC Cancer Program Letters visit ",
+                                value: "For more information about BC Cancer Screening Program letters, visit ",
                             },
                             {
                                 type: "link",
