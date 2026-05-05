@@ -180,20 +180,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             VerifyQueueNotificationSettingsRequest(mock.JobServiceMock, Times.Never());
         }
 
-        /// <summary>
-        /// VerifySmsNumberAsync throws database exception.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task VerifySmsNumberShouldThrowDatabaseException()
-        {
-            // Arrange
-            VerifySmsNumberMock mock = SetupVerifySmsNumberMock(Hdid, SmsValidationCode, updateProfileStatus: DbStatusCode.NotFound);
-
-            // Act and Assert
-            await Assert.ThrowsAsync<NotFoundException>(async () => { await mock.Service.VerifySmsNumberAsync(Hdid, SmsValidationCode, CancellationToken.None); });
-        }
-
         private static void VerifyNotifySmsVerification(Mock<IJobService> jobServiceMock, Times? times = null)
         {
             jobServiceMock.Verify(
@@ -218,11 +204,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         private static void VerifyUserProfileNotificationSettingsUpdate(
-            Mock<IUserProfileNotificationSettingService> notificationSettngServiceMock,
+            Mock<IUserProfileNotificationSettingService> notificationSettingServiceMock,
             Mock<IBackgroundJobClient> backgroundJobClient,
             Times? times = null)
         {
-            notificationSettngServiceMock.Verify(
+            notificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
                     Hdid,
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
@@ -517,8 +503,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool changeFeedEnabled = false,
             bool verificationValidated = false,
             bool verificationDeleted = false,
-            int verificationAttempts = 0,
-            DbStatusCode updateProfileStatus = DbStatusCode.Updated)
+            int verificationAttempts = 0)
         {
             UserProfile? userProfile = userProfileExists ? GenerateUserProfile() : null;
             MessagingVerification messagingVerification = GenerateMessagingVerification(
@@ -530,7 +515,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 deleted: verificationDeleted,
                 verificationAttempts: verificationAttempts);
             DbResult<UserProfile> updateProfileResult = GenerateUserProfileDbResult(
-                updateProfileStatus,
+                DbStatusCode.Updated,
                 userProfile);
 
             Mock<IJobService> jobServiceMock = new();

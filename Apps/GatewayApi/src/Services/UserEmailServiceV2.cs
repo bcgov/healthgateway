@@ -143,7 +143,7 @@ namespace HealthGateway.GatewayApi.Services
                 store.DispatchOutboxItemsAsync(ct));
 
             // Update notification settings after commit
-            await this.QueueNotificationSettingsRequest(userProfile, ct);
+            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
 
             return true;
         }
@@ -195,7 +195,7 @@ namespace HealthGateway.GatewayApi.Services
                 await this.jobService.SendEmailAsync(messagingVerification.Email, true, ct);
             }
 
-            await this.QueueNotificationSettingsRequest(userProfile, ct);
+            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
         }
 
         private async Task IncrementEmailVerificationAttempts(string hdid, CancellationToken ct)
@@ -214,7 +214,6 @@ namespace HealthGateway.GatewayApi.Services
             await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
 
             userProfile.Email = matchingVerification.Email!.To;
-            await this.profileDelegate.UpdateAsync(userProfile, false, ct);
         }
 
         private async Task NotifyVerificationSuccessful(string hdid, string emailAddress, bool shouldCommit, CancellationToken ct)
@@ -223,11 +222,6 @@ namespace HealthGateway.GatewayApi.Services
             {
                 await this.jobService.NotifyEmailVerificationAsync(hdid, emailAddress, shouldCommit, ct);
             }
-        }
-
-        private async Task QueueNotificationSettingsRequest(UserProfile userProfile, CancellationToken ct)
-        {
-            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
         }
     }
 }

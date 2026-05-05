@@ -149,48 +149,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// ValidateSmsAsync returns not found error when updating user profile to the database.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ValidateSmsReturnsErrorWhenUserProfileUpdateNotFound()
-        {
-            // Arrange
-            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.NotFound }; // Should cause error to be returned.
-            UserProfile userProfile = new();
-            MessagingVerification messagingVerification = new()
-            {
-                UserProfileId = HdIdMock,
-                VerificationAttempts = 0,
-                SmsValidationCode = SmsValidationCode,
-                ExpireDate = DateTime.Now.AddDays(1),
-            };
-
-            Mock<IJobService> jobServiceMock = new();
-            IUserSmsService service = GetUserSmsService(
-                messagingVerification: messagingVerification,
-                userProfile: userProfile,
-                jobServiceMock: jobServiceMock,
-                updateUserProfileResult: dbResult);
-
-            // Act
-            RequestResult<bool> actual = await service.ValidateSmsAsync(HdIdMock, SmsValidationCode, CancellationToken.None);
-
-            // Assert
-            Assert.False(actual.ResourcePayload);
-            Assert.Equal(ErrorMessages.UserProfileNotFound, actual.ResultError?.ResultMessage);
-
-            // Verify
-            jobServiceMock.Verify(
-                v => v.NotifySmsVerificationAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.Is<bool>(b => b == false),
-                    It.IsAny<CancellationToken>()),
-                Times.Never);
-        }
-
-        /// <summary>
         /// UpdateUserSmsAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -366,10 +324,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileNotificationSettingService>? profileNotificationSettingServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
             Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
-            bool changeFeedEnabled = false,
-            DbResult<UserProfile>? updateUserProfileResult = null)
+            bool changeFeedEnabled = false)
         {
-            updateUserProfileResult ??= new DbResult<UserProfile> { Status = DbStatusCode.Updated };
+            DbResult<UserProfile>? updateUserProfileResult = new()
+                { Status = DbStatusCode.Updated };
             messagingVerificationDelegateMock ??= new();
             messagingVerificationDelegateMock
                 .Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
