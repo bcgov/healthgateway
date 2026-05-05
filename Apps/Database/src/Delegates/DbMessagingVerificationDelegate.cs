@@ -92,7 +92,7 @@ namespace HealthGateway.Database.Delegates
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.UserProfileId == hdid && p.VerificationType == messagingVerificationType)
-                .OrderByDescending(p => p.UpdatedDateTime)
+                .OrderByDescending(p => p.CreatedDateTime)
                 .FirstOrDefaultAsync(ct);
 
             return verification?.Deleted == true ? null : verification;
