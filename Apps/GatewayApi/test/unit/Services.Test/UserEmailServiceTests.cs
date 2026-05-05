@@ -82,7 +82,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = email,
             };
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
-            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
             Mock<IJobService> jobServiceMock = new();
             Mock<IUserProfileNotificationSettingService> userProfileNotificationSettingServiceMock = new();
@@ -92,7 +91,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileMock,
                 verificationByInviteKey,
                 messagingVerificationDelegateMock,
-                userProfileDelegateMock: userProfileDelegateMock,
                 notificationSettingsServiceMock: notificationSettingsServiceMock,
                 jobServiceMock: jobServiceMock,
                 userProfileNotificationSettingServiceMock: userProfileNotificationSettingServiceMock,
@@ -109,11 +107,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegateMock
                 .Verify(
                     s => s.UpdateAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-
-            userProfileDelegateMock
-                .Verify(
-                    s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             jobServiceMock.Verify(
@@ -205,41 +198,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Assert
             Assert.Equal(ResultType.Error, actual.ResultStatus);
-        }
-
-        /// <summary>
-        /// ValidateEmailAsync returns not found error when updating user profile to the database.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ValidateEmailReturnsErrorWhenUserProfileUpdateNotFound()
-        {
-            // Arrange
-            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.NotFound }; // Should cause error to be returned.
-
-            Guid inviteKey = Guid.NewGuid();
-            MessagingVerification verificationByInviteKey = new()
-            {
-                UserProfileId = HdIdMock,
-                VerificationAttempts = 0,
-                InviteKey = inviteKey,
-                ExpireDate = DateTime.Now.AddDays(1),
-                Validated = false,
-                Email = new Email
-                {
-                    To = "fakeemail@healthgateway.gov.bc.ca",
-                },
-            };
-
-            UserProfile userProfile = new();
-            IUserEmailService service = GetUserEmailService(userProfile, verificationByInviteKey, updateUserProfileResult: dbResult);
-
-            // Act
-            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
-
-            // Assert
-            Assert.Equal(ResultType.Error, actual.ResultStatus);
-            Assert.Equal(ErrorMessages.UserProfileNotFound, actual.ResultError?.ResultMessage);
         }
 
         /// <summary>

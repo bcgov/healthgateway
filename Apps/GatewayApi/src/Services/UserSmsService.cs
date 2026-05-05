@@ -25,17 +25,13 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Providers;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.EntityFrameworkCore.Storage;
@@ -119,11 +115,6 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageVerificationDelegate.UpdateAsync(smsVerification, false, ct);
 
                 userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
-                DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, false, ct);
-                if (dbResult.Status == DbStatusCode.NotFound)
-                {
-                    return RequestResultFactory.ServiceError<bool>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
-                }
 
                 if (this.changeFeedConfiguration.Notifications.Enabled)
                 {
