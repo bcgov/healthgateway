@@ -7,13 +7,18 @@ import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
 import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { ResultError } from "@/models/errors";
+import { isTooManyRequestsError, ResultError } from "@/models/errors";
 import { Action, Text, Type } from "@/plugins/extensions";
-import { ILogger, ITrackingService } from "@/services/interfaces";
+import {
+    ILogger,
+    ITrackingService,
+    IUserProfileService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
@@ -24,6 +29,9 @@ const emit = defineEmits<{
 }>();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const userProfileService = container.get<IUserProfileService>(
+    SERVICE_IDENTIFIER.UserProfileService
+);
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
@@ -73,6 +81,20 @@ function cancelEmailEdit(): void {
     v$.value.$reset();
 }
 
+function refreshProfile(): Promise<void> {
+    return userStore.retrieveProfile().catch((error) => {
+        if (isTooManyRequestsError(error)) {
+            errorStore.setTooManyRequestsWarning("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Retrieve,
+                ErrorSourceType.Profile,
+                undefined
+            );
+        }
+    });
+}
+
 function saveEmailEdit(): void {
     v$.value.$touch();
     if (v$.value.inputValue.$invalid !== true) {
@@ -82,8 +104,6 @@ function saveEmailEdit(): void {
 }
 
 function sendUserEmailUpdate(): void {
-    const updatedEmail = inputValue.value;
-
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.VerifyEmailAddress,
@@ -93,15 +113,13 @@ function sendUserEmailUpdate(): void {
     loadingStore.applyLoader(
         Loader.UserProfile,
         "updateUserEmail",
-        userStore
-            .updateUserEmail(inputValue.value)
+        userProfileService
+            .updateEmail(userStore.hdid, inputValue.value)
+            .then(refreshProfile)
             .then(() => {
-                userStore.user.email = updatedEmail;
-                userStore.user.verifiedEmail = false;
-
                 isEmailEditable.value = false;
                 v$.value.$reset();
-                emit("email-updated", email.value);
+                emit("email-updated", inputValue.value);
             })
             .catch((err) => {
                 const resultError = err as ResultError | undefined;

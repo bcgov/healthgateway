@@ -267,22 +267,6 @@ export const useUserStore = defineStore("user", () => {
             });
     }
 
-    function updateUserEmail(emailAddress: string): Promise<void> {
-        return userProfileService
-            .updateEmail(user.value.hdid, emailAddress)
-            .then(retrieveProfile)
-            .catch((resultError: ResultError) => {
-                if (resultError.statusCode !== 409) {
-                    handleError(
-                        resultError,
-                        ErrorType.Update,
-                        ErrorSourceType.User
-                    );
-                }
-                throw resultError;
-            });
-    }
-
     function setUserPreference(preference: UserPreference): Promise<void> {
         let setPreferencePromise: Promise<UserPreference>;
         if (preference.hdId == undefined) {
@@ -471,7 +455,6 @@ export const useUserStore = defineStore("user", () => {
         userName,
         createProfile,
         retrieveProfile,
-        updateUserEmail,
         updateSmsResendDateTime,
         setUserPreference,
         updateQuickLinks,
