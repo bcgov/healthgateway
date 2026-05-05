@@ -22,6 +22,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <inheritdoc/>
     /// <param name="dbContext">he context to be used when accessing the database.</param>
@@ -37,15 +38,23 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task UpdateAsync(UserProfileNotificationSetting notificationSetting, bool commit = true, CancellationToken ct = default)
+        public async Task UpdateAsync(
+            UserProfileNotificationSetting notificationSetting,
+            bool commit = true,
+            CancellationToken ct = default)
         {
-            if (notificationSetting.Version == 0)
+            EntityEntry<UserProfileNotificationSetting> entry = dbContext.Entry(notificationSetting);
+
+            if (entry.State == EntityState.Detached)
             {
-                dbContext.UserProfileNotificationSetting.Add(notificationSetting);
-            }
-            else
-            {
-                dbContext.UserProfileNotificationSetting.Update(notificationSetting);
+                if (notificationSetting.Version == 0)
+                {
+                    dbContext.UserProfileNotificationSetting.Add(notificationSetting);
+                }
+                else
+                {
+                    dbContext.UserProfileNotificationSetting.Update(notificationSetting);
+                }
             }
 
             if (commit)
