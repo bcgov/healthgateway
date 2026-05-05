@@ -27,15 +27,26 @@ describe("User Email Verification", () => {
 
     it("Check verified email invite", () => {
         setupStandardFixtures();
-
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/validateEmail/valid"
         );
+
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
-        cy.get("[data-testid=verifiedInvite]").should("be.visible");
+        cy.get("[data-testid=verifiedInvite]")
+            .should("be.visible")
+            .within(() => {
+                cy.contains("Your email address has been verified.");
+                cy.contains("Health Gateway may now send you notifications.");
+                cy.contains("You can change your preferences");
+
+                cy.get("[data-testid=verified-profile-page-link]")
+                    .should("exist")
+                    .and("have.attr", "href")
+                    .and("include", "/profile");
+            });
         cy.get("[data-testid=continueButton]").click();
         cy.url().should("include", "/home");
     });
