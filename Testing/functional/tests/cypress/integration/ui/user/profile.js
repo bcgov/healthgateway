@@ -136,6 +136,12 @@ describe("User Profile", () => {
         cy.get("[data-testid=smsStatusNotVerified]").should("not.exist");
         cy.get("[data-testid=verifySMSBtn]").should("not.exist");
         cy.get("[data-testid=smsStatusVerified]").should("be.visible");
+        cy.get("[data-testid=verified-sms-message]")
+            .should("be.visible")
+            .and(
+                "contain",
+                "Health Gateway may now send you notifications. You can change your preferences at any time."
+            );
 
         cy.log("Edit SMS number");
         cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
@@ -155,6 +161,7 @@ describe("User Profile", () => {
         cy.get("[data-testid=verifySMSBtn]")
             .should("be.visible")
             .should("be.enabled");
+        cy.get("[data-testid=verified-sms-message]").should("not.exist");
 
         cy.log("Clear/OptOut SMS number");
         cy.get("[data-testid=editSMSBtn]").click();
@@ -175,6 +182,7 @@ describe("User Profile", () => {
         });
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=smsStatusOptedOut]").should("be.visible");
+        cy.get("[data-testid=verified-sms-message]").should("not.exist");
     });
 });
 
