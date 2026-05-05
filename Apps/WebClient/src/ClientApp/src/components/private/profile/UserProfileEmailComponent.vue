@@ -82,8 +82,6 @@ function saveEmailEdit(): void {
 }
 
 function sendUserEmailUpdate(): void {
-    const updatedEmail = inputValue.value;
-
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.VerifyEmailAddress,
@@ -96,9 +94,6 @@ function sendUserEmailUpdate(): void {
         userStore
             .updateUserEmail(inputValue.value)
             .then(() => {
-                userStore.user.email = updatedEmail;
-                userStore.user.verifiedEmail = false;
-
                 isEmailEditable.value = false;
                 v$.value.$reset();
                 emit("email-updated", email.value);
