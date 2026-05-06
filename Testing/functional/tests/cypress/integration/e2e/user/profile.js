@@ -1,4 +1,5 @@
 const { AuthMethod } = require("../../../support/constants");
+const defaultTimeout = 60000;
 
 describe("User Profile", () => {
     beforeEach(() => {
@@ -165,6 +166,54 @@ describe("User Profile Notification Settings", () => {
         cy.get(sel.modal).should("not.exist");
     });
 
+    it("Update email address and refresh browser", () => {
+        cy.login(
+            Cypress.env("keycloak.hthgtwy20.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
+
+        cy.intercept("PUT", `**/UserProfile/*/email?api-version=2.0`).as(
+            "updateUserProfile"
+        );
+        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+
+        cy.log("Edit email address");
+        cy.get("[data-testid=email-input] input").should(
+            "have.value",
+            "nobody@healthgateway.gov.bc.ca"
+        );
+        cy.get("[data-testid=editEmailBtn]").click();
+        cy.get("[data-testid=email-input] input")
+            .clear()
+            .type(Cypress.env("emailAddress"));
+        cy.get("[data-testid=editEmailSaveBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+
+        cy.wait("@updateUserProfile", { timeout: defaultTimeout });
+        cy.wait("@getUserProfile", { timeout: defaultTimeout });
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
+
+        cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
+        cy.get("[data-testid=resendEmailBtn]").should("be.visible");
+
+        cy.log("Click browser refresh button");
+        cy.reload();
+
+        cy.wait("@getUserProfile", { timeout: defaultTimeout });
+        cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
+        cy.get("[data-testid=resendEmailBtn]").should("be.visible");
+        cy.get("[data-testid=email-input] input").should(
+            "have.attr",
+            "readonly"
+        );
+        cy.get("[data-testid=email-input] input").should(
+            "have.value",
+            Cypress.env("emailAddress")
+        );
+    });
+
     it("Deleting email disables only email notification preferences", () => {
         cy.login(
             Cypress.env("keycloak.notfound.username"),
@@ -181,10 +230,19 @@ describe("User Profile Notification Settings", () => {
         cy.log("Assert sms switch before delete");
         assertSwitch(notificationId, "sms", { enabled: true, checked: false });
 
+        cy.intercept("PUT", `**/UserProfile/*/email?api-version=2.0`).as(
+            "updateUserEmail"
+        );
+        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=email-input] input").clear();
         cy.get("[data-testid=editEmailSaveBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
+
+        cy.wait("@updateUserEmail", { timeout: defaultTimeout });
+        cy.wait("@getUserProfile", { timeout: defaultTimeout });
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
 
         cy.log("Assert email switch after delete");
         assertSwitch(notificationId, "email", {
@@ -211,12 +269,21 @@ describe("User Profile Notification Settings", () => {
         cy.log("Assert sms switch before delete");
         assertSwitch(notificationId, "sms", { enabled: true, checked: false });
 
+        cy.intercept("PUT", `**/UserProfile/*/sms?api-version=2.0`).as(
+            "updateUserSms"
+        );
+        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+
         cy.get("[data-testid=editSMSBtn]").click();
         cy.get("[data-testid=smsNumberInput] input").clear();
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
 
-        cy.log("Assert email switch after dekete");
+        cy.wait("@updateUserSms", { timeout: defaultTimeout });
+        cy.wait("@getUserProfile", { timeout: defaultTimeout });
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
+
+        cy.log("Assert email switch after delete");
         assertSwitch(notificationId, "email", {
             enabled: true,
             checked: false,
