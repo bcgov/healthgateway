@@ -37,7 +37,10 @@ function checkAgentAuditHistory() {
 
     cy.get("[data-testid=agent-audit-history-table]").should("be.visible");
 
-    return cy.get("[data-testid=agent-audit-history-count]").invoke("text");
+    return cy
+        .get("[data-testid=agent-audit-history-count]")
+        .invoke("text")
+        .then((text) => Number(text.trim()));
 }
 
 function validateDatasetAccess() {
@@ -89,17 +92,20 @@ function validateDatasetAccess() {
             .should("exist", "be.visible")
             .click();
 
-        cy.get("[data-testid=audit-reason-input")
+        cy.get("[data-testid=audit-reason-input]")
             .should("be.visible")
-            .type(auditBlockReason);
+            .type(auditBlockReason)
+            .blur();
 
         cy.intercept("PUT", "**/Support/*/BlockAccess*").as("blockAccess");
 
         cy.get("[data-testid=audit-confirm-button]")
             .should("be.visible")
-            .click({ force: true });
+            .should("not.be.disabled")
+            .click();
 
         cy.wait("@blockAccess", { timeout: defaultTimeout });
+        cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
 
         cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
             "be.checked"
@@ -139,17 +145,20 @@ function validateDatasetAccess() {
             .should("exist", "be.visible")
             .click();
 
-        cy.get("[data-testid=audit-reason-input")
+        cy.get("[data-testid=audit-reason-input]")
             .should("be.visible")
-            .type(auditUnblockReason);
+            .type(auditUnblockReason)
+            .blur();
 
         cy.intercept("PUT", "**/Support/*/BlockAccess*").as("blockAccess");
 
         cy.get("[data-testid=audit-confirm-button]")
             .should("be.visible")
-            .click({ force: true });
+            .should("not.be.disabled")
+            .click();
 
         cy.wait("@blockAccess", { timeout: defaultTimeout });
+        cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
 
         cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
             "not.be.checked"

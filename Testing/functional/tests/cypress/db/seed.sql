@@ -119,7 +119,7 @@ VALUES (
 	'Web'
 );
 
-/* Labratory Queued - Keycloak User (hthgtwy09) */
+/* Laboratory Queued - Keycloak User (hthgtwy09) and Clear SMS Number Job */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -138,16 +138,16 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
 	'System', 
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'System', 
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'8d713fb0-5d94-425f-996a-f2eabb54847c', 
 	null,
 	null,
 	null,
-	current_timestamp, 
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null,
+	'6046719015',
 	'1967',
 	null
 );
@@ -218,7 +218,7 @@ VALUES (
 	'Android'
 );
 
-/* PHN: 9735352535 used for admin covid assessment and blocked dataset tests */
+/* PHN: 9735352535 (hthgtwy06) used for admin covid assessment and blocked dataset tests and for User Preferences: showSmsRemoved */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -237,14 +237,14 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
 	'System', 
-	current_timestamp - INTERVAL '1000 day',  
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z', 
 	'System', 
-	current_timestamp - INTERVAL '1000 day',   
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',  
 	'8d713fb0-5d94-425f-996a-f2eabb54847c', 
 	null,
 	null,
 	null,
-	current_timestamp - INTERVAL '1000 day',  
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:00:00Z',
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	null,
@@ -775,6 +775,24 @@ VALUES (
 	'[{"name":"Medications","filter":{"modules":["Medication"]}},{"name":"My Notes","filter":{"modules":["Note"]}}]'
 );
 
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'showSmsRemoved', 
+	'true'
+);
+
 /* Add Resource Delegates */
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
@@ -1201,74 +1219,74 @@ VALUES (
     'Processed'
 );
 
-/* Registered HealthGateway User - Keycloak User (healthgateway) */
+/* Registered HealthGateway User - Keycloak User (healthgateway) - active activation */
 INSERT INTO gateway."MessagingVerification"(
-	"MessagingVerificationId", 
-	"CreatedBy", 
-	"CreatedDateTime", 
-	"UpdatedBy", 
-	"UpdatedDateTime", 
-	"HdId", 
-	"Validated", 
-	"EmailId", 
-	"InviteKey", 
-	"ExpireDate", 
-	"SMSNumber", 
-	"SMSValidationCode", 
-	"VerificationType", 
-	"Deleted", 
-	"VerificationAttempts")
+    "MessagingVerificationId",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime",
+    "HdId",
+    "Validated",
+    "EmailId",
+    "InviteKey",
+    "ExpireDate",
+    "SMSNumber",
+    "SMSValidationCode",
+    "VerificationType",
+    "Deleted",
+    "VerificationAttempts")
 VALUES (
-	uuid_generate_v4(),
-	'System',
-	now(),
-	'System',
-	now(),
-	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
-	true,
-	null,
-	'00000000-0000-0000-0000-000000000000',
-	now()+INTERVAL '1 day',
-	'2506715000',
-	'654321',
-	'SMS',
-	false,
-	0
+    uuid_generate_v4(),
+    'System',
+    timezone('utc', now()),
+    'System',
+    timezone('utc', now()),
+    'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    false,
+    null,
+    '00000000-0000-0000-0000-000000000000',
+    timezone('utc', now()) + INTERVAL '1 day',
+    '2506715000',
+    '123456',
+    'SMS',
+    false,
+    0
 );
 
-/* Registered HealthGateway User - Keycloak User (healthgateway) */
+/* Registered HealthGateway User - Keycloak User (healthgateway) - deleted verification */
 INSERT INTO gateway."MessagingVerification"(
-	"MessagingVerificationId", 
-	"CreatedBy", 
-	"CreatedDateTime", 
-	"UpdatedBy", 
-	"UpdatedDateTime", 
-	"HdId", 
-	"Validated", 
-	"EmailId", 
-	"InviteKey", 
-	"ExpireDate", 
-	"SMSNumber", 
-	"SMSValidationCode", 
-	"VerificationType", 
-	"Deleted", 
-	"VerificationAttempts")
+    "MessagingVerificationId",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime",
+    "HdId",
+    "Validated",
+    "EmailId",
+    "InviteKey",
+    "ExpireDate",
+    "SMSNumber",
+    "SMSValidationCode",
+    "VerificationType",
+    "Deleted",
+    "VerificationAttempts")
 VALUES (
-	uuid_generate_v4(),
-	'System',
-	now()- INTERVAL '1 hour',
-	'System',
-	now()- INTERVAL '1 hour',
-	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
-	false,
-	null,
-	'00000000-0000-0000-0000-000000000000',
-	now()+INTERVAL '1 day',
-	'2506715000',
-	'123456',
-	'SMS',
-	false,
-	0
+    uuid_generate_v4(),
+    'System',
+    timezone('utc', now()) - INTERVAL '6 days',
+    'System',
+    timezone('utc', now()) - INTERVAL '6 days',
+    'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+    true,
+    null,
+    '00000000-0000-0000-0000-000000000000',
+    timezone('utc', now()) - INTERVAL '5 days',
+    '2506715000',
+    '123456',
+    'SMS',
+    true,
+    0
 );
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -1308,7 +1326,7 @@ VALUES (
 	'nobody@healthgateway.gov.bc.ca'
 );
 
-/* Registered HealthGateway User - Keycloak User (healthgateway) */
+/* Registered HealthGateway User - Keycloak User (protected) */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
 	"CreatedBy", 
@@ -1378,6 +1396,41 @@ VALUES (
 	false,
 	0,
 	'fakeemail@healthgateway.gov.bc.ca'
+);
+
+/* Keycloak User (hthgtwy06) used for User Preferences: showSmsRemoved */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:05:00Z',
+	'System',
+	TIMESTAMP WITH TIME ZONE '2022-12-31T08:00:00Z',
+	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',
+	true,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	TIMESTAMP WITH TIME ZONE '2023-01-01T00:05:00Z',
+	'2506715000',
+	'654321',
+	'SMS',
+	false,
+	0
 );
 
 /* Keycloak User (hthgtwy20) */
@@ -1829,4 +1882,26 @@ VALUES (
     CURRENT_TIMESTAMP,
     'System',
     CURRENT_TIMESTAMP
+);
+
+INSERT INTO gateway."UserJobState" (
+    "Id",
+    "JobName",
+    "UserProfileId",
+    "ProcessedDateTime",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime"
+)
+
+VALUES (
+    gen_random_uuid(),
+    'ClearSmsNumber',
+    'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',
+    current_timestamp,
+    'System',
+    current_timestamp,
+    'System',
+    current_timestamp
 );

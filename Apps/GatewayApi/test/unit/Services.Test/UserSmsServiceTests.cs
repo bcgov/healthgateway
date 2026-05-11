@@ -21,18 +21,24 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
+    using Hangfire;
+    using Hangfire.Common;
+    using Hangfire.States;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Providers;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -56,90 +62,90 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="userProfileExists">The bool value indicating if the user profile for the associated hdid exists.</param>
         /// <param name="smsVerificationExpired">The bool value indicating if the sms verification has expired.</param>
         /// <param name="changeFeedEnabled">The bool value indicating if change feed should be validated.</param>
-        /// <param name="validationResult">The expected bool value indicating if SMS verification was found and validated.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(HdIdMock, SmsValidationCode, true, false, false, true)]
-        [InlineData(HdIdMock, SmsValidationCode, true, false, true, true)]
-        [InlineData(HdIdMock, SmsValidationCode, true, true, true, false)]
-        [InlineData(HdIdMock, SmsValidationCode, false, false, false, false)]
-        [InlineData(InvalidHdidMock, SmsValidationCode, true, false, false, false)]
-        public async Task ShouldValidateSms(string hdid, string smsValidationCode, bool userProfileExists, bool smsVerificationExpired, bool changeFeedEnabled, bool validationResult)
+        [InlineData(HdIdMock, SmsValidationCode, true, false, false)]
+        [InlineData(HdIdMock, SmsValidationCode, true, false, true)]
+        [InlineData(HdIdMock, SmsValidationCode, true, true, true)]
+        [InlineData(HdIdMock, SmsValidationCode, false, false, false)]
+        [InlineData(InvalidHdidMock, SmsValidationCode, true, false, false)]
+        public async Task ShouldValidateSms(
+            string hdid,
+            string smsValidationCode,
+            bool userProfileExists,
+            bool smsVerificationExpired,
+            bool changeFeedEnabled)
         {
             // Arrange
+            bool shouldValidate =
+                userProfileExists &&
+                !smsVerificationExpired &&
+                hdid == HdIdMock;
+
             UserProfile? userProfile = userProfileExists ? new UserProfile() : null;
 
-            MessagingVerification expectedResult = new()
+            MessagingVerification verification = new()
             {
                 UserProfileId = hdid,
                 VerificationAttempts = 0,
                 SmsValidationCode = smsValidationCode,
-                ExpireDate = DateTime.Now.AddDays(smsVerificationExpired ? -1 : 1),
+                ExpireDate = DateTime.UtcNow.AddDays(smsVerificationExpired ? -1 : 1),
             };
 
-            Mock<IMessageSender> messageSenderMock = new();
-            IUserSmsService service = GetUserSmsService(messagingVerification: expectedResult, userProfile: userProfile, messageSenderMock: messageSenderMock, changeFeedEnabled: changeFeedEnabled);
+            Mock<IJobService> jobServiceMock = new();
+            Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
+            Mock<IBackgroundJobClient> backgroundJobClientMock = new();
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
 
-            // Act
-            RequestResult<bool> actualResult = await service.ValidateSmsAsync(HdIdMock, smsValidationCode, CancellationToken.None);
-
-            // Assert
-            if (validationResult)
-            {
-                Assert.True(actualResult.ResourcePayload);
-
-                messageSenderMock.Verify(
-                    m => m.SendAsync(
-                        It.Is<IEnumerable<MessageEnvelope>>(
-                            envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                        CancellationToken.None),
-                    changeFeedEnabled ? Times.Once : Times.Never);
-            }
-            else
-            {
-                Assert.False(actualResult.ResourcePayload);
-            }
-        }
-
-        /// <summary>
-        /// ValidateSmsAsync returns error when updating user profile to the database.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ValidateSmsReturnsError()
-        {
-            // Arrange
-            DbResult<UserProfile> dbResult = new() { Status = DbStatusCode.Error }; // Should cause error to be returned.
-            UserProfile userProfile = new();
-            MessagingVerification messagingVerification = new()
-            {
-                UserProfileId = HdIdMock,
-                VerificationAttempts = 0,
-                SmsValidationCode = SmsValidationCode,
-                ExpireDate = DateTime.Now.AddDays(1),
-            };
-
-            Mock<IMessageSender> messageSenderMock = new();
             IUserSmsService service = GetUserSmsService(
-                messagingVerification: messagingVerification,
+                messagingVerification: verification,
                 userProfile: userProfile,
-                messageSenderMock: messageSenderMock,
-                updateUserProfileResult: dbResult);
+                jobServiceMock: jobServiceMock,
+                notificationSettingsServiceMock: notificationSettingsServiceMock,
+                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock,
+                backgroundJobClientMock: backgroundJobClientMock,
+                changeFeedEnabled: changeFeedEnabled);
 
             // Act
-            RequestResult<bool> actual = await service.ValidateSmsAsync(HdIdMock, SmsValidationCode, CancellationToken.None);
+            RequestResult<bool> result =
+                await service.ValidateSmsAsync(HdIdMock, smsValidationCode, CancellationToken.None);
 
             // Assert
-            Assert.False(actual.ResourcePayload);
-            Assert.Equal(ErrorMessages.CannotPerformAction, actual.ResultError?.ResultMessage);
+            Assert.Equal(shouldValidate, result.ResourcePayload);
 
-            // Verify
-            messageSenderMock.Verify(
-                m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    CancellationToken.None),
-                Times.Never);
+            Times successPathTimes = shouldValidate ? Times.Once() : Times.Never();
+            Times changeFeedTimes = shouldValidate && changeFeedEnabled ? Times.Once() : Times.Never();
+
+            jobServiceMock.Verify(
+                v => v.NotifySmsVerificationAsync(
+                    HdIdMock,
+                    It.IsAny<string>(),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                changeFeedTimes);
+
+            profileNotificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    HdIdMock,
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Single().Type == ProfileNotificationType.BcCancerScreening &&
+                        models.Single().EmailEnabled == null &&
+                        models.Single().SmsEnabled == true),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                successPathTimes);
+
+            backgroundJobClientMock.Verify(
+                v => v.Create(
+                    It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
+                    It.IsAny<EnqueuedState>()),
+                successPathTimes);
+
+            notificationSettingsServiceMock.Verify(
+                v => v.QueueNotificationSettingsAsync(
+                    It.IsAny<NotificationSettingsRequest>(),
+                    It.IsAny<CancellationToken>()),
+                successPathTimes);
         }
 
         /// <summary>
@@ -285,8 +291,27 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Verify
             messagingVerificationDelegateMock
-                .Verify(
-                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
+                .Verify(s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
+        }
+
+        private static Mock<IGatewayDbContextTransactionProvider> GetTransactionProviderMock()
+        {
+            Mock<IGatewayDbContextTransactionProvider> transactionProviderMock = new();
+            Mock<IDbContextTransaction> transactionMock = new();
+
+            transactionProviderMock
+                .Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(transactionMock.Object);
+
+            transactionProviderMock
+                .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            transactionMock
+                .Setup(x => x.CommitAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            return transactionProviderMock;
         }
 
         private static IUserSmsService GetUserSmsService(
@@ -294,19 +319,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             MessagingVerification? messagingVerification = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             UserProfile? userProfile = null,
-            Mock<IMessageSender>? messageSenderMock = null,
+            Mock<IJobService>? jobServiceMock = null,
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
-            bool changeFeedEnabled = false,
-            DbResult<UserProfile>? updateUserProfileResult = null)
+            Mock<IUserProfileNotificationSettingService>? profileNotificationSettingServiceMock = null,
+            Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
+            bool changeFeedEnabled = false)
         {
-            updateUserProfileResult ??= new DbResult<UserProfile> { Status = DbStatusCode.Updated };
+            DbResult<UserProfile>? updateUserProfileResult = new()
+                { Status = DbStatusCode.Updated };
             messagingVerificationDelegateMock ??= new();
             messagingVerificationDelegateMock
                 .Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(messagingVerification);
             messagingVerificationDelegateMock
-                .Setup(
-                    s => s.InsertAsync(It.IsAny<MessagingVerification>(), !ChangeFeedEnabled, CancellationToken.None))
+                .Setup(s => s.InsertAsync(It.IsAny<MessagingVerification>(), !ChangeFeedEnabled, CancellationToken.None))
                 .ReturnsAsync(Guid.Empty);
 
             userProfileDelegateMock ??= new();
@@ -314,15 +341,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateUserProfileResult);
 
-            messageSenderMock ??= new();
             notificationSettingsServiceMock ??= new();
+            profileNotificationSettingServiceMock ??= new();
+            jobServiceMock ??= new();
+            backgroundJobClientMock ??= new();
+            transactionProviderMock ??= GetTransactionProviderMock();
 
             return new UserSmsService(
                 new Mock<ILogger<UserSmsService>>().Object,
                 messagingVerificationDelegateMock.Object,
                 userProfileDelegateMock.Object,
                 notificationSettingsServiceMock.Object,
-                messageSenderMock.Object,
+                profileNotificationSettingServiceMock.Object,
+                jobServiceMock.Object,
+                backgroundJobClientMock.Object,
+                transactionProviderMock.Object,
                 GetConfiguration(changeFeedEnabled));
         }
 

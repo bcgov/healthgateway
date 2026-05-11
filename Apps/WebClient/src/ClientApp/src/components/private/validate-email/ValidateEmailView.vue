@@ -58,9 +58,20 @@ loadingStore.applyLoader(
                 :color="isSuccess ? 'success' : 'error'"
             />
             <h4 class="text-h6 my-4 pa-4">
-                <span v-if="isVerified" data-testid="verifiedInvite"
-                    >Your email address has been verified</span
-                >
+                <span v-if="isVerified" data-testid="verifiedInvite">
+                    Your email address has been verified.
+                    <br />
+                    Health Gateway may now send you notifications.
+                    <br />
+                    You can change your preferences on your
+                    <router-link
+                        class="text-link"
+                        data-testid="verified-profile-page-link"
+                        to="/profile"
+                        >Profile Page</router-link
+                    >
+                    at any time.
+                </span>
                 <span
                     v-if="isAlreadyVerified"
                     data-testid="alreadyVerifiedInvite"

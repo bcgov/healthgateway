@@ -45,6 +45,7 @@ const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const isSmsEditable = ref(false);
+const showVerifiedSmsMessage = ref(false);
 
 const verified = computed(() => userStore.user.verifiedSms);
 const storePhoneNumber = computed(() => userStore.user.sms);
@@ -155,6 +156,7 @@ function verifySms(): void {
 }
 
 function handleSmsVerified(): void {
+    showVerifiedSmsMessage.value = true;
     loadingStore.applyLoader(Loader.UserProfile, "verifySms", refreshProfile());
 }
 
@@ -275,6 +277,14 @@ watch(maskedInputPhoneNumber, (value) => {
                 horizontal
             />
         </div>
+        <HgAlertComponent
+            v-if="showVerifiedSmsMessage && verified"
+            data-testid="verified-sms-message"
+            class="pt-0"
+            type="success"
+            variant="text"
+            text="Health Gateway may now send you notifications. You can change your preferences at any time."
+        />
         <HgButtonComponent
             v-if="!verified && storePhoneNumber"
             data-testid="verifySMSBtn"

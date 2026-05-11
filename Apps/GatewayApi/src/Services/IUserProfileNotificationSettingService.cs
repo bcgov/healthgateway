@@ -47,5 +47,22 @@ namespace HealthGateway.GatewayApi.Services
             string hdid,
             UserProfileNotificationSettingModel model,
             CancellationToken ct = default);
+
+        /// <summary>
+        /// Updates notification settings for one or more notification types.
+        /// </summary>
+        /// <param name="hdid">The user HDID.</param>
+        /// <param name="models">
+        /// A collection of notification setting models containing the notification types
+        /// and updated delivery channel values.
+        /// </param>
+        /// <param name="commit">Whether to commit changes immediately or defer to the caller's transaction.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task UpdateAsync(
+            string hdid,
+            IReadOnlyCollection<UserProfileNotificationSettingModel> models,
+            bool commit = true,
+            CancellationToken ct = default);
     }
 }

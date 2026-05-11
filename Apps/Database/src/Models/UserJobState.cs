@@ -24,7 +24,7 @@ namespace HealthGateway.Database.Models
     /// Stores the current resumable state for a logical job.
     /// One row per job name.
     /// </summary>
-    [Index(nameof(Hdid), nameof(JobName), IsUnique = true)]
+    [Index(nameof(JobName), nameof(Hdid), IsUnique = true)]
     public class UserJobState : AuditableEntity
     {
         /// <summary>

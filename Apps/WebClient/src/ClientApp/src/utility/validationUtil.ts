@@ -1,6 +1,11 @@
-import { BaseValidation } from "@vuelidate/core";
-import { unref } from "vue";
+import { type MaybeRef, unref } from "vue";
 
+type Validator = {
+    $dirty: boolean;
+    $invalid: boolean;
+    $pending: boolean;
+    $errors: { $message: MaybeRef<string> }[];
+};
 const PHNsigDigits = [2, 4, 8, 5, 10, 9, 7, 3];
 
 export default abstract class ValidationUtil {
@@ -42,15 +47,16 @@ export default abstract class ValidationUtil {
      * @returns undefined if the parameter is untouched (and ignoreUntouched is true), otherwise true when the validator's state is not invalid or pending.
      */
     public static isValid(
-        rootValidator: BaseValidation,
-        validator: BaseValidation | undefined = undefined,
+        rootValidator: Validator,
+        validator: Validator | undefined = undefined,
         ignoreUntouched = true
     ): boolean | undefined {
-        validator ??= rootValidator;
+        const validatorToCheck = validator ?? rootValidator;
         const untouched = !rootValidator.$dirty;
+
         return untouched && ignoreUntouched
             ? undefined
-            : !validator.$invalid && !validator.$pending;
+            : !validatorToCheck.$invalid && !validatorToCheck.$pending;
     }
 
     /**
@@ -60,13 +66,16 @@ export default abstract class ValidationUtil {
      * @returns an empty array if the parameter is untouched (and ignoreUntouched is true), otherwise an array containing the error messages associated with all failed validation rules on the validator.
      */
     public static getErrorMessages(
-        validator: BaseValidation,
+        validator: Validator,
         ignoreUntouched = true
     ): string[] {
-        const errors = ignoreUntouched
-            ? validator.$errors
-            : validator.$silentErrors;
-        return errors.map((e) => unref(e.$message));
+        const untouched = !validator.$dirty;
+
+        if (untouched && ignoreUntouched) {
+            return [];
+        }
+
+        return validator.$errors.map((e) => unref(e.$message));
     }
 
     /**

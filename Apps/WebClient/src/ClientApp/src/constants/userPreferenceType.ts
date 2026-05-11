@@ -11,4 +11,6 @@ export default abstract class UserPreferenceType {
 
     public static readonly HideRecommendationsQuickLink =
         "hideRecommendationsQuickLink";
+
+    public static readonly ShowSmsRemoved = "showSmsRemoved";
 }

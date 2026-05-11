@@ -31,8 +31,6 @@ export const useAuthStore = defineStore("auth", () => {
             tokenDetails.value.idToken.length > 0
     );
 
-    const oidcError = computed(() => error.value);
-
     function setAuthenticated(incomingTokenDetails: OidcTokenDetails) {
         logger.verbose("setAuthenticated");
         tokenDetails.value = incomingTokenDetails;
@@ -42,11 +40,6 @@ export const useAuthStore = defineStore("auth", () => {
     function setUnauthenticated() {
         logger.verbose("setUnauthenticated");
         tokenDetails.value = undefined;
-    }
-
-    function setError(errorRaised: unknown) {
-        logger.error(`setError: ${errorRaised}`);
-        error.value = errorRaised;
     }
 
     async function checkStatus(): Promise<boolean> {
@@ -79,7 +72,6 @@ export const useAuthStore = defineStore("auth", () => {
             logger.verbose("Successfully signed in");
         } catch (error) {
             logger.verbose("Failed to sign in");
-            setError(error);
             throw error;
         }
     }
@@ -155,7 +147,6 @@ export const useAuthStore = defineStore("auth", () => {
 
     return {
         oidcIsAuthenticated,
-        oidcError,
         checkStatus,
         clearStorage,
         signIn,

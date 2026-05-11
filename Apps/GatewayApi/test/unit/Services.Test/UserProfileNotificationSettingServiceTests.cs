@@ -82,10 +82,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(notificationSettings);
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
+            Mock<IOutboxStore> outboxStoreMock = new();
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             // Act
             IList<UserProfileNotificationSettingModel> actual =
@@ -149,10 +149,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notificationSettings);
 
-            Mock<IMessageSender> messageSenderMock = new();
+            Mock<IOutboxStore> outboxStoreMock = new();
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             // Act
             await service.UpdateAsync(Hdid, notificationSettingModel, CancellationToken.None);
@@ -169,11 +169,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 
-            messageSenderMock.Verify(
-                m => m.SendAsync(
+            outboxStoreMock.Verify(
+                m => m.StoreAsync(
                     It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
                         envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
-                    CancellationToken.None),
+                    true,
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -214,10 +215,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notificationSettings);
 
-            Mock<IMessageSender> messageSenderMock = new();
+            Mock<IOutboxStore> outboxStoreMock = new();
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -241,8 +242,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 
-            messageSenderMock.Verify(
-                m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), CancellationToken.None),
+            outboxStoreMock.Verify(
+                m => m.StoreAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
+                        envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
+                    true,
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -283,10 +288,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notificationSettings);
 
-            Mock<IMessageSender> messageSenderMock = new();
+            Mock<IOutboxStore> outboxStoreMock = new();
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -310,8 +315,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 
-            messageSenderMock.Verify(
-                m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), CancellationToken.None),
+            outboxStoreMock.Verify(
+                m => m.StoreAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
+                        envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
+                    true,
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -325,10 +334,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
-
-            IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+            Mock<IOutboxStore> outboxStoreMock = new();
 
             UserProfile userProfile = new()
             {
@@ -361,10 +367,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            messageSenderMock
-                .Setup(x => x.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, CancellationToken>((events, _) => { capturedEvents = events.ToList(); })
+            outboxStoreMock
+                .Setup(x => x.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((events, _, _) => { capturedEvents = events.ToList(); })
                 .Returns(Task.CompletedTask);
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             // Act
             await service.UpdateAsync(Hdid, model, CancellationToken.None);
@@ -389,8 +401,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 
-            messageSenderMock.Verify(
-                x => x.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()),
+            outboxStoreMock.Verify(
+                x => x.StoreAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(events =>
+                        events.First().Content is NotificationChannelPreferencesChangedEvent),
+                    true,
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
 
             Assert.NotNull(capturedEvents);
@@ -435,14 +451,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             NotificationChannelPreferencesChangedEvent? capturedEvent = null;
 
-            Mock<IMessageSender> messageSenderMock = new();
-            messageSenderMock
-                .Setup(m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, CancellationToken>((envelopes, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
+            Mock<IOutboxStore> outboxStoreMock = new();
+            outboxStoreMock
+                .Setup(m => m.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
                 .Returns(Task.CompletedTask);
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -490,14 +509,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             NotificationChannelPreferencesChangedEvent? capturedEvent = null;
 
-            Mock<IMessageSender> messageSenderMock = new();
-            messageSenderMock
-                .Setup(m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, CancellationToken>((envelopes, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
+            Mock<IOutboxStore> outboxStoreMock = new();
+            outboxStoreMock
+                .Setup(m => m.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
                 .Returns(Task.CompletedTask);
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -541,14 +563,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             NotificationChannelPreferencesChangedEvent? capturedEvent = null;
 
-            Mock<IMessageSender> messageSenderMock = new();
-            messageSenderMock
-                .Setup(m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, CancellationToken>((envelopes, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
+            Mock<IOutboxStore> outboxStoreMock = new();
+            outboxStoreMock
+                .Setup(m => m.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
                 .Returns(Task.CompletedTask);
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -592,14 +617,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             NotificationChannelPreferencesChangedEvent? capturedEvent = null;
 
-            Mock<IMessageSender> messageSenderMock = new();
-            messageSenderMock
-                .Setup(m => m.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, CancellationToken>((envelopes, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
+            Mock<IOutboxStore> outboxStoreMock = new();
+            outboxStoreMock
+                .Setup(m => m.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
                 .Returns(Task.CompletedTask);
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -639,10 +667,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(userProfile);
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            Mock<IMessageSender> messageSenderMock = new();
+            Mock<IOutboxStore> outboxStoreMock = new();
 
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             // Act and Assert
             await Assert.ThrowsAsync<NotFoundException>(async () =>
@@ -676,10 +704,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync([]);
 
-            Mock<IMessageSender> messageSenderMock = new();
-
+            Mock<IOutboxStore> outboxStoreMock = new();
             IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, messageSenderMock);
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
 
             UserProfileNotificationSettingModel model = new()
             {
@@ -696,17 +723,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static IUserProfileNotificationSettingService GetNotificationSettingService(
             Mock<IUserProfileDelegate>? profileDelegateMock = null,
             Mock<IUserProfileNotificationSettingDelegate>? notificationSettingDelegateMock = null,
-            Mock<IMessageSender>? messageSenderMock = null)
+            Mock<IOutboxStore>? outboxStoreMock = null)
         {
             profileDelegateMock ??= new();
             notificationSettingDelegateMock ??= new();
-            messageSenderMock ??= new();
+            outboxStoreMock ??= new();
 
             return new UserProfileNotificationSettingService(
                 profileDelegateMock.Object,
                 notificationSettingDelegateMock.Object,
                 MappingService,
-                messageSenderMock.Object);
+                outboxStoreMock.Object);
         }
     }
 }
