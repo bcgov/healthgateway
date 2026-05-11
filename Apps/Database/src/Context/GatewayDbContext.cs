@@ -1044,6 +1044,17 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = DateTime.ParseExact("02/01/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = DateTime.ParseExact("02/01/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
+                    },
+                    new LegalAgreement // Add notice that you can opt out of select notifications
+                    {
+                        Id = Guid.Parse("5b320814-4508-4975-9baa-a230acd0b84b"),
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
+                        LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20260511.html"),
+                        EffectiveDate = DateTime.ParseExact("05/11/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = DateTime.ParseExact("05/11/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = DateTime.ParseExact("05/11/2026 Z", TimezoneDateFormat, CultureInfo.InvariantCulture).ToUniversalTime(),
                     });
         }
 
