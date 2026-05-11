@@ -2,6 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const downloadUrl = "/reports";
+const profileUrl = "/profile";
 const defaultTimeout = 60000;
 
 describe("Home Page", () => {
@@ -101,6 +102,58 @@ describe("Home Page", () => {
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=timeline-record-count]").should("be.visible");
+    });
+});
+
+describe("Home page - notification settings alert", () => {
+    it("SMS removed alert should display if SMS is removed", () => {
+        cy.configureSettings({});
+
+        cy.login(
+            Cypress.env("keycloak.hthgtwy06.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.log("The alert should be visible when first logging in.");
+        cy.get("[data-testid=incomplete-profile-banner]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=sms-removed-message]").should(
+                    "be.visible"
+                );
+
+                cy.get("[data-testid=unverified-email-sms-message]").should(
+                    "not.exist"
+                );
+            });
+
+        cy.log("The link in the alert should go to the profile page.");
+        cy.get("[data-testid=profile-preferences-link]")
+            .should("be.visible")
+            .click();
+        cy.location("pathname").should("eq", profileUrl);
+
+        cy.log("When returning to the home page, the alert should be gone.");
+        cy.get("[data-testid=menu-btn-home-link]").should("be.visible").click();
+        cy.location("pathname").should("eq", homeUrl);
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=sms-removed-message]").should("not.exist");
+    });
+
+    it("SMS removed alert should not display on subsequent visits", () => {
+        cy.configureSettings({});
+
+        cy.login(
+            Cypress.env("keycloak.hthgtwy06.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=sms-removed-message]").should("not.exist");
     });
 });
 

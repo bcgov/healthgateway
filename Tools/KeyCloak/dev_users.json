@@ -65,6 +65,22 @@
             ]
         },
         {
+            "username": "hthgtwy06",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
             "username": "hthgtwy09",
             "enabled": true,
             "firstName": "Dr",
@@ -127,7 +143,8 @@
                     "temporary": false
                 }
             ]
-        },        {
+        },
+        {
             "username": "hlthgw401",
             "enabled": true,
             "firstName": "Dr",
@@ -211,10 +228,9 @@
         {
             "username": "hgateway@idir",
             "enabled": true
-        },
-
+        }
     ],
-    "roleMappings": { 
+    "roleMappings": {
         "blazoradmin": ["AdminUser"],
         "blazorreviewer": ["AdminReviewer"],
         "blazoranalyst": ["AdminAnalyst"],
