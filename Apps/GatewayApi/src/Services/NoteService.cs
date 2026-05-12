@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -72,7 +73,13 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserNote>> CreateNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct: ct);
-            string? key = profile?.EncryptionKey;
+
+            if (profile == null)
+            {
+                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+            }
+
+            string? key = profile.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("Profile does not have an encryption key");
@@ -105,7 +112,13 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<IList<Note>> dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
 
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct: ct);
-            string? key = profile?.EncryptionKey;
+
+            if (profile == null)
+            {
+                return RequestResultFactory.ServiceError<IEnumerable<UserNote>>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+            }
+
+            string? key = profile.EncryptionKey;
 
             // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have an encryption key.
             if (key == null)
@@ -127,7 +140,13 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserNote>> UpdateNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct: ct);
-            string? key = profile?.EncryptionKey;
+
+            if (profile == null)
+            {
+                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+            }
+
+            string? key = profile.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("Profile does not have an encryption key");
@@ -146,7 +165,13 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserNote>> DeleteNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct: ct);
-            string? key = profile?.EncryptionKey;
+
+            if (profile == null)
+            {
+                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+            }
+
+            string? key = profile.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("Profile does not have an encryption key");
@@ -166,11 +191,6 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogDebug("Generating encryption key for profile");
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
-            DbResult<UserProfile> userProfileUpdateResult = await this.profileDelegate.UpdateAsync(profile, false, ct);
-            if (userProfileUpdateResult.Status != DbStatusCode.Deferred)
-            {
-                throw new DatabaseException(userProfileUpdateResult.Message);
-            }
 
             foreach (Note note in dbNotes)
             {

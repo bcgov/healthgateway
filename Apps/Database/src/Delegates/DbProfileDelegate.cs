@@ -28,6 +28,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -65,52 +66,45 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
+        public async Task<DbResult<UserProfile>> UpdateAsync(
+            UserProfile profile,
+            bool commit = true,
+            CancellationToken ct = default)
         {
             logger.LogDebug("Updating user profile in DB");
 
-            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, true, ct);
-            DbResult<UserProfile> result = new();
+            EntityEntry<UserProfile> entry = dbContext.Entry(profile);
 
-            if (userProfile != null)
+            if (entry.State == EntityState.Detached)
             {
-                // Copy certain attributes into the fetched User Profile
-                userProfile.Email = profile.Email;
-                userProfile.TermsOfServiceId = profile.TermsOfServiceId;
-                userProfile.UpdatedBy = profile.UpdatedBy;
-                userProfile.Version = profile.Version;
-                userProfile.YearOfBirth = profile.YearOfBirth;
-                userProfile.LastLoginClientCode = profile.LastLoginClientCode;
-                userProfile.BetaFeatureCodes = profile.BetaFeatureCodes;
-                result.Status = DbStatusCode.Deferred;
-                result.Payload = userProfile;
-                dbContext.UserProfile.Update(userProfile);
-
-                if (commit)
-                {
-                    try
-                    {
-                        await dbContext.SaveChangesAsync(ct);
-                        result.Status = DbStatusCode.Updated;
-                    }
-                    catch (DbUpdateConcurrencyException e)
-                    {
-                        logger.LogWarning(e, "Error updating user profile in DB");
-                        result.Status = DbStatusCode.Concurrency;
-                        result.Message = e.Message;
-                    }
-                    catch (DbUpdateException e)
-                    {
-                        logger.LogError(e, "Error updating user profile in DB");
-                        result.Status = DbStatusCode.Error;
-                        result.Message = e.Message;
-                    }
-                }
+                dbContext.UserProfile.Update(profile);
             }
-            else
+
+            DbResult<UserProfile> result = new()
             {
-                logger.LogDebug("User profile does not exist in DB for {Hdid}", profile.HdId);
-                result.Status = DbStatusCode.NotFound;
+                Status = DbStatusCode.Deferred,
+                Payload = profile,
+            };
+
+            if (commit)
+            {
+                try
+                {
+                    await dbContext.SaveChangesAsync(ct);
+                    result.Status = DbStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    logger.LogWarning(e, "Error updating user profile in DB");
+                    result.Status = DbStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    logger.LogError(e, "Error updating user profile in DB");
+                    result.Status = DbStatusCode.Error;
+                    result.Message = e.Message;
+                }
             }
 
             return result;
@@ -214,37 +208,33 @@ namespace HealthGateway.Database.Delegates
             TimeSpan offset = startDateTimeOffset.Offset;
             var userProfileQuery = dbContext.UserProfile
                 .Where(u => u.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && u.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
-                .Select(
-                    u => new
-                    {
-                        u.HdId,
-                        u.LastLoginDateTime,
-                    });
+                .Select(u => new
+                {
+                    u.HdId,
+                    u.LastLoginDateTime,
+                });
 
             var userProfileHistoryQuery = dbContext.UserProfileHistory
                 .Where(u => u.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && u.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
-                .Select(
-                    u => new
-                    {
-                        u.HdId,
-                        u.LastLoginDateTime,
-                    });
+                .Select(u => new
+                {
+                    u.HdId,
+                    u.LastLoginDateTime,
+                });
 
             var unionQuery = userProfileQuery
                 .Union(userProfileHistoryQuery);
 
             return await unionQuery
-                .GroupBy(
-                    t => new
-                    {
-                        LastLoginDate = t.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date,
-                    })
-                .Select(
-                    g => new
-                    {
-                        g.Key.LastLoginDate,
-                        Count = g.Select(t => t.HdId).Distinct().Count(),
-                    })
+                .GroupBy(t => new
+                {
+                    LastLoginDate = t.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date,
+                })
+                .Select(g => new
+                {
+                    g.Key.LastLoginDate,
+                    Count = g.Select(t => t.HdId).Distinct().Count(),
+                })
                 .ToDictionaryAsync(x => DateOnly.FromDateTime(x.LastLoginDate), x => x.Count, ct);
         }
 
@@ -288,11 +278,10 @@ namespace HealthGateway.Database.Delegates
                 .Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime })
                 .Concat(
                     dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime }))
-                .Where(
-                    x =>
-                        x.LastLoginClientCode != null &&
-                        x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime &&
-                        x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
+                .Where(x =>
+                    x.LastLoginClientCode != null &&
+                    x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime &&
+                    x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(x => new { x.HdId, x.LastLoginClientCode })
                 .Distinct()
                 .GroupBy(x => x.LastLoginClientCode)
