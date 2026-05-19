@@ -52,7 +52,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string HdIdMock = "hdIdMock";
         private const string InvalidHdidMock = "invalid" + HdIdMock;
         private const string SmsValidationCode = "SMSValidationCodeMock";
-        private const bool ChangeFeedEnabled = false;
 
         /// <summary>
         /// ValidateSmsAsync.
@@ -169,32 +168,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
-            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
 
             IUserSmsService service = GetUserSmsService(
                 messagingVerificationDelegateMock,
                 expectedResult,
-                userProfileDelegateMock,
-                userProfile,
+                userProfile: userProfile,
                 notificationSettingsServiceMock: notificationSettingsServiceMock);
 
             // Act and Assert
             Assert.True(await service.UpdateUserSmsAsync(HdIdMock, sms));
 
             // Verify
-            userProfileDelegateMock
-                .Verify(
-                    s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.ExpireAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-
-            messagingVerificationDelegateMock
-                .Verify(
-                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, It.IsAny<CancellationToken>()),
+                    s => s.InsertAsync(
+                        It.Is<MessagingVerification>(x =>
+                            x.UserProfileId == HdIdMock &&
+                            x.SmsNumber == sms),
+                        false,
+                        It.IsAny<CancellationToken>()),
                     Times.Once);
 
             notificationSettingsServiceMock
@@ -271,29 +263,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             await Assert.ThrowsAsync<ValidationException>(() => service.UpdateUserSmsAsync(HdIdMock, sms));
         }
 
-        /// <summary>
-        /// CreateUserSmsAsync.
-        /// </summary>
-        /// <param name="smsNumber">The sms number to sanitize.</param>
-        [Theory]
-        [InlineData("1234561234")]
-        [InlineData("(123)4561234")]
-        [InlineData("123 456 1234")]
-        [InlineData("+1 123-456-1234")]
-        public void ShouldCreateUserSms(string smsNumber)
-        {
-            // Arrange
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
-            IUserSmsService service = GetUserSmsService(messagingVerificationDelegateMock: messagingVerificationDelegateMock);
-
-            // Act
-            service.CreateUserSmsAsync(HdIdMock, smsNumber);
-
-            // Verify
-            messagingVerificationDelegateMock
-                .Verify(s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
-        }
-
         private static Mock<IGatewayDbContextTransactionProvider> GetTransactionProviderMock()
         {
             Mock<IGatewayDbContextTransactionProvider> transactionProviderMock = new();
@@ -326,14 +295,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
             bool changeFeedEnabled = false)
         {
-            DbResult<UserProfile>? updateUserProfileResult = new()
+            DbResult<UserProfile> updateUserProfileResult = new()
                 { Status = DbStatusCode.Updated };
             messagingVerificationDelegateMock ??= new();
             messagingVerificationDelegateMock
                 .Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(messagingVerification);
             messagingVerificationDelegateMock
-                .Setup(s => s.InsertAsync(It.IsAny<MessagingVerification>(), !ChangeFeedEnabled, CancellationToken.None))
+                .Setup(s => s.InsertAsync(
+                    It.IsAny<MessagingVerification>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Guid.Empty);
 
             userProfileDelegateMock ??= new();
