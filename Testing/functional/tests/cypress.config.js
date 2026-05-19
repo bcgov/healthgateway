@@ -26,6 +26,7 @@ module.exports = defineConfig({
         "keycloak.deceased.username": "hthgtwy19",
         "keycloak.healthgateway12.username": "healthgateway12",
         "keycloak.hlthgw401.username": "hlthgw401",
+        "keycloak.hthgtwy06.username": "hthgtwy06",
         "keycloak.hthgtwy20.username": "hthgtwy20",
         "keycloak.laboratory.queued.username": "hthgtwy09",
         "keycloak.notfound.username": "hthgtwy03",

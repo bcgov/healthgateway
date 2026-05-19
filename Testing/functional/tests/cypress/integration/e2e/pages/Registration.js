@@ -106,7 +106,13 @@ describe("Registration Page", () => {
         // AB#16942 Disable full App Tour and display only one slide - change back to original once App Tour has been redesigned.
         // cy.get("[data-testid=app-tour-skip]").click();
         cy.get("[data-testid=app-tour-done]").click();
-        cy.get("[data-testid=incomplete-profile-banner]").should("be.visible");
+        cy.get("[data-testid=incomplete-profile-banner]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=unverified-email-sms-message]").should(
+                    "be.visible"
+                );
+            });
     });
 
     it("Validate Closed Profile Registration", () => {
