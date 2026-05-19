@@ -70,7 +70,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly bool accountsChangeFeedEnabled;
         private readonly bool notificationsChangeFeedEnabled;
         private readonly IMessagingVerificationService messagingVerificationService;
-        private readonly IJobService jobService;
+        private readonly IOutboxStoreService outboxStoreService;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IGatewayDbContextTransactionProvider transactionProvider;
         private readonly EmailTemplateConfig emailTemplateConfig;
@@ -93,7 +93,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="applicationSettingsService">The injected Application Settings service.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="messagingVerificationService">The injected message verification service.</param>
-        /// <param name="jobService">The injected job service.</param>
+        /// <param name="outboxStoreService">The injected outbox store service.</param>
         /// <param name="backgroundJobClient">Hangfire background job client.</param>
         /// <param name="transactionProvider">
         /// Provides database transaction and persistence operations for the current request
@@ -116,7 +116,7 @@ namespace HealthGateway.GatewayApi.Services
             IApplicationSettingsService applicationSettingsService,
             IPatientRepository patientRepository,
             IMessagingVerificationService messagingVerificationService,
-            IJobService jobService,
+            IOutboxStoreService outboxStoreService,
             IBackgroundJobClient backgroundJobClient,
             IGatewayDbContextTransactionProvider transactionProvider)
         {
@@ -137,7 +137,7 @@ namespace HealthGateway.GatewayApi.Services
             this.applicationSettingsService = applicationSettingsService;
             this.patientRepository = patientRepository;
             this.messagingVerificationService = messagingVerificationService;
-            this.jobService = jobService;
+            this.outboxStoreService = outboxStoreService;
             this.backgroundJobClient = backgroundJobClient;
             this.transactionProvider = transactionProvider;
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
@@ -250,7 +250,7 @@ namespace HealthGateway.GatewayApi.Services
             if (this.accountsChangeFeedEnabled)
             {
                 // Store an event indicating the account was created.
-                await this.jobService.NotifyAccountCreationAsync(hdid, false, ct);
+                await this.outboxStoreService.QueueAccountCreatedEventAsync(hdid, false, ct);
             }
 
             MessagingVerification? emailVerification = null;
@@ -263,7 +263,7 @@ namespace HealthGateway.GatewayApi.Services
                 {
                     case true when this.notificationsChangeFeedEnabled:
                         // Store an event indicating the email channel has been verified.
-                        await this.jobService.NotifyEmailVerificationAsync(hdid, requestedEmail, false, ct);
+                        await this.outboxStoreService.QueueEmailVerificationEventAsync(hdid, requestedEmail, false, ct);
                         break;
                     case false:
                         // Persist the email for background processing.

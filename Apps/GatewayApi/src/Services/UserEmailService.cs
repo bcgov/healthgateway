@@ -57,7 +57,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IUserProfileNotificationSettingService profileNotificationSettingService;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly ChangeFeedOptions changeFeedConfiguration;
-        private readonly IJobService jobService;
+        private readonly IOutboxStoreService outboxStoreService;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IGatewayDbContextTransactionProvider transactionProvider;
         private readonly EmailTemplateConfig emailTemplateConfig;
@@ -71,7 +71,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
-        /// <param name="jobService">The job service.</param>
+        /// <param name="outboxStoreService">The outbox store service.</param>
         /// <param name="backgroundJobClient">Hangfire background job client.</param>
         /// <param name="transactionProvider">
         /// Provides database transaction and persistence operations for the current request
@@ -86,7 +86,7 @@ namespace HealthGateway.GatewayApi.Services
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
             IUserProfileNotificationSettingService profileNotificationSettingService,
-            IJobService jobService,
+            IOutboxStoreService outboxStoreService,
             IBackgroundJobClient backgroundJobClient,
             IGatewayDbContextTransactionProvider transactionProvider,
             IConfiguration configuration)
@@ -99,7 +99,7 @@ namespace HealthGateway.GatewayApi.Services
             this.profileNotificationSettingService = profileNotificationSettingService;
             this.emailVerificationExpirySeconds = configuration.GetSection(WebClientConfigSection).GetValue(EmailConfigExpirySecondsKey, 5);
 
-            this.jobService = jobService;
+            this.outboxStoreService = outboxStoreService;
             this.backgroundJobClient = backgroundJobClient;
             this.transactionProvider = transactionProvider;
             this.changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>() ?? new();
@@ -179,7 +179,7 @@ namespace HealthGateway.GatewayApi.Services
             if (this.changeFeedConfiguration.Notifications.Enabled)
             {
                 // Store an event indicating email was verified.
-                await this.jobService.NotifyEmailVerificationAsync(hdid, matchingVerification.Email!.To, false, ct);
+                await this.outboxStoreService.QueueEmailVerificationEventAsync(hdid, matchingVerification.Email!.To, false, ct);
             }
 
             // Enable default user profile notification settings after successful verification

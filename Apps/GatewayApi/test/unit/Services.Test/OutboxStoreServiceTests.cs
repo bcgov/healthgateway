@@ -28,14 +28,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// <summary>
     /// JobService's Unit Tests.
     /// </summary>
-    public class JobServiceTests
+    public class OutboxStoreServiceTests
     {
         private const string Hdid = "hdid-mock";
         private const string EmailAddress = "user@HealthGateway.ca";
         private const string SmsNumber = "2505556000";
 
         /// <summary>
-        /// NotifyAccountCreationAsync.
+        /// QueueAccountCreatedEvent.
         /// </summary>
         /// <param name="shouldCommit">
         /// Indicates whether the outbox operation should immediately commit and schedule dispatch,
@@ -45,13 +45,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldNotifyAccountCreation(bool shouldCommit)
+        public async Task ShouldQueueAccountCreatedEvent(bool shouldCommit)
         {
             // Arrange
-            (IJobService service, Mock<IOutboxStore> outboxStoreMock) = SetupOutboxStoreMock();
+            (IOutboxStoreService service, Mock<IOutboxStore> outboxStoreMock) = SetupOutboxStoreMock();
 
             // Act
-            await service.NotifyAccountCreationAsync(Hdid, shouldCommit);
+            await service.QueueAccountCreatedEventAsync(Hdid, shouldCommit);
 
             // Verify
             outboxStoreMock.Verify(v => v.StoreAsync(
@@ -61,7 +61,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// Verifies that NotifyEmailVerificationAsync enqueues a notification event
+        /// Verifies that QueueEmailVerificationEvent enqueues a notification event
         /// and correctly passes the <c>shouldCommit</c> flag to the outbox store.
         /// </summary>
         /// <param name="shouldCommit">
@@ -72,13 +72,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldNotifyEmailVerification(bool shouldCommit)
+        public async Task ShouldQueueEmailVerificationEvent(bool shouldCommit)
         {
             // Arrange
-            (IJobService service, Mock<IOutboxStore> outboxStoreMock) = SetupOutboxStoreMock();
+            (IOutboxStoreService service, Mock<IOutboxStore> outboxStoreMock) = SetupOutboxStoreMock();
 
             // Act
-            await service.NotifyEmailVerificationAsync(Hdid, EmailAddress, shouldCommit);
+            await service.QueueEmailVerificationEventAsync(Hdid, EmailAddress, shouldCommit);
 
             // Verify
             outboxStoreMock.Verify(v => v.StoreAsync(
@@ -88,7 +88,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// Verifies that NotifySmsVerificationAsync enqueues a notification event
+        /// Verifies that ueueSmsVerificationEvent enqueues a notification event
         /// and correctly passes the <c>shouldCommit</c> flag to the outbox store.
         /// </summary>
         /// <param name="shouldCommit">
@@ -99,13 +99,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldNotifySmsVerification(bool shouldCommit)
+        public async Task ShouldQueueSmsVerificationEvent(bool shouldCommit)
         {
             // Arrange
-            (IJobService service, Mock<IOutboxStore> outboxStoreMock) = SetupOutboxStoreMock();
+            (IOutboxStoreService service, Mock<IOutboxStore> outboxStoreMock) = SetupOutboxStoreMock();
 
             // Act
-            await service.NotifySmsVerificationAsync(Hdid, SmsNumber, shouldCommit);
+            await service.QueueSmsVerificationEventAsync(Hdid, SmsNumber, shouldCommit);
 
             // Verify
             outboxStoreMock.Verify(v => v.StoreAsync(
@@ -114,23 +114,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 It.IsAny<CancellationToken>()));
         }
 
-        private static IJobService GetJobService(Mock<IOutboxStore>? outboxStoreMock = null)
+        private static IOutboxStoreService GetOutboxStoreService(Mock<IOutboxStore>? outboxStoreMock = null)
         {
             outboxStoreMock ??= new();
 
-            return new JobService(outboxStoreMock.Object);
+            return new OutboxStoreService(outboxStoreMock.Object);
         }
 
         private static NotificationEventMock SetupOutboxStoreMock()
         {
             Mock<IOutboxStore> outboxStoreMock = new();
-            IJobService service = GetJobService(outboxStoreMock: outboxStoreMock);
+            IOutboxStoreService service = GetOutboxStoreService(outboxStoreMock: outboxStoreMock);
 
             return new(service, outboxStoreMock);
         }
 
         private sealed record NotificationEventMock(
-            IJobService Service,
+            IOutboxStoreService Service,
             Mock<IOutboxStore> OutboxStoreMock);
     }
 }

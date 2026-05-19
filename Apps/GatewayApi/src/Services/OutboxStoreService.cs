@@ -23,10 +23,10 @@ namespace HealthGateway.GatewayApi.Services
 
     /// <inheritdoc/>
     /// <param name="outboxStore">The outbox store to use.</param>
-    public class JobService(IOutboxStore outboxStore) : IJobService
+    public class OutboxStoreService(IOutboxStore outboxStore) : IOutboxStoreService
     {
         /// <inheritdoc/>
-        public async Task NotifyAccountCreationAsync(string hdid, bool shouldCommit = true, CancellationToken ct = default)
+        public async Task QueueAccountCreatedEventAsync(string hdid, bool shouldCommit = true, CancellationToken ct = default)
         {
             MessageEnvelope[] messages =
             [
@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task NotifyEmailVerificationAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default)
+        public async Task QueueEmailVerificationEventAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default)
         {
             MessageEnvelope[] messages =
             [
@@ -48,7 +48,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task NotifySmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default)
+        public async Task QueueSmsVerificationEventAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default)
         {
             MessageEnvelope[] messages =
             [

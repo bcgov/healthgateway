@@ -84,7 +84,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
-            Mock<IJobService> jobServiceMock = new();
+            Mock<IOutboxStoreService> outboxStoreServiceMock = new();
             Mock<IUserProfileNotificationSettingService> userProfileNotificationSettingServiceMock = new();
             Mock<IBackgroundJobClient> backgroundJobClientMock = new();
 
@@ -92,7 +92,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileMock,
                 verificationByInviteKey,
                 notificationSettingsServiceMock: notificationSettingsServiceMock,
-                jobServiceMock: jobServiceMock,
+                outboxStoreServiceMock: outboxStoreServiceMock,
                 userProfileNotificationSettingServiceMock: userProfileNotificationSettingServiceMock,
                 backgroundJobClientMock: backgroundJobClientMock,
                 changeFeedEnabled: changeFeedEnabled);
@@ -104,8 +104,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(ResultType.Success, actual.ResultStatus);
 
             // Verify
-            jobServiceMock.Verify(
-                v => v.NotifyEmailVerificationAsync(
+            outboxStoreServiceMock.Verify(
+                v => v.QueueEmailVerificationEventAsync(
                     It.Is<string>(s => s == HdIdMock),
                     It.Is<string>(s => s == email),
                     It.Is<bool>(b => b == false),
@@ -287,7 +287,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
             bool changeFeedEnabled = false,
             DbResult<UserProfile>? updateUserProfileResult = null,
-            Mock<IJobService>? jobServiceMock = null,
+            Mock<IOutboxStoreService>? outboxStoreServiceMock = null,
             Mock<IUserProfileNotificationSettingService>? userProfileNotificationSettingServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
             Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
@@ -306,7 +306,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             notificationSettingsServiceMock ??= new();
             userProfileNotificationSettingServiceMock ??= new();
-            jobServiceMock ??= new();
+            outboxStoreServiceMock ??= new();
             backgroundJobClientMock ??= new();
             transactionProviderMock ??= GetTransactionProviderMock();
             emailQueueServiceMock ??= new();
@@ -318,7 +318,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 emailQueueServiceMock.Object,
                 notificationSettingsServiceMock.Object,
                 userProfileNotificationSettingServiceMock.Object,
-                jobServiceMock.Object,
+                outboxStoreServiceMock.Object,
                 backgroundJobClientMock.Object,
                 transactionProviderMock.Object,
                 GetConfiguration(changeFeedEnabled));

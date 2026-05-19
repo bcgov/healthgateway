@@ -91,7 +91,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ExpireDate = DateTime.UtcNow.AddDays(smsVerificationExpired ? -1 : 1),
             };
 
-            Mock<IJobService> jobServiceMock = new();
+            Mock<IOutboxStoreService> outboxStoreServiceMock = new();
             Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
             Mock<IBackgroundJobClient> backgroundJobClientMock = new();
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
@@ -99,7 +99,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserSmsService service = GetUserSmsService(
                 messagingVerification: verification,
                 userProfile: userProfile,
-                jobServiceMock: jobServiceMock,
+                outboxStoreServiceMock: outboxStoreServiceMock,
                 notificationSettingsServiceMock: notificationSettingsServiceMock,
                 profileNotificationSettingServiceMock: profileNotificationSettingServiceMock,
                 backgroundJobClientMock: backgroundJobClientMock,
@@ -115,8 +115,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Times successPathTimes = shouldValidate ? Times.Once() : Times.Never();
             Times changeFeedTimes = shouldValidate && changeFeedEnabled ? Times.Once() : Times.Never();
 
-            jobServiceMock.Verify(
-                v => v.NotifySmsVerificationAsync(
+            outboxStoreServiceMock.Verify(
+                v => v.QueueSmsVerificationEventAsync(
                     HdIdMock,
                     It.IsAny<string>(),
                     false,
@@ -288,7 +288,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             MessagingVerification? messagingVerification = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             UserProfile? userProfile = null,
-            Mock<IJobService>? jobServiceMock = null,
+            Mock<IOutboxStoreService>? outboxStoreServiceMock = null,
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
             Mock<IUserProfileNotificationSettingService>? profileNotificationSettingServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
@@ -315,7 +315,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             notificationSettingsServiceMock ??= new();
             profileNotificationSettingServiceMock ??= new();
-            jobServiceMock ??= new();
+            outboxStoreServiceMock ??= new();
             backgroundJobClientMock ??= new();
             transactionProviderMock ??= GetTransactionProviderMock();
 
@@ -325,7 +325,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileDelegateMock.Object,
                 notificationSettingsServiceMock.Object,
                 profileNotificationSettingServiceMock.Object,
-                jobServiceMock.Object,
+                outboxStoreServiceMock.Object,
                 backgroundJobClientMock.Object,
                 transactionProviderMock.Object,
                 GetConfiguration(changeFeedEnabled));

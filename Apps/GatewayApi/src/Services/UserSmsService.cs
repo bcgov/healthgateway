@@ -51,7 +51,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileNotificationSettingService profileNotificationSettingService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IJobService jobService;
+        private readonly IOutboxStoreService outboxStoreService;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IGatewayDbContextTransactionProvider transactionProvider;
         private readonly ChangeFeedOptions changeFeedConfiguration;
@@ -64,7 +64,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
-        /// <param name="jobService">The job service.</param>
+        /// <param name="outboxStoreService">The outbox store service.</param>
         /// <param name="backgroundJobClient">Hangfire background job client.</param>
         /// <param name="transactionProvider">
         /// Provides database transaction and persistence operations for the current request
@@ -78,7 +78,7 @@ namespace HealthGateway.GatewayApi.Services
             IUserProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService,
             IUserProfileNotificationSettingService profileNotificationSettingService,
-            IJobService jobService,
+            IOutboxStoreService outboxStoreService,
             IBackgroundJobClient backgroundJobClient,
             IGatewayDbContextTransactionProvider transactionProvider,
             IConfiguration configuration)
@@ -88,7 +88,7 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.profileNotificationSettingService = profileNotificationSettingService;
-            this.jobService = jobService;
+            this.outboxStoreService = outboxStoreService;
             this.backgroundJobClient = backgroundJobClient;
             this.transactionProvider = transactionProvider;
             this.changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>() ?? new();
@@ -117,7 +117,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (this.changeFeedConfiguration.Notifications.Enabled)
                 {
                     // Store an event indicating sms was verified.
-                    await this.jobService.NotifySmsVerificationAsync(hdid, smsVerification.SmsNumber, false, ct);
+                    await this.outboxStoreService.QueueSmsVerificationEventAsync(hdid, smsVerification.SmsNumber, false, ct);
                 }
 
                 // Enable default user profile notification settings after successful verification

@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApi.Services
     /// <summary>
     /// The Job service.
     /// </summary>
-    public interface IJobService
+    public interface IOutboxStoreService
     {
         /// <summary>
         /// Creates an event to notify that the account was created.
@@ -30,7 +30,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task NotifyAccountCreationAsync(string hdid, bool shouldCommit = true, CancellationToken ct = default);
+        Task QueueAccountCreatedEventAsync(string hdid, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Notifies email verification was successful.
@@ -40,7 +40,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task NotifyEmailVerificationAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default);
+        Task QueueEmailVerificationEventAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Notifies sms verification was successful.
@@ -50,6 +50,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task NotifySmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default);
+        Task QueueSmsVerificationEventAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default);
     }
 }

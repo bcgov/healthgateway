@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
@@ -41,7 +42,7 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
     /// <param name="cryptoDelegate">The injected crypto delegate.</param>
     /// <param name="messagingVerificationService">The injected message verification service.</param>
-    /// <param name="jobService">The injected job service.</param>
+    /// <param name="outboxStoreService">The injected job service.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
     /// <param name="emailQueueService">The injected email queue service.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
@@ -58,7 +59,7 @@ namespace HealthGateway.GatewayApi.Services
         IAuthenticationDelegate authenticationDelegate,
         ICryptoDelegate cryptoDelegate,
         IMessagingVerificationService messagingVerificationService,
-        IJobService jobService,
+        IOutboxStoreService outboxStoreService,
         IPatientDetailsService patientDetailsService,
         IUserProfileDelegate userProfileDelegate,
         IUserProfileModelService userProfileModelService,
@@ -78,6 +79,10 @@ namespace HealthGateway.GatewayApi.Services
         private readonly bool notificationsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Notifications.Enabled ?? false;
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Maintainability",
+            "CA1506:Avoid excessive class coupling",
+            Justification = "Service orchestration method requiring multiple domain dependencies.")]
         public async Task<UserProfileModel> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
             string hdid = createProfileRequest.Profile.HdId;
@@ -122,7 +127,7 @@ namespace HealthGateway.GatewayApi.Services
                 LastLoginClientCode = authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
 
-            // add user profile to DB and commit changes
+            // add user profile to DB
             await userProfileDelegate.InsertUserProfileAsync(profile, false, ct);
 
             if (emailVerification != null && !isEmailVerified)
@@ -134,13 +139,13 @@ namespace HealthGateway.GatewayApi.Services
             if (this.accountsChangeFeedEnabled)
             {
                 // Store an event indicating the account was created.
-                await jobService.NotifyAccountCreationAsync(profile.HdId, false, ct);
+                await outboxStoreService.QueueAccountCreatedEventAsync(profile.HdId, false, ct);
             }
 
             if (isEmailVerified && this.notificationsChangeFeedEnabled)
             {
                 // Store an event indicating the email was verified.
-                await jobService.NotifyEmailVerificationAsync(profile.HdId, requestedEmail, false, ct);
+                await outboxStoreService.QueueEmailVerificationEventAsync(profile.HdId, requestedEmail, false, ct);
             }
 
             // Persist changes within transaction
