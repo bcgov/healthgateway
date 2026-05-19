@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The Job service.
@@ -28,9 +27,10 @@ namespace HealthGateway.GatewayApi.Services
         /// Creates an event to notify that the account was created.
         /// </summary>
         /// <param name="hdid">The hdid associated with the account.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task NotifyAccountCreationAsync(string hdid, CancellationToken ct = default);
+        Task NotifyAccountCreationAsync(string hdid, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Notifies email verification was successful.
@@ -51,35 +51,5 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task NotifySmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default);
-
-        /// <summary>
-        /// Queues email to be sent.
-        /// </summary>
-        /// <param name="email">The email to queue.</param>
-        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task SendEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default);
-
-        /// <summary>
-        /// Queues email to be sent.
-        /// </summary>
-        /// <param name="emailAddress">The to email address.</param>
-        /// <param name="emailTemplateName">The email template to use.</param>
-        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task SendEmailAsync(string emailAddress, string emailTemplateName, bool shouldCommit = true, CancellationToken ct = default);
-
-        /// <summary>
-        /// Queues job to push notification settings to PHSA.
-        /// </summary>
-        /// <param name="userProfile">The user profile for the notification settings.</param>
-        /// <param name="email">Email address for the notification settings.</param>
-        /// <param name="smsNumber">SMS Number for the notification settings.</param>
-        /// <param name="smsVerificationCode">The code used to validate the ownership of the number.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task QueueNotificationSettingsRequestAsync(UserProfile userProfile, string? email, string? smsNumber, string? smsVerificationCode = null, CancellationToken ct = default);
     }
 }
