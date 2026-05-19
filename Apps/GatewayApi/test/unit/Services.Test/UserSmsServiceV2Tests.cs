@@ -28,6 +28,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -83,10 +85,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             await mock.Service.UpdateSmsNumberAsync(Hdid, sms, CancellationToken.None);
 
             // Assert and Verify
-            VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
             VerifyVerificationExpire(mock.MessagingVerificationDelegateMock, expectedVerificationExpireTimes);
-            VerifyVerificationInsert(mock.MessagingVerificationDelegateMock, expectedVerificationInsertTimes);
-            VerifyQueueNotificationSettingsRequest(mock.JobServiceMock);
+            VerifyAddSmsVerification(mock.MessagingVerificationServiceMock, expectedVerificationInsertTimes);
+            VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
         }
 
         /// <summary>
@@ -102,7 +103,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Theory]
         [InlineData(SmsNumberInvalid, false, null, typeof(ValidationException))]
         [InlineData(SmsNumber, false, null, typeof(NotFoundException))]
-        [InlineData(SmsNumber, true, DbStatusCode.Error, typeof(DatabaseException))]
         public async Task UpdateSmsNumberShouldThrowsExceptionAsync(
             string sms,
             bool userProfileExists,
@@ -145,8 +145,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.True(actual);
 
             VerifyNotifySmsVerification(mock.JobServiceMock, expectedNotificationChannelVerifiedEventTimes);
-            VerifyUserProfileNotificationSettingsUpdate(mock.NotificationSettingServiceMock, mock.BackgroundJobClientMock);
-            VerifyQueueNotificationSettingsRequest(mock.JobServiceMock);
+            VerifyUserProfileNotificationSettingsUpdate(mock.ProfileNotificationSettingServiceMock, mock.BackgroundJobClientMock);
+            VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.False(actual);
 
             VerifyNotifySmsVerification(mock.JobServiceMock, Times.Never());
-            VerifyQueueNotificationSettingsRequest(mock.JobServiceMock, Times.Never());
+            VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock, Times.Never());
         }
 
         private static void VerifyNotifySmsVerification(Mock<IJobService> jobServiceMock, Times? times = null)
@@ -191,14 +191,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 times ?? Times.Once());
         }
 
-        private static void VerifyQueueNotificationSettingsRequest(Mock<IJobService> jobServiceMock, Times? times = null)
+        private static void VerifyQueueNotificationSettings(Mock<INotificationSettingsService> notificationSettingsServiceMock, Times? times = null)
         {
-            jobServiceMock.Verify(
-                v => v.QueueNotificationSettingsRequestAsync(
-                    It.IsAny<UserProfile>(),
-                    It.IsAny<string?>(),
-                    It.IsAny<string?>(),
-                    It.IsAny<string?>(),
+            notificationSettingsServiceMock.Verify(
+                v => v.QueueNotificationSettingsAsync(
+                    It.IsAny<NotificationSettingsRequest>(),
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
         }
@@ -226,16 +223,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 times ?? Times.Once());
         }
 
-        private static void VerifyUserProfileUpdate(Mock<IUserProfileDelegate> userProfileDelegateMock, Times? times = null)
-        {
-            userProfileDelegateMock.Verify(
-                v => v.UpdateAsync(
-                    It.IsAny<UserProfile>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()),
-                times ?? Times.Once());
-        }
-
         private static void VerifyVerificationExpire(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
         {
             messagingVerificationDelegateMock.Verify(
@@ -247,12 +234,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 times ?? Times.Once());
         }
 
-        private static void VerifyVerificationInsert(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
+        private static void VerifyAddSmsVerification(
+            Mock<IMessagingVerificationService> messagingVerificationServiceMock,
+            Times? times = null)
         {
-            messagingVerificationDelegateMock.Verify(
-                s => s.InsertAsync(
-                    It.IsAny<MessagingVerification>(),
-                    It.IsAny<bool>(),
+            messagingVerificationServiceMock.Verify(
+                s => s.AddSmsVerificationAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.Is<bool>(x => !x),
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
         }
@@ -362,6 +352,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
             Mock<IMessagingVerificationService>? messagingVerificationServiceMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
             Mock<IUserProfileNotificationSettingService>? userProfileNotificationSettingServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
             Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
@@ -371,6 +362,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegateMock ??= new();
             messagingVerificationServiceMock ??= new();
             userProfileDelegateMock ??= new();
+            notificationSettingsServiceMock ??= new();
             userProfileNotificationSettingServiceMock ??= new();
             backgroundJobClientMock ??= new();
             transactionProviderMock ??= GetTransactionProviderMock();
@@ -379,6 +371,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ILogger<UserSmsServiceV2>>().Object,
                 messagingVerificationDelegateMock.Object,
                 messagingVerificationServiceMock.Object,
+                notificationSettingsServiceMock.Object,
                 userProfileNotificationSettingServiceMock.Object,
                 userProfileDelegateMock.Object,
                 jobServiceMock.Object,
@@ -403,18 +396,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static Mock<IMessagingVerificationService> SetupMessagingVerificationServiceMock(MessagingVerification messagingVerification)
         {
-            Mock<IMessagingVerificationService> messagingVerificationMock = new();
+            Mock<IMessagingVerificationService> messagingVerificationServiceMock = new();
 
             if (messagingVerification.VerificationType == MessagingVerificationType.Sms)
             {
-                messagingVerificationMock.Setup(s => s.GenerateMessagingVerification(
+                messagingVerificationServiceMock.Setup(s => s.AddSmsVerificationAsync(
                         It.IsAny<string>(),
                         It.IsAny<string>(),
-                        It.IsAny<bool>()))
-                    .Returns(messagingVerification);
+                        It.Is<bool>(x => !x),
+                        It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(messagingVerification);
             }
 
-            return messagingVerificationMock;
+            return messagingVerificationServiceMock;
         }
 
         private static Mock<IUserProfileDelegate> SetupUserProfileDelegateMock(
@@ -464,12 +458,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 : null;
 
             MessagingVerification smsVerification = GenerateMessagingVerification(MessagingVerificationType.Sms, hdid, sms, smsValidationCode);
-
-            Mock<IJobService> jobServiceMock = new();
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = SetupMessagingVerificationDelegateMock(lastSmsVerification);
             Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(
                 userProfile: userProfile);
             Mock<IMessagingVerificationService> messagingVerificationServiceMock = SetupMessagingVerificationServiceMock(smsVerification);
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
 
             if (updateProfileStatus != null)
             {
@@ -483,16 +476,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
 
             IUserSmsServiceV2 service = GetUserSmsService(
-                jobServiceMock,
-                messagingVerificationDelegateMock,
-                messagingVerificationServiceMock,
-                userProfileDelegateMock);
+                messagingVerificationDelegateMock: messagingVerificationDelegateMock,
+                messagingVerificationServiceMock: messagingVerificationServiceMock,
+                userProfileDelegateMock: userProfileDelegateMock,
+                notificationSettingsServiceMock: notificationSettingsServiceMock);
 
             return new(
                 service,
-                jobServiceMock,
+                notificationSettingsServiceMock,
                 messagingVerificationDelegateMock,
-                userProfileDelegateMock);
+                messagingVerificationServiceMock);
         }
 
         private static VerifySmsNumberMock SetupVerifySmsNumberMock(
@@ -524,7 +517,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(
                 userProfile: userProfile,
                 updateProfileResult: updateProfileResult);
-            Mock<IUserProfileNotificationSettingService> notificationSettingServiceMock = new();
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
             Mock<IBackgroundJobClient> backgroundJobClientMock = new();
 
             IUserSmsServiceV2 service = GetUserSmsService(
@@ -532,23 +526,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationDelegateMock,
                 messagingVerificationServiceMock,
                 userProfileDelegateMock,
-                notificationSettingServiceMock,
+                notificationSettingsServiceMock,
+                profileNotificationSettingServiceMock,
                 backgroundJobClientMock,
                 changeFeedEnabled: changeFeedEnabled);
 
-            return new(service, jobServiceMock, notificationSettingServiceMock, backgroundJobClientMock);
+            return new(service, jobServiceMock, notificationSettingsServiceMock, profileNotificationSettingServiceMock, backgroundJobClientMock);
         }
 
         private sealed record UpdateSmsNumberMock(
             IUserSmsServiceV2 Service,
-            Mock<IJobService> JobServiceMock,
+            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
             Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
-            Mock<IUserProfileDelegate> UserProfileDelegateMock);
+            Mock<IMessagingVerificationService> MessagingVerificationServiceMock);
 
         private sealed record VerifySmsNumberMock(
             IUserSmsServiceV2 Service,
             Mock<IJobService> JobServiceMock,
-            Mock<IUserProfileNotificationSettingService> NotificationSettingServiceMock,
+            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
+            Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock,
             Mock<IBackgroundJobClient> BackgroundJobClientMock);
     }
 }
