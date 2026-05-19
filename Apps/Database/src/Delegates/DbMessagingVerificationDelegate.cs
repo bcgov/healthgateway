@@ -25,6 +25,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -76,7 +77,13 @@ namespace HealthGateway.Database.Delegates
         public async Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
             logger.LogDebug("Updating messaging verification in DB with ID {MessagingVerificationId}", messageVerification.Id);
-            dbContext.Update(messageVerification);
+
+            EntityEntry<MessagingVerification> entry = dbContext.Entry(messageVerification);
+
+            if (entry.State == EntityState.Detached)
+            {
+                dbContext.MessagingVerification.Update(messageVerification);
+            }
 
             if (commit)
             {
