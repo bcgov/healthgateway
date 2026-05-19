@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Provides a mechanism to store an email to the dabase and queue it for delivery.
+    /// Provides a mechanism to store an email to the database and queue it for delivery.
     /// The batch scheduler will pickup the queued email and process it.
     /// </summary>
     public interface IEmailQueueService
@@ -72,6 +72,18 @@ namespace HealthGateway.Common.Services
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task QueueNewEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default);
+
+        /// <summary>
+        /// Queues an email using the specified template and returns the populated email entity.
+        /// The email record is added to the database and can be dispatched after transaction commit.
+        /// </summary>
+        /// <param name="toEmail">The recipient email address.</param>
+        /// <param name="templateName">The email template name.</param>
+        /// <param name="keyValues">Template replacement values.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The populated email entity.</returns>
+        Task<Email> QueueNewEmailAndReturnAsync(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Looks up an Email Template in the database.
