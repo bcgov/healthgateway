@@ -16,11 +16,13 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -36,7 +38,7 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="configuration">The injected configuration.</param>
     /// <param name="authenticationDelegate">The injected authentication delegate.</param>
     /// <param name="userProfileModelService">The injected user profile model service.</param>
-    /// <param name="jobService">The injected job service.</param>
+    /// <param name="emailQueueService">The email service to queue emails.</param>
     public class UserProfileServiceV2(
         ILogger<UserProfileServiceV2> logger,
         IPatientDetailsService patientDetailsService,
@@ -44,11 +46,12 @@ namespace HealthGateway.GatewayApi.Services
         IConfiguration configuration,
         IAuthenticationDelegate authenticationDelegate,
         IUserProfileModelService userProfileModelService,
-        IJobService jobService) : IUserProfileServiceV2
+        IEmailQueueService emailQueueService) : IUserProfileServiceV2
     {
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private const string WebClientConfigSection = "WebClient";
         private readonly int userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection).GetValue(UserProfileHistoryRecordLimitKey, 4);
+        private readonly EmailTemplateConfig emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
 
         /// <inheritdoc/>
         public async Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
@@ -96,7 +99,11 @@ namespace HealthGateway.GatewayApi.Services
                 throw new DatabaseException(dbResult.Message);
             }
 
-            await this.SendEmailAsync(dbResult.Payload.Email, EmailTemplateName.AccountClosedTemplate, ct);
+            if (!string.IsNullOrWhiteSpace(dbResult.Payload.Email))
+            {
+                Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = this.emailTemplateConfig.Host };
+                await emailQueueService.QueueNewEmailAsync(dbResult.Payload.Email, EmailTemplateName.AccountClosedTemplate, keyValues, ct: ct);
+            }
         }
 
         /// <inheritdoc/>
@@ -119,7 +126,11 @@ namespace HealthGateway.GatewayApi.Services
                 throw new DatabaseException(dbResult.Message);
             }
 
-            await this.SendEmailAsync(dbResult.Payload.Email, EmailTemplateName.AccountRecoveredTemplate, ct);
+            if (!string.IsNullOrWhiteSpace(dbResult.Payload.Email))
+            {
+                Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = this.emailTemplateConfig.Host };
+                await emailQueueService.QueueNewEmailAsync(dbResult.Payload.Email, EmailTemplateName.AccountRecoveredTemplate, keyValues, ct: ct);
+            }
         }
 
         /// <inheritdoc/>
@@ -132,14 +143,6 @@ namespace HealthGateway.GatewayApi.Services
             if (result.Status != DbStatusCode.Updated)
             {
                 throw new DatabaseException(result.Message);
-            }
-        }
-
-        private async Task SendEmailAsync(string? emailAddress, string emailTemplateName, CancellationToken ct)
-        {
-            if (!string.IsNullOrWhiteSpace(emailAddress))
-            {
-                await jobService.SendEmailAsync(emailAddress, emailTemplateName, ct: ct);
             }
         }
     }
