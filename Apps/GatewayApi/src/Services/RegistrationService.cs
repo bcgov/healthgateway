@@ -19,17 +19,21 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading;
     using System.Threading.Tasks;
     using FluentValidation;
+    using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
+    using HealthGateway.Database.Providers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
@@ -39,8 +43,15 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="messagingVerificationService">The injected message verification service.</param>
     /// <param name="jobService">The injected job service.</param>
     /// <param name="patientDetailsService">The injected patient details service.</param>
+    /// <param name="emailQueueService">The injected email queue service.</param>
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
     /// <param name="userProfileModelService">The injected user profile model service.</param>
+    /// <param name="notificationSettingsService">Notification settings service.</param>
+    /// <param name="backgroundJobClient">Hangfire background job client.</param>
+    /// <param name="transactionProvider">
+    /// Provides database transaction and persistence operations for the current request
+    /// scope.
+    /// </param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
     public class RegistrationService(
         IConfiguration configuration,
@@ -50,7 +61,11 @@ namespace HealthGateway.GatewayApi.Services
         IJobService jobService,
         IPatientDetailsService patientDetailsService,
         IUserProfileDelegate userProfileDelegate,
-        IUserProfileModelService userProfileModelService) : IRegistrationService
+        IUserProfileModelService userProfileModelService,
+        IEmailQueueService emailQueueService,
+        INotificationSettingsService notificationSettingsService,
+        IBackgroundJobClient backgroundJobClient,
+        IGatewayDbContextTransactionProvider transactionProvider) : IRegistrationService
     {
         private const string MinPatientAgeKey = "MinPatientAge";
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
@@ -78,9 +93,18 @@ namespace HealthGateway.GatewayApi.Services
                 await new AgeRangeValidator(this.minPatientAge).ValidateAndThrowAsync(patient.Birthdate.ToDateTime(TimeOnly.MinValue), ct);
             }
 
-            // add SMS and email messaging verifications to DB without committing changes
-            MessagingVerification? smsVerification = await this.AddSmsVerification(hdid, requestedSmsNumber, ct);
-            MessagingVerification? emailVerification = await this.AddEmailVerification(hdid, requestedEmail, isEmailVerified, ct);
+            // Begin transaction for all database updates
+            await using IDbContextTransaction transaction =
+                await transactionProvider.BeginTransactionAsync(ct);
+
+            // Generate and add SMS messaging verification to DB without committing changes
+            MessagingVerification? smsVerification = !string.IsNullOrWhiteSpace(requestedSmsNumber)
+                ? await messagingVerificationService.AddSmsVerificationAsync(hdid, requestedSmsNumber, false, ct)
+                : null;
+
+            MessagingVerification? emailVerification = !string.IsNullOrWhiteSpace(requestedEmail)
+                ? await messagingVerificationService.AddEmailVerificationAsync(hdid, requestedEmail, isEmailVerified, false, ct)
+                : null;
 
             // initialize user profile
             UserProfile profile = new()
@@ -99,65 +123,49 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             // add user profile to DB and commit changes
-            DbResult<UserProfile> dbResult = await userProfileDelegate.InsertUserProfileAsync(profile, true, ct);
-            if (dbResult.Status != DbStatusCode.Created)
-            {
-                throw new DatabaseException(dbResult.Message);
-            }
+            await userProfileDelegate.InsertUserProfileAsync(profile, false, ct);
 
-            // queue verification email
             if (emailVerification != null && !isEmailVerified)
             {
-                await jobService.SendEmailAsync(emailVerification.Email, true, ct);
+                // Persist the email for background processing.
+                await emailQueueService.QueueNewEmailAsync(emailVerification.Email, false, ct);
             }
 
-            // notify partners about new account
-            await this.NotifyAccountCreated(profile, requestedEmail, requestedSmsNumber, isEmailVerified, smsVerification?.SmsValidationCode, ct);
+            if (this.accountsChangeFeedEnabled)
+            {
+                // Store an event indicating the account was created.
+                await jobService.NotifyAccountCreationAsync(profile.HdId, false, ct);
+            }
+
+            if (isEmailVerified && this.notificationsChangeFeedEnabled)
+            {
+                // Store an event indicating the email was verified.
+                await jobService.NotifyEmailVerificationAsync(profile.HdId, requestedEmail, false, ct);
+            }
+
+            // Persist changes within transaction
+            await transactionProvider.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            // Dispatch outbox events after commit
+            backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                store.DispatchOutboxItemsAsync(ct));
+
+            if (emailVerification != null && !isEmailVerified)
+            {
+                // Queue a background job to send the email.
+                backgroundJobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(emailVerification.Email!.Id, ct));
+            }
+
+            // Queue background jobs to push notification settings updates for the primary user and corresponding dependent(s).
+            NotificationSettingsRequest notificationSettingsRequest = new(profile, profile.Email, profile.SmsNumber)
+            {
+                SmsVerificationCode = smsVerification?.SmsValidationCode,
+            };
+            await notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
 
             // build and return model
             return await userProfileModelService.BuildUserProfileModelAsync(profile, this.userProfileHistoryRecordLimit, ct);
-        }
-
-        private async Task<MessagingVerification?> AddSmsVerification(string hdid, string? requestedSmsNumber, CancellationToken ct)
-        {
-            MessagingVerification? smsVerification = null;
-            if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
-            {
-                // Generate amd add SMS messaging verification to DB without committing changes
-                smsVerification = await messagingVerificationService.AddSmsVerificationAsync(hdid, requestedSmsNumber, false, ct);
-            }
-
-            return smsVerification;
-        }
-
-        private async Task<MessagingVerification?> AddEmailVerification(string hdid, string? requestedEmail, bool isEmailVerified, CancellationToken ct)
-        {
-            MessagingVerification? emailVerification = null;
-            if (!string.IsNullOrWhiteSpace(requestedEmail))
-            {
-                // Generate amd add email messaging verification to DB without committing changes
-                emailVerification = await messagingVerificationService.AddEmailVerificationAsync(hdid, requestedEmail, isEmailVerified, false, ct);
-            }
-
-            return emailVerification;
-        }
-
-        private async Task NotifyAccountCreated(UserProfile profile, string requestedEmail, string requestedSmsNumber, bool isEmailVerified, string smsVerificationCode, CancellationToken ct)
-        {
-            // notify account was created
-            if (this.accountsChangeFeedEnabled)
-            {
-                await jobService.NotifyAccountCreationAsync(profile.HdId, ct);
-            }
-
-            // notify email verification was successful
-            if (isEmailVerified && this.notificationsChangeFeedEnabled)
-            {
-                await jobService.NotifyEmailVerificationAsync(profile.HdId, requestedEmail, ct: ct);
-            }
-
-            // queue notification settings job
-            await jobService.QueueNotificationSettingsRequestAsync(profile, profile.Email, requestedSmsNumber, smsVerificationCode, ct);
         }
     }
 }
