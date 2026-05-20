@@ -146,7 +146,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
             ];
 
-            // Store an event indicating user profile notification setting haa been defaulted.
+            // Store an event indicating user profile notification settings have been defaulted.
             await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
 
             // Persist changes within transaction
