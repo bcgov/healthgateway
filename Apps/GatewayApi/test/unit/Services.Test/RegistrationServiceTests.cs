@@ -123,7 +123,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Assert
             VerifyNotifyAccountCreation(
-                mock.JobServiceMock,
+                mock.OutboxStoreServiceMock,
                 accountsChangeFeedEnabled ? Times.Once() : Times.Never());
         }
 
@@ -193,7 +193,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Assert
             VerifyNotifyEmailVerification(
-                mock.JobServiceMock,
+                mock.OutboxStoreServiceMock,
                 expectedNotification ? Times.Once() : Times.Never());
         }
 
