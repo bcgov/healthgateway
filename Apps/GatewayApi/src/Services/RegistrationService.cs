@@ -162,11 +162,15 @@ namespace HealthGateway.GatewayApi.Services
                 backgroundJobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(emailVerification.Email!.Id, ct));
             }
 
-            // Queue background jobs to push notification settings updates for the primary user and corresponding dependent(s).
+            // Intentionally use profile.SmsNumber here.
+            // The requested SMS number is not persisted to UserProfile.SmsNumber until SMS verification succeeds.
+            // UserSmsServiceV2.VerifySmsNumberAsync updates UserProfile.SmsNumber after successful verification.
             NotificationSettingsRequest notificationSettingsRequest = new(profile, profile.Email, profile.SmsNumber)
             {
                 SmsVerificationCode = smsVerification?.SmsValidationCode,
             };
+
+            // Queue background jobs to push notification settings updates for the primary user and corresponding dependent(s).
             await notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
 
             // build and return model
