@@ -26,7 +26,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using Xunit;
 
     /// <summary>
-    /// JobService's Unit Tests.
+    /// OutboxStoreService's Unit Tests.
     /// </summary>
     public class OutboxStoreServiceTests
     {
