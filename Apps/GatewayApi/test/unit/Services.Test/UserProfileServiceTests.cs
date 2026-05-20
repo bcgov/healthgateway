@@ -40,6 +40,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Utils;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -830,6 +831,83 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             actual.ShouldDeepEqual(expected);
         }
 
+        [Theory]
+        [InlineData("Create", "Concurrency")]
+        [InlineData("Create", "Database")]
+        [InlineData("Close", "Concurrency")]
+        [InlineData("Close", "Database")]
+        [InlineData("Recover", "Concurrency")]
+        [InlineData("Recover", "Database")]
+        public async Task ShouldReturnServiceErrorWhenTransactionSaveFails(string action, string exceptionType)
+        {
+            // Arrange
+            Mock<IGatewayDbContextTransactionProvider> transactionProviderMock =
+                GetFailingTransactionProviderMock(exceptionType);
+
+            RequestResult<UserProfileModel> actual;
+
+            switch (action)
+            {
+                case "Create":
+                    actual = await SetupCreateUserProfileMock(
+                            true,
+                            true,
+                            10,
+                            SmsNumber,
+                            GeneratePatientResult(patientModel: GeneratePatientModel(DateTime.UtcNow.AddYears(-10))),
+                            transactionProviderMock)
+                        .Service
+                        .CreateUserProfileAsync(
+                            new CreateUserRequest
+                            {
+                                Profile = new(Hdid, TermsOfServiceGuid, SmsNumber, Email),
+                            },
+                            DateTime.UtcNow,
+                            Email);
+                    break;
+
+                case "Close":
+                    actual = await SetupCloseUserProfileMock(
+                            new UserProfile
+                            {
+                                HdId = Hdid,
+                                TermsOfServiceId = TermsOfServiceGuid,
+                                Email = Email,
+                                LastLoginDateTime = DateTime.UtcNow,
+                            },
+                            transactionProviderMock)
+                        .Service
+                        .CloseUserProfileAsync(Hdid, Guid.NewGuid());
+                    break;
+
+                case "Recover":
+                    actual = await SetupRecoverUserProfileMock(
+                            new DbResult<UserProfile>(),
+                            new UserProfile
+                            {
+                                HdId = Hdid,
+                                TermsOfServiceId = TermsOfServiceGuid,
+                                Email = Email,
+                                ClosedDateTime = DateTime.UtcNow,
+                                LastLoginDateTime = DateTime.UtcNow,
+                            },
+                            transactionProviderMock)
+                        .Service
+                        .RecoverUserProfileAsync(Hdid);
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            Assert.Null(actual.ResourcePayload);
+            Assert.Equal(
+                ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                actual.ResultError?.ErrorCode);
+        }
+
         private static PatientModel GeneratePatientModel(DateTime birthDate)
         {
             return new()
@@ -915,6 +993,26 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
         }
 
+        private static Mock<IGatewayDbContextTransactionProvider> GetFailingTransactionProviderMock(string exceptionType)
+        {
+            Mock<IGatewayDbContextTransactionProvider> transactionProviderMock = new();
+            Mock<IDbContextTransaction> transactionMock = new();
+
+            Exception exception = exceptionType == "Concurrency"
+                ? new DbUpdateConcurrencyException("Concurrency error")
+                : new DbUpdateException("Database error");
+
+            transactionProviderMock
+                .Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(transactionMock.Object);
+
+            transactionProviderMock
+                .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(exception);
+
+            return transactionProviderMock;
+        }
+
         private static IConfigurationRoot GetIConfiguration(
             int minPatientAge = 12,
             int profileHistoryRecordLimit = 2,
@@ -939,7 +1037,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool notificationsFeedEnabled,
             int minPatientAge,
             string smsNumber,
-            RequestResult<PatientModel> patientResult)
+            RequestResult<PatientModel> patientResult,
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
 
@@ -1037,7 +1136,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 applicationSettingsServiceMock: applicationSettingsServiceMock,
                 messagingVerificationServiceMock: messagingVerificationServiceMock,
                 outboxStoreServiceMock: outboxStoreServiceMock,
-                backgroundJobClientMock: backgroundJobClientMock);
+                backgroundJobClientMock: backgroundJobClientMock,
+                transactionProviderMock: transactionProviderMock);
 
             return new CreateUserProfileMock(
                 service,
@@ -1209,7 +1309,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         private static CloseUserProfileMock SetupCloseUserProfileMock(
-            UserProfile? readUserProfile)
+            UserProfile? readUserProfile,
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
         {
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime latestTourDate = new(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -1264,12 +1365,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 legalAgreementServiceMock: legalAgreementServiceMock,
                 userPreferenceServiceMock: userPreferenceServiceMock,
                 applicationSettingsServiceMock: applicationSettingsServiceMock,
-                patientRepositoryMock: patientRepositoryMock);
+                patientRepositoryMock: patientRepositoryMock,
+                transactionProviderMock: transactionProviderMock);
 
             return new(service, emailQueueServiceMock);
         }
 
-        private static RecoverUserProfileMock SetupRecoverUserProfileMock(DbResult<UserProfile> updateResult, UserProfile? readUserProfile)
+        private static RecoverUserProfileMock SetupRecoverUserProfileMock(
+            DbResult<UserProfile> updateResult,
+            UserProfile? readUserProfile,
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
         {
             Guid latestTermsOfServiceId = Guid.NewGuid();
             DateTime latestTourDate = new(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -1330,7 +1435,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 legalAgreementServiceMock: legalAgreementServiceMock,
                 userPreferenceServiceMock: userPreferenceServiceMock,
                 applicationSettingsServiceMock: applicationSettingsServiceMock,
-                patientRepositoryMock: patientRepositoryMock);
+                patientRepositoryMock: patientRepositoryMock,
+                transactionProviderMock: transactionProviderMock);
 
             return new(service, emailQueueServiceMock);
         }
@@ -1384,7 +1490,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationService>? messagingVerificationServiceMock = null,
             Mock<IOutboxStoreService>? outboxStoreServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
-            Mock<IGatewayDbContextTransactionProvider>? transactionProvideMock = null)
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
         {
             patientServiceMock ??= new();
             emailQueueServiceMock ??= new();
@@ -1400,7 +1506,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationServiceMock ??= new();
             outboxStoreServiceMock ??= new();
             backgroundJobClientMock ??= new();
-            transactionProvideMock ??= GetTransactionProviderMock();
+            transactionProviderMock ??= GetTransactionProviderMock();
 
             return new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -1420,7 +1526,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationServiceMock.Object,
                 outboxStoreServiceMock.Object,
                 backgroundJobClientMock.Object,
-                transactionProvideMock.Object);
+                transactionProviderMock.Object);
         }
 
         private sealed record CreateUserProfileMock(

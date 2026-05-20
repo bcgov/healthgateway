@@ -41,6 +41,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -282,9 +283,22 @@ namespace HealthGateway.GatewayApi.Services
                 notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
             }
 
-            // Persist changes within transaction
-            await this.transactionProvider.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+            try
+            {
+                // Persist changes within transaction
+                await this.transactionProvider.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                this.logger.LogError(e, "Concurrency error saving transaction");
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+            }
+            catch (DbUpdateException e)
+            {
+                this.logger.LogError(e, "Database error persisting changes");
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+            }
 
             // Dispatch outbox events after commit
             this.logger.LogDebug("Dispatching events after commit");
@@ -344,9 +358,22 @@ namespace HealthGateway.GatewayApi.Services
                     ct);
             }
 
-            // Persist changes within transaction
-            await this.transactionProvider.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+            try
+            {
+                // Persist changes within transaction
+                await this.transactionProvider.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                this.logger.LogError(e, "Concurrency error saving transaction");
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+            }
+            catch (DbUpdateException e)
+            {
+                this.logger.LogError(e, "Database error persisting changes");
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+            }
 
             // Dispatch email event after commit
             if (email is not null && email.Id != Guid.Empty)
@@ -393,9 +420,22 @@ namespace HealthGateway.GatewayApi.Services
                     ct);
             }
 
-            // Persist changes within transaction
-            await this.transactionProvider.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+            try
+            {
+                // Persist changes within transaction
+                await this.transactionProvider.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                this.logger.LogError(e, "Concurrency error saving transaction");
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+            }
+            catch (DbUpdateException e)
+            {
+                this.logger.LogError(e, "Database error persisting changes");
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+            }
 
             // Dispatch email event after commit
             if (email is not null && email.Id != Guid.Empty)
