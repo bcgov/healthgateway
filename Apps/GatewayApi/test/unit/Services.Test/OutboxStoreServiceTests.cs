@@ -88,7 +88,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// Verifies that ueueSmsVerificationEvent enqueues a notification event
+        /// Verifies that QueueSmsVerificationEvent enqueues a notification event
         /// and correctly passes the <c>shouldCommit</c> flag to the outbox store.
         /// </summary>
         /// <param name="shouldCommit">
