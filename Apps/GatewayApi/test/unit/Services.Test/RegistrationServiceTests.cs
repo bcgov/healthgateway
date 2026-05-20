@@ -611,7 +611,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private sealed record UserProfileMock(
             IRegistrationService Service,
-            Mock<IOutboxStoreService> JobServiceMock,
+            Mock<IOutboxStoreService> OutboxStoreServiceMock,
             Mock<IEmailQueueService> EmailQueueServiceMock,
             Mock<INotificationSettingsService> NotificationSettingsServiceMock);
     }
