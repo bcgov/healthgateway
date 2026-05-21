@@ -19,7 +19,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading.Tasks;
 
     /// <summary>
-    /// The Job service.
+    /// The OutboxStore service.
     /// </summary>
     public interface IOutboxStoreService
     {
@@ -33,7 +33,7 @@ namespace HealthGateway.GatewayApi.Services
         Task QueueAccountCreatedEventAsync(string hdid, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
-        /// Notifies email verification was successful.
+        /// Creates an event to notify that email verification was successful.
         /// </summary>
         /// <param name="hdid">The hdid associated with the email.</param>
         /// <param name="email">The email associated with the verification.</param>
@@ -43,9 +43,9 @@ namespace HealthGateway.GatewayApi.Services
         Task QueueEmailVerificationEventAsync(string hdid, string email, bool shouldCommit = true, CancellationToken ct = default);
 
         /// <summary>
-        /// Notifies sms verification was successful.
+        /// Creates an event to notify sms verification was successful.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the email.</param>
+        /// <param name="hdid">The hdid associated with the sms.</param>
         /// <param name="smsNumber">The sms associated with the verification.</param>
         /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>

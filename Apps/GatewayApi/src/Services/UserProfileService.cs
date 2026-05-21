@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -210,6 +211,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Maintainability",
+            "CA1506:Avoid excessive class coupling",
+            Justification = "Service orchestration method requiring multiple domain dependencies.")]
         public async Task<RequestResult<UserProfileModel>> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
             RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfileAsync(createProfileRequest, ct);
@@ -283,21 +288,13 @@ namespace HealthGateway.GatewayApi.Services
                 notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
             }
 
-            try
+            // Persist changes within transaction
+            RequestResult<UserProfileModel>? transactionError =
+                await this.CommitTransactionAsync<UserProfileModel>(transaction, ct);
+
+            if (transactionError != null)
             {
-                // Persist changes within transaction
-                await this.transactionProvider.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                this.logger.LogError(e, "Concurrency error saving transaction");
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
-            }
-            catch (DbUpdateException e)
-            {
-                this.logger.LogError(e, "Database error persisting changes");
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+                return transactionError;
             }
 
             // Dispatch outbox events after commit
@@ -358,21 +355,13 @@ namespace HealthGateway.GatewayApi.Services
                     ct);
             }
 
-            try
+            // Persist changes within transaction
+            RequestResult<UserProfileModel>? transactionError =
+                await this.CommitTransactionAsync<UserProfileModel>(transaction, ct);
+
+            if (transactionError != null)
             {
-                // Persist changes within transaction
-                await this.transactionProvider.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                this.logger.LogError(e, "Concurrency error saving transaction");
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
-            }
-            catch (DbUpdateException e)
-            {
-                this.logger.LogError(e, "Database error persisting changes");
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+                return transactionError;
             }
 
             // Dispatch email event after commit
@@ -420,21 +409,13 @@ namespace HealthGateway.GatewayApi.Services
                     ct);
             }
 
-            try
+            // Persist changes within transaction
+            RequestResult<UserProfileModel>? transactionError =
+                await this.CommitTransactionAsync<UserProfileModel>(transaction, ct);
+
+            if (transactionError != null)
             {
-                // Persist changes within transaction
-                await this.transactionProvider.SaveChangesAsync(ct);
-                await transaction.CommitAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                this.logger.LogError(e, "Concurrency error saving transaction");
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
-            }
-            catch (DbUpdateException e)
-            {
-                this.logger.LogError(e, "Database error persisting changes");
-                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, e.Message);
+                return transactionError;
             }
 
             // Dispatch email event after commit
@@ -489,6 +470,37 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default)
         {
             return await UserProfileValidator.ValidateUserProfileSmsNumberAsync(phoneNumber, ct);
+        }
+
+        private async Task<RequestResult<T>?> CommitTransactionAsync<T>(
+            IDbContextTransaction transaction,
+            CancellationToken ct)
+        {
+            try
+            {
+                await this.transactionProvider.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+
+                return null;
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                this.logger.LogError(e, "Concurrency error saving transaction");
+
+                return RequestResultFactory.ServiceError<T>(
+                    ErrorType.CommunicationInternal,
+                    ServiceType.Database,
+                    e.Message);
+            }
+            catch (DbUpdateException e)
+            {
+                this.logger.LogError(e, "Database error persisting changes");
+
+                return RequestResultFactory.ServiceError<T>(
+                    ErrorType.CommunicationInternal,
+                    ServiceType.Database,
+                    e.Message);
+            }
         }
 
         private async Task<RequestResult<UserProfileModel>?> ValidateUserProfileAsync(CreateUserRequest createProfileRequest, CancellationToken ct)
