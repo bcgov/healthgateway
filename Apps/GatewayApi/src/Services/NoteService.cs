@@ -74,20 +74,14 @@ namespace HealthGateway.GatewayApi.Services
         {
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct: ct);
 
-            if (profile == null)
+            RequestResult<string> keyResult = this.GetEncryptionKey(profile);
+            if (keyResult.ResultStatus != ResultType.Success)
             {
-                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+                return RequestResultFactory.Error<UserNote>(keyResult.ResultError);
             }
 
-            string? key = profile.EncryptionKey;
-            if (key == null)
-            {
-                this.logger.LogError("Profile does not have an encryption key");
-                return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
-            }
-
+            string key = keyResult.ResourcePayload!;
             Note note = this.mappingService.MapToNote(userNote, key);
-
             DbResult<Note> dbNote = await this.noteDelegate.AddNoteAsync(note, ct: ct);
 
             return dbNote.Status != DbStatusCode.Created
@@ -141,18 +135,13 @@ namespace HealthGateway.GatewayApi.Services
         {
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct: ct);
 
-            if (profile == null)
+            RequestResult<string> keyResult = this.GetEncryptionKey(profile);
+            if (keyResult.ResultStatus != ResultType.Success)
             {
-                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+                return RequestResultFactory.Error<UserNote>(keyResult.ResultError);
             }
 
-            string? key = profile.EncryptionKey;
-            if (key == null)
-            {
-                this.logger.LogError("Profile does not have an encryption key");
-                return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
-            }
-
+            string key = keyResult.ResourcePayload!;
             Note note = this.mappingService.MapToNote(userNote, key);
             DbResult<Note> dbResult = await this.noteDelegate.UpdateNoteAsync(note, ct: ct);
 
@@ -166,18 +155,13 @@ namespace HealthGateway.GatewayApi.Services
         {
             UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct: ct);
 
-            if (profile == null)
+            RequestResult<string> keyResult = this.GetEncryptionKey(profile);
+            if (keyResult.ResultStatus != ResultType.Success)
             {
-                return RequestResultFactory.ServiceError<UserNote>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+                return RequestResultFactory.Error<UserNote>(keyResult.ResultError);
             }
 
-            string? key = profile.EncryptionKey;
-            if (key == null)
-            {
-                this.logger.LogError("Profile does not have an encryption key");
-                return RequestResultFactory.Error<UserNote>(ErrorType.InvalidState, "Profile Key not set");
-            }
-
+            string key = keyResult.ResourcePayload!;
             Note note = this.mappingService.MapToNote(userNote, key);
             DbResult<Note> dbResult = await this.noteDelegate.DeleteNoteAsync(note, ct: ct);
 
@@ -200,6 +184,23 @@ namespace HealthGateway.GatewayApi.Services
 
             DbResult<IEnumerable<Note>> batchUpdateResult = await this.noteDelegate.BatchUpdateAsync(dbNotes, ct: ct);
             return batchUpdateResult.Status != DbStatusCode.Updated ? throw new DatabaseException(batchUpdateResult.Message) : key;
+        }
+
+        private RequestResult<string> GetEncryptionKey(UserProfile? profile)
+        {
+            if (profile == null)
+            {
+                return RequestResultFactory.ServiceError<string>(ErrorType.CommunicationInternal, ServiceType.Database, ErrorMessages.UserProfileNotFound);
+            }
+
+            string? key = profile.EncryptionKey;
+            if (key == null)
+            {
+                this.logger.LogError("Profile does not have an encryption key");
+                return RequestResultFactory.Error<string>(ErrorType.InvalidState, "Profile Key not set");
+            }
+
+            return RequestResultFactory.Success(key);
         }
     }
 }
