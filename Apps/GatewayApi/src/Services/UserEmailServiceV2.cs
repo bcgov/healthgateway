@@ -23,12 +23,13 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Messaging;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Providers;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.EntityFrameworkCore.Storage;
@@ -43,9 +44,11 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IMessagingVerificationService messagingVerificationService;
+        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileNotificationSettingService profileNotificationSettingService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IJobService jobService;
+        private readonly IEmailQueueService emailQueueService;
+        private readonly IOutboxStoreService outboxStoreService;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IGatewayDbContextTransactionProvider transactionProvider;
         private readonly bool notificationsChangeFeedEnabled;
@@ -56,9 +59,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="messagingVerificationService">The messaging verification service.</param>
+        /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="jobService">The injected job service.</param>
+        /// <param name="emailQueueService">The email service to queue emails.</param>
+        /// <param name="outboxStoreService">The injected outbox store service.</param>
         /// <param name="backgroundJobClient">Hangfire background job client.</param>
         /// <param name="transactionProvider">
         /// Provides database transaction and persistence operations for the current request
@@ -70,9 +75,11 @@ namespace HealthGateway.GatewayApi.Services
             ILogger<UserEmailServiceV2> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IMessagingVerificationService messagingVerificationService,
+            INotificationSettingsService notificationSettingsService,
             IUserProfileNotificationSettingService profileNotificationSettingService,
             IUserProfileDelegate profileDelegate,
-            IJobService jobService,
+            IEmailQueueService emailQueueService,
+            IOutboxStoreService outboxStoreService,
             IBackgroundJobClient backgroundJobClient,
             IGatewayDbContextTransactionProvider transactionProvider,
             IConfiguration configuration)
@@ -80,9 +87,11 @@ namespace HealthGateway.GatewayApi.Services
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.messagingVerificationService = messagingVerificationService;
+            this.notificationSettingsService = notificationSettingsService;
             this.profileNotificationSettingService = profileNotificationSettingService;
             this.profileDelegate = profileDelegate;
-            this.jobService = jobService;
+            this.emailQueueService = emailQueueService;
+            this.outboxStoreService = outboxStoreService;
             this.backgroundJobClient = backgroundJobClient;
             this.transactionProvider = transactionProvider;
             this.notificationsChangeFeedEnabled = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>()?.Notifications.Enabled ?? false;
@@ -97,7 +106,7 @@ namespace HealthGateway.GatewayApi.Services
             if (matchingVerification == null || matchingVerification.UserProfileId != hdid || matchingVerification.Deleted)
             {
                 this.logger.LogDebug("Invalid email verification");
-                await this.IncrementEmailVerificationAttempts(hdid, ct);
+                await this.IncrementEmailVerificationAttempts(hdid, true, ct);
                 return false;
             }
 
@@ -116,9 +125,15 @@ namespace HealthGateway.GatewayApi.Services
             await using IDbContextTransaction transaction =
                 await this.transactionProvider.BeginTransactionAsync(ct);
 
-            // Update verification state and send confirmation (DB + related logic)
-            await this.SetAddressValidated(userProfile, matchingVerification, ct);
-            await this.NotifyVerificationSuccessful(hdid, matchingVerification.Email!.To, false, ct);
+            // Email address validated
+            matchingVerification.Validated = true;
+            userProfile.Email = matchingVerification.Email!.To;
+
+            if (this.notificationsChangeFeedEnabled)
+            {
+                // Store an event indicating email was verified.
+                await this.outboxStoreService.QueueEmailVerificationEventAsync(hdid, matchingVerification.Email!.To, false, ct);
+            }
 
             // Enable default user profile notification settings after successful verification
             UserProfileNotificationSettingModel[] notificationSettingModels =
@@ -131,6 +146,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
             ];
 
+            // Store an event indicating user profile notification settings have been defaulted.
             await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
 
             // Persist changes within transaction
@@ -142,8 +158,9 @@ namespace HealthGateway.GatewayApi.Services
             this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
                 store.DispatchOutboxItemsAsync(ct));
 
-            // Update notification settings after commit
-            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
+            // Queue background job to push notification settings through the job scheduler for user and dependents.
+            NotificationSettingsRequest notificationSettingsRequest = new(userProfile, userProfile.Email, userProfile.SmsNumber);
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
 
             return true;
         }
@@ -157,12 +174,18 @@ namespace HealthGateway.GatewayApi.Services
             await new OptionalEmailAddressValidator().ValidateAndThrowAsync(emailAddress, ct);
             UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, true, ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
+            // Begin transaction for all database updates
+            await using IDbContextTransaction transaction =
+                await this.transactionProvider.BeginTransactionAsync(ct);
+
             // expire previous email verification in DB without committing changes
             MessagingVerification? lastEmailVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
             if (lastEmailVerification != null)
             {
                 this.logger.LogDebug("Expiring old email verification");
-                await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isEmpty, false, ct);
+                lastEmailVerification.ExpireDate = DateTime.UtcNow;
+                lastEmailVerification.Deleted = isEmpty;
+
                 if (string.Equals(emailAddress, lastEmailVerification.Email?.To, StringComparison.OrdinalIgnoreCase))
                 {
                     // reuse same invite key if the last verification was for the same email address
@@ -174,53 +197,42 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? messagingVerification = null;
             if (!isEmpty)
             {
-                messagingVerification = await this.messagingVerificationService.GenerateMessagingVerificationAsync(hdid, emailAddress, inviteKey, false, ct);
-                await this.messageVerificationDelegate.InsertAsync(messagingVerification, false, ct);
+                messagingVerification = await this.messagingVerificationService.AddEmailVerificationAsync(hdid, emailAddress, false, inviteKey, false, ct);
             }
 
-            this.logger.LogDebug("Clearing user's email address");
+            this.logger.LogDebug("Update user profile - clearing user's email address and beta feature codes");
             userProfile.Email = null;
             userProfile.BetaFeatureCodes = [];
-
-            // update user profile in DB and commit changes
-            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, true, ct);
-            if (dbResult.Status != DbStatusCode.Updated)
-            {
-                throw new DatabaseException(dbResult.Message);
-            }
 
             if (messagingVerification != null)
             {
                 this.logger.LogDebug("Sending new email verification");
-                await this.jobService.SendEmailAsync(messagingVerification.Email, true, ct);
+                await this.emailQueueService.QueueNewEmailAsync(messagingVerification.Email, false, ct);
             }
 
-            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
+            // Persist changes within transaction
+            await this.transactionProvider.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            // Dispatch events after commit
+            this.logger.LogDebug("Dispatching events after commit");
+            if (messagingVerification is { Email: not null })
+            {
+                this.backgroundJobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(messagingVerification.Email.Id, ct));
+            }
+
+            // Queue background job to push notification settings through the job scheduler for user and dependents.
+            NotificationSettingsRequest notificationSettingsRequest = new(userProfile, userProfile.Email, userProfile.SmsNumber);
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
         }
 
-        private async Task IncrementEmailVerificationAttempts(string hdid, CancellationToken ct)
+        private async Task IncrementEmailVerificationAttempts(string hdid, bool shouldCommit, CancellationToken ct)
         {
             MessagingVerification? latestEmailVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Email, ct);
             if (latestEmailVerification is { Validated: false })
             {
                 latestEmailVerification.VerificationAttempts++;
-                await this.messageVerificationDelegate.UpdateAsync(latestEmailVerification, true, ct);
-            }
-        }
-
-        private async Task SetAddressValidated(UserProfile userProfile, MessagingVerification matchingVerification, CancellationToken ct = default)
-        {
-            matchingVerification.Validated = true;
-            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, false, ct);
-
-            userProfile.Email = matchingVerification.Email!.To;
-        }
-
-        private async Task NotifyVerificationSuccessful(string hdid, string emailAddress, bool shouldCommit, CancellationToken ct)
-        {
-            if (this.notificationsChangeFeedEnabled)
-            {
-                await this.jobService.NotifyEmailVerificationAsync(hdid, emailAddress, shouldCommit, ct);
+                await this.messageVerificationDelegate.UpdateAsync(latestEmailVerification, shouldCommit, ct);
             }
         }
     }

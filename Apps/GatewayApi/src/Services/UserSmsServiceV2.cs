@@ -24,11 +24,11 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Providers;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.EntityFrameworkCore.Storage;
@@ -45,9 +45,10 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IMessagingVerificationService messagingVerificationService;
+        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileNotificationSettingService profileNotificationSettingService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly IJobService jobService;
+        private readonly IOutboxStoreService outboxStoreService;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IGatewayDbContextTransactionProvider transactionProvider;
         private readonly bool notificationsChangeFeedEnabled;
@@ -58,9 +59,10 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="messagingVerificationService">The messaging verification service.</param>
+        /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="jobService">The job service.</param>
+        /// <param name="outboxStoreService">The outbox store service.</param>
         /// <param name="backgroundJobClient">Hangfire background job client.</param>
         /// <param name="transactionProvider">
         /// Provides database transaction and persistence operations for the current request
@@ -72,9 +74,10 @@ namespace HealthGateway.GatewayApi.Services
             ILogger<UserSmsServiceV2> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IMessagingVerificationService messagingVerificationService,
+            INotificationSettingsService notificationSettingsService,
             IUserProfileNotificationSettingService profileNotificationSettingService,
             IUserProfileDelegate profileDelegate,
-            IJobService jobService,
+            IOutboxStoreService outboxStoreService,
             IBackgroundJobClient backgroundJobClient,
             IGatewayDbContextTransactionProvider transactionProvider,
             IConfiguration configuration)
@@ -82,9 +85,10 @@ namespace HealthGateway.GatewayApi.Services
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.messagingVerificationService = messagingVerificationService;
+            this.notificationSettingsService = notificationSettingsService;
             this.profileNotificationSettingService = profileNotificationSettingService;
             this.profileDelegate = profileDelegate;
-            this.jobService = jobService;
+            this.outboxStoreService = outboxStoreService;
             this.backgroundJobClient = backgroundJobClient;
             this.transactionProvider = transactionProvider;
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed)
@@ -117,13 +121,12 @@ namespace HealthGateway.GatewayApi.Services
                 await this.transactionProvider.BeginTransactionAsync(ct);
 
             smsVerification.Validated = true;
-            await this.messageVerificationDelegate.UpdateAsync(smsVerification, false, ct);
-
             userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
 
             if (this.notificationsChangeFeedEnabled)
             {
-                await this.jobService.NotifySmsVerificationAsync(hdid, smsVerification.SmsNumber, false, ct);
+                // Store an event indicating sms was verified.
+                await this.outboxStoreService.QueueSmsVerificationEventAsync(hdid, smsVerification.SmsNumber, false, ct);
             }
 
             // Enable default user profile notification settings after successful verification
@@ -137,6 +140,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
             ];
 
+            // Store an event indicating user profile notification settings have been defaulted.
             await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
 
             // Persist changes within transaction
@@ -148,8 +152,9 @@ namespace HealthGateway.GatewayApi.Services
             this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
                 store.DispatchOutboxItemsAsync(ct));
 
-            // Update notification settings after commit
-            await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, userProfile.SmsNumber, ct: ct);
+            // Queue background job to push notification settings through the job scheduler for user and dependents.
+            NotificationSettingsRequest notificationSettingsRequest = new(userProfile, userProfile.Email, userProfile.SmsNumber);
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);
 
             this.logger.LogDebug("Finished verifying sms");
             return true;
@@ -163,37 +168,39 @@ namespace HealthGateway.GatewayApi.Services
 
             UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException(ErrorMessages.UserProfileNotFound);
 
-            userProfile.SmsNumber = null;
+            // Begin transaction for all database updates
+            await using IDbContextTransaction transaction =
+                await this.transactionProvider.BeginTransactionAsync(ct);
 
             this.logger.LogDebug("Clearing user's SMS number");
-            DbResult<UserProfile> dbResult = await this.profileDelegate.UpdateAsync(userProfile, ct: ct);
-            if (dbResult.Status != DbStatusCode.Updated)
-            {
-                throw new DatabaseException(dbResult.Message);
-            }
+            userProfile.SmsNumber = null;
 
             bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
             MessagingVerification? lastSmsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
             if (lastSmsVerification != null)
             {
                 this.logger.LogDebug("Expiring old SMS messaging verification");
-                await this.messageVerificationDelegate.ExpireAsync(lastSmsVerification, isDeleted, ct: ct);
+                await this.messageVerificationDelegate.ExpireAsync(lastSmsVerification, isDeleted, false, ct);
             }
+
+            MessagingVerification? messagingVerification = null;
 
             if (!isDeleted)
             {
-                MessagingVerification messagingVerification = this.messagingVerificationService.GenerateMessagingVerification(hdid, sanitizedSms, false);
                 this.logger.LogDebug("Adding SMS messaging verification");
-                await this.messageVerificationDelegate.InsertAsync(messagingVerification, true, ct);
+                messagingVerification = await this.messagingVerificationService.AddSmsVerificationAsync(hdid, sanitizedSms, false, ct);
+            }
 
-                // Update the notification settings
-                await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, sanitizedSms, messagingVerification.SmsValidationCode, ct);
-            }
-            else
+            // Persist changes within transaction
+            await this.transactionProvider.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            // Queue background job to push notification settings through the job scheduler for user and dependents.
+            NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms)
             {
-                // Update the notification settings
-                await this.jobService.QueueNotificationSettingsRequestAsync(userProfile, userProfile.Email, sanitizedSms, ct: ct);
-            }
+                SmsVerificationCode = messagingVerification?.SmsValidationCode,
+            };
+            await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
         }
 
         private static string SanitizeSms(string smsNumber)

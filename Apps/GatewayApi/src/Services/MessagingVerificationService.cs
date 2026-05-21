@@ -50,7 +50,13 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<MessagingVerification> AddEmailVerificationAsync(string hdid, string email, bool isEmailVerified, bool shouldCommit = true, CancellationToken ct = default)
         {
-            MessagingVerification emailVerification = await this.GenerateMessagingVerificationAsync(hdid, email, Guid.NewGuid(), isEmailVerified, ct);
+            return await this.AddEmailVerificationAsync(hdid, email, isEmailVerified, Guid.NewGuid(), shouldCommit, ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<MessagingVerification> AddEmailVerificationAsync(string hdid, string email, bool isEmailVerified, Guid inviteKey, bool shouldCommit = true, CancellationToken ct = default)
+        {
+            MessagingVerification emailVerification = await this.CreateEmailVerificationAsync(hdid, email, inviteKey, isEmailVerified, ct);
             await messageVerificationDelegate.InsertAsync(emailVerification, shouldCommit, ct);
 
             return emailVerification;
@@ -59,24 +65,20 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<MessagingVerification> AddSmsVerificationAsync(string hdid, string smsNumber, bool shouldCommit = true, CancellationToken ct = default)
         {
-            MessagingVerification smsVerification = this.GenerateMessagingVerification(hdid, smsNumber);
+            MessagingVerification smsVerification = CreateSmsVerification(hdid, smsNumber);
             await messageVerificationDelegate.InsertAsync(smsVerification, shouldCommit, ct);
 
             return smsVerification;
         }
 
-        /// <inheritdoc/>
-        public MessagingVerification GenerateMessagingVerification(string hdid, string sms, bool sanitize = true)
+        private static MessagingVerification CreateSmsVerification(string hdid, string sms)
         {
-            if (sanitize)
-            {
-                sms = SanitizeSms(sms);
-            }
+            string sanitizedSmsNumber = SanitizeSms(sms);
 
             MessagingVerification messagingVerification = new()
             {
                 UserProfileId = hdid,
-                SmsNumber = sms,
+                SmsNumber = sanitizedSmsNumber,
                 SmsValidationCode = CreateVerificationCode(),
                 VerificationType = MessagingVerificationType.Sms,
                 ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
@@ -85,8 +87,30 @@ namespace HealthGateway.GatewayApi.Services
             return messagingVerification;
         }
 
-        /// <inheritdoc/>
-        public async Task<MessagingVerification> GenerateMessagingVerificationAsync(string hdid, string emailAddress, Guid inviteKey, bool isVerified, CancellationToken ct = default)
+        /// <summary>
+        /// Creates a new 6 digit verification code.
+        /// </summary>
+        /// <returns>The verification code.</returns>
+        private static string CreateVerificationCode()
+        {
+            using RandomNumberGenerator generator = RandomNumberGenerator.Create();
+            byte[] data = new byte[4];
+            generator.GetBytes(data);
+            return
+                BitConverter
+                    .ToUInt32(data)
+                    .ToString("D6", CultureInfo.InvariantCulture)[..6];
+        }
+
+        [GeneratedRegex("[^0-9]")]
+        private static partial Regex NonDigitRegex();
+
+        private static string SanitizeSms(string smsNumber)
+        {
+            return NonDigitRegex().Replace(smsNumber, string.Empty);
+        }
+
+        private async Task<MessagingVerification> CreateEmailVerificationAsync(string hdid, string emailAddress, Guid inviteKey, bool isVerified, CancellationToken ct = default)
         {
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
@@ -118,28 +142,5 @@ namespace HealthGateway.GatewayApi.Services
 
             return messagingVerification;
         }
-
-        /// <summary>
-        /// Creates a new 6 digit verification code.
-        /// </summary>
-        /// <returns>The verification code.</returns>
-        private static string CreateVerificationCode()
-        {
-            using RandomNumberGenerator generator = RandomNumberGenerator.Create();
-            byte[] data = new byte[4];
-            generator.GetBytes(data);
-            return
-                BitConverter
-                    .ToUInt32(data)
-                    .ToString("D6", CultureInfo.InvariantCulture)[..6];
-        }
-
-        private static string SanitizeSms(string smsNumber)
-        {
-            return NonDigitRegex().Replace(smsNumber, string.Empty);
-        }
-
-        [GeneratedRegex("[^0-9]")]
-        private static partial Regex NonDigitRegex();
     }
 }

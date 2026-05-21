@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -28,7 +27,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -52,126 +50,137 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(Mapper, GetCryptoDelegateMock().Object);
 
         /// <summary>
-        /// GetNotes - Happy Path.
+        /// GetNotes - returns decrypted notes when the profile already has an encryption key.
         /// </summary>
-        /// <param name="notesDbStatusCode">The db status code for get notes.</param>
-        /// <param name="updateProfileDbStatusCode">The db status code for update user profile.</param>
-        /// <param name="updateNotesBatchDbStatusCode">The db status code for update notes batch.</param>
-        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
-        /// <param name="canAccessDataSource">The value indicates whether the health visit data source can be accessed or not.</param>
-        /// <param name="exceptionThrown">The bool value indicating whether problem details exception was thrown or not.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, null, EncryptionKey, true, false)]
-        [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, DbStatusCode.Updated, null, true, false)]
-        [InlineData(DbStatusCode.Error, DbStatusCode.Deferred, DbStatusCode.Updated, null, true, false)]
-        [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, DbStatusCode.Error, null, true, true)]
-        [InlineData(DbStatusCode.Read, DbStatusCode.Error, null, null, true, true)]
-        [InlineData(null, null, null, null, false, false)]
-        [SuppressMessage("Style", "IDE0010:Populate switch", Justification = "Team decision")]
-        public async Task ShouldGetNotes(
-            DbStatusCode? notesDbStatusCode,
-            DbStatusCode? updateProfileDbStatusCode,
-            DbStatusCode? updateNotesBatchDbStatusCode,
-            string? encryptionKey,
-            bool canAccessDataSource,
-            bool exceptionThrown)
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task ShouldReturnNotes()
         {
             // Arrange
-            List<UserNote> expected =
+            List<UserNote> expected = GetUserNotes();
+            IList<Note> encryptedNotes = GetEncryptedNotes(expected, EncryptionKey);
+
+            DbResult<IList<Note>> notesDbResult = GetNotesDbResult(encryptedNotes);
+
+            UserProfile userProfile = new()
+            {
+                EncryptionKey = EncryptionKey,
+            };
+
+            NoteService service = GetNoteService(
+                userProfile: userProfile,
+                notesDbResult: notesDbResult);
+
+            // Act
+            RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
+            actual.ResourcePayload.ShouldDeepEqual(expected);
+        }
+
+        /// <summary>
+        /// GetNotes - generates an encryption key and encrypts existing notes when the profile does not have an encryption key.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task ShouldEncryptNotesWhenProfileDoesNotHaveEncryptionKey()
+        {
+            // Arrange
+            IList<Note> notes =
             [
                 new()
                 {
                     HdId = Hdid,
                     Title = "First Note",
                     Text = "First Note text",
-                    CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-                },
-
-                new()
-                {
-                    HdId = Hdid,
-                    Title = "Second Note",
-                    Text = "Second Note text",
-                    CreatedDateTime = DateTime.Parse("2020-02-02", CultureInfo.InvariantCulture),
                 },
             ];
 
-            IList<Note> notes = expected.Select(Mapper.Map<UserNote, Note>).ToList();
-            if (encryptionKey != null)
-            {
-                foreach (Note note in notes)
-                {
-                    note.Title = GetCryptoDelegateMock().Object.Encrypt(encryptionKey, note.Title);
-                    note.Text = GetCryptoDelegateMock().Object.Encrypt(encryptionKey, note.Text);
-                }
-            }
-
-            DbResult<IList<Note>>? notesDbResult = notesDbStatusCode != null
-                ? new()
-                {
-                    Payload = notes,
-                    Status = notesDbStatusCode.Value,
-                }
-                : null;
+            DbResult<IList<Note>> notesDbResult = GetNotesDbResult(notes);
 
             UserProfile userProfile = new()
             {
-                EncryptionKey = encryptionKey,
+                EncryptionKey = null,
             };
 
-            DbResult<UserProfile>? updateProfileDbResult = updateProfileDbStatusCode != null
-                ? new()
-                {
-                    Payload = userProfile,
-                    Status = updateProfileDbStatusCode.Value,
-                }
-                : null;
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            Mock<INoteDelegate> noteDelegateMock = new();
 
-            DbResult<IEnumerable<Note>>? notesBatchUpdateDbResult = updateNotesBatchDbStatusCode != null
-                ? new()
-                {
-                    Payload = notes,
-                    Status = updateNotesBatchDbStatusCode.Value,
-                }
-                : null;
+            NoteService service = GetNoteService(
+                profileDelegateMock,
+                userProfile,
+                noteDelegateMock,
+                notesDbResult: notesDbResult);
+
+            // Act
+            RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
+
+            noteDelegateMock.Verify(
+                x => x.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), true, It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// GetNotes - returns an error when retrieving notes from the database fails.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task ShouldReturnErrorWhenGetNotesFails()
+        {
+            // Arrange
+            DbResult<IList<Note>> notesDbResult = new()
+            {
+                Payload = [],
+                Status = DbStatusCode.Error,
+            };
+
+            UserProfile userProfile = new()
+            {
+                EncryptionKey = EncryptionKey,
+            };
 
             NoteService service = GetNoteService(
                 userProfile: userProfile,
-                updateProfileDbResult: updateProfileDbResult,
-                notesDbResult: notesDbResult,
-                notesBatchUpdateDbResult: notesBatchUpdateDbResult,
-                canAccessDataSource: canAccessDataSource);
+                notesDbResult: notesDbResult);
 
-            if (exceptionThrown)
-            {
-                // Act and Assert
-                await Assert.ThrowsAsync<DatabaseException>(() => service.GetNotesAsync(Hdid));
-            }
-            else
-            {
-                // Act
-                RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
+            // Act
+            RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
 
-                // Assert
-                switch (canAccessDataSource, notesDbStatusCode)
-                {
-                    case (true, DbStatusCode.Read):
-                        Assert.Equal(ResultType.Success, actual.ResultStatus);
-                        actual.ResourcePayload.ShouldDeepEqual(expected);
-                        break;
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            Assert.NotNull(actual.ResultError);
+        }
 
-                    case (true, _):
-                        Assert.Equal(ResultType.Error, actual.ResultStatus);
-                        Assert.NotNull(actual.ResultError);
-                        break;
+        /// <summary>
+        /// GetNotes - returns an empty result when the user cannot access the Note data source.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task ShouldReturnEmptyNotesWhenDataSourceCannotBeAccessed()
+        {
+            // Arrange
+            NoteService service = GetNoteService(
+                userProfile: new UserProfile { EncryptionKey = EncryptionKey },
+                canAccessDataSource: false);
 
-                    case (false, _):
-                        Assert.Equal(ResultType.Success, actual.ResultStatus);
-                        Assert.Empty(actual.ResourcePayload);
-                        break;
-                }
-            }
+            // Act
+            RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
+            Assert.Empty(actual.ResourcePayload);
         }
 
         /// <summary>
@@ -330,6 +339,108 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
         }
 
+        [Theory]
+        [InlineData(nameof(NoteService.CreateNoteAsync))]
+        [InlineData(nameof(NoteService.UpdateNoteAsync))]
+        [InlineData(nameof(NoteService.DeleteNoteAsync))]
+        public async Task ShouldReturnErrorWhenProfileNotFound(string methodName)
+        {
+            // Arrange
+            UserNote userNote = new()
+            {
+                HdId = Hdid,
+                Title = "Test Note",
+                Text = "Test Note text",
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+            };
+
+            NoteService service = GetNoteService(userProfile: null);
+
+            // Act
+            RequestResult<UserNote> actual = methodName switch
+            {
+                nameof(NoteService.CreateNoteAsync) => await service.CreateNoteAsync(userNote),
+                nameof(NoteService.UpdateNoteAsync) => await service.UpdateNoteAsync(userNote),
+                nameof(NoteService.DeleteNoteAsync) => await service.DeleteNoteAsync(userNote),
+                _ => throw new InvalidOperationException(),
+            };
+
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            Assert.NotNull(actual.ResultError);
+        }
+
+        [Fact]
+        public async Task ShouldReturnErrorWhenProfileNotFoundForGetNotes()
+        {
+            // Arrange
+            List<Note> notes = [];
+
+            DbResult<IList<Note>> notesDbResult = new()
+            {
+                Payload = notes,
+                Status = DbStatusCode.Read,
+            };
+
+            NoteService service = GetNoteService(
+                userProfile: null,
+                notesDbResult: notesDbResult);
+
+            // Act
+            RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
+
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            Assert.NotNull(actual.ResultError);
+        }
+
+        private static List<UserNote> GetUserNotes()
+        {
+            return
+            [
+                new()
+                {
+                    HdId = Hdid,
+                    Title = "First Note",
+                    Text = "First Note text",
+                    CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+                },
+                new()
+                {
+                    HdId = Hdid,
+                    Title = "Second Note",
+                    Text = "Second Note text",
+                    CreatedDateTime = DateTime.Parse("2020-02-02", CultureInfo.InvariantCulture),
+                },
+            ];
+        }
+
+        private static IList<Note> GetEncryptedNotes(IEnumerable<UserNote> userNotes, string encryptionKey)
+        {
+            ICryptoDelegate cryptoDelegate = GetCryptoDelegateMock().Object;
+
+            IList<Note> notes = userNotes
+                .Select(Mapper.Map<UserNote, Note>)
+                .ToList();
+
+            foreach (Note note in notes)
+            {
+                note.Title = cryptoDelegate.Encrypt(encryptionKey, note.Title);
+                note.Text = cryptoDelegate.Encrypt(encryptionKey, note.Text);
+            }
+
+            return notes;
+        }
+
+        private static DbResult<IList<Note>> GetNotesDbResult(IList<Note> notes, DbStatusCode status = DbStatusCode.Read)
+        {
+            return new()
+            {
+                Payload = notes,
+                Status = status,
+            };
+        }
+
         private static Mock<ICryptoDelegate> GetCryptoDelegateMock()
         {
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
@@ -342,22 +453,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static NoteService GetNoteService(
             Mock<IUserProfileDelegate>? profileDelegateMock = null,
             UserProfile? userProfile = null,
-            DbResult<UserProfile>? updateProfileDbResult = null,
             Mock<INoteDelegate>? noteDelegateMock = null,
             DbResult<Note>? noteDbResult = null,
             DbResult<IList<Note>>? notesDbResult = null,
-            DbResult<IEnumerable<Note>>? notesBatchUpdateDbResult = null,
             bool canAccessDataSource = true)
         {
             profileDelegateMock ??= new();
 
-            if (updateProfileDbResult != null)
-            {
-                profileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), false, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(updateProfileDbResult);
-            }
-
             profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+
+            profileDelegateMock
+                .Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), false, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((UserProfile profile, bool _, CancellationToken _) => new DbResult<UserProfile>
+                {
+                    Payload = profile,
+                    Status = DbStatusCode.Deferred,
+                });
 
             noteDelegateMock ??= new();
             if (noteDbResult != null)
@@ -367,14 +478,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 noteDelegateMock.Setup(s => s.DeleteNoteAsync(It.Is<Note>(x => x.Text == noteDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(noteDbResult);
             }
 
+            noteDelegateMock
+                .Setup(s => s.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), true, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((IEnumerable<Note> notes, bool _, CancellationToken _) => new DbResult<IEnumerable<Note>>
+                {
+                    Payload = notes,
+                    Status = DbStatusCode.Updated,
+                });
+
             if (notesDbResult != null)
             {
                 noteDelegateMock.Setup(s => s.GetNotesAsync(Hdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(notesDbResult);
-            }
-
-            if (notesBatchUpdateDbResult != null)
-            {
-                noteDelegateMock.Setup(s => s.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(notesBatchUpdateDbResult);
             }
 
             Mock<IPatientRepository> patientRepository = new();
