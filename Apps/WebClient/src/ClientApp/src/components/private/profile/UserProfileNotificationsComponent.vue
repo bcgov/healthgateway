@@ -257,7 +257,7 @@ async function handleChannelToggle(
         return;
     }
 
-    // Compute previous values safely using the event payload
+    // Capture previous values from current UI state so we can roll back if saving fails.
     const previousEmailEnabled = state.emailEnabled;
     const previousSmsEnabled = state.smsEnabled;
 
