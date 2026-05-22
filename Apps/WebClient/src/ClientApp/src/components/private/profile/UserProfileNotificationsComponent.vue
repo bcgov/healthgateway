@@ -258,10 +258,8 @@ async function handleChannelToggle(
     }
 
     // Compute previous values safely using the event payload
-    const previousEmailEnabled =
-        channel === "email" ? !newChannelEnabled : state.emailEnabled;
-    const previousSmsEnabled =
-        channel === "sms" ? !newChannelEnabled : state.smsEnabled;
+    const previousEmailEnabled = state.emailEnabled;
+    const previousSmsEnabled = state.smsEnabled;
 
     // Ensure state reflects the intended new value
     if (channel === "email") {
@@ -444,7 +442,9 @@ watchEffect(() => {
                                 >Email</span
                             >
                             <v-switch
-                                v-model="channelState[item.id].emailEnabled"
+                                :model-value="
+                                    channelState[item.id].emailEnabled
+                                "
                                 color="primary"
                                 class="hg-switch ma-0 d-flex justify-start"
                                 density="compact"
@@ -470,7 +470,7 @@ watchEffect(() => {
                                 >Text (SMS)</span
                             >
                             <v-switch
-                                v-model="channelState[item.id].smsEnabled"
+                                :model-value="channelState[item.id].smsEnabled"
                                 color="primary"
                                 class="hg-switch ma-0 d-flex justify-start"
                                 density="compact"
