@@ -38,11 +38,11 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The user HDID.</param>
         /// <param name="model">
-        /// The notification setting model containing the notification type and updated delivery channel
-        /// values.
+        /// The notification setting model containing the notification type and optional delivery channel values.
+        /// Only provided channel values are updated and included in the emitted notification preference event.
         /// </param>
         /// <param name="ct">The cancellation token.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A task representing the asynchronous operation.</returns>
         Task UpdateAsync(
             string hdid,
             UserProfileNotificationSettingModel model,
@@ -53,8 +53,9 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The user HDID.</param>
         /// <param name="models">
-        /// A collection of notification setting models containing the notification types
-        /// and updated delivery channel values.
+        /// A collection of notification setting models containing the notification types and optional delivery channel values.
+        /// Provided channel values are updated. When a channel value is not provided, an existing stored value may still be
+        /// included in the emitted notification preference event.
         /// </param>
         /// <param name="commit">Whether to commit changes immediately or defer to the caller's transaction.</param>
         /// <param name="ct">The cancellation token.</param>
