@@ -15,7 +15,7 @@
     "devDependencies": {
         "@cypress/skip-test": "^2.6.1",
         "cy-verify-downloads": "^0.3.0",
-        "cypress": "^15.8.2",
+        "cypress": "^15.15.0",
         "cypress-real-events": "^1.15.0",
         "eslint": "^10.2.1",
         "eslint-config-prettier": "^10.1.8",
