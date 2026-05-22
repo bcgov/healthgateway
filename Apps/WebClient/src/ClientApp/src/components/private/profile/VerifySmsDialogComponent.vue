@@ -86,20 +86,38 @@ function setResendTimeout(): void {
     }
 }
 
-function verifySms(): void {
+function refreshProfile(): Promise<void> {
+    return userStore.retrieveProfile().catch((error) => {
+        if (isTooManyRequestsError(error)) {
+            errorStore.setTooManyRequestsWarning("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Retrieve,
+                ErrorSourceType.Profile,
+                undefined
+            );
+        }
+    });
+}
+
+async function verifySms(): Promise<void> {
     smsVerificationCode.value = smsVerificationCode.value.replaceAll(/\D/g, "");
     isLoading.value = true;
+
     userProfileService
         .validateSms(user.value.hdid, smsVerificationCode.value)
-        .then((result) => {
+        .then(async (result) => {
             validationError.value = !result;
+
             if (!validationError.value) {
+                await refreshProfile();
                 hideDialog();
                 emit("verified");
             }
         })
         .catch((err: ResultError) => {
             logger.error(err.message);
+
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("verifySmsModal");
             } else {
