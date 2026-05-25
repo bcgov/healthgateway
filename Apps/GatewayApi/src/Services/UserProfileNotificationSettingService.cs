@@ -56,7 +56,45 @@ namespace HealthGateway.GatewayApi.Services
             UserProfileNotificationSettingModel model,
             CancellationToken ct = default)
         {
-            await this.UpdateAsync(hdid, [model], ct: ct);
+            UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
+
+            IReadOnlyList<UserProfileNotificationSetting> existing =
+                await notificationSettingDelegate.GetAsync(hdid, ct);
+
+            UserProfileNotificationSetting setting =
+                existing.SingleOrDefault(x => x.NotificationType == model.Type) ?? new UserProfileNotificationSetting
+                {
+                    Hdid = hdid,
+                    NotificationType = model.Type,
+                };
+
+            // Update email preference only when an email value is provided.
+            if (model.EmailEnabled.HasValue)
+            {
+                setting.EmailEnabled = model.EmailEnabled.Value;
+            }
+
+            // Update SMS preference only when an SMS value is provided.
+            if (model.SmsEnabled.HasValue)
+            {
+                setting.SmsEnabled = model.SmsEnabled.Value;
+            }
+
+            IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
+                model.EmailEnabled.HasValue
+                    ? GetTargets(model.Type, model.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email))
+                    : [];
+
+            IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
+                model.SmsEnabled.HasValue
+                    ? GetTargets(model.Type, model.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber))
+                    : [];
+
+            MessageEnvelope[] events =
+                [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
+
+            await notificationSettingDelegate.UpdateAsync(setting, false, ct);
+            await outboxStore.StoreAsync(events, ct: ct);
         }
 
         /// <inheritdoc/>
@@ -84,6 +122,7 @@ namespace HealthGateway.GatewayApi.Services
                         NotificationType = model.Type,
                     };
 
+                // Use provided email value when present.
                 if (model.EmailEnabled.HasValue)
                 {
                     setting.EmailEnabled = model.EmailEnabled.Value;
@@ -92,12 +131,27 @@ namespace HealthGateway.GatewayApi.Services
                         GetTargets(model.Type, model.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email)));
                 }
 
+                // Otherwise use existing email value when available.
+                if (!model.EmailEnabled.HasValue && setting.EmailEnabled.HasValue)
+                {
+                    emailNotificationTargets.AddRange(
+                        GetTargets(model.Type, setting.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email)));
+                }
+
+                // Use provided SMS value when present.
                 if (model.SmsEnabled.HasValue)
                 {
                     setting.SmsEnabled = model.SmsEnabled.Value;
 
                     smsNotificationTargets.AddRange(
                         GetTargets(model.Type, model.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber)));
+                }
+
+                // Otherwise use existing SMS value when available.
+                if (!model.SmsEnabled.HasValue && setting.SmsEnabled.HasValue)
+                {
+                    smsNotificationTargets.AddRange(
+                        GetTargets(model.Type, setting.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber)));
                 }
 
                 await notificationSettingDelegate.UpdateAsync(setting, false, ct);

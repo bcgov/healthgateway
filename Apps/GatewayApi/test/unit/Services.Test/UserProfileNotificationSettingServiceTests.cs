@@ -421,79 +421,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         [Theory]
-        [InlineData("test@healthgateway.gov.bc.ca", true, 1)]
-        [InlineData("test@healthgateway.gov.bc.ca", false, 0)]
-        [InlineData(null, false, 0)]
-        public async Task UpdateAsyncSetsEmailTargetsCorrectly(
+        [InlineData("test@healthgateway.gov.bc.ca", true, "6046715000", true, 1, 1)]
+        [InlineData("test@healthgateway.gov.bc.ca", false, "6046715000", true, 0, 1)]
+        [InlineData(null, true, "6046715000", true, 0, 1)]
+        [InlineData("test@healthgateway.gov.bc.ca", true, "6046715000", false, 1, 0)]
+        [InlineData("test@healthgateway.gov.bc.ca", true, null, true, 1, 0)]
+        [InlineData(null, false, null, false, 0, 0)]
+        public async Task UpdateAsyncSetsTargetsCorrectly(
             string? email,
             bool emailEnabled,
-            int expectedEmailTargetCount)
+            string? smsNumber,
+            bool smsEnabled,
+            int expectedEmailTargetCount,
+            int expectedSmsTargetCount)
         {
             // Arrange
-            const ProfileNotificationType expectedType = ProfileNotificationType.BcCancerScreening;
-
             UserProfile userProfile = new()
             {
                 HdId = Hdid,
                 Email = email,
-                SmsNumber = SmsNumber,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock
-                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfile);
-
-            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            notificationSettingDelegateMock
-                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync([]);
-
-            NotificationChannelPreferencesChangedEvent? capturedEvent = null;
-
-            Mock<IOutboxStore> outboxStoreMock = new();
-            outboxStoreMock
-                .Setup(m => m.StoreAsync(
-                    It.IsAny<IEnumerable<MessageEnvelope>>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
-                .Returns(Task.CompletedTask);
-
-            IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
-
-            UserProfileNotificationSettingModel model = new()
-            {
-                Type = expectedType,
-                EmailEnabled = emailEnabled,
-                SmsEnabled = false,
-            };
-
-            // Act
-            await service.UpdateAsync(Hdid, model, CancellationToken.None);
-
-            // Assert
-            capturedEvent.ShouldNotBeNull();
-            capturedEvent!.EmailNotificationTargets.Count.ShouldBe(expectedEmailTargetCount);
-        }
-
-        [Theory]
-        [InlineData("6046715000", true, 1)]
-        [InlineData("6046715000", false, 0)]
-        [InlineData(null, false, 0)]
-        public async Task UpdateAsyncSetsSmsTargetsCorrectly(
-            string? smsNumber,
-            bool smsEnabled,
-            int expectedSmsTargetCount)
-        {
-            // Arrange
-            const ProfileNotificationType expectedType = ProfileNotificationType.BcCancerScreening;
-
-            UserProfile userProfile = new()
-            {
-                HdId = Hdid,
-                Email = Email,
                 SmsNumber = smsNumber,
             };
 
@@ -523,8 +469,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             UserProfileNotificationSettingModel model = new()
             {
-                Type = expectedType,
-                EmailEnabled = false,
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = emailEnabled,
                 SmsEnabled = smsEnabled,
             };
 
@@ -533,116 +479,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Assert
             capturedEvent.ShouldNotBeNull();
-            capturedEvent!.SmsNotificationTargets.Count.ShouldBe(expectedSmsTargetCount);
+            capturedEvent!.EmailNotificationTargets.Count.ShouldBe(expectedEmailTargetCount);
+            capturedEvent.SmsNotificationTargets.Count.ShouldBe(expectedSmsTargetCount);
         }
 
-        /// <summary>
-        /// UpdateAsync sets empty email targets when email notifications are disabled.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task UpdateAsyncSetsEmptyEmailTargetsWhenEmailDisabled()
-        {
-            // Arrange
-            UserProfile userProfile = new()
-            {
-                HdId = Hdid,
-                Email = Email,
-                SmsNumber = SmsNumber,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock
-                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfile);
-
-            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            notificationSettingDelegateMock
-                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync([]);
-
-            NotificationChannelPreferencesChangedEvent? capturedEvent = null;
-
-            Mock<IOutboxStore> outboxStoreMock = new();
-            outboxStoreMock
-                .Setup(m => m.StoreAsync(
-                    It.IsAny<IEnumerable<MessageEnvelope>>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
-                .Returns(Task.CompletedTask);
-
-            IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
-
-            UserProfileNotificationSettingModel model = new()
-            {
-                Type = ProfileNotificationType.BcCancerScreening,
-                EmailEnabled = false,
-                SmsEnabled = false,
-            };
-
-            // Act
-            await service.UpdateAsync(Hdid, model, CancellationToken.None);
-
-            // Assert
-            capturedEvent.ShouldNotBeNull();
-            capturedEvent!.EmailNotificationTargets.ShouldBeEmpty();
-        }
-
-        /// <summary>
-        /// UpdateAsync sets empty email targets when no email address is available.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task UpdateAsyncSetsEmptyEmailTargetsWhenEmailMissing()
-        {
-            // Arrange
-            UserProfile userProfile = new()
-            {
-                HdId = Hdid,
-                Email = null,
-                SmsNumber = SmsNumber,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock
-                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfile);
-
-            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
-            notificationSettingDelegateMock
-                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
-                .ReturnsAsync([]);
-
-            NotificationChannelPreferencesChangedEvent? capturedEvent = null;
-
-            Mock<IOutboxStore> outboxStoreMock = new();
-            outboxStoreMock
-                .Setup(m => m.StoreAsync(
-                    It.IsAny<IEnumerable<MessageEnvelope>>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()))
-                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((envelopes, _, _) => { capturedEvent = envelopes.First().Content as NotificationChannelPreferencesChangedEvent; })
-                .Returns(Task.CompletedTask);
-
-            IUserProfileNotificationSettingService service =
-                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
-
-            UserProfileNotificationSettingModel model = new()
-            {
-                Type = ProfileNotificationType.BcCancerScreening,
-                EmailEnabled = true,
-                SmsEnabled = false,
-            };
-
-            // Act
-            await service.UpdateAsync(Hdid, model, CancellationToken.None);
-
-            // Assert
-            capturedEvent.ShouldNotBeNull();
-            capturedEvent!.EmailNotificationTargets.ShouldBeEmpty();
-        }
 
         /// <summary>
         /// UpdateAsync throws NotFoundException.
@@ -718,6 +558,243 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Act and Assert
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
                 await service.UpdateAsync(Hdid, model, CancellationToken.None));
+        }
+
+        /// <summary>
+        /// UpdateAsync collection overload preserves existing channel values when a model value is not provided.
+        /// </summary>
+        /// <param name="existingEmailEnabled">The existing email enabled value.</param>
+        /// <param name="existingSmsEnabled">The existing SMS enabled value.</param>
+        /// <param name="modelEmailEnabled">The model email enabled value.</param>
+        /// <param name="modelSmsEnabled">The model SMS enabled value.</param>
+        /// <param name="expectedEmailTargets">The expected email target count.</param>
+        /// <param name="expectedSmsTargets">The expected SMS target count.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(true, null, null, true, 1, 1)]
+        [InlineData(true, null, null, false, 1, 0)]
+        [InlineData(null, true, true, null, 1, 1)]
+        [InlineData(null, true, false, null, 0, 1)]
+        [InlineData(false, true, null, null, 0, 1)]
+        [InlineData(true, false, null, null, 1, 0)]
+        public async Task UpdateAsyncCollectionUsesExistingValuesWhenModelValuesAreNull(
+            bool? existingEmailEnabled,
+            bool? existingSmsEnabled,
+            bool? modelEmailEnabled,
+            bool? modelSmsEnabled,
+            int expectedEmailTargets,
+            int expectedSmsTargets)
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            UserProfileNotificationSetting existingSetting = new()
+            {
+                Id = Guid.NewGuid(),
+                Hdid = Hdid,
+                NotificationType = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = existingEmailEnabled,
+                SmsEnabled = existingSmsEnabled,
+            };
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync([existingSetting]);
+
+            NotificationChannelPreferencesChangedEvent? capturedEvent = null;
+
+            Mock<IOutboxStore> outboxStoreMock = new();
+            outboxStoreMock
+                .Setup(s => s.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((events, _, _) => { capturedEvent = events.Single().Content as NotificationChannelPreferencesChangedEvent; })
+                .Returns(Task.CompletedTask);
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
+
+            IReadOnlyCollection<UserProfileNotificationSettingModel> models =
+            [
+                new()
+                {
+                    Type = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = modelEmailEnabled,
+                    SmsEnabled = modelSmsEnabled,
+                },
+            ];
+
+            // Act
+            await service.UpdateAsync(Hdid, models, true, CancellationToken.None);
+
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                s => s.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(x =>
+                        x.Hdid == Hdid &&
+                        x.NotificationType == ProfileNotificationType.BcCancerScreening),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            outboxStoreMock.Verify(
+                s => s.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    true,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            capturedEvent.ShouldNotBeNull();
+            capturedEvent!.EmailNotificationTargets.Count.ShouldBe(expectedEmailTargets);
+            capturedEvent.SmsNotificationTargets.Count.ShouldBe(expectedSmsTargets);
+        }
+
+        [Fact]
+        public async Task UpdateAsyncCollectionPassesCommitToOutboxStore()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync([]);
+
+            Mock<IOutboxStore> outboxStoreMock = new();
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
+
+            IReadOnlyCollection<UserProfileNotificationSettingModel> models =
+            [
+                new()
+                {
+                    Type = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = true,
+                    SmsEnabled = true,
+                },
+            ];
+
+            // Act
+            await service.UpdateAsync(Hdid, models, false, CancellationToken.None);
+
+            // Assert
+            outboxStoreMock.Verify(
+                s => s.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateAsync collection overload preserves the existing channel value when only the other channel is provided.
+        /// </summary>
+        /// <param name="existingEmailEnabled">The existing email enabled value.</param>
+        /// <param name="existingSmsEnabled">The existing SMS enabled value.</param>
+        /// <param name="modelEmailEnabled">The model email enabled value.</param>
+        /// <param name="modelSmsEnabled">The model SMS enabled value.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(true, null, null, true)]
+        [InlineData(null, true, true, null)]
+        public async Task UpdateAsyncCollectionPreservesExistingChannelWhenOnlyOtherChannelProvided(
+            bool? existingEmailEnabled,
+            bool? existingSmsEnabled,
+            bool? modelEmailEnabled,
+            bool? modelSmsEnabled)
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            UserProfileNotificationSetting existingSetting = new()
+            {
+                Id = Guid.NewGuid(),
+                Hdid = Hdid,
+                NotificationType = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = existingEmailEnabled,
+                SmsEnabled = existingSmsEnabled,
+            };
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync([existingSetting]);
+
+            NotificationChannelPreferencesChangedEvent? capturedEvent = null;
+
+            Mock<IOutboxStore> outboxStoreMock = new();
+            outboxStoreMock
+                .Setup(s => s.StoreAsync(
+                    It.IsAny<IEnumerable<MessageEnvelope>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<IEnumerable<MessageEnvelope>, bool, CancellationToken>((events, _, _) => { capturedEvent = events.Single().Content as NotificationChannelPreferencesChangedEvent; })
+                .Returns(Task.CompletedTask);
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
+
+            IReadOnlyCollection<UserProfileNotificationSettingModel> models =
+            [
+                new()
+                {
+                    Type = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = modelEmailEnabled,
+                    SmsEnabled = modelSmsEnabled,
+                },
+            ];
+
+            // Act
+            await service.UpdateAsync(Hdid, models, true, CancellationToken.None);
+
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                x => x.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(s =>
+                        s.Hdid == Hdid &&
+                        s.NotificationType == ProfileNotificationType.BcCancerScreening &&
+                        s.EmailEnabled == true &&
+                        s.SmsEnabled == true),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            capturedEvent.ShouldNotBeNull();
+            capturedEvent!.EmailNotificationTargets.ShouldContain(NotificationTargets.BcCancer);
+            capturedEvent.SmsNotificationTargets.ShouldContain(NotificationTargets.BcCancer);
         }
 
         private static IUserProfileNotificationSettingService GetNotificationSettingService(

@@ -47,6 +47,7 @@ const userStore = useUserStore();
 const isSmsEditable = ref(false);
 const showVerifiedSmsMessage = ref(false);
 
+const email = computed(() => userStore.user.email);
 const verified = computed(() => userStore.user.verifiedSms);
 const storePhoneNumber = computed(() => userStore.user.sms);
 const maskedStorePhoneNumber = computed(() =>
@@ -174,6 +175,9 @@ function refreshProfile(): Promise<void> {
     });
 }
 
+watch(email, () => {
+    showVerifiedSmsMessage.value = false;
+});
 watch(
     maskedStorePhoneNumber,
     (value) => (maskedInputPhoneNumber.value = value)
