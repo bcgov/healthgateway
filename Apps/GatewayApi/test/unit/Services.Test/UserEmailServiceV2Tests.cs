@@ -197,6 +197,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             await mock.Service.UpdateEmailAddressAsync(Hdid, emailAddress);
 
             VerifyAddEmailVerification(mock.MessagingVerificationServiceMock, expectedVerificationInsertTimes);
+            VerifyUserProfileNotificationSettingsEmailDisabled(mock.ProfileNotificationSettingServiceMock);
             VerifyQueueNotificationSettings(mock.NotificationSettingServiceMock);
             VerifyQueueNewEmail(mock.EmailQueueServiceMock, expectedQueueNewEmailByEntityTimes);
         }
@@ -304,6 +305,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 v => v.Create(
                     It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
                     It.IsAny<EnqueuedState>()),
+                times ?? Times.Once());
+        }
+
+        private static void VerifyUserProfileNotificationSettingsEmailDisabled(
+            Mock<IUserProfileNotificationSettingService> notificationSettingServiceMock,
+            Times? times = null)
+        {
+            notificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    Hdid,
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Single().Type == ProfileNotificationType.BcCancerScreening &&
+                        models.Single().EmailEnabled == false &&
+                        models.Single().SmsEnabled == null),
+                    false,
+                    It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
         }
 
@@ -663,19 +680,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
             Mock<IEmailQueueService> emailQueueServiceMock = new();
+            Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
 
             IUserEmailServiceV2 service = GetUserEmailService(
                 emailQueueServiceMock: emailQueueServiceMock,
                 messagingVerificationDelegateMock: messagingVerificationDelegateMock,
                 messagingVerificationServiceMock: messagingVerificationServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock,
-                notificationSettingsServiceMock: notificationSettingsServiceMock);
+                notificationSettingsServiceMock: notificationSettingsServiceMock,
+                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock);
 
             return new(
                 service,
                 emailQueueServiceMock,
                 notificationSettingsServiceMock,
-                messagingVerificationServiceMock ?? new Mock<IMessagingVerificationService>());
+                messagingVerificationServiceMock ?? new Mock<IMessagingVerificationService>(),
+                profileNotificationSettingServiceMock);
         }
 
         private static IUserEmailServiceV2 SetupUpdateEmailAddressThrowsExceptionMock(
@@ -704,7 +724,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserEmailServiceV2 Service,
             Mock<IEmailQueueService> EmailQueueServiceMock,
             Mock<INotificationSettingsService> NotificationSettingServiceMock,
-            Mock<IMessagingVerificationService> MessagingVerificationServiceMock);
+            Mock<IMessagingVerificationService> MessagingVerificationServiceMock,
+            Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock);
 
         private sealed record VerifyEmailAddressMock(
             IUserEmailServiceV2 Service,

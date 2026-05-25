@@ -258,6 +258,124 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
         }
 
+        [Theory]
+        [InlineData("updated@healthgateway.gov.bc.ca", true)]
+        [InlineData("", false)]
+        public async Task UpdateUserEmailShouldDisableEmailNotificationSettings(
+            string emailAddress,
+            bool expectedEmailVerificationCreated)
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = HdIdMock,
+                Email = "old@healthgateway.gov.bc.ca",
+            };
+
+            MessagingVerification lastVerificationForUser = new()
+            {
+                UserProfileId = HdIdMock,
+                InviteKey = Guid.NewGuid(),
+                Email = new Email
+                {
+                    To = "old@healthgateway.gov.bc.ca",
+                },
+            };
+
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
+            messagingVerificationDelegateMock
+                .Setup(s => s.InsertAsync(
+                    It.IsAny<MessagingVerification>(),
+                    false,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            Mock<IEmailQueueService> emailQueueServiceMock = new();
+            emailQueueServiceMock
+                .Setup(s => s.GetEmailTemplateAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new EmailTemplate());
+
+            emailQueueServiceMock
+                .Setup(s => s.ProcessTemplate(
+                    It.IsAny<string>(),
+                    It.IsAny<EmailTemplate>(),
+                    It.IsAny<Dictionary<string, string>>()))
+                .Returns((string to, EmailTemplate _, Dictionary<string, string> _) => new Email
+                {
+                    Id = Guid.NewGuid(),
+                    To = to,
+                });
+
+            emailQueueServiceMock
+                .Setup(s => s.QueueNewEmailAsync(
+                    It.IsAny<Email>(),
+                    false,
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            Mock<IUserProfileNotificationSettingService> userProfileNotificationSettingServiceMock = new();
+            userProfileNotificationSettingServiceMock
+                .Setup(s => s.UpdateAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<IReadOnlyCollection<UserProfileNotificationSettingModel>>(),
+                    false,
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            notificationSettingsServiceMock
+                .Setup(s => s.QueueNotificationSettingsAsync(
+                    It.IsAny<NotificationSettingsRequest>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            Mock<IBackgroundJobClient> backgroundJobClientMock = new();
+
+            IUserEmailService service = GetUserEmailService(
+                userProfile,
+                null,
+                messagingVerificationDelegateMock,
+                lastVerificationForUser,
+                notificationSettingsServiceMock: notificationSettingsServiceMock,
+                userProfileNotificationSettingServiceMock: userProfileNotificationSettingServiceMock,
+                backgroundJobClientMock: backgroundJobClientMock,
+                emailQueueServiceMock: emailQueueServiceMock);
+
+            // Act
+            bool actual = await service.UpdateUserEmailAsync(HdIdMock, emailAddress);
+
+            // Assert
+            Assert.True(actual);
+            Assert.Null(userProfile.Email);
+
+            userProfileNotificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    HdIdMock,
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Single().Type == ProfileNotificationType.BcCancerScreening &&
+                        models.Single().EmailEnabled == false &&
+                        models.Single().SmsEnabled == null),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            messagingVerificationDelegateMock.Verify(
+                v => v.InsertAsync(
+                    It.IsAny<MessagingVerification>(),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                expectedEmailVerificationCreated ? Times.Once : Times.Never);
+
+            emailQueueServiceMock.Verify(
+                v => v.QueueNewEmailAsync(
+                    It.IsAny<Email>(),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                expectedEmailVerificationCreated ? Times.Once : Times.Never);
+        }
+
         private static Mock<IGatewayDbContextTransactionProvider> GetTransactionProviderMock()
         {
             Mock<IGatewayDbContextTransactionProvider> transactionProviderMock = new();

@@ -191,6 +191,21 @@ namespace HealthGateway.GatewayApi.Services
                 messagingVerification = await this.messagingVerificationService.AddSmsVerificationAsync(hdid, sanitizedSms, false, ct);
             }
 
+            // Because the sms number was deleted or requires re-verification,
+            // update PHSA notification settings to disable sms notifications.
+            UserProfileNotificationSettingModel[] notificationSettingModels =
+            [
+                new()
+                {
+                    Type = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = null,
+                    SmsEnabled = false,
+                },
+            ];
+
+            // Store an event indicating user profile notification settings have been defaulted.
+            await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
+
             // Persist changes within transaction
             await this.transactionProvider.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
