@@ -277,6 +277,21 @@ namespace HealthGateway.GatewayApi.Services
                 await this.emailQueueService.QueueNewEmailAsync(emailVerification.Email, false, ct);
             }
 
+            // Because the email address was deleted or requires re-verification,
+            // update PHSA notification settings to disable email notifications.
+            UserProfileNotificationSettingModel[] notificationSettingModels =
+            [
+                new()
+                {
+                    Type = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = false,
+                    SmsEnabled = null,
+                },
+            ];
+
+            // Store an event indicating user profile notification settings have been defaulted.
+            await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
+
             // Persist changes within transaction
             await this.transactionProvider.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);

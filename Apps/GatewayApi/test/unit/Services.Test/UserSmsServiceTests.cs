@@ -147,15 +147,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 successPathTimes);
         }
 
-        /// <summary>
-        /// UpdateUserSmsAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateUserSms()
+        [Theory]
+        [InlineData("2508801234", true)]
+        [InlineData("", false)]
+        public async Task ShouldUpdateUserSms(string sms, bool expectedVerificationInsert)
         {
             // Arrange
-            const string sms = "2508801234";
             UserProfile userProfile = new();
 
             MessagingVerification expectedResult = new()
@@ -168,12 +165,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
 
             IUserSmsService service = GetUserSmsService(
                 messagingVerificationDelegateMock,
                 expectedResult,
                 userProfile: userProfile,
-                notificationSettingsServiceMock: notificationSettingsServiceMock);
+                notificationSettingsServiceMock: notificationSettingsServiceMock,
+                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock);
 
             // Act and Assert
             Assert.True(await service.UpdateUserSmsAsync(HdIdMock, sms));
@@ -187,11 +186,24 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                             x.SmsNumber == sms),
                         false,
                         It.IsAny<CancellationToken>()),
-                    Times.Once);
+                    expectedVerificationInsert ? Times.Once : Times.Never);
+
+            profileNotificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    HdIdMock,
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Single().Type == ProfileNotificationType.BcCancerScreening &&
+                        models.Single().EmailEnabled == null &&
+                        models.Single().SmsEnabled == false),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
 
             notificationSettingsServiceMock
                 .Verify(
-                    s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()),
+                    s => s.QueueNotificationSettingsAsync(
+                        It.IsAny<NotificationSettingsRequest>(),
+                        It.IsAny<CancellationToken>()),
                     Times.Once);
         }
 
