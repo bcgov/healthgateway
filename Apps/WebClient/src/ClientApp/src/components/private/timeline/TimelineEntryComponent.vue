@@ -7,7 +7,7 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import TimelineEntry from "@/models/timeline/timelineEntry";
-import { Action, Type } from "@/plugins/extensions";
+import { Action, Origin } from "@/plugins/extensions";
 import { ITrackingService } from "@/services/interfaces";
 import { EventName, useEventStore } from "@/stores/event";
 import { useLayoutStore } from "@/stores/layout";
@@ -60,18 +60,35 @@ const dateString = computed(() => props.entry.date.format());
 const commentCount = computed(() => props.entry.comments?.length ?? 0);
 
 function handleCardClick(): void {
-    if (props.entry.type === EntryType.BcCancerScreening) {
-        trackingService.trackEvent({
-            action: Action.TimelineCardClick,
-            text: props.title,
-            type: Type.BcCancerScreening,
-        });
-    }
     if (layoutStore.isMobile && !props.isMobileDetails) {
         eventStore.emit(EventName.OpenFullscreenTimelineEntry, props.entry);
+        trackCardExpanded();
     } else if (!layoutStore.isMobile && props.canShowDetails) {
         detailsVisible.value = !detailsVisible.value;
+        if (detailsVisible.value) {
+            trackCardExpanded();
+        }
     }
+}
+
+function trackCardExpanded(): void {
+    const entryTypeDetails = entryTypeMap.get(props.entry.type);
+    if (!entryTypeDetails) {
+        return;
+    }
+
+    let text: string = entryTypeDetails?.dataset;
+    if (props.entry.type === EntryType.BcCancerScreening) {
+        text = props.title;
+    }
+
+    trackingService.trackEvent({
+        action: Action.CardClick,
+        text: text,
+        origin: Origin.Timeline,
+        dataset: entryTypeDetails.dataset,
+        type: entryTypeDetails.dataset,
+    });
 }
 
 watch(

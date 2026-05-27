@@ -19,7 +19,7 @@ export interface EventData {
     format?: Format;
     origin?: Origin;
     rating?: Rating;
-    type?: Type;
+    type?: Type | Dataset;
     url?: string | InternalUrl | ExternalUrl;
 }
 
@@ -34,7 +34,6 @@ export const enum Action {
     InternalLink = "internal_link",
     ExternalLink = "external_link",
     Submit = "submit",
-    TimelineCardClick = "timeline_card_click",
 }
 
 export const enum Actor {
@@ -43,7 +42,6 @@ export const enum Actor {
 }
 
 export const enum Dataset {
-    BcCancer = "BC Cancer",
     BcCancerScreening = "BC Cancer Screening",
     ClinicalDocuments = "Clinical Documents",
     Covid19Tests = "COVID-19 Tests",
