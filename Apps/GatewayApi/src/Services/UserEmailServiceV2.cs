@@ -236,6 +236,9 @@ namespace HealthGateway.GatewayApi.Services
                 this.backgroundJobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(messagingVerification.Email.Id, ct));
             }
 
+            this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                store.DispatchOutboxItemsAsync(ct));
+
             // Queue background job to push notification settings through the job scheduler for user and dependents.
             NotificationSettingsRequest notificationSettingsRequest = new(userProfile, userProfile.Email, userProfile.SmsNumber);
             await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationSettingsRequest, ct);

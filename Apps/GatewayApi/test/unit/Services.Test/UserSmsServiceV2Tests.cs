@@ -90,6 +90,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             VerifyVerificationExpire(mock.MessagingVerificationDelegateMock, expectedVerificationExpireTimes);
             VerifyAddSmsVerification(mock.MessagingVerificationServiceMock, expectedVerificationInsertTimes);
             VerifyUserProfileNotificationSettingsSmsDisabled(mock.ProfileNotificationSettingServiceMock);
+            VerifyDispatchOutboxItems(mock.BackgroundJobClientMock);
             VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
         }
 
@@ -219,11 +220,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
 
-            backgroundJobClient.Verify(
-                v => v.Create(
-                    It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
-                    It.IsAny<EnqueuedState>()),
-                times ?? Times.Once());
+            VerifyDispatchOutboxItems(backgroundJobClient, times);
         }
 
         private static void VerifyVerificationExpire(Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock, Times? times = null)
@@ -263,6 +260,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         models.Single().SmsEnabled == false),
                     false,
                     It.IsAny<CancellationToken>()),
+                times ?? Times.Once());
+        }
+
+        private static void VerifyDispatchOutboxItems(
+            Mock<IBackgroundJobClient> backgroundJobClient,
+            Times? times = null)
+        {
+            backgroundJobClient.Verify(
+                v => v.Create(
+                    It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
+                    It.IsAny<EnqueuedState>()),
                 times ?? Times.Once());
         }
 
@@ -488,6 +496,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationService> messagingVerificationServiceMock = SetupMessagingVerificationServiceMock(smsVerification);
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
             Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
+            Mock<IBackgroundJobClient> backgroundJobClientMock = new();
 
             if (updateProfileStatus != null)
             {
@@ -505,14 +514,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationServiceMock: messagingVerificationServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock,
                 notificationSettingsServiceMock: notificationSettingsServiceMock,
-                userProfileNotificationSettingServiceMock: profileNotificationSettingServiceMock);
+                userProfileNotificationSettingServiceMock: profileNotificationSettingServiceMock,
+                backgroundJobClientMock: backgroundJobClientMock);
 
             return new(
                 service,
                 notificationSettingsServiceMock,
                 messagingVerificationDelegateMock,
                 messagingVerificationServiceMock,
-                profileNotificationSettingServiceMock);
+                profileNotificationSettingServiceMock,
+                backgroundJobClientMock);
         }
 
         private static VerifySmsNumberMock SetupVerifySmsNumberMock(
@@ -566,7 +577,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<INotificationSettingsService> NotificationSettingsServiceMock,
             Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
             Mock<IMessagingVerificationService> MessagingVerificationServiceMock,
-            Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock);
+            Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock,
+            Mock<IBackgroundJobClient> BackgroundJobClientMock);
 
         private sealed record VerifySmsNumberMock(
             IUserSmsServiceV2 Service,

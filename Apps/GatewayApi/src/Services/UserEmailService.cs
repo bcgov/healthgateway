@@ -296,11 +296,16 @@ namespace HealthGateway.GatewayApi.Services
             await this.transactionProvider.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
 
+            // Dispatch events after commit
             if (emailVerification != null)
             {
                 // Queue a background job to send the email.
                 this.backgroundJobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(emailVerification.Email!.Id, ct));
             }
+
+            this.logger.LogDebug("Dispatching events after commit");
+            this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                store.DispatchOutboxItemsAsync(ct));
 
             // Queue background job to push notification settings through the job scheduler for user and dependents.
             NotificationSettingsRequest notificationSettingsRequest = new(userProfile, userProfile.Email, userProfile.SmsNumber);

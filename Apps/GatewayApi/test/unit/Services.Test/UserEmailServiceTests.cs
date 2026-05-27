@@ -374,6 +374,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     false,
                     It.IsAny<CancellationToken>()),
                 expectedEmailVerificationCreated ? Times.Once : Times.Never);
+
+            backgroundJobClientMock.Verify(
+                v => v.Create(
+                    It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
+                    It.IsAny<EnqueuedState>()),
+                Times.Once);
         }
 
         private static Mock<IGatewayDbContextTransactionProvider> GetTransactionProviderMock()
