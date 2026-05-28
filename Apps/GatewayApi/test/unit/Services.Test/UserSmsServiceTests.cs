@@ -166,13 +166,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
             Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
+            Mock<IBackgroundJobClient> backgroundJobClientMock = new();
 
             IUserSmsService service = GetUserSmsService(
                 messagingVerificationDelegateMock,
                 expectedResult,
                 userProfile: userProfile,
                 notificationSettingsServiceMock: notificationSettingsServiceMock,
-                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock);
+                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock,
+                backgroundJobClientMock: backgroundJobClientMock);
 
             // Act and Assert
             Assert.True(await service.UpdateUserSmsAsync(HdIdMock, sms));
@@ -197,6 +199,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         models.Single().SmsEnabled == false),
                     false,
                     It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            backgroundJobClientMock.Verify(
+                v => v.Create(
+                    It.Is<Job>(job => job.Type == typeof(DbOutboxStore)),
+                    It.IsAny<EnqueuedState>()),
                 Times.Once);
 
             notificationSettingsServiceMock

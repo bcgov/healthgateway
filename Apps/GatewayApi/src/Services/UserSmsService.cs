@@ -220,6 +220,11 @@ namespace HealthGateway.GatewayApi.Services
             await this.transactionProvider.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
 
+            // Dispatch outbox events after commit
+            this.logger.LogDebug("Dispatching events after commit");
+            this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                store.DispatchOutboxItemsAsync(ct));
+
             // Queue background job to push notification settings through the job scheduler for user and dependents.
             await this.notificationSettingsService.QueueNotificationSettingsAsync(notificationRequest, ct);
             return true;
