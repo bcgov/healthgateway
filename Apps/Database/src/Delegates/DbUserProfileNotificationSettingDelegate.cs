@@ -38,6 +38,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<IReadOnlyList<UserProfileNotificationSetting>> GetNoTrackingAsync(string hdid, CancellationToken ct = default)
+        {
+            return await dbContext.UserProfileNotificationSetting
+                .AsNoTracking()
+                .Where(d => d.Hdid == hdid)
+                .ToListAsync(ct);
+        }
+
+        /// <inheritdoc/>
         public async Task UpdateAsync(
             UserProfileNotificationSetting notificationSetting,
             bool commit = true,
