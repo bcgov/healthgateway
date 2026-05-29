@@ -46,7 +46,7 @@ namespace HealthGateway.GatewayApi.Services
             CancellationToken ct = default)
         {
             IReadOnlyList<UserProfileNotificationSetting> notificationSettings =
-                await notificationSettingDelegate.GetAsync(hdid, ct);
+                await notificationSettingDelegate.GetNoTrackingAsync(hdid, ct);
             return mappingService.MapToUserProfileNotificationSettingModels(notificationSettings);
         }
 

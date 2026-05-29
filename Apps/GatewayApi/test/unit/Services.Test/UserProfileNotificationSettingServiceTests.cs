@@ -78,7 +78,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
             notificationSettingDelegateMock
-                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .Setup(s => s.GetNoTrackingAsync(Hdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notificationSettings);
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -482,7 +482,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             capturedEvent!.EmailNotificationTargets.Count.ShouldBe(expectedEmailTargetCount);
             capturedEvent.SmsNotificationTargets.Count.ShouldBe(expectedSmsTargetCount);
         }
-
 
         /// <summary>
         /// UpdateAsync throws NotFoundException.
