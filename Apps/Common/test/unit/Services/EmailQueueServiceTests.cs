@@ -82,20 +82,17 @@ namespace HealthGateway.CommonTests.Services
                 await emailService.QueueNewEmailAsync(expectedEmail, string.Empty);
             }
 
-            mockJobclient.Verify(
-                x => x.Create(
-                    It.Is<Job>(job => job.Method.Name == "SendEmailAsync" && (Guid)job.Args[0] == expectedEmailId),
-                    It.IsAny<EnqueuedState>()));
-            mockEmailDelegate.Verify(
-                x => x.InsertEmailAsync(
-                    It.Is<Email>(
-                        email =>
-                            email.Id == Guid.Empty &&
-                            email.To == expectedEmail &&
-                            email.Subject == emailTemplate.Subject &&
-                            email.Body == expectedBody),
-                    true,
-                    It.IsAny<CancellationToken>()));
+            mockJobclient.Verify(x => x.Create(
+                It.Is<Job>(job => job.Method.Name == "SendEmailAsync" && (Guid)job.Args[0] == expectedEmailId),
+                It.IsAny<EnqueuedState>()));
+            mockEmailDelegate.Verify(x => x.InsertEmailAsync(
+                It.Is<Email>(email =>
+                    email.Id == Guid.Empty &&
+                    email.To == expectedEmail &&
+                    email.Subject == emailTemplate.Subject &&
+                    email.Body == expectedBody),
+                true,
+                It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
@@ -230,6 +227,72 @@ namespace HealthGateway.CommonTests.Services
             Assert.Equal(expectedErrorMessage, exception.Message);
         }
 
+        /// <summary>
+        /// QueueNewEmailAndReturnAsync - Happy Path.
+        /// </summary>
+        /// <param name="shouldCommit">The value indicating whether to commit and queue the email job.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [InlineData(true)]
+        [InlineData(false)]
+        [Theory]
+        public async Task ShouldQueueEmailAndReturnEmail(bool shouldCommit)
+        {
+            const string expectedEmail = "mock@mock.com";
+            const string environment = "mock environment";
+            const string bodyPrefix = "Mock Body for";
+            string expectedBody = $"{bodyPrefix} {environment}";
+
+            EmailTemplate emailTemplate = GenerateEmailTemplate(expectedBody);
+
+            Guid expectedEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
+            Dictionary<string, string> kv = new()
+            {
+                { "environment", environment },
+            };
+
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IEmailDelegate> mockEmailDelegate = new();
+
+            IEmailQueueService emailService = SetupQueueEmailMock(
+                mockEmailDelegate,
+                mockJobclient,
+                emailTemplate,
+                expectedEmailId,
+                shouldCommit);
+
+            Email actual = await emailService.QueueNewEmailAndReturnAsync(
+                expectedEmail,
+                string.Empty,
+                kv,
+                shouldCommit);
+
+            Assert.Equal(expectedEmail, actual.To);
+            Assert.Equal(emailTemplate.Subject, actual.Subject);
+            Assert.Equal(expectedBody, actual.Body);
+            Assert.Equal(emailTemplate.From, actual.From);
+            Assert.Equal(emailTemplate.Priority, actual.Priority);
+            Assert.Equal(emailTemplate.FormatCode, actual.FormatCode);
+            Assert.Equal(emailTemplate.Name, actual.Template);
+            Assert.Equal(kv, actual.Personalization);
+
+            mockEmailDelegate.Verify(
+                x => x.InsertEmailAsync(
+                    It.Is<Email>(email =>
+                        email.Id == Guid.Empty &&
+                        email.To == expectedEmail &&
+                        email.Subject == emailTemplate.Subject &&
+                        email.Body == expectedBody),
+                    shouldCommit,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            mockJobclient.Verify(
+                x => x.Create(
+                    It.Is<Job>(job => job.Method.Name == "SendEmailAsync" && (Guid)job.Args[0] == expectedEmailId),
+                    It.IsAny<EnqueuedState>()),
+                shouldCommit ? Times.Once() : Times.Never());
+        }
+
         private static EmailTemplate GenerateEmailTemplate(string? body = null)
         {
             return new()
@@ -249,10 +312,11 @@ namespace HealthGateway.CommonTests.Services
             Mock<IEmailDelegate> mockEmailDelegate,
             Mock<IBackgroundJobClient> mockJobclient,
             EmailTemplate emailTemplate,
-            Guid emailId)
+            Guid emailId,
+            bool shouldCommit = true)
         {
             mockEmailDelegate.Setup(s => s.GetEmailTemplateAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(emailTemplate);
-            mockEmailDelegate.Setup(s => s.InsertEmailAsync(It.IsAny<Email>(), true, It.IsAny<CancellationToken>())).ReturnsAsync(emailId);
+            mockEmailDelegate.Setup(s => s.InsertEmailAsync(It.IsAny<Email>(), shouldCommit, It.IsAny<CancellationToken>())).ReturnsAsync(emailId);
 
             return new EmailQueueService(
                 new Mock<ILogger<EmailQueueService>>().Object,

@@ -26,6 +26,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -69,7 +70,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
-                VerifySendEmail(mock.JobServiceMock, expectedEmailTemplateName, expectedCommit);
+                VerifySendEmail(mock.EmailQueueServiceMock, expectedEmailTemplateName, expectedCommit);
             }
             else
             {
@@ -97,7 +98,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock, Times.Never());
-                VerifySendEmail(mock.JobServiceMock, expectedEmailTemplateName, expectedCommit, Times.Never());
+                VerifySendEmail(mock.EmailQueueServiceMock, expectedEmailTemplateName, expectedCommit, Times.Never());
             }
             else
             {
@@ -194,7 +195,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock);
-                VerifySendEmail(mock.JobServiceMock, expectedEmailTemplateName, expectedCommit);
+                VerifySendEmail(mock.EmailQueueServiceMock, expectedEmailTemplateName, expectedCommit);
             }
             else
             {
@@ -222,7 +223,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 // Verify
                 VerifyUserProfileUpdate(mock.UserProfileDelegateMock, Times.Never());
-                VerifySendEmail(mock.JobServiceMock, expectedEmailTemplateName, expectedCommit, Times.Never());
+                VerifySendEmail(mock.EmailQueueServiceMock, expectedEmailTemplateName, expectedCommit, Times.Never());
             }
             else
             {
@@ -298,8 +299,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (baseMock is UpdateAcceptedTermsExceptionMock mock)
             {
                 // Act and Assert
-                await Assert.ThrowsAsync<DatabaseException>(
-                    async () => { await mock.Service.UpdateAcceptedTermsAsync(Hdid, TermsOfServiceGuid); });
+                await Assert.ThrowsAsync<DatabaseException>(async () => { await mock.Service.UpdateAcceptedTermsAsync(Hdid, TermsOfServiceGuid); });
             }
             else
             {
@@ -307,12 +307,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
         }
 
-        private static void VerifySendEmail(Mock<IJobService> jobServiceMock, string emailTemplate, bool shouldCommit, Times? times = null)
+        private static void VerifySendEmail(Mock<IEmailQueueService> emailQueueServiceMock, string emailTemplate, bool shouldCommit, Times? times = null)
         {
-            jobServiceMock.Verify(
-                v => v.SendEmailAsync(
+            emailQueueServiceMock.Verify(
+                v => v.QueueNewEmailAsync(
                     It.IsAny<string>(),
                     It.Is<string>(x => x == emailTemplate),
+                    It.IsAny<Dictionary<string, string>>(),
                     It.Is<bool>(x => x == shouldCommit),
                     It.IsAny<CancellationToken>()),
                 times ?? Times.Once());
@@ -430,14 +431,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static IUserProfileServiceV2 GetUserProfileService(
             Mock<IPatientDetailsService>? patientDetailsServiceMock = null,
-            Mock<IJobService>? jobServiceMock = null,
+            Mock<IEmailQueueService>? emailQueueServiceMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
             Mock<IAuthenticationDelegate>? authenticationDelegateMock = null,
             Mock<IUserProfileModelService>? userProfileModelServiceMock = null,
             IConfigurationRoot? configurationRoot = null)
         {
             patientDetailsServiceMock ??= new();
-            jobServiceMock ??= new();
+            emailQueueServiceMock ??= new();
             userProfileDelegateMock ??= new();
             authenticationDelegateMock ??= new();
             userProfileModelServiceMock ??= new();
@@ -450,7 +451,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 configurationRoot,
                 authenticationDelegateMock.Object,
                 userProfileModelServiceMock.Object,
-                jobServiceMock.Object);
+                emailQueueServiceMock.Object);
         }
 
         private static Mock<IAuthenticationDelegate> SetupAuthenticationDelegateMock(
@@ -459,12 +460,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
 
-            authenticationDelegateMock.Setup(
-                    s => s.FetchAuthenticatedUserClientType())
+            authenticationDelegateMock.Setup(s => s.FetchAuthenticatedUserClientType())
                 .Returns(userLoginClientType);
 
-            authenticationDelegateMock.Setup(
-                    s => s.FetchAuthenticatedUserId())
+            authenticationDelegateMock.Setup(s => s.FetchAuthenticatedUserId())
                 .Returns(authenticatedUserId);
 
             return authenticationDelegateMock;
@@ -473,12 +472,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static Mock<IPatientDetailsService> SetupPatientDetailsServiceMock(PatientDetails patientDetails)
         {
             Mock<IPatientDetailsService> patientDetailsServiceMock = new();
-            patientDetailsServiceMock.Setup(
-                    s => s.GetPatientAsync(
-                        It.Is<string>(x => x == Hdid),
-                        It.IsAny<PatientIdentifierType>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            patientDetailsServiceMock.Setup(s => s.GetPatientAsync(
+                    It.Is<string>(x => x == Hdid),
+                    It.IsAny<PatientIdentifierType>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patientDetails);
 
             return patientDetailsServiceMock;
@@ -488,11 +486,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfile? userProfile)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
-            userProfileDelegateMock.Setup(
-                    s => s.GetUserProfileAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<CancellationToken>()))
+            userProfileDelegateMock.Setup(s => s.GetUserProfileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfile);
 
             return userProfileDelegateMock;
@@ -505,21 +502,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             if (insertProfileResult != null)
             {
-                userProfileDelegateMock.Setup(
-                        s => s.InsertUserProfileAsync(
-                            It.IsAny<UserProfile>(),
-                            It.IsAny<bool>(),
-                            It.IsAny<CancellationToken>()))
+                userProfileDelegateMock.Setup(s => s.InsertUserProfileAsync(
+                        It.IsAny<UserProfile>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(insertProfileResult);
             }
 
             if (updateProfileResult != null)
             {
-                userProfileDelegateMock.Setup(
-                        s => s.UpdateAsync(
-                            It.IsAny<UserProfile>(),
-                            It.IsAny<bool>(),
-                            It.IsAny<CancellationToken>()))
+                userProfileDelegateMock.Setup(s => s.UpdateAsync(
+                        It.IsAny<UserProfile>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
                     .ReturnsAsync(updateProfileResult);
             }
         }
@@ -527,11 +522,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private static Mock<IUserProfileModelService> SetupUserProfileModelServiceMock(UserProfileModel userProfileModel, int profileHistoryRecordLimit)
         {
             Mock<IUserProfileModelService> userProfileModelServiceMock = new();
-            userProfileModelServiceMock.Setup(
-                    s => s.BuildUserProfileModelAsync(
-                        It.IsAny<UserProfile>(),
-                        It.Is<int>(x => x == profileHistoryRecordLimit),
-                        It.IsAny<CancellationToken>()))
+            userProfileModelServiceMock.Setup(s => s.BuildUserProfileModelAsync(
+                    It.IsAny<UserProfile>(),
+                    It.Is<int>(x => x == profileHistoryRecordLimit),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(userProfileModel);
 
             return userProfileModelServiceMock;
@@ -571,18 +565,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
 
             Mock<IAuthenticationDelegate> authenticationDelegateMock = SetupAuthenticationDelegateMock();
-            Mock<IJobService> jobServiceMock = new();
+            Mock<IEmailQueueService> emailQueueServiceMock = new();
 
             IUserProfileServiceV2 service = GetUserProfileService(
                 userProfileDelegateMock: userProfileDelegateMock,
                 authenticationDelegateMock: authenticationDelegateMock,
-                jobServiceMock: jobServiceMock);
+                emailQueueServiceMock: emailQueueServiceMock);
 
             return closedDateTime != null || profileUpdateStatus == DbStatusCode.Updated
                 ? new CloseUserProfileMock(
                     service,
                     userProfileDelegateMock,
-                    jobServiceMock)
+                    emailQueueServiceMock)
                 : new CloseUserProfileExceptionMock(service);
         }
 
@@ -604,17 +598,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 SetupUserProfileDelegateMock(userProfileDelegateMock, updateProfileResult: updateProfileResult);
             }
 
-            Mock<IJobService> jobServiceMock = new();
+            Mock<IEmailQueueService> emailQueueServiceMock = new();
 
             IUserProfileServiceV2 service = GetUserProfileService(
-                jobServiceMock: jobServiceMock,
+                emailQueueServiceMock: emailQueueServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock);
 
             if (userProfileExists)
             {
                 return profileUpdateStatus == DbStatusCode.Error
                     ? new RecoverUserProfileExceptionMock(service)
-                    : new RecoverUserProfileMock(service, userProfileDelegateMock, jobServiceMock);
+                    : new RecoverUserProfileMock(service, userProfileDelegateMock, emailQueueServiceMock);
             }
 
             return new RecoverUserProfileExceptionMock(service);
@@ -668,7 +662,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private sealed record CloseUserProfileMock(
             IUserProfileServiceV2 Service,
             Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            Mock<IJobService> JobServiceMock) : BaseUserProfileServiceMock;
+            Mock<IEmailQueueService> EmailQueueServiceMock) : BaseUserProfileServiceMock;
 
         private sealed record CloseUserProfileExceptionMock(
             IUserProfileServiceV2 Service) : BaseUserProfileServiceMock;
@@ -676,7 +670,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private sealed record RecoverUserProfileMock(
             IUserProfileServiceV2 Service,
             Mock<IUserProfileDelegate> UserProfileDelegateMock,
-            Mock<IJobService> JobServiceMock) : BaseUserProfileServiceMock;
+            Mock<IEmailQueueService> EmailQueueServiceMock) : BaseUserProfileServiceMock;
 
         private sealed record RecoverUserProfileExceptionMock(
             IUserProfileServiceV2 Service) : BaseUserProfileServiceMock;

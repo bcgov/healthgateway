@@ -669,9 +669,10 @@ describe("User Profile Notification Settings", () => {
                 "[data-testid=profile-notification-preferences-save-error]"
             ).should("be.visible");
 
-            cy.get(notificationSel.email)
-                .find('input[type="checkbox"]')
-                .should("not.be.checked");
+            cy.get(notificationSel.email).should(
+                "not.have.class",
+                "v-selection-control--dirty"
+            );
         });
 
         // -------------------------------------------------------
@@ -709,9 +710,10 @@ describe("User Profile Notification Settings", () => {
             );
 
             // Toggle should rollback to previous state (still unchecked)
-            cy.get(notificationSel.email)
-                .find('input[type="checkbox"]')
-                .should("not.be.checked");
+            cy.get(notificationSel.email).should(
+                "not.have.class",
+                "v-selection-control--dirty"
+            );
         });
     });
 });

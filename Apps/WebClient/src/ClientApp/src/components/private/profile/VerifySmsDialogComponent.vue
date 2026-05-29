@@ -86,13 +86,15 @@ function setResendTimeout(): void {
     }
 }
 
-function verifySms(): void {
+async function verifySms(): Promise<void> {
     smsVerificationCode.value = smsVerificationCode.value.replaceAll(/\D/g, "");
     isLoading.value = true;
+
     userProfileService
         .validateSms(user.value.hdid, smsVerificationCode.value)
-        .then((result) => {
+        .then(async (result) => {
             validationError.value = !result;
+
             if (!validationError.value) {
                 hideDialog();
                 emit("verified");
@@ -100,6 +102,7 @@ function verifySms(): void {
         })
         .catch((err: ResultError) => {
             logger.error(err.message);
+
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsError("verifySmsModal");
             } else {

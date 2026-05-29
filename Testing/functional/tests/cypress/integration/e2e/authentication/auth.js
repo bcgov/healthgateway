@@ -17,17 +17,27 @@ describe("Authentication", () => {
             AuthMethod.BCSC,
             "/home"
         );
-        cy.origin("https://idtest.gov.bc.ca", () => {
-            cy.url().should("include", "/login/username");
 
-            // Agree to terms
-            cy.get('input[type="checkbox"][name="accept"]').check({
-                force: true,
-            });
-            cy.get("button#btnSubmit").click({ force: true });
+        cy.location("pathname", { timeout: 30000 }).should((pathname) => {
+            expect(["/home", "/acceptTermsOfService"]).to.include(pathname);
         });
 
-        cy.url().should("include", "/home");
+        cy.location("pathname").then((pathname) => {
+            if (pathname === "/acceptTermsOfService") {
+                cy.get("[data-testid=accept-tos-checkbox] input")
+                    .should("be.enabled")
+                    .check({ force: true });
+
+                cy.contains("button", "Continue").click({ force: true });
+
+                cy.location("pathname", { timeout: 30000 }).should(
+                    "eq",
+                    "/home"
+                );
+            }
+        });
+
+        cy.location("pathname").should("eq", "/home");
 
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]")

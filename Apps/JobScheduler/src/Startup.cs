@@ -34,7 +34,6 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.JobScheduler.AspNetConfiguration.Modules;
     using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
-    using HealthGateway.JobScheduler.Models;
     using HealthGateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -95,17 +94,6 @@ namespace HealthGateway.JobScheduler
                         policy.RequireAssertion(ctx => ctx.User.HasClaim(userRoleClaimType, requiredUserRole));
                     });
             });
-
-            // Bind configuration
-            services.Configure<NotificationBackfillOptions>(
-                "NotificationEmailBackfill",
-                this.startupConfig.Configuration.GetSection("NotificationBackfill:Email:Options"));
-            services.Configure<NotificationBackfillOptions>(
-                "NotificationSmsBackfill",
-                this.startupConfig.Configuration.GetSection("NotificationBackfill:Sms:Options"));
-            services.Configure<ClearSmsNumberOptions>(
-                "ClearSmsNumber",
-                this.startupConfig.Configuration.GetSection("ClearSmsNumber:Options"));
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();

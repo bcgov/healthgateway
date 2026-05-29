@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -196,46 +196,6 @@ function buildNotificationPreferences(
 
     return preferences;
 }
-
-function disableInvalidChannels(
-    rowId: string,
-    emailDisabled: boolean,
-    smsDisabled: boolean
-): boolean {
-    const state = channelState[rowId];
-    if (!state) {
-        return false;
-    }
-
-    let changed = false;
-
-    if (emailDisabled && state.emailEnabled) {
-        state.emailEnabled = false;
-        changed = true;
-    }
-
-    if (smsDisabled && state.smsEnabled) {
-        state.smsEnabled = false;
-        changed = true;
-    }
-
-    return changed;
-}
-
-function handleSaveNotificationPreferencesError(err: unknown): void {
-    const resultError = err as ResultError | undefined;
-    logger.error(resultError?.message ?? String(err));
-
-    if (resultError?.statusCode === 429) {
-        saveError.value = null;
-        errorStore.setTooManyRequestsError("page");
-        return;
-    }
-
-    saveError.value =
-        "An unexpected error has occurred. Please try again later.";
-}
-
 function trackNotificationToggle(
     item: NotificationPreference,
     channel: NotificationChannel,
@@ -297,11 +257,9 @@ async function handleChannelToggle(
         return;
     }
 
-    // Compute previous values safely using the event payload
-    const previousEmailEnabled =
-        channel === "email" ? !newChannelEnabled : state.emailEnabled;
-    const previousSmsEnabled =
-        channel === "sms" ? !newChannelEnabled : state.smsEnabled;
+    // Capture previous values from current UI state so we can roll back if saving fails.
+    const previousEmailEnabled = state.emailEnabled;
+    const previousSmsEnabled = state.smsEnabled;
 
     // Ensure state reflects the intended new value
     if (channel === "email") {
@@ -340,57 +298,6 @@ async function handleChannelToggle(
     }
 }
 
-async function syncDisabledChannelsForRow(
-    row: NotificationPreference,
-    emailDisabled: boolean,
-    smsDisabled: boolean
-): Promise<boolean> {
-    if (savingState[row.id]) {
-        return true;
-    }
-
-    const changed = disableInvalidChannels(row.id, emailDisabled, smsDisabled);
-    if (!changed) {
-        return true;
-    }
-
-    try {
-        await saveNotificationPreferences(
-            row.type,
-            buildNotificationPreferences(row.id)
-        );
-        return true;
-    } catch (err: unknown) {
-        handleSaveNotificationPreferencesError(err);
-
-        const resultError = err as ResultError | undefined;
-        return resultError?.statusCode !== 429;
-    }
-}
-
-// When a contact channel (email or SMS) becomes invalid (deleted or unverified),
-// automatically turn OFF any enabled notification preferences for that channel
-// and persist the updated settings to the backend.
-//
-// This enforces the business rule that notifications cannot remain enabled
-// if the corresponding contact method is missing or unverified.
-watch(
-    [isEmailChannelDisabled, isSmsChannelDisabled],
-    async ([emailDisabled, smsDisabled]) => {
-        for (const row of enabledNotificationPreferences.value) {
-            const shouldContinue = await syncDisabledChannelsForRow(
-                row,
-                emailDisabled,
-                smsDisabled
-            );
-
-            if (!shouldContinue) {
-                return;
-            }
-        }
-    }
-);
-
 // Ensure channelState is initialized for each enabled notification type.
 // This keeps the UI switch state in sync with the user's saved preferences.
 // Runs immediately and whenever the enabled notification rows or
@@ -400,18 +307,16 @@ watchEffect(() => {
     const prefsMap = notificationPreferencesByType.value;
 
     for (const row of rows) {
-        // Initialize channel state once
-        if (!channelState[row.id]) {
-            const enabledPrefs = prefsMap.get(row.type) ?? [];
-            channelState[row.id] = {
-                emailEnabled: enabledPrefs.includes(
-                    ProfileNotificationPreference.Email
-                ),
-                smsEnabled: enabledPrefs.includes(
-                    ProfileNotificationPreference.Sms
-                ),
-            };
-        }
+        const enabledPrefs = prefsMap.get(row.type) ?? [];
+
+        channelState[row.id] = {
+            emailEnabled: enabledPrefs.includes(
+                ProfileNotificationPreference.Email
+            ),
+            smsEnabled: enabledPrefs.includes(
+                ProfileNotificationPreference.Sms
+            ),
+        };
 
         // Initialize saving state once
         if (savingState[row.id] === undefined) {
@@ -537,7 +442,9 @@ watchEffect(() => {
                                 >Email</span
                             >
                             <v-switch
-                                v-model="channelState[item.id].emailEnabled"
+                                :model-value="
+                                    channelState[item.id].emailEnabled
+                                "
                                 color="primary"
                                 class="hg-switch ma-0 d-flex justify-start"
                                 density="compact"
@@ -563,7 +470,7 @@ watchEffect(() => {
                                 >Text (SMS)</span
                             >
                             <v-switch
-                                v-model="channelState[item.id].smsEnabled"
+                                :model-value="channelState[item.id].smsEnabled"
                                 color="primary"
                                 class="hg-switch ma-0 d-flex justify-start"
                                 density="compact"

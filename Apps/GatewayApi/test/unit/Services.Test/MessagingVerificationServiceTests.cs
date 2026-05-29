@@ -20,7 +20,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
-    using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
@@ -45,12 +44,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string SmsNumberWithDashes = "250-555-6000";
         private const int SmsVerificationExpiryDays = 5;
 
-        /// <summary>
-        /// AddEmailVerificationAsync.
-        /// </summary>
-        /// <param name="isEmailVerified">If true, the email status code should be set to 'Processed' else remains 'New'.</param>
-        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true, true)]
         [InlineData(false, true)]
@@ -69,147 +62,76 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert and Verify
             Assert.Equal(Hdid, actual.UserProfileId);
             Assert.Equal(EmailAddress, actual.EmailAddress);
+            Assert.Equal(isEmailVerified, actual.Validated);
             Assert.Null(actual.SmsNumber);
             Assert.Null(actual.SmsValidationCode);
+            Assert.NotNull(actual.InviteKey);
+            Assert.NotNull(actual.Email);
+            Assert.Equal(email, actual.Email);
+            Assert.Equal(
+                DateTime.UtcNow.AddSeconds(EmailVerificationExpirySeconds).Date,
+                actual.ExpireDate.Date);
+
+            if (isEmailVerified)
+            {
+                Assert.Equal(EmailStatus.Processed, actual.Email.EmailStatusCode);
+            }
 
             mock.MessagingVerificationDelegateMock.Verify(v => v.InsertAsync(
                 It.Is<MessagingVerification>(x => string.IsNullOrWhiteSpace(x.SmsNumber)
                                                   && x.Email != null
-                                                  && !string.IsNullOrWhiteSpace(x.EmailAddress)),
+                                                  && x.EmailAddress == EmailAddress
+                                                  && x.Validated == isEmailVerified),
                 It.Is<bool>(x => x == shouldCommit),
                 It.IsAny<CancellationToken>()));
         }
 
-        /// <summary>
-        /// AddSmsVerificationAsync.
-        /// </summary>
-        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldAddSmsVerification(bool shouldCommit)
-        {
-            // Arrange
-            MessagingVerificationMock mock = SetupAddSmsMessagingVerificationMockk();
-
-            // Act
-            MessagingVerification actual = await mock.Service.AddSmsVerificationAsync(Hdid, SmsNumber, shouldCommit);
-
-            // Assert and Verify
-            Assert.Null(actual.EmailAddress);
-            Assert.Equal(Hdid, actual.UserProfileId);
-            Assert.Equal(SmsNumber, actual.SmsNumber);
-            Assert.NotNull(actual.SmsValidationCode);
-
-            mock.MessagingVerificationDelegateMock.Verify(v => v.InsertAsync(
-                It.Is<MessagingVerification>(x => !string.IsNullOrWhiteSpace(x.SmsNumber)
-                                                  && x.Email == null
-                                                  && string.IsNullOrWhiteSpace(x.EmailAddress)),
-                It.IsAny<bool>(),
-                It.IsAny<CancellationToken>()));
-        }
-
-        /// <summary>
-        /// GenerateMessagingVerificationAsync for email.
-        /// </summary>
-        /// <param name="isVerified">The bool value indicating whether the messaging verification is verified or not.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ShouldGenerateEmailMessagingVerification(bool isVerified)
-        {
-            // Arrange
-            Guid emailId = Guid.NewGuid();
-            Guid inviteKey = Guid.NewGuid();
-            Email email = GenerateEmail(emailId, EmailAddress);
-
-            MessagingVerification expected = GenerateMessagingVerification(Hdid, MessagingVerificationType.Email, isVerified, emailAddress: EmailAddress, email: email, inviteKey: inviteKey);
-
-            MessagingVerificationMock mock = SetupEmailMessagingVerificationMock(email: email);
-
-            // Act
-            MessagingVerification actual = await mock.Service.GenerateMessagingVerificationAsync(
-                Hdid,
-                EmailAddress,
-                inviteKey,
-                isVerified);
-
-            // Assert
-            Assert.Equal(expected.InviteKey, actual.InviteKey);
-            Assert.Equal(expected.UserProfileId, actual.UserProfileId);
-            Assert.Equal(expected.Validated, actual.Validated);
-            Assert.Equal(expected.EmailAddress, actual.EmailAddress);
-            Assert.Equal(
-                TruncateToSeconds(expected.ExpireDate),
-                TruncateToSeconds(actual.ExpireDate));
-            actual.Email.ShouldDeepEqual(expected.Email);
-            return;
-
-            static DateTime TruncateToSeconds(DateTime dateTime)
-            {
-                return new DateTime(
-                    dateTime.Year,
-                    dateTime.Month,
-                    dateTime.Day,
-                    dateTime.Hour,
-                    dateTime.Minute,
-                    0,
-                    dateTime.Kind);
-            }
-        }
-
-        /// <summary>
-        /// GenerateMessagingVerificationAsync for email throws database exception.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GenerateEmailMessagingVerificationShouldThrowDatabaseException()
+        public async Task AddEmailVerificationShouldThrowDatabaseException()
         {
             // Arrange
-            Guid inviteKey = Guid.NewGuid();
             bool isVerified = true;
             MessagingVerificationMock mock = SetupEmailMessagingVerificationMock(false);
 
             // Act and Assert
             await Assert.ThrowsAsync<DatabaseException>(async () =>
             {
-                await mock.Service.GenerateMessagingVerificationAsync(
+                await mock.Service.AddEmailVerificationAsync(
                     Hdid,
                     EmailAddress,
-                    inviteKey,
                     isVerified);
             });
         }
 
-        /// <summary>
-        /// GenerateMessagingVerification for Sms.
-        /// </summary>
-        /// <param name="sms">SMS number to be set for the user.</param>
-        /// <param name="sanitize">If set to true, the provided SMS number will be sanitized before being used.</param>
         [Theory]
         [InlineData(SmsNumber, true)]
         [InlineData(SmsNumber, false)]
         [InlineData(SmsNumberWithDashes, true)]
         [InlineData(SmsNumberWithDashes, false)]
-        public void ShouldGenerateSmsMessagingVerification(string sms, bool sanitize)
+        public async Task ShouldAddSmsVerification(string sms, bool shouldCommit)
         {
             // Arrange
-            string expectedSmsNumber = sanitize ? SmsNumber : !sms.Contains('-', StringComparison.Ordinal) ? SmsNumber : SmsNumberWithDashes;
-            DateTime expectedExpireDate = DateTime.UtcNow.AddDays(SmsVerificationExpiryDays);
-
-            IMessagingVerificationService service = GetMessagingVerificationService();
+            MessagingVerificationMock mock = SetupAddSmsMessagingVerificationMock();
 
             // Act
-            MessagingVerification actual = service.GenerateMessagingVerification(Hdid, sms, sanitize);
+            MessagingVerification actual = await mock.Service.AddSmsVerificationAsync(Hdid, sms, shouldCommit);
 
-            // Assert
+            // Assert and Verify
+            Assert.Null(actual.EmailAddress);
+            Assert.Null(actual.Email);
             Assert.Equal(Hdid, actual.UserProfileId);
-            Assert.Equal(expectedSmsNumber, actual.SmsNumber);
+            Assert.Equal(SmsNumber, actual.SmsNumber);
             Assert.Equal(MessagingVerificationType.Sms, actual.VerificationType);
-            Assert.Equal(expectedExpireDate.Date, actual.ExpireDate.Date);
             Assert.NotNull(actual.SmsValidationCode);
+            Assert.Equal(DateTime.UtcNow.AddDays(SmsVerificationExpiryDays).Date, actual.ExpireDate.Date);
+
+            mock.MessagingVerificationDelegateMock.Verify(v => v.InsertAsync(
+                It.Is<MessagingVerification>(x => x.SmsNumber == SmsNumber
+                                                  && x.Email == null
+                                                  && string.IsNullOrWhiteSpace(x.EmailAddress)
+                                                  && x.VerificationType == MessagingVerificationType.Sms),
+                It.Is<bool>(x => x == shouldCommit),
+                It.IsAny<CancellationToken>()));
         }
 
         private static Email GenerateEmail(Guid emailId, string toEmailAddress)
@@ -218,34 +140,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Id = emailId,
                 To = toEmailAddress,
-            };
-        }
-
-        private static MessagingVerification GenerateMessagingVerification(
-            string hdid,
-            string verificationType,
-            bool validated = true,
-            Guid? inviteKey = null,
-            string? emailAddress = null,
-            string? smsNumber = null,
-            string? smsVerificationCode = null,
-            Email? email = null)
-        {
-            return new()
-            {
-                Id = Guid.NewGuid(),
-                UserProfileId = hdid,
-                InviteKey = inviteKey ?? Guid.NewGuid(),
-                SmsNumber = smsNumber,
-                SmsValidationCode = smsVerificationCode,
-                EmailAddress = emailAddress,
-                Validated = validated,
-                Email = email,
-                VerificationType = verificationType,
-                ExpireDate =
-                    !string.IsNullOrWhiteSpace(smsNumber)
-                        ? DateTime.UtcNow.AddDays(SmsVerificationExpiryDays)
-                        : DateTime.UtcNow.AddSeconds(EmailVerificationExpirySeconds),
             };
         }
 
@@ -314,7 +208,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new(service, messagingVerificationDelegateMock);
         }
 
-        private static MessagingVerificationMock SetupAddSmsMessagingVerificationMockk()
+        private static MessagingVerificationMock SetupAddSmsMessagingVerificationMock()
         {
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             IMessagingVerificationService service = GetMessagingVerificationService(messagingVerificationDelegateMock: messagingVerificationDelegateMock);
