@@ -4,7 +4,7 @@ import { computed, ref } from "vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -189,7 +189,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
                 </v-card-title>
                 <v-divider />
                 <v-card-text class="pa-4">
-                    <SectionHeaderComponent title="Search" />
+                    <LabelComponent title="Search" />
                     <v-text-field
                         v-model="keywordInputText"
                         data-testid="filterTextInput"
@@ -197,7 +197,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
                         placeholder="i.e. Medication Name"
                         prepend-inner-icon="search"
                     />
-                    <SectionHeaderComponent title="Type" class="mb-3" />
+                    <LabelComponent title="Type" class="mb-3" />
                     <div class="mb-3">
                         <v-chip-group
                             v-model="selectedEntryTypes"
@@ -234,7 +234,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
                             </v-chip>
                         </v-chip-group>
                     </div>
-                    <SectionHeaderComponent title="Dates" />
+                    <LabelComponent title="Dates" />
                     <v-row>
                         <v-col cols="12" sm="6">
                             <HgDatePickerComponent

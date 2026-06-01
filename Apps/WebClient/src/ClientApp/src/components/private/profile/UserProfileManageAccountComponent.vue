@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import { ErrorSourceType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
 import { container } from "@/ioc/container";
@@ -54,7 +54,7 @@ function closeAccount(): void {
 </script>
 
 <template>
-    <SectionHeaderComponent title="Manage Account" />
+    <LabelComponent title="Manage Account" />
     <HgButtonComponent
         v-if="!showCloseWarning"
         id="recoverAccountShowCloseWarningBtn"

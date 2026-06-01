@@ -4,7 +4,7 @@ import { computed, reactive, ref, watchEffect } from "vue";
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import InformationModalComponent from "@/components/common/InformationModalComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import {
     getNotificationPreferenceTypes,
     getUserProfileNotificationSettings,
@@ -345,7 +345,7 @@ watchEffect(() => {
 </script>
 <template>
     <div v-if="showNotificationSection" class="mb-4">
-        <SectionHeaderComponent
+        <LabelComponent
             title="Notifications"
             data-testid="profile-notification-preferences-label"
         />

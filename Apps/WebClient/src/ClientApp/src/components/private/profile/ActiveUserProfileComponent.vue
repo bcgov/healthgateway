@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import UserProfileAddressComponent from "@/components/private/profile/UserProfileAddressComponent.vue";
 import UserProfileEmailComponent from "@/components/private/profile/UserProfileEmailComponent.vue";
 import UserProfileManageAccountComponent from "@/components/private/profile/UserProfileManageAccountComponent.vue";
@@ -28,9 +28,9 @@ const formattedLoginDateTimes = computed(() =>
 </script>
 
 <template>
-    <SectionHeaderComponent title="Full Name" />
+    <LabelComponent title="Full Name" />
     <p data-testid="fullName">{{ userStore.userName }}</p>
-    <SectionHeaderComponent title="Personal Health Number" />
+    <LabelComponent title="Personal Health Number" />
     <p data-testid="PHN">
         {{ userStore.patient.personalHealthNumber }}
     </p>
@@ -41,7 +41,7 @@ const formattedLoginDateTimes = computed(() =>
     {{
         /* AB#16941 - Hide login history as that was not in Sales Force Implementation */ ""
     }}
-    <SectionHeaderComponent v-if="false" title="Login History" />
+    <LabelComponent v-if="false" title="Login History" />
     <ul v-if="false" id="lastLoginDate" class="text-body-1">
         <li
             v-for="(item, index) in formattedLoginDateTimes"

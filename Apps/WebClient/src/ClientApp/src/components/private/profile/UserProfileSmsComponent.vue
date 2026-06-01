@@ -8,7 +8,7 @@ import { computed, ref, watch } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import VerifySmsDialogComponent from "@/components/private/profile/VerifySmsDialogComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
@@ -188,7 +188,7 @@ watch(maskedInputPhoneNumber, (value) => {
 </script>
 
 <template>
-    <SectionHeaderComponent title="Cell Number (SMS notifications)">
+    <LabelComponent title="Cell Number (SMS notifications)">
         <template #append>
             <HgButtonComponent
                 data-testid="editSMSBtn"
@@ -199,7 +199,7 @@ watch(maskedInputPhoneNumber, (value) => {
                 @click="makeSmsEditable"
             />
         </template>
-    </SectionHeaderComponent>
+    </LabelComponent>
     <v-sheet :max-width="400">
         <v-text-field
             v-model="maskedInputPhoneNumber"

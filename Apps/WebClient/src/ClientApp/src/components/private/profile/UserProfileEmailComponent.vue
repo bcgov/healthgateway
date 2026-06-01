@@ -6,7 +6,7 @@ import { computed, ref, watch } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import { Loader } from "@/constants/loader";
 import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
@@ -112,7 +112,7 @@ watch(email, (value) => (inputValue.value = value));
 </script>
 
 <template>
-    <SectionHeaderComponent title="Email Address">
+    <LabelComponent title="Email Address">
         <template #append>
             <HgButtonComponent
                 id="editEmail"
@@ -124,7 +124,7 @@ watch(email, (value) => (inputValue.value = value));
                 @click="makeEmailEditable"
             />
         </template>
-    </SectionHeaderComponent>
+    </LabelComponent>
     <v-sheet :max-width="400">
         <v-text-field
             v-model.trim="inputValue"

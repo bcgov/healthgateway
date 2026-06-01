@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
@@ -66,7 +66,7 @@ function onAddressChangeClick() {
 
 <template>
     <div class="mb-4">
-        <SectionHeaderComponent
+        <LabelComponent
             data-testid="postal-address-label"
             :title="postalAddressLabel"
         />
@@ -99,7 +99,7 @@ function onAddressChangeClick() {
         data-testid="physical-address-section"
         class="mb-4"
     >
-        <SectionHeaderComponent
+        <LabelComponent
             data-testid="physical-address-label"
             title="Physical Address"
         />
