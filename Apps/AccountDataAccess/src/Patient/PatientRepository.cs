@@ -23,6 +23,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Hangfire;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
@@ -33,6 +34,8 @@ namespace HealthGateway.AccountDataAccess.Patient
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Providers;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -54,7 +57,9 @@ namespace HealthGateway.AccountDataAccess.Patient
         private readonly IBlockedAccessDelegate blockedAccessDelegate;
         private readonly ICacheProvider cacheProvider;
         private readonly PatientQueryFactory patientQueryFactory;
-        private readonly IMessageSender messageSender;
+        private readonly IOutboxStore outboxStore;
+        private readonly IBackgroundJobClient backgroundJobClient;
+        private readonly IGatewayDbContextTransactionProvider transactionProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientRepository"/> class.
@@ -65,7 +70,12 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientQueryFactory">The injected patient query factory.</param>
-        /// <param name="messageSender">The change feed message sender.</param>
+        /// <param name="outboxStore">The outbox store to use.</param>
+        /// <param name="backgroundJobClient">Hangfire background job client.</param>
+        /// <param name="transactionProvider">
+        /// Provides database transaction and persistence operations for the current request
+        /// scope.
+        /// </param>
         public PatientRepository(
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,
@@ -73,14 +83,18 @@ namespace HealthGateway.AccountDataAccess.Patient
             ICacheProvider cacheProvider,
             IConfiguration configuration,
             PatientQueryFactory patientQueryFactory,
-            IMessageSender messageSender)
+            IOutboxStore outboxStore,
+            IBackgroundJobClient backgroundJobClient,
+            IGatewayDbContextTransactionProvider transactionProvider)
         {
             this.logger = logger;
             this.blockedAccessDelegate = blockedAccessDelegate;
             this.authenticationDelegate = authenticationDelegate;
             this.cacheProvider = cacheProvider;
             this.patientQueryFactory = patientQueryFactory;
-            this.messageSender = messageSender;
+            this.outboxStore = outboxStore;
+            this.backgroundJobClient = backgroundJobClient;
+            this.transactionProvider = transactionProvider;
             this.blockedAccessCacheTtl = configuration.GetValue($"{BlockedAccessKey}:{CacheTtlKey}", 30);
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.blockedDataSourcesChangeFeedEnabled = changeFeedConfiguration?.BlockedDataSources.Enabled ?? false;
@@ -112,6 +126,10 @@ namespace HealthGateway.AccountDataAccess.Patient
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
 
+            // Begin transaction for all database updates
+            await using IDbContextTransaction transaction =
+                await this.transactionProvider.BeginTransactionAsync(ct);
+
             AgentAudit agentAudit = new()
             {
                 Hdid = command.Hdid,
@@ -124,7 +142,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 UpdatedBy = authenticatedUserId,
             };
 
-            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid, ct) ?? new()
+            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetAsync(command.Hdid, ct) ?? new()
             {
                 Hdid = command.Hdid,
                 CreatedBy = authenticatedUserId,
@@ -142,32 +160,49 @@ namespace HealthGateway.AccountDataAccess.Patient
                 .ToList();
 #pragma warning restore IDE0305
 
-            // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
-            // this is temporary and will be changed when we introduce a proper unit of work to manage transactions.
+            // Keep the entity in sync with the requested state.
+            // This ensures the change-feed payload is empty when access is unblocked.
+            blockedAccess.DataSources = sources;
+
             if (sources.Count != 0)
             {
-                blockedAccess.DataSources = sources;
-                blockedAccess.CreatedDateTime = DateTime.UtcNow;
-                blockedAccess.UpdatedDateTime = DateTime.UtcNow;
-                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled, ct);
+                await this.blockedAccessDelegate.UpsertAsync(blockedAccess, agentAudit, false, ct);
             }
             else
             {
-                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled, ct);
+                await this.blockedAccessDelegate.DeleteAsync(blockedAccess, agentAudit, false, ct);
             }
 
             if (this.blockedDataSourcesChangeFeedEnabled)
             {
                 this.logger.LogDebug("Sending change feed notification for blocked data sources");
-                IEnumerable<string> dataSourceValues = blockedAccess.DataSources.Select(ds => EnumUtility.ToEnumString(ds));
-                await this.messageSender.SendAsync([new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, dataSourceValues), command.Hdid)], ct);
-            }
-        }
+                string[] dataSourceValues = blockedAccess.DataSources
+                    .Select(ds => EnumUtility.ToEnumString(ds))
+                    .ToArray();
 
-        /// <inheritdoc/>
-        public async Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default)
-        {
-            return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid, ct);
+                MessageEnvelope[] events =
+                [
+                    new(
+                        new DataSourcesBlockedEvent(
+                            command.Hdid,
+                            dataSourceValues),
+                        command.Hdid),
+                ];
+
+                await this.outboxStore.StoreAsync(events, false, ct);
+            }
+
+            // Persist changes within transaction
+            await this.transactionProvider.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            if (this.blockedDataSourcesChangeFeedEnabled)
+            {
+                // Dispatch outbox events after commit
+                this.logger.LogDebug("Dispatching events after commit");
+                this.backgroundJobClient.Enqueue<DbOutboxStore>(store =>
+                    store.DispatchOutboxItemsAsync(ct));
+            }
         }
 
         /// <inheritdoc/>

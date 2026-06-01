@@ -23,6 +23,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -31,7 +32,7 @@ namespace HealthGateway.Database.Delegates
     public class DbBlockedAccessDelegate(ILogger<DbBlockedAccessDelegate> logger, GatewayDbContext dbContext) : IBlockedAccessDelegate
     {
         /// <inheritdoc/>
-        public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
+        public async Task DeleteAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
             logger.LogDebug("Removing blocked access from DB for {Hdid}", blockedAccess.Hdid);
 
@@ -44,11 +45,14 @@ namespace HealthGateway.Database.Delegates
             logger.LogDebug("Adding audit record to DB");
             dbContext.AgentAudit.Add(agentAudit);
 
-            await dbContext.SaveChangesAsync(ct);
+            if (commit)
+            {
+                await dbContext.SaveChangesAsync(ct);
+            }
         }
 
         /// <inheritdoc/>
-        public async Task<BlockedAccess?> GetBlockedAccessAsync(string hdid, CancellationToken ct = default)
+        public async Task<BlockedAccess?> GetAsync(string hdid, CancellationToken ct = default)
         {
             logger.LogDebug("Retrieving blocked access from DB for {Hdid}", hdid);
             return await dbContext.BlockedAccess
@@ -57,32 +61,51 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<BlockedAccess?> GetNoTrackingAsync(string hdid, CancellationToken ct = default)
+        {
+            return await dbContext.BlockedAccess
+                .AsNoTracking()
+                .Where(d => d.Hdid == hdid)
+                .SingleOrDefaultAsync(ct);
+        }
+
+        /// <inheritdoc/>
         public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default)
         {
-            BlockedAccess? blockedAccess = await this.GetBlockedAccessAsync(hdid, ct);
+            BlockedAccess? blockedAccess = await this.GetNoTrackingAsync(hdid, ct);
             return blockedAccess?.DataSources ?? [];
         }
 
         /// <inheritdoc/>
-        public async Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
+        public async Task UpsertAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
             // Ensure the DataSources list remains logically unique.
             // This property was previously a HashSet<DataSource>, which prevented duplicates automatically.
-            // Since EF Core JSON mapping now requires List<T>, duplicates could appear;
-            // apply Distinct() to remove them if present before saving.
-            blockedAccess.DataSources = blockedAccess.DataSources
+            // Since EF Core JSON mapping now requires List<T>, duplicates could appear.
+            // Remove duplicates before saving while avoiding unnecessary updates when the list is already unique.
+            List<DataSource> distinctSources = blockedAccess.DataSources
                 .Distinct()
                 .ToList();
 
-            if (blockedAccess.Version == 0)
+            if (distinctSources.Count != blockedAccess.DataSources.Count)
             {
-                logger.LogDebug("Adding blocked access to DB for {Hdid}", blockedAccess.Hdid);
-                dbContext.BlockedAccess.Add(blockedAccess);
+                blockedAccess.DataSources = distinctSources;
             }
-            else
+
+            EntityEntry<BlockedAccess> entry = dbContext.Entry(blockedAccess);
+
+            if (entry.State == EntityState.Detached)
             {
-                logger.LogDebug("Updating blocked access in DB for {Hdid}", blockedAccess.Hdid);
-                dbContext.BlockedAccess.Update(blockedAccess);
+                if (blockedAccess.Version == 0)
+                {
+                    logger.LogDebug("Adding blocked access to DB for {Hdid}", blockedAccess.Hdid);
+                    dbContext.BlockedAccess.Add(blockedAccess);
+                }
+                else
+                {
+                    logger.LogDebug("Updating blocked access in DB for {Hdid}", blockedAccess.Hdid);
+                    dbContext.BlockedAccess.Update(blockedAccess);
+                }
             }
 
             logger.LogDebug("Adding audit record to DB");
@@ -95,10 +118,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct = default)
+        public async Task<IList<BlockedAccess>> GetAllNoTrackingAsync(CancellationToken ct = default)
         {
             logger.LogDebug("Retrieving blocked access from DB");
             return await dbContext.BlockedAccess
+                .AsNoTracking()
                 .ToListAsync(ct);
         }
     }

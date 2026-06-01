@@ -21,7 +21,6 @@ namespace HealthGateway.AccountDataAccess.Patient
     using FluentValidation;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.ErrorHandling.Exceptions;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents the patient detail source to determine what to query.
@@ -67,14 +66,6 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The blocked access or null if not found.</returns>
         Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default);
-
-        /// <summary>
-        /// Gets the blocked access record.
-        /// </summary>
-        /// <param name="hdid">The hdid to query on.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The blocked access or null if not found.</returns>
-        Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the blocked access's data sources for the hdid.
