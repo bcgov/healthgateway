@@ -162,7 +162,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DateTime previousLastLogin = userProfile.LastLoginDateTime;
-            if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
+            if (jwtAuthTime > previousLastLogin)
             {
                 userProfile.LastLoginDateTime = jwtAuthTime;
                 userProfile.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
