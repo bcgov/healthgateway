@@ -12,10 +12,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { useAppStore } from "@/stores/app";
 import { useUserStore } from "@/stores/user";
 
-const emit = defineEmits<{
-    (e: "email-updated", value: string): void;
-}>();
-
 const appStore = useAppStore();
 const userStore = useUserStore();
 
@@ -37,7 +33,7 @@ const formattedLoginDateTimes = computed(() =>
         {{ userStore.patient.personalHealthNumber }}
     </p>
     <SectionHeadingComponent title="Contact Information" include-divider />
-    <UserProfileEmailComponent @email-updated="emit('email-updated', $event)" />
+    <UserProfileEmailComponent />
     <UserProfileSmsComponent />
     <UserProfileAddressComponent />
     <UserProfileNotificationsComponent />

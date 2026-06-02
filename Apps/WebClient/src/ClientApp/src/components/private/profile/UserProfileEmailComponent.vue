@@ -15,19 +15,17 @@ import { ResultError } from "@/models/errors";
 import { Action, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { EventName, useEventStore } from "@/stores/event";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 import ValidationUtil from "@/utility/validationUtil";
-
-const emit = defineEmits<{
-    (e: "email-updated", value: string): void;
-}>();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
 const errorStore = useErrorStore();
+const eventStore = useEventStore();
 const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
@@ -96,7 +94,7 @@ function sendUserEmailUpdate(): void {
             .then(() => {
                 isEmailEditable.value = false;
                 v$.value.$reset();
-                emit("email-updated", email.value);
+                eventStore.emit(EventName.UpdateEmailAddress, email.value);
             })
             .catch((err) => {
                 const resultError = err as ResultError | undefined;
