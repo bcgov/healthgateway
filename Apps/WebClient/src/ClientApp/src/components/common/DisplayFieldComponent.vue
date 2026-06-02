@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSlots } from "vue";
 
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 
 interface Props {
     name: string;
@@ -34,9 +34,9 @@ const slots = useSlots();
         </span>
     </p>
     <template v-else>
-        <SectionHeaderComponent :class="nameClass" :title="name">
+        <LabelComponent :class="nameClass" :title="name">
             <template #append><slot name="append" /></template>
-        </SectionHeaderComponent>
+        </LabelComponent>
         <template v-if="slots.value !== undefined">
             <slot name="value" />
             <slot name="append-value" />

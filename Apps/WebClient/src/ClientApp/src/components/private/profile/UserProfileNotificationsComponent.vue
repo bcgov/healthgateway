@@ -4,7 +4,7 @@ import { computed, reactive, ref, watchEffect } from "vue";
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import InformationModalComponent from "@/components/common/InformationModalComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import SectionHeadingComponent from "@/components/common/SectionHeadingComponent.vue";
 import {
     getNotificationPreferenceTypes,
     getUserProfileNotificationSettings,
@@ -345,8 +345,9 @@ watchEffect(() => {
 </script>
 <template>
     <div v-if="showNotificationSection" class="mb-4">
-        <SectionHeaderComponent
+        <SectionHeadingComponent
             title="Notifications"
+            include-divider
             data-testid="profile-notification-preferences-label"
         />
         <p
@@ -365,7 +366,6 @@ watchEffect(() => {
         >
             {{ saveError }}
         </HgAlertComponent>
-        <v-divider class="my-4" />
         <v-container fluid class="pa-0">
             <!-- Key change: constrain width so Email/SMS don't drift on 4K/5K -->
             <v-sheet max-width="960" class="pa-0">
@@ -522,7 +522,6 @@ watchEffect(() => {
                 </p>
             </v-sheet>
         </v-container>
-        <v-divider class="my-4" />
     </div>
     <InformationModalComponent
         ref="learnMoreModal"
