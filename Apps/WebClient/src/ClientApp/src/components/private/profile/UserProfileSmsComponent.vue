@@ -289,14 +289,14 @@ watch(maskedInputPhoneNumber, (value) => {
             variant="text"
             text="Health Gateway may now send you notifications. You can change your preferences at any time."
         />
-        <HgButtonComponent
-            v-if="!verified && storePhoneNumber"
-            data-testid="verifySMSBtn"
-            class="mb-4"
-            variant="secondary"
-            text="Verify"
-            @click="verifySms"
-        />
+        <div v-if="!verified && storePhoneNumber" class="mb-4">
+            <HgButtonComponent
+                data-testid="verifySMSBtn"
+                variant="secondary"
+                text="Verify"
+                @click="verifySms"
+            />
+        </div>
     </template>
     <VerifySmsDialogComponent
         ref="verifySmsDialog"

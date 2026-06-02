@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import LabelComponent from "@/components/common/LabelComponent.vue";
+import SectionHeadingComponent from "@/components/common/SectionHeadingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
@@ -65,6 +66,7 @@ function onAddressChangeClick() {
 </script>
 
 <template>
+    <SectionHeadingComponent title="Address" include-divider />
     <div class="mb-4">
         <LabelComponent
             data-testid="postal-address-label"
