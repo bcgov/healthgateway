@@ -20,6 +20,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
     using System.Net.Http;
     using System.ServiceModel;
     using System.Threading.Tasks;
+    using FluentValidation;
     using FluentValidation.Results;
     using HealthGateway.Common.ErrorHandling.ExceptionHandlers;
     using HealthGateway.Common.ErrorHandling.Exceptions;
@@ -43,16 +44,17 @@ namespace HealthGateway.CommonTests.ErrorHandling
         /// Gets parameters for DefaultExceptionHandler unit test(s).
         /// </summary>
         public static TheoryData<Exception> DefaultExceptionHandlerTheoryData =>
-        [
-            new UnauthorizedAccessException(),
-            new CommunicationException(),
-            new AlreadyExistsException(),
-            new DatabaseException(),
-            new InvalidDataException(),
-            new NotFoundException(),
-            new UpstreamServiceException(),
-            new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e")))))))))),
-        ];
+            new()
+            {
+                new UnauthorizedAccessException(),
+                new CommunicationException(),
+                new AlreadyExistsException(),
+                new DatabaseException(),
+                new InvalidDataException(),
+                new NotFoundException(),
+                new UpstreamServiceException(),
+                new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e", new("e")))))))))),
+            };
 
         /// <summary>
         /// DefaultExceptionHandler TryHandleAsync - Happy Path.
@@ -166,7 +168,7 @@ namespace HealthGateway.CommonTests.ErrorHandling
         {
             // Arrange
             HttpContext httpContext = new DefaultHttpContext();
-            Exception exception = new FluentValidation.ValidationException([new ValidationFailure("hdid", "required"), new ValidationFailure("hdid", "malformed")]);
+            Exception exception = new ValidationException([new ValidationFailure("hdid", "required"), new ValidationFailure("hdid", "malformed")]);
 
             ValidationExceptionHandlerSetup setup = GetValidationExceptionHandlerSetup(true);
 
@@ -295,15 +297,14 @@ namespace HealthGateway.CommonTests.ErrorHandling
                 .Setup(s => s.CreateProblemDetails(It.IsAny<HttpContext>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>()))
                 .Returns(GenerateProblemDetails);
             problemDetailsFactory
-                .Setup(
-                    s => s.CreateValidationProblemDetails(
-                        It.IsAny<HttpContext>(),
-                        It.IsAny<ModelStateDictionary>(),
-                        It.IsAny<int?>(),
-                        It.IsAny<string?>(),
-                        It.IsAny<string?>(),
-                        It.IsAny<string?>(),
-                        It.IsAny<string?>()))
+                .Setup(s => s.CreateValidationProblemDetails(
+                    It.IsAny<HttpContext>(),
+                    It.IsAny<ModelStateDictionary>(),
+                    It.IsAny<int?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>()))
                 .Returns(GenerateValidationProblemDetails);
 
             return problemDetailsFactory.Object;
