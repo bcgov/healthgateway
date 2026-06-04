@@ -76,6 +76,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// Provides database transaction and persistence operations for the current request
         /// scope.
         /// </param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public PatientRepository(
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,
