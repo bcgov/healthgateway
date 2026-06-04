@@ -1326,7 +1326,7 @@ VALUES (
 	'nobody@healthgateway.gov.bc.ca'
 );
 
-/* Registered HealthGateway User - Keycloak User (protected) */
+/* Registered HealthGateway User - Keycloak User (protected) SMS */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
 	"CreatedBy", 
@@ -1357,6 +1357,41 @@ VALUES (
 	'2506715000',
 	'567890',
 	'SMS',
+	false,
+	0
+);
+
+/* Registered HealthGateway User - Keycloak User (protected) Email */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	now(),
+	'System',
+	now(),
+	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',
+	true,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	now()+INTERVAL '1 day',
+	'2506715000',
+	'567890',
+	'Email',
 	false,
 	0
 );
@@ -1393,7 +1428,7 @@ VALUES (
 	null,
 	'123456',
 	'Email',
-	false,
+	true,
 	0,
 	'fakeemail@healthgateway.gov.bc.ca'
 );
@@ -1468,6 +1503,41 @@ VALUES (
 	false,
 	0,
 	'nobody@healthgateway.gov.bc.ca'
+);
+
+/* Laboratory Queued - Keycloak User (hthgtwy09) */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	TIMESTAMP WITH TIME ZONE '2022-12-31T00:05:00Z',
+	'System',
+	TIMESTAMP WITH TIME ZONE '2022-12-31T08:00:00Z',
+	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',
+	true,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	TIMESTAMP WITH TIME ZONE '2023-01-01T00:05:00Z',
+	'6046719015',
+	'123456',
+	'SMS',
+	false,
+	0
 );
 
 /* User hthgtwy20 */
