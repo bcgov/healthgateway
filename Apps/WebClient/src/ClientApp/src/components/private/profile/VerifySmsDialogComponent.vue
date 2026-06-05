@@ -87,6 +87,10 @@ function setResendTimeout(): void {
 }
 
 async function verifySms(): Promise<void> {
+    if (isLoading.value) {
+        return;
+    }
+
     smsVerificationCode.value = smsVerificationCode.value.replaceAll(/\D/g, "");
     isLoading.value = true;
 
@@ -116,6 +120,10 @@ async function verifySms(): Promise<void> {
 }
 
 function sendUserSmsUpdate(): void {
+    if (smsVerificationSent.value) {
+        return;
+    }
+
     smsVerificationSent.value = true;
     userStore.updateSmsResendDateTime(DateWrapper.now());
     userProfileService

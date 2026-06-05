@@ -210,6 +210,10 @@ function loadTermsOfService(): void {
 }
 
 async function onSubmit(): Promise<void> {
+    if (submittingRegistration.value) {
+        return;
+    }
+
     v$.value.$touch();
     if (v$.value.$invalid || userStore.oidcUserInfo === undefined) {
         submitStatus.value = "ERROR";
@@ -369,7 +373,7 @@ loadTermsOfService();
             />
             <div class="mb-3 text-right">
                 <HgButtonComponent
-                    :disabled="!accepted"
+                    :disabled="!accepted || submittingRegistration"
                     class="px-12"
                     data-testid="registerButton"
                     type="submit"

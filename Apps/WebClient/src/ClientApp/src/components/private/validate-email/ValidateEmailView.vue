@@ -26,23 +26,25 @@ const isAlreadyVerified = ref<boolean>();
 const isSuccess = computed(() => isAlreadyVerified.value || isVerified.value);
 const validationFailed = computed(() => isVerified.value === false);
 
-// Created hook
-loadingStore.applyLoader(
-    Loader.ValidateEmail,
-    "verifyingEmailAddress",
-    userStore
-        .validateEmail(props.inviteKey)
-        .then((result: boolean) => {
-            isVerified.value = result;
-        })
-        .catch((resultError: ResultError) => {
-            if (resultError.statusCode === 409) {
-                isAlreadyVerified.value = true;
-            } else {
-                logger.error("Error while validating email.");
-            }
-        })
-);
+if (!loadingStore.isLoading(Loader.ValidateEmail)) {
+    // Created hook
+    loadingStore.applyLoader(
+        Loader.ValidateEmail,
+        "verifyingEmailAddress",
+        userStore
+            .validateEmail(props.inviteKey)
+            .then((result: boolean) => {
+                isVerified.value = result;
+            })
+            .catch((resultError: ResultError) => {
+                if (resultError.statusCode === 409) {
+                    isAlreadyVerified.value = true;
+                } else {
+                    logger.error("Error while validating email.");
+                }
+            })
+    );
+}
 </script>
 
 <template>
