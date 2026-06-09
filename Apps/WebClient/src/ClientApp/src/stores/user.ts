@@ -447,7 +447,7 @@ export const useUserStore = defineStore("user", () => {
                 retrieveEssentialDataPromise = undefined;
             });
 
-        return retrieveEssentialDataPromise;
+        return retrieveEssentialDataPromise!;
     }
 
     function updateNotificationSettings(
