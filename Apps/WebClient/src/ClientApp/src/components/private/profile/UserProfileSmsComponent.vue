@@ -56,6 +56,7 @@ const maskedStorePhoneNumber = computed(() =>
 
 const inputPhoneNumber = ref(storePhoneNumber.value);
 const maskedInputPhoneNumber = ref(maskedStorePhoneNumber.value);
+const isUpdatingSms = ref(false);
 
 const verifySmsDialog = ref<InstanceType<typeof VerifySmsDialogComponent>>();
 
@@ -115,6 +116,12 @@ function saveSmsEdit(): void {
 }
 
 function updateSms(): void {
+    if (isUpdatingSms.value) {
+        return;
+    }
+
+    isUpdatingSms.value = true;
+
     // Reset timer when user submits their SMS number
     userStore.updateSmsResendDateTime(DateWrapper.now());
 
@@ -143,6 +150,9 @@ function updateSms(): void {
                         undefined
                     );
                 }
+            })
+            .finally(() => {
+                isUpdatingSms.value = false;
             })
     );
 }
@@ -248,6 +258,7 @@ watch(maskedInputPhoneNumber, (value) => {
             variant="primary"
             text="Save"
             :disabled="
+                isUpdatingSms ||
                 inputPhoneNumber === storePhoneNumber ||
                 !ValidationUtil.isValid(v$.inputPhoneNumber)
             "
