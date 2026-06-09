@@ -121,7 +121,8 @@ export const useUserStore = defineStore("user", () => {
             : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
     );
 
-    let retrieveEssentialDataPromise: Promise<void> | undefined = undefined;
+let retrieveEssentialDataPromise: Promise<void> | undefined;
+let retrieveEssentialDataHdid: string | undefined;
 
     function setOidcUserInfo(userInfo: OidcUserInfo) {
         user.value.hdid = userInfo.hdid;
