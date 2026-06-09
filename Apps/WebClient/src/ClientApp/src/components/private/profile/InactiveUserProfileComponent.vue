@@ -29,7 +29,7 @@ const userStore = useUserStore();
 
 const timeForDeletion = ref(-1);
 const intervalHandler = ref<ReturnType<typeof setInterval>>();
-const isRecovering = ref(false);
+const isSubmitting = ref(false);
 
 const timeForDeletionString = computed(() => {
     if (userStore.userIsActive) {
@@ -49,11 +49,11 @@ const timeForDeletionString = computed(() => {
 });
 
 function recoverAccount(): void {
-    if (isRecovering.value) {
+    if (isSubmitting.value) {
         return;
     }
 
-    isRecovering.value = true;
+    isSubmitting.value = true;
 
     trackingService.trackEvent({
         action: Action.ButtonClick,
@@ -78,7 +78,7 @@ function recoverAccount(): void {
                 }
             })
             .finally(() => {
-                isRecovering.value = false;
+                isSubmitting.value = false;
             })
     );
 }
@@ -121,7 +121,7 @@ intervalHandler.value = globalThis.setInterval(
         id="recoverAccountCancelBtn"
         data-testid="recoverAccountCancelBtn"
         variant="primary"
-        :disabled="isRecovering"
+        :disabled="isSubmitting"
         text="Recover Account"
         @click="recoverAccount"
     />
