@@ -24,8 +24,15 @@ const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const showCloseWarning = ref(false);
+const isClosingAccount = ref(false);
 
 function closeAccount(): void {
+    if (isClosingAccount.value) {
+        return;
+    }
+
+    isClosingAccount.value = true;
+
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.DeleteAccount,
@@ -48,6 +55,9 @@ function closeAccount(): void {
                         undefined
                     );
                 }
+            })
+            .finally(() => {
+                isClosingAccount.value = false;
             })
     );
 }
@@ -91,6 +101,7 @@ function closeAccount(): void {
                     data-testid="closeAccountBtn"
                     color="error"
                     text="Delete Account"
+                    :disabled="isClosingAccount"
                     @click="closeAccount"
                 />
             </template>

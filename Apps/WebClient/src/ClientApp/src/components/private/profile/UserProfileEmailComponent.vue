@@ -31,6 +31,7 @@ const userStore = useUserStore();
 
 const isEmailEditable = ref(false);
 const inputValue = ref(userStore.user.email);
+const isUpdatingEmail = ref(false);
 
 const email = computed(() => userStore.user.email);
 const emailVerified = computed(() => userStore.user.verifiedEmail);
@@ -80,6 +81,12 @@ function saveEmailEdit(): void {
 }
 
 function sendUserEmailUpdate(): void {
+    if (isUpdatingEmail.value) {
+        return;
+    }
+
+    isUpdatingEmail.value = true;
+
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.VerifyEmailAddress,
@@ -103,6 +110,9 @@ function sendUserEmailUpdate(): void {
                 if (resultError?.statusCode === 429) {
                     errorStore.setTooManyRequestsError("page");
                 }
+            })
+            .finally(() => {
+                isUpdatingEmail.value = false;
             })
     );
 }
@@ -163,6 +173,7 @@ watch(email, (value) => (inputValue.value = value));
             variant="primary"
             text="Save"
             :disabled="
+                isUpdatingEmail ||
                 inputValue === email ||
                 !ValidationUtil.isValid(v$.inputValue, undefined, false)
             "
@@ -203,7 +214,7 @@ watch(email, (value) => (inputValue.value = value));
             class="mb-4"
             variant="secondary"
             text="Resend Verification"
-            :disabled="emailVerificationSent"
+            :disabled="emailVerificationSent || isUpdatingEmail"
             @click="sendUserEmailUpdate"
         />
     </template>

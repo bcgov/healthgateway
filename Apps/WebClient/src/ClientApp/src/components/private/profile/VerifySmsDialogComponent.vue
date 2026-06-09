@@ -87,6 +87,10 @@ function setResendTimeout(): void {
 }
 
 async function verifySms(): Promise<void> {
+    if (isLoading.value) {
+        return;
+    }
+
     smsVerificationCode.value = smsVerificationCode.value.replaceAll(/\D/g, "");
     isLoading.value = true;
 
@@ -116,12 +120,18 @@ async function verifySms(): Promise<void> {
 }
 
 function sendUserSmsUpdate(): void {
+    if (smsVerificationSent.value) {
+        return;
+    }
+
     smsVerificationSent.value = true;
     userStore.updateSmsResendDateTime(DateWrapper.now());
     userProfileService
         .updateSmsNumber(user.value.hdid, props.smsNumber)
         .then(() => setTimeout(() => (smsVerificationSent.value = false), 5000))
         .catch((error) => {
+            smsVerificationSent.value = false;
+
             if (isTooManyRequestsError(error)) {
                 errorStore.setTooManyRequestsWarning("page");
             } else {

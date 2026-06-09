@@ -29,6 +29,7 @@ const userStore = useUserStore();
 
 const timeForDeletion = ref(-1);
 const intervalHandler = ref<ReturnType<typeof setInterval>>();
+const isSubmitting = ref(false);
 
 const timeForDeletionString = computed(() => {
     if (userStore.userIsActive) {
@@ -48,6 +49,12 @@ const timeForDeletionString = computed(() => {
 });
 
 function recoverAccount(): void {
+    if (isSubmitting.value) {
+        return;
+    }
+
+    isSubmitting.value = true;
+
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.RecoverAccount,
@@ -56,18 +63,23 @@ function recoverAccount(): void {
     loadingStore.applyLoader(
         Loader.UserProfile,
         "recoverAccount",
-        userStore.recoverUserAccount().catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addCustomError(
-                    `Unable to recover ${ErrorSourceType.Profile}`,
-                    ErrorSourceType.Profile,
-                    undefined
-                );
-            }
-        })
+        userStore
+            .recoverUserAccount()
+            .catch((err: ResultError) => {
+                logger.error(err.message);
+                if (err.statusCode === 429) {
+                    errorStore.setTooManyRequestsError("page");
+                } else {
+                    errorStore.addCustomError(
+                        `Unable to recover ${ErrorSourceType.Profile}`,
+                        ErrorSourceType.Profile,
+                        undefined
+                    );
+                }
+            })
+            .finally(() => {
+                isSubmitting.value = false;
+            })
     );
 }
 
@@ -109,6 +121,7 @@ intervalHandler.value = globalThis.setInterval(
         id="recoverAccountCancelBtn"
         data-testid="recoverAccountCancelBtn"
         variant="primary"
+        :disabled="isSubmitting"
         text="Recover Account"
         @click="recoverAccount"
     />
