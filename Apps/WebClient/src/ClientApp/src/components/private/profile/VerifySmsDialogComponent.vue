@@ -125,10 +125,12 @@ function sendUserSmsUpdate(): void {
     }
 
     smsVerificationSent.value = true;
-    userStore.updateSmsResendDateTime(DateWrapper.now());
     userProfileService
         .updateSmsNumber(user.value.hdid, props.smsNumber)
-        .then(() => setTimeout(() => (smsVerificationSent.value = false), 5000))
+        .then(() => {
+            userStore.updateSmsResendDateTime(DateWrapper.now());
+            setTimeout(() => (smsVerificationSent.value = false), 5000);
+        })
         .catch((error) => {
             smsVerificationSent.value = false;
 
