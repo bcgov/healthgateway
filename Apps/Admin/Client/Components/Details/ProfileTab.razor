@@ -1,5 +1,4 @@
-﻿@using HealthGateway.Admin.Client.Components.Support
-@using HealthGateway.Common.Data.Utils
+﻿@using HealthGateway.Common.Data.Utils
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @if (Patient != null)
@@ -18,35 +17,14 @@
             <HgField Label="PHN" Value="@Patient.PersonalHealthNumber" data-testid="patient-phn" />
         </MudItem>
         <MudItem xs="12" lg="6">
-            <HgField Label="Physical Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)" data-testid="patient-physical-address" />
+            <HgField Label="Physical Address"
+                     Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)"
+                     data-testid="patient-physical-address" />
         </MudItem>
         <MudItem xs="12" lg="6">
-            <HgField Label="Mailing Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PostalAddress)" data-testid="patient-mailing-address" />
+            <HgField Label="Mailing Address"
+                     Value="@AddressUtility.GetAddressAsSingleLine(Patient.PostalAddress)"
+                     data-testid="patient-mailing-address" />
         </MudItem>
     </MudGrid>
-
-    <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Support}")">
-        <MudExpansionPanels Class="mt-6">
-            <MudProgressLinear Class="rounding-t overflow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
-            <MudExpansionPanel Expanded="@true">
-                <TitleContent>
-                    <MudText Typo="Typo.h6" data-testid="profile-covid19-section-title">
-                        COVID-19 Section
-                    </MudText>
-                </TitleContent>
-                <ChildContent>
-                    @if (ImmunizationsAreBlocked)
-                    {
-                        <MudAlert data-testid="blocked-immunization-alert" Severity="@Severity.Error" Dense="@true" Class="alert-background-color mt-4">
-                            Unable to retrieve vaccine records for this individual.
-                        </MudAlert>
-                    }
-                    else
-                    {
-                        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" />
-                    }
-                </ChildContent>
-            </MudExpansionPanel>
-        </MudExpansionPanels>
-    </AuthorizeView>
 }

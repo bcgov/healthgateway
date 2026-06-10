@@ -41,20 +41,15 @@ public interface ISupportApi
     /// </summary>
     /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
     /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
-    /// <param name="refreshVaccineDetails">
-    /// Whether the call should force cached vaccine validation details data to be
-    /// refreshed.
-    /// </param>
     /// <param name="includeApiRegistration">Indicates whether the response should include Api Registration status.</param>
     /// <param name="includeImagingRefresh">Indicates whether the response should include imaging refresh data.</param>
     /// <param name="includeLabsRefresh">Indicates whether the response should include labs refresh data.</param>
     /// <returns>The patient support details object.</returns>
     [Get(
-        "/PatientSupportDetails?queryType={queryType}&queryString={queryString}&refreshVaccineDetails={refreshVaccineDetails}&includeApiRegistration={includeApiRegistration}&includeImagingRefresh={includeImagingRefresh}&includeLabsRefresh={includeLabsRefresh}")]
+        "/PatientSupportDetails?queryType={queryType}&queryString={queryString}&includeApiRegistration={includeApiRegistration}&includeImagingRefresh={includeImagingRefresh}&includeLabsRefresh={includeLabsRefresh}")]
     Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
         ClientRegistryType queryType,
         string queryString,
-        bool refreshVaccineDetails,
         bool includeApiRegistration,
         bool includeImagingRefresh,
         bool includeLabsRefresh);

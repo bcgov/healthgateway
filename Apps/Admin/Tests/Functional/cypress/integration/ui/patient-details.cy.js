@@ -51,7 +51,7 @@ describe("Patient details as admin", () => {
         // Patient Details
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=False&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phn}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -60,7 +60,7 @@ describe("Patient details as admin", () => {
         // Patient Details with deceased PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&refreshVaccineDetails=False&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -69,7 +69,7 @@ describe("Patient details as admin", () => {
         // Patient Details with not a user PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&refreshVaccineDetails=False&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -254,7 +254,7 @@ describe("Patient details as support", () => {
         // Patient Details with deceased PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&refreshVaccineDetails=False&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -263,7 +263,7 @@ describe("Patient details as support", () => {
         // Patient Details with not a user PHN
         cy.intercept(
             "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&refreshVaccineDetails=False&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -272,7 +272,7 @@ describe("Patient details as support", () => {
         // Patient Details with one dose
         cy.intercept(
             "GET",
-            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=False&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details-one-dose.json",
             }
@@ -281,7 +281,7 @@ describe("Patient details as support", () => {
         // Patient Details with vaccine details with multiple doses
         cy.intercept(
             "GET",
-            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&refreshVaccineDetails=True&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -291,23 +291,6 @@ describe("Patient details as support", () => {
             Cypress.env("keycloak_support_username"),
             Cypress.env("keycloak_password"),
             "/support"
-        );
-    });
-
-    it("Verify patient details with phn and refresh", () => {
-        performSearch("PHN", phn);
-        cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
-
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length",
-            1
-        );
-
-        cy.get("[data-testid=refresh-button]").click();
-
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length",
-            5
         );
     });
 

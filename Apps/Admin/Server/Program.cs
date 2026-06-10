@@ -26,7 +26,6 @@ namespace HealthGateway.Admin.Server
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess;
     using HealthGateway.Admin.Server.Api;
-    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
@@ -179,8 +178,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
-            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IBetaFeatureAccessDelegate, DbBetaFeatureAccessDelegate>();
         }
     }
