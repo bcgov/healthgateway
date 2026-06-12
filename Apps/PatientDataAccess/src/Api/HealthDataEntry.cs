@@ -139,6 +139,34 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public DateTimeOffset ResultTimestamp { get; set; }
     }
+
+    [ExcludeFromCodeCoverage]
+    internal record HospitalVisit : HealthDataEntry
+    {
+        public string? EncounterId { get; init; }
+
+        public string? Facility { get; init; }
+
+        public string? HealthService { get; init; }
+
+        public string? VisitType { get; init; }
+
+        public string? HealthAuthority { get; init; }
+
+        public DateTime? AdmitDateTime { get; init; }
+
+        public DateTime? EndDateTime { get; init; }
+
+        public IEnumerable<Clinician>? Clinicians { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record Clinician
+    {
+        public string? DisplayName { get; set; }
+
+        public string? RoleDescription { get; set; }
+    }
 }
 #pragma warning restore SA1600
 #pragma warning restore SA1602

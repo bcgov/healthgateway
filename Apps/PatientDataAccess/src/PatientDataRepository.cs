@@ -67,6 +67,7 @@ namespace HealthGateway.PatientDataAccess
             {
                 HealthCategory.DiagnosticImaging => "DiagnosticImaging",
                 HealthCategory.BcCancerScreening => "BcCancerScreening",
+                HealthCategory.HospitalVisits => "HospitalVisits",
                 _ => null,
             };
         }

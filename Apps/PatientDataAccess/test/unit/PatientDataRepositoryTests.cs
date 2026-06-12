@@ -26,6 +26,7 @@ namespace PatientDataAccessTests
     using BcCancerScreeningType = HealthGateway.PatientDataAccess.Api.CancerScreeningType;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
+    using HospitalVisit = HealthGateway.PatientDataAccess.Api.HospitalVisit;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
 
@@ -166,6 +167,42 @@ namespace PatientDataAccessTests
 
             HealthGateway.PatientDataAccess.BcCancerScreening csExam = result.Items.Last().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreening>();
             csExam.Id.ShouldBe(bcCancerScreening.HealthDataId);
+        }
+
+        [Fact]
+        public async Task CanGetHospitalVisitData()
+        {
+            Mock<IPatientApi> patientApi = new();
+
+            HospitalVisit hospitalVisit = new()
+            {
+                HealthDataId = "12345678931",
+                HealthDataFileId = "12345678931",
+                EncounterId = "123",
+                AdmitDateTime = DateTime.Parse("2020-01-15", CultureInfo.InvariantCulture),
+                EndDateTime = null,
+                Clinicians = [new() { DisplayName = "Display", RoleDescription = "Role" }],
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new HealthDataResult(
+                        new HealthDataMetadata(),
+                        [hospitalVisit]));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.HospitalVisits]), CancellationToken.None);
+
+            result.ShouldNotBeNull();
+            HealthGateway.PatientDataAccess.HospitalVisit visit = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.HospitalVisit>();
+            visit.Id.ShouldBe(hospitalVisit.HealthDataId);
+            visit.FileId.ShouldBe(hospitalVisit.HealthDataFileId);
+            visit.EncounterId.ShouldBe(hospitalVisit.EncounterId);
+            visit.AdmitDateTime.ShouldBe(hospitalVisit.AdmitDateTime);
+            visit.EndDateTime.ShouldBeNull();
+            visit.Provider.ShouldBe("Display");
         }
 
         [Fact]

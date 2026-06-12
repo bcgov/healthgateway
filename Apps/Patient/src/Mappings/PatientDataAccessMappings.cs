@@ -36,31 +36,31 @@ namespace HealthGateway.Patient.Mappings
         public PatientDataAccessMappings()
         {
             this.CreateMap<PatientDataType, HealthCategory>()
-                .ConvertUsing(
-                    (source, _, _) =>
+                .ConvertUsing((source, _, _) =>
+                {
+                    return source switch
                     {
-                        return source switch
-                        {
-                            PatientDataType.OrganDonorRegistrationStatus => HealthCategory.OrganDonorRegistrationStatus,
-                            PatientDataType.DiagnosticImaging => HealthCategory.DiagnosticImaging,
-                            PatientDataType.BcCancerScreening => HealthCategory.BcCancerScreening,
-                            _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
-                        };
-                    });
+                        PatientDataType.OrganDonorRegistrationStatus => HealthCategory.OrganDonorRegistrationStatus,
+                        PatientDataType.DiagnosticImaging => HealthCategory.DiagnosticImaging,
+                        PatientDataType.BcCancerScreening => HealthCategory.BcCancerScreening,
+                        PatientDataType.HospitalVisits => HealthCategory.HospitalVisits,
+                        _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
+                    };
+                });
             this.CreateMap<HealthData, PatientData>()
                 .ConvertUsing<PatientDataConverter>();
             this.CreateMap<PatientDataType, DataSource>()
-                .ConvertUsing(
-                    (source, _, _) =>
+                .ConvertUsing((source, _, _) =>
+                {
+                    return source switch
                     {
-                        return source switch
-                        {
-                            PatientDataType.OrganDonorRegistrationStatus => DataSource.OrganDonorRegistration,
-                            PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
-                            PatientDataType.BcCancerScreening => DataSource.BcCancerScreening,
-                            _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
-                        };
-                    });
+                        PatientDataType.OrganDonorRegistrationStatus => DataSource.OrganDonorRegistration,
+                        PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
+                        PatientDataType.BcCancerScreening => DataSource.BcCancerScreening,
+                        PatientDataType.HospitalVisits => DataSource.HospitalVisit,
+                        _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
+                    };
+                });
         }
 
 #pragma warning disable SA1600
