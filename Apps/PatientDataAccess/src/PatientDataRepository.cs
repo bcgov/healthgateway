@@ -23,7 +23,9 @@ namespace HealthGateway.PatientDataAccess
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess.Api;
+    using Microsoft.Extensions.Configuration;
     using Refit;
 
     /// <summary>
@@ -31,7 +33,8 @@ namespace HealthGateway.PatientDataAccess
     /// </summary>
     /// <param name="patientApi">The patient API to use.</param>
     /// <param name="mapper">The injected mapper.</param>
-    internal class PatientDataRepository(IPatientApi patientApi, IMapper mapper) : IPatientDataRepository
+    /// <param name="configuration">The injected configuration provider.</param>
+    internal class PatientDataRepository(IPatientApi patientApi, IMapper mapper, IConfiguration configuration) : IPatientDataRepository
     {
         /// <summary>
         /// Performs a query against the data repository.
@@ -67,6 +70,7 @@ namespace HealthGateway.PatientDataAccess
             {
                 HealthCategory.DiagnosticImaging => "DiagnosticImaging",
                 HealthCategory.BcCancerScreening => "BcCancerScreening",
+                HealthCategory.HospitalVisits => "HospitalVisits",
                 _ => null,
             };
         }
@@ -150,6 +154,22 @@ namespace HealthGateway.PatientDataAccess
 
         private HealthData Map(HealthDataEntry healthDataEntry)
         {
+            TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(configuration);
+
+            if (healthDataEntry is Api.HospitalVisit hospitalVisit)
+            {
+                healthDataEntry = hospitalVisit with
+                {
+                    AdmitDateTime = hospitalVisit.AdmitDateTime == null
+                        ? null
+                        : DateFormatter.SpecifyTimeZone(hospitalVisit.AdmitDateTime.Value, localTimeZone),
+
+                    EndDateTime = hospitalVisit.EndDateTime == null
+                        ? null
+                        : DateFormatter.SpecifyTimeZone(hospitalVisit.EndDateTime.Value, localTimeZone),
+                };
+            }
+
             return mapper.Map<HealthData>(healthDataEntry);
         }
     }
