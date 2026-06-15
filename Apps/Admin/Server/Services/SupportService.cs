@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
@@ -27,11 +26,8 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
-    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -50,8 +46,6 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="patientRepository">The injected patient repository.</param>
     /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-    /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-    /// <param name="immunizationAdminDelegate">The injected immunization admin delegate.</param>
     /// <param name="auditRepository">The injected audit repository.</param>
     /// <param name="cacheProvider">The injected cache provider.</param>
     /// <param name="logger">The injected logger provider.</param>
@@ -64,8 +58,6 @@ namespace HealthGateway.Admin.Server.Services
         IPatientRepository patientRepository,
         IResourceDelegateDelegate resourceDelegateDelegate,
         IUserProfileDelegate userProfileDelegate,
-        IAuthenticationDelegate authenticationDelegate,
-        IImmunizationAdminDelegate immunizationAdminDelegate,
         IAuditRepository auditRepository,
         ICacheProvider cacheProvider,
         ILogger<SupportService> logger,
@@ -81,9 +73,6 @@ namespace HealthGateway.Admin.Server.Services
                     ? new(Hdid: query.QueryParameter, Source: PatientDetailSource.All, UseCache: false)
                     : new(query.QueryParameter, Source: PatientDetailSource.Empi, UseCache: false),
                 ct);
-
-            Task<VaccineDetails>? getVaccineDetails =
-                query.IncludeCovidDetails ? this.GetVaccineDetailsAsync(patient, query.RefreshVaccineDetails, ct) : null;
 
             IEnumerable<MessagingVerificationModel>? messagingVerifications =
                 query.IncludeMessagingVerifications ? await this.GetMessagingVerificationsAsync(patient.Hdid, ct) : null;
@@ -124,7 +113,6 @@ namespace HealthGateway.Admin.Server.Services
                 BlockedDataSources = blockedDataSources,
                 AgentActions = agentActions,
                 Dependents = dependents,
-                VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
                 IsAccountRegistered = personalAccountsResponse?.Registered,
                 LastImagingRefreshDate = imagingResponse?.LastRefreshDate,
                 LastLabsRefreshDate = laboratoryResponse?.LastRefreshDate,
@@ -234,23 +222,6 @@ namespace HealthGateway.Admin.Server.Services
             dependentInfo.ExpiryDate = item.ResourceDelegate.ExpiryDate;
             dependentInfo.Protected = item.Dependent?.Protected == true;
             return dependentInfo;
-        }
-
-        [SuppressMessage("Style", "IDE0046:'if' statement can be simplified", Justification = "Team decision")]
-        private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
-        {
-            if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
-            {
-                throw new InvalidDataException(ErrorMessages.PhnOrDateOfBirthInvalid);
-            }
-
-            return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
-        }
-
-        private async Task<string> GetAccessTokenAsync(CancellationToken ct)
-        {
-            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
-            return accessToken ?? throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
         }
 
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)

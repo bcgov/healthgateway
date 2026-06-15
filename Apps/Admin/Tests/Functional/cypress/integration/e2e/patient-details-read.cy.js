@@ -1,10 +1,8 @@
-import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
+import { selectTab } from "../../utilities/sharedUtilities";
 import { performSearch as search } from "../../utilities/supportUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const phnWithValidDoses = "9042146714";
-const phnWithInvalidDoses = "9735352535";
-const phnWithBlockedImmunizations = "9873659643";
 const switchName = "Immunization";
 const defaultTimeout = 60000;
 
@@ -36,51 +34,6 @@ function validateTabDoesNotExist(tabText) {
         .contains(".mud-tab", tabText)
         .should("not.exist");
 }
-
-describe("Patient details page as admin user", () => {
-    beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
-    });
-
-    it("Verify covid immunization section (not blocked) and contains valid dose", () => {
-        performSearch("PHN", phnWithValidDoses);
-
-        selectPatientTab("Profile");
-
-        cy.get("[data-testid=patient-phn]")
-            .should("be.visible")
-            .contains(phnWithValidDoses);
-        cy.get("[data-testid=patient-hdid]").should("not.exist");
-
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        cy.get("[data-testid=invalid-dose-alert").should("not.exist");
-    });
-
-    it("Verify covid immunization section (not blocked) and contains invalid dose", () => {
-        performSearch("PHN", phnWithInvalidDoses);
-
-        selectPatientTab("Profile");
-
-        cy.get("[data-testid=patient-phn]")
-            .should("be.visible")
-            .contains(phnWithInvalidDoses);
-        cy.get("[data-testid=patient-hdid]").should("not.exist");
-
-        cy.scrollTo("bottom", { ensureScrollable: false });
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        cy.get("[data-testid=invalid-dose-alert").should("be.visible");
-    });
-});
 
 describe("Patient details page as reviewer", () => {
     beforeEach(() => {
@@ -120,64 +73,6 @@ describe("Patient Details as Support", () => {
             Cypress.env("keycloak_password"),
             "/support"
         );
-    });
-
-    it("Verify covid immunization section (not blocked) and contains invalid dose", () => {
-        performSearch("PHN", phnWithInvalidDoses);
-
-        selectPatientTab("Profile");
-        validateTabDoesNotExist("Account");
-        validateTabDoesNotExist("Manage");
-        validateTabDoesNotExist("Notes");
-
-        cy.get("[data-testid=patient-phn]")
-            .should("be.visible")
-            .contains(phnWithInvalidDoses);
-        cy.get("[data-testid=patient-hdid]").should("not.exist");
-
-        cy.scrollTo("bottom", { ensureScrollable: false });
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        cy.get("[data-testid=invalid-dose-alert").should("be.visible");
-    });
-
-    it("Verify covid immunization section (not blocked) and contains valid dose", () => {
-        performSearch("PHN", phnWithValidDoses);
-
-        selectPatientTab("Profile");
-        validateTabDoesNotExist("Account");
-        validateTabDoesNotExist("Manage");
-        validateTabDoesNotExist("Notes");
-
-        cy.get("[data-testid=patient-phn]")
-            .should("be.visible")
-            .contains(phnWithValidDoses);
-        cy.get("[data-testid=patient-hdid]").should("not.exist");
-
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        cy.get("[data-testid=invalid-dose-alert").should("not.exist");
-    });
-
-    it("Verify covid immunization blocked", () => {
-        performSearch("PHN", phnWithBlockedImmunizations);
-
-        selectPatientTab("Profile");
-        validateTabDoesNotExist("Account");
-        validateTabDoesNotExist("Manage");
-        validateTabDoesNotExist("Notes");
-
-        cy.get("[data-testid=patient-phn]")
-            .should("be.visible")
-            .contains(phnWithBlockedImmunizations);
-        cy.get("[data-testid=patient-hdid]").should("not.exist");
-
-        cy.get("[data-testid=immunization-table]").should("not.exist");
-        cy.get("[data-testid=blocked-immunization-alert").should("be.visible");
     });
 
     it("Verify dependent section not shown", () => {

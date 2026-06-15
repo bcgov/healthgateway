@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Common.Models
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
 
@@ -45,11 +44,6 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets or sets the dependents.
         /// </summary>
         public IEnumerable<PatientSupportDependentInfo>? Dependents { get; set; } = [];
-
-        /// <summary>
-        /// Gets the vaccine details.
-        /// </summary>
-        public VaccineDetails? VaccineDetails { get; init; }
 
         /// <summary>
         /// Gets a value indicating whether the patient's account is registered in the system.

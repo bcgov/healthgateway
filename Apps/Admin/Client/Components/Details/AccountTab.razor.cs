@@ -133,7 +133,6 @@ namespace HealthGateway.Admin.Client.Components.Details
                 {
                     QueryType = ClientRegistryType.Phn,
                     QueryString = this.Phn,
-                    RefreshVaccineDetails = false,
                 });
         }
 
@@ -146,7 +145,6 @@ namespace HealthGateway.Admin.Client.Components.Details
                 {
                     QueryType = ClientRegistryType.Phn,
                     QueryString = this.Phn,
-                    RefreshVaccineDetails = false,
                 });
         }
     }
