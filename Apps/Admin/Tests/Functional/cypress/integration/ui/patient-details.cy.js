@@ -225,14 +225,6 @@ describe("Patient details as admin", () => {
 
 describe("Patient details as support", () => {
     beforeEach(() => {
-        cy.intercept(
-            "GET",
-            `**/Support/Users?queryType=Phn&queryString=${phn}`,
-            {
-                fixture: "SupportService/users.json",
-            }
-        );
-
         // PHN deceased
         cy.intercept(
             "GET",
@@ -264,24 +256,6 @@ describe("Patient details as support", () => {
         cy.intercept(
             "GET",
             `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
-            {
-                fixture: "SupportService/patient-details.json",
-            }
-        );
-
-        // Patient Details with one dose
-        cy.intercept(
-            "GET",
-            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
-            {
-                fixture: "SupportService/patient-details-one-dose.json",
-            }
-        );
-
-        // Patient Details with vaccine details with multiple doses
-        cy.intercept(
-            "GET",
-            `**/Support/PatientSupportDetails?queryType=Phn&queryString=${phn}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
             {
                 fixture: "SupportService/patient-details.json",
             }
