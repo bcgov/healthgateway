@@ -99,7 +99,7 @@ function closeAccount(): void {
                 <HgButtonComponent
                     id="closeAccountBtn"
                     data-testid="closeAccountBtn"
-                    color="error"
+                    variant="error"
                     text="Delete Account"
                     :disabled="isClosingAccount"
                     @click="closeAccount"

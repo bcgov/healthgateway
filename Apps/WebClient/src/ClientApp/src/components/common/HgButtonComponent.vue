@@ -14,7 +14,13 @@ const props = withDefaults(defineProps<Props>(), {
     uppercase: true,
 });
 
-export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
+export type HgButtonVariant =
+    | "primary"
+    | "secondary"
+    | "error"
+    | "error-secondary"
+    | "link"
+    | "transparent";
 
 interface HgButtonVariantDetails {
     inverseVariant: HgButtonVariant;
@@ -33,6 +39,17 @@ variants.set("secondary", {
     inverseVariant: "primary",
     vuetifyVariant: "outlined",
     color: "background",
+    disabledColor: "grey-lighten-6",
+});
+variants.set("error", {
+    inverseVariant: "error-secondary",
+    vuetifyVariant: "elevated",
+    color: "error",
+});
+variants.set("error-secondary", {
+    inverseVariant: "error",
+    vuetifyVariant: "outlined",
+    color: "error",
     disabledColor: "grey-lighten-6",
 });
 variants.set("link", {
