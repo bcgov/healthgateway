@@ -69,7 +69,7 @@ function closeAccount(): void {
         v-if="!showCloseWarning"
         id="recoverAccountShowCloseWarningBtn"
         data-testid="recoverAccountShowCloseWarningBtn"
-        variant="primary"
+        variant="error-secondary"
         text="Delete My Account"
         @click="showCloseWarning = true"
     />
@@ -99,7 +99,7 @@ function closeAccount(): void {
                 <HgButtonComponent
                     id="closeAccountBtn"
                     data-testid="closeAccountBtn"
-                    color="error"
+                    variant="error"
                     text="Delete Account"
                     :disabled="isClosingAccount"
                     @click="closeAccount"

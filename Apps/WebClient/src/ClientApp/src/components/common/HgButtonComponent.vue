@@ -14,7 +14,13 @@ const props = withDefaults(defineProps<Props>(), {
     uppercase: true,
 });
 
-export type HgButtonVariant = "primary" | "secondary" | "link" | "transparent";
+export type HgButtonVariant =
+    | "primary"
+    | "secondary"
+    | "error"
+    | "error-secondary"
+    | "link"
+    | "transparent";
 
 interface HgButtonVariantDetails {
     inverseVariant: HgButtonVariant;
@@ -32,7 +38,18 @@ variants.set("primary", {
 variants.set("secondary", {
     inverseVariant: "primary",
     vuetifyVariant: "outlined",
-    color: "background",
+    color: "primary",
+    disabledColor: "grey-lighten-6",
+});
+variants.set("error", {
+    inverseVariant: "error-secondary",
+    vuetifyVariant: "elevated",
+    color: "error",
+});
+variants.set("error-secondary", {
+    inverseVariant: "error",
+    vuetifyVariant: "outlined",
+    color: "error",
     disabledColor: "grey-lighten-6",
 });
 variants.set("link", {
@@ -69,13 +86,7 @@ const textCaseClass = computed(() =>
         :variant="variantDetails.vuetifyVariant"
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
-        :class="[
-            'transition-none',
-            textCaseClass,
-            props.variant === 'secondary'
-                ? 'secondary-btn-primarytext-surfacehover'
-                : '',
-        ]"
+        :class="['transition-none', textCaseClass]"
     >
         <slot />
     </v-btn>
@@ -84,28 +95,12 @@ const textCaseClass = computed(() =>
         :variant="variantDetails.vuetifyVariant"
         :color="disabled ? disabledColor : color"
         :disabled="disabled"
-        :class="[
-            'transition-none',
-            textCaseClass,
-            props.variant === 'secondary'
-                ? 'secondary-btn-primarytext-surfacehover'
-                : '',
-        ]"
+        :class="['transition-none', textCaseClass]"
     />
 </template>
 
 <style lang="scss" scoped>
 .transition-none {
     transition: none;
-}
-
-.v-btn.secondary-btn-primarytext-surfacehover {
-    color: rgb(var(--v-theme-primary)) !important;
-
-    --v-hover-opacity: 0;
-
-    &:hover {
-        background-color: rgb(var(--v-theme-surfaceHover)) !important;
-    }
 }
 </style>
