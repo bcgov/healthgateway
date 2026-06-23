@@ -141,7 +141,9 @@ function isNew(notification: Notification): boolean {
         <v-container class="h-100">
             <v-row align="center" no-gutters>
                 <v-col>
-                    <h5 class="text-h6 text-primary d-flex align-center">
+                    <h5
+                        class="text-title-large text-primary d-flex align-center"
+                    >
                         <HgIconButtonComponent
                             data-testid="notification-centre-close-button"
                             class="mr-1"
@@ -179,7 +181,7 @@ function isNew(notification: Notification): boolean {
                         src="@/assets/images/home/empty-state-notifications.svg"
                         alt="No Notifications"
                     />
-                    <h5 class="text-center text-primary mt-4 text-h6">
+                    <h5 class="text-center text-primary mt-4 text-title-large">
                         No Notifications
                     </h5>
                 </v-col>
@@ -195,7 +197,7 @@ function isNew(notification: Notification): boolean {
                     cols="12"
                 >
                     <p
-                        class="text-body-2"
+                        class="text-body-medium"
                         :class="{
                             'text-medium-emphasis': !isNew(notification),
                         }"
@@ -210,7 +212,7 @@ function isNew(notification: Notification): boolean {
                         >
                             <v-row no-gutters>
                                 <v-col class="d-flex align-center">
-                                    <p class="text-body-1">
+                                    <p class="text-body-large">
                                         {{ notification.displayText }}
                                     </p>
                                 </v-col>

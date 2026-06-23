@@ -86,7 +86,7 @@ function hideDialog(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="text-body-1 pa-4">
+                <v-card-text class="text-body-large pa-4">
                     <p data-testid="idleModalText">
                         You will be automatically logged out in
                         {{ remainingSeconds }} seconds.

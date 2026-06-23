@@ -103,7 +103,7 @@ function handleRating(value: number | string, skip = false): void {
                 </v-card-title>
                 <v-card-text class="pa-4">
                     <p
-                        class="text-body-1 text-center"
+                        class="text-body-large text-center"
                         data-testid="ratingModalQuestionText"
                     >
                         {{ question }}

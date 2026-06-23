@@ -238,7 +238,7 @@ immunizationStore
             :class="forceShow ? '' : 'd-none d-md-block'"
         >
             <template v-if="!hideImmunizations">
-                <h4 class="text-h6 font-weight-bold mb-2">
+                <h4 class="text-title-large font-weight-bold mb-2">
                     Immunization Record
                 </h4>
                 <p>
@@ -297,7 +297,7 @@ immunizationStore
             >
                 <h4
                     v-if="!hideRecommendationHeader"
-                    class="text-h6 font-weight-bold mb-2"
+                    class="text-title-large font-weight-bold mb-2"
                 >
                     Recommended Immunizations
                 </h4>

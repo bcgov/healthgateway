@@ -34,14 +34,14 @@ setTimeout(() => {
     <div class="text-center">
         <h1
             data-testid="logout-complete-msg"
-            class="mt-12 text-h4 text-primary font-weight-bold mb-6"
+            class="mt-12 text-headline-large text-primary font-weight-bold mb-6"
         >
             You signed out of your account
         </h1>
-        <p class="text-body-1 mb-4">
+        <p class="text-body-large mb-4">
             This does not sign out of any other accounts.
         </p>
-        <p class="text-body-1">
+        <p class="text-body-large">
             It is recommended that you sign out of all other accounts and close
             all browser windows to protect your health information.
         </p>

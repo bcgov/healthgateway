@@ -311,7 +311,7 @@ fetchVaccineCardData();
                 class="d-print-none px-4 pb-4"
                 :class="{ 'pt-4': !downloadButtonShown }"
             >
-                <p class="text-body-1">
+                <p class="text-body-large">
                     To learn more, visit
                     <a
                         href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
@@ -352,24 +352,28 @@ fetchVaccineCardData();
                         />
                     </v-col>
                     <v-col cols="auto">
-                        <h3 class="text-h6 font-weight-bold text-center">
+                        <h3
+                            class="text-title-large font-weight-bold text-center"
+                        >
                             COVID‑19 Vaccination Record
                         </h3>
                     </v-col>
                 </v-row>
                 <div class="my-4">
-                    <div class="text-body-2 text-medium-emphasis">Name:</div>
-                    <div class="text-body-1 font-weight-bold">
+                    <div class="text-body-medium text-medium-emphasis">
+                        Name:
+                    </div>
+                    <div class="text-body-large font-weight-bold">
                         {{ patientName }}
                     </div>
                 </div>
                 <div class="my-4">
-                    <div class="text-body-2 text-medium-emphasis">
+                    <div class="text-body-medium text-medium-emphasis">
                         Date of Birth:
                     </div>
                     <div
                         data-testid="patientBirthdate"
-                        class="text-body-1 font-weight-bold"
+                        class="text-body-large font-weight-bold"
                     >
                         {{ patientBirthdate }}
                     </div>
@@ -379,7 +383,7 @@ fetchVaccineCardData();
                         <v-col
                             cols="auto"
                             :data-testid="'dose-' + (index + 1)"
-                            class="text-body-1 font-weight-bold text-medium-emphasis"
+                            class="text-body-large font-weight-bold text-medium-emphasis"
                         >
                             Dose {{ index + 1 }}
                         </v-col>
@@ -390,25 +394,25 @@ fetchVaccineCardData();
                             <v-row dense class="align-baseline">
                                 <v-col
                                     cols="auto"
-                                    class="text-body-1 font-weight-bold"
+                                    class="text-body-large font-weight-bold"
                                 >
                                     {{ dose.product }}
                                 </v-col>
                                 <v-col
                                     v-if="dose.lot"
-                                    class="text-body-2 text-medium-emphasis"
+                                    class="text-body-medium text-medium-emphasis"
                                 >
                                     Lot {{ dose.lot }}
                                 </v-col>
                             </v-row>
-                            <div class="text-body-2 text-medium-emphasis">
+                            <div class="text-body-medium text-medium-emphasis">
                                 {{ dose.provider }}
                             </div>
                         </v-col>
                         <v-col
                             cols="auto"
                             data-testid="doseDate"
-                            class="text-body-1 font-weight-bold"
+                            class="text-body-large font-weight-bold"
                         >
                             {{ dose.date }}
                         </v-col>

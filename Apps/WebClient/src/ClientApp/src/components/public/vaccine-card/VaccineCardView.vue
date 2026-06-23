@@ -316,7 +316,7 @@ watch(vaccineRecord, (value) => {
                 />
             </div>
             <div
-                class="d-print-none px-4 pb-4 text-body-1"
+                class="d-print-none px-4 pb-4 text-body-large"
                 :class="{ 'pt-4': !downloadButtonShown }"
             >
                 <p
@@ -371,8 +371,8 @@ watch(vaccineRecord, (value) => {
                     data-testid="vaccineCardFormTitle"
                     class="vaccine-card-form-title text-center font-weight-bold"
                     :class="{
-                        'text-h6': layoutStore.isMobile,
-                        'text-h5': !layoutStore.isMobile,
+                        'text-title-large': layoutStore.isMobile,
+                        'text-headline-small': !layoutStore.isMobile,
                     }"
                 >
                     Get your proof of vaccination
@@ -494,7 +494,7 @@ watch(vaccineRecord, (value) => {
                         <v-col><v-divider /></v-col>
                         <v-col cols="auto">
                             <h2
-                                class="text-h6 font-weight-bold text-medium-emphasis"
+                                class="text-title-large font-weight-bold text-medium-emphasis"
                             >
                                 OR
                             </h2>
@@ -512,21 +512,21 @@ watch(vaccineRecord, (value) => {
                 </div>
             </div>
             <div class="bg-white mt-6 px-4 px-sm-12 py-6">
-                <h3 class="text-h5 font-weight-bold mb-4">
+                <h3 class="text-headline-small font-weight-bold mb-4">
                     Help in other languages
                 </h3>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Talk to someone on the phone. Get support in 140+ languages,
                     including:
                 </p>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     <span lang="zh">國粵語</span> |
                     <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
                     <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
                     <span lang="fr">Français</span> |
                     <span lang="es">Español</span>
                 </p>
-                <p class="text-body-1 font-weight-bold">
+                <p class="text-body-large font-weight-bold">
                     Service is available every day: 7 am to 7 pm or 9 am to 5 pm
                     on holidays.
                 </p>
@@ -544,7 +544,7 @@ watch(vaccineRecord, (value) => {
                         href="tel:711"
                     />
                 </div>
-                <p class="text-body-1 text-medium-emphasis">
+                <p class="text-body-large text-medium-emphasis">
                     Standard message and data rates may apply.
                 </p>
             </div>

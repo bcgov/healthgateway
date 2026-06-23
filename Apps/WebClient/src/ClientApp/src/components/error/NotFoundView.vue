@@ -4,6 +4,8 @@ import PageErrorComponent from "@/components/error/PageErrorComponent.vue";
 
 <template>
     <PageErrorComponent title="404" subtitle="Page Not Found">
-        <p class="text-body-1">The page you were looking for does not exist.</p>
+        <p class="text-body-large">
+            The page you were looking for does not exist.
+        </p>
     </PageErrorComponent>
 </template>

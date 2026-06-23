@@ -25,7 +25,11 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
                 <h1
                     id="subject"
                     class="text-primary font-weight-bold"
-                    :class="layoutStore.isMobile ? 'text-h5' : 'text-h4'"
+                    :class="
+                        layoutStore.isMobile
+                            ? 'text-headline-small'
+                            : 'text-headline-large'
+                    "
                 >
                     {{ title }}
                 </h1>

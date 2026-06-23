@@ -79,7 +79,7 @@ const entryIcon = computed(() => {
         </template>
         <template v-if="entry.immunization.forecast">
             <v-divider class="my-4" />
-            <h3 class="text-h6 font-weight-bold mb-4">Forecast</h3>
+            <h3 class="text-title-large font-weight-bold mb-4">Forecast</h3>
             <v-row>
                 <v-col :cols="cols">
                     <DisplayFieldComponent

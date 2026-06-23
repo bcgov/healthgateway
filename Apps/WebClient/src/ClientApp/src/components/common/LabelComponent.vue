@@ -10,7 +10,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <h4
-        class="text-subtitle-1 font-weight-bold d-flex align-center"
+        class="text-body-large font-weight-bold d-flex align-center"
         :class="[margin]"
     >
         <span>{{ title }}</span>

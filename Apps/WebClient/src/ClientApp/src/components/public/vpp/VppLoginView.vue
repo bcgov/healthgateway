@@ -85,7 +85,7 @@ function trackNavigationClick(
             <div
                 class="vpp-login-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
-                <h2 class="text-center text-h6 font-weight-bold mb-4">
+                <h2 class="text-center text-title-large font-weight-bold mb-4">
                     Do you want to open Health Gateway?
                 </h2>
                 <p class="text-center">
@@ -117,7 +117,7 @@ function trackNavigationClick(
                         variant="secondary"
                         text="Cancel"
                         :uppercase="false"
-                        class="text-body-1"
+                        class="text-body-large"
                         data-testid="cancel-button"
                         :data-url="ExternalUrl.AccessMyHealth"
                         @click="openAccessMyHealth()"
@@ -126,7 +126,7 @@ function trackNavigationClick(
                         variant="primary"
                         text="Continue to Health Gateway"
                         :uppercase="false"
-                        class="text-body-1"
+                        class="text-body-large"
                         data-testid="continue-to-hgw-button"
                         @click="openHgHome()"
                     />

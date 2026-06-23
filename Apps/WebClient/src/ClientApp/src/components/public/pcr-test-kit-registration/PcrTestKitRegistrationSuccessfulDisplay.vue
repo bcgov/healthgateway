@@ -12,11 +12,11 @@ defineProps<Props>();
         <v-icon icon="circle-check" color="success" size="48" class="mb-4" />
         <h4
             data-testid="registration-success-banner-title"
-            class="text-h4 mb-4"
+            class="text-headline-large mb-4"
         >
             Success!
         </h4>
-        <p class="text-body-1 mt-2">
+        <p class="text-body-large mt-2">
             Your kit has been registered to your profile.
         </p>
         <div class="text-center">

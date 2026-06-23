@@ -90,7 +90,7 @@ function hideDialog(): void {
     <div class="bg-primary text-white rounded-t pa-4">
         <h1
             data-testid="formTitleVaccineCard"
-            class="text-h5 font-weight-bold text-center"
+            class="text-headline-small font-weight-bold text-center"
         >
             BC Vaccine Card
         </h1>
@@ -99,7 +99,7 @@ function hideDialog(): void {
             color="accent"
             :thickness="2"
         />
-        <p class="text-body-1 text-center">{{ name }}</p>
+        <p class="text-body-large text-center">{{ name }}</p>
     </div>
     <v-row
         no-gutters
@@ -128,7 +128,7 @@ function hideDialog(): void {
                 v-if="isFullyVaccinated"
                 aria-label="Status Vaccinated"
                 data-testid="statusVaccinated"
-                class="text-h5 font-weight-bold"
+                class="text-headline-small font-weight-bold"
             >
                 <v-icon icon="check-circle" class="mr-2" />
                 <span>Vaccinated</span>
@@ -137,7 +137,7 @@ function hideDialog(): void {
                 v-else-if="isPartiallyVaccinated"
                 aria-label="Status Partially Vaccinated"
                 data-testid="statusPartiallyVaccinated"
-                class="text-h5 font-weight-bold"
+                class="text-headline-small font-weight-bold"
             >
                 Partially Vaccinated
             </h2>
@@ -145,7 +145,7 @@ function hideDialog(): void {
                 v-else-if="isVaccinationNotFound"
                 aria-label="Status Not Found"
                 data-testid="statusNotFound"
-                class="text-h5 font-weight-bold"
+                class="text-headline-small font-weight-bold"
             >
                 Not Found
             </h2>
@@ -154,7 +154,7 @@ function hideDialog(): void {
                     issuedDateTime &&
                     (isFullyVaccinated || isPartiallyVaccinated)
                 "
-                class="mt-4 text-body-2"
+                class="mt-4 text-body-medium"
             >
                 Issued on {{ issuedDateTime }}
             </div>
@@ -175,7 +175,7 @@ function hideDialog(): void {
                     @click="showDialog()"
                 />
                 <p
-                    class="d-sm-none d-print-none text-body-1"
+                    class="d-sm-none d-print-none text-body-large"
                     @click="showDialog()"
                 >
                     <v-icon icon="hand-pointer" class="mr-2" />
@@ -249,7 +249,7 @@ function hideDialog(): void {
         variant="outlined"
     >
         <template #text>
-            <p data-testid="errorTextDescription" class="text-body-1">
+            <p data-testid="errorTextDescription" class="text-body-large">
                 We've found an issue and the Health Gateway team is working hard
                 to fix it.
             </p>

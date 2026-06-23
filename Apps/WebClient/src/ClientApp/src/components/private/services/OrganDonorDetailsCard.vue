@@ -120,7 +120,9 @@ if (!showOrganDonorRegistration.value) {
                 :height="30"
             />
         </template>
-        <div class="flex-grow-1 d-flex flex-column text-body-1 card-content">
+        <div
+            class="flex-grow-1 d-flex flex-column text-body-large card-content"
+        >
             <div>
                 <span class="text-medium-emphasis">Status: </span>
                 <strong data-testid="organ-donor-registration-status">
@@ -160,7 +162,7 @@ if (!showOrganDonorRegistration.value) {
                     Not Available
                 </strong>
             </div>
-            <div class="text-body-1">
+            <div class="text-body-large">
                 <p>
                     <a
                         href="http://www.transplant.bc.ca/Pages/Register-your-Decision.aspx"

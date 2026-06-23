@@ -269,7 +269,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                     <template #text>
                         <p
                             data-testid="dependent-error-text"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             <span v-if="isErrorDataMismatch">
                                 The information you entered does not match our
@@ -294,7 +294,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         <span
                             v-if="isErrorProtected"
                             data-testid="condensed-error-contact-message"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             Please contact
                             <a
@@ -306,7 +306,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         <span
                             v-else
                             data-testid="not-condensed-error-contact-message"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             If you continue to have issues, please contact
                             <a
@@ -396,7 +396,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             data-testid="dependent-terms-checkbox"
                             density="compact"
                             color="primary"
-                            class="text-body-1 checkbox-top"
+                            class="text-body-large checkbox-top"
                             hide-details
                             :error="
                                 ValidationUtil.isValid(v$.dependent) &&

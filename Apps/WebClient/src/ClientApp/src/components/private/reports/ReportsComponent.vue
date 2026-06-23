@@ -536,7 +536,7 @@ for (const [entryType] of reportComponentMap) {
                             />
                         </v-col>
                         <v-col v-if="isMedicationReport" cols="12">
-                            <h6 class="text-h6 font-weight-bold">
+                            <h6 class="text-title-large font-weight-bold">
                                 Exclude These Records
                             </h6>
                             <p>Medications:</p>
@@ -597,7 +597,7 @@ for (const [entryType] of reportComponentMap) {
                 width="200"
                 alt="..."
             />
-            <h5 data-testid="info-text" class="text-center text-h5">
+            <h5 data-testid="info-text" class="text-center text-headline-small">
                 Select a record type above to create a report
             </h5>
         </div>

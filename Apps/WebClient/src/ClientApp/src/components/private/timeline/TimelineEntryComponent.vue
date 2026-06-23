@@ -141,13 +141,13 @@ watch(
                             >
                                 <span
                                     data-testid="entryCardDate"
-                                    class="text-subtitle-1 font-weight-bold d-sm-inline d-block text-no-wrap mr-sm-2"
+                                    class="text-body-large font-weight-bold d-sm-inline d-block text-no-wrap mr-sm-2"
                                 >
                                     {{ dateString }}
                                 </span>
                                 <span
                                     data-testid="entry-card-type-title"
-                                    class="text-subtitle-1 font-weight-bold d-sm-inline d-block text-no-wrap"
+                                    class="text-body-large font-weight-bold d-sm-inline d-block text-no-wrap"
                                 >
                                     {{ entryTypeTitle }}
                                 </span>
@@ -157,14 +157,14 @@ watch(
                                 >
                                     <span
                                         data-testid="entry-card-details-pipe"
-                                        class="text-subtitle-1 font-weight-bold d-none d-sm-inline"
+                                        class="text-body-large font-weight-bold d-none d-sm-inline"
                                         aria-hidden="true"
                                     >
                                         |
                                     </span>
                                     <span
                                         data-testid="entryCardDetailsTitle"
-                                        class="text-subtitle-1"
+                                        class="text-body-large"
                                     >
                                         {{ displayTitle }}
                                     </span>

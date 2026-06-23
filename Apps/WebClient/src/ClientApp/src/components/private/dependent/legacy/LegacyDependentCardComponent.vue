@@ -666,7 +666,10 @@ watch(vaccineRecordState, () => {
             <v-card-title class="bg-grey-lighten-3 pa-4 pb-0">
                 <v-row>
                     <v-col>
-                        <h5 class="text-h6 mb-4" data-testid="dependentName">
+                        <h5
+                            class="text-title-large mb-4"
+                            data-testid="dependentName"
+                        >
                             {{ dependent.dependentInformation.firstname }}
                             {{ dependent.dependentInformation.lastname }}
                         </h5>
@@ -700,12 +703,13 @@ watch(vaccineRecordState, () => {
                     color="primary"
                     selected-class="bg-white"
                 >
-                    <v-tab :value="0">Profile</v-tab>
+                    <v-tab :value="0" class="text-uppercase">Profile</v-tab>
                     <v-tab
                         v-if="isCovid19TabShown"
                         :disabled="isExpired"
                         data-testid="covid19TabTitle"
                         :value="1"
+                        class="text-uppercase"
                         @click="fetchCovid19LaboratoryTests"
                     >
                         COVID-19
@@ -715,6 +719,7 @@ watch(vaccineRecordState, () => {
                         :disabled="isExpired"
                         :data-testid="`immunization-tab-title-${dependent.ownerId}`"
                         :value="2"
+                        class="text-uppercase"
                         @click="fetchPatientImmunizations"
                     >
                         Immunization
@@ -724,6 +729,7 @@ watch(vaccineRecordState, () => {
                         :disabled="isExpired"
                         :data-testid="`lab-results-tab-title-${dependent.ownerId}`"
                         :value="3"
+                        class="text-uppercase"
                         @click="fetchLaboratoryOrders"
                     >
                         Lab Results
@@ -733,6 +739,7 @@ watch(vaccineRecordState, () => {
                         :disabled="isExpired"
                         :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
                         :value="4"
+                        class="text-uppercase"
                         @click="fetchClinicalDocuments"
                     >
                         Clinical Docs
@@ -745,7 +752,7 @@ watch(vaccineRecordState, () => {
                         <div v-if="isExpired">
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
-                                    <h5 class="text-h6">
+                                    <h5 class="text-title-large">
                                         Your access has expired
                                     </h5>
                                 </v-col>
@@ -770,7 +777,7 @@ watch(vaccineRecordState, () => {
                             </v-row>
                         </div>
                         <div v-else>
-                            <v-row class="text-body-1">
+                            <v-row class="text-body-large">
                                 <v-col xl="3" md="4" sm="6">
                                     <label
                                         :for="`dependent-phn-${dependent.ownerId}`"
@@ -826,7 +833,7 @@ watch(vaccineRecordState, () => {
                         </div>
                         <p
                             :id="`covid19-table-header-${dependent.ownerId}`"
-                            class="text-body-1 font-weight-bold my-4"
+                            class="text-body-large font-weight-bold my-4"
                         >
                             COVID-19 Test Results
                         </p>
@@ -839,7 +846,7 @@ watch(vaccineRecordState, () => {
                             <p
                                 v-if="covid19TestResultRows.length === 0"
                                 data-testid="covid19NoRecords"
-                                class="text-body-2"
+                                class="text-body-medium"
                             >
                                 No records found.
                             </p>
@@ -1005,7 +1012,7 @@ watch(vaccineRecordState, () => {
                             data-testid="dependent-immunization-disclaimer-alert"
                         >
                             <template #text>
-                                <span class="text-body-1">
+                                <span class="text-body-large">
                                     If your dependent’s immunizations are
                                     missing or incorrect,
                                     <a
@@ -1037,8 +1044,12 @@ watch(vaccineRecordState, () => {
                                 v-model="immunizationTabIndex"
                                 color="primary"
                             >
-                                <v-tab :key="1">History</v-tab>
-                                <v-tab :key="2">Schedule</v-tab>
+                                <v-tab :key="1" class="text-uppercase"
+                                    >History</v-tab
+                                >
+                                <v-tab :key="2" class="text-uppercase"
+                                    >Schedule</v-tab
+                                >
                             </v-tabs>
                             <v-skeleton-loader
                                 v-if="immunizationsAreLoading"
@@ -1053,7 +1064,7 @@ watch(vaccineRecordState, () => {
                                 <v-window-item class="pa-1">
                                     <p
                                         v-if="immunizationItems.length === 0"
-                                        class="text-body-1"
+                                        class="text-body-large"
                                         :data-testid="`immunization-history-no-rows-found-${dependent.ownerId}`"
                                     >
                                         No records found. If this is your first
@@ -1221,7 +1232,7 @@ watch(vaccineRecordState, () => {
                                 <v-window-item class="pa-1">
                                     <v-row justify="end" no-gutters>
                                         <v-col cols="12" :md="true">
-                                            <p class="mb-md-0 text-body-1">
+                                            <p class="mb-md-0 text-body-large">
                                                 School-aged children are offered
                                                 most immunizations in their
                                                 school, particularly in grades 6
@@ -1303,7 +1314,7 @@ watch(vaccineRecordState, () => {
                                     <p
                                         v-if="recommendationItems.length === 0"
                                         :data-testid="`immunization-schedule-no-rows-found-${dependent.ownerId}`"
-                                        class="text-body-1 my-4"
+                                        class="text-body-large my-4"
                                     >
                                         No records found.
                                     </p>
@@ -1367,7 +1378,7 @@ watch(vaccineRecordState, () => {
                         <div
                             v-else-if="labResults.length === 0"
                             :data-testid="`lab-results-no-records-${dependent.ownerId}`"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             No records found. If you just added your dependent,
                             it can take up to 24 hours to get their records.
@@ -1465,7 +1476,7 @@ watch(vaccineRecordState, () => {
                         <div
                             v-else-if="clinicalDocuments.length === 0"
                             :data-testid="`clinical-document-no-records-${dependent.ownerId}`"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             No records found.
                         </div>

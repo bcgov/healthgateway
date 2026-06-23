@@ -70,7 +70,7 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                 type="info"
                 variant="outlined"
             >
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Information is from the billing claim and may show a
                     different practitioner or clinic from the one you visited.
                     For more information, visit the
@@ -83,7 +83,7 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                     >
                     page.
                 </p>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Health Gateway shows your health visits billed to the BC
                     Medical Services Plan (MSP) for the past seven years. You
                     can also get your hospital visits since 2021 for everywhere

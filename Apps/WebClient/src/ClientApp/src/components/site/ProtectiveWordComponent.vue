@@ -89,7 +89,7 @@ function handleClose(): void {
                 </v-card-title>
                 <div class="d-flex flex-column align-start border-t-sm pa-4">
                     <p
-                        class="text-body-2"
+                        class="text-body-medium"
                         data-testid="protectiveWordModalText"
                     >
                         Please enter the protective word required to access
@@ -104,10 +104,10 @@ function handleClose(): void {
                         </a>
                     </p>
                 </div>
-                <v-card-text class="text-body-1 px-4 pt-0 pb-4">
+                <v-card-text class="text-body-large px-4 pt-0 pb-4">
                     <label
                         for="protectiveWord-input"
-                        class="d-block text-body-2 mb-1 mt-0"
+                        class="d-block text-body-medium mb-1 mt-0"
                     >
                         <span class="text-error" aria-hidden="true">*</span>
                         <span class="ms-1">Protective word</span>

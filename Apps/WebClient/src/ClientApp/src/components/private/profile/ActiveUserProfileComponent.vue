@@ -45,7 +45,7 @@ const formattedLoginDateTimes = computed(() =>
         title="Login History"
         include-divider
     />
-    <ul v-if="false" id="lastLoginDate" class="text-body-1">
+    <ul v-if="false" id="lastLoginDate" class="text-body-large">
         <li
             v-for="(item, index) in formattedLoginDateTimes"
             :key="index"

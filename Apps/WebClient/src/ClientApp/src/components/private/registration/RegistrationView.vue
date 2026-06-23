@@ -274,10 +274,10 @@ loadTermsOfService();
             @submit.prevent="onSubmit"
         >
             <PageTitleComponent title="Registration" />
-            <h4 class="text-h6 text-grey mb-3">
+            <h4 class="text-title-large text-grey mb-3">
                 Communication Preferences (Optional)
             </h4>
-            <p class="text-body-2 mb-4 text-medium-emphasis">
+            <p class="text-body-medium mb-4 text-medium-emphasis">
                 Choose how you would like to receive updates. Preferences can be
                 changed anytime in your profile.
             </p>
@@ -289,7 +289,7 @@ loadTermsOfService();
                     label="Email Notifications"
                     @change="onEmailOptout($event)"
                 />
-                <em class="text-body-2">
+                <em class="text-body-medium">
                     Enter your email to receive updates when available.
                 </em>
                 <v-text-field
@@ -321,7 +321,7 @@ loadTermsOfService();
                     label="Text Notifications"
                     @change="onSMSOptout($event)"
                 />
-                <em class="text-body-2">
+                <em class="text-body-medium">
                     Enter your phone number to receive text updates when
                     available.
                 </em>
@@ -351,7 +351,7 @@ loadTermsOfService();
                     You can update this from your Profile Page later.</span
                 >
             </div>
-            <h4 class="text-h5 font-weight-bold mt-10 mb-2">
+            <h4 class="text-headline-small font-weight-bold mt-10 mb-2">
                 Terms of Service
             </h4>
             <HtmlTextAreaComponent
@@ -382,7 +382,7 @@ loadTermsOfService();
             <PageErrorComponent title="Minimum age required for registration">
                 <p
                     data-testid="minimumAgeErrorText"
-                    class="text-body-1 text-h5 mt-1 mb-4"
+                    class="text-body-large text-headline-small mt-1 mb-4"
                 >
                     You must be
                     <strong>{{ webClientConfig.minPatientAge }}</strong>
@@ -401,7 +401,7 @@ loadTermsOfService();
             <PageErrorComponent title="Error retrieving user information">
                 <p
                     data-testid="clientRegistryErrorText"
-                    class="text-body-1 text-h5 mt-1 mb-4"
+                    class="text-body-large text-headline-small mt-1 mb-4"
                 >
                     There may be an issue in our Client Registry. Please contact
                     <a
@@ -419,6 +419,6 @@ loadTermsOfService();
                 />
             </PageErrorComponent>
         </div>
-        <h1 v-else class="text-h4">Unknown error</h1>
+        <h1 v-else class="text-headline-large">Unknown error</h1>
     </template>
 </template>

@@ -264,10 +264,10 @@ function hideModal(): void {
                         class="my-3"
                         variant="outlined"
                     >
-                        <h5 class="text-body-1 font-weight-bold mb-2">
+                        <h5 class="text-body-large font-weight-bold mb-2">
                             {{ bannerError.title }}
                         </h5>
-                        <span class="text-body-1">
+                        <span class="text-body-large">
                             If you continue to have issues, please contact
                             <a
                                 href="mailto:HealthGateway@gov.bc.ca"

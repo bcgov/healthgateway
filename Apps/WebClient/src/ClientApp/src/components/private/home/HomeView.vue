@@ -453,7 +453,7 @@ if (preferenceShowSmsRemoved.value) {
         <template #default>
             <p
                 v-if="showSmsRemoved"
-                class="text-body-1"
+                class="text-body-large"
                 data-testid="sms-removed-message"
             >
                 We see you haven't logged in for a while &mdash; please review
@@ -478,7 +478,7 @@ if (preferenceShowSmsRemoved.value) {
             </p>
             <p
                 v-else
-                class="text-body-1"
+                class="text-body-large"
                 data-testid="unverified-email-sms-message"
             >
                 Your email or cell phone number has not been verified. You can
@@ -528,7 +528,7 @@ if (preferenceShowSmsRemoved.value) {
                         alt="Health Gateway Logo"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     View your available health records, including dispensed
                     medications, health visits, lab results, immunizations, and
                     more.
@@ -565,7 +565,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveImmunizationRecord()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Download a record of your immunizations, including
                     recommended vaccines.
                 </p>
@@ -601,7 +601,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveRecommendations()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     View immunizations you received from community pharmacies or
                     public health, including vaccine recommendations.
                 </p>
@@ -634,7 +634,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveHealthConnectCard()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Register for the Health Connect Registry and get matched
                     with a family doctor or nurse practitioner in your
                     community.
@@ -665,7 +665,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveOrganDonorQuickLink()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Check whether you have registered your decision on organ
                     donation with BC Transplant. If you have registered your
                     decision, you can review the details here.
@@ -689,7 +689,7 @@ if (preferenceShowSmsRemoved.value) {
                         alt="Canada Government Logo"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Download and print your Federal Proof of Vaccination
                     Certificate (PVC) for domestic and international travel.
                 </p>
@@ -732,7 +732,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveQuickLink(card.index)"
                     />
                 </template>
-                <p class="text-body-1">{{ card.description }}</p>
+                <p class="text-body-large">{{ card.description }}</p>
             </HgCardComponent>
         </v-col>
     </v-row>
@@ -756,11 +756,11 @@ if (preferenceShowSmsRemoved.value) {
                         />
                         <div>
                             <div
-                                class="text-h6 font-weight-bold text-high-emphasis mb-1 mb-md-2"
+                                class="text-title-large font-weight-bold text-high-emphasis mb-1 mb-md-2"
                             >
                                 Other record sources
                             </div>
-                            <p class="text-body-1 mb-0">
+                            <p class="text-body-large mb-0">
                                 Some health records may not appear in Health
                                 Gateway. Learn about other trusted regional
                                 patient websites to help you find your health

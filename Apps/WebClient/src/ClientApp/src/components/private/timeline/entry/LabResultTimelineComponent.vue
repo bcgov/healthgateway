@@ -173,7 +173,7 @@ function getReport(): void {
                 />
             </v-col>
         </v-row>
-        <p class="text-body-1 mb-2">
+        <p class="text-body-large mb-2">
             <span data-testid="reporting-lab-information-text"
                 ><strong>Find resources about your lab tests:</strong></span
             >

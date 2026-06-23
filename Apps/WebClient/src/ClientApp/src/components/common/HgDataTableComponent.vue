@@ -24,12 +24,12 @@ const slots = useSlots();
 const densityTextSize = computed(() => {
     switch (props.density) {
         case "compact":
-            return "text-caption";
+            return "text-body-small";
         case "comfortable":
-            return "text-body-2";
+            return "text-body-medium";
         case "default":
         default:
-            return "text-body-1";
+            return "text-body-large";
     }
 });
 

@@ -10,5 +10,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <v-divider v-if="includeDivider" class="my-4" />
-    <h3 v-bind="$attrs" class="text-h6 font-weight-bold my-4">{{ title }}</h3>
+    <h3 v-bind="$attrs" class="text-title-large font-weight-bold my-4">
+        {{ title }}
+    </h3>
 </template>

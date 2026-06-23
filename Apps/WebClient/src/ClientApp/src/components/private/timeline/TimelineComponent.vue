@@ -645,7 +645,7 @@ setPageFromDate(linearDate.value);
             <p
                 v-if="visibleTimelineEntries.length > 0"
                 data-testid="timeline-record-count"
-                class="text-body-1"
+                class="text-body-large"
             >
                 {{ recordCountMessage }}
             </p>
@@ -673,7 +673,7 @@ setPageFromDate(linearDate.value);
                 closable
                 variant="outlined"
             >
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Information is from the billing claim and may show a
                     different practitioner or clinic from the one you visited.
                     For more information, visit the
@@ -686,7 +686,7 @@ setPageFromDate(linearDate.value);
                     >
                     page.
                 </p>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Health Gateway shows your health visits billed to the BC
                     Medical Services Plan (MSP) for the past seven years. You
                     can also get your hospital visits since 2021 for everywhere
@@ -811,7 +811,7 @@ setPageFromDate(linearDate.value);
                 alt="..."
             />
             <p
-                class="text-body-1 text-medium-emphasis"
+                class="text-body-large text-medium-emphasis"
                 data-testid="noTimelineEntriesText"
             >
                 {{
