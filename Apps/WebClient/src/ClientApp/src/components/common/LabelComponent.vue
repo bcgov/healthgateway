@@ -4,7 +4,7 @@ interface Props {
     margin?: string;
 }
 withDefaults(defineProps<Props>(), {
-    margin: "mb-4",
+    margin: "mb-2",
 });
 </script>
 
