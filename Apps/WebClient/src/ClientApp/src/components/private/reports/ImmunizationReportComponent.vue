@@ -272,7 +272,7 @@ immunizationStore
                     data-testid="immunization-history-report-table"
                 >
                     <template #header-agents>
-                        <v-row no-gutters align="center">
+                        <v-row class="align-center" no-gutters>
                             <v-col class="pr-4">Agent</v-col>
                             <v-col class="px-4">Product</v-col>
                             <v-col class="pl-4">Lot Number</v-col>

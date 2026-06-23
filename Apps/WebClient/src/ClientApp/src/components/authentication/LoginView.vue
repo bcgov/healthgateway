@@ -62,7 +62,7 @@ if (oidcIsAuthenticated.value) {
 
 <template>
     <LoadingComponent :is-loading="isLoading" />
-    <v-row align="center" justify="center" class="mb-5">
+    <v-row class="mb-5 align-center justify-center">
         <v-col md="5">
             <HgAlertComponent
                 v-model="showError"

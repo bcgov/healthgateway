@@ -139,7 +139,7 @@ function isNew(notification: Notification): boolean {
         touchless
     >
         <v-container class="h-100">
-            <v-row align="center" no-gutters>
+            <v-row class="align-center" no-gutters>
                 <v-col>
                     <h5
                         class="text-title-large text-primary d-flex align-center"
@@ -172,9 +172,7 @@ function isNew(notification: Notification): boolean {
             </v-row>
             <v-row
                 v-if="notifications.length === 0"
-                align="center"
-                justify="center"
-                class="notification-section"
+                class="notification-section align-center justify-center"
             >
                 <v-col cols="8">
                     <v-img

@@ -458,7 +458,7 @@ if (!props.serialNumber) {
                 </v-row>
                 <v-row
                     v-if="dataSource === PcrDataSource.Manual"
-                    align="center"
+                    class="align-center"
                     no-gutters
                 >
                     <v-col cols="auto">

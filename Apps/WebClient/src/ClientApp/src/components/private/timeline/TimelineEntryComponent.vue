@@ -133,7 +133,7 @@ watch(
                         </div>
                     </v-col>
                     <v-col>
-                        <v-row dense>
+                        <v-row density="compact">
                             <v-col
                                 :data-testid="`${String(
                                     entry.type
@@ -171,7 +171,7 @@ watch(
                                 </span>
                             </v-col>
                         </v-row>
-                        <v-row dense justify="end">
+                        <v-row class="justify-end" density="compact">
                             <v-col
                                 class="py-1 align-self-center"
                                 data-testid="entryCardDetailsSubtitle"

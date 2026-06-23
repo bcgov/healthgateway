@@ -7,7 +7,7 @@ defineProps<Props>();
 </script>
 
 <template>
-    <v-row justify="center">
+    <v-row class="justify-center">
         <v-col cols="12" md="8" lg="6" class="pt-0 text-center">
             <div class="mb-4">
                 <h1

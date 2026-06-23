@@ -54,7 +54,7 @@ const isNormalDensity = computed<boolean>(() => {
         :border="border"
     >
         <template #title>
-            <v-row align="center" class="text-wrap">
+            <v-row class="text-wrap align-center">
                 <v-col
                     v-if="hasIconSlot"
                     class="flex-grow-0 d-flex align-center"
@@ -87,14 +87,18 @@ const isNormalDensity = computed<boolean>(() => {
                 <v-col
                     v-if="hasActionIconSlot"
                     class="flex-grow-0 d-flex"
-                    :class="{ 'pa-5': isNormalDensity }"
+                    :class="{
+                        'pa-5': isNormalDensity,
+                    }"
                 >
                     <slot name="action-icon" />
                 </v-col>
                 <v-col
                     v-if="hasMenuItemsSlot"
                     class="flex-grow-0"
-                    :class="{ 'py-3': isNormalDensity }"
+                    :class="{
+                        'py-3': isNormalDensity,
+                    }"
                 >
                     <v-menu location="bottom end">
                         <template #activator="{ props: activatorProps }">

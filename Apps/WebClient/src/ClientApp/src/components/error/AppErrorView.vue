@@ -31,7 +31,7 @@ const isTooManyRequests = computed(
         </v-app-bar>
         <v-main>
             <v-container class="fill-height">
-                <v-row justify="center">
+                <v-row class="justify-center">
                     <v-col sm="10" md="6">
                         <HgAlertComponent
                             v-if="isTooManyRequests"

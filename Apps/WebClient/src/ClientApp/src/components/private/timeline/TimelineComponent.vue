@@ -610,7 +610,7 @@ setPageFromDate(linearDate.value);
                 sticky
                 border="0"
             >
-                <v-row class="align-center" dense>
+                <v-row class="align-center" density="compact">
                     <v-col cols="auto">
                         <FilterComponent
                             :hdid="hdid"

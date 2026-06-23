@@ -396,8 +396,7 @@ watchEffect(() => {
                         v-for="item in enabledNotificationPreferences"
                         :key="item.id"
                         no-gutters
-                        align="center"
-                        class="mb-4 mb-sm-0"
+                        class="mb-4 mb-sm-0 align-center"
                         :data-testid="`profile-notification-preferences-row-${item.id}`"
                     >
                         <v-col

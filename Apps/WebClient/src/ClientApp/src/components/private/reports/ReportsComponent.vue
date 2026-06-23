@@ -404,7 +404,7 @@ for (const [entryType] of reportComponentMap) {
             variant="outlined"
         />
         <v-sheet color="white" class="pa-4 mb-4">
-            <v-row align="center">
+            <v-row class="align-center">
                 <v-col cols="12" sm="auto" class="flex-grow-1">
                     <v-select
                         id="reportType"

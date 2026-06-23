@@ -24,7 +24,7 @@ const setDataSource = (dataSource: PcrDataSource) => {
             text="Log in with BC Services Card"
             @click="setDataSource(PcrDataSource.Keycloak)"
         />
-        <v-row class="my-4" align="center">
+        <v-row class="my-4 align-center">
             <v-col><v-divider /></v-col>
             <v-col cols="auto">
                 <h2

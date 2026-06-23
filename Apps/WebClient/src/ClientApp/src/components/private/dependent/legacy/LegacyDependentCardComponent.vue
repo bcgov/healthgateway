@@ -1072,7 +1072,7 @@ watch(vaccineRecordState, () => {
                                         refreshing the page in a few minutes.
                                     </p>
                                     <div v-else>
-                                        <v-row justify="end">
+                                        <v-row class="justify-end">
                                             <v-col cols="auto">
                                                 <v-menu
                                                     v-if="
@@ -1230,7 +1230,7 @@ watch(vaccineRecordState, () => {
                                     </div>
                                 </v-window-item>
                                 <v-window-item class="pa-1">
-                                    <v-row justify="end" no-gutters>
+                                    <v-row class="justify-end" no-gutters>
                                         <v-col cols="12" :md="true">
                                             <p class="mb-md-0 text-body-large">
                                                 School-aged children are offered

@@ -379,7 +379,7 @@ fetchVaccineCardData();
                     </div>
                 </div>
                 <div v-for="(dose, index) in doses" :key="index" class="my-4">
-                    <v-row dense class="d-flex align-center">
+                    <v-row density="compact" class="d-flex align-center">
                         <v-col
                             cols="auto"
                             :data-testid="'dose-' + (index + 1)"
@@ -389,9 +389,9 @@ fetchVaccineCardData();
                         </v-col>
                         <v-col><v-divider /></v-col>
                     </v-row>
-                    <v-row dense>
+                    <v-row density="compact">
                         <v-col>
-                            <v-row dense class="align-baseline">
+                            <v-row density="compact" class="align-baseline">
                                 <v-col
                                     cols="auto"
                                     class="text-body-large font-weight-bold"

@@ -128,7 +128,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
         </p>
     </div>
     <v-container v-else>
-        <v-row justify="start" align="start">
+        <v-row class="align-start justify-start">
             <v-col lg="5">
                 <h1
                     class="mb-6 text-primary text-headline-large font-weight-bold"
@@ -231,7 +231,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
-            <v-row v-else align="stretch" class="mb-6 mb-md-8">
+            <v-row v-else class="mb-6 mb-md-8 align-stretch">
                 <v-col
                     v-for="tile in accessLinks"
                     :key="tile.name"
@@ -274,7 +274,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
                 variant="tonal"
                 class="pa-6 pa-lg-8"
             >
-                <v-row align="start" no-gutters>
+                <v-row class="align-start" no-gutters>
                     <v-col cols="12" md="7" class="pr-md-8">
                         <h2
                             class="text-headline-large font-weight-bold text-primary mb-2"
@@ -374,7 +374,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
-            <v-row v-else align="stretch" class="mb-6 mb-md-8">
+            <v-row v-else class="mb-6 mb-md-8 align-stretch">
                 <v-col
                     v-for="tile in healthServicesLinks"
                     :key="tile.name"
