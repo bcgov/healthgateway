@@ -273,7 +273,7 @@ watch(vaccineRecord, (value) => {
         </div>
         <div
             v-if="displayResult"
-            class="vaccine-card align-self-center w-100 ma-4 pa-4 rounded elevation-6"
+            class="vaccine-card align-self-center w-100 ma-4 pa-4 rounded elevation-2"
         >
             <VaccineCardComponent
                 :status="vaccinationStatus"
@@ -352,7 +352,7 @@ watch(vaccineRecord, (value) => {
         </div>
         <div v-else class="d-flex flex-column">
             <div
-                class="vaccine-card-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
+                class="vaccine-card-form bg-white rounded elevation-2 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
                 <TooManyRequestsComponent location="publicVaccineCard" />
                 <div v-if="bannerError !== undefined">

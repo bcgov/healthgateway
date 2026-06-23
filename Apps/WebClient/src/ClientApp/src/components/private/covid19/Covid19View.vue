@@ -259,7 +259,7 @@ fetchVaccineCardData();
         <div
             v-if="!isVaccinationStatusLoading && !vaccinationStatusError"
             v-show="!isImmunizationHistoryShown"
-            class="vaccine-card w-100 rounded elevation-6"
+            class="vaccine-card w-100 rounded elevation-2"
         >
             <VaccineCardComponent
                 :status="vaccinationStatus"
@@ -327,7 +327,7 @@ fetchVaccineCardData();
             v-if="!isHistoryLoading && !immunizationsError"
             v-show="isImmunizationHistoryShown"
             no-gutters
-            class="immunization-history w-100 rounded elevation-6"
+            class="immunization-history w-100 rounded elevation-2"
         >
             <v-col cols="auto" class="d-print-none">
                 <HgButtonComponent

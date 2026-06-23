@@ -80,7 +80,7 @@ if (oidcIsAuthenticated.value) {
         id="loginPicker"
         class="shadow-lg bg-white mx-auto"
         style="max-width: 25rem"
-        elevation="7"
+        elevation="3"
     >
         <v-card-title>
             <h2 class="text-headline-small font-weight-bold pt-3 text-center">

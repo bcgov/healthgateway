@@ -83,7 +83,7 @@ function trackNavigationClick(
         </div>
         <div class="d-flex flex-column">
             <div
-                class="vpp-login-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
+                class="vpp-login-form bg-white rounded elevation-2 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
                 <h2 class="text-center text-title-large font-weight-bold mb-4">
                     Do you want to open Health Gateway?
