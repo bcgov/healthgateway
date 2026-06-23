@@ -197,8 +197,8 @@ function getFormattedFilterCount(entryType: EntryType): string {
                         placeholder="i.e. Medication Name"
                         prepend-inner-icon="search"
                     />
-                    <LabelComponent title="Type" margin="mb-3" />
-                    <div class="mb-3">
+                    <LabelComponent title="Type" margin="mb-0" />
+                    <div class="mb-2">
                         <v-chip-group
                             v-model="selectedEntryTypes"
                             column
