@@ -121,6 +121,8 @@ export const useUserStore = defineStore("user", () => {
             : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
     );
 
+    let retrieveEssentialDataPromise: Promise<void> | undefined = undefined;
+
     function setOidcUserInfo(userInfo: OidcUserInfo) {
         user.value.hdid = userInfo.hdid;
         oidcUserInfo.value = userInfo;
@@ -388,8 +390,13 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function retrieveEssentialData(): Promise<void> {
+        if (retrieveEssentialDataPromise !== undefined) {
+            return retrieveEssentialDataPromise;
+        }
+
         status.value = LoadStatus.REQUESTED;
-        return patientService
+
+        retrieveEssentialDataPromise = patientService
             .getPatient(user.value.hdid)
             .then((result: Patient) => {
                 if (!result) {
@@ -397,7 +404,9 @@ export const useUserStore = defineStore("user", () => {
                     logger.debug("Patient retrieval failed");
                     return;
                 }
+
                 setPatient(result);
+
                 return userProfileService
                     .getProfile(user.value.hdid)
                     .then((userProfile) => {
@@ -433,7 +442,12 @@ export const useUserStore = defineStore("user", () => {
                 } else {
                     logger.debug("Patient retrieval failed");
                 }
+            })
+            .finally(() => {
+                retrieveEssentialDataPromise = undefined;
             });
+
+        return retrieveEssentialDataPromise!;
     }
 
     function updateNotificationSettings(

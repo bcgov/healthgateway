@@ -75,10 +75,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
         /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
-        /// <param name="refreshVaccineDetails">
-        /// Whether the call should force cached vaccine validation details data to be
-        /// refreshed.
-        /// </param>
         /// <param name="includeApiRegistration">Indicates whether the response should include the Api Registration status.</param>
         /// <param name="includeImagingRefresh">Indicates whether the response should include imaging refresh data.</param>
         /// <param name="includeLabsRefresh">Indicates whether the response should include labs refresh data.</param>
@@ -102,7 +98,6 @@ namespace HealthGateway.Admin.Server.Controllers
         public async Task<PatientSupportDetails> GetPatientSupportDetails(
             [FromQuery] ClientRegistryType queryType,
             [FromQuery] string queryString,
-            [FromQuery] bool refreshVaccineDetails,
             [FromQuery] bool includeApiRegistration,
             [FromQuery] bool includeImagingRefresh,
             [FromQuery] bool includeLabsRefresh,
@@ -111,7 +106,6 @@ namespace HealthGateway.Admin.Server.Controllers
             ClaimsPrincipal user = this.HttpContext.User;
             bool userIsAdmin = user.IsInRole("AdminUser");
             bool userIsReviewer = user.IsInRole("AdminReviewer");
-            bool userIsSupport = user.IsInRole("SupportUser");
 
             return await supportService.GetPatientSupportDetailsAsync(
                 new PatientSupportDetailsQuery
@@ -122,11 +116,9 @@ namespace HealthGateway.Admin.Server.Controllers
                     IncludeBlockedDataSources = userIsAdmin || userIsReviewer,
                     IncludeAgentActions = userIsAdmin,
                     IncludeDependents = userIsAdmin || userIsReviewer,
-                    IncludeCovidDetails = userIsAdmin || userIsSupport,
                     IncludeApiRegistration = includeApiRegistration,
                     IncludeImagingRefresh = includeImagingRefresh,
                     IncludeLabsRefresh = includeLabsRefresh,
-                    RefreshVaccineDetails = refreshVaccineDetails,
                 },
                 ct);
         }

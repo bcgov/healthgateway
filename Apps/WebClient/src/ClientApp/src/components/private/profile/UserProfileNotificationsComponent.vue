@@ -4,7 +4,7 @@ import { computed, reactive, ref, watchEffect } from "vue";
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import InformationModalComponent from "@/components/common/InformationModalComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import SectionHeadingComponent from "@/components/common/SectionHeadingComponent.vue";
 import {
     getNotificationPreferenceTypes,
     getUserProfileNotificationSettings,
@@ -57,18 +57,6 @@ const isSmsChannelDisabled = computed(() => !sms.value || !smsVerified.value);
 const uiNotificationSettings = computed<UserProfileNotificationSettings[]>(() =>
     getUserProfileNotificationSettings(userStore.user.notificationSettings)
 );
-
-const notificationGrid = computed(() => {
-    const email = showEmailColumn.value ? 1 : 0;
-    const sms = showSmsColumn.value ? 1 : 0;
-
-    return {
-        type: 4,
-        email,
-        sms,
-        action: 2,
-    };
-});
 
 const notificationPreferencesByType = computed(
     () =>
@@ -345,8 +333,9 @@ watchEffect(() => {
 </script>
 <template>
     <div v-if="showNotificationSection" class="mb-4">
-        <SectionHeaderComponent
+        <SectionHeadingComponent
             title="Notifications"
+            include-divider
             data-testid="profile-notification-preferences-label"
         />
         <p
@@ -365,7 +354,6 @@ watchEffect(() => {
         >
             {{ saveError }}
         </HgAlertComponent>
-        <v-divider class="my-4" />
         <v-container fluid class="pa-0">
             <!-- Key change: constrain width so Email/SMS don't drift on 4K/5K -->
             <v-sheet max-width="960" class="pa-0">
@@ -377,66 +365,60 @@ watchEffect(() => {
                         data-testid="profile-notification-preferences-header"
                     >
                         <v-col
-                            :sm="notificationGrid.type"
-                            cols="6"
                             data-testid="profile-notification-preferences-header-type"
-                            class="py-0 pe-2"
+                            class="pe-sm-8"
+                            :class="{
+                                'notification-type-col':
+                                    $vuetify.display.smAndUp,
+                            }"
                         >
                             Notification Type
                         </v-col>
-
                         <v-col
                             v-if="showEmailColumn"
-                            :sm="notificationGrid.email"
-                            cols="2"
+                            cols="auto"
                             data-testid="profile-notification-preferences-header-email"
-                            class="py-0 d-flex align-start justify-start"
+                            class="notification-toggle-col pe-4"
                         >
                             Email
                         </v-col>
-
                         <v-col
                             v-if="showSmsColumn"
-                            :sm="notificationGrid.sms"
-                            cols="2"
+                            cols="auto"
                             data-testid="profile-notification-preferences-header-sms"
-                            class="py-0 d-flex align-start justify-start"
+                            class="notification-toggle-col pe-4"
                         >
                             <span>Text<br />(SMS)</span>
                         </v-col>
-
-                        <v-col
-                            :sm="notificationGrid.action"
-                            cols="2"
-                            class="py-0"
-                        />
+                        <v-col class="ps-sm-4" />
                     </v-row>
                     <v-row
                         v-for="item in enabledNotificationPreferences"
                         :key="item.id"
                         no-gutters
+                        align="center"
                         class="mb-4 mb-sm-0"
                         :data-testid="`profile-notification-preferences-row-${item.id}`"
                     >
                         <v-col
                             cols="12"
-                            :sm="notificationGrid.type"
-                            class="py-0 pe-sm-2 mb-2 mb-sm-0"
+                            sm
+                            class="pe-sm-8 mb-2 mb-sm-0 d-flex align-center"
+                            :class="{
+                                'notification-type-col':
+                                    $vuetify.display.smAndUp,
+                            }"
                         >
-                            <div class="d-flex align-center">
-                                <span
-                                    :data-testid="`profile-notification-preferences-${item.id}-label-value`"
-                                >
-                                    {{ item.label }}
-                                </span>
+                            <div
+                                :data-testid="`profile-notification-preferences-${item.id}-label-value`"
+                            >
+                                {{ item.label }}
                             </div>
                         </v-col>
-
                         <v-col
                             v-if="showEmailColumn"
-                            cols="6"
-                            :sm="notificationGrid.email"
-                            class="py-0 d-flex flex-column flex-sm-row align-start align-sm-start justify-start mb-2 mb-sm-0"
+                            cols="auto"
+                            class="notification-toggle-col pe-4 mb-2 mb-sm-0"
                         >
                             <span class="d-sm-none mb-1 w-100 text-left"
                                 >Email</span
@@ -462,9 +444,8 @@ watchEffect(() => {
                         </v-col>
                         <v-col
                             v-if="showSmsColumn"
-                            cols="6"
-                            :sm="notificationGrid.sms"
-                            class="py-0 d-flex flex-column flex-sm-row align-start align-sm-start justify-start mb-2 mb-sm-0"
+                            cols="auto"
+                            class="notification-toggle-col pe-4 mb-2 mb-sm-0"
                         >
                             <span class="d-sm-none mb-1 w-100 text-left"
                                 >Text (SMS)</span
@@ -488,28 +469,24 @@ watchEffect(() => {
                         </v-col>
                         <v-col
                             cols="12"
-                            :sm="notificationGrid.action"
-                            class="py-0 pt-2 pt-sm-0 ps-0 ps-sm-3 d-flex justify-start"
+                            sm
+                            class="ps-sm-4 pt-2 pt-sm-0 d-flex align-center"
                         >
-                            <v-sheet
+                            <HgButtonComponent
                                 v-if="
                                     item.type ===
                                     ProfileNotificationType.BcCancerScreening
                                 "
-                                class="d-flex align-center"
-                            >
-                                <HgButtonComponent
-                                    variant="secondary"
-                                    text="LEARN MORE"
-                                    :data-testid="`profile-notification-preferences-${item.id}-learn-more`"
-                                    @click="
-                                        showInformationModal(
-                                            item,
-                                            Text.ScreeningNotificationsLearnMore
-                                        )
-                                    "
-                                />
-                            </v-sheet>
+                                variant="secondary"
+                                text="LEARN MORE"
+                                :data-testid="`profile-notification-preferences-${item.id}-learn-more`"
+                                @click="
+                                    showInformationModal(
+                                        item,
+                                        Text.ScreeningNotificationsLearnMore
+                                    )
+                                "
+                            />
                         </v-col>
                     </v-row>
                 </template>
@@ -522,7 +499,6 @@ watchEffect(() => {
                 </p>
             </v-sheet>
         </v-container>
-        <v-divider class="my-4" />
     </div>
     <InformationModalComponent
         ref="learnMoreModal"
@@ -534,5 +510,12 @@ watchEffect(() => {
 <style lang="scss" scoped>
 :deep(.hg-switch .v-switch__track.bg-primary) {
     opacity: 1 !important;
+}
+.notification-type-col {
+    min-width: 245px;
+    max-width: 295px;
+}
+.notification-toggle-col {
+    min-width: 68px;
 }
 </style>

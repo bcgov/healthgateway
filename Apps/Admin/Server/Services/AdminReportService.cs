@@ -41,22 +41,21 @@ namespace HealthGateway.Admin.Server.Services
             (IList<string> hdids, int totalHdids) = await delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
 
             IEnumerable<Task<ProtectedDependentRecord>> tasks = hdids
-                .Select(
-                    async hdid =>
+                .Select(async hdid =>
+                {
+                    PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
+                    PatientModel? patient = null;
+                    try
                     {
-                        PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
-                        PatientModel? patient = null;
-                        try
-                        {
-                            patient = (await patientRepository.QueryAsync(query, ct)).Item;
-                        }
-                        catch (NotFoundException e)
-                        {
-                            logger.LogWarning(e, "Error retrieving patient details for dependent {DependentHdid}", hdid);
-                        }
+                        patient = (await patientRepository.QueryAsync(query, ct)).Item;
+                    }
+                    catch (NotFoundException e)
+                    {
+                        logger.LogWarning(e, "Error retrieving patient details for dependent {DependentHdid}", hdid);
+                    }
 
-                        return new ProtectedDependentRecord(hdid, patient?.Phn);
-                    });
+                    return new ProtectedDependentRecord(hdid, patient?.Phn);
+                });
 
             return new(await Task.WhenAll(tasks), new(totalHdids, page, pageSize));
         }
@@ -64,7 +63,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct = default)
         {
-            IList<BlockedAccess> records = await blockedAccessDelegate.GetAllAsync(ct);
+            IList<BlockedAccess> records = await blockedAccessDelegate.GetAllNoTrackingAsync(ct);
             return records
                 .Where(r => r.DataSources.Count > 0)
                 .Select(r => new BlockedAccessRecord(r.Hdid, [.. r.DataSources]));

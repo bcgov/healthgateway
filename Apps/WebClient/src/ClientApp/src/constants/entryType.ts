@@ -1,4 +1,5 @@
 import { CommentEntryType } from "@/constants/commentEntryType";
+import { Dataset } from "@/plugins/extensions";
 
 export enum EntryType {
     ClinicalDocument = "ClinicalDocument",
@@ -19,13 +20,13 @@ export class EntryTypeDetails {
     name!: string;
     title!: string;
     description!: string;
-    reportEventName!: string;
     logoUri?: string;
     icon!: string;
     component!: string;
     commentType!: CommentEntryType;
     eventName!: string;
     moduleName!: string;
+    dataset!: Dataset;
 }
 
 const entryTypeMap = new Map<EntryType | undefined, EntryTypeDetails>();
@@ -47,7 +48,7 @@ entryTypeMap.set(EntryType.Immunization, {
     component: "ImmunizationTimelineComponent",
     eventName: "immunizations",
     moduleName: "Immunization",
-    reportEventName: "Immunization",
+    dataset: Dataset.Immunizations,
 });
 
 entryTypeMap.set(EntryType.Medication, {
@@ -60,7 +61,7 @@ entryTypeMap.set(EntryType.Medication, {
     component: "MedicationTimelineComponent",
     eventName: "medications",
     moduleName: "Medication",
-    reportEventName: "Medication",
+    dataset: Dataset.Medications,
 });
 
 entryTypeMap.set(EntryType.LabResult, {
@@ -73,7 +74,7 @@ entryTypeMap.set(EntryType.LabResult, {
     component: "LabResultTimelineComponent",
     eventName: "lab_results",
     moduleName: "AllLaboratory",
-    reportEventName: "Laboratory Tests",
+    dataset: Dataset.LabResults,
 });
 
 entryTypeMap.set(EntryType.Covid19TestResult, {
@@ -87,7 +88,7 @@ entryTypeMap.set(EntryType.Covid19TestResult, {
     component: "Covid19TestResultTimelineComponent",
     eventName: "covid_test",
     moduleName: "Laboratory",
-    reportEventName: "COVID-19 Test",
+    dataset: Dataset.Covid19Tests,
 });
 
 entryTypeMap.set(EntryType.HealthVisit, {
@@ -101,7 +102,7 @@ entryTypeMap.set(EntryType.HealthVisit, {
     component: "HealthVisitTimelineComponent",
     eventName: "health_visits",
     moduleName: "Encounter",
-    reportEventName: "Health Visits",
+    dataset: Dataset.HealthVisits,
 });
 
 entryTypeMap.set(EntryType.Note, {
@@ -114,7 +115,7 @@ entryTypeMap.set(EntryType.Note, {
     component: "NoteTimelineComponent",
     eventName: "my_notes",
     moduleName: "Note",
-    reportEventName: "Notes",
+    dataset: Dataset.Notes,
 });
 
 entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
@@ -128,7 +129,7 @@ entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
     component: "SpecialAuthorityRequestTimelineComponent",
     eventName: "special_authority",
     moduleName: "MedicationRequest",
-    reportEventName: "Special Authority Requests",
+    dataset: Dataset.SpecialAuthorityRequests,
 });
 
 entryTypeMap.set(EntryType.ClinicalDocument, {
@@ -142,7 +143,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     component: "ClinicalDocumentTimelineComponent",
     eventName: "document",
     moduleName: "ClinicalDocument",
-    reportEventName: "Clinical Documents",
+    dataset: Dataset.ClinicalDocuments,
 });
 
 entryTypeMap.set(EntryType.HospitalVisit, {
@@ -156,7 +157,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     component: "HospitalVisitTimelineComponent",
     eventName: "hospital_visits",
     moduleName: "HospitalVisit",
-    reportEventName: "Hospital Visits",
+    dataset: Dataset.HospitalVisits,
 });
 
 entryTypeMap.set(EntryType.DiagnosticImaging, {
@@ -169,7 +170,7 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
     component: "DiagnosticImagingTimelineComponent",
     eventName: "diagnostic_imaging",
     moduleName: "DiagnosticImaging",
-    reportEventName: "Diagnostic Imaging Exams",
+    dataset: Dataset.ImagingReports,
 });
 
 entryTypeMap.set(EntryType.BcCancerScreening, {
@@ -183,7 +184,7 @@ entryTypeMap.set(EntryType.BcCancerScreening, {
     component: "BcCancerScreeningTimelineComponent",
     eventName: "bc_cancer_screening",
     moduleName: "BcCancerScreening",
-    reportEventName: "BC Cancer Screening",
+    dataset: Dataset.BcCancerScreening,
 });
 
 export { entryTypeMap };

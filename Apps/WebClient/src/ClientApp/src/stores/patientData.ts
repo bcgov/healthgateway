@@ -42,7 +42,7 @@ const defaultPatientDataFileState: PatientDataFileState = {
     error: undefined,
 };
 
-function reportDataLoaded(
+function trackDataLoaded(
     patientDataTypes: PatientDataType[],
     data: PatientDataResponse
 ) {
@@ -234,7 +234,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
             .getPatientData(hdid, patientDataTypes)
             .then((data) => {
                 setPatientData(hdid, patientDataTypes, data.items);
-                reportDataLoaded(patientDataTypes, data);
+                trackDataLoaded(patientDataTypes, data);
                 return data.items;
             })
             .catch((error: ResultError) => {

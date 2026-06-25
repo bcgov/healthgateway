@@ -6,7 +6,7 @@ import { computed, ref, watch } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
 import { Loader } from "@/constants/loader";
 import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
@@ -15,24 +15,23 @@ import { ResultError } from "@/models/errors";
 import { Action, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { EventName, useEventStore } from "@/stores/event";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 import ValidationUtil from "@/utility/validationUtil";
-
-const emit = defineEmits<{
-    (e: "email-updated", value: string): void;
-}>();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
 const errorStore = useErrorStore();
+const eventStore = useEventStore();
 const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const isEmailEditable = ref(false);
 const inputValue = ref(userStore.user.email);
+const isUpdatingEmail = ref(false);
 
 const email = computed(() => userStore.user.email);
 const emailVerified = computed(() => userStore.user.verifiedEmail);
@@ -82,6 +81,12 @@ function saveEmailEdit(): void {
 }
 
 function sendUserEmailUpdate(): void {
+    if (isUpdatingEmail.value) {
+        return;
+    }
+
+    isUpdatingEmail.value = true;
+
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.VerifyEmailAddress,
@@ -96,7 +101,7 @@ function sendUserEmailUpdate(): void {
             .then(() => {
                 isEmailEditable.value = false;
                 v$.value.$reset();
-                emit("email-updated", email.value);
+                eventStore.emit(EventName.UpdateEmailAddress, email.value);
             })
             .catch((err) => {
                 const resultError = err as ResultError | undefined;
@@ -106,13 +111,16 @@ function sendUserEmailUpdate(): void {
                     errorStore.setTooManyRequestsError("page");
                 }
             })
+            .finally(() => {
+                isUpdatingEmail.value = false;
+            })
     );
 }
 watch(email, (value) => (inputValue.value = value));
 </script>
 
 <template>
-    <SectionHeaderComponent title="Email Address">
+    <LabelComponent title="Email Address">
         <template #append>
             <HgButtonComponent
                 id="editEmail"
@@ -124,7 +132,7 @@ watch(email, (value) => (inputValue.value = value));
                 @click="makeEmailEditable"
             />
         </template>
-    </SectionHeaderComponent>
+    </LabelComponent>
     <v-sheet :max-width="400">
         <v-text-field
             v-model.trim="inputValue"
@@ -165,6 +173,7 @@ watch(email, (value) => (inputValue.value = value));
             variant="primary"
             text="Save"
             :disabled="
+                isUpdatingEmail ||
                 inputValue === email ||
                 !ValidationUtil.isValid(v$.inputValue, undefined, false)
             "
@@ -205,7 +214,7 @@ watch(email, (value) => (inputValue.value = value));
             class="mb-4"
             variant="secondary"
             text="Resend Verification"
-            :disabled="emailVerificationSent"
+            :disabled="emailVerificationSent || isUpdatingEmail"
             @click="sendUserEmailUpdate"
         />
     </template>

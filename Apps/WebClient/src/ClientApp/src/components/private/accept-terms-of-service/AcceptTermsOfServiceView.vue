@@ -28,7 +28,7 @@ const termsOfService = ref("");
 const accepted = ref(false);
 
 function onSubmit(): void {
-    if (accepted.value !== true) {
+    if (accepted.value !== true || isLoading.value) {
         return;
     }
 
@@ -116,7 +116,7 @@ userProfileService
             <HgButtonComponent
                 data-testid="continue-btn"
                 variant="primary"
-                :disabled="!accepted"
+                :disabled="!accepted || isLoading"
                 text="Continue"
                 @click="onSubmit"
             />

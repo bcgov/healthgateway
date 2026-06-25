@@ -46,7 +46,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(
                     action.QueryType,
                     action.QueryString,
-                    action.RefreshVaccineDetails,
                     includeApiRegistration,
                     includeImagingRefresh,
                     includeLabsRefresh);
@@ -88,7 +87,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 {
                     QueryType = ClientRegistryType.Hdid,
                     QueryString = action.Hdid,
-                    RefreshVaccineDetails = false,
                 });
             return Task.CompletedTask;
         }

@@ -231,7 +231,7 @@ namespace HealthGateway.Admin.Tests.Services
             ];
 
             Mock<IBlockedAccessDelegate> blockedAccessDelegateMock = new();
-            blockedAccessDelegateMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(records);
+            blockedAccessDelegateMock.Setup(s => s.GetAllNoTrackingAsync(It.IsAny<CancellationToken>())).ReturnsAsync(records);
 
             IAdminReportService service = GetAdminReportService(blockedAccessDelegateMock: blockedAccessDelegateMock);
             return service;

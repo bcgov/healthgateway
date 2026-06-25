@@ -18,10 +18,8 @@ namespace HealthGateway.Admin.Client.Components.Details
     using System.Linq;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
 
@@ -37,20 +35,11 @@ namespace HealthGateway.Admin.Client.Components.Details
         public string Phn { get; set; } = string.Empty;
 
         [Inject]
-        private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
-
-        [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
         private string PatientName => StringManipulator.JoinWithoutBlanks([this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname]);
-
-        private VaccineDetails? VaccineDetails => this.PatientDetailsState.Value.VaccineDetails;
-
-        private bool ImmunizationsAreBlocked => this.VaccineDetails?.Blocked ?? false;
-
-        private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
     }
 }

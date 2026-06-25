@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import SectionHeadingComponent from "@/components/common/SectionHeadingComponent.vue";
 import { ErrorSourceType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
 import { container } from "@/ioc/container";
@@ -24,8 +24,15 @@ const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const showCloseWarning = ref(false);
+const isClosingAccount = ref(false);
 
 function closeAccount(): void {
+    if (isClosingAccount.value) {
+        return;
+    }
+
+    isClosingAccount.value = true;
+
     trackingService.trackEvent({
         action: Action.ButtonClick,
         text: Text.DeleteAccount,
@@ -49,22 +56,25 @@ function closeAccount(): void {
                     );
                 }
             })
+            .finally(() => {
+                isClosingAccount.value = false;
+            })
     );
 }
 </script>
 
 <template>
-    <SectionHeaderComponent title="Manage Account" />
+    <SectionHeadingComponent title="Manage Account" include-divider />
     <HgButtonComponent
         v-if="!showCloseWarning"
         id="recoverAccountShowCloseWarningBtn"
         data-testid="recoverAccountShowCloseWarningBtn"
-        variant="primary"
+        variant="error-secondary"
         text="Delete My Account"
         @click="showCloseWarning = true"
     />
     <template v-else>
-        <v-card variant="text">
+        <v-card variant="text" class="mt-n4">
             <template #text>
                 <HgAlertComponent
                     type="error"
@@ -73,6 +83,7 @@ function closeAccount(): void {
                         you from accessing your information on the Health
                         Gateway. After a set period of time it will be
                         removed permanently."
+                    class="pa-0"
                 />
             </template>
             <template #actions>
@@ -88,8 +99,9 @@ function closeAccount(): void {
                 <HgButtonComponent
                     id="closeAccountBtn"
                     data-testid="closeAccountBtn"
-                    color="error"
+                    variant="error"
                     text="Delete Account"
+                    :disabled="isClosingAccount"
                     @click="closeAccount"
                 />
             </template>

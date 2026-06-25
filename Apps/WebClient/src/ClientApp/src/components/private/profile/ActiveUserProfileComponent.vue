@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
+import LabelComponent from "@/components/common/LabelComponent.vue";
+import SectionHeadingComponent from "@/components/common/SectionHeadingComponent.vue";
 import UserProfileAddressComponent from "@/components/private/profile/UserProfileAddressComponent.vue";
 import UserProfileEmailComponent from "@/components/private/profile/UserProfileEmailComponent.vue";
 import UserProfileManageAccountComponent from "@/components/private/profile/UserProfileManageAccountComponent.vue";
@@ -10,10 +11,6 @@ import UserProfileSmsComponent from "@/components/private/profile/UserProfileSms
 import { DateWrapper } from "@/models/dateWrapper";
 import { useAppStore } from "@/stores/app";
 import { useUserStore } from "@/stores/user";
-
-const emit = defineEmits<{
-    (e: "email-updated", value: string): void;
-}>();
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -28,20 +25,26 @@ const formattedLoginDateTimes = computed(() =>
 </script>
 
 <template>
-    <SectionHeaderComponent title="Full Name" />
+    <SectionHeadingComponent title="Personal Information" />
+    <LabelComponent title="Full Name" />
     <p data-testid="fullName">{{ userStore.userName }}</p>
-    <SectionHeaderComponent title="Personal Health Number" />
+    <LabelComponent title="Personal Health Number" />
     <p data-testid="PHN">
         {{ userStore.patient.personalHealthNumber }}
     </p>
-    <UserProfileEmailComponent @email-updated="emit('email-updated', $event)" />
+    <SectionHeadingComponent title="Contact Information" include-divider />
+    <UserProfileEmailComponent />
     <UserProfileSmsComponent />
     <UserProfileAddressComponent />
     <UserProfileNotificationsComponent />
     {{
         /* AB#16941 - Hide login history as that was not in Sales Force Implementation */ ""
     }}
-    <SectionHeaderComponent v-if="false" title="Login History" />
+    <SectionHeadingComponent
+        v-if="false"
+        title="Login History"
+        include-divider
+    />
     <ul v-if="false" id="lastLoginDate" class="text-body-1">
         <li
             v-for="(item, index) in formattedLoginDateTimes"

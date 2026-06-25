@@ -9,6 +9,7 @@ import InactiveUserProfileComponent from "@/components/private/profile/InactiveU
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import { Loader } from "@/constants/loader";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import { EventName, useEventStore } from "@/stores/event";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 
@@ -21,12 +22,17 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
+const eventStore = useEventStore();
 const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const showCheckEmailAlert = ref(false);
 
 const isLoading = computed(() => loadingStore.isLoading(Loader.UserProfile));
+
+eventStore.subscribe(EventName.UpdateEmailAddress, (email) => {
+    showCheckEmailAlert.value = Boolean(email);
+});
 </script>
 
 <template>
@@ -49,10 +55,7 @@ const isLoading = computed(() => loadingStore.isLoading(Loader.UserProfile));
         type="heading, text, heading, paragraph"
     />
     <div v-show="!isLoading">
-        <ActiveUserProfileComponent
-            v-if="userStore.userIsActive"
-            @email-updated="showCheckEmailAlert = Boolean($event)"
-        />
+        <ActiveUserProfileComponent v-if="userStore.userIsActive" />
         <InactiveUserProfileComponent v-else />
     </div>
 </template>

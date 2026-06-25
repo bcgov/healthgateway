@@ -23,6 +23,7 @@ namespace HealthGateway.AccountDataAccess
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Providers;
     using Microsoft.Extensions.DependencyInjection;
     using Refit;
 
@@ -57,6 +58,9 @@ namespace HealthGateway.AccountDataAccess
                 .AddScoped<PatientQueryStrategy, HdidPhsaStrategy>(s => s.GetService<HdidPhsaStrategy>()!);
             services.AddScoped<PhnEmpiStrategy>()
                 .AddScoped<PatientQueryStrategy, PhnEmpiStrategy>(s => s.GetService<PhnEmpiStrategy>()!);
+
+            // Abstraction for DbContext transaction and persistence operations
+            services.AddScoped<IGatewayDbContextTransactionProvider, GatewayDbContextTransactionProvider>();
 
             services.AddRefitClient<IPatientIdentityApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)

@@ -37,6 +37,17 @@ namespace HealthGateway.Database.Delegates
         Task<IReadOnlyList<UserProfileNotificationSetting>> GetAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
+        /// Fetches the user profile notification settings by hdid from the database without tracking.
+        /// </summary>
+        /// <param name="hdid">The hdid to search by.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>
+        /// A read-only list of user profile notification settings for the specified hdid.
+        /// Returns an empty collection if none are found.
+        /// </returns>
+        Task<IReadOnlyList<UserProfileNotificationSetting>> GetNoTrackingAsync(string hdid, CancellationToken ct = default);
+
+        /// <summary>
         /// Adds or updates the user profile notification object to the DB.
         /// </summary>
         /// <param name="notificationSetting">The user profile notification setting object to add or update.</param>
