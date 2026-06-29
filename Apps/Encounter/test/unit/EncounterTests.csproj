@@ -37,9 +37,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Encounter.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
   <Target Name="CopyKeyDerivationAssembly" BeforeTargets="VSTest">
     <ItemGroup>
       <KeyDerivationDll Include="$(PkgMicrosoft_AspNetCore_Cryptography_KeyDerivation)/lib/**/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll" />

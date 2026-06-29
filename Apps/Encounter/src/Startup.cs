@@ -24,11 +24,14 @@ namespace HealthGateway.Encounter
     using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Services;
+    using HealthGateway.PatientDataAccess;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Refit;
+    using PersonalAccount = HealthGateway.Common.AspNetConfiguration.Modules.PersonalAccount;
 
     /// <summary>
     /// Configures the application during startup.
@@ -75,6 +78,15 @@ namespace HealthGateway.Encounter
             PhsaConfigV2 phsaConfigV2 = new();
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
 
+            ILogger logger = ProgramConfiguration.GetInitialLogger(this.startupConfig.Configuration);
+            PersonalAccount.ConfigurePersonalAccountAccess(services, logger, this.startupConfig.Configuration);
+
+            // Access token swap
+            PhsaV2.ConfigurePhsaV2Access(services, logger, this.startupConfig.Configuration);
+
+            // Access patient data repository
+            services.AddPatientDataAccess(new PatientDataAccessConfiguration(phsaConfigV2.BaseUrl));
+
             // Access patient repository
             services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
 
@@ -84,6 +96,7 @@ namespace HealthGateway.Encounter
             // Add services
             services.AddTransient<IEncounterMappingService, EncounterMappingService>();
             services.AddTransient<IEncounterService, EncounterService>();
+            services.AddTransient<IEncounterServiceV2, EncounterServiceV2>();
 
             // Add Delegates
             services.AddTransient<IMspVisitDelegate, RestMspVisitDelegate>();

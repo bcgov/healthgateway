@@ -158,4 +158,30 @@ describe("Encounter Service", () => {
             });
         });
     });
+
+    it("Verify Hospital Visits V2 Authorized", () => {
+        const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+
+        cy.get("@tokens").then((tokens) => {
+            cy.get("@config").then((config) => {
+                const encounterEndpoint = config.serviceEndpoints.Encounter;
+
+                cy.request({
+                    method: "GET",
+                    url: `${encounterEndpoint}Encounter/HospitalVisit/${HDID}?api-version=2`,
+                    followRedirect: false,
+                    timeout: 120000,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).then((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                });
+            });
+        });
+    });
 });
