@@ -154,10 +154,10 @@ namespace HealthGateway.PatientDataAccess
 
         private HealthData Map(HealthDataEntry healthDataEntry)
         {
-            TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(configuration);
-
             if (healthDataEntry is Api.HospitalVisit hospitalVisit)
             {
+                TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(configuration);
+
                 healthDataEntry = hospitalVisit with
                 {
                     AdmitDateTime = hospitalVisit.AdmitDateTime == null
