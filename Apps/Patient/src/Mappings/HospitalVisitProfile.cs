@@ -32,8 +32,7 @@ namespace HealthGateway.Patient.Mappings
             this.CreateMap<HospitalVisit, Services.HospitalVisit>()
                 .ForMember(
                     d => d.AdmitDateTime,
-                    opts => opts.MapFrom(s => s.AdmitDateTime.HasValue ? DateFormatter.SpecifyUtc(s.AdmitDateTime.Value) : (DateTime?)null));
-            this.CreateMap<HospitalVisit, Services.HospitalVisit>()
+                    opts => opts.MapFrom(s => s.AdmitDateTime.HasValue ? DateFormatter.SpecifyUtc(s.AdmitDateTime.Value) : (DateTime?)null))
                 .ForMember(
                     d => d.EndDateTime,
                     opts => opts.MapFrom(s => s.EndDateTime.HasValue ? DateFormatter.SpecifyUtc(s.EndDateTime.Value) : (DateTime?)null));
