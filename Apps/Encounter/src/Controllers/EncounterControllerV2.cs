@@ -24,6 +24,7 @@ namespace HealthGateway.Encounter.Controllers
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -54,6 +55,10 @@ namespace HealthGateway.Encounter.Controllers
         [Produces("application/json")]
         [Route("HospitalVisit/{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
+        [ProducesResponseType<IReadOnlyList<HospitalVisitModel>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable, Type = typeof(ProblemDetails))]
         public async Task<IReadOnlyList<HospitalVisitModel>> GetHospitalVisits(string hdid, CancellationToken ct)
         {
             return await encounterService.GetHospitalVisitsAsync(hdid, ct);
