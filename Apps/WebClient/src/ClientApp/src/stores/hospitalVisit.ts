@@ -1,16 +1,12 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
 
-import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { HospitalVisitState } from "@/models/datasetState";
 import { HospitalVisit } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
-import HospitalVisitResult from "@/models/hospitalVisitResult";
-import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { Action, Dataset, Text } from "@/plugins/extensions";
 import {
@@ -26,7 +22,6 @@ const defaultHospitalVisitState: HospitalVisitState = {
     status: LoadStatus.NONE,
     statusMessage: "",
     error: undefined,
-    queued: false,
 };
 
 export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
@@ -55,39 +50,20 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
         return getHospitalVisitsState(hdid).status === LoadStatus.REQUESTED;
     }
 
-    function hospitalVisitsAreQueued(hdid: string): boolean {
-        return getHospitalVisitsState(hdid).queued;
-    }
-
     function hospitalVisitsCount(hdid: string): number {
         return getHospitalVisitsState(hdid).data.length;
     }
 
-    function setHospitalVisitRefreshInProgress(
-        hdid: string,
-        hospitalVisitResult: HospitalVisitResult
-    ) {
-        const hospitalVisitState = getHospitalVisitsState(hdid);
-        hospitalVisitsMap.value.set(hdid, {
-            ...hospitalVisitState,
-            data: hospitalVisitResult.hospitalVisits,
-            error: undefined,
-            statusMessage: "",
-            status: LoadStatus.REQUESTED,
-            queued: hospitalVisitResult.queued,
-        });
-    }
-
     function setHospitalVisits(
         hdid: string,
-        hospitalVisitResult: HospitalVisitResult
+        hospitalVisits: HospitalVisit[]
     ): void {
         datasetMapUtil.setStateData(
             hospitalVisitsMap.value,
             hdid,
-            hospitalVisitResult.hospitalVisits,
+            hospitalVisits,
             {
-                queued: hospitalVisitResult.queued,
+                queued: false,
             }
         );
     }
@@ -115,28 +91,13 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
         }
     }
 
-    function retrieveHospitalVisits(
-        hdid: string
-    ): Promise<RequestResult<HospitalVisitResult>> {
+    function retrieveHospitalVisits(hdid: string): Promise<HospitalVisit[]> {
         const trackingService = container.get<ITrackingService>(
             SERVICE_IDENTIFIER.TrackingService
         );
         if (getHospitalVisitsState(hdid).status === LoadStatus.LOADED) {
             logger.debug(`Hospital Visits found stored, not querying!`);
-            const visits: HospitalVisit[] = hospitalVisits(hdid);
-            const hospitalVisitsQueued: boolean = hospitalVisitsAreQueued(hdid);
-            return Promise.resolve({
-                pageIndex: 0,
-                pageSize: 0,
-                resourcePayload: {
-                    loaded: true,
-                    queued: hospitalVisitsQueued,
-                    retryin: 0,
-                    hospitalVisits: visits,
-                },
-                resultStatus: ResultType.Success,
-                totalResultCount: visits.length,
-            });
+            return Promise.resolve(hospitalVisits(hdid));
         }
 
         logger.debug(`Retrieving Hospital Visits`);
@@ -144,43 +105,15 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
         return hospitalVisitService
             .getHospitalVisits(hdid)
             .then((result) => {
-                const payload = result.resourcePayload;
-                if (
-                    result.resultStatus === ResultType.Success &&
-                    payload.loaded
-                ) {
-                    if (result.totalResultCount > 0) {
-                        trackingService.trackEvent({
-                            action: Action.Load,
-                            text: Text.Data,
-                            dataset: Dataset.HospitalVisits,
-                        });
-                    }
-                    logger.info(`Hospital Visits loaded.`);
-                    setHospitalVisits(hdid, payload);
-                } else if (
-                    result.resultError?.actionCode === ActionType.Refresh &&
-                    !payload.loaded &&
-                    payload.retryin > 0
-                ) {
-                    logger.info(
-                        `Refresh in progress.... partially load hospital visits`
-                    );
-                    setHospitalVisitRefreshInProgress(hdid, payload);
-                    setTimeout(() => {
-                        logger.info("Re-querying for hospital visits");
-                        retrieveHospitalVisits(hdid);
-                    }, payload.retryin);
-                } else {
-                    if (result.resultError) {
-                        throw ResultError.fromModel(result.resultError);
-                    }
-                    logger.warn(
-                        `Hospital visits retrieval failed! ${JSON.stringify(
-                            result
-                        )}`
-                    );
+                if (result.length > 0) {
+                    trackingService.trackEvent({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.HospitalVisits,
+                    });
                 }
+                logger.info(`Hospital Visits loaded.`);
+                setHospitalVisits(hdid, result);
 
                 return result;
             })
@@ -198,7 +131,6 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
     return {
         hospitalVisits,
         hospitalVisitsAreLoading,
-        hospitalVisitsAreQueued,
         hospitalVisitsCount,
         retrieveHospitalVisits,
     };
