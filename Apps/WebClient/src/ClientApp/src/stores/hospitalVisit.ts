@@ -61,10 +61,7 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
         datasetMapUtil.setStateData(
             hospitalVisitsMap.value,
             hdid,
-            hospitalVisits,
-            {
-                queued: false,
-            }
+            hospitalVisits
         );
     }
 
