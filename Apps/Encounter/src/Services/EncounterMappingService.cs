@@ -19,8 +19,8 @@ namespace HealthGateway.Encounter.Services
     using AutoMapper;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Encounter.Models;
-    using HealthGateway.Encounter.Models.PHSA;
     using Microsoft.Extensions.Configuration;
+    using HospitalVisit = HealthGateway.Encounter.Models.PHSA.HospitalVisit;
 
     /// <inheritdoc/>
     public class EncounterMappingService(IMapper mapper, IConfiguration configuration) : IEncounterMappingService
@@ -42,6 +42,12 @@ namespace HealthGateway.Encounter.Services
             dest.EndDateTime = dest.EndDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.EndDateTime.Value, this.LocalTimeZone);
 
             return dest;
+        }
+
+        /// <inheritdoc/>
+        public HospitalVisitModel MapToHospitalVisitModel(PatientDataAccess.HospitalVisit source)
+        {
+            return mapper.Map<PatientDataAccess.HospitalVisit, HospitalVisitModel>(source);
         }
     }
 }

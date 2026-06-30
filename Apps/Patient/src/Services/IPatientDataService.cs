@@ -205,6 +205,56 @@ namespace HealthGateway.Patient.Services
     }
 
     /// <summary>
+    /// The details of a hospital visit.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record HospitalVisit : PatientData
+    {
+        /// <summary>
+        /// Gets the encounter id.
+        /// </summary>
+        public string? EncounterId { get; init; }
+
+        /// <summary>
+        /// Gets the facility.
+        /// </summary>
+        public string? Facility { get; init; }
+
+        /// <summary>
+        /// Gets the health service.
+        /// </summary>
+        public string? HealthService { get; init; }
+
+        /// <summary>
+        /// Gets the visit type.
+        /// </summary>
+        public string? VisitType { get; init; }
+
+        /// <summary>
+        /// Gets the health authority.
+        /// </summary>
+        public string? HealthAuthority { get; init; }
+
+        /// <summary>
+        /// Gets the admit date time.
+        /// </summary>
+        public DateTime? AdmitDateTime { get; init; }
+
+        /// <summary>
+        /// Gets the end date time.
+        /// </summary>
+        public DateTime? EndDateTime { get; init; }
+
+        /// <summary>
+        /// Gets the provider.
+        /// </summary>
+        public string? Provider { get; init; }
+
+        /// <inheritdoc/>
+        public override string Type { get; } = nameof(HospitalVisit);
+    }
+
+    /// <summary>
     /// Query patient files.
     /// </summary>
     /// <param name="Hdid">Patient's hdid.</param>

@@ -23,6 +23,7 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.PatientDataAccess;
     using BcCancerScreening = HealthGateway.PatientDataAccess.BcCancerScreening;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
+    using HospitalVisit = HealthGateway.PatientDataAccess.HospitalVisit;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
 
     /// <summary>
@@ -36,31 +37,31 @@ namespace HealthGateway.Patient.Mappings
         public PatientDataAccessMappings()
         {
             this.CreateMap<PatientDataType, HealthCategory>()
-                .ConvertUsing(
-                    (source, _, _) =>
+                .ConvertUsing((source, _, _) =>
+                {
+                    return source switch
                     {
-                        return source switch
-                        {
-                            PatientDataType.OrganDonorRegistrationStatus => HealthCategory.OrganDonorRegistrationStatus,
-                            PatientDataType.DiagnosticImaging => HealthCategory.DiagnosticImaging,
-                            PatientDataType.BcCancerScreening => HealthCategory.BcCancerScreening,
-                            _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
-                        };
-                    });
+                        PatientDataType.OrganDonorRegistrationStatus => HealthCategory.OrganDonorRegistrationStatus,
+                        PatientDataType.DiagnosticImaging => HealthCategory.DiagnosticImaging,
+                        PatientDataType.BcCancerScreening => HealthCategory.BcCancerScreening,
+                        PatientDataType.HospitalVisits => HealthCategory.HospitalVisits,
+                        _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
+                    };
+                });
             this.CreateMap<HealthData, PatientData>()
                 .ConvertUsing<PatientDataConverter>();
             this.CreateMap<PatientDataType, DataSource>()
-                .ConvertUsing(
-                    (source, _, _) =>
+                .ConvertUsing((source, _, _) =>
+                {
+                    return source switch
                     {
-                        return source switch
-                        {
-                            PatientDataType.OrganDonorRegistrationStatus => DataSource.OrganDonorRegistration,
-                            PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
-                            PatientDataType.BcCancerScreening => DataSource.BcCancerScreening,
-                            _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
-                        };
-                    });
+                        PatientDataType.OrganDonorRegistrationStatus => DataSource.OrganDonorRegistration,
+                        PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
+                        PatientDataType.BcCancerScreening => DataSource.BcCancerScreening,
+                        PatientDataType.HospitalVisits => DataSource.HospitalVisit,
+                        _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
+                    };
+                });
         }
 
 #pragma warning disable SA1600
@@ -74,6 +75,7 @@ namespace HealthGateway.Patient.Mappings
                     OrganDonorRegistration hd => context.Mapper.Map<Services.OrganDonorRegistration>(hd),
                     DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
                     BcCancerScreening hd => context.Mapper.Map<Services.BcCancerScreening>(hd),
+                    HospitalVisit hd => context.Mapper.Map<Services.HospitalVisit>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }
