@@ -43,36 +43,47 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             logger.LogDebug("Sensitive Data Logging is enabled: {IsSensitiveDataLoggingEnabled}", isSensitiveDataLoggingEnabled);
 
             services.AddEntityFrameworkNpgsql();
-            services.AddSingleton(
-                _ =>
-                {
-                    NpgsqlDataSourceBuilder dataSourceBuilder = new(configuration.GetConnectionString("GatewayConnection"));
-                    dataSourceBuilder.EnableDynamicJson();
-                    return dataSourceBuilder.Build();
-                });
+            services.AddSingleton(_ =>
+            {
+                NpgsqlDataSourceBuilder dataSourceBuilder = new(configuration.GetConnectionString("GatewayConnection"));
+                dataSourceBuilder.EnableDynamicJson();
+                return dataSourceBuilder.Build();
+            });
 
-            services.AddDbContextPool<GatewayDbContext>(
-                (sp, options) =>
+            services.AddDbContextPool<GatewayDbContext>((sp, options) =>
+            {
+                NpgsqlDataSource ds = sp.GetRequiredService<NpgsqlDataSource>();
+                options.UseInternalServiceProvider(sp);
+                options.UseNpgsql(
+                    ds,
+                    builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
+                if (isSensitiveDataLoggingEnabled)
                 {
-                    NpgsqlDataSource ds = sp.GetRequiredService<NpgsqlDataSource>();
-                    options.UseInternalServiceProvider(sp);
-                    options.UseNpgsql(
-                        ds,
-                        builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
-                    if (isSensitiveDataLoggingEnabled)
-                    {
-                        options.EnableSensitiveDataLogging();
-                    }
-                });
+                    options.EnableSensitiveDataLogging();
+                }
+            });
+
+            services.AddPooledDbContextFactory<GatewayDbContext>((sp, options) =>
+            {
+                NpgsqlDataSource ds = sp.GetRequiredService<NpgsqlDataSource>();
+                options.UseInternalServiceProvider(sp);
+                options.UseNpgsql(
+                    ds,
+                    builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
+
+                if (isSensitiveDataLoggingEnabled)
+                {
+                    options.EnableSensitiveDataLogging();
+                }
+            });
 
             if (isSensitiveDataLoggingEnabled)
             {
-                services.AddLogging(
-                    loggingBuilder =>
-                    {
-                        loggingBuilder.AddConsole()
-                            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
-                    });
+                services.AddLogging(loggingBuilder =>
+                {
+                    loggingBuilder.AddConsole()
+                        .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
+                });
             }
         }
     }

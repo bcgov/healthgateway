@@ -20,18 +20,20 @@ namespace HealthGateway.Database.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     /// <param name="logger">The injected logger.</param>
-    /// <param name="dbContext">The context to be used when accessing the database context.</param>
+    /// <param name="dbContextFactory">The factory used to create an isolated database context for writing audit events.</param>
     [ExcludeFromCodeCoverage]
-    public class DbWriteAuditEventDelegate(ILogger<DbWriteAuditEventDelegate> logger, GatewayDbContext dbContext) : IWriteAuditEventDelegate
+    public class DbWriteAuditEventDelegate(ILogger<DbWriteAuditEventDelegate> logger, IDbContextFactory<GatewayDbContext> dbContextFactory) : IWriteAuditEventDelegate
     {
         /// <inheritdoc/>
         public async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
             logger.LogDebug("Adding audit event to DB");
+            await using GatewayDbContext dbContext = await dbContextFactory.CreateDbContextAsync(ct);
             dbContext.Add(auditEvent);
             await dbContext.SaveChangesAsync(ct);
         }
