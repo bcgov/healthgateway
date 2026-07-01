@@ -1,10 +1,24 @@
-:is(p, ol, ul):not(:last-child) {
-    margin-bottom: 1em;
-}
+// these rules are placed in our hg-overrides layer
+// so they won't take precedence over utility classes like "my-0"
+// which are applied in the vuetify-utilities layer
+// https://vuetifyjs.com/en/styles/layers/
+@layer hg-overrides {
+    :is(p, ol, ul) {
+        margin-top: 0;
 
-:is(ol, ul) {
-    padding-left: 40px;
-    &.v-pagination__list {
-        padding-left: 0;
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &:not(:last-child) {
+            margin-bottom: 1em;
+        }
+    }
+
+    :is(ol, ul) {
+        padding-left: 40px;
+        &.v-pagination__list {
+            padding-left: 0;
+        }
     }
 }

@@ -1,5 +1,3 @@
-import "@/assets/styles/main.scss";
-
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -73,6 +71,16 @@ export default createVuetify({
                     sectionBackground: "#f0f5fa",
                 },
             },
+        },
+    },
+    display: {
+        thresholds: {
+            // restore v3 breakpoints
+            // see also: main.scss
+            md: 960,
+            lg: 1280,
+            xl: 1920,
+            xxl: 2560,
         },
     },
 });

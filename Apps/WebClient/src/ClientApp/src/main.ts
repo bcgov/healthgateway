@@ -1,3 +1,9 @@
+// stylesheets must be imported before App.vue
+// order is important: layers first, then vuetify/styles, then main
+import "@/assets/styles/layers.scss";
+import "vuetify/styles";
+import "@/assets/styles/main.scss";
+
 import { createApp } from "vue";
 
 import App from "@/App.vue";
