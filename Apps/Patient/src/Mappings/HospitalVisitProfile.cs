@@ -22,6 +22,7 @@ namespace HealthGateway.Patient.Mappings
 
     /// <summary>
     /// The AutoMapper profile for Hospital Visits.
+    /// </summary>
     public class HospitalVisitProfile : Profile
     {
         /// <summary>
