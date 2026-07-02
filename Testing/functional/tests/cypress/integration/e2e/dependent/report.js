@@ -328,7 +328,9 @@ describe("Reports", () => {
         );
     });
 
-    it("Validate Hospital Visits Report", () => {
+    // AB#17092 - Test skipped until PHSA fixes dependent test data for hospital visists V2.
+    // Re-enable test when PHSA fixes test data.
+    it.skip("Validate Hospital Visits Report", () => {
         const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
