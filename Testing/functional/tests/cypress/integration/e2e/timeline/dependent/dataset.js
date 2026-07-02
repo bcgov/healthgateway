@@ -177,7 +177,9 @@ describe("Dependent Timeline Datasets", () => {
     });
 
     describe("Validate hospital visits on dependent timeline", () => {
-        it("Enabled HospitalVisit dataset should be present", () => {
+        // AB#17092 - Test skipped until PHSA fixes dependent test data for hospital visists V2.
+        // Re-enable test when PHSA fixes test data.
+        it.skip("Enabled HospitalVisit dataset should be present", () => {
             enabledDatasetShouldBePresent(Dataset.HospitalVisit);
         });
         it("Disabled HospitalVisit dataset should not be present", () => {
