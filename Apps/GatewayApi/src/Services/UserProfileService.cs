@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
+        public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, bool isLogin, CancellationToken ct = default)
         {
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             if (userProfile == null)
@@ -162,7 +162,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DateTime previousLastLogin = userProfile.LastLoginDateTime;
-            if (jwtAuthTime > previousLastLogin)
+            if (isLogin && jwtAuthTime > previousLastLogin)
             {
                 userProfile.LastLoginDateTime = jwtAuthTime;
                 userProfile.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();

@@ -606,7 +606,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<DateTime>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
             Mock<ILegalAgreementService> legalAgreementServiceMock = new();
             legalAgreementServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new RequestResult<TermsOfServiceModel>());

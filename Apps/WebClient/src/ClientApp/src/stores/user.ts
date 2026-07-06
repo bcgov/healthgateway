@@ -408,7 +408,7 @@ export const useUserStore = defineStore("user", () => {
                 setPatient(result);
 
                 return userProfileService
-                    .getProfile(user.value.hdid)
+                    .getProfile(user.value.hdid, true)
                     .then((userProfile) => {
                         logger.debug(
                             `User Profile: ${JSON.stringify(userProfile)}`

@@ -54,7 +54,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly EmailTemplateConfig emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
 
         /// <inheritdoc/>
-        public async Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
+        public async Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, bool isLogin = false, CancellationToken ct = default)
         {
             UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             if (userProfile == null)
@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DateTime previousLastLogin = userProfile.LastLoginDateTime;
-            if (jwtAuthTime > previousLastLogin)
+            if (isLogin && jwtAuthTime > previousLastLogin)
             {
                 PatientDetails patient = await patientDetailsService.GetPatientAsync(hdid, ct: ct);
 

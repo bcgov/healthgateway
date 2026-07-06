@@ -139,33 +139,45 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// </summary>
         /// <param name="userProfileExists">The value indicating whether user profile exists or not.</param>
         /// <param name="jwtAuthTimeIsDifferent">The value indicating whether jwt auth time is different from last login or not.</param>
+        /// <param name="isLogin">The value indicating whether the request is part of login flow.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, true)] // User profile exists and jwt auth time is different
-        [InlineData(true, false)] // User profile exists and jwt auth time is not different
-        [InlineData(false, false)] // Cannot get profile because user profile does not exist
+        [InlineData(true, true, true)] // Login flow, update expected
+        [InlineData(true, true, false)] // Not login flow, update not expected
+        [InlineData(true, false, true)] // Login flow, auth time not newer, update not expected
+        [InlineData(false, false, true)] // Cannot get profile because user profile does not exist
         public async Task ShouldGetUserProfile(
             bool userProfileExists,
-            bool jwtAuthTimeIsDifferent)
+            bool jwtAuthTimeIsDifferent,
+            bool isLogin)
         {
             // Arrange
-            Times expectedUserProfileUpdate = ConvertToTimes(jwtAuthTimeIsDifferent);
+            Times expectedUserProfileUpdate = ConvertToTimes(
+                userProfileExists && jwtAuthTimeIsDifferent && isLogin);
 
             DateTime currentDateTime = DateTime.UtcNow.Date;
             DateTime jwtAuthTime = jwtAuthTimeIsDifferent
                 ? currentDateTime.AddHours(1)
                 : currentDateTime;
 
+            DateTime expectedLastLoginDateTime = isLogin && jwtAuthTimeIsDifferent
+                ? jwtAuthTime
+                : currentDateTime;
+
             UserProfileModel expected = userProfileExists
-                ? GenerateUserProfileModel(currentDateTime)
+                ? GenerateUserProfileModel(expectedLastLoginDateTime)
                 : new();
 
             UserProfileMock mock = SetupUserProfileMock(
                 currentDateTime,
+                expectedLastLoginDateTime,
                 userProfileExists);
 
             // Act
-            UserProfileModel actual = await mock.Service.GetUserProfileAsync(Hdid, jwtAuthTime);
+            UserProfileModel actual = await mock.Service.GetUserProfileAsync(
+                Hdid,
+                jwtAuthTime,
+                isLogin);
 
             // Assert and Verify
             actual.ShouldDeepEqual(expected);
@@ -616,6 +628,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static UserProfileMock SetupUserProfileMock(
             DateTime currentDateTime,
+            DateTime expectedLastLoginDateTime,
             bool userProfileExists = true)
         {
             DateTime birthDate = GenerateBirthDate();
@@ -631,7 +644,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(birthDate));
             Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
 
-            UserProfileModel userProfileModel = userProfileExists ? GenerateUserProfileModel(currentDateTime) : new();
+            UserProfileModel userProfileModel = userProfileExists ? GenerateUserProfileModel(expectedLastLoginDateTime) : new();
             Mock<IUserProfileModelService> userProfileModelServiceMock = SetupUserProfileModelServiceMock(userProfileModel, profileHistoryRecordLimit);
 
             IUserProfileServiceV2 service = GetUserProfileService(
