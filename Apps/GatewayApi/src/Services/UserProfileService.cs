@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, bool isLogin, CancellationToken ct = default)
+public async Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, bool isLogin = false, CancellationToken ct = default)
         {
             UserProfile? userProfile = await this.userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             if (userProfile == null)
