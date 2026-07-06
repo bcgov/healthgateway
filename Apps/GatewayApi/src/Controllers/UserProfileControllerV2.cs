@@ -136,6 +136,12 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The requested user profile, or an empty profile if the requested profile doesn't exist.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <param name="isLogin">
+        /// Indicates whether the request is part of the user's login flow. When <c>true</c>,
+        /// the user's last login metadata (last login time, client type, and year of birth)
+        /// is updated before returning the profile. When <c>false</c>, the profile is returned
+        /// without modifying the user record.
+        /// </param>
         /// <response code="200">Returns the requested user profile, or an empty profile if the requested profile doesn't exist.</response>
         /// <response code="400">Validation error.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -155,10 +161,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<UserProfileModel> GetUserProfile(string hdid, CancellationToken ct)
+        public async Task<UserProfileModel> GetUserProfile(string hdid, CancellationToken ct, [FromQuery] bool isLogin = false)
         {
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(this.httpContextAccessor.HttpContext!.User);
-            return await this.userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
+            return await this.userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, isLogin, ct);
         }
 
         /// <summary>

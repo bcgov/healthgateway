@@ -71,19 +71,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="emailIsVerified">The value indicating whether email is verified or not.</param>
         /// <param name="smsIsVerified">The value indicating whether sms is verified or not.</param>
         /// <param name="tourChangeDateIsLatest">The value indicating whether tour change date is latest or not.</param>
+        /// <param name="isLogin">The value indicating whether the request is part of login flow.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, true, true, true, true)]
-        [InlineData(true, false, false, true, true)]
-        [InlineData(true, false, false, false, true)]
-        [InlineData(true, false, false, false, false)]
-        [InlineData(false, false, false, false, false)] // Cannot get profile because user profile does not exist
+        [InlineData(true, true, true, true, true, true)] // Login flow, update expected
+        [InlineData(true, true, true, true, true, false)] // Not login flow, no update expected
+        [InlineData(true, false, false, true, true, true)]
+        [InlineData(true, false, false, false, true, true)]
+        [InlineData(true, false, false, false, false, true)]
+        [InlineData(false, false, false, false, false, true)] // Cannot get profile because user profile does not exist
         public async Task ShouldGetUserProfile(
             bool userProfileExists,
             bool jwtAuthTimeIsDifferent,
             bool emailIsVerified,
             bool smsIsVerified,
-            bool tourChangeDateIsLatest)
+            bool tourChangeDateIsLatest,
+            bool isLogin)
         {
             // Arrange
             const int patientAge = 15;
@@ -104,7 +107,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             DateTime[] lastLoginDateTimes =
             [
-                jwtAuthTimeIsDifferent ? jwtAuthTime : currentUtcDate,
+                isLogin && jwtAuthTimeIsDifferent ? jwtAuthTime : currentUtcDate,
                 userProfileHistoryList[0].LastLoginDateTime,
                 userProfileHistoryList[1].LastLoginDateTime,
             ];
@@ -123,7 +126,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ResultStatus = ResultType.Success,
             };
 
-            Times expectedTimesUpdateUserProfile = jwtAuthTimeIsDifferent
+            Times expectedTimesUpdateUserProfile = userProfileExists && isLogin && jwtAuthTimeIsDifferent
                 ? Times.Once()
                 : Times.Never();
 
@@ -137,7 +140,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileHistoryList: userProfileHistoryList);
 
             // Act
-            RequestResult<UserProfileModel> actual = await service.GetUserProfileAsync(Hdid, jwtAuthTime);
+            RequestResult<UserProfileModel> actual = await service.GetUserProfileAsync(Hdid, jwtAuthTime, isLogin);
 
             // Assert
             actual.ShouldDeepEqual(expected);

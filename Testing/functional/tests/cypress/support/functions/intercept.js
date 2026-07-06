@@ -104,7 +104,7 @@ export function setupUserProfileFixture(options = {}) {
         statusCode = defaultUserProfileStatusCode,
     } = options;
 
-    const url = `**/UserProfile/${hdid}?api-version=2.0`;
+    const url = `**/UserProfile/${hdid}?api-version=2.0*`;
 
     if (statusCode !== 200) {
         cy.intercept("GET", url, { statusCode });

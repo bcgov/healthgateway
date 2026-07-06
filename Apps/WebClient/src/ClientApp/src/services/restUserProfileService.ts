@@ -36,10 +36,10 @@ export class RestUserProfileService implements IUserProfileService {
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
-    public getProfile(hdid: string): Promise<UserProfile> {
+    public getProfile(hdid: string, isLogin = false): Promise<UserProfile> {
         return this.http
             .getWithCors<RequestResult<UserProfile>>(
-                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}?isLogin=${isLogin}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(
