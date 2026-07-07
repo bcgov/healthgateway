@@ -29,10 +29,18 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets a user profile.
         /// </summary>
         /// <param name="hdid">The requested user HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The user profile.</returns>
+        Task<UserProfileModel> GetUserProfileAsync(string hdid, CancellationToken ct = default);
+
+        /// <summary>
+        /// Gets a user profile during the login flow and updates login metadata if required.
+        /// </summary>
+        /// <param name="hdid">The requested user HDID.</param>
         /// <param name="jwtAuthTime">The authenticated login time from the JWT.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The user profile.</returns>
-        Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default);
+        Task<UserProfileModel> GetUserProfileForLoginAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default);
 
         /// <summary>
         /// Closes a user profile.

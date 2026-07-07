@@ -58,6 +58,10 @@ export class RestUserProfileService implements IUserProfileService {
             });
     }
 
+    public getProfileForLogin(_hdid: string): Promise<UserProfile> {
+        return Promise.reject(new Error("Not implemented."));
+    }
+
     public createProfile(
         createRequest: CreateUserRequest
     ): Promise<UserProfile> {

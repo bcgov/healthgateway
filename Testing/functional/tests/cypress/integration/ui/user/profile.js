@@ -69,7 +69,7 @@ describe("User Profile", () => {
             }
         ).then((data) => {
             data.email = Cypress.env("emailAddress");
-            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+            cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
                 ...data,
             });
         });
@@ -98,7 +98,7 @@ describe("User Profile", () => {
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=email-input] input").clear();
         cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
             fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=editEmailSaveBtn]").click();
@@ -118,7 +118,7 @@ describe("User Profile", () => {
 
         cy.log("Verify SMS number");
         cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
             fixture: "UserProfileService/userProfileSMSVerified.json",
         });
         cy.get("[data-testid=verifySMSBtn]")
@@ -144,7 +144,7 @@ describe("User Profile", () => {
             );
 
         cy.log("Edit SMS number");
-        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
             fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=editSMSBtn]").click();
@@ -176,7 +176,7 @@ describe("User Profile", () => {
             }
         ).then((data) => {
             data.smsNumber = undefined;
-            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+            cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
                 ...data,
             });
         });
