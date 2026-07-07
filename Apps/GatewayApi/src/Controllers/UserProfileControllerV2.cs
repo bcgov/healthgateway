@@ -157,8 +157,41 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<UserProfileModel> GetUserProfile(string hdid, CancellationToken ct)
         {
+            return await this.userProfileService.GetUserProfileAsync(hdid, ct);
+        }
+
+        /// <summary>
+        /// Gets a user profile during the login flow.
+        /// </summary>
+        /// <returns>
+        /// The requested user profile, or an empty profile if the requested profile doesn't exist.
+        /// Updates the user's login metadata when appropriate.
+        /// </returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <response code="200">Returns the requested user profile, or an empty profile if the requested profile doesn't exist.</response>
+        /// <response code="400">Validation error.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="500">Internal server error.</response>
+        /// <response code="502">Upstream error.</response>
+        [HttpGet]
+        [Route("{hdid}/login")]
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        [Produces("application/json")]
+        [ProducesResponseType<UserProfileModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
+        public async Task<UserProfileModel> GetUserProfileForLogin(string hdid, CancellationToken ct)
+        {
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(this.httpContextAccessor.HttpContext!.User);
-            return await this.userProfileService.GetUserProfileAsync(hdid, jwtAuthTime, ct);
+            return await this.userProfileService.GetUserProfileForLoginAsync(hdid, jwtAuthTime, ct);
         }
 
         /// <summary>

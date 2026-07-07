@@ -54,7 +54,22 @@ namespace HealthGateway.GatewayApi.Services
         private readonly EmailTemplateConfig emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
 
         /// <inheritdoc/>
-        public async Task<UserProfileModel> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
+        public async Task<UserProfileModel> GetUserProfileAsync(string hdid, CancellationToken ct = default)
+        {
+            UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
+            if (userProfile == null)
+            {
+                return new UserProfileModel();
+            }
+
+            return await userProfileModelService.BuildUserProfileModelAsync(
+                userProfile,
+                this.userProfileHistoryRecordLimit,
+                ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<UserProfileModel> GetUserProfileForLoginAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default)
         {
             UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, true, ct);
             if (userProfile == null)
@@ -76,7 +91,10 @@ namespace HealthGateway.GatewayApi.Services
                 await userProfileDelegate.UpdateAsync(userProfile, ct: ct);
             }
 
-            return await userProfileModelService.BuildUserProfileModelAsync(userProfile, this.userProfileHistoryRecordLimit, ct);
+            return await userProfileModelService.BuildUserProfileModelAsync(
+                userProfile,
+                this.userProfileHistoryRecordLimit,
+                ct);
         }
 
         /// <inheritdoc/>
