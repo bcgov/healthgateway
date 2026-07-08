@@ -104,20 +104,27 @@ export function setupUserProfileFixture(options = {}) {
         statusCode = defaultUserProfileStatusCode,
     } = options;
 
-    const url = `**/UserProfile/${hdid}**?api-version=2.0`;
+    const urls = [
+        `**/UserProfile/${hdid}?api-version=2.0`,
+        `**/UserProfile/${hdid}/login?api-version=2.0`,
+    ];
 
-    if (statusCode !== 200) {
-        cy.intercept("GET", url, { statusCode });
-        return;
-    }
+    urls.forEach((url) => {
+        if (statusCode !== 200) {
+            cy.intercept("GET", url, { statusCode });
+            return;
+        }
 
-    // Only used when explicitly provided
-    if (userProfileBody !== undefined) {
-        cy.intercept("GET", url, { statusCode: 200, body: userProfileBody });
-        return;
-    }
+        if (userProfileBody !== undefined) {
+            cy.intercept("GET", url, {
+                statusCode: 200,
+                body: userProfileBody,
+            });
+            return;
+        }
 
-    cy.intercept("GET", url, { fixture: userProfileFixture });
+        cy.intercept("GET", url, { fixture: userProfileFixture });
+    });
 }
 
 export function setupNotificationFixture(options = {}) {
@@ -150,7 +157,10 @@ export function setupStandardAliases() {
         "GET",
         "**/PatientData/*?patientDataTypes=OrganDonorRegistrationStatus*"
     ).as("getOrganDonorRegistrationStatus");
-    cy.intercept("GET", "**/UserProfile/**").as("getUserProfile");
+    cy.intercept(
+        "GET",
+        /\/UserProfile\/[^/?]+(\/login)?\?.*api-version=2\.0/
+    ).as("getUserProfile");
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 }
 

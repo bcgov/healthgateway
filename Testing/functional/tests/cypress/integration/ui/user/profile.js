@@ -57,22 +57,14 @@ describe("User Profile", () => {
 
         cy.log("Edit email address");
         cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=email-input] input").type(
-            Cypress.env("emailAddress")
-        );
-        cy.readFile(
-            "cypress/fixtures/UserProfileService/userProfile.json",
-            (err, _data) => {
-                if (err) {
-                    throw err;
-                }
-            }
-        ).then((data) => {
+        cy.get("[data-testid=email-input] input")
+            .clear()
+            .type(Cypress.env("emailAddress"));
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
             data.email = Cypress.env("emailAddress");
-            cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
-                ...data,
-            });
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
         });
+
         cy.get("[data-testid=editEmailSaveBtn]").click();
         cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
         cy.get("[data-testid=resendEmailBtn]").should("be.visible");
@@ -98,7 +90,7 @@ describe("User Profile", () => {
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=email-input] input").clear();
         cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
             fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=editEmailSaveBtn]").click();
@@ -118,13 +110,15 @@ describe("User Profile", () => {
 
         cy.log("Verify SMS number");
         cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
-            fixture: "UserProfileService/userProfileSMSVerified.json",
-        });
         cy.get("[data-testid=verifySMSBtn]")
             .should("be.visible")
             .should("be.enabled")
             .click();
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.isSMSNumberVerified = true;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+        });
 
         cy.get("[data-testid=verifySMSModalCodeInput]")
             .should("be.visible")
@@ -142,10 +136,10 @@ describe("User Profile", () => {
                 "contain",
                 "Health Gateway may now send you notifications. You can change your preferences at any time."
             );
-
         cy.log("Edit SMS number");
-        cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
-            fixture: "UserProfileService/userProfile.json",
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.isSMSNumberVerified = true;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
         });
         cy.get("[data-testid=editSMSBtn]").click();
         cy.get("[data-testid=smsNumberInput]")
@@ -155,6 +149,12 @@ describe("User Profile", () => {
         cy.get("[data-testid=smsNumberInput] input")
             .clear()
             .type(fakeSMSNumber);
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.smsNumber = fakeSMSNumber;
+            data.isSMSNumberVerified = false;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+        });
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=messageModalCloseButton]").click();
         cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
@@ -167,18 +167,10 @@ describe("User Profile", () => {
         cy.get("[data-testid=editSMSBtn]").click();
         cy.get("[data-testid=smsNumberInput] input").clear();
         cy.get("[data-testid=smsOptOutMessage]").should("be.visible");
-        cy.readFile(
-            "cypress/fixtures/UserProfileService/userProfile.json",
-            (err, _data) => {
-                if (err) {
-                    throw err;
-                }
-            }
-        ).then((data) => {
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
             data.smsNumber = undefined;
-            cy.intercept("GET", `**/UserProfile/${HDID}**?api-version=2.0`, {
-                ...data,
-            });
+            data.isSMSNumberVerified = false;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
         });
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=smsStatusOptedOut]").should("be.visible");
