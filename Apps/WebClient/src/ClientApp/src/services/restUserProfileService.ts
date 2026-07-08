@@ -59,7 +59,11 @@ export class RestUserProfileService implements IUserProfileService {
     }
 
     public getProfileForLogin(_hdid: string): Promise<UserProfile> {
-        return Promise.reject(new Error("Not implemented."));
+        return Promise.reject(
+            new Error(
+                "getProfileForLogin is not supported by the V1 user profile service."
+            )
+        );
     }
 
     public createProfile(

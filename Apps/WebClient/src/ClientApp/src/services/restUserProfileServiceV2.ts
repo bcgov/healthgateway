@@ -58,7 +58,7 @@ export class RestUserProfileServiceV2 implements IUserProfileService {
             )
             .catch((err: HttpError) => {
                 this.logger.error(
-                    `Error in RestUserProfileService.getProfileForLogin()`
+                    `Error in RestUserProfileServiceV2.getProfileForLogin()`
                 );
                 throw ErrorTranslator.internalNetworkError(
                     err,
