@@ -72,12 +72,17 @@ async function copyToClipboard() {
         variant="outlined"
         @click:close="clearErrors"
     >
-        <v-expansion-panels variant="accordion" class="mt-4">
+        <v-expansion-panels
+            variant="accordion"
+            class="hg-error-details mt-4"
+            rounded="6"
+        >
             <v-expansion-panel
                 v-model="detailsExpanded"
                 data-testid="errorDetailsBtn"
                 :title="detailsExpanded ? 'Hide Details' : 'View Details'"
                 elevation="0"
+                bg-color="error-background-lighten-1"
             >
                 <template #text>
                     <p>
@@ -93,6 +98,7 @@ async function copyToClipboard() {
                             data-testid="copyToClipBoardBtn"
                             prepend-icon="copy"
                             text="Copy"
+                            class="bg-surface"
                             @click="copyToClipboard"
                         />
                     </p>
@@ -115,3 +121,27 @@ async function copyToClipboard() {
         :ok-only="true"
     />
 </template>
+
+<style lang="scss" scoped>
+// style expansion panels inside alert
+.hg-error-details.v-expansion-panels {
+    border: 2px solid rgb(var(--v-theme-error-background-darken-1));
+}
+
+.hg-error-details::v-deep(.v-expansion-panel-text) {
+    border-top: 1px solid rgb(var(--v-theme-error-background-darken-1));
+}
+
+.hg-error-details::v-deep(.v-expansion-panel-text__wrapper) {
+    padding-top: 1rem;
+}
+
+.hg-error-details::v-deep(button.v-expansion-panel-title) {
+    font-weight: bold;
+    color: rgb(var(--v-theme-error-darken-1));
+}
+
+.hg-error-details::v-deep(.v-expansion-panel-title) {
+    min-height: auto !important;
+}
+</style>

@@ -48,6 +48,11 @@ export default createVuetify({
     },
     theme: {
         defaultTheme: "light",
+        variations: {
+            colors: ["error", "error-background"],
+            lighten: 1,
+            darken: 1,
+        },
         themes: {
             light: {
                 colors: {
@@ -56,15 +61,19 @@ export default createVuetify({
                     primary: "#003366",
                     secondary: "#38598a",
                     success: "#2e8540",
-                    // warning: "",
+                    warning: "#7a4f00",
                     error: "#d8292f",
                     info: "#0092f1",
                     // custom colours below
                     accent: "#fcba19",
                     link: "#1a5a96",
                     focus: "#3b99fc",
-                    infoBackground: "#e5edf5",
-                    infoText: "#1a2e49",
+                    "error-background": "#fbd5d8",
+                    "warning-background": "#fff4dc",
+                    "warning-text": "#5c3a00",
+                    "warning-border": "#f9b23d",
+                    "info-background": "#e5edf5",
+                    "info-text": "#1a2e49",
                     borderLight: "#e0e0e0",
                     navHighlight: "#e0e0e0",
                     borderDivider: "#d1d5db",
