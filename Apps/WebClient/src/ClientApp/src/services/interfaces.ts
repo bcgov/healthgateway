@@ -125,6 +125,7 @@ export interface IConfigService {
 export interface IUserProfileService {
     createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
     getProfile(hdid: string): Promise<UserProfile>;
+    getProfileForLogin(hdid: string): Promise<UserProfile>;
     validateAge(hdid: string): Promise<boolean>;
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<void>;

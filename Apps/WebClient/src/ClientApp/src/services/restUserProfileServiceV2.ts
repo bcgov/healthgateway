@@ -51,6 +51,22 @@ export class RestUserProfileServiceV2 implements IUserProfileService {
             });
     }
 
+    public getProfileForLogin(hdid: string): Promise<UserProfile> {
+        return this.http
+            .getWithCors<UserProfile>(
+                `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/login?api-version=${this.API_VERSION}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestUserProfileServiceV2.getProfileForLogin()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
+    }
+
     public createProfile(
         createRequest: CreateUserRequest
     ): Promise<UserProfile> {

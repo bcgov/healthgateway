@@ -138,23 +138,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// GetUserProfileAsync.
         /// </summary>
         /// <param name="userProfileExists">The value indicating whether user profile exists or not.</param>
-        /// <param name="jwtAuthTimeIsDifferent">The value indicating whether jwt auth time is different from last login or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, true)] // User profile exists and jwt auth time is different
-        [InlineData(true, false)] // User profile exists and jwt auth time is not different
-        [InlineData(false, false)] // Cannot get profile because user profile does not exist
-        public async Task ShouldGetUserProfile(
-            bool userProfileExists,
-            bool jwtAuthTimeIsDifferent)
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldGetUserProfile(bool userProfileExists)
         {
             // Arrange
-            Times expectedUserProfileUpdate = ConvertToTimes(jwtAuthTimeIsDifferent);
-
             DateTime currentDateTime = DateTime.UtcNow.Date;
-            DateTime jwtAuthTime = jwtAuthTimeIsDifferent
-                ? currentDateTime.AddHours(1)
-                : currentDateTime;
 
             UserProfileModel expected = userProfileExists
                 ? GenerateUserProfileModel(currentDateTime)
@@ -165,7 +156,54 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileExists);
 
             // Act
-            UserProfileModel actual = await mock.Service.GetUserProfileAsync(Hdid, jwtAuthTime);
+            UserProfileModel actual = await mock.Service.GetUserProfileAsync(Hdid);
+
+            // Assert and Verify
+            actual.ShouldDeepEqual(expected);
+
+            VerifyUserProfileUpdate(mock.UserProfileDelegateMock, Times.Never());
+        }
+
+        /// <summary>
+        /// GetUserProfileForLoginAsync.
+        /// </summary>
+        /// <param name="userProfileExists">The value indicating whether user profile exists or not.</param>
+        /// <param name="jwtAuthTimeIsDifferent">The value indicating whether jwt auth time is newer than last login or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(true, true)]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        public async Task ShouldGetUserProfileForLogin(
+            bool userProfileExists,
+            bool jwtAuthTimeIsDifferent)
+        {
+            // Arrange
+            Times expectedUserProfileUpdate = ConvertToTimes(
+                userProfileExists && jwtAuthTimeIsDifferent);
+
+            DateTime currentDateTime = DateTime.UtcNow.Date;
+            DateTime jwtAuthTime = jwtAuthTimeIsDifferent
+                ? currentDateTime.AddHours(1)
+                : currentDateTime;
+
+            DateTime expectedLastLoginDateTime = jwtAuthTimeIsDifferent
+                ? jwtAuthTime
+                : currentDateTime;
+
+            UserProfileMock mock = SetupUserProfileMock(
+                currentDateTime,
+                userProfileExists,
+                expectedLastLoginDateTime);
+
+            UserProfileModel expected = userProfileExists
+                ? GenerateUserProfileModel(expectedLastLoginDateTime)
+                : new();
+
+            // Act
+            UserProfileModel actual = await mock.Service.GetUserProfileForLoginAsync(
+                Hdid,
+                jwtAuthTime);
 
             // Assert and Verify
             actual.ShouldDeepEqual(expected);
@@ -616,30 +654,47 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static UserProfileMock SetupUserProfileMock(
             DateTime currentDateTime,
-            bool userProfileExists = true)
+            bool userProfileExists = true,
+            DateTime? modelLastLoginDateTime = null)
         {
             DateTime birthDate = GenerateBirthDate();
             const int profileHistoryRecordLimit = 2;
 
             UserProfile? userProfile = userProfileExists
-                ? GenerateUserProfile(loginDate: currentDateTime, email: EmailAddress, smsNumber: SmsNumber)
+                ? GenerateUserProfile(
+                    loginDate: currentDateTime,
+                    email: EmailAddress,
+                    smsNumber: SmsNumber)
                 : null;
 
-            Mock<IUserProfileDelegate> userProfileDelegateMock = SetupUserProfileDelegateMock(userProfile);
-            Mock<IAuthenticationDelegate> authenticationDelegateMock = SetupAuthenticationDelegateMock();
+            Mock<IUserProfileDelegate> userProfileDelegateMock =
+                SetupUserProfileDelegateMock(userProfile);
 
-            PatientDetails patientDetails = GeneratePatientDetails(birthDate: DateOnly.FromDateTime(birthDate));
-            Mock<IPatientDetailsService> patientDetailsServiceMock = SetupPatientDetailsServiceMock(patientDetails);
+            Mock<IAuthenticationDelegate> authenticationDelegateMock =
+                SetupAuthenticationDelegateMock();
 
-            UserProfileModel userProfileModel = userProfileExists ? GenerateUserProfileModel(currentDateTime) : new();
-            Mock<IUserProfileModelService> userProfileModelServiceMock = SetupUserProfileModelServiceMock(userProfileModel, profileHistoryRecordLimit);
+            PatientDetails patientDetails =
+                GeneratePatientDetails(birthDate: DateOnly.FromDateTime(birthDate));
+
+            Mock<IPatientDetailsService> patientDetailsServiceMock =
+                SetupPatientDetailsServiceMock(patientDetails);
+
+            UserProfileModel userProfileModel = userProfileExists
+                ? GenerateUserProfileModel(modelLastLoginDateTime ?? currentDateTime)
+                : new();
+
+            Mock<IUserProfileModelService> userProfileModelServiceMock =
+                SetupUserProfileModelServiceMock(
+                    userProfileModel,
+                    profileHistoryRecordLimit);
 
             IUserProfileServiceV2 service = GetUserProfileService(
                 patientDetailsServiceMock,
                 userProfileDelegateMock: userProfileDelegateMock,
                 authenticationDelegateMock: authenticationDelegateMock,
                 userProfileModelServiceMock: userProfileModelServiceMock,
-                configurationRoot: GetIConfiguration(profileHistoryRecordLimit: profileHistoryRecordLimit));
+                configurationRoot: GetIConfiguration(
+                    profileHistoryRecordLimit: profileHistoryRecordLimit));
 
             return new(
                 service,
