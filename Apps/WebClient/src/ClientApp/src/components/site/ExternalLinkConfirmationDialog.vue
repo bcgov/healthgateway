@@ -35,12 +35,14 @@ const props = withDefaults(
         body?: DialogBodyLine[];
         confirmLabel?: string;
         cancelLabel?: string;
+        width?: number | string;
     }>(),
     {
         title: "",
         body: () => [],
         confirmLabel: "Proceed",
         cancelLabel: "Cancel",
+        width: 700,
     }
 );
 
@@ -90,13 +92,19 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
         @update:model-value="emit('update:modelValue', $event)"
     >
         <div class="d-flex justify-center">
-            <v-card max-width="700">
+            <!-- Prevent the dialog from exceeding the viewport width -->
+            <v-card :width="props.width" max-width="95vw">
                 <v-card-title class="bg-primary px-0">
                     <v-toolbar
-                        :title="props.title"
                         density="compact"
                         color="primary"
+                        height="auto"
+                        class="ps-4 pe-1"
                     >
+                        <div class="dialog-title text-h6">
+                            {{ props.title }}
+                        </div>
+
                         <HgIconButtonComponent
                             icon="close"
                             aria-label="Close"
@@ -110,7 +118,7 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
                             v-for="(line, i) in props.body"
                             :key="i"
                             class="text-body-1"
-                            :class="{ 'mb-1': i < props.body.length - 1 }"
+                            :class="{ 'mb-4': i < props.body.length - 1 }"
                             :data-testid="`external-link-confirmation-dialog-body-${i}`"
                         >
                             <template v-if="typeof line === 'string'">
@@ -163,3 +171,11 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
         </div>
     </v-dialog>
 </template>
+
+<style scoped>
+.dialog-title {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+}
+</style>

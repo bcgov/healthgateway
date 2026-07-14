@@ -182,21 +182,21 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
     <PageTitleComponent title="Other record sources" />
     <ExternalLinkConfirmationDialog
         v-model="isExternalLinkDialogOpen"
-        title="Open AccessMyHealth"
+        title="Do you want to open AccessMyHealth?"
         :body="[
-            'This will sign you into AccessMyHealth directly. You must have at least one record in AccessMyHealth for this to work.',
             {
-                prefix: 'To find out more, visit ',
-                text: ExternalUrl.AccessMyHealth,
+                text: Text.AccessMyHealth,
                 trackingText: Text.AccessMyHealthDialogUrl,
                 href: ExternalUrl.AccessMyHealth,
-                suffix: '.',
+                suffix: ' may contain more health records and information.',
             },
+            'You are currently signed into Health Gateway. If you wish to continue, you will be signed in to AccessMyHealth in a new window. You must have at least one record in AccessMyHealth for this to work.',
         ]"
-        confirm-label="Sign in"
-        cancel-label="Cancel"
+        confirm-label="SIGN IN"
+        cancel-label="CANCEL"
         :origin="Origin.OtherRecordSources"
         :tracking-text="Text.AccessMyHealthDialogUrl"
+        :width="960"
         @confirm="confirmExternalNavigation"
         @cancel="cancelExternalNavigation"
     />
