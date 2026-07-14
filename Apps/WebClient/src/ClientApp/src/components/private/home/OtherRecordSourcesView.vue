@@ -190,10 +190,10 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
                 href: ExternalUrl.AccessMyHealth,
                 suffix: ' may contain more health records and information.',
             },
-            'You are currently signed into Health Gateway. If you wish to continue, you will be signed in to AccessMyHealth in a new window. You must have at least one record in AccessMyHealth for this to work.',
+            'You are currently signed in to Health Gateway. If you wish to continue, you will be signed in to AccessMyHealth in a new window. You must have at least one record in AccessMyHealth for this to work.',
         ]"
-        confirm-label="SIGN IN"
-        cancel-label="CANCEL"
+        confirm-label="Sign in"
+        cancel-label="Cancel"
         :origin="Origin.OtherRecordSources"
         :width="960"
         @confirm="confirmExternalNavigation"

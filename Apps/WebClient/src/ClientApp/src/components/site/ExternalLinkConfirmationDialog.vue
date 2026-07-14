@@ -36,6 +36,7 @@ const props = withDefaults(
         confirmLabel?: string;
         cancelLabel?: string;
         width?: number | string;
+        uppercase?: boolean;
     }>(),
     {
         title: "",
@@ -43,6 +44,7 @@ const props = withDefaults(
         confirmLabel: "Proceed",
         cancelLabel: "Cancel",
         width: 700,
+        uppercase: undefined,
     }
 );
 
@@ -114,11 +116,10 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
                 </v-card-title>
                 <v-card-text class="pa-4">
                     <div v-if="props.body?.length">
-                        <div
+                        <p
                             v-for="(line, i) in props.body"
                             :key="i"
                             class="text-body-1"
-                            :class="{ 'mb-4': i < props.body.length - 1 }"
                             :data-testid="`external-link-confirmation-dialog-body-${i}`"
                         >
                             <template v-if="typeof line === 'string'">
@@ -148,20 +149,20 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
                                     line.suffix
                                 }}</span>
                             </template>
-                        </div>
+                        </p>
                     </div>
                 </v-card-text>
                 <v-card-actions class="justify-end border-t-sm px-4 py-3">
                     <HgButtonComponent
                         variant="secondary"
-                        :uppercase="false"
+                        :uppercase="props.uppercase"
                         :text="props.cancelLabel"
                         data-testid="external-link-confirmation-dialog-cancel-button"
                         @click="cancel()"
                     />
                     <HgButtonComponent
                         variant="primary"
-                        :uppercase="false"
+                        :uppercase="props.uppercase"
                         :text="props.confirmLabel"
                         data-testid="external-link-confirmation-dialog-proceed-button"
                         @click="confirm()"
