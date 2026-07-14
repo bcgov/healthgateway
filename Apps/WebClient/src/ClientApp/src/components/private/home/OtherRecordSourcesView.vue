@@ -195,7 +195,6 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
         confirm-label="SIGN IN"
         cancel-label="CANCEL"
         :origin="Origin.OtherRecordSources"
-        :tracking-text="Text.AccessMyHealthDialogUrl"
         :width="960"
         @confirm="confirmExternalNavigation"
         @cancel="cancelExternalNavigation"
