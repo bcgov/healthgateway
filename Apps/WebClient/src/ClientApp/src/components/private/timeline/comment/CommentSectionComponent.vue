@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { type ComponentPublicInstance, computed, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import AddCommentComponent from "@/components/private/timeline/comment/AddCommentComponent.vue";
@@ -45,7 +45,7 @@ const layoutStore = useLayoutStore();
 
 const showComments = ref(false);
 const isLoadingComments = ref(false);
-const commentList = ref();
+const commentList = ref<ComponentPublicInstance>();
 
 const commentButtonText = computed(() =>
     commentCount.value === 1 ? "1 Comment" : `${commentCount.value} Comments`
