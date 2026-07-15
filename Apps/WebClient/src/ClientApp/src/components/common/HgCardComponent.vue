@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
 
-import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
-
 interface Props {
     title?: string;
     density?: "compact" | "normal";
@@ -17,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
     density: "normal",
     variant: "elevated",
     compactHeader: false,
-    elevation: 1,
+    elevation: 0,
     border: undefined,
     fillBody: false,
 });
@@ -54,15 +52,15 @@ const isNormalDensity = computed<boolean>(() => {
         :border="border"
     >
         <template #title>
-            <v-row class="text-wrap align-center">
+            <v-row class="text-wrap align-center" density="comfortable">
                 <v-col
                     v-if="hasIconSlot"
                     class="flex-grow-0 d-flex align-center"
                     :class="[
                         isNormalDensity
                             ? props.compactHeader
-                                ? 'py-3 py-sm-5'
-                                : 'py-5'
+                                ? 'py-sm-2'
+                                : 'py-2'
                             : '',
                         props.compactHeader ? 'ps-4 pe-2 ps-sm-3 pe-sm-3' : '',
                     ]"
@@ -75,8 +73,8 @@ const isNormalDensity = computed<boolean>(() => {
                     :class="[
                         isNormalDensity
                             ? props.compactHeader
-                                ? 'py-3 py-sm-5'
-                                : 'py-5'
+                                ? 'py-sm-2'
+                                : 'py-2'
                             : '',
                         props.compactHeader ? 'px-0 px-sm-3' : '',
                     ]"
@@ -93,18 +91,13 @@ const isNormalDensity = computed<boolean>(() => {
                 >
                     <slot name="action-icon" />
                 </v-col>
-                <v-col
-                    v-if="hasMenuItemsSlot"
-                    class="flex-grow-0"
-                    :class="{
-                        'py-3': isNormalDensity,
-                    }"
-                >
+                <v-col v-if="hasMenuItemsSlot" class="flex-grow-0">
                     <v-menu location="bottom end">
                         <template #activator="{ props: activatorProps }">
-                            <HgIconButtonComponent
+                            <v-icon-btn
                                 v-bind="activatorProps"
                                 icon="fas fa-ellipsis-vertical"
+                                variant="plain"
                                 aria-label="Menu"
                                 data-testid="card-menu-button"
                                 @click.stop.prevent

@@ -111,6 +111,7 @@ if (!showOrganDonorRegistration.value) {
     <HgCardComponent
         v-if="showOrganDonorRegistration"
         title="Organ Donor Registration"
+        border="thin grey-lighten-2"
         data-testid="organ-donor-registration-card"
     >
         <template #icon>

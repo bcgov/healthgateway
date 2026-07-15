@@ -515,7 +515,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Health Records"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="health-records-card"
                 class="flex-grow-1"
@@ -543,7 +542,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Immunization Record"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="immunization-record-card-button"
                 class="flex-grow-1"
@@ -579,7 +577,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Immunizations"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="recommendations-card-button"
                 class="flex-grow-1"
@@ -614,7 +611,6 @@ if (preferenceShowSmsRemoved.value) {
         >
             <HgCardComponent
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="health-connect-registry-card"
                 class="flex-grow-1"
@@ -645,7 +641,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Organ Donor Registration"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="organ-donor-registration-card"
                 class="flex-grow-1"
@@ -676,7 +671,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Proof of Vaccination"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="proof-vaccination-card-btn"
                 class="flex-grow-1"
@@ -704,7 +698,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 :title="card.title"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="quick-link-card"
                 class="flex-grow-1"
@@ -740,8 +733,7 @@ if (preferenceShowSmsRemoved.value) {
         <v-col v-if="showOtherRecordSourcesCardButton" cols="12" class="d-flex">
             <HgCardComponent
                 density="compact"
-                variant="outlined"
-                elevation="1"
+                variant="elevated"
                 border="thin grey-lighten-2"
                 class="flex-grow-1 w-100"
                 data-testid="other-record-sources-card"
