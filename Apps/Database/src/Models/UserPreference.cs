@@ -25,7 +25,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        [Key]
         [Column("UserProfileId")]
         [MaxLength(52)]
         public string HdId { get; set; } = null!;
@@ -33,7 +32,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the preference key.
         /// </summary>
-        [Key]
         public string Preference { get; set; } = null!;
 
         /// <summary>
