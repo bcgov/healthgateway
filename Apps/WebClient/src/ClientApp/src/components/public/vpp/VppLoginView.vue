@@ -89,19 +89,19 @@ function trackNavigationClick(
                     Do you want to open Health Gateway?
                 </h2>
                 <p class="text-center">
-                    Health Gateway may contain more health records and
-                    information.
                     <a
                         :href="ExternalUrl.HealthGateway"
                         class="text-link"
                         data-testid="click-hgw-link"
                         @click.prevent="openHealthGatewayInfo"
-                        >Learn more.</a
+                        >Health Gateway</a
                     >
+                    may contain more health records and information.
                 </p>
                 <p class="text-center mb-4">
-                    You are currently signed into AccessMyHealth. If you wish to
-                    continue, you will open Health Gateway in this window.
+                    You are currently signed in to AccessMyHealth. If you wish
+                    to continue, you will be signed in to Health Gateway in this
+                    window.
                 </p>
                 <HgAlertComponent
                     type="warning"
