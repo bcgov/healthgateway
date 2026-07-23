@@ -70,6 +70,7 @@ namespace HealthGateway.Patient.Services
     [KnownType(typeof(OrganDonorRegistration))]
     [KnownType(typeof(DiagnosticImagingExam))]
     [KnownType(typeof(BcCancerScreening))]
+    [KnownType(typeof(HospitalVisit))]
     [ExcludeFromCodeCoverage]
     public abstract record PatientData
     {
@@ -285,6 +286,8 @@ namespace HealthGateway.Patient.Services
             {
                 nameof(OrganDonorRegistration) => typeof(OrganDonorRegistration),
                 nameof(DiagnosticImagingExam) => typeof(DiagnosticImagingExam),
+                nameof(BcCancerScreening) => typeof(BcCancerScreening),
+                nameof(HospitalVisit) => typeof(HospitalVisit),
                 _ => null,
             };
         }
