@@ -41,6 +41,10 @@ namespace HealthGateway.PatientTests.Services
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
     using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
+    using ServiceBcCancerScreening =
+        HealthGateway.Patient.Services.BcCancerScreening;
+    using ServiceBcCancerScreeningType =
+        HealthGateway.Patient.Models.BcCancerScreeningType;
 
     public class PatientDataServiceTests
     {
@@ -119,6 +123,88 @@ namespace HealthGateway.PatientTests.Services
             actualDiagnosticImagingExam.ExamStatus.ShouldBe(diagnosticImagingExam.ExamStatus);
         }
 
+        [Fact]
+        public void CanSerializeBcCancerScreening()
+        {
+            ServiceBcCancerScreening bcCancerScreening = new()
+            {
+                EventType = ServiceBcCancerScreeningType.Recall,
+                ProgramName = "Test Program",
+                EventDateTime = DateTime.UtcNow,
+                ResultDateTime = DateTime.UtcNow,
+            };
+
+            PatientData[] data =
+            [
+                bcCancerScreening,
+            ];
+
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
+
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized =
+                JsonSerializer.Deserialize<PatientDataResponse>(serialized)
+                    .ShouldNotBeNull();
+
+            ServiceBcCancerScreening actualBcCancerScreening =
+                deserialized.Items
+                    .ShouldHaveSingleItem()
+                    .ShouldBeOfType<ServiceBcCancerScreening>();
+
+            actualBcCancerScreening.EventType.ShouldBe(
+                bcCancerScreening.EventType);
+            actualBcCancerScreening.ProgramName.ShouldBe(
+                bcCancerScreening.ProgramName);
+            actualBcCancerScreening.EventDateTime.ShouldBe(
+                bcCancerScreening.EventDateTime);
+            actualBcCancerScreening.ResultDateTime.ShouldBe(
+                bcCancerScreening.ResultDateTime);
+        }
+
+        [Fact]
+        public void CanSerializeHospitalVisit()
+        {
+            HospitalVisit hospitalVisit = new()
+            {
+                EncounterId = "Encounter Id",
+                AdmitDateTime = DateTime.UtcNow,
+                EndDateTime = DateTime.UtcNow,
+                Provider = "Provider Id",
+            };
+
+            PatientData[] data =
+            [
+                hospitalVisit,
+            ];
+
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
+
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized =
+                JsonSerializer.Deserialize<PatientDataResponse>(serialized)
+                    .ShouldNotBeNull();
+
+            HospitalVisit actualHospitalVisit =
+                deserialized.Items
+                    .ShouldHaveSingleItem()
+                    .ShouldBeOfType<HospitalVisit>();
+
+            actualHospitalVisit.EncounterId.ShouldBe(
+                hospitalVisit.EncounterId);
+            actualHospitalVisit.AdmitDateTime.ShouldBe(
+                hospitalVisit.AdmitDateTime);
+            actualHospitalVisit.EndDateTime.ShouldBe(
+                hospitalVisit.EndDateTime);
+            actualHospitalVisit.Provider.ShouldBe(
+                hospitalVisit.Provider);
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -190,7 +276,7 @@ namespace HealthGateway.PatientTests.Services
 
             if (canAccessDataSource)
             {
-                Patient.Services.BcCancerScreening actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.BcCancerScreening>();
+                ServiceBcCancerScreening actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ServiceBcCancerScreening>();
                 actual.Id.ShouldBe(expected.Id);
                 actual.FileId.ShouldBe(expected.FileId);
                 actual.ProgramName.ShouldBe(expected.ProgramName);
