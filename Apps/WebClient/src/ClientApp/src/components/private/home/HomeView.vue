@@ -21,6 +21,7 @@ import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
@@ -127,6 +128,14 @@ const preferenceShowSmsRemoved = computed(
     () =>
         user.value.preferences[UserPreferenceType.ShowSmsRemoved]?.value ===
         "true"
+);
+const showBcCancerNotificationsAlert = computed(
+    () =>
+        user.value.lastLoginDateTimes.length > 1 &&
+        user.value.lastLoginDateTimes[1] &&
+        DateWrapper.fromIso(user.value.lastLoginDateTimes[1]).isBefore(
+            DateWrapper.fromIso("2026-05-19T09:00")
+        )
 );
 const showRecommendationsCardButton = computed(
     () =>
@@ -442,6 +451,26 @@ if (preferenceShowSmsRemoved.value) {
         :is-loading="isVaccineRecordDownloading"
         :text="vaccineRecordStatusMessage"
     />
+    <HgAlertComponent
+        v-if="showBcCancerNotificationsAlert"
+        data-testid="bc-cancer-notifications-banner"
+        type="info"
+        variant="outlined"
+    >
+        <template #default>
+            <p class="text-body-1">
+                Email and text notifications are now being sent for BC Cancer
+                Screening program letters. Review your preferences in your
+                <router-link
+                    id="profileNotificationsLink"
+                    data-testid="profile-notifications-link"
+                    class="text-link"
+                    to="/profile"
+                    >profile</router-link
+                >.
+            </p>
+        </template>
+    </HgAlertComponent>
     <HgAlertComponent
         v-if="unverifiedEmail || unverifiedSms || showSmsRemoved"
         data-testid="incomplete-profile-banner"
