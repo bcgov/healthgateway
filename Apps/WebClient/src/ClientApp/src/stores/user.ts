@@ -408,7 +408,7 @@ export const useUserStore = defineStore("user", () => {
                 setPatient(result);
 
                 return userProfileService
-                    .getProfile(user.value.hdid)
+                    .getProfileForLogin(user.value.hdid)
                     .then((userProfile) => {
                         logger.debug(
                             `User Profile: ${JSON.stringify(userProfile)}`
@@ -447,7 +447,7 @@ export const useUserStore = defineStore("user", () => {
                 retrieveEssentialDataPromise = undefined;
             });
 
-        return retrieveEssentialDataPromise!;
+        return retrieveEssentialDataPromise;
     }
 
     function updateNotificationSettings(

@@ -13,30 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Encounter.Services
 {
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Encounter.Models;
 
-#pragma warning disable CS1591 // self explanatory simple model
-#pragma warning disable SA1600 // self explanatory simple model
-    public class UserPreference : AuditableEntity
+    /// <summary>
+    /// The encounter data service.
+    /// </summary>
+    public interface IEncounterServiceV2
     {
         /// <summary>
-        /// Gets or sets the user hdid.
+        /// Gets a list of Hospital Visits.
         /// </summary>
-        [Column("UserProfileId")]
-        [MaxLength(52)]
-        public string HdId { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the preference key.
-        /// </summary>
-        public string Preference { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the preference value.
-        /// </summary>
-        public string Value { get; set; } = null!;
+        /// <param name="hdid">The health directed id for the subject.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>Returns the hospital visit result.</returns>
+        Task<IReadOnlyList<HospitalVisitModel>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default);
     }
 }

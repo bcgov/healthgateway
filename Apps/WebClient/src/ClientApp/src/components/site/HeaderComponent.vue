@@ -40,7 +40,7 @@ const trackingService = container.get<ITrackingService>(
 const notificationButtonClicked = ref(false);
 const hasViewedTour = ref(false);
 const isScrollNearBottom = ref(false);
-const isHeaderVisible = ref();
+const isHeaderVisible = ref<boolean>();
 
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
 const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();

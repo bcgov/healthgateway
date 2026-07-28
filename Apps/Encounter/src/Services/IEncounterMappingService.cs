@@ -16,7 +16,7 @@
 namespace HealthGateway.Encounter.Services
 {
     using HealthGateway.Encounter.Models;
-    using HealthGateway.Encounter.Models.PHSA;
+    using HospitalVisit = HealthGateway.Encounter.Models.PHSA.HospitalVisit;
 
     /// <summary>
     /// Service to map between models at different layers.
@@ -32,5 +32,10 @@ namespace HealthGateway.Encounter.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         HospitalVisitModel MapToHospitalVisitModel(HospitalVisit source);
+
+        /// <summary>Maps model.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        HospitalVisitModel MapToHospitalVisitModel(PatientDataAccess.HospitalVisit source);
     }
 }

@@ -135,6 +135,7 @@ export const enum Text {
     Page = "Page",
     Request = "Request",
     AboutUs = "About Us",
+    AccessMyHealth = "AccessMyHealth",
     AccessMyHealthDialogCancel = "AccessMyHealth Dialog Cancel",
     AccessMyHealthDialogUrl = "AccessMyHealth Dialog URL",
     AccessMyHealthDialogSignin = "AccessMyHealth Dialog Sign in",

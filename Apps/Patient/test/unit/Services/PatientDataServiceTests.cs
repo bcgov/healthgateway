@@ -36,10 +36,15 @@ namespace HealthGateway.PatientTests.Services
     using BcCancerScreening = HealthGateway.PatientDataAccess.BcCancerScreening;
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
+    using HospitalVisit = HealthGateway.Patient.Services.HospitalVisit;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
     using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
+    using ServiceBcCancerScreening =
+        HealthGateway.Patient.Services.BcCancerScreening;
+    using ServiceBcCancerScreeningType =
+        HealthGateway.Patient.Models.BcCancerScreeningType;
 
     public class PatientDataServiceTests
     {
@@ -118,6 +123,88 @@ namespace HealthGateway.PatientTests.Services
             actualDiagnosticImagingExam.ExamStatus.ShouldBe(diagnosticImagingExam.ExamStatus);
         }
 
+        [Fact]
+        public void CanSerializeBcCancerScreening()
+        {
+            ServiceBcCancerScreening bcCancerScreening = new()
+            {
+                EventType = ServiceBcCancerScreeningType.Recall,
+                ProgramName = "Test Program",
+                EventDateTime = DateTime.UtcNow,
+                ResultDateTime = DateTime.UtcNow,
+            };
+
+            PatientData[] data =
+            [
+                bcCancerScreening,
+            ];
+
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
+
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized =
+                JsonSerializer.Deserialize<PatientDataResponse>(serialized)
+                    .ShouldNotBeNull();
+
+            ServiceBcCancerScreening actualBcCancerScreening =
+                deserialized.Items
+                    .ShouldHaveSingleItem()
+                    .ShouldBeOfType<ServiceBcCancerScreening>();
+
+            actualBcCancerScreening.EventType.ShouldBe(
+                bcCancerScreening.EventType);
+            actualBcCancerScreening.ProgramName.ShouldBe(
+                bcCancerScreening.ProgramName);
+            actualBcCancerScreening.EventDateTime.ShouldBe(
+                bcCancerScreening.EventDateTime);
+            actualBcCancerScreening.ResultDateTime.ShouldBe(
+                bcCancerScreening.ResultDateTime);
+        }
+
+        [Fact]
+        public void CanSerializeHospitalVisit()
+        {
+            HospitalVisit hospitalVisit = new()
+            {
+                EncounterId = "Encounter Id",
+                AdmitDateTime = DateTime.UtcNow,
+                EndDateTime = DateTime.UtcNow,
+                Provider = "Provider Id",
+            };
+
+            PatientData[] data =
+            [
+                hospitalVisit,
+            ];
+
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
+
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized =
+                JsonSerializer.Deserialize<PatientDataResponse>(serialized)
+                    .ShouldNotBeNull();
+
+            HospitalVisit actualHospitalVisit =
+                deserialized.Items
+                    .ShouldHaveSingleItem()
+                    .ShouldBeOfType<HospitalVisit>();
+
+            actualHospitalVisit.EncounterId.ShouldBe(
+                hospitalVisit.EncounterId);
+            actualHospitalVisit.AdmitDateTime.ShouldBe(
+                hospitalVisit.AdmitDateTime);
+            actualHospitalVisit.EndDateTime.ShouldBe(
+                hospitalVisit.EndDateTime);
+            actualHospitalVisit.Provider.ShouldBe(
+                hospitalVisit.Provider);
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -189,7 +276,7 @@ namespace HealthGateway.PatientTests.Services
 
             if (canAccessDataSource)
             {
-                Patient.Services.BcCancerScreening actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.BcCancerScreening>();
+                ServiceBcCancerScreening actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ServiceBcCancerScreening>();
                 actual.Id.ShouldBe(expected.Id);
                 actual.FileId.ShouldBe(expected.FileId);
                 actual.ProgramName.ShouldBe(expected.ProgramName);
@@ -243,6 +330,54 @@ namespace HealthGateway.PatientTests.Services
                 actual.Organization.ShouldBe(expected.Organization);
                 actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
                 actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Pending);
+            }
+            else
+            {
+                result.Items.ShouldBeEmpty();
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetHospitalVisitData(bool canAccessDataSource)
+        {
+            PatientDataAccess.HospitalVisit expected = new()
+            {
+                EncounterId = "cdr.f46ecad5-9898-463c-bb13-acfb44a4fdc3.2e5c6929-99da-4dcc-b936-5132387c4d6a",
+                Facility = "Sechelt Shishalh Hospital",
+                HealthService = "Cardiology",
+                VisitType = "Inpatient",
+                HealthAuthority = "Provincial Health Services Authority",
+                AdmitDateTime = new DateTime(2022, 5, 2, 13, 42, 59, DateTimeKind.Unspecified),
+                EndDateTime = new DateTime(2022, 5, 2, 14, 27, 0, DateTimeKind.Unspecified),
+                Provider = "Plisvci, B",
+            };
+
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.HospitalVisits),
+                expected);
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
+
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, [PatientDataType.HospitalVisits]), CancellationToken.None);
+
+            if (canAccessDataSource)
+            {
+                HospitalVisit actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HospitalVisit>();
+                actual.EncounterId.ShouldBe(expected.EncounterId);
+                actual.Facility.ShouldBe(expected.Facility);
+                actual.HealthService.ShouldBe(expected.HealthService);
+                actual.VisitType.ShouldBe(expected.VisitType);
+                actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
+                actual.AdmitDateTime.ShouldBe(expected.AdmitDateTime);
+                actual.EndDateTime.ShouldBe(expected.EndDateTime);
+                actual.Provider.ShouldBe(expected.Provider);
             }
             else
             {

@@ -18,14 +18,17 @@ namespace PatientDataAccessTests
     using System.Globalization;
     using System.Net;
     using AutoMapper;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess;
     using HealthGateway.PatientDataAccess.Api;
+    using Microsoft.Extensions.Configuration;
     using Moq;
     using Refit;
     using BcCancerScreening = HealthGateway.PatientDataAccess.Api.BcCancerScreening;
     using BcCancerScreeningType = HealthGateway.PatientDataAccess.Api.CancerScreeningType;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
+    using HospitalVisit = HealthGateway.PatientDataAccess.Api.HospitalVisit;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
 
@@ -169,6 +172,49 @@ namespace PatientDataAccessTests
         }
 
         [Fact]
+        public async Task CanGetHospitalVisitData()
+        {
+            Mock<IPatientApi> patientApi = new();
+
+            HospitalVisit hospitalVisit = new()
+            {
+                HealthDataId = "12345678931",
+                HealthDataFileId = "12345678931",
+                EncounterId = "123",
+                AdmitDateTime = DateTime.Parse("2020-01-15", CultureInfo.InvariantCulture),
+                EndDateTime = null,
+                Clinicians = [new() { DisplayName = "Display", RoleDescription = "Role" }],
+            };
+
+            // Converting to local time
+            TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(GetIConfigurationRoot());
+            DateTime expectedAdmitDateTime =
+                DateFormatter.SpecifyTimeZone(
+                    hospitalVisit.AdmitDateTime.Value,
+                    localTimeZone);
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new HealthDataResult(
+                        new HealthDataMetadata(),
+                        [hospitalVisit]));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.HospitalVisits]), CancellationToken.None);
+
+            result.ShouldNotBeNull();
+            HealthGateway.PatientDataAccess.HospitalVisit visit = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.HospitalVisit>();
+            visit.Id.ShouldBe(hospitalVisit.HealthDataId);
+            visit.FileId.ShouldBe(hospitalVisit.HealthDataFileId);
+            visit.EncounterId.ShouldBe(hospitalVisit.EncounterId);
+            visit.AdmitDateTime.ShouldBe(expectedAdmitDateTime);
+            visit.EndDateTime.ShouldBeNull();
+            visit.Provider.ShouldBe("Display");
+        }
+
+        [Fact]
         public async Task CanGetPatientFile()
         {
             Mock<IPatientApi> patientApi = new();
@@ -245,11 +291,39 @@ namespace PatientDataAccessTests
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
 
+        [Fact]
+        public async Task QueryAsyncThrowsNotImplementedForUnsupportedQuery()
+        {
+            Mock<IPatientApi> patientApi = new();
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            UnsupportedPatientDataQuery query = new();
+
+            NotImplementedException exception = await Should.ThrowAsync<NotImplementedException>(async () => await sut.QueryAsync(query, CancellationToken.None));
+
+            exception.Message.ShouldBe("UnsupportedPatientDataQuery doesn't have a handler");
+        }
+
         private static IPatientDataRepository CreateSut(IPatientApi api)
         {
             IMapper? mapper = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Mappings))).CreateMapper();
 
-            return new PatientDataRepository(api, mapper);
+            return new PatientDataRepository(api, mapper, GetIConfigurationRoot());
         }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> configuration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(configuration)
+                .Build();
+        }
+
+        private sealed record UnsupportedPatientDataQuery : PatientDataQuery;
     }
 }

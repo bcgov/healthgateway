@@ -67,6 +67,11 @@ namespace HealthGateway.PatientDataAccess
         /// BC Cancer Screening.
         /// </summary>
         BcCancerScreening,
+
+        /// <summary>
+        /// Hospital Visits.
+        /// </summary>
+        HospitalVisits,
     }
 
     /// <summary>

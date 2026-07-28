@@ -284,9 +284,13 @@ describe("Reports - Hospital Visits", () => {
     });
 
     it("Validate Hospital Visit Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Encounter/HospitalVisit/${HDID}`, {
-            fixture: "Report/hospitalVisitUnSorted.json",
-        });
+        cy.intercept(
+            "GET",
+            `**/Encounter/HospitalVisit/${HDID}?api-version=2.0`,
+            {
+                fixture: "Report/hospitalVisitUnSorted.json",
+            }
+        );
         cy.vSelect("[data-testid=report-type]", "Hospital Visits");
 
         cy.get("[data-testid=report-sample]").should("be.visible");

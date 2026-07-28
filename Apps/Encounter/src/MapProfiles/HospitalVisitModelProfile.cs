@@ -18,7 +18,8 @@ namespace HealthGateway.Encounter.MapProfiles
     using System.Linq;
     using AutoMapper;
     using HealthGateway.Encounter.Models;
-    using HealthGateway.Encounter.Models.PHSA;
+    using PatientDataHospitalVisit = HealthGateway.PatientDataAccess.HospitalVisit;
+    using PhsaHospitalVisit = HealthGateway.Encounter.Models.PHSA.HospitalVisit;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between PHSA and UI Models.
@@ -30,9 +31,12 @@ namespace HealthGateway.Encounter.MapProfiles
         /// </summary>
         public HospitalVisitModelProfile()
         {
-            this.CreateMap<HospitalVisit, HospitalVisitModel>()
+            this.CreateMap<PhsaHospitalVisit, HospitalVisitModel>()
                 .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians.Select(c => c.DisplayName).FirstOrDefault()))
                 .ReverseMap();
+
+            // Provider has already been converted in HealthData
+            this.CreateMap<PatientDataHospitalVisit, HospitalVisitModel>();
         }
     }
 }

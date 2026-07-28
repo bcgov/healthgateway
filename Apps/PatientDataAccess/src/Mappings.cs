@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientDataAccess
 {
 #pragma warning disable SA1600 // Disables documentation for internal class.
+    using System.Linq;
     using AutoMapper;
     using HealthGateway.PatientDataAccess.Api;
 
@@ -40,6 +41,13 @@ namespace HealthGateway.PatientDataAccess
             this.CreateMap<Api.BcCancerScreening, BcCancerScreening>()
                 .ForMember(d => d.EventDateTime, opts => opts.MapFrom(cse => cse.EventTimestampUtc))
                 .ForMember(d => d.ResultDateTime, opts => opts.MapFrom(cse => cse.ResultTimestamp.UtcDateTime));
+
+            this.CreateMap<Api.HospitalVisit, HospitalVisit>()
+                .ForMember(
+                    dest => dest.Provider,
+                    opt => opt.MapFrom(src => src.Clinicians == null
+                        ? null
+                        : src.Clinicians.Select(c => c.DisplayName).FirstOrDefault()));
         }
     }
 }

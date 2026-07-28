@@ -7,8 +7,7 @@ import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
-import { Encounter } from "@/models/encounter";
-import HospitalVisitResult from "@/models/hospitalVisitResult";
+import { Encounter, HospitalVisit } from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
 import {
     Covid19LaboratoryOrderResult,
@@ -97,9 +96,7 @@ export interface IEncounterService {
 }
 
 export interface IHospitalVisitService {
-    getHospitalVisits(
-        hdid: string
-    ): Promise<RequestResult<HospitalVisitResult>>;
+    getHospitalVisits(hdid: string): Promise<HospitalVisit[]>;
 }
 
 export interface ILaboratoryService {
@@ -128,6 +125,7 @@ export interface IConfigService {
 export interface IUserProfileService {
     createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
     getProfile(hdid: string): Promise<UserProfile>;
+    getProfileForLogin(hdid: string): Promise<UserProfile>;
     validateAge(hdid: string): Promise<boolean>;
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<void>;

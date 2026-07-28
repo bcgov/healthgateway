@@ -1,10 +1,8 @@
 import { EntryType } from "@/constants/entryType";
-import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
+import { HospitalVisit } from "@/models/encounter";
 import { HttpError } from "@/models/errors";
-import HospitalVisitResult from "@/models/hospitalVisitResult";
-import RequestResult from "@/models/requestResult";
 import {
     IHospitalVisitService,
     IHttpDelegate,
@@ -14,6 +12,7 @@ import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestHospitalVisitService implements IHospitalVisitService {
+    private readonly API_VERSION: string = "2.0";
     private readonly HOSPITAL_VISIT_BASE_URI: string = "Encounter";
     private readonly logger;
     private readonly http;
@@ -31,28 +30,15 @@ export class RestHospitalVisitService implements IHospitalVisitService {
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.HospitalVisit);
     }
 
-    public getHospitalVisits(
-        hdid: string
-    ): Promise<RequestResult<HospitalVisitResult>> {
+    public getHospitalVisits(hdid: string): Promise<HospitalVisit[]> {
         if (!this.isEnabled) {
-            return Promise.resolve({
-                pageIndex: 0,
-                pageSize: 0,
-                resourcePayload: {
-                    loaded: true,
-                    queued: false,
-                    retryin: 0,
-                    hospitalVisits: [],
-                },
-                resultStatus: ResultType.Success,
-                totalResultCount: 0,
-            });
+            return Promise.resolve([]);
         }
 
         return this.http
             .getWithCors<
-                RequestResult<HospitalVisitResult>
-            >(`${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}`)
+                HospitalVisit[]
+            >(`${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}?api-version=${this.API_VERSION}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestHospitalVisitService.getHospitalVisits()`

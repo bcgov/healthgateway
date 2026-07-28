@@ -35,12 +35,16 @@ const props = withDefaults(
         body?: DialogBodyLine[];
         confirmLabel?: string;
         cancelLabel?: string;
+        width?: number | string;
+        uppercase?: boolean;
     }>(),
     {
         title: "",
         body: () => [],
         confirmLabel: "Proceed",
         cancelLabel: "Cancel",
+        width: 700,
+        uppercase: undefined,
     }
 );
 
@@ -90,13 +94,19 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
         @update:model-value="emit('update:modelValue', $event)"
     >
         <div class="d-flex justify-center">
-            <v-card max-width="700">
+            <!-- Prevent the dialog from exceeding the viewport width -->
+            <v-card :width="props.width" max-width="95vw">
                 <v-card-title class="bg-primary px-0">
                     <v-toolbar
-                        :title="props.title"
                         density="compact"
                         color="primary"
+                        height="auto"
+                        class="ps-4 pe-1"
                     >
+                        <div class="dialog-title text-h6">
+                            {{ props.title }}
+                        </div>
+
                         <HgIconButtonComponent
                             icon="close"
                             aria-label="Close"
@@ -106,11 +116,10 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
                 </v-card-title>
                 <v-card-text class="pa-4">
                     <div v-if="props.body?.length">
-                        <div
+                        <p
                             v-for="(line, i) in props.body"
                             :key="i"
                             class="text-body-1"
-                            :class="{ 'mb-1': i < props.body.length - 1 }"
                             :data-testid="`external-link-confirmation-dialog-body-${i}`"
                         >
                             <template v-if="typeof line === 'string'">
@@ -140,20 +149,20 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
                                     line.suffix
                                 }}</span>
                             </template>
-                        </div>
+                        </p>
                     </div>
                 </v-card-text>
                 <v-card-actions class="justify-end border-t-sm px-4 py-3">
                     <HgButtonComponent
                         variant="secondary"
-                        :uppercase="false"
+                        :uppercase="props.uppercase"
                         :text="props.cancelLabel"
                         data-testid="external-link-confirmation-dialog-cancel-button"
                         @click="cancel()"
                     />
                     <HgButtonComponent
                         variant="primary"
-                        :uppercase="false"
+                        :uppercase="props.uppercase"
                         :text="props.confirmLabel"
                         data-testid="external-link-confirmation-dialog-proceed-button"
                         @click="confirm()"
@@ -163,3 +172,11 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
         </div>
     </v-dialog>
 </template>
+
+<style scoped>
+.dialog-title {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+}
+</style>

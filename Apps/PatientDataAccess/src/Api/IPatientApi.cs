@@ -39,6 +39,7 @@ namespace HealthGateway.PatientDataAccess.Api
         ClinicalDocument,
         DiagnosticImaging,
         BcCancerScreening,
+        HospitalVisits,
     }
 
     internal enum DiagnosticImagingStatus

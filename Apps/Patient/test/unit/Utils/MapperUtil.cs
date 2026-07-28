@@ -30,15 +30,15 @@ namespace HealthGateway.PatientTests.Utils
         /// <returns>A configured AutoMapper.</returns>
         public static IMapper InitializeAutoMapper()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new OrganDonorRegistrationProfile());
-                    cfg.AddProfile(new BcCancerScreeningProfile());
-                    cfg.AddProfile(new DiagnosticImagingExamProfile());
-                    cfg.AddProfile(new PatientDataAccessMappings());
-                    cfg.AddProfile(new AccountDataAccessMappings());
-                });
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.AddProfile(new OrganDonorRegistrationProfile());
+                cfg.AddProfile(new BcCancerScreeningProfile());
+                cfg.AddProfile(new DiagnosticImagingExamProfile());
+                cfg.AddProfile(new PatientDataAccessMappings());
+                cfg.AddProfile(new AccountDataAccessMappings());
+                cfg.AddProfile(new HospitalVisitProfile());
+            });
 
             return config.CreateMapper();
         }

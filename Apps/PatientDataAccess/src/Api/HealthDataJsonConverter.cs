@@ -33,6 +33,7 @@ namespace HealthGateway.PatientDataAccess.Api
                 "ClinicalDocument" => typeof(ClinicalDocument),
                 "DiagnosticImaging" => typeof(DiagnosticImagingExam),
                 "BcCancerScreening" => typeof(BcCancerScreening),
+                "HospitalVisits" => typeof(HospitalVisit),
                 _ => null,
             };
         }

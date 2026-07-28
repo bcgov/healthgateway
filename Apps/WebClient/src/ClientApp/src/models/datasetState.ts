@@ -26,9 +26,7 @@ export type Covid19TestResultState = DatasetState<Covid19LaboratoryOrder[]>;
 export type HealthVisitState = DatasetState<Encounter[]>;
 export type PatientDataState = DatasetState<PatientDataMap>;
 export type PatientDataFileState = DatasetState<PatientDataFile | undefined>;
-export interface HospitalVisitState extends DatasetState<HospitalVisit[]> {
-    queued: boolean;
-}
+export type HospitalVisitState = DatasetState<HospitalVisit[]>;
 export interface ImmunizationDatasetState extends DatasetState<
     ImmunizationEvent[]
 > {

@@ -37,5 +37,10 @@ namespace HealthGateway.Patient.Constants
         /// BC Cancer screening.
         /// </summary>
         BcCancerScreening,
+
+        /// <summary>
+        /// Hospital Visits.
+        /// </summary>
+        HospitalVisits,
     }
 }

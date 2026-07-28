@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
+    <ProjectReference Include="..\..\PatientDataAccess\src\PatientDataAccess.csproj" />
   </ItemGroup>
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
