@@ -31,10 +31,11 @@ namespace AccountDataAccessTest.Utils
         public static async Task<ApiException> CreateApiException(HttpStatusCode statusCode)
         {
             RefitSettings rfSettings = new();
+            using HttpRequestMessage request = new(HttpMethod.Get, "http://localhost");
             using HttpResponseMessage response = new(statusCode);
             return await ApiException.Create(
-                null!,
-                null!,
+                request,
+                HttpMethod.Get,
                 response,
                 rfSettings);
         }

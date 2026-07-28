@@ -34,11 +34,12 @@ namespace HealthGateway.Admin.Tests.Utils
         public static async Task<ApiException> CreateApiException(HttpStatusCode statusCode, string? message = null)
         {
             RefitSettings rfSettings = new();
+            using HttpRequestMessage request = new(HttpMethod.Get, "http://localhost");
             using HttpResponseMessage response = new(statusCode);
             return await ApiException.Create(
                 message,
-                null!,
-                null!,
+                request,
+                HttpMethod.Get,
                 response,
                 rfSettings);
         }
