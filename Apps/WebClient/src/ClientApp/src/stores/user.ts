@@ -402,7 +402,7 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function retrieveEssentialDataInternal(
-        retrieveProfile: () => Promise<UserProfile>
+        getUserProfile: () => Promise<UserProfile>
     ): Promise<void> {
         if (retrieveEssentialDataPromise !== undefined) {
             return retrieveEssentialDataPromise;
@@ -421,7 +421,7 @@ export const useUserStore = defineStore("user", () => {
 
                 setPatient(result);
 
-                return retrieveProfile()
+                return getUserProfile()
                     .then((userProfile) => {
                         logger.debug(
                             `User Profile: ${JSON.stringify(userProfile)}`
