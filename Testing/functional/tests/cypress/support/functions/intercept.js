@@ -153,6 +153,9 @@ export function setupStandardAliases() {
         "GET",
         "**/PatientData/*patientDataTypes=DiagnosticImaging*"
     ).as("getPatientDataForDiagnosticImaging");
+    cy.intercept("GET", "**/Encounter/HospitalVisit/*").as(
+        "getPatientDataForHospitalVisit"
+    );
     cy.intercept(
         "GET",
         "**/PatientData/*?patientDataTypes=OrganDonorRegistrationStatus*"
@@ -187,6 +190,11 @@ export function waitForInitialDataLoad(username, config, path) {
             blockedDataSources
         );
         waitForPatientDataForDiagnosticImaging(
+            featureToggle,
+            path,
+            blockedDataSources
+        );
+        waitForPatientDataForHospitalVisit(
             featureToggle,
             path,
             blockedDataSources
@@ -349,6 +357,39 @@ function waitForPatientDataForDiagnosticImaging(
     }
 }
 
+function waitForPatientDataForHospitalVisit(
+    featureToggle,
+    path,
+    blockedDataSources
+) {
+    const hospitalVisitBlocked = checkHospitalVisitBlocked(blockedDataSources);
+
+    const hospitalVisitEnabled = featureToggle?.datasets.some(
+        (x) => x.enabled && x.name === "hospitalVisit"
+    );
+
+    const dependentHospitalVisitDisabled =
+        featureToggle.dependents.datasets.some(
+            (x) => !x.enabled && x.name === "hospitalVisit"
+        );
+
+    cy.log(
+        `waitForPatientDataForHospitalVisit called - enabled: ${hospitalVisitEnabled} - dependent disabled: ${dependentHospitalVisitDisabled} - blocked: ${hospitalVisitBlocked}`
+    );
+
+    if (
+        !hospitalVisitBlocked &&
+        hospitalVisitEnabled &&
+        (isTimeline(path) ||
+            (isDependentsTimeline(path) && !dependentHospitalVisitDisabled))
+    ) {
+        cy.log("Wait on patient data for hospital visit.");
+        cy.wait("@getPatientDataForHospitalVisit", {
+            timeout: defaultTimeout,
+        });
+    }
+}
+
 function waitForOrganDonorRegistratonStatusService(
     featureToggle,
     path,
@@ -384,6 +425,13 @@ function checkBcCancerScreeningBlocked(blockedDataSources) {
     return (
         Array.isArray(blockedDataSources) &&
         blockedDataSources.includes("BcCancerScreening")
+    );
+}
+
+function checkHospitalVisitBlocked(blockedDataSources) {
+    return (
+        Array.isArray(blockedDataSources) &&
+        blockedDataSources.includes("HospitalVisit")
     );
 }
 
