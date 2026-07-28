@@ -49,7 +49,7 @@ signIn(defaultPath.value)
             return;
         }
 
-        return userStore.retrieveEssentialData().then(() => {
+        return userStore.retrieveEssentialDataForLogin().then(() => {
             retrieveNotifications();
             redirect();
         });

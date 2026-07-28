@@ -390,6 +390,20 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function retrieveEssentialData(): Promise<void> {
+        return retrieveEssentialDataInternal(() =>
+            userProfileService.getProfile(user.value.hdid)
+        );
+    }
+
+    function retrieveEssentialDataForLogin(): Promise<void> {
+        return retrieveEssentialDataInternal(() =>
+            userProfileService.getProfileForLogin(user.value.hdid)
+        );
+    }
+
+    function retrieveEssentialDataInternal(
+        getUserProfile: () => Promise<UserProfile>
+    ): Promise<void> {
         if (retrieveEssentialDataPromise !== undefined) {
             return retrieveEssentialDataPromise;
         }
@@ -407,8 +421,7 @@ export const useUserStore = defineStore("user", () => {
 
                 setPatient(result);
 
-                return userProfileService
-                    .getProfileForLogin(user.value.hdid)
+                return getUserProfile()
                     .then((userProfile) => {
                         logger.debug(
                             `User Profile: ${JSON.stringify(userProfile)}`
@@ -493,6 +506,7 @@ export const useUserStore = defineStore("user", () => {
         closeUserAccount,
         recoverUserAccount,
         retrieveEssentialData,
+        retrieveEssentialDataForLogin,
         updateAcceptedTerms,
         clearUserData,
         setOidcUserInfo,
