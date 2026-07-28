@@ -46,8 +46,7 @@ interface Props {
 }
 const route = useRoute();
 const defaultEntryTypeFromRoute = route.query.defaultEntryType as
-    | EntryType
-    | undefined;
+    EntryType | undefined;
 const props = withDefaults(defineProps<Props>(), {
     isDependent: false,
 });

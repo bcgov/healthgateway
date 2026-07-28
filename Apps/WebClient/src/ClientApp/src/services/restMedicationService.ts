@@ -52,9 +52,10 @@ export class RestMedicationService implements IMedicationService {
         }
 
         return this.http
-            .get<
-                RequestResult<MedicationStatement[]>
-            >(`${this.baseUri}${this.BASE_URI}/${hdid}`, headers)
+            .get<RequestResult<MedicationStatement[]>>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}`,
+                headers
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestMedicationService.getPatientMedicationStatements()`

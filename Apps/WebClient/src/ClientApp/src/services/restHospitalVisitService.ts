@@ -36,9 +36,9 @@ export class RestHospitalVisitService implements IHospitalVisitService {
         }
 
         return this.http
-            .getWithCors<
-                HospitalVisit[]
-            >(`${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}?api-version=${this.API_VERSION}`)
+            .getWithCors<HospitalVisit[]>(
+                `${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}?api-version=${this.API_VERSION}`
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestHospitalVisitService.getHospitalVisits()`

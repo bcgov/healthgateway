@@ -51,9 +51,10 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         headers["dateOfVaccine"] = dateOfVaccine;
 
         return this.http
-            .getWithCors<
-                RequestResult<VaccinationStatus>
-            >(`${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}`, headers)
+            .getWithCors<RequestResult<VaccinationStatus>>(
+                `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}`,
+                headers
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestVaccinationStatusService.getPublicVaccineStatus()`
@@ -82,9 +83,10 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         headers["dateOfVaccine"] = dateOfVaccine;
 
         return this.http
-            .getWithCors<
-                RequestResult<CovidVaccineRecord>
-            >(`${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}/pdf`, headers)
+            .getWithCors<RequestResult<CovidVaccineRecord>>(
+                `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}/pdf`,
+                headers
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestVaccinationStatusService.getPublicVaccineStatusPdf()`
@@ -106,9 +108,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         }
 
         return this.http
-            .getWithCors<
-                RequestResult<VaccinationStatus>
-            >(`${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}?hdid=${hdid}`)
+            .getWithCors<RequestResult<VaccinationStatus>>(
+                `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}?hdid=${hdid}`
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestVaccinationStatusService.getAuthenticatedVaccineStatus()`
@@ -130,9 +132,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         }
 
         return this.http
-            .getWithCors<
-                RequestResult<CovidVaccineRecord>
-            >(`${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}`)
+            .getWithCors<RequestResult<CovidVaccineRecord>>(
+                `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}`
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestVaccinationStatusService.getAuthenticatedVaccineRecord()`
