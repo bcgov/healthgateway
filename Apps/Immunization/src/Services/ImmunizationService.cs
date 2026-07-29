@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization.Services
                     ResourcePayload = new ImmunizationResult
                     {
                         LoadState = this.mappingService.MapToLoadStateModel(delegateResult.ResourcePayload!.LoadState),
-                        Immunizations = delegateResult.ResourcePayload!.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent).ToList(),
+                        Immunizations = delegateResult.ResourcePayload.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent).ToList(),
                         Recommendations = this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations),
                     },
                     PageIndex = delegateResult.PageIndex,

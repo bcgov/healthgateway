@@ -80,21 +80,20 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <returns>The app builder.</returns>
         public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app, string[]? excludePaths = null)
         {
-            app.UseSerilogRequestLogging(
-                opts =>
-                {
-                    opts.IncludeQueryInRequestPath = true;
+            app.UseSerilogRequestLogging(opts =>
+            {
+                opts.IncludeQueryInRequestPath = true;
 
-                    // ReSharper disable once RedundantDelegateCreation
-                    opts.GetLevel = new Func<HttpContext, double, Exception?, LogEventLevel>((httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []));
-                    opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
-                    {
-                        diagCtx.Set("Host", httpCtx.Request.Host.Value);
-                        diagCtx.Set("ContentLength", httpCtx.Response.ContentLength?.ToString(CultureInfo.InvariantCulture) ?? string.Empty);
-                        diagCtx.Set("Protocol", httpCtx.Request.Protocol);
-                        diagCtx.Set("Scheme", httpCtx.Request.Scheme);
-                    };
-                });
+                // ReSharper disable once RedundantDelegateCreation
+                opts.GetLevel = new Func<HttpContext, double, Exception?, LogEventLevel>((httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? []));
+                opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
+                {
+                    diagCtx.Set("Host", httpCtx.Request.Host.Value);
+                    diagCtx.Set("ContentLength", httpCtx.Response.ContentLength?.ToString(CultureInfo.InvariantCulture) ?? string.Empty);
+                    diagCtx.Set("Protocol", httpCtx.Request.Protocol);
+                    diagCtx.Set("Scheme", httpCtx.Request.Scheme);
+                };
+            });
 
             return app;
         }
@@ -119,78 +118,73 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             }
 
             services.AddOpenTelemetry()
-                .WithTracing(
-                    builder =>
+                .WithTracing(builder =>
+                {
+                    builder
+                        .SetSampler(new AlwaysOnSampler())
+                        .ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreInstrumentation(options =>
+                        {
+                            // ReSharper disable once RedundantLambdaParameterType
+                            options.Filter = (HttpContext httpContext) => !Array.Exists(
+                                otlpConfig.IgnorePathPrefixes,
+                                s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
+                        })
+                        .AddRedisInstrumentation()
+                        .AddEntityFrameworkCoreInstrumentation()
+                        .AddNpgsql();
+
+                    foreach (string source in otlpConfig.Sources)
                     {
-                        builder
-                            .SetSampler(new AlwaysOnSampler())
-                            .ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
-                            .AddHttpClientInstrumentation()
-                            .AddAspNetCoreInstrumentation(
-                                options =>
-                                {
-                                    // ReSharper disable once RedundantLambdaParameterType
-                                    options.Filter = (HttpContext httpContext) => !Array.Exists(
-                                        otlpConfig.IgnorePathPrefixes,
-                                        s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
-                                })
-                            .AddRedisInstrumentation()
-                            .AddEntityFrameworkCoreInstrumentation()
-                            .AddNpgsql();
+                        builder.AddSource(source);
+                    }
 
-                        foreach (string source in otlpConfig.Sources)
-                        {
-                            builder.AddSource(source);
-                        }
-
-                        if (otlpConfig.TraceConsoleExporterEnabled)
-                        {
-                            builder.AddConsoleExporter();
-                        }
-
-                        if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
-                        {
-                            builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
-                        }
-
-                        if (otlpConfig.Endpoint != null)
-                        {
-                            builder.AddOtlpExporter(
-                                config =>
-                                {
-                                    config.Protocol = otlpConfig.ExportProtocol;
-                                    config.Endpoint = otlpConfig.Endpoint;
-                                });
-                        }
-                    })
-                .WithMetrics(
-                    builder =>
+                    if (otlpConfig.TraceConsoleExporterEnabled)
                     {
-                        builder
-                            .AddHttpClientInstrumentation()
-                            .AddAspNetCoreInstrumentation()
-                            .AddRuntimeInstrumentation();
+                        builder.AddConsoleExporter();
+                    }
 
-                        if (otlpConfig.MetricsConsoleExporterEnabled)
-                        {
-                            builder.AddConsoleExporter();
-                        }
+                    if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                    {
+                        builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
+                    }
 
-                        if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                    if (otlpConfig.Endpoint != null)
+                    {
+                        builder.AddOtlpExporter(config =>
                         {
-                            builder.AddAzureMonitorMetricExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
-                        }
+                            config.Protocol = otlpConfig.ExportProtocol;
+                            config.Endpoint = otlpConfig.Endpoint;
+                        });
+                    }
+                })
+                .WithMetrics(builder =>
+                {
+                    builder
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreInstrumentation()
+                        .AddRuntimeInstrumentation();
 
-                        if (otlpConfig.Endpoint != null)
+                    if (otlpConfig.MetricsConsoleExporterEnabled)
+                    {
+                        builder.AddConsoleExporter();
+                    }
+
+                    if (!string.IsNullOrEmpty(otlpConfig.AzureConnectionString))
+                    {
+                        builder.AddAzureMonitorMetricExporter(options => options.ConnectionString = otlpConfig.AzureConnectionString);
+                    }
+
+                    if (otlpConfig.Endpoint != null)
+                    {
+                        builder.AddOtlpExporter(config =>
                         {
-                            builder.AddOtlpExporter(
-                                config =>
-                                {
-                                    config.Protocol = otlpConfig.ExportProtocol;
-                                    config.Endpoint = otlpConfig.Endpoint;
-                                });
-                        }
-                    })
+                            config.Protocol = otlpConfig.ExportProtocol;
+                            config.Endpoint = otlpConfig.Endpoint;
+                        });
+                    }
+                })
                 ;
 
             services.AddSingleton(TracerProvider.Default.GetTracer(otlpConfig.ServiceName));
@@ -210,17 +204,16 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             if (openTelemetryConfig.Enabled)
             {
-                app.Use(
-                    async (context, next) =>
-                    {
-                        string subject = GetRequestHdid(context);
-                        EnrichActivityWithBaggage("Subject", subject, Activity.Current);
+                app.Use(async (context, next) =>
+                {
+                    string subject = GetRequestHdid(context);
+                    EnrichActivityWithBaggage("Subject", subject, Activity.Current);
 
-                        string user = context.User.Identity?.Name ?? string.Empty;
-                        EnrichActivityWithBaggage("User", user, Activity.Current);
+                    string user = context.User.Identity?.Name ?? string.Empty;
+                    EnrichActivityWithBaggage("User", user, Activity.Current);
 
-                        await next();
-                    });
+                    await next();
+                });
             }
         }
 
@@ -282,7 +275,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 return false;
             }
 
-            string requestPathValue = requestPath.Value!;
+            string requestPathValue = requestPath.Value;
 
             return path switch
             {

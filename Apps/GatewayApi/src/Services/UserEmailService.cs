@@ -179,7 +179,7 @@ namespace HealthGateway.GatewayApi.Services
             if (this.changeFeedConfiguration.Notifications.Enabled)
             {
                 // Store an event indicating email was verified.
-                await this.outboxStoreService.QueueEmailVerificationEventAsync(hdid, matchingVerification.Email!.To, false, ct);
+                await this.outboxStoreService.QueueEmailVerificationEventAsync(hdid, matchingVerification.Email.To, false, ct);
             }
 
             // Enable default user profile notification settings after successful verification
