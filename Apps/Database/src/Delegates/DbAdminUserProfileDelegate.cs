@@ -21,10 +21,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using HealthGateway.Database.Constants;
 using HealthGateway.Database.Context;
 using HealthGateway.Database.Models;
-using HealthGateway.Database.Wrapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -35,33 +33,12 @@ using Microsoft.Extensions.Logging;
 public class DbAdminUserProfileDelegate(ILogger<DbAdminUserProfileDelegate> logger, GatewayDbContext dbContext) : IAdminUserProfileDelegate
 {
     /// <inheritdoc/>
-    public async Task<DbResult<AdminUserProfile>> GetAdminUserProfileAsync(string username, CancellationToken ct = default)
-    {
-        logger.LogDebug("Retrieving admin user profile from DB with username {Username}", username);
-        AdminUserProfile? profile = await dbContext.AdminUserProfile.SingleOrDefaultAsync(profile => profile.Username == username, ct);
-
-        DbResult<AdminUserProfile> result = new();
-        if (profile != null)
-        {
-            result.Payload = profile;
-            result.Status = DbStatusCode.Read;
-        }
-        else
-        {
-            result.Status = DbStatusCode.NotFound;
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc/>
     public async Task<IList<AdminUserProfile>> GetActiveAdminUserProfilesAsync(int activeDays, TimeSpan timeOffset, CancellationToken ct = default)
     {
         logger.LogDebug("Retrieving all admin user profiles from DB active in the last {ActiveDays} day(s)", activeDays);
         return await dbContext.AdminUserProfile
-            .Where(
-                profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date >=
-                           DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays).Date)
+            .Where(profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date >=
+                              DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays).Date)
             .OrderByDescending(profile => profile.LastLoginDateTime)
             .ToListAsync(ct);
     }
@@ -71,73 +48,9 @@ public class DbAdminUserProfileDelegate(ILogger<DbAdminUserProfileDelegate> logg
     {
         logger.LogDebug("Retrieving all admin user profiles from DB that have been inactive for at least {InactiveDays} day(s)", inactiveDays);
         return await dbContext.AdminUserProfile
-            .Where(
-                profile =>
-                    profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date <= DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays).Date)
+            .Where(profile =>
+                profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date <= DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays).Date)
             .OrderByDescending(profile => profile.LastLoginDateTime)
             .ToListAsync(ct);
-    }
-
-    /// <inheritdoc/>
-    public async Task<DbResult<AdminUserProfile>> AddAsync(AdminUserProfile profile, CancellationToken ct = default)
-    {
-        logger.LogDebug("Adding admin user profile to DB");
-
-        DbResult<AdminUserProfile> result = new();
-        dbContext.Add(profile);
-
-        try
-        {
-            await dbContext.SaveChangesAsync(ct);
-            result.Payload = profile;
-            result.Status = DbStatusCode.Created;
-        }
-        catch (DbUpdateException e)
-        {
-            logger.LogError(e, "Error adding admin user profile to DB");
-            result.Status = DbStatusCode.Error;
-            result.Message = e.Message;
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc/>
-    public async Task<DbResult<AdminUserProfile>> UpdateAsync(AdminUserProfile profile, bool commit = true, CancellationToken ct = default)
-    {
-        logger.LogDebug("Updating admin user profile in DB");
-
-        DbResult<AdminUserProfile> result = await this.GetAdminUserProfileAsync(profile.Username, ct);
-        if (result.Status == DbStatusCode.Read)
-        {
-            // Copy certain attributes into the fetched Admin User Profile
-            result.Payload!.LastLoginDateTime = profile.LastLoginDateTime;
-            result.Payload!.UpdatedBy = profile.UpdatedBy;
-            result.Payload!.Version = profile.Version;
-            result.Status = DbStatusCode.Deferred;
-
-            if (commit)
-            {
-                try
-                {
-                    await dbContext.SaveChangesAsync(ct);
-                    result.Status = DbStatusCode.Updated;
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    logger.LogWarning(e, "Error updating admin user profile in DB");
-                    result.Status = DbStatusCode.Concurrency;
-                    result.Message = e.Message;
-                }
-                catch (DbUpdateException e)
-                {
-                    logger.LogError(e, "Error updating admin user profile in DB");
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
-            }
-        }
-
-        return result;
     }
 }
