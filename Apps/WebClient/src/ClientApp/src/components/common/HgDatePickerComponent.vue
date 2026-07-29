@@ -151,7 +151,7 @@ watch(
 </template>
 
 <style lang="scss">
-.dp__theme_light {
+.dp--theme-light {
     --dp-text-color: rgba(
         var(--v-theme-on-background),
         var(--v-high-emphasis-opacity)
