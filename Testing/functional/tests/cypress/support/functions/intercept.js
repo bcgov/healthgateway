@@ -141,6 +141,7 @@ export function setupNotificationFixture(options = {}) {
 export function setupStandardAliases() {
     cy.log("Setting up standard aliases.");
 
+    cy.intercept("GET", "**/Encounter/HospitalVisit/*").as("getHospitalVisit");
     cy.intercept("GET", "**/ClinicalDocument/*").as("getClinicalDocument");
     cy.intercept("GET", `**/Communication/*`).as("getCommunication");
     cy.intercept("GET", "**/Notification/*").as("getNotification");
@@ -153,9 +154,6 @@ export function setupStandardAliases() {
         "GET",
         "**/PatientData/*patientDataTypes=DiagnosticImaging*"
     ).as("getPatientDataForDiagnosticImaging");
-    cy.intercept("GET", "**/Encounter/HospitalVisit/*").as(
-        "getPatientDataForHospitalVisit"
-    );
     cy.intercept(
         "GET",
         "**/PatientData/*?patientDataTypes=OrganDonorRegistrationStatus*"
@@ -194,11 +192,7 @@ export function waitForInitialDataLoad(username, config, path) {
             path,
             blockedDataSources
         );
-        waitForPatientDataForHospitalVisit(
-            featureToggle,
-            path,
-            blockedDataSources
-        );
+        waitForHospitalVisit(featureToggle, path, blockedDataSources);
     });
 
     cy.log("Wait on communication.");
@@ -247,6 +241,35 @@ function waitForNotification(featureToggle) {
     if (featureToggle.notificationCentre.enabled) {
         cy.log("Wait on notification.");
         cy.wait("@getNotification", { timeout: defaultTimeout });
+    }
+}
+
+function waitForHospitalVisit(featureToggle, path, blockedDataSources) {
+    const hospitalVisitBlocked = checkHospitalVisitBlocked(blockedDataSources);
+
+    const hospitalVisitEnabled = featureToggle?.datasets.some(
+        (x) => x.enabled && x.name === "hospitalVisit"
+    );
+
+    const dependentHospitalVisitDisabled =
+        featureToggle.dependents.datasets.some(
+            (x) => !x.enabled && x.name === "hospitalVisit"
+        );
+
+    cy.log(
+        `waitForHospitalVisit called - enabled: ${hospitalVisitEnabled} - dependent disabled: ${dependentHospitalVisitDisabled} - blocked: ${hospitalVisitBlocked}`
+    );
+
+    if (
+        !hospitalVisitBlocked &&
+        hospitalVisitEnabled &&
+        (isTimeline(path) ||
+            (isDependentsTimeline(path) && !dependentHospitalVisitDisabled))
+    ) {
+        cy.log("Wait on hospital visit.");
+        cy.wait("@getHospitalVisit", {
+            timeout: defaultTimeout,
+        });
     }
 }
 
@@ -352,39 +375,6 @@ function waitForPatientDataForDiagnosticImaging(
     ) {
         cy.log("Wait on patient data for diagnostic imaging.");
         cy.wait("@getPatientDataForDiagnosticImaging", {
-            timeout: defaultTimeout,
-        });
-    }
-}
-
-function waitForPatientDataForHospitalVisit(
-    featureToggle,
-    path,
-    blockedDataSources
-) {
-    const hospitalVisitBlocked = checkHospitalVisitBlocked(blockedDataSources);
-
-    const hospitalVisitEnabled = featureToggle?.datasets.some(
-        (x) => x.enabled && x.name === "hospitalVisit"
-    );
-
-    const dependentHospitalVisitDisabled =
-        featureToggle.dependents.datasets.some(
-            (x) => !x.enabled && x.name === "hospitalVisit"
-        );
-
-    cy.log(
-        `waitForPatientDataForHospitalVisit called - enabled: ${hospitalVisitEnabled} - dependent disabled: ${dependentHospitalVisitDisabled} - blocked: ${hospitalVisitBlocked}`
-    );
-
-    if (
-        !hospitalVisitBlocked &&
-        hospitalVisitEnabled &&
-        (isTimeline(path) ||
-            (isDependentsTimeline(path) && !dependentHospitalVisitDisabled))
-    ) {
-        cy.log("Wait on patient data for hospital visit.");
-        cy.wait("@getPatientDataForHospitalVisit", {
             timeout: defaultTimeout,
         });
     }
