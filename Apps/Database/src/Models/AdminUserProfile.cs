@@ -35,7 +35,7 @@ public class AdminUserProfile : AuditableEntity
     /// Gets or sets the username.
     /// </summary>
     [MaxLength(255)]
-    public string Username { get; set; } = string.Empty;
+    public string Username { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the users last login datetime.

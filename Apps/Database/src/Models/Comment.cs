@@ -57,13 +57,13 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(3)]
         [Required]
-        public string EntryTypeCode { get; set; } = string.Empty;
+        public string EntryTypeCode { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the related event id.
         /// </summary>
         [MaxLength(100)]
         [Required]
-        public string ParentEntryId { get; set; } = string.Empty;
+        public string ParentEntryId { get; set; } = null!;
     }
 }

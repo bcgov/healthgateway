@@ -38,21 +38,21 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string Hdid { get; set; } = string.Empty;
+        public string Hdid { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the agent username.
         /// </summary>
         [Required]
         [MaxLength(255)]
-        public string AgentUsername { get; set; } = string.Empty;
+        public string AgentUsername { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the reason.
         /// </summary>
         [Required]
         [MaxLength(500)]
-        public string Reason { get; set; } = string.Empty;
+        public string Reason { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value representing the type of audit operation.

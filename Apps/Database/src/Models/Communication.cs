@@ -39,13 +39,13 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the message text.
         /// </summary>
         [MaxLength(1000)]
-        public string Text { get; set; } = string.Empty;
+        public string Text { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the message subject.
         /// </summary>
         [MaxLength(1000)]
-        public string Subject { get; set; } = string.Empty;
+        public string Subject { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the effective datetime.

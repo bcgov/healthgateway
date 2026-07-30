@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(50)]
-        public string JobName { get; init; } = string.Empty;
+        public string JobName { get; init; } = null!;
 
         /// <summary>
         /// Gets the HDID for this run.

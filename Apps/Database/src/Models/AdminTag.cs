@@ -37,6 +37,6 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(20)]
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!;
     }
 }

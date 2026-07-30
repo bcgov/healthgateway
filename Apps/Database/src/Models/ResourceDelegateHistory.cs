@@ -69,7 +69,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the operation that created this history row.
         /// </summary>
         [Required]
-        public string Operation { get; set; } = string.Empty;
+        public string Operation { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the datetime the operation was performed.

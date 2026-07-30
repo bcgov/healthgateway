@@ -45,13 +45,13 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(300)]
         [Required]
-        public string EventSource { get; set; } = string.Empty;
+        public string EventSource { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the description of the event.
         /// </summary>
         [MaxLength(1000)]
         [Required]
-        public string EventDescription { get; set; } = string.Empty;
+        public string EventDescription { get; set; } = null!;
     }
 }
