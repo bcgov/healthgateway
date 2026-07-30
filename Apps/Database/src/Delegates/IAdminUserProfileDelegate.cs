@@ -20,21 +20,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HealthGateway.Database.Models;
-using HealthGateway.Database.Wrapper;
 
 /// <summary>
 /// Operations to be performed in the DB for the Admin Profile.
 /// </summary>
 public interface IAdminUserProfileDelegate
 {
-    /// <summary>
-    /// Fetches the AdminUserProfile from the database.
-    /// </summary>
-    /// <param name="username">The unique username key to find.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>A DB result which encapsulates the return object and status.</returns>
-    Task<DbResult<AdminUserProfile>> GetAdminUserProfileAsync(string username, CancellationToken ct = default);
-
     /// <summary>
     /// Returns Active AdminUserProfile objects from the database.
     /// </summary>
@@ -52,23 +43,4 @@ public interface IAdminUserProfileDelegate
     /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects.</returns>
     Task<IList<AdminUserProfile>> GetInactiveAdminUserProfilesAsync(int inactiveDays, TimeSpan timeOffset, CancellationToken ct = default);
-
-    /// <summary>
-    /// Creates an AdminUserProfile object in the database.
-    /// </summary>
-    /// <param name="profile">The profile to create.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>A DB result which encapsulates the return object and status.</returns>
-    Task<DbResult<AdminUserProfile>> AddAsync(AdminUserProfile profile, CancellationToken ct = default);
-
-    /// <summary>
-    /// Updates the AdminUserProfile object in the DB.
-    /// Version must be set or a Concurrency exception will occur.
-    /// UpdatedDateTime will overridden by our framework.
-    /// </summary>
-    /// <param name="profile">The profile to update.</param>
-    /// <param name="commit">if true the transaction is persisted immediately.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>A DB result which encapsulates the return object and status.</returns>
-    Task<DbResult<AdminUserProfile>> UpdateAsync(AdminUserProfile profile, bool commit = true, CancellationToken ct = default);
 }

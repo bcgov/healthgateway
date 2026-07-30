@@ -1,17 +1,18 @@
+@using HealthGateway.Admin.Client.Pages
 @inject NavigationManager NavigationManager;
 
-<Fluxor.Blazor.Web.StoreInitializer />
+<Fluxor.Blazor.Web.StoreInitializer/>
 
 <PageTitle>Health Gateway Admin</PageTitle>
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly"
-            NotFoundPage="typeof(Pages.NotFound)">
+            NotFoundPage="typeof(NotFound)">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData"
                                 DefaultLayout="@typeof(DefaultLayout)">
                 <NotAuthorized>
-                    @if (!context.User.Identity!.IsAuthenticated)
+                    @if (context.User.Identity?.IsAuthenticated != true)
                     {
                         NavigationManager.NavigateTo(
                             NavigationManager.GetUriWithQueryParameters(

@@ -143,7 +143,7 @@ namespace HealthGateway.JobScheduler.Jobs
 
             if (!string.IsNullOrWhiteSpace(profile.Email))
             {
-                await this.emailService.QueueNewEmailAsync(profile.Email!, this.emailTemplate, false, ct);
+                await this.emailService.QueueNewEmailAsync(profile.Email, this.emailTemplate, false, ct);
             }
 
             JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
