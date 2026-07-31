@@ -144,6 +144,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     Email = verificationEmailExists
                         ? new()
                         {
+                            From = string.Empty,
                             To = Email,
                         }
                         : null,

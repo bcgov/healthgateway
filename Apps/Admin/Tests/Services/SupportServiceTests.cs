@@ -685,7 +685,7 @@ namespace HealthGateway.Admin.Tests.Services
             return
             [
                 new() { Id = Guid.NewGuid(), Validated = true, SmsNumber = sms },
-                new() { Id = Guid.NewGuid(), Validated = false, Email = new() { To = email } },
+                new() { Id = Guid.NewGuid(), Validated = false, Email = new() { From = string.Empty, To = email } },
             ];
         }
 
