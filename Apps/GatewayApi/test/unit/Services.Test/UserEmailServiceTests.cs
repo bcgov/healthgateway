@@ -74,6 +74,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Validated = false,
                 Email = new Email
                 {
+                    From = string.Empty,
                     To = email,
                 },
             };
@@ -278,6 +279,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 InviteKey = Guid.NewGuid(),
                 Email = new Email
                 {
+                    From = string.Empty,
                     To = "old@healthgateway.gov.bc.ca",
                 },
             };
@@ -295,7 +297,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Setup(s => s.GetEmailTemplateAsync(
                     It.IsAny<string>(),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new EmailTemplate());
+                .ReturnsAsync(new EmailTemplate
+                {
+                    Name = string.Empty,
+                    From = string.Empty,
+                    Subject = string.Empty,
+                    Body = string.Empty,
+                });
 
             emailQueueServiceMock
                 .Setup(s => s.ProcessTemplate(
@@ -305,6 +313,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Returns((string to, EmailTemplate _, Dictionary<string, string> _) => new Email
                 {
                     Id = Guid.NewGuid(),
+                    From = string.Empty,
                     To = to,
                 });
 

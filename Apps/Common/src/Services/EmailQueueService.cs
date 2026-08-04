@@ -123,12 +123,10 @@ namespace HealthGateway.Common.Services
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             this.logger.LogDebug("Processing email template {EmailTemplateName}", emailTemplate.Name);
-            Email email = this.ParseTemplate(emailTemplate, keyValues);
-            email.To = toEmail;
-            return email;
+            return this.ParseTemplate(toEmail, emailTemplate, keyValues);
         }
 
-        private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
+        private Email ParseTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             if (!keyValues.ContainsKey(EmailTemplateVariable.Environment))
             {
@@ -138,9 +136,10 @@ namespace HealthGateway.Common.Services
             return new Email
             {
                 From = emailTemplate.From,
+                To = toEmail,
                 Priority = emailTemplate.Priority,
-                Subject = StringManipulator.Replace(emailTemplate.Subject!, keyValues),
-                Body = StringManipulator.Replace(emailTemplate.Body!, keyValues),
+                Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues),
+                Body = StringManipulator.Replace(emailTemplate.Body, keyValues),
                 FormatCode = emailTemplate.FormatCode,
                 Personalization = keyValues,
                 Template = emailTemplate.Name,

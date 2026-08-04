@@ -37,28 +37,28 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(30)]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the From address for sending the email.
         /// </summary>
         [Required]
         [MaxLength(254)]
-        public string? From { get; set; }
+        public required string From { get; set; }
 
         /// <summary>
         /// Gets or sets the subject line.
         /// </summary>
         [Required]
         [MaxLength(100)]
-        public string? Subject { get; set; }
+        public required string Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the Body.
         /// </summary>
         [Required]
         [Column(TypeName = "text")]
-        public string? Body { get; set; }
+        public required string Body { get; set; }
 
         /// <summary>
         /// Gets or sets the priority of the email.

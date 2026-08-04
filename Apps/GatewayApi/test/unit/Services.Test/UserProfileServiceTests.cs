@@ -1102,6 +1102,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                         Email = new Email
                         {
                             Id = Guid.NewGuid(),
+                            From = string.Empty,
                             To = email,
                         },
                     });
@@ -1223,6 +1224,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = new()
                 {
                     Id = Guid.NewGuid(),
+                    From = string.Empty,
                     To = Email,
                 },
             };
@@ -1356,6 +1358,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     new Email
                     {
                         Id = Guid.NewGuid(),
+                        From = string.Empty,
                         To = Email,
                     });
 
@@ -1426,6 +1429,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     new Email
                     {
                         Id = Guid.NewGuid(),
+                        From = string.Empty,
                         To = Email,
                     });
 

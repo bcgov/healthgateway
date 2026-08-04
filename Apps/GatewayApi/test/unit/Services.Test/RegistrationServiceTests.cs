@@ -290,6 +290,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new()
             {
                 Id = emailId ?? Guid.NewGuid(),
+                From = string.Empty,
                 To = toEmailAddress,
             };
         }

@@ -139,6 +139,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return new()
             {
                 Id = emailId,
+                From = string.Empty,
                 To = toEmailAddress,
             };
         }
@@ -199,6 +200,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 {
                     Id = Guid.NewGuid(),
                     Name = EmailTemplateName.RegistrationTemplate,
+                    From = string.Empty,
+                    Subject = string.Empty,
+                    Body = string.Empty,
                 }
                 : null;
 

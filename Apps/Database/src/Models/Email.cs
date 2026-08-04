@@ -40,14 +40,14 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(254)]
-        public string? From { get; set; }
+        public required string From { get; set; }
 
         /// <summary>
         /// Gets or sets the To address for sending the email.
         /// </summary>
         [Required]
         [MaxLength(254)]
-        public string? To { get; set; }
+        public required string To { get; set; }
 
         /// <summary>
         /// Gets or sets the Subject line of the email.

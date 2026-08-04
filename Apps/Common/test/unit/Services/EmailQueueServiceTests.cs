@@ -111,6 +111,8 @@ namespace HealthGateway.CommonTests.Services
             };
             EmailTemplate template = new()
             {
+                Name = string.Empty,
+                From = string.Empty,
                 Subject = "Subject=${SUBJECT}",
                 Body = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}",
                 FormatCode = EmailFormat.Text,
@@ -118,6 +120,7 @@ namespace HealthGateway.CommonTests.Services
             };
             Email expected = new()
             {
+                From = string.Empty,
                 To = emailTo,
                 Subject = "Subject=Test Subject",
                 Body = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3",
@@ -148,6 +151,8 @@ namespace HealthGateway.CommonTests.Services
             string expectedBody = $"{bodyPrefix} {environment}";
             EmailTemplate template = new()
             {
+                Name = string.Empty,
+                From = string.Empty,
                 Subject = "Mock Subject",
                 Body = $"{bodyPrefix} ${{Environment}}",
                 FormatCode = EmailFormat.Text,
@@ -179,6 +184,8 @@ namespace HealthGateway.CommonTests.Services
             string expectedBody = $"{bodyPrefix} {environment}";
             EmailTemplate template = new()
             {
+                Name = string.Empty,
+                From = string.Empty,
                 Subject = "Mock Subject",
                 Body = $"{bodyPrefix} ${{Environment}}",
                 FormatCode = EmailFormat.Text,
@@ -213,6 +220,7 @@ namespace HealthGateway.CommonTests.Services
             Email email = new()
             {
                 Id = Guid.NewGuid(),
+                From = string.Empty,
                 To = string.Empty, // This will cause an exception
             };
 
@@ -293,7 +301,7 @@ namespace HealthGateway.CommonTests.Services
                 shouldCommit ? Times.Once() : Times.Never());
         }
 
-        private static EmailTemplate GenerateEmailTemplate(string? body = null)
+        private static EmailTemplate GenerateEmailTemplate(string body = "")
         {
             return new()
             {
@@ -302,6 +310,7 @@ namespace HealthGateway.CommonTests.Services
                 CreatedDateTime = DateTime.UtcNow,
                 UpdatedBy = "Mocked Updated By",
                 UpdatedDateTime = DateTime.UtcNow,
+                Name = string.Empty,
                 Subject = "Mock Subject",
                 Body = body,
                 From = "mock@mock.com",
