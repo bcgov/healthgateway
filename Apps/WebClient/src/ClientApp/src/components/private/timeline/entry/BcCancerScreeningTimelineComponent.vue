@@ -163,7 +163,6 @@ function downloadFile(): void {
         <HgButtonComponent
             v-if="hasFile"
             data-testid="bc-cancer-screening-download-button"
-            class="mb-6"
             variant="secondary"
             :text="entry.callToActionText"
             prepend-icon="eye"

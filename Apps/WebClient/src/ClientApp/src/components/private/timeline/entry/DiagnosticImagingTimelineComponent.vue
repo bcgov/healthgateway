@@ -104,7 +104,7 @@ function downloadFile(): void {
             Imaging reports may contain sensitive information. Consult your
             provider if you are unsure about viewing.
         </p>
-        <v-row class="mb-3">
+        <v-row class="mb-6">
             <v-col :cols="cols">
                 <DisplayFieldComponent
                     data-testid="diagnostic-imaging-procedure-description"

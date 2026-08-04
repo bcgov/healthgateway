@@ -128,7 +128,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
         </p>
     </div>
     <v-container v-else>
-        <v-row class="align-start justify-start">
+        <v-row class="align-start justify-start" no-gutters>
             <v-col lg="5">
                 <h1
                     class="mb-6 text-primary text-headline-large font-weight-bold"
@@ -167,7 +167,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
             <v-col
                 xs="false"
                 lg="7"
-                class="d-none d-lg-block text-center col-7 pa-0"
+                class="d-none d-lg-block text-center col-7"
             >
                 <v-img
                     src="@/assets/images/landing/landing-top.png"
@@ -231,14 +231,13 @@ function openExternalLink(tile: InfoTile, action: Action) {
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
-            <v-row v-else class="mb-6 mb-md-8 align-stretch">
+            <v-row v-else class="mb-6 mb-md-8 align-stretch" gap="32">
                 <v-col
                     v-for="tile in accessLinks"
                     :key="tile.name"
                     cols="12"
                     md="6"
                     lg="3"
-                    class="px-2 px-md-4"
                 >
                     <v-card
                         variant="outlined"
@@ -374,14 +373,13 @@ function openExternalLink(tile: InfoTile, action: Action) {
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
-            <v-row v-else class="mb-6 mb-md-8 align-stretch">
+            <v-row v-else class="mb-6 mb-md-8 align-stretch" gap="32">
                 <v-col
                     v-for="tile in healthServicesLinks"
                     :key="tile.name"
                     cols="12"
                     md="6"
                     lg="4"
-                    class="px-2 px-md-4"
                 >
                     <v-card
                         variant="outlined"

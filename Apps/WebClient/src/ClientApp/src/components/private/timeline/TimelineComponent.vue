@@ -787,7 +787,7 @@ setPageFromDate(linearDate.value);
             class="py-2 mb-4"
             type="divider, avatar, heading, divider, avatar, heading, divider, avatar, heading, divider"
         />
-        <div v-if="filteredTimelineEntries.length > 0" class="text-center mb-4">
+        <div v-if="filteredTimelineEntries.length > 0" class="text-center">
             <v-pagination
                 v-model="currentPage"
                 data-testid="pagination"
@@ -802,7 +802,7 @@ setPageFromDate(linearDate.value);
                 !selectedDatasetsAreLoading &&
                 isFullyLoaded
             "
-            class="d-flex flex-column align-center mb-4"
+            class="d-flex flex-column align-center"
         >
             <v-img
                 src="@/assets/images/timeline/empty-state.png"

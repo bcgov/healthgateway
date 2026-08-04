@@ -449,7 +449,7 @@ watch(vaccineRecord, (value) => {
                         </div>
                     </v-col>
                 </v-row>
-                <v-row class="mb-4">
+                <v-row class="mb-7">
                     <v-col cols="6">
                         <HgButtonComponent
                             data-testid="btnCancel"
@@ -490,7 +490,7 @@ watch(vaccineRecord, (value) => {
                     if you have any questions about this collection.
                 </InfoPopoverComponent>
                 <div class="text-center">
-                    <v-row class="my-4 no-gutters d-flex align-center">
+                    <v-row class="my-7 no-gutters d-flex align-center">
                         <v-col><v-divider /></v-col>
                         <v-col cols="auto">
                             <h2

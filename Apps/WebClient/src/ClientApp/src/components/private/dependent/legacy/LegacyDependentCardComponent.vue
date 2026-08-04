@@ -746,7 +746,7 @@ watch(vaccineRecordState, () => {
                     </v-tab>
                 </v-tabs>
             </v-card-title>
-            <v-card-text class="pa-4">
+            <v-card-text class="pt-4">
                 <v-window v-model="selectedTabIndex">
                     <v-window-item data-testid="dependentTab" class="pa-1">
                         <div v-if="isExpired">

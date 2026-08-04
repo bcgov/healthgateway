@@ -403,7 +403,7 @@ for (const [entryType] of reportComponentMap) {
             you can see them."
             variant="outlined"
         />
-        <v-sheet color="white" class="pa-4 mb-4">
+        <v-sheet color="white" class="mb-4">
             <v-row class="align-center">
                 <v-col cols="12" sm="auto" class="flex-grow-1">
                     <v-select
@@ -504,7 +504,7 @@ for (const [entryType] of reportComponentMap) {
                     </v-chip>
                 </v-col>
             </v-row>
-            <v-expand-transition>
+            <v-slide-y-transition>
                 <div v-show="isAdvancedOpen" class="pt-4">
                     <v-row>
                         <v-col cols="12" md="6" xl="4">
@@ -575,7 +575,7 @@ for (const [entryType] of reportComponentMap) {
                         </v-col>
                     </v-row>
                 </div>
-            </v-expand-transition>
+            </v-slide-y-transition>
         </v-sheet>
         <LoadingComponent :is-loading="isGeneratingReport" />
         <div v-if="selectedEntryType" data-testid="report-sample">
@@ -589,7 +589,7 @@ for (const [entryType] of reportComponentMap) {
                 @on-is-empty-changed="hasRecords = !$event"
             />
         </div>
-        <div v-else class="pa-4">
+        <div v-else class="mb-4">
             <v-img
                 class="mx-auto py-4"
                 src="@/assets/images/reports/reports.png"

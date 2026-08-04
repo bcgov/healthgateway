@@ -121,7 +121,7 @@ function removeDependent(): void {
                     />
                 </v-tabs>
             </v-card-title>
-            <v-card-text class="pa-4">
+            <v-card-text class="pt-4">
                 <v-window v-model="selectedTabIndex">
                     <v-window-item data-testid="dashboard-tab" class="pa-1">
                         <div

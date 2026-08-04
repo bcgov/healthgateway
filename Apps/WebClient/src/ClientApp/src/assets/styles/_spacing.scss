@@ -1,3 +1,14 @@
+@layer vuetify-core.reset {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+    }
+}
+
 // these rules are placed in our hg-overrides layer
 // so they won't take precedence over utility classes like "my-0"
 // which are applied in the vuetify-utilities layer
