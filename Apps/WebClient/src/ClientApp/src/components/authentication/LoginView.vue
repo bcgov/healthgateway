@@ -70,7 +70,7 @@ if (oidcIsAuthenticated.value) {
                 close-label="Close"
                 type="error"
                 title="Error"
-                text="An unexpected error occured while processing the request, please try again."
+                text="An unexpected error occurred while processing the request, please try again."
                 variant="outlined"
             />
         </v-col>

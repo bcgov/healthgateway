@@ -245,7 +245,7 @@ function hideDialog(): void {
         close-label="Close"
         type="error"
         title="Our Apologies"
-        text="An unexpected error occured while processing the request, please try again."
+        text="An unexpected error occurred while processing the request, please try again."
         variant="outlined"
     >
         <template #text>
