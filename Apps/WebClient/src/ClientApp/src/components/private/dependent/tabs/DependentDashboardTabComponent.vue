@@ -12,15 +12,7 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import type { Dependent } from "@/models/dependent";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccineRecordState from "@/models/vaccineRecordState";
-import {
-    Action,
-    Actor,
-    Destination,
-    Format,
-    Origin,
-    Text,
-    Type,
-} from "@/plugins/extensions";
+import { Action, Destination, Origin, Text } from "@/plugins/extensions";
 import { ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
@@ -43,8 +35,6 @@ const { columns } = useGrid();
 
 const recommendationsDialogComponent =
     ref<InstanceType<typeof RecommendationsDialogComponent>>();
-const sensitiveDocumentDownloadModal =
-    ref<InstanceType<typeof MessageModalComponent>>();
 const vaccineRecordResultModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 
@@ -53,11 +43,6 @@ const vaccineRecordState = computed<VaccineRecordState>(() =>
 );
 const isVaccineRecordDownloading = computed(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
-);
-const showFederalProofOfVaccination = computed(
-    () =>
-        configStore.webConfig.featureToggleConfiguration.homepage
-            .showFederalProofOfVaccination
 );
 const showRecommendations = computed(
     () =>
@@ -70,10 +55,6 @@ const vaccineRecordStatusMessage = computed(
 const vaccineRecordResultMessage = computed(
     () => vaccineRecordState.value.resultMessage
 );
-
-function retrieveAuthenticatedVaccineRecord(hdid: string): void {
-    vaccinationStatusStore.retrieveVaccineRecord(hdid);
-}
 
 function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
     vaccinationStatusStore.stopVaccineRecordDownload(hdid);
@@ -99,21 +80,6 @@ function showRecommendationsDialog(): void {
         origin: Origin.Dependents,
     });
     recommendationsDialogComponent.value?.showDialog();
-}
-
-function handleFederalProofOfVaccinationDownload(): void {
-    trackingService.trackEvent({
-        action: Action.Download,
-        text: Text.Document,
-        type: Type.Covid19ProofOfVaccination,
-        format: Format.Pdf,
-        actor: Actor.Guardian,
-    });
-    retrieveAuthenticatedVaccineRecord(props.dependent.ownerId);
-}
-
-function showSensitiveDocumentDownloadModal(): void {
-    sensitiveDocumentDownloadModal.value?.showModal();
 }
 
 watch(vaccineRecordState, () => {
@@ -179,37 +145,11 @@ watch(vaccineRecordState, () => {
                 </template>
             </HgCardComponent>
         </v-col>
-        <v-col
-            v-if="showFederalProofOfVaccination"
-            :cols="columns"
-            class="d-flex"
-        >
-            <HgCardComponent
-                title="Proof of Vaccination"
-                density="compact"
-                class="flex-grow-1 ma-1"
-                :data-testid="`proof-vaccination-card-btn-${dependent.ownerId}`"
-                @click="showSensitiveDocumentDownloadModal()"
-            >
-                <template #icon>
-                    <v-icon icon="check-circle" color="success" size="small" />
-                </template>
-                <template #action-icon>
-                    <v-icon icon="download" color="primary" size="small" />
-                </template>
-            </HgCardComponent>
-        </v-col>
     </v-row>
     <RecommendationsDialogComponent
         ref="recommendationsDialogComponent"
         :hdid="dependent.ownerId"
         :is-dependent="true"
-    />
-    <MessageModalComponent
-        ref="sensitiveDocumentDownloadModal"
-        title="Sensitive Document"
-        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-        @submit="handleFederalProofOfVaccinationDownload"
     />
     <MessageModalComponent
         ref="vaccineRecordResultModal"

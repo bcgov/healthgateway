@@ -68,8 +68,6 @@ const { columns } = useGrid();
 
 const showSmsRemoved = ref<boolean>();
 
-const sensitiveDocumentDownloadModal =
-    ref<InstanceType<typeof MessageModalComponent>>();
 const vaccineRecordResultModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 const recommendationsDialogComponent =
@@ -95,11 +93,6 @@ const unverifiedEmail = computed(
 );
 const unverifiedSms = computed(
     () => !user.value.verifiedSms && user.value.hasSms
-);
-const showFederalCardButton = computed(
-    () =>
-        configStore.webConfig.featureToggleConfiguration.homepage
-            .showFederalProofOfVaccination
 );
 const preferenceOrganDonorHidden = computed(
     () =>
@@ -206,16 +199,8 @@ const isAddQuickLinkButtonDisabled = computed(
         !preferenceRecommendationsLinkHidden.value
 );
 
-function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {
-    return authenticatedVaccinationStatusStore.retrieveVaccineRecord(hdid);
-}
-
 function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
     authenticatedVaccinationStatusStore.stopVaccineRecordDownload(hdid);
-}
-
-function retrieveVaccinePdf(): void {
-    retrieveAuthenticatedVaccineRecord(user.value.hdid);
 }
 
 function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
@@ -392,16 +377,6 @@ function handleClickQuickLink(index: number): void {
 
     timelineStore.setFilter(builder);
     router.push({ path: "/timeline" });
-}
-
-function showSensitiveDocumentDownloadModal(): void {
-    trackingService.trackEvent({
-        action: Action.ButtonClick,
-        text: Text.ViewProofOfVaccination,
-        origin: Origin.Home,
-        type: Type.HomeTile,
-    });
-    sensitiveDocumentDownloadModal.value?.showModal();
 }
 
 watch(vaccineRecordState, () => {
@@ -672,29 +647,6 @@ if (preferenceShowSmsRemoved.value) {
                 </p>
             </HgCardComponent>
         </v-col>
-        <v-col v-if="showFederalCardButton" :cols="columns" class="d-flex">
-            <HgCardComponent
-                title="Proof of Vaccination"
-                variant="outlined"
-                elevation="1"
-                border="thin grey-lighten-2"
-                data-testid="proof-vaccination-card-btn"
-                class="flex-grow-1"
-                @click="showSensitiveDocumentDownloadModal()"
-            >
-                <template #icon>
-                    <img
-                        class="quick-link-icon"
-                        src="@/assets/images/gov/canada-gov-logo.svg"
-                        alt="Canada Government Logo"
-                    />
-                </template>
-                <p class="text-body-1">
-                    Download and print your Federal Proof of Vaccination
-                    Certificate (PVC) for domestic and international travel.
-                </p>
-            </HgCardComponent>
-        </v-col>
         <v-col
             v-for="card in quickLinkCards"
             :key="card.title"
@@ -775,12 +727,6 @@ if (preferenceShowSmsRemoved.value) {
     <RecommendationsDialogComponent
         ref="recommendationsDialogComponent"
         :hdid="user.hdid"
-    />
-    <MessageModalComponent
-        ref="sensitiveDocumentDownloadModal"
-        title="Sensitive Document"
-        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-        @submit="retrieveVaccinePdf"
     />
     <MessageModalComponent
         ref="vaccineRecordResultModal"
