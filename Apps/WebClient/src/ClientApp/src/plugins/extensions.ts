@@ -215,7 +215,6 @@ export const enum Text {
     TermsOfService = "Terms of Service",
     TimelineMissingImmunizations = "Timeline - Missing Immunizations Fill In Online Form",
     VerifyContactInformation = "Verify Contact Information",
-    ViewProofOfVaccination = "View Proof of Vaccination",
     VerifyEmailAddress = "Verify Email Address",
     VerifyMobileNumber = "Verify Mobile Number",
     UpdateMailingAddress = "Update Mailing Address",

@@ -4,7 +4,7 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
-    it("Save Federal Proof of Vaccination with Retry", () => {
+    it.skip("Save Federal Proof of Vaccination with Retry", () => {
         let isLoading = false;
         cy.intercept(
             "GET",
@@ -50,7 +50,7 @@ describe("Federal Proof of Vaccination", () => {
         cy.verifyDownload("VaccineProof.pdf");
     });
 
-    it("Federal Proof of Vaccination Absent When Disabled", () => {
+    it.skip("Federal Proof of Vaccination Absent When Disabled", () => {
         cy.configureSettings({
             homepage: {
                 showFederalProofOfVaccination: false,

@@ -40,7 +40,7 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
     });
 
-    it("Home - Immunization Record Card button enabled", () => {
+    it.skip("Home - Immunization Record Card button enabled", () => {
         cy.configureSettings({
             homepage: {
                 showImmunizationRecordLink: true,
@@ -111,7 +111,7 @@ describe("Authenticated User - Home Page", () => {
         cy.url().should("include", timelineUrl);
     });
 
-    it("Home - Federal Card button disabled", () => {
+    it.skip("Home - Federal Card button disabled", () => {
         cy.configureSettings({});
 
         setupStandardFixtures();

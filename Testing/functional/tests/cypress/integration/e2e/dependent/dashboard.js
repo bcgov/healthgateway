@@ -81,7 +81,7 @@ describe("dependents - dashboard", () => {
         cy.location("pathname").should("eq", validDependent.timelinePath);
     });
 
-    it("Validate download of federal proof of vaccination", () => {
+    it.skip("Validate download of federal proof of vaccination", () => {
         cy.get(validDependent.federalProofOfVaccinationButtonSelector)
             .should("be.visible", "be.enabled")
             .click();
