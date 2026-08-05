@@ -131,9 +131,8 @@ const preferenceShowSmsRemoved = computed(
 );
 const showBcCancerNotificationsAlert = computed(
     () =>
-        user.value.lastLoginDateTimes.length > 1 &&
-        user.value.lastLoginDateTimes[1] &&
-        DateWrapper.fromIso(user.value.lastLoginDateTimes[1]).isBefore(
+        userStore.lastLoginDateTime != undefined &&
+        DateWrapper.fromIso(userStore.lastLoginDateTime).isBefore(
             DateWrapper.fromIso("2026-05-19T09:00")
         )
 );
