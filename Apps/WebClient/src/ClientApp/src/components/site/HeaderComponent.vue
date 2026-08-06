@@ -87,9 +87,7 @@ const isAppTourAvailable = computed(
         userIsActive.value &&
         !patientRetrievalFailed.value
 );
-const isLoggedInMenuShown = computed(
-    () => oidcIsAuthenticated.value
-);
+const isLoggedInMenuShown = computed(() => oidcIsAuthenticated.value);
 const isLogInButtonShown = computed(
     () =>
         !oidcIsAuthenticated.value &&
