@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import saveAs from "file-saver";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
-import LoadingComponent from "@/components/common/LoadingComponent.vue";
-import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import type { Dependent } from "@/models/dependent";
-import { LoadStatus } from "@/models/storeOperations";
-import VaccineRecordState from "@/models/vaccineRecordState";
 import { Action, Destination, Origin, Text } from "@/plugins/extensions";
 import { ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
-import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import { useGrid } from "@/utility/useGrid";
 
 interface Props {
@@ -28,37 +22,18 @@ const trackingService = container.get<ITrackingService>(
 );
 
 const configStore = useConfigStore();
-const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 
 const router = useRouter();
 const { columns } = useGrid();
 
 const recommendationsDialogComponent =
     ref<InstanceType<typeof RecommendationsDialogComponent>>();
-const vaccineRecordResultModal =
-    ref<InstanceType<typeof MessageModalComponent>>();
 
-const vaccineRecordState = computed<VaccineRecordState>(() =>
-    vaccinationStatusStore.vaccineRecordState(props.dependent.ownerId)
-);
-const isVaccineRecordDownloading = computed(
-    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
-);
 const showRecommendations = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.homepage
             .showRecommendationsLink
 );
-const vaccineRecordStatusMessage = computed(
-    () => vaccineRecordState.value.statusMessage
-);
-const vaccineRecordResultMessage = computed(
-    () => vaccineRecordState.value.resultMessage
-);
-
-function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
-    vaccinationStatusStore.stopVaccineRecordDownload(hdid);
-}
 
 function handleClickHealthRecordsButton(): void {
     trackingService.trackEvent({
@@ -81,32 +56,9 @@ function showRecommendationsDialog(): void {
     });
     recommendationsDialogComponent.value?.showDialog();
 }
-
-watch(vaccineRecordState, () => {
-    if (vaccineRecordState.value.resultMessage.length > 0) {
-        vaccineRecordResultModal.value?.showModal();
-    }
-
-    if (
-        vaccineRecordState.value.record !== undefined &&
-        vaccineRecordState.value.status === LoadStatus.LOADED &&
-        vaccineRecordState.value.download
-    ) {
-        const mimeType = vaccineRecordState.value.record.document.mediaType;
-        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
-        fetch(downloadLink).then((res) => {
-            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-        });
-        stopAuthenticatedVaccineRecordDownload(props.dependent.ownerId);
-    }
-});
 </script>
 
 <template>
-    <LoadingComponent
-        :is-loading="isVaccineRecordDownloading"
-        :text="vaccineRecordStatusMessage"
-    />
     <v-row>
         <v-col :cols="columns" class="d-flex">
             <HgCardComponent
@@ -150,11 +102,5 @@ watch(vaccineRecordState, () => {
         ref="recommendationsDialogComponent"
         :hdid="dependent.ownerId"
         :is-dependent="true"
-    />
-    <MessageModalComponent
-        ref="vaccineRecordResultModal"
-        ok-only
-        title="Alert"
-        :message="vaccineRecordResultMessage"
     />
 </template>
