@@ -1,12 +1,9 @@
 ﻿<script setup lang="ts">
-import { saveAs } from "file-saver";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
-import LoadingComponent from "@/components/common/LoadingComponent.vue";
-import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddQuickLinkComponent from "@/components/private/home/AddQuickLinkComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
@@ -22,14 +19,12 @@ import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { QuickLink } from "@/models/quickLink";
-import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import {
     Action,
     Dataset,
     Destination,
     ExternalUrl,
-    Format,
     InternalUrl,
     Origin,
     Text,
@@ -40,7 +35,6 @@ import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
-import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
 import EventDataUtility from "@/utility/eventDataUtility";
 import { useGrid } from "@/utility/useGrid";
@@ -60,34 +54,17 @@ const trackingService = container.get<ITrackingService>(
 const router = useRouter();
 const configStore = useConfigStore();
 const userStore = useUserStore();
-const authenticatedVaccinationStatusStore =
-    useVaccinationStatusAuthenticatedStore();
 const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
 const { columns } = useGrid();
 
 const showSmsRemoved = ref<boolean>();
 
-const vaccineRecordResultModal =
-    ref<InstanceType<typeof MessageModalComponent>>();
 const recommendationsDialogComponent =
     ref<InstanceType<typeof RecommendationsDialogComponent>>();
 
 const user = computed(() => userStore.user);
 const quickLinks = computed(() => userStore.quickLinks);
-const vaccineRecordState = computed(() =>
-    authenticatedVaccinationStatusStore.vaccineRecordState(user.value.hdid)
-);
-
-const isVaccineRecordDownloading = computed(
-    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
-);
-const vaccineRecordStatusMessage = computed(
-    () => vaccineRecordState.value.statusMessage
-);
-const vaccineRecordResultMessage = computed(
-    () => vaccineRecordState.value.resultMessage
-);
 const unverifiedEmail = computed(
     () => !user.value.verifiedEmail && user.value.hasEmail
 );
@@ -198,10 +175,6 @@ const isAddQuickLinkButtonDisabled = computed(
         !preferenceHealthConnectHidden.value &&
         !preferenceRecommendationsLinkHidden.value
 );
-
-function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
-    authenticatedVaccinationStatusStore.stopVaccineRecordDownload(hdid);
-}
 
 function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
     const updatedLinks =
@@ -379,33 +352,6 @@ function handleClickQuickLink(index: number): void {
     router.push({ path: "/timeline" });
 }
 
-watch(vaccineRecordState, () => {
-    if (vaccineRecordState.value.resultMessage.length > 0) {
-        vaccineRecordResultModal.value?.showModal();
-    }
-
-    if (
-        vaccineRecordState.value.record !== undefined &&
-        vaccineRecordState.value.status === LoadStatus.LOADED &&
-        vaccineRecordState.value.download
-    ) {
-        const mimeType = vaccineRecordState.value.record.document.mediaType;
-        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
-        fetch(downloadLink).then((res) => {
-            trackingService.trackEvent({
-                action: Action.ButtonClick,
-                text: Text.DownloadProofOfVaccination,
-                origin: Origin.Home,
-                destination: Destination.Download,
-                type: Type.Covid19ProofOfVaccination,
-                format: Format.Pdf,
-            });
-            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-        });
-        stopAuthenticatedVaccineRecordDownload(user.value.hdid);
-    }
-});
-
 if (preferenceShowSmsRemoved.value) {
     showSmsRemoved.value = true;
     setPreferenceValue(UserPreferenceType.ShowSmsRemoved, "false");
@@ -413,10 +359,6 @@ if (preferenceShowSmsRemoved.value) {
 </script>
 
 <template>
-    <LoadingComponent
-        :is-loading="isVaccineRecordDownloading"
-        :text="vaccineRecordStatusMessage"
-    />
     <HgAlertComponent
         v-if="unverifiedEmail || unverifiedSms || showSmsRemoved"
         data-testid="incomplete-profile-banner"
@@ -727,12 +669,6 @@ if (preferenceShowSmsRemoved.value) {
     <RecommendationsDialogComponent
         ref="recommendationsDialogComponent"
         :hdid="user.hdid"
-    />
-    <MessageModalComponent
-        ref="vaccineRecordResultModal"
-        ok-only
-        title="Alert"
-        :message="vaccineRecordResultMessage"
     />
 </template>
 
