@@ -26,7 +26,6 @@ import {
     IUserNoteService,
     IUserProfileService,
     IUserRatingService,
-    IVaccinationStatusService,
 } from "@/services/interfaces";
 import { LoglevelLogger } from "@/services/loglevelLogger";
 import { RestAuthenticationService } from "@/services/restAuthService";
@@ -51,7 +50,6 @@ import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileServiceV2 } from "@/services/restUserProfileServiceV2";
 import { RestUserRatingService } from "@/services/restUserRatingService";
-import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
 import { useConfigStore } from "@/stores/config";
 
 export async function initializeServices(): Promise<void> {
@@ -275,16 +273,6 @@ export async function initializeServices(): Promise<void> {
         SERVICE_IDENTIFIER.UserRatingService,
         (c) =>
             new RestUserRatingService(
-                c.get<ILogger>(SERVICE_IDENTIFIER.Logger),
-                c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
-                configStore.config
-            )
-    );
-
-    container.set<IVaccinationStatusService>(
-        SERVICE_IDENTIFIER.VaccinationStatusService,
-        (c) =>
-            new RestVaccinationStatusService(
                 c.get<ILogger>(SERVICE_IDENTIFIER.Logger),
                 c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
                 configStore.config

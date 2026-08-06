@@ -3,8 +3,6 @@ import { Dictionary } from "@/models/baseTypes";
 import { ClinicalDocument } from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import { ExternalConfiguration } from "@/models/configData";
-import CovidVaccineRecord from "@/models/covidVaccineRecord";
-import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { Encounter, HospitalVisit } from "@/models/encounter";
@@ -37,7 +35,6 @@ import UserProfile, {
     UserProfileNotificationSettingModel,
 } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
-import VaccinationStatus from "@/models/vaccinationStatus";
 import { EventData } from "@/plugins/extensions";
 
 export interface IAuthenticationService {
@@ -53,25 +50,6 @@ export interface IImmunizationService {
     getPatientImmunizations(
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>>;
-}
-
-export interface IVaccinationStatusService {
-    getPublicVaccineStatus(
-        phn: string,
-        dateOfBirth: StringISODate,
-        dateOfVaccine: StringISODate
-    ): Promise<RequestResult<VaccinationStatus>>;
-    getPublicVaccineStatusPdf(
-        phn: string,
-        dateOfBirth: StringISODate,
-        dateOfVaccine: StringISODate
-    ): Promise<RequestResult<CovidVaccineRecord>>;
-    getAuthenticatedVaccineStatus(
-        hdid: string
-    ): Promise<RequestResult<VaccinationStatus>>;
-    getAuthenticatedVaccineRecord(
-        hdid: string
-    ): Promise<RequestResult<CovidVaccineRecord>>;
 }
 
 export interface IPatientService {

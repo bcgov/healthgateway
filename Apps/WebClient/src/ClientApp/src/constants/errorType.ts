@@ -25,8 +25,6 @@ export enum ErrorSourceType {
     ClinicalDocument = "clinical document",
     Note = "note",
     Patient = "patient",
-    VaccineCard = "vaccine card",
-    VaccineRecord = "vaccine record",
     Profile = "profile",
     User = "user",
     TermsOfService = "terms of service",

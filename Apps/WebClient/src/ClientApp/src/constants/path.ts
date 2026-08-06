@@ -19,7 +19,6 @@ export enum Path {
     TermsOfService = "/termsOfService",
     Timeline = "/timeline",
     Unauthorized = "/unauthorized",
-    VaccineCard = "/vaccinecard",
     ValidateEmail = "/validateEmail",
     VppLogin = "/vppLogin",
 }

@@ -24,8 +24,7 @@ type ServiceIdentifier =
     | "UserFeedbackService"
     | "UserNoteService"
     | "UserProfileService"
-    | "UserRatingService"
-    | "VaccinationStatusService";
+    | "UserRatingService";
 
 export type Identifier = DelegateIdentifier | ServiceIdentifier;
 
@@ -58,5 +57,4 @@ export const SERVICE_IDENTIFIER: { [key: string]: ServiceIdentifier } = {
     UserNoteService: "UserNoteService",
     UserProfileService: "UserProfileService",
     UserRatingService: "UserRatingService",
-    VaccinationStatusService: "VaccinationStatusService",
 };

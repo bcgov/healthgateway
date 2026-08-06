@@ -114,7 +114,6 @@ export const enum Origin {
     Profile = "Profile",
     ServicesPage = "Services Page",
     Timeline = "Timeline",
-    VaccineCard = "Vaccine Card",
     VPPLoginPage = "VPP Login Page",
 }
 
@@ -182,7 +181,6 @@ export const enum Text {
     ImmunizationsHealthLinkBC = "Immunizations - HealthLink BC",
     Login = "Log in",
     LoginBCSC = "Log in with BCSC",
-    LoginVaccineCard = "Log in Vaccine Card",
     Logout = "Logout",
     MyHealthTile = "MyHealth Tile",
     MyHealthURL = "MyHealth URL",
@@ -221,9 +219,7 @@ export const enum Text {
 }
 
 export const enum Type {
-    Covid19ProofOfVaccination = "COVID-19 Proof of Vaccination",
     OrganDonorRegistration = "Organ Donor Registration",
-    PublicCovid19ProofOfVaccination = "Public COVID-19 Proof of Vaccination",
     Recall = "Recall",
     Result = "Result",
     BcCancerScreening = "BC Cancer Screening",
