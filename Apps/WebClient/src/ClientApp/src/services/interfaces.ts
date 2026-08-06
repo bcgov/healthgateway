@@ -20,7 +20,6 @@ import PatientDataResponse, {
     PatientDataFile,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -205,16 +204,6 @@ export interface IHttpDelegate {
         payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
-}
-
-export interface IPcrTestService {
-    registerTestKit(
-        hdid: string,
-        testKit: RegisterTestKitRequest
-    ): Promise<RegisterTestKitRequest | undefined>;
-    registerTestKitPublic(
-        testKit: RegisterTestKitRequest
-    ): Promise<RegisterTestKitRequest | undefined>;
 }
 
 export interface IReportService {

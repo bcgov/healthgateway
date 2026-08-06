@@ -28,7 +28,6 @@ export enum ErrorSourceType {
     Profile = "profile",
     User = "user",
     TermsOfService = "terms of service",
-    TestKit = "test kit",
     QuickLinks = "quick links",
     ExportRecords = "export record",
     Notification = "notification",

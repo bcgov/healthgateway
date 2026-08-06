@@ -93,10 +93,6 @@ const ValidateEmailView = () =>
     import(
         /* webpackChunkName: "validateEmail" */ "@/components/private/validate-email/ValidateEmailView.vue"
     );
-const PcrTestKitRegistrationView = () =>
-    import(
-        /* webpackChunkName: "pcrTest" */ "@/components/public/pcr-test-kit-registration/PcrTestKitRegistrationView.vue"
-    );
 const VppLoginView = () =>
     import(
         /* webpackChunkName: "vppLogin" */ "@/components/public/vpp/VppLoginView.vue"
@@ -263,26 +259,6 @@ const routes = [
         path: Path.NotFound,
         component: NotFoundView,
         meta: { stateless: true },
-    },
-    {
-        path: Path.PcrTestKitRegistration,
-        component: PcrTestKitRegistrationView,
-        props: false,
-        meta: {
-            validStates: [UserState.unauthenticated, UserState.registered],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.pcrTestEnabled,
-        },
-    },
-    {
-        path: Path.PcrTestKitRegistration + "/:serialNumber",
-        component: PcrTestKitRegistrationView,
-        props: true,
-        meta: {
-            validStates: [UserState.unauthenticated, UserState.registered],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.pcrTestEnabled,
-        },
     },
     {
         path: Path.Reports,

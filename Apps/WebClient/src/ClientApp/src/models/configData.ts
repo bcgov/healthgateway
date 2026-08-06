@@ -70,14 +70,12 @@ export interface FeatureToggleConfiguration {
     notificationCentre: NotificationCentreSettings;
     timeline: TimelineSettings;
     datasets: DatasetSettings[];
-    covid19: Covid19Settings;
     dependents: DependentsSettings;
     services: ServicesSettings;
     profile: ProfileSettings;
 }
 
 export interface HomepageSettings {
-    showFederalProofOfVaccination: boolean;
     showRecommendationsLink: boolean;
     showImmunizationRecordLink: boolean;
     otherRecordSources: OtherRecordSourcesSettings;
@@ -94,21 +92,6 @@ export interface TimelineSettings {
 export interface DatasetSettings {
     name: string;
     enabled: boolean;
-}
-
-export interface Covid19Settings {
-    pcrTestEnabled: boolean;
-    publicCovid19: PublicCovid19Settings;
-    proofOfVaccination: ProofOfVaccinationSettings;
-}
-
-export interface PublicCovid19Settings {
-    vaccineCardEnabled: boolean;
-    showFederalProofOfVaccination: boolean;
-}
-
-export interface ProofOfVaccinationSettings {
-    exportPdf: boolean;
 }
 
 export interface DependentsSettings {

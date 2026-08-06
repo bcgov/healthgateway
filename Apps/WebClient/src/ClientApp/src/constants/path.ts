@@ -11,7 +11,6 @@ export enum Path {
     NotFound = "/not-found",
     OtherRecordSources = "/otherRecordSources",
     PatientRetrievalError = "/patientRetrievalError",
-    PcrTestKitRegistration = "/pcrtest",
     Profile = "/profile",
     Registration = "/registration",
     Reports = "/reports",

@@ -17,7 +17,6 @@ import {
     INotificationService,
     IPatientDataService,
     IPatientService,
-    IPcrTestService,
     IReportService,
     ISpecialAuthorityService,
     ITrackingService,
@@ -41,7 +40,6 @@ import { RestMedicationService } from "@/services/restMedicationService";
 import { RestNotificationService } from "@/services/restNotificationService";
 import { RestPatientDataService } from "@/services/restPatientDataService";
 import { RestPatientService } from "@/services/restPatientService";
-import { RestPcrTestService } from "@/services/restPcrTestService";
 import { RestReportService } from "@/services/restReportService";
 import { RestSpecialAuthorityService } from "@/services/restSpecialAuthorityService";
 import { RestTrackingService } from "@/services/restTrackingService";
@@ -187,16 +185,6 @@ export async function initializeServices(): Promise<void> {
         SERVICE_IDENTIFIER.PatientService,
         (c) =>
             new RestPatientService(
-                c.get<ILogger>(SERVICE_IDENTIFIER.Logger),
-                c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
-                configStore.config
-            )
-    );
-
-    container.set<IPcrTestService>(
-        SERVICE_IDENTIFIER.PcrTestService,
-        (c) =>
-            new RestPcrTestService(
                 c.get<ILogger>(SERVICE_IDENTIFIER.Logger),
                 c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
                 configStore.config

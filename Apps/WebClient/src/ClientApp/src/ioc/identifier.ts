@@ -15,7 +15,6 @@ type ServiceIdentifier =
     | "NotificationService"
     | "PatientDataService"
     | "PatientService"
-    | "PcrTestService"
     | "ReportService"
     | "SpecialAuthorityService"
     | "TrackingService"
@@ -47,7 +46,6 @@ export const SERVICE_IDENTIFIER: { [key: string]: ServiceIdentifier } = {
     NotificationService: "NotificationService",
     PatientDataService: "PatientDataService",
     PatientService: "PatientService",
-    PcrTestService: "PcrTestService",
     ReportService: "ReportService",
     SpecialAuthorityService: "SpecialAuthorityService",
     TrackingService: "TrackingService",

@@ -23,10 +23,7 @@ const isHeaderVisible = computed(
 );
 const isCommunicationVisible = computed(
     () =>
-        !currentPathMatches(Path.LoginCallback, Path.VppLogin) &&
-        !route.path
-            .toLowerCase()
-            .startsWith(Path.PcrTestKitRegistration.toLowerCase())
+        !currentPathMatches(Path.LoginCallback, Path.VppLogin)
 );
 const isFooterVisible = computed(
     () =>
