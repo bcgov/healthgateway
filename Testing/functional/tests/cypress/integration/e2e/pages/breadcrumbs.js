@@ -13,10 +13,6 @@ function testPageBreadcrumb(url, dataTestId) {
 
     cy.visit(url);
 
-    if (url === "/covid19") {
-        cy.wait("@getVaccinationStatus", { timeout: defaultTimeout });
-    }
-
     if (url === "/dependents") {
         cy.wait("@getDependent", { timeout: defaultTimeout });
     }
@@ -48,8 +44,6 @@ describe("Breadcrumbs", () => {
     });
     it("Breadcrumbs present on timeline", () =>
         testPageBreadcrumb("/timeline", "breadcrumb-timeline"));
-    it("Breadcrumbs present on covid19", () =>
-        testPageBreadcrumb("/covid19", "breadcrumb-covid-19"));
     it("Breadcrumbs present on dependents", () =>
         testPageBreadcrumb("/dependents", "breadcrumb-dependents"));
     it("Breadcrumbs present on download", () =>

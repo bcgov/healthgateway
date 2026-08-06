@@ -9,10 +9,6 @@ import { FeatureToggleConfiguration } from "@/models/configData";
 import { afterEachHook } from "@/router/afterEachHook";
 import { beforeEachGuard } from "@/router/beforeEachGuard";
 
-const Covid19View = () =>
-    import(
-        /* webpackChunkName: "covid19" */ "@/components/private/covid19/Covid19View.vue"
-    );
 const DependentTimelineView = () =>
     import(
         /* webpackChunkName: "dependents" */ "@/components/private/dependent/DependentTimelineView.vue"
@@ -143,13 +139,6 @@ const routes = [
                 UserState.registered,
                 UserState.offline,
             ],
-        },
-    },
-    {
-        path: Path.Covid19,
-        component: Covid19View,
-        meta: {
-            validStates: [UserState.registered],
         },
     },
     {

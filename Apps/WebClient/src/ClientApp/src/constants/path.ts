@@ -1,7 +1,6 @@
 export enum Path {
     Root = "/",
     AcceptTermsOfService = "/acceptTermsOfService",
-    Covid19 = "/covid19",
     Dependents = "/dependents",
     Home = "/home",
     IdirLoggedIn = "/idirLoggedIn",
