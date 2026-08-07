@@ -40,7 +40,6 @@ namespace HealthGateway.ImmunizationTests.Utils
                     cfg.AddProfile(new ForecastProfile());
                     cfg.AddProfile(new LoadStateProfile());
                     cfg.AddProfile(new TargetDiseaseProfile());
-                    cfg.AddProfile(new VaccineStatusProfile());
                 });
 
             return config.CreateMapper();

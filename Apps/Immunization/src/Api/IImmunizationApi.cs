@@ -38,17 +38,4 @@ public interface IImmunizationApi
     /// </returns>
     [Get("/api/v1/Immunizations?subjectHdid={subjectHdid}&limit={limit}")]
     Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(string subjectHdid, int? limit, [Authorize] string token, CancellationToken ct = default);
-
-    /// <summary>
-    /// Retrieves a PhsaResult containing the vaccine status of a given patient.
-    /// </summary>
-    /// <param name="subjectHdid">The HDID identifying the subject of the request.</param>
-    /// <param name="federalPvc">A value indicating if the federal proof of vaccination should be included in the response.</param>
-    /// <param name="token">The bearer token to authorize the call.</param>
-    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-    /// <returns>
-    /// A PhsaResult containing the vaccine status of a given patient.
-    /// </returns>
-    [Post("/api/v1/Immunizations/VaccineStatusIndicator?subjectHdid={subjectHdid}&federalPvc={federalPvc}")]
-    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(string subjectHdid, bool federalPvc, [Authorize] string token, CancellationToken ct = default);
 }

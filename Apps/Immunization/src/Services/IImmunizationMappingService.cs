@@ -41,11 +41,5 @@ namespace HealthGateway.Immunization.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         LoadStateModel MapToLoadStateModel(PhsaLoadState source);
-
-        /// <summary>Maps model.</summary>
-        /// <param name="source">The source object to transform.</param>
-        /// <param name="personalHealthNumber">The patient's personal health number.</param>
-        /// <returns>The destination object.</returns>
-        VaccineStatus MapToVaccineStatus(VaccineStatusResult source, string? personalHealthNumber);
     }
 }

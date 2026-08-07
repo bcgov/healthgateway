@@ -3,9 +3,6 @@ import { AuthMethod } from "../../../support/constants";
 const defaultTimeout = 60000;
 
 function testPageBreadcrumb(url, dataTestId) {
-    cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
-        "getVaccinationStatus"
-    );
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
     cy.intercept("GET", "**/UserProfile/termsofservice*").as(
         "getTermsOfService"
