@@ -21,7 +21,7 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
-    it.skip("Home - Immunization Record Card button enabled", () => {
+    it("Home - Immunization Record Card button enabled", () => {
         cy.configureSettings({
             homepage: {
                 showImmunizationRecordLink: true,
