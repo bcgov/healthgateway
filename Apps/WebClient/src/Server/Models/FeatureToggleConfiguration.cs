@@ -24,7 +24,6 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="NotificationCentre">Settings for the notification centre.</param>
     /// <param name="Timeline">Settings for the timeline.</param>
     /// <param name="Datasets">Settings for the data sets.</param>
-    /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
     /// <param name="Services">Settings for services features.</param>
     /// <param name="Profile">Settings for profile features.</param>
@@ -33,7 +32,6 @@ namespace HealthGateway.WebClient.Server.Models
         NotificationCentreSettings NotificationCentre,
         TimelineSettings Timeline,
         DatasetSettings[] Datasets,
-        Covid19Settings Covid19,
         DependentsSettings Dependents,
         ServicesSettings Services,
         ProfileSettings Profile);
@@ -41,12 +39,10 @@ namespace HealthGateway.WebClient.Server.Models
     /// <summary>
     /// Settings for the home page.
     /// </summary>
-    /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
     /// <param name="ShowRecommendationsLink">Toggles vaccination recommendation link.</param>
     /// <param name="ShowImmunizationRecordLink">Toggles immunization record link.</param>
     /// <param name="OtherRecordSources">Settings for other record sources features.</param>
     public record HomepageSettings(
-        bool ShowFederalProofOfVaccination,
         bool ShowRecommendationsLink,
         bool ShowImmunizationRecordLink,
         OtherRecordSourcesSettings OtherRecordSources);
@@ -73,33 +69,6 @@ namespace HealthGateway.WebClient.Server.Models
     public record DatasetSettings(
         string Name,
         bool Enabled);
-
-    /// <summary>
-    /// Settings for covid19 features.
-    /// </summary>
-    /// <param name="PcrTestEnabled">Toggles pcr test.</param>
-    /// <param name="PublicCovid19">Settings for public covid19 feature.</param>
-    /// <param name="ProofOfVaccination">Settings for proof of vaccination feature.</param>
-    public record Covid19Settings(
-        bool PcrTestEnabled,
-        PublicCovid19Settings PublicCovid19,
-        ProofOfVaccinationSettings ProofOfVaccination);
-
-    /// <summary>
-    /// Settings for public covid19 feature.
-    /// </summary>
-    /// <param name="VaccineCardEnabled">Toggles vaccine card page.</param>
-    /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
-    public record PublicCovid19Settings(
-        bool VaccineCardEnabled,
-        bool ShowFederalProofOfVaccination);
-
-    /// <summary>
-    /// Settings for proof of vaccination feature.
-    /// </summary>
-    /// <param name="ExportPdf">Toggles export of pdf feature.</param>
-    public record ProofOfVaccinationSettings(
-        bool ExportPdf);
 
     /// <summary>
     /// Settings for dependents features.

@@ -1,6 +1,5 @@
 {
     "homepage": {
-        "showFederalProofOfVaccination": true,
         "showRecommendationsLink": true,
         "showImmunizationRecordLink": true,
         "otherRecordSources": {
@@ -65,16 +64,6 @@
             "enabled": true
         }
     ],
-    "covid19": {
-        "pcrTestEnabled": true,
-        "publicCovid19": {
-            "vaccineCardEnabled": true,
-            "showFederalProofOfVaccination": true
-        },
-        "proofOfVaccination": {
-            "exportPdf": false
-        }
-    },
     "dependents": {
         "enabled": true,
         "timelineEnabled": true,

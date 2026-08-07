@@ -204,11 +204,10 @@ namespace HealthGateway.WebClientTests.Services
                     FeatureToggleFilePath = featureToggleConfigurationPath,
                     FeatureToggleConfiguration = showFeatureToggleConfiguration
                         ? new FeatureToggleConfiguration(
-                            new HomepageSettings(true, true, true, new OtherRecordSourcesSettings(true, [new("accessMyHealth", false)])),
+                            new HomepageSettings(true, true, new OtherRecordSourcesSettings(true, [new("accessMyHealth", false)])),
                             new NotificationCentreSettings(true),
                             new TimelineSettings(true),
                             GetFeatureDatasetSettings(),
-                            new Covid19Settings(true, new PublicCovid19Settings(true, true), new ProofOfVaccinationSettings(false)),
                             new DependentsSettings(true, true, [new("note", false)]),
                             new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]),
                             GetDefaultProfileSettings())
