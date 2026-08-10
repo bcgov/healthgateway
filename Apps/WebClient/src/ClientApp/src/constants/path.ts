@@ -1,7 +1,6 @@
 export enum Path {
     Root = "/",
     AcceptTermsOfService = "/acceptTermsOfService",
-    Covid19 = "/covid19",
     Dependents = "/dependents",
     Home = "/home",
     IdirLoggedIn = "/idirLoggedIn",
@@ -12,7 +11,6 @@ export enum Path {
     NotFound = "/not-found",
     OtherRecordSources = "/otherRecordSources",
     PatientRetrievalError = "/patientRetrievalError",
-    PcrTestKitRegistration = "/pcrtest",
     Profile = "/profile",
     Registration = "/registration",
     Reports = "/reports",
@@ -20,7 +18,6 @@ export enum Path {
     TermsOfService = "/termsOfService",
     Timeline = "/timeline",
     Unauthorized = "/unauthorized",
-    VaccineCard = "/vaccinecard",
     ValidateEmail = "/validateEmail",
     VppLogin = "/vppLogin",
 }

@@ -30,9 +30,6 @@ const agedOutDependentRemoveButtonId = `[data-testid=remove-dependent-btn-${aged
 describe("dependents - dashboard", () => {
     beforeEach(() => {
         cy.configureSettings({
-            homepage: {
-                showFederalProofOfVaccination: true,
-            },
             dependents: {
                 enabled: true,
                 timelineEnabled: true,

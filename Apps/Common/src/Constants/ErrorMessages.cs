@@ -106,39 +106,9 @@ namespace HealthGateway.Common.Constants
         public const string MaximumRetryAttemptsReached = "Maximum retry attempts reached.";
 
         /// <summary>
-        /// Error message to return when phn and date of birth are invalid.
-        /// </summary>
-        public const string PhnOrDateOfBirthInvalid = "Personal Health Number and Date of Birth are invalid.";
-
-        /// <summary>
-        /// Error message to return when vaccine status not found.
-        /// </summary>
-        public const string VaccineStatusNotFound = "Vaccine status not found";
-
-        /// <summary>
-        /// Error message to return when vaccination status is unknown.
-        /// </summary>
-        public const string VaccinationStatusUnknown = "Vaccination status is unknown.";
-
-        /// <summary>
         /// Error message to return when delegate user profile not found.
         /// </summary>
         public const string DelegateUserProfileNotFound = "Delegate user profile not found.";
-
-        /// <summary>
-        /// Error message to return when unable to get vaccine proof.
-        /// </summary>
-        public const string CannotGetVaccineProof = "Unable to obtain Vaccine Proof.";
-
-        /// <summary>
-        /// Error message to return when unable to get vaccine proof pdf.
-        /// </summary>
-        public const string CannotGetVaccineProofPdf = "Unable to obtain Vaccine Proof PDF.";
-
-        /// <summary>
-        /// Error message to return when unable to get vaccine status.
-        /// </summary>
-        public const string CannotGetVaccineStatus = "Error retrieving vaccine status information.";
 
         /// <summary>
         /// Error message to return when email template not found in database.

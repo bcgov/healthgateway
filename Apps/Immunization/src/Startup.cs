@@ -69,19 +69,15 @@ namespace HealthGateway.Immunization
             // Add Services
             services.AddTransient<IImmunizationMappingService, ImmunizationMappingService>();
             services.AddTransient<IImmunizationService, ImmunizationService>();
-            services.AddTransient<IVaccineStatusService, VaccineStatusService>();
 
             // Add delegates
             services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
-            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
 
             // Add API Clients
             PhsaConfig phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfig.ConfigurationSectionKey, phsaConfig);
             services.AddRefitClient<IImmunizationApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
-            services.AddRefitClient<IImmunizationPublicApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
             PhsaConfigV2 phsaConfigV2 = new();

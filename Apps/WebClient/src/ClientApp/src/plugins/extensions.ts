@@ -78,7 +78,6 @@ export const enum Destination {
     Home = "Home",
     ImmunizationRecordBC = "Immunization Record BC",
     Login = "Login",
-    MohCovid19 = "MoH COVID-19",
     MyHealth = "MyHealth",
     MyHealthKey = "myhealthkey",
     MyHealthPortal = "MyHealthPortal",
@@ -114,7 +113,6 @@ export const enum Origin {
     Profile = "Profile",
     ServicesPage = "Services Page",
     Timeline = "Timeline",
-    VaccineCard = "Vaccine Card",
     VPPLoginPage = "VPP Login Page",
 }
 
@@ -146,7 +144,6 @@ export const enum Text {
     AppRating = "App Rating",
     BcVaccineSchedule = "BC Vaccine Schedule",
     Cancel = "Cancel",
-    Covid19VaccineInformation = "COVID-19 Vaccine Information",
     DeleteAccount = "Delete Account",
     Dependents = "Dependents",
     DependentRecords = "Dependent records",
@@ -156,7 +153,6 @@ export const enum Text {
     DownloadDependentRecommendedImmunizations = "Download Dependent Recommended Immunizations",
     DownloadImagingReport = "Download Imaging Report",
     DownloadLabResult = "Download Lab Result",
-    DownloadProofOfVaccination = "Download Proof of Vaccination",
     EmailHealthGateway = "Email HealthGateway",
     Export = "Export",
     FilterHealthRecords = "Filter Health Records",
@@ -182,7 +178,6 @@ export const enum Text {
     ImmunizationsHealthLinkBC = "Immunizations - HealthLink BC",
     Login = "Log in",
     LoginBCSC = "Log in with BCSC",
-    LoginVaccineCard = "Log in Vaccine Card",
     Logout = "Logout",
     MyHealthTile = "MyHealth Tile",
     MyHealthURL = "MyHealth URL",
@@ -215,16 +210,13 @@ export const enum Text {
     TermsOfService = "Terms of Service",
     TimelineMissingImmunizations = "Timeline - Missing Immunizations Fill In Online Form",
     VerifyContactInformation = "Verify Contact Information",
-    ViewProofOfVaccination = "View Proof of Vaccination",
     VerifyEmailAddress = "Verify Email Address",
     VerifyMobileNumber = "Verify Mobile Number",
     UpdateMailingAddress = "Update Mailing Address",
 }
 
 export const enum Type {
-    Covid19ProofOfVaccination = "COVID-19 Proof of Vaccination",
     OrganDonorRegistration = "Organ Donor Registration",
-    PublicCovid19ProofOfVaccination = "Public COVID-19 Proof of Vaccination",
     Recall = "Recall",
     Result = "Result",
     BcCancerScreening = "BC Cancer Screening",

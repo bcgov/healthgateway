@@ -22,9 +22,7 @@ namespace HealthGateway.Laboratory.Controllers
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
-    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -36,23 +34,19 @@ namespace HealthGateway.Laboratory.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    [TypeFilter(typeof(AvailabilityFilter))]
     [ExcludeFromCodeCoverage]
     [SuppressMessage("SonarLint", "S6960:This controller has multiple responsibilities and could be split into 2 smaller controllers", Justification = "Team decision")]
     public class LaboratoryController : ControllerBase
     {
         private readonly ILaboratoryService labService;
-        private readonly ILabTestKitService labTestKitService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
         /// <param name="labService">The laboratory data service.</param>
-        /// <param name="labTestKitService">The lab testkit service to use.</param>
-        public LaboratoryController(ILaboratoryService labService, ILabTestKitService labTestKitService)
+        public LaboratoryController(ILaboratoryService labService)
         {
             this.labService = labService;
-            this.labTestKitService = labTestKitService;
         }
 
         /// <summary>
@@ -129,30 +123,6 @@ namespace HealthGateway.Laboratory.Controllers
             Activity.Current?.AddBaggage("LaboratoryReportId", reportId);
             Activity.Current?.AddBaggage("LaboratoryReportIsCovid19", isCovid19.ToString());
             return await this.labService.GetLabReportAsync(reportId, hdid, isCovid19, ct);
-        }
-
-        /// <summary>
-        /// Registers a lab test for an authenticated user.
-        /// </summary>
-        /// <param name="hdid">The hdid to apply the LabTestKit against.</param>
-        /// <param name="labTestKit">The labTestKit to register.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
-        /// <response code="200">The LabTestKit was processed.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
-        /// </response>
-        /// <response code="503">The service is unavailable for use.</response>
-        [HttpPost]
-        [Produces("application/json")]
-        [Route("{hdid}/LabTestKit")]
-        [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody] LabTestKit labTestKit, CancellationToken ct)
-        {
-            Activity.Current?.AddBaggage("TestKitId", labTestKit.TestKitId);
-            return await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit, ct);
         }
     }
 }

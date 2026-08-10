@@ -58,9 +58,6 @@ const user = computed(() => userStore.user);
 const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
 const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
-const isPcrTest = computed(() =>
-    route.path.toLowerCase().startsWith("/pcrtest")
-);
 const isSidebarButtonShown = computed(
     () =>
         !isOffline.value &&
@@ -68,15 +65,13 @@ const isSidebarButtonShown = computed(
         isValidIdentityProvider.value &&
         userIsRegistered.value &&
         userIsActive.value &&
-        !patientRetrievalFailed.value &&
-        !isPcrTest.value
+        !patientRetrievalFailed.value
 );
 const isNotificationCentreAvailable = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.notificationCentre
             .enabled &&
         !isOffline.value &&
-        !isPcrTest.value &&
         oidcIsAuthenticated.value &&
         isValidIdentityProvider.value &&
         userIsRegistered.value &&
@@ -86,24 +81,17 @@ const isNotificationCentreAvailable = computed(
 const isAppTourAvailable = computed(
     () =>
         !isOffline.value &&
-        !isPcrTest.value &&
         oidcIsAuthenticated.value &&
         isValidIdentityProvider.value &&
         userIsRegistered.value &&
         userIsActive.value &&
         !patientRetrievalFailed.value
 );
-const isLoggedInMenuShown = computed(
-    () => oidcIsAuthenticated.value && !isPcrTest.value
-);
-const isLogOutButtonShown = computed(
-    () => oidcIsAuthenticated.value && isPcrTest.value
-);
+const isLoggedInMenuShown = computed(() => oidcIsAuthenticated.value);
 const isLogInButtonShown = computed(
     () =>
         !oidcIsAuthenticated.value &&
         !isOffline.value &&
-        !isPcrTest.value &&
         route.path.toLowerCase() !== "/login"
 );
 const isProfileLinkAvailable = computed(
@@ -344,17 +332,6 @@ nextTick(() => {
             :uppercase="false"
             @click="handleLoginClick"
         />
-        <HgButtonComponent
-            v-else-if="isLogOutButtonShown"
-            variant="secondary"
-            prepend-icon="fas fa-sign-out-alt"
-            class="mx-2"
-            data-testid="header-log-out-button"
-            to="/logout"
-            :uppercase="false"
-        >
-            Log out
-        </HgButtonComponent>
     </v-app-bar>
     <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
 </template>

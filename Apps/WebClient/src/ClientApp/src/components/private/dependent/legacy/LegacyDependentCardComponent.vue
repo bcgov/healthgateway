@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { saveAs } from "file-saver";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
-import Covid19TestResultDescriptionComponent from "@/components/private/timeline/entry/Covid19TestResultDescriptionComponent.vue";
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
@@ -22,16 +21,11 @@ import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import { ImmunizationAgent } from "@/models/immunizationModel";
-import {
-    Covid19LaboratoryOrder,
-    Covid19LaboratoryTest,
-    LaboratoryOrder,
-} from "@/models/laboratory";
+import { LaboratoryOrder } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import {
     Action,
@@ -53,13 +47,11 @@ import {
 } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useConfigStore } from "@/stores/config";
-import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
 import { useDependentStore } from "@/stores/dependent";
 import { useErrorStore } from "@/stores/error";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useLabResultStore } from "@/stores/labResult";
 import { useUserStore } from "@/stores/user";
-import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
 import DateSortUtility from "@/utility/dateSortUtility";
 import EventDataUtility from "@/utility/eventDataUtility";
@@ -72,12 +64,6 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
     (e: "needs-update"): void;
 }>();
-
-interface Covid19LaboratoryTestRow {
-    id: string;
-    reportAvailable: boolean;
-    test: Covid19LaboratoryTest;
-}
 
 interface ImmunizationRow {
     date: string;
@@ -95,10 +81,9 @@ interface RecommendationRow {
 
 const tabIndices = {
     profile: 0,
-    covid19: 1,
-    immunization: 2,
-    labResults: 3,
-    clinicalDocs: 4,
+    immunization: 1,
+    labResults: 2,
+    clinicalDocs: 3,
 };
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -113,10 +98,8 @@ const trackingService = container.get<ITrackingService>(
 );
 const userStore = useUserStore();
 const configStore = useConfigStore();
-const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 const errorStore = useErrorStore();
 const immunizationStore = useImmunizationStore();
-const covid19TestResultStore = useCovid19TestResultStore();
 const labResultStore = useLabResultStore();
 const clinicalDocumentStore = useClinicalDocumentStore();
 const dependentStore = useDependentStore();
@@ -125,25 +108,18 @@ const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
 const pdfFormatType = ref(ReportFormatType.PDF);
 const xlsxFormatType = ref(ReportFormatType.XLSX);
-const isReport = ref(false);
 const isReportDownloading = ref(false);
 const selectedTabIndex = ref(0);
 const immunizationTabIndex = ref(0);
-const selectedTestRow = ref<Covid19LaboratoryTestRow>();
 const selectedLaboratoryOrderRow = ref<LaboratoryOrder>();
 const selectedClinicalDocumentRow = ref<ClinicalDocument>();
 
 const reportDownloadModal = ref<InstanceType<typeof MessageModalComponent>>();
-const vaccineRecordResultModal =
-    ref<InstanceType<typeof MessageModalComponent>>();
 const deleteModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const dependentHdid = computed(() => props.dependent.ownerId);
 const user = computed<User>(() => userStore.user);
 const webClientConfig = computed(() => configStore.webConfig);
-const vaccineRecordState = computed(() =>
-    vaccinationStatusStore.vaccineRecordState(dependentHdid.value)
-);
 const headerData = computed<ReportHeader>(() => {
     return {
         phn: props.dependent.dependentInformation.PHN,
@@ -160,9 +136,6 @@ const headerData = computed<ReportHeader>(() => {
         filterText: "",
     };
 });
-const isVaccineRecordDownloading = computed(
-    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
-);
 const isExpired = computed(
     () =>
         DateWrapper.today().diff(
@@ -205,25 +178,6 @@ const clinicalDocuments = computed(() =>
                 DateWrapper.fromIsoDate(b.serviceDate)
             )
         )
-);
-// Covid-19
-const isCovid19TabShown = computed(() =>
-    ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
-);
-const covid19TestsAreLoading = computed(() =>
-    covid19TestResultStore.covid19TestResultsAreLoading(dependentHdid.value)
-);
-const covid19TestResultRows = computed(
-    () =>
-        covid19TestResultStore
-            .covid19TestResults(dependentHdid.value)
-            .flatMap((o: Covid19LaboratoryOrder) =>
-                o.labResults.map((r) => ({
-                    id: o.id,
-                    reportAvailable: o.reportAvailable,
-                    test: r,
-                }))
-            ) ?? []
 );
 // Immunizations
 const isImmunizationTabShown = computed(() =>
@@ -282,43 +236,6 @@ function deleteDependent(): void {
         })
         .finally(() => {
             emit("needs-update");
-        });
-}
-
-function downloadCovid19Report(): void {
-    if (selectedTestRow.value === undefined) {
-        return;
-    }
-
-    isReportDownloading.value = true;
-    const test = selectedTestRow.value.test;
-    laboratoryService
-        .getReportDocument(selectedTestRow.value.id, dependentHdid.value, true)
-        .then((result) => {
-            const report = result.resourcePayload;
-            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(
-                        blob,
-                        `COVID_Result_${props.dependent.dependentInformation.firstname}${props.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
-                    )
-                );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.Covid19LaboratoryReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
         });
 }
 
@@ -469,28 +386,17 @@ function downloadClinicalDocument(): void {
 }
 
 function downloadDocument(): void {
-    if (isReport.value) {
-        logger.debug(
-            `Download document from dependent tab: ${selectedTabIndex.value}`
-        );
+    logger.debug(
+        `Download document from dependent tab: ${selectedTabIndex.value}`
+    );
 
-        if (selectedTabIndex.value === tabIndices.covid19) {
-            downloadCovid19Report();
-        } else if (selectedTabIndex.value === tabIndices.immunization) {
-            downloadImmunizationReport();
-        } else if (selectedTabIndex.value === tabIndices.labResults) {
-            downloadLaboratoryOrderReport();
-        } else if (selectedTabIndex.value === tabIndices.clinicalDocs) {
-            downloadClinicalDocument();
-        }
-    } else {
-        downloadVaccinePdf();
+    if (selectedTabIndex.value === tabIndices.immunization) {
+        downloadImmunizationReport();
+    } else if (selectedTabIndex.value === tabIndices.labResults) {
+        downloadLaboratoryOrderReport();
+    } else if (selectedTabIndex.value === tabIndices.clinicalDocs) {
+        downloadClinicalDocument();
     }
-}
-
-function downloadVaccinePdf(): void {
-    logger.debug(`Downloading vaccine PDF for hdid: ${dependentHdid.value}`);
-    vaccinationStatusStore.retrieveVaccineRecord(dependentHdid.value);
 }
 
 function formatDateTime(dateTime: StringISODateTime): string {
@@ -506,13 +412,6 @@ function fetchClinicalDocuments(): void {
         `Fetching Clinical Documents for Hdid: ${dependentHdid.value}`
     );
     clinicalDocumentStore.retrieveClinicalDocuments(dependentHdid.value);
-}
-
-function fetchCovid19LaboratoryTests(): void {
-    logger.debug(
-        `Fetching COVID 19 Laboratory Tests for Hdid: ${dependentHdid.value}`
-    );
-    covid19TestResultStore.retrieveCovid19TestResults(dependentHdid.value);
 }
 
 function fetchLaboratoryOrders(): void {
@@ -570,34 +469,9 @@ function getMimeType(reportFormatType: ReportFormatType): string {
     }
 }
 
-function getOutcomeClasses(outcome: string): string[] {
-    switch (outcome?.toUpperCase()) {
-        case "NEGATIVE":
-            return ["text-success"];
-        case "POSITIVE":
-            return ["text-danger"];
-        default:
-            return ["text-muted"];
-    }
-}
-
-function showVaccineProofDownloadConfirmationModal(): void {
-    isReport.value = false;
-    reportDownloadModal.value?.showModal();
-}
-
-function showCovid19DownloadConfirmationModal(
-    row: Covid19LaboratoryTestRow
-): void {
-    isReport.value = true;
-    selectedTestRow.value = row;
-    reportDownloadModal.value?.showModal();
-}
-
 function showImmunizationDownloadConfirmationModal(
     type: ReportFormatType
 ): void {
-    isReport.value = true;
     reportFormatType.value = type;
     reportDownloadModal.value?.showModal();
 }
@@ -605,7 +479,6 @@ function showImmunizationDownloadConfirmationModal(
 function showClinicalDocumentDownloadConfirmationModal(
     row: ClinicalDocument
 ): void {
-    isReport.value = true;
     selectedClinicalDocumentRow.value = row;
     reportDownloadModal.value?.showModal();
 }
@@ -613,7 +486,6 @@ function showClinicalDocumentDownloadConfirmationModal(
 function showLaboratoryOrderDownloadConfirmationModal(
     row: LaboratoryOrder
 ): void {
-    isReport.value = true;
     selectedLaboratoryOrderRow.value = row;
     reportDownloadModal.value?.showModal();
 }
@@ -621,43 +493,12 @@ function showLaboratoryOrderDownloadConfirmationModal(
 function showDeleteConfirmationModal(): void {
     deleteModal.value?.showModal();
 }
-
-watch(vaccineRecordState, () => {
-    if (vaccineRecordState.value.resultMessage.length > 0) {
-        vaccineRecordResultModal.value?.showModal();
-    }
-
-    if (
-        vaccineRecordState.value.record !== undefined &&
-        vaccineRecordState.value.status === LoadStatus.LOADED &&
-        vaccineRecordState.value.download
-    ) {
-        const mimeType = vaccineRecordState.value.record.document.mediaType;
-        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
-        fetch(downloadLink).then((res) => {
-            trackingService.trackEvent({
-                action: Action.Download,
-                text: Text.Document,
-                type: Type.Covid19ProofOfVaccination,
-                format: Format.Pdf,
-                actor: Actor.Guardian,
-            });
-            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-        });
-        vaccinationStatusStore.stopVaccineRecordDownload(dependentHdid.value);
-    }
-});
 </script>
 
 <template>
     <div>
         <LoadingComponent
             :is-loading="isReportDownloading"
-            :full-screen="false"
-        />
-        <LoadingComponent
-            :is-loading="isVaccineRecordDownloading"
-            :text="vaccineRecordState.statusMessage"
             :full-screen="false"
         />
         <v-card
@@ -705,20 +546,10 @@ watch(vaccineRecordState, () => {
                 >
                     <v-tab :value="0" class="text-uppercase">Profile</v-tab>
                     <v-tab
-                        v-if="isCovid19TabShown"
-                        :disabled="isExpired"
-                        data-testid="covid19TabTitle"
-                        :value="1"
-                        class="text-uppercase"
-                        @click="fetchCovid19LaboratoryTests"
-                    >
-                        COVID-19
-                    </v-tab>
-                    <v-tab
                         v-if="isImmunizationTabShown"
                         :disabled="isExpired"
                         :data-testid="`immunization-tab-title-${dependent.ownerId}`"
-                        :value="2"
+                        :value="1"
                         class="text-uppercase"
                         @click="fetchPatientImmunizations"
                     >
@@ -728,7 +559,7 @@ watch(vaccineRecordState, () => {
                         v-if="isLaboratoryOrderTabShown"
                         :disabled="isExpired"
                         :data-testid="`lab-results-tab-title-${dependent.ownerId}`"
-                        :value="3"
+                        :value="2"
                         class="text-uppercase"
                         @click="fetchLaboratoryOrders"
                     >
@@ -738,7 +569,7 @@ watch(vaccineRecordState, () => {
                         v-if="isClinicalDocumentTabShown"
                         :disabled="isExpired"
                         :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
-                        :value="4"
+                        :value="3"
                         class="text-uppercase"
                         @click="fetchClinicalDocuments"
                     >
@@ -817,188 +648,6 @@ watch(vaccineRecordState, () => {
                                 </v-col>
                             </v-row>
                         </div>
-                    </v-window-item>
-                    <v-window-item data-testid="covid19Tab" class="pa-1">
-                        <div class="d-flex justify-center">
-                            <HgButtonComponent
-                                :id="`download-proof-of-vaccination-btn-id-${dependent.ownerId}`"
-                                :data-testid="`download-proof-of-vaccination-btn-${dependent.ownerId}`"
-                                variant="secondary"
-                                prepend-icon="check-circle"
-                                text="Download Proof of Vaccination"
-                                @click="
-                                    showVaccineProofDownloadConfirmationModal
-                                "
-                            />
-                        </div>
-                        <p
-                            :id="`covid19-table-header-${dependent.ownerId}`"
-                            class="text-body-large font-weight-bold my-4"
-                        >
-                            COVID-19 Test Results
-                        </p>
-                        <v-skeleton-loader
-                            v-if="covid19TestsAreLoading"
-                            type="table-thead, table-row@2"
-                            data-testid="table-skeleton-loader"
-                        />
-                        <template v-else>
-                            <p
-                                v-if="covid19TestResultRows.length === 0"
-                                data-testid="covid19NoRecords"
-                                class="text-body-medium"
-                            >
-                                No records found.
-                            </p>
-                            <v-table
-                                v-else
-                                class="w-100 mb-0"
-                                :aria-labelledby="`covid19-table-header-${dependent.ownerId}`"
-                                :data-testid="`covid19-table-${dependent.ownerId}`"
-                            >
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" scope="col">
-                                            Date
-                                        </th>
-                                        <th
-                                            class="d-none d-md-table-cell text-center"
-                                            scope="col"
-                                        >
-                                            Type
-                                        </th>
-                                        <th
-                                            class="d-none d-md-table-cell text-center"
-                                            scope="col"
-                                        >
-                                            Status
-                                        </th>
-                                        <th class="text-center" scope="col">
-                                            Result
-                                        </th>
-                                        <th class="text-center" scope="col">
-                                            Report
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr
-                                        v-for="(
-                                            row, index
-                                        ) in covid19TestResultRows"
-                                        :key="index"
-                                    >
-                                        <td
-                                            data-testid="dependentCovidTestDate"
-                                            class="text-center text-nowrap"
-                                        >
-                                            {{
-                                                formatDateTime(
-                                                    row.test.collectedDateTime
-                                                )
-                                            }}
-                                        </td>
-                                        <td
-                                            data-testid="dependentCovidTestType"
-                                            class="d-none d-md-table-cell text-center"
-                                        >
-                                            {{ row.test.testType }}
-                                        </td>
-                                        <td
-                                            data-testid="dependentCovidTestStatus"
-                                            class="d-none d-md-table-cell text-center"
-                                        >
-                                            {{ row.test.testStatus }}
-                                        </td>
-                                        <td
-                                            data-testid="dependentCovidTestLabResult"
-                                            class="text-center"
-                                        >
-                                            <span
-                                                v-if="
-                                                    row.test
-                                                        .filteredLabResultOutcome
-                                                "
-                                                class="font-weight-bold"
-                                                :class="
-                                                    getOutcomeClasses(
-                                                        row.test
-                                                            .labResultOutcome
-                                                    )
-                                                "
-                                            >
-                                                {{
-                                                    row.test
-                                                        .filteredLabResultOutcome
-                                                }}
-                                            </span>
-                                            <HgIconButtonComponent
-                                                v-if="
-                                                    row.test.resultReady &&
-                                                    row.test.resultDescription
-                                                "
-                                                :id="
-                                                    'dependent-covid-test-info-button-' +
-                                                    index
-                                                "
-                                                data-testid="dependent-covid-test-info-button"
-                                                aria-label="Result Description"
-                                                class="ml-1 text-primary"
-                                                size="x-small"
-                                            >
-                                                <v-icon
-                                                    icon="info-circle"
-                                                    size="large"
-                                                />
-                                                <v-overlay
-                                                    activator="parent"
-                                                    location-strategy="connected"
-                                                    scroll-strategy="close"
-                                                    open-on-click
-                                                    :open-on-hover="false"
-                                                >
-                                                    <v-card
-                                                        data-testid="dependent-covid-test-info-popover"
-                                                        class="pa-2"
-                                                        max-width="400px"
-                                                    >
-                                                        <Covid19TestResultDescriptionComponent
-                                                            :description="
-                                                                row.test
-                                                                    .resultDescription
-                                                            "
-                                                            :link="
-                                                                row.test
-                                                                    .resultLink
-                                                            "
-                                                        />
-                                                    </v-card>
-                                                </v-overlay>
-                                            </HgIconButtonComponent>
-                                        </td>
-                                        <td class="text-center">
-                                            <HgIconButtonComponent
-                                                v-if="
-                                                    row.reportAvailable &&
-                                                    row.test.resultReady
-                                                "
-                                                icon="download"
-                                                data-testid="dependentCovidReportDownloadBtn"
-                                                variant="secondary"
-                                                class="pa-0"
-                                                color="primary"
-                                                size="small"
-                                                @click="
-                                                    showCovid19DownloadConfirmationModal(
-                                                        row
-                                                    )
-                                                "
-                                            />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </v-table>
-                        </template>
                     </v-window-item>
                     <v-window-item
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
@@ -1585,12 +1234,6 @@ watch(vaccineRecordState, () => {
             title="Sensitive Document"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="downloadDocument"
-        />
-        <MessageModalComponent
-            ref="vaccineRecordResultModal"
-            ok-only
-            title="Alert"
-            :message="vaccineRecordState.resultMessage"
         />
     </div>
 </template>

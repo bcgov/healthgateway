@@ -72,7 +72,6 @@ namespace HealthGateway.Laboratory
             services.AddTransient<ILaboratoryMappingService, LaboratoryMappingService>();
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
-            services.AddTransient<ILabTestKitService, LabTestKitService>();
 
             // Add delegates
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
@@ -80,8 +79,6 @@ namespace HealthGateway.Laboratory
             // Add API Clients
             LaboratoryConfig labConfig = new();
             this.startupConfig.Configuration.Bind(LaboratoryConfig.ConfigSectionKey, labConfig);
-            services.AddRefitClient<ILabTestKitApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
             services.AddRefitClient<ILaboratoryApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
 

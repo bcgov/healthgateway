@@ -7,8 +7,6 @@ const validDependent = {
     timelinePath: "/dependents/162346565465464564565463257/timeline",
     healthRecordsButtonSelector:
         "[data-testid=dependent-health-records-button-162346565465464564565463257]",
-    federalProofOfVaccinationButtonSelector:
-        "[data-testid=proof-vaccination-card-btn-162346565465464564565463257]",
     recommendationsCardSelector:
         "[data-testid=recommendations-card-162346565465464564565463257]",
 };
@@ -24,7 +22,6 @@ describe("dependents - dashboard", () => {
     beforeEach(() => {
         cy.configureSettings({
             homepage: {
-                showFederalProofOfVaccination: true,
                 showRecommendationsLink: true,
             },
             dependents: {
@@ -34,10 +31,6 @@ describe("dependents - dashboard", () => {
             datasets: [
                 {
                     name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "covid19TestResult",
                     enabled: true,
                 },
                 {
@@ -79,21 +72,6 @@ describe("dependents - dashboard", () => {
             .should("be.visible")
             .click();
         cy.location("pathname").should("eq", validDependent.timelinePath);
-    });
-
-    it("Validate download of federal proof of vaccination", () => {
-        cy.get(validDependent.federalProofOfVaccinationButtonSelector)
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get(confirmationModalButton).click();
-
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.verifyDownload("VaccineProof.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
     });
 
     it("Validate download of vaccine recommendations", () => {

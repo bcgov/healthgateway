@@ -15,7 +15,6 @@ type ServiceIdentifier =
     | "NotificationService"
     | "PatientDataService"
     | "PatientService"
-    | "PcrTestService"
     | "ReportService"
     | "SpecialAuthorityService"
     | "TrackingService"
@@ -24,8 +23,7 @@ type ServiceIdentifier =
     | "UserFeedbackService"
     | "UserNoteService"
     | "UserProfileService"
-    | "UserRatingService"
-    | "VaccinationStatusService";
+    | "UserRatingService";
 
 export type Identifier = DelegateIdentifier | ServiceIdentifier;
 
@@ -48,7 +46,6 @@ export const SERVICE_IDENTIFIER: { [key: string]: ServiceIdentifier } = {
     NotificationService: "NotificationService",
     PatientDataService: "PatientDataService",
     PatientService: "PatientService",
-    PcrTestService: "PcrTestService",
     ReportService: "ReportService",
     SpecialAuthorityService: "SpecialAuthorityService",
     TrackingService: "TrackingService",
@@ -58,5 +55,4 @@ export const SERVICE_IDENTIFIER: { [key: string]: ServiceIdentifier } = {
     UserNoteService: "UserNoteService",
     UserProfileService: "UserProfileService",
     UserRatingService: "UserRatingService",
-    VaccinationStatusService: "VaccinationStatusService",
 };

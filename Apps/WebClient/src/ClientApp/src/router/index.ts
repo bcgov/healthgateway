@@ -9,10 +9,6 @@ import { FeatureToggleConfiguration } from "@/models/configData";
 import { afterEachHook } from "@/router/afterEachHook";
 import { beforeEachGuard } from "@/router/beforeEachGuard";
 
-const Covid19View = () =>
-    import(
-        /* webpackChunkName: "covid19" */ "@/components/private/covid19/Covid19View.vue"
-    );
 const DependentTimelineView = () =>
     import(
         /* webpackChunkName: "dependents" */ "@/components/private/dependent/DependentTimelineView.vue"
@@ -36,10 +32,6 @@ const LoginCallbackView = () =>
 const ProfileView = () =>
     import(
         /* webpackChunkName: profile" */ "@/components/private/profile/ProfileView.vue"
-    );
-const PublicVaccineCardViewSelectorComponent = () =>
-    import(
-        /* webpackChunkName: "vaccinationStatus" */ "@/components/public/vaccine-card/VaccineCardViewSelectorComponent.vue"
     );
 const RegistrationView = () =>
     import(
@@ -101,10 +93,6 @@ const ValidateEmailView = () =>
     import(
         /* webpackChunkName: "validateEmail" */ "@/components/private/validate-email/ValidateEmailView.vue"
     );
-const PcrTestKitRegistrationView = () =>
-    import(
-        /* webpackChunkName: "pcrTest" */ "@/components/public/pcr-test-kit-registration/PcrTestKitRegistrationView.vue"
-    );
 const VppLoginView = () =>
     import(
         /* webpackChunkName: "vppLogin" */ "@/components/public/vpp/VppLoginView.vue"
@@ -132,13 +120,6 @@ const routes = [
                 UserState.registered,
                 UserState.offline,
             ],
-        },
-    },
-    {
-        path: Path.Covid19,
-        component: Covid19View,
-        meta: {
-            validStates: [UserState.registered],
         },
     },
     {
@@ -234,13 +215,6 @@ const routes = [
         meta: { stateless: true },
     },
     {
-        path: Path.VaccineCard,
-        component: PublicVaccineCardViewSelectorComponent,
-        meta: {
-            validStates: [UserState.unauthenticated, UserState.registered],
-        },
-    },
-    {
         path: Path.Registration,
         name: "Registration",
         component: RegistrationView,
@@ -274,26 +248,6 @@ const routes = [
         path: Path.NotFound,
         component: NotFoundView,
         meta: { stateless: true },
-    },
-    {
-        path: Path.PcrTestKitRegistration,
-        component: PcrTestKitRegistrationView,
-        props: false,
-        meta: {
-            validStates: [UserState.unauthenticated, UserState.registered],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.pcrTestEnabled,
-        },
-    },
-    {
-        path: Path.PcrTestKitRegistration + "/:serialNumber",
-        component: PcrTestKitRegistrationView,
-        props: true,
-        meta: {
-            validStates: [UserState.unauthenticated, UserState.registered],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.pcrTestEnabled,
-        },
     },
     {
         path: Path.Reports,

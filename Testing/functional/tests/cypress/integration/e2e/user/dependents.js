@@ -628,10 +628,6 @@ describe("CRUD Operations", () => {
                     enabled: true,
                 },
                 {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
                     name: "clinicalDocument",
                     enabled: true,
                 },
@@ -702,35 +698,50 @@ describe("CRUD Operations", () => {
                 );
             });
 
-        cy.log("Validating COVID-19 tab");
-
-        cy.get("@newDependentCard").within(() => {
-            // Validate the tab and elements are present
-            cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
-                "getCovid19Orders"
-            );
-            cy.get("[data-testid=covid19TabTitle]").click();
-            cy.wait("@getCovid19Orders", { timeout: defaultTimeout });
-            cy.get("[data-testid=dependentCovidTestDate]").each(($date) => {
-                cy.wrap($date).contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-            });
-            cy.get("[data-testid=dependentCovidTestStatus]").each(($status) => {
-                cy.wrap($status).should("not.be.empty");
-            });
-        });
+        cy.log("Validating Immunization tab");
 
         cy.setupDownloads();
-        const sensitiveDocMessage =
-            "The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off.";
+        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
+        cy.get("@newDependentCard").within(() => {
+            cy.get(
+                `[data-testid=immunization-tab-title-${validDependent.hdid}]`
+            ).click();
+        });
+        cy.wait("@getImmunization", { timeout: defaultTimeout });
 
-        cy.get("[data-testid=dependentCovidReportDownloadBtn]").first().click();
+        cy.get(
+            `[data-testid=immunization-tab-div-${validDependent.hdid}]`
+        ).within(() => {
+            cy.contains(".v-btn .v-btn__content", "History").click();
+        });
+
+        cy.get(
+            `[data-testid=immunization-history-table-${validDependent.hdid}]`
+        )
+            .find("tr")
+            .should("have.length.greaterThan", 1);
+
+        cy.get(
+            `[data-testid=download-immunization-history-report-btn-${validDependent.hdid}]`
+        )
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.get(
+            `[data-testid=download-immunization-history-report-pdf-btn-${validDependent.hdid}]`
+        )
+            .should("be.visible")
+            .click();
+
+        cy.intercept("POST", "**/Report").as("postReport");
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-text]").should(
-            "have.text",
-            sensitiveDocMessage
-        );
         cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
+            cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+                timeout: 60000,
+                interval: 5000,
+            });
+        });
 
         cy.log("Adding same dependent as another user");
         cy.logout();
@@ -741,7 +752,7 @@ describe("CRUD Operations", () => {
             },
             datasets: [
                 {
-                    name: "covid19TestResult",
+                    name: "immunization",
                     enabled: true,
                 },
             ],
@@ -795,7 +806,7 @@ describe("CRUD Operations", () => {
             },
             datasets: [
                 {
-                    name: "covid19TestResult",
+                    name: "immunization",
                     enabled: true,
                 },
             ],
