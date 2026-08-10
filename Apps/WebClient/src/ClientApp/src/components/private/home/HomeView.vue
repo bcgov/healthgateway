@@ -59,7 +59,7 @@ const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
 const { columns } = useGrid();
 
-const showSmsRemoved = ref<boolean>();
+const showSmsRemoved = ref<boolean>(false);
 
 const recommendationsDialogComponent =
     ref<InstanceType<typeof RecommendationsDialogComponent>>();
@@ -401,8 +401,8 @@ if (preferenceShowSmsRemoved.value) {
                 class="text-body-large"
                 data-testid="sms-removed-message"
             >
-                We see you haven't logged in for a while &mdash; please review
-                your
+                You have not logged in for a while. Please verify your contact
+                information in your
                 <router-link
                     id="profilePreferencesLink"
                     data-testid="profile-preferences-link"
@@ -418,7 +418,7 @@ if (preferenceShowSmsRemoved.value) {
                             url: InternalUrl.Profile,
                         })
                     "
-                    >notification preferences</router-link
+                    >profile</router-link
                 >.
             </p>
             <p
@@ -426,9 +426,8 @@ if (preferenceShowSmsRemoved.value) {
                 class="text-body-large"
                 data-testid="unverified-email-sms-message"
             >
-                Your email or cell phone number has not been verified. You can
-                use the Health Gateway without verified contact information,
-                however, you will not receive notifications. Visit the
+                Your email or cell phone number has not been verified. Visit
+                your
                 <router-link
                     id="profilePageLink"
                     data-testid="profile-page-link"
@@ -444,9 +443,9 @@ if (preferenceShowSmsRemoved.value) {
                             url: InternalUrl.Profile,
                         })
                     "
-                    >Profile Page</router-link
+                    >profile</router-link
                 >
-                to complete your verification.
+                to verify your contact information.
             </p>
         </template>
     </HgAlertComponent>
