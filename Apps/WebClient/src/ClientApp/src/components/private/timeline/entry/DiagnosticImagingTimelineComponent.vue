@@ -100,11 +100,11 @@ function downloadFile(): void {
         :has-attachment="hasFile"
         @click-attachment-button="showConfirmationModal"
     >
-        <p class="text-body-1 font-italic mb-4">
+        <p class="text-body-large font-italic mb-4">
             Imaging reports may contain sensitive information. Consult your
             provider if you are unsure about viewing.
         </p>
-        <v-row class="mb-3">
+        <v-row class="mb-6">
             <v-col :cols="cols">
                 <DisplayFieldComponent
                     data-testid="diagnostic-imaging-procedure-description"
@@ -132,11 +132,11 @@ function downloadFile(): void {
             :loading="isLoadingFile"
             @click="showConfirmationModal"
         />
-        <p class="text-body-1">
+        <p class="text-body-large">
             If you have questions about your imaging report: Contact your
             primary care provider or call HealthlinkBC at 811.
         </p>
-        <p class="text-body-1">
+        <p class="text-body-large">
             You can learn more about medical imaging tests on the following
             websites:
         </p>

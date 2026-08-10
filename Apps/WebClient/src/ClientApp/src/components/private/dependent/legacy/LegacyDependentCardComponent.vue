@@ -507,7 +507,10 @@ function showDeleteConfirmationModal(): void {
             <v-card-title class="bg-grey-lighten-3 pa-4 pb-0">
                 <v-row>
                     <v-col>
-                        <h5 class="text-h6 mb-4" data-testid="dependentName">
+                        <h5
+                            class="text-title-large mb-4"
+                            data-testid="dependentName"
+                        >
                             {{ dependent.dependentInformation.firstname }}
                             {{ dependent.dependentInformation.lastname }}
                         </h5>
@@ -541,12 +544,13 @@ function showDeleteConfirmationModal(): void {
                     color="primary"
                     selected-class="bg-white"
                 >
-                    <v-tab :value="0">Profile</v-tab>
+                    <v-tab :value="0" class="text-uppercase">Profile</v-tab>
                     <v-tab
                         v-if="isImmunizationTabShown"
                         :disabled="isExpired"
                         :data-testid="`immunization-tab-title-${dependent.ownerId}`"
                         :value="1"
+                        class="text-uppercase"
                         @click="fetchPatientImmunizations"
                     >
                         Immunization
@@ -556,6 +560,7 @@ function showDeleteConfirmationModal(): void {
                         :disabled="isExpired"
                         :data-testid="`lab-results-tab-title-${dependent.ownerId}`"
                         :value="2"
+                        class="text-uppercase"
                         @click="fetchLaboratoryOrders"
                     >
                         Lab Results
@@ -565,19 +570,20 @@ function showDeleteConfirmationModal(): void {
                         :disabled="isExpired"
                         :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
                         :value="3"
+                        class="text-uppercase"
                         @click="fetchClinicalDocuments"
                     >
                         Clinical Docs
                     </v-tab>
                 </v-tabs>
             </v-card-title>
-            <v-card-text class="pa-4">
+            <v-card-text class="pt-4">
                 <v-window v-model="selectedTabIndex">
                     <v-window-item data-testid="dependentTab" class="pa-1">
                         <div v-if="isExpired">
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
-                                    <h5 class="text-h6">
+                                    <h5 class="text-title-large">
                                         Your access has expired
                                     </h5>
                                 </v-col>
@@ -602,7 +608,7 @@ function showDeleteConfirmationModal(): void {
                             </v-row>
                         </div>
                         <div v-else>
-                            <v-row class="text-body-1">
+                            <v-row class="text-body-large">
                                 <v-col xl="3" md="4" sm="6">
                                     <label
                                         :for="`dependent-phn-${dependent.ownerId}`"
@@ -655,7 +661,7 @@ function showDeleteConfirmationModal(): void {
                             data-testid="dependent-immunization-disclaimer-alert"
                         >
                             <template #text>
-                                <span class="text-body-1">
+                                <span class="text-body-large">
                                     If your dependent’s immunizations are
                                     missing or incorrect,
                                     <a
@@ -687,8 +693,12 @@ function showDeleteConfirmationModal(): void {
                                 v-model="immunizationTabIndex"
                                 color="primary"
                             >
-                                <v-tab :key="1">History</v-tab>
-                                <v-tab :key="2">Schedule</v-tab>
+                                <v-tab :key="1" class="text-uppercase"
+                                    >History</v-tab
+                                >
+                                <v-tab :key="2" class="text-uppercase"
+                                    >Schedule</v-tab
+                                >
                             </v-tabs>
                             <v-skeleton-loader
                                 v-if="immunizationsAreLoading"
@@ -703,7 +713,7 @@ function showDeleteConfirmationModal(): void {
                                 <v-window-item class="pa-1">
                                     <p
                                         v-if="immunizationItems.length === 0"
-                                        class="text-body-1"
+                                        class="text-body-large"
                                         :data-testid="`immunization-history-no-rows-found-${dependent.ownerId}`"
                                     >
                                         No records found. If this is your first
@@ -711,7 +721,7 @@ function showDeleteConfirmationModal(): void {
                                         refreshing the page in a few minutes.
                                     </p>
                                     <div v-else>
-                                        <v-row justify="end">
+                                        <v-row class="justify-end">
                                             <v-col cols="auto">
                                                 <v-menu
                                                     v-if="
@@ -869,9 +879,9 @@ function showDeleteConfirmationModal(): void {
                                     </div>
                                 </v-window-item>
                                 <v-window-item class="pa-1">
-                                    <v-row justify="end" no-gutters>
+                                    <v-row class="justify-end" no-gutters>
                                         <v-col cols="12" :md="true">
-                                            <p class="mb-md-0 text-body-1">
+                                            <p class="mb-md-0 text-body-large">
                                                 School-aged children are offered
                                                 most immunizations in their
                                                 school, particularly in grades 6
@@ -953,7 +963,7 @@ function showDeleteConfirmationModal(): void {
                                     <p
                                         v-if="recommendationItems.length === 0"
                                         :data-testid="`immunization-schedule-no-rows-found-${dependent.ownerId}`"
-                                        class="text-body-1 my-4"
+                                        class="text-body-large my-4"
                                     >
                                         No records found.
                                     </p>
@@ -1017,7 +1027,7 @@ function showDeleteConfirmationModal(): void {
                         <div
                             v-else-if="labResults.length === 0"
                             :data-testid="`lab-results-no-records-${dependent.ownerId}`"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             No records found. If you just added your dependent,
                             it can take up to 24 hours to get their records.
@@ -1115,7 +1125,7 @@ function showDeleteConfirmationModal(): void {
                         <div
                             v-else-if="clinicalDocuments.length === 0"
                             :data-testid="`clinical-document-no-records-${dependent.ownerId}`"
-                            class="text-body-1"
+                            class="text-body-large"
                         >
                             No records found.
                         </div>

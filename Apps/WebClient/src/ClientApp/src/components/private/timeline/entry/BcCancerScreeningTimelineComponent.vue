@@ -125,7 +125,7 @@ function downloadFile(): void {
         :has-attachment="hasFile"
         @click-attachment-button="showConfirmationModal"
     >
-        <p class="text-body-1 mb-3">
+        <p class="text-body-large mb-3">
             <span
                 v-if="props.entry.isResult"
                 data-testid="bc-cancer-result-body"
@@ -163,7 +163,6 @@ function downloadFile(): void {
         <HgButtonComponent
             v-if="hasFile"
             data-testid="bc-cancer-screening-download-button"
-            class="mb-6"
             variant="secondary"
             :text="entry.callToActionText"
             prepend-icon="eye"

@@ -4,7 +4,7 @@ import PageErrorComponent from "@/components/error/PageErrorComponent.vue";
 
 <template>
     <PageErrorComponent title="403" subtitle="IDIR Login">
-        <p class="text-body-1">
+        <p class="text-body-large">
             You’ve logged in with your IDIR. Please log out and use your BC
             Services Card.
         </p>

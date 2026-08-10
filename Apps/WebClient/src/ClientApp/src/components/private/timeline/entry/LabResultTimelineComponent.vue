@@ -163,7 +163,7 @@ function getReport(): void {
                 />
             </v-col>
         </v-row>
-        <v-row class="mb-3">
+        <v-row>
             <v-col>
                 <DisplayFieldComponent
                     data-testid="laboratory-reporting-lab"
@@ -173,11 +173,14 @@ function getReport(): void {
                 />
             </v-col>
         </v-row>
-        <p class="text-body-1 mb-2">
-            <span data-testid="reporting-lab-information-text"
-                ><strong>Find resources about your lab tests:</strong></span
+        <v-row class="mb-2">
+            <v-col
+                class="text-body-large"
+                data-testid="reporting-lab-information-text"
             >
-        </p>
+                <strong>Find resources about your lab tests:</strong>
+            </v-col>
+        </v-row>
         <ul>
             <li>
                 <a

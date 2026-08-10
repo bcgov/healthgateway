@@ -18,6 +18,7 @@ import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import {
@@ -97,6 +98,13 @@ const preferenceShowSmsRemoved = computed(
     () =>
         user.value.preferences[UserPreferenceType.ShowSmsRemoved]?.value ===
         "true"
+);
+const showBcCancerNotificationsAlert = computed(
+    () =>
+        userStore.lastLoginDateTime != undefined &&
+        DateWrapper.fromIso(userStore.lastLoginDateTime).isBefore(
+            DateWrapper.fromIso("2026-05-19T09:00")
+        )
 );
 const showRecommendationsCardButton = computed(
     () =>
@@ -360,6 +368,26 @@ if (preferenceShowSmsRemoved.value) {
 
 <template>
     <HgAlertComponent
+        v-if="showBcCancerNotificationsAlert"
+        data-testid="bc-cancer-notifications-banner"
+        type="info"
+        variant="outlined"
+    >
+        <template #default>
+            <p class="text-body-1">
+                Email and text notifications are now being sent for BC Cancer
+                Screening program letters. Review your preferences in your
+                <router-link
+                    id="profileNotificationsLink"
+                    data-testid="profile-notifications-link"
+                    class="text-link"
+                    to="/profile"
+                    >profile</router-link
+                >.
+            </p>
+        </template>
+    </HgAlertComponent>
+    <HgAlertComponent
         v-if="unverifiedEmail || unverifiedSms || showSmsRemoved"
         data-testid="incomplete-profile-banner"
         closable
@@ -370,7 +398,7 @@ if (preferenceShowSmsRemoved.value) {
         <template #default>
             <p
                 v-if="showSmsRemoved"
-                class="text-body-1"
+                class="text-body-large"
                 data-testid="sms-removed-message"
             >
                 We see you haven't logged in for a while &mdash; please review
@@ -395,7 +423,7 @@ if (preferenceShowSmsRemoved.value) {
             </p>
             <p
                 v-else
-                class="text-body-1"
+                class="text-body-large"
                 data-testid="unverified-email-sms-message"
             >
                 Your email or cell phone number has not been verified. You can
@@ -432,7 +460,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Health Records"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="health-records-card"
                 class="flex-grow-1"
@@ -445,7 +472,7 @@ if (preferenceShowSmsRemoved.value) {
                         alt="Health Gateway Logo"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     View your available health records, including dispensed
                     medications, health visits, lab results, immunizations, and
                     more.
@@ -460,7 +487,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Immunization Record"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="immunization-record-card-button"
                 class="flex-grow-1"
@@ -482,7 +508,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveImmunizationRecord()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Download a record of your immunizations, including
                     recommended vaccines.
                 </p>
@@ -496,7 +522,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Immunizations"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="recommendations-card-button"
                 class="flex-grow-1"
@@ -518,7 +543,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveRecommendations()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     View immunizations you received from community pharmacies or
                     public health, including vaccine recommendations.
                 </p>
@@ -531,7 +556,6 @@ if (preferenceShowSmsRemoved.value) {
         >
             <HgCardComponent
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="health-connect-registry-card"
                 class="flex-grow-1"
@@ -551,7 +575,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveHealthConnectCard()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Register for the Health Connect Registry and get matched
                     with a family doctor or nurse practitioner in your
                     community.
@@ -562,7 +586,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 title="Organ Donor Registration"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="organ-donor-registration-card"
                 class="flex-grow-1"
@@ -582,7 +605,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveOrganDonorQuickLink()"
                     />
                 </template>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Check whether you have registered your decision on organ
                     donation with BC Transplant. If you have registered your
                     decision, you can review the details here.
@@ -598,7 +621,6 @@ if (preferenceShowSmsRemoved.value) {
             <HgCardComponent
                 :title="card.title"
                 variant="outlined"
-                elevation="1"
                 border="thin grey-lighten-2"
                 data-testid="quick-link-card"
                 class="flex-grow-1"
@@ -626,7 +648,7 @@ if (preferenceShowSmsRemoved.value) {
                         @click.stop="handleClickRemoveQuickLink(card.index)"
                     />
                 </template>
-                <p class="text-body-1">{{ card.description }}</p>
+                <p class="text-body-large">{{ card.description }}</p>
             </HgCardComponent>
         </v-col>
     </v-row>
@@ -634,8 +656,7 @@ if (preferenceShowSmsRemoved.value) {
         <v-col v-if="showOtherRecordSourcesCardButton" cols="12" class="d-flex">
             <HgCardComponent
                 density="compact"
-                variant="outlined"
-                elevation="1"
+                variant="elevated"
                 border="thin grey-lighten-2"
                 class="flex-grow-1 w-100"
                 data-testid="other-record-sources-card"
@@ -650,11 +671,11 @@ if (preferenceShowSmsRemoved.value) {
                         />
                         <div>
                             <div
-                                class="text-h6 font-weight-bold text-high-emphasis mb-1 mb-md-2"
+                                class="text-title-large font-weight-bold text-high-emphasis mb-1 mb-md-2"
                             >
                                 Other record sources
                             </div>
-                            <p class="text-body-1 mb-0">
+                            <p class="text-body-large mb-0">
                                 Some health records may not appear in Health
                                 Gateway. Learn about other trusted regional
                                 patient websites to help you find your health

@@ -43,7 +43,7 @@ withDefaults(defineProps<Props>(), {
             :data-testid="popoverTestId"
         >
             <v-card
-                class="pa-2 text-body-2"
+                class="pa-2 text-body-medium"
                 :width="layoutStore.isMobile ? 250 : 472"
             >
                 <slot />

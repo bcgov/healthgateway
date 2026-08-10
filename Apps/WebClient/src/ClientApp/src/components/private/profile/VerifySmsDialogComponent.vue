@@ -199,7 +199,7 @@ setResendTimeout();
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="text-body-1 pa-4">
+                <v-card-text class="text-body-large pa-4">
                     <TooManyRequestsComponent location="verifySmsModal" />
                     <HgAlertComponent
                         v-if="unexpectedError"
@@ -223,7 +223,7 @@ setResendTimeout();
                         data-testid="verifySMSModalText"
                         class="text-center"
                     >
-                        <p class="text-body-1">
+                        <p class="text-body-large">
                             Enter the verification code sent to
                             <span class="font-weight-bold">
                                 {{ maskedSmsNumber }}

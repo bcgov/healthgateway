@@ -120,20 +120,22 @@ function openExternalLink(tile: InfoTile, action: Action) {
 
 <template>
     <div v-if="isOffline" class="pa-4 text-center">
-        <h1 class="text-primary text-h4 font-weight-bold mb-6">
+        <h1 class="text-primary text-headline-large font-weight-bold mb-6">
             The site is offline for maintenance
         </h1>
-        <p data-testid="offlineMessage" class="text-body-1">
+        <p data-testid="offlineMessage" class="text-body-large">
             {{ offlineMessage }}
         </p>
     </div>
     <v-container v-else>
-        <v-row justify="start" align="start">
+        <v-row class="align-start justify-start" no-gutters>
             <v-col lg="5">
-                <h1 class="mb-6 text-primary text-h4 font-weight-bold">
+                <h1
+                    class="mb-6 text-primary text-headline-large font-weight-bold"
+                >
                     Access your health information online
                 </h1>
-                <p class="mb-6 text-body-1">
+                <p class="mb-6 text-body-large">
                     Health Gateway provides secure and convenient access to your
                     health records in British Columbia
                 </p>
@@ -148,7 +150,9 @@ function openExternalLink(tile: InfoTile, action: Action) {
                         @click="handleLoginClick"
                     />
                     <div class="mt-4 d-flex align-center">
-                        <span class="text-body-1 mr-2">Need an account?</span>
+                        <span class="text-body-large mr-2"
+                            >Need an account?</span
+                        >
                         <HgButtonComponent
                             id="btnStart"
                             text="Register"
@@ -163,7 +167,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
             <v-col
                 xs="false"
                 lg="7"
-                class="d-none d-lg-block text-center col-7 pa-0"
+                class="d-none d-lg-block text-center col-7"
             >
                 <v-img
                     src="@/assets/images/landing/landing-top.png"
@@ -174,12 +178,12 @@ function openExternalLink(tile: InfoTile, action: Action) {
         </v-row>
         <div v-if="shouldDisplayAccessLinks" class="mt-4 mt-md-8">
             <h2
-                class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-5"
+                class="text-primary text-headline-large font-weight-bold mb-2 mb-md-4 mb-lg-5"
                 data-testid="access-links-header"
             >
                 What you can access
             </h2>
-            <p class="landing-bc-black text-body-1 mb-4">
+            <p class="landing-bc-black text-body-large mb-4">
                 There are many features that help you view, manage and stay
                 informed about your health.
             </p>
@@ -227,14 +231,13 @@ function openExternalLink(tile: InfoTile, action: Action) {
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
-            <v-row v-else align="stretch" class="mb-6 mb-md-8">
+            <v-row v-else class="mb-6 mb-md-8 align-stretch" gap="32">
                 <v-col
                     v-for="tile in accessLinks"
                     :key="tile.name"
                     cols="12"
                     md="6"
                     lg="3"
-                    class="px-2 px-md-4"
                 >
                     <v-card
                         variant="outlined"
@@ -270,12 +273,14 @@ function openExternalLink(tile: InfoTile, action: Action) {
                 variant="tonal"
                 class="pa-6 pa-lg-8"
             >
-                <v-row align="start" no-gutters>
+                <v-row class="align-start" no-gutters>
                     <v-col cols="12" md="7" class="pr-md-8">
-                        <h2 class="text-h4 font-weight-bold text-primary mb-2">
+                        <h2
+                            class="text-headline-large font-weight-bold text-primary mb-2"
+                        >
                             Find your health records
                         </h2>
-                        <p class="text-body-1 mb-4">
+                        <p class="text-body-large mb-4">
                             Health Gateway helps bring your records together in
                             one place. It connects to many record sources, but
                             not all.
@@ -316,7 +321,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
         </div>
         <div v-if="shouldDisplayHealthServicesLinks" class="mt-6 mt-md-8">
             <h2
-                class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-5"
+                class="text-primary text-headline-large font-weight-bold mb-2 mb-md-4 mb-lg-5"
                 data-testid="health-services-links-header"
             >
                 Explore other trusted B.C. health services
@@ -368,14 +373,13 @@ function openExternalLink(tile: InfoTile, action: Action) {
                     </v-card>
                 </v-carousel-item>
             </v-carousel>
-            <v-row v-else align="stretch" class="mb-6 mb-md-8">
+            <v-row v-else class="mb-6 mb-md-8 align-stretch" gap="32">
                 <v-col
                     v-for="tile in healthServicesLinks"
                     :key="tile.name"
                     cols="12"
                     md="6"
                     lg="4"
-                    class="px-2 px-md-4"
                 >
                     <v-card
                         variant="outlined"

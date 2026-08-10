@@ -116,7 +116,7 @@ function onChange(): void {
 </script>
 
 <template>
-    <v-row dense>
+    <v-row density="compact">
         <v-col class="date-dropdown-column flex-grow-0">
             <v-select
                 v-model="year"

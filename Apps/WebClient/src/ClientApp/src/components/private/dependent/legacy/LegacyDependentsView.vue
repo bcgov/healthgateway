@@ -49,7 +49,7 @@ retrieveDependents(userStore.hdid, false);
             <AddDependentComponent @handle-submit="refreshDependents" />
         </template>
     </PageTitleComponent>
-    <h5 class="text-subtitle-1 font-weight-bold">
+    <h5 class="text-body-large font-weight-bold">
         You can add your dependents under the age of
         {{ webClientConfig.maxDependentAge }} to view their health records. Make
         sure you include all given names exactly as shown on their BC Services

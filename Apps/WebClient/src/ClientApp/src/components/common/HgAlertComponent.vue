@@ -23,23 +23,18 @@ const props = withDefaults(defineProps<Props>(), {
     centerContent: false,
 });
 
-const backgroundClass = computed(() => {
-    switch (props.type) {
+const outlinedColorClasses = computed(() => {
+    switch (props.variant == "outlined" ? props.type : undefined) {
         case "info":
-            return "hg-alert-outlined-info";
-        case "success":
-            return "";
+            return "bg-info-background text-info-text border-info-text";
         case "warning":
-            if (props.variant === "outlined") {
-                return "hg-alert-outlined-warning";
-            } else if (props.variant === "text") {
-                return "hg-alert-text-warning";
-            }
-            return "";
+            return "bg-warning-background text-warning-text border-warning-border";
         case "error":
-            return "hg-alert-outlined-error";
+            return "bg-error-background text-error border-error";
+        case "success":
+            return undefined;
         default:
-            return "";
+            return undefined;
     }
 });
 </script>
@@ -47,10 +42,7 @@ const backgroundClass = computed(() => {
 <template>
     <v-alert
         :class="[
-            props.variant === 'outlined' ||
-            (props.variant === 'text' && props.type === 'warning')
-                ? backgroundClass
-                : '',
+            outlinedColorClasses,
             props.centerContent ? 'hg-alert--center-content' : '',
             props.class,
         ]"
@@ -72,82 +64,6 @@ const backgroundClass = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.hg-alert-outlined-info {
-    background-color: rgb(var(--v-theme-infoBackground)) !important;
-    color: rgb(var(--v-theme-infoText)) !important;
-}
-
-// Warning
-.v-alert.hg-alert-outlined-warning {
-    background-color: #fff4dc !important; // Soft yellow background
-}
-
-.hg-alert-outlined-warning {
-    color: #5c3a00 !important; // Dark brown for text
-    border-color: #f9b23d !important; // Golden border
-}
-
-.hg-alert-text-warning {
-    color: #7a4f00 !important;
-}
-
-.hg-alert-text-warning .v-alert__prepend i {
-    color: #7a4f00 !important;
-}
-
-// Error
-.v-alert.hg-alert-outlined-error {
-    background-color: #fbd5d8 !important; // Darker pink background
-}
-
-.hg-alert-outlined-error {
-    color: #d8292f !important; // Strong red for text
-    border-color: #b00020 !important; // Deeper red border
-}
-
-.hg-alert-outlined-error .v-alert__prepend i {
-    color: #d8292f !important; // Strong red for icon
-}
-
-.hg-alert-outlined-error .v-alert-title {
-    font-weight: bold;
-    color: #b00020 !important; // Deeper red border
-}
-
-// Support for inner expansion panels in error alert
-.hg-alert-outlined-error::v-deep(.v-expansion-panels),
-.hg-alert-outlined-error::v-deep(.v-expansion-panel) {
-    background-color: #fde7e9 !important; // Light pink
-    border: 1px solid #e5a9ad; // Soft pinkish red
-    border-radius: 6px;
-}
-
-.hg-alert-outlined-error::v-deep(.v-expansion-panel-text) {
-    background-color: #fde7e9 !important;
-    border-top: 1px solid #e5a9ad;
-    padding-top: 0.5rem;
-    padding-bottom: 0 !important;
-    margin-top: 0.5rem;
-}
-
-.hg-alert-outlined-error::v-deep(button.v-expansion-panel-title) {
-    font-weight: bold !important;
-    color: #b00020 !important;
-    padding-bottom: 0.25rem !important;
-}
-
-.hg-alert-outlined-error::v-deep(.v-expansion-panel-title__overlay) {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-.hg-alert-outlined-error::v-deep(.v-expansion-panel-title) {
-    margin-top: 0 !important;
-    margin-bottom: 0.5rem !important;
-    min-height: auto !important;
-    height: auto !important;
-}
-
 /*
  * Opt-in: vertically center icon + wrapped text (no-title case can look misaligned).
  * Enabled via the centerContent prop.

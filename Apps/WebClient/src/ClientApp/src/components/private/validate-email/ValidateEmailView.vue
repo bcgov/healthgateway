@@ -47,7 +47,11 @@ loadingStore.applyLoader(
 
 <template>
     <div class="text-center pa-4">
-        <h4 v-if="isLoading" class="text-h5" data-testid="verifyingInvite">
+        <h4
+            v-if="isLoading"
+            class="text-headline-small"
+            data-testid="verifyingInvite"
+        >
             We are verifying your email...
         </h4>
         <template v-else>
@@ -57,7 +61,7 @@ loadingStore.applyLoader(
                 aria-hidden="true"
                 :color="isSuccess ? 'success' : 'error'"
             />
-            <h4 class="text-h6 my-4 pa-4">
+            <h4 class="text-title-large my-4 pa-4">
                 <span v-if="isVerified" data-testid="verifiedInvite">
                     Your email address has been verified.
                     <br />

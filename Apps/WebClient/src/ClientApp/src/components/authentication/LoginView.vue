@@ -62,7 +62,7 @@ if (oidcIsAuthenticated.value) {
 
 <template>
     <LoadingComponent :is-loading="isLoading" />
-    <v-row align="center" justify="center" class="mb-5">
+    <v-row class="mb-5 align-center justify-center">
         <v-col md="5">
             <HgAlertComponent
                 v-model="showError"
@@ -70,7 +70,7 @@ if (oidcIsAuthenticated.value) {
                 close-label="Close"
                 type="error"
                 title="Error"
-                text="An unexpected error occured while processing the request, please try again."
+                text="An unexpected error occurred while processing the request, please try again."
                 variant="outlined"
             />
         </v-col>
@@ -80,10 +80,12 @@ if (oidcIsAuthenticated.value) {
         id="loginPicker"
         class="shadow-lg bg-white mx-auto"
         style="max-width: 25rem"
-        elevation="7"
+        elevation="3"
     >
         <v-card-title>
-            <h2 class="text-h5 font-weight-bold pt-3 text-center">Log In</h2>
+            <h2 class="text-headline-small font-weight-bold pt-3 text-center">
+                Log In
+            </h2>
         </v-card-title>
         <v-card-text v-if="hasMultipleProviders || isRetry" class="px-10 py-8">
             <div v-for="provider in identityProviders" :key="provider.id">
@@ -104,13 +106,13 @@ if (oidcIsAuthenticated.value) {
                         identityProviders.indexOf(provider) <
                         identityProviders.length - 1
                     "
-                    class="text-center text-body-1 my-1"
+                    class="text-center text-body-large my-1"
                 >
                     or
                 </div>
             </div>
         </v-card-text>
-        <v-card-text v-else class="pa-5 text-center text-body-1">
+        <v-card-text v-else class="pa-5 text-center text-body-large">
             Redirecting to <strong>{{ identityProviders[0].name }}</strong
             >...
         </v-card-text>

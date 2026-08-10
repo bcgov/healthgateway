@@ -20,7 +20,7 @@ function formatDate(date: StringISODate): string {
 </script>
 
 <template>
-    <v-row class="text-body-1">
+    <v-row class="text-body-large">
         <v-col xl="3" md="4" sm="6">
             <label :for="`dependent-phn-${dependent.ownerId}`">PHN</label>
             <v-text-field

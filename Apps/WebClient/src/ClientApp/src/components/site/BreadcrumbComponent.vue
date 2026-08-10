@@ -63,7 +63,7 @@ function onBreadcrumbClick(item: BreadcrumbItem) {
     <v-breadcrumbs
         v-if="displayBreadcrumbs"
         data-testid="breadcrumbs"
-        class="py-0 mb-4"
+        class="pa-0 mb-4"
         aria-label="Breadcrumb Nav"
     >
         <template v-for="(item, index) in allBreadcrumbItems" :key="item.text">
@@ -72,6 +72,7 @@ function onBreadcrumbClick(item: BreadcrumbItem) {
                 :active="item.active"
                 :data-testid="item.dataTestId"
                 :disabled="item.active"
+                class="px-0"
                 @click="onBreadcrumbClick(item)"
             >
                 {{ item.text }}
@@ -82,14 +83,3 @@ function onBreadcrumbClick(item: BreadcrumbItem) {
         </template>
     </v-breadcrumbs>
 </template>
-
-<style scoped>
-.v-breadcrumbs {
-    padding: 0.75rem 0rem;
-    margin-bottom: 0rem;
-}
-
-.v-breadcrumbs-item {
-    padding: 0 0;
-}
-</style>

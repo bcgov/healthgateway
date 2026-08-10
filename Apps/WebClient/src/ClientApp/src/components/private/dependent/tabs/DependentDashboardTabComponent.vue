@@ -64,6 +64,7 @@ function showRecommendationsDialog(): void {
             <HgCardComponent
                 title="Health Records"
                 density="compact"
+                border="thin grey-lighten-2"
                 class="flex-grow-1 ma-1"
                 :data-testid="`dependent-health-records-button-${dependent.ownerId}`"
                 @click="handleClickHealthRecordsButton"
@@ -84,6 +85,7 @@ function showRecommendationsDialog(): void {
             <HgCardComponent
                 title="Vaccine Recommendations"
                 density="compact"
+                border="thin grey-lighten-2"
                 class="flex-grow-1 ma-1"
                 :data-testid="`recommendations-card-${dependent.ownerId}`"
                 @click="showRecommendationsDialog()"
