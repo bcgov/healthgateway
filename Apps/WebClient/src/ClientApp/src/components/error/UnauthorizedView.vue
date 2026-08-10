@@ -4,6 +4,8 @@ import PageErrorComponent from "@/components/error/PageErrorComponent.vue";
 
 <template>
     <PageErrorComponent title="401" subtitle="Unauthorized">
-        <p class="text-body-1">You do not have permission to view this page.</p>
+        <p class="text-body-large">
+            You do not have permission to view this page.
+        </p>
     </PageErrorComponent>
 </template>

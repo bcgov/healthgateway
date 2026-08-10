@@ -146,6 +146,7 @@ watch(vaccineRecordState, () => {
             <HgCardComponent
                 title="Health Records"
                 density="compact"
+                border="thin grey-lighten-2"
                 class="flex-grow-1 ma-1"
                 :data-testid="`dependent-health-records-button-${dependent.ownerId}`"
                 @click="handleClickHealthRecordsButton"
@@ -166,6 +167,7 @@ watch(vaccineRecordState, () => {
             <HgCardComponent
                 title="Vaccine Recommendations"
                 density="compact"
+                border="thin grey-lighten-2"
                 class="flex-grow-1 ma-1"
                 :data-testid="`recommendations-card-${dependent.ownerId}`"
                 @click="showRecommendationsDialog()"
@@ -187,6 +189,7 @@ watch(vaccineRecordState, () => {
             <HgCardComponent
                 title="Proof of Vaccination"
                 density="compact"
+                border="thin grey-lighten-2"
                 class="flex-grow-1 ma-1"
                 :data-testid="`proof-vaccination-card-btn-${dependent.ownerId}`"
                 @click="showSensitiveDocumentDownloadModal()"

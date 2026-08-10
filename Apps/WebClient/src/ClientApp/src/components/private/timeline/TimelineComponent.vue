@@ -610,7 +610,7 @@ setPageFromDate(linearDate.value);
                 sticky
                 border="0"
             >
-                <v-row class="align-center" dense>
+                <v-row class="align-center" density="compact">
                     <v-col cols="auto">
                         <FilterComponent
                             :hdid="hdid"
@@ -645,7 +645,7 @@ setPageFromDate(linearDate.value);
             <p
                 v-if="visibleTimelineEntries.length > 0"
                 data-testid="timeline-record-count"
-                class="text-body-1"
+                class="text-body-large"
             >
                 {{ recordCountMessage }}
             </p>
@@ -673,7 +673,7 @@ setPageFromDate(linearDate.value);
                 closable
                 variant="outlined"
             >
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Information is from the billing claim and may show a
                     different practitioner or clinic from the one you visited.
                     For more information, visit the
@@ -686,7 +686,7 @@ setPageFromDate(linearDate.value);
                     >
                     page.
                 </p>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Health Gateway shows your health visits billed to the BC
                     Medical Services Plan (MSP) for the past seven years. You
                     can also get your hospital visits since 2021 for everywhere
@@ -787,7 +787,7 @@ setPageFromDate(linearDate.value);
             class="py-2 mb-4"
             type="divider, avatar, heading, divider, avatar, heading, divider, avatar, heading, divider"
         />
-        <div v-if="filteredTimelineEntries.length > 0" class="text-center mb-4">
+        <div v-if="filteredTimelineEntries.length > 0" class="text-center">
             <v-pagination
                 v-model="currentPage"
                 data-testid="pagination"
@@ -802,7 +802,7 @@ setPageFromDate(linearDate.value);
                 !selectedDatasetsAreLoading &&
                 isFullyLoaded
             "
-            class="d-flex flex-column align-center mb-4"
+            class="d-flex flex-column align-center"
         >
             <v-img
                 src="@/assets/images/timeline/empty-state.png"
@@ -811,7 +811,7 @@ setPageFromDate(linearDate.value);
                 alt="..."
             />
             <p
-                class="text-body-1 text-medium-emphasis"
+                class="text-body-large text-medium-emphasis"
                 data-testid="noTimelineEntriesText"
             >
                 {{

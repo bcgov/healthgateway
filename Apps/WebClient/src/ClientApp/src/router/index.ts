@@ -121,17 +121,6 @@ export enum UserState {
     registered = "registered",
 }
 
-declare module "vue-router" {
-    interface RouteMeta {
-        routeIsOidcCallback?: boolean;
-        stateless?: boolean;
-        validStates?: UserState[];
-        requiredFeaturesEnabled?: (
-            featureToggleConfig: FeatureToggleConfiguration
-        ) => boolean;
-    }
-}
-
 const routes = [
     {
         path: Path.Root,

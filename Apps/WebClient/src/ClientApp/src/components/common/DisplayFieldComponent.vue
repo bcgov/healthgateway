@@ -21,7 +21,7 @@ const slots = useSlots();
 </script>
 
 <template>
-    <p v-if="horizontal" class="text-body-1">
+    <p v-if="horizontal" class="text-body-large">
         <span :class="nameClass">{{ name }}: </span>
         <template v-if="slots.value !== undefined">
             <slot name="value" />
@@ -41,7 +41,7 @@ const slots = useSlots();
             <slot name="value" />
             <slot name="append-value" />
         </template>
-        <p v-else class="text-body-1" :class="valueClass" v-bind="$attrs">
+        <p v-else class="text-body-large" :class="valueClass" v-bind="$attrs">
             {{ value || "N/A" }}<slot name="append-value" />
         </p>
     </template>

@@ -171,7 +171,7 @@ function previous(): void {
                         v-if="currentSlide && currentSlide.layout === 'split'"
                         class="pt-3 pb-0 text-center"
                     >
-                        <h3 class="text-h6 font-weight-bold">
+                        <h3 class="text-title-large font-weight-bold">
                             {{ currentSlide.title }}
                         </h3>
                     </div>
@@ -199,12 +199,12 @@ function previous(): void {
                                 currentSlide.layout === 'below'
                             "
                         >
-                            <h3 class="text-h6 font-weight-bold">
+                            <h3 class="text-title-large font-weight-bold">
                                 {{ currentSlide.title }}
                             </h3>
                             <p
                                 v-if="currentSlide.description"
-                                class="text-body-1"
+                                class="text-body-large"
                             >
                                 {{ currentSlide.description }}
                             </p>
@@ -212,7 +212,7 @@ function previous(): void {
                         <template v-else-if="currentSlide.layout === 'split'">
                             <p
                                 v-if="currentSlide.description"
-                                class="text-body-1 text-center mx-auto"
+                                class="text-body-large text-center mx-auto"
                                 style="max-width: 640px"
                             >
                                 {{ currentSlide.description }}

@@ -133,7 +133,7 @@ function resetFeedback(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text v-if="!hasSubmitted" class="pa-4 text-body-1">
+                <v-card-text v-if="!hasSubmitted" class="pa-4 text-body-large">
                     <p>
                         Do you have a suggestion or idea? Let us know in the
                         field below.
@@ -152,7 +152,7 @@ function resetFeedback(): void {
                     />
                 </v-card-text>
                 <v-card-text v-else class="pa-4">
-                    <div class="text-center text-body-1">
+                    <div class="text-center text-body-large">
                         <v-icon
                             v-if="isSuccess"
                             color="success"
@@ -165,7 +165,7 @@ function resetFeedback(): void {
                             icon="circle-xmark"
                             size="48"
                         />
-                        <h3 class="text-h6 font-weight-bold pt-3">
+                        <h3 class="text-title-large font-weight-bold pt-3">
                             {{ resultTitle }}
                         </h3>
                         <p class="py-3">

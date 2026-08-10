@@ -64,7 +64,10 @@ function removeDependent(): void {
             <v-card-title class="bg-grey-lighten-3 pa-4 pb-0">
                 <v-row>
                     <v-col>
-                        <h5 class="text-h6 mb-4" data-testid="dependentName">
+                        <h5
+                            class="text-title-large mb-4"
+                            data-testid="dependentName"
+                        >
                             {{ formattedName }}
                         </h5>
                     </v-col>
@@ -102,20 +105,23 @@ function removeDependent(): void {
                     <v-tab
                         :id="`dashboard-tab-button-${dependent.ownerId}`"
                         text="Dashboard"
+                        class="text-uppercase"
                     />
                     <v-tab
                         :id="`report-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
                         text="Export"
+                        class="text-uppercase"
                     />
                     <v-tab
                         :id="`profile-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
                         text="Profile"
+                        class="text-uppercase"
                     />
                 </v-tabs>
             </v-card-title>
-            <v-card-text class="pa-4">
+            <v-card-text class="pt-4">
                 <v-window v-model="selectedTabIndex">
                     <v-window-item data-testid="dashboard-tab" class="pa-1">
                         <div
@@ -125,7 +131,7 @@ function removeDependent(): void {
                         >
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
-                                    <h5 class="text-h6">
+                                    <h5 class="text-title-large">
                                         Your access has expired
                                     </h5>
                                 </v-col>

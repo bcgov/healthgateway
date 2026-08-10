@@ -75,7 +75,7 @@ function onAddressChangeClick() {
         <div
             v-if="postalAddress"
             data-testid="postal-address-div"
-            class="text-body-1"
+            class="text-body-large"
         >
             <div
                 v-for="(item, index) in postalAddress.streetLines"
@@ -91,7 +91,7 @@ function onAddressChangeClick() {
         <div
             v-else
             data-testid="no-postal-address-text"
-            class="text-body-1 font-italic"
+            class="text-body-large font-italic"
         >
             No address on record
         </div>
@@ -108,7 +108,7 @@ function onAddressChangeClick() {
         <div
             v-if="physicalAddress"
             data-testid="physical-address-div"
-            class="text-body-1"
+            class="text-body-large"
         >
             <div
                 v-for="(item, index) in physicalAddress.streetLines"
@@ -124,12 +124,12 @@ function onAddressChangeClick() {
         <div
             v-else
             data-testid="no-physical-address-text"
-            class="text-body-1 font-italic"
+            class="text-body-large font-italic"
         >
             No address on record
         </div>
     </div>
-    <div v-if="hasAddress && isSameAddress" class="mb-4 text-body-1">
+    <div v-if="hasAddress && isSameAddress" class="mb-4 text-body-large">
         If this address is incorrect, update it
         <a
             :href="ExternalUrl.AddressChangeBC"
@@ -140,7 +140,7 @@ function onAddressChangeClick() {
             >here</a
         >.
     </div>
-    <div v-if="!isSameAddress" class="mb-4 text-body-1">
+    <div v-if="!isSameAddress" class="mb-4 text-body-large">
         If either of these addresses is incorrect, update them
         <a
             :href="ExternalUrl.AddressChangeBC"
@@ -151,7 +151,7 @@ function onAddressChangeClick() {
             >here</a
         >.
     </div>
-    <div v-if="!hasAddress" class="mb-4 text-body-1">
+    <div v-if="!hasAddress" class="mb-4 text-body-large">
         To add an address, visit
         <a
             :href="ExternalUrl.AddressChangeBC"

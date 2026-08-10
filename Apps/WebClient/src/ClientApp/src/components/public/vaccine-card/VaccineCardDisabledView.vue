@@ -40,7 +40,7 @@ function trackVaccineInfoLink(href: string) {
         </div>
         <div class="d-flex flex-column">
             <div
-                class="vaccine-card-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
+                class="vaccine-card-form bg-white rounded elevation-2 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
                 <p>
                     Federal Proof of Vaccination is no longer provided by Health

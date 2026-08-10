@@ -119,7 +119,7 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
                         <p
                             v-for="(line, i) in props.body"
                             :key="i"
-                            class="text-body-1"
+                            class="text-body-large"
                             :data-testid="`external-link-confirmation-dialog-body-${i}`"
                         >
                             <template v-if="typeof line === 'string'">

@@ -3,6 +3,7 @@
 import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { FeatureToggleConfiguration } from "@/models/configData";
 import { UserState } from "@/router/index";
 import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
@@ -84,7 +85,14 @@ export const beforeEachGuard: NavigationGuard = async (
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
 
-    const meta = to.meta;
+    const meta = to.meta as {
+        routeIsOidcCallback?: boolean;
+        stateless?: boolean;
+        validStates?: UserState[];
+        requiredFeaturesEnabled?: (
+            featureToggleConfig: FeatureToggleConfiguration
+        ) => boolean;
+    };
     if (meta === undefined) {
         throw new Error("Route meta property is undefined");
     }

@@ -18,13 +18,13 @@ const isTooManyRequestsError = computed(
     >
         <p
             v-if="isTooManyRequestsError"
-            class="text-body-1"
+            class="text-body-large"
             data-testid="too-busy"
         >
             We are unable to retrieve the patient details from our Client
             Registry as the site is too busy. Please try again later.
         </p>
-        <p v-else class="text-body-1">
+        <p v-else class="text-body-large">
             There may be an issue in our Client Registry. Please contact
             <a
                 class="text-link font-weight-bold"

@@ -231,7 +231,7 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
                             :alt="tile.name"
                         />
                     </template>
-                    <p class="text-body-1">{{ tile.description }}</p>
+                    <p class="text-body-large">{{ tile.description }}</p>
                     <div class="mt-auto pt-3 text-start">
                         <a
                             class="text-link"
@@ -247,7 +247,7 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
             </v-col>
         </v-row>
         <v-row class="mt-6">
-            <v-col cols="12" class="pt-2 text-body-2">
+            <v-col cols="12" class="pt-2 text-body-medium">
                 For more information on these websites and more visit
                 <a
                     :href="ExternalUrl.YourHealthInformation"

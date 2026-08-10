@@ -273,7 +273,7 @@ watch(vaccineRecord, (value) => {
         </div>
         <div
             v-if="displayResult"
-            class="vaccine-card align-self-center w-100 ma-4 pa-4 rounded elevation-6"
+            class="vaccine-card align-self-center w-100 ma-4 pa-4 rounded elevation-2"
         >
             <VaccineCardComponent
                 :status="vaccinationStatus"
@@ -316,7 +316,7 @@ watch(vaccineRecord, (value) => {
                 />
             </div>
             <div
-                class="d-print-none px-4 pb-4 text-body-1"
+                class="d-print-none px-4 pb-4 text-body-large"
                 :class="{ 'pt-4': !downloadButtonShown }"
             >
                 <p
@@ -352,7 +352,7 @@ watch(vaccineRecord, (value) => {
         </div>
         <div v-else class="d-flex flex-column">
             <div
-                class="vaccine-card-form bg-white rounded elevation-6 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
+                class="vaccine-card-form bg-white rounded elevation-2 ma-2 ma-sm-4 py-6 py-sm-16 px-4 px-sm-16 align-self-center"
             >
                 <TooManyRequestsComponent location="publicVaccineCard" />
                 <div v-if="bannerError !== undefined">
@@ -371,8 +371,8 @@ watch(vaccineRecord, (value) => {
                     data-testid="vaccineCardFormTitle"
                     class="vaccine-card-form-title text-center font-weight-bold"
                     :class="{
-                        'text-h6': layoutStore.isMobile,
-                        'text-h5': !layoutStore.isMobile,
+                        'text-title-large': layoutStore.isMobile,
+                        'text-headline-small': !layoutStore.isMobile,
                     }"
                 >
                     Get your proof of vaccination
@@ -449,7 +449,7 @@ watch(vaccineRecord, (value) => {
                         </div>
                     </v-col>
                 </v-row>
-                <v-row class="mb-4">
+                <v-row class="mb-7">
                     <v-col cols="6">
                         <HgButtonComponent
                             data-testid="btnCancel"
@@ -490,11 +490,11 @@ watch(vaccineRecord, (value) => {
                     if you have any questions about this collection.
                 </InfoPopoverComponent>
                 <div class="text-center">
-                    <v-row class="my-4 no-gutters d-flex align-center">
+                    <v-row class="my-7 no-gutters d-flex align-center">
                         <v-col><v-divider /></v-col>
                         <v-col cols="auto">
                             <h2
-                                class="text-h6 font-weight-bold text-medium-emphasis"
+                                class="text-title-large font-weight-bold text-medium-emphasis"
                             >
                                 OR
                             </h2>
@@ -512,21 +512,21 @@ watch(vaccineRecord, (value) => {
                 </div>
             </div>
             <div class="bg-white mt-6 px-4 px-sm-12 py-6">
-                <h3 class="text-h5 font-weight-bold mb-4">
+                <h3 class="text-headline-small font-weight-bold mb-4">
                     Help in other languages
                 </h3>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     Talk to someone on the phone. Get support in 140+ languages,
                     including:
                 </p>
-                <p class="text-body-1">
+                <p class="text-body-large">
                     <span lang="zh">國粵語</span> |
                     <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
                     <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
                     <span lang="fr">Français</span> |
                     <span lang="es">Español</span>
                 </p>
-                <p class="text-body-1 font-weight-bold">
+                <p class="text-body-large font-weight-bold">
                     Service is available every day: 7 am to 7 pm or 9 am to 5 pm
                     on holidays.
                 </p>
@@ -544,7 +544,7 @@ watch(vaccineRecord, (value) => {
                         href="tel:711"
                     />
                 </div>
-                <p class="text-body-1 text-medium-emphasis">
+                <p class="text-body-large text-medium-emphasis">
                     Standard message and data rates may apply.
                 </p>
             </div>

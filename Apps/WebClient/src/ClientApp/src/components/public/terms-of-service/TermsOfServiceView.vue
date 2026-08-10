@@ -65,8 +65,8 @@ userProfileService
             title="Error"
         >
             <template #text>
-                <p class="text-body-1">
-                    An unexpected error occured while processing the request.
+                <p class="text-body-large">
+                    An unexpected error occurred while processing the request.
                     Please refresh your browser.
                 </p>
             </template>

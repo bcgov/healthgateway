@@ -12,7 +12,7 @@ const setDataSource = (dataSource: PcrDataSource) => {
 </script>
 
 <template>
-    <h2 class="text-h5 font-weight-bold">
+    <h2 class="text-headline-small font-weight-bold">
         Register your COVID‑19 test kit using one of the following methods:
     </h2>
     <div class="mt-12 text-center">
@@ -24,10 +24,12 @@ const setDataSource = (dataSource: PcrDataSource) => {
             text="Log in with BC Services Card"
             @click="setDataSource(PcrDataSource.Keycloak)"
         />
-        <v-row class="my-4" align="center">
+        <v-row class="my-4 align-center">
             <v-col><v-divider /></v-col>
             <v-col cols="auto">
-                <h2 class="text-h6 font-weight-bold text-medium-emphasis">
+                <h2
+                    class="text-title-large font-weight-bold text-medium-emphasis"
+                >
                     OR
                 </h2>
             </v-col>

@@ -70,7 +70,6 @@ retrievePatientData();
         <v-col
             v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
             :cols="columns"
-            class="pa-4"
         >
             <OrganDonorDetailsCard :hdid="userStore.hdid" />
         </v-col>

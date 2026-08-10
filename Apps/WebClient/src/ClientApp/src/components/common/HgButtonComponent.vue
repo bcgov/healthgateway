@@ -103,4 +103,8 @@ const textCaseClass = computed(() =>
 .transition-none {
     transition: none;
 }
+
+.text-uppercase {
+    letter-spacing: 0.078125rem;
+}
 </style>
