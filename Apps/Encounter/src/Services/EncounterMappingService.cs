@@ -37,9 +37,17 @@ namespace HealthGateway.Encounter.Services
         public HospitalVisitModel MapToHospitalVisitModel(HospitalVisit source)
         {
             HospitalVisitModel? dest = mapper.Map<HospitalVisit, HospitalVisitModel>(source);
+            TimeZoneInfo localTimeZone = this.LocalTimeZone;
 
-            dest.AdmitDateTime = dest.AdmitDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.AdmitDateTime.Value, this.LocalTimeZone);
-            dest.EndDateTime = dest.EndDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.EndDateTime.Value, this.LocalTimeZone);
+            if (dest.AdmitDateTime != null)
+            {
+                dest.AdmitDateTime = DateFormatter.SpecifyTimeZone(dest.AdmitDateTime.Value, localTimeZone);
+            }
+
+            if (dest.EndDateTime != null)
+            {
+                dest.EndDateTime = DateFormatter.SpecifyTimeZone(dest.EndDateTime.Value, localTimeZone);
+            }
 
             return dest;
         }
@@ -48,8 +56,18 @@ namespace HealthGateway.Encounter.Services
         public HospitalVisitModel MapToHospitalVisitModel(PatientDataAccess.HospitalVisit source)
         {
             HospitalVisitModel dest = mapper.Map<PatientDataAccess.HospitalVisit, HospitalVisitModel>(source);
-            dest.AdmitDateTime = dest.AdmitDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.AdmitDateTime.Value, this.LocalTimeZone);
-            dest.EndDateTime = dest.EndDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.EndDateTime.Value, this.LocalTimeZone);
+            TimeZoneInfo localTimeZone = this.LocalTimeZone;
+
+            if (dest.AdmitDateTime != null)
+            {
+                dest.AdmitDateTime = DateFormatter.SpecifyTimeZone(dest.AdmitDateTime.Value, localTimeZone);
+            }
+
+            if (dest.EndDateTime != null)
+            {
+                dest.EndDateTime = DateFormatter.SpecifyTimeZone(dest.EndDateTime.Value, localTimeZone);
+            }
+
             return dest;
         }
     }
