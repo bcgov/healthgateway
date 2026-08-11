@@ -201,7 +201,7 @@ namespace PatientDataAccessTests
             visit.EncounterId.ShouldBe(hospitalVisit.EncounterId);
             visit.AdmitDateTime.ShouldBe(hospitalVisit.AdmitDateTime);
             visit.EndDateTime.ShouldBeNull();
-            visit.Provider.ShouldBe("Display");
+            visit.Clinicians.ShouldNotBeNull().ShouldHaveSingleItem().DisplayName.ShouldBe("Display");
         }
 
         [Fact]

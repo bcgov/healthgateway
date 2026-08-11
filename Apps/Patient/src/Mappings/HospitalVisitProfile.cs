@@ -16,6 +16,7 @@
 namespace HealthGateway.Patient.Mappings
 {
     using System;
+    using System.Linq;
     using AutoMapper;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess;
@@ -36,7 +37,12 @@ namespace HealthGateway.Patient.Mappings
                     opts => opts.MapFrom(s => s.AdmitDateTime.HasValue ? DateFormatter.SpecifyUtc(s.AdmitDateTime.Value) : (DateTime?)null))
                 .ForMember(
                     d => d.EndDateTime,
-                    opts => opts.MapFrom(s => s.EndDateTime.HasValue ? DateFormatter.SpecifyUtc(s.EndDateTime.Value) : (DateTime?)null));
+                    opts => opts.MapFrom(s => s.EndDateTime.HasValue ? DateFormatter.SpecifyUtc(s.EndDateTime.Value) : (DateTime?)null))
+                .ForMember(
+                    d => d.Provider,
+                    opts => opts.MapFrom(s => s.Clinicians == null
+                        ? null
+                        : s.Clinicians.Select(c => c.DisplayName).FirstOrDefault()));
         }
     }
 }

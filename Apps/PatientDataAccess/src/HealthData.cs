@@ -17,6 +17,7 @@ namespace HealthGateway.PatientDataAccess
 {
 #pragma warning disable SA1201 // Elements should appear in the correct order
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
@@ -152,9 +153,26 @@ namespace HealthGateway.PatientDataAccess
         public DateTime? EndDateTime { get; init; }
 
         /// <summary>
-        /// Gets the provider.
+        /// Gets the clinicians associated with the hospital visit.
         /// </summary>
-        public string? Provider { get; init; }
+        public IEnumerable<Clinician>? Clinicians { get; init; }
+    }
+
+    /// <summary>
+    /// Represents a clinician associated with a hospital visit.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record Clinician
+    {
+        /// <summary>
+        /// Gets the clinician's display name.
+        /// </summary>
+        public string? DisplayName { get; init; }
+
+        /// <summary>
+        /// Gets the clinician's role description.
+        /// </summary>
+        public string? RoleDescription { get; init; }
     }
 
     /// <summary>

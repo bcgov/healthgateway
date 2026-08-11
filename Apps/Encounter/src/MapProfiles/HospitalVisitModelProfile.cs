@@ -35,8 +35,10 @@ namespace HealthGateway.Encounter.MapProfiles
                 .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians.Select(c => c.DisplayName).FirstOrDefault()))
                 .ReverseMap();
 
-            // Provider has already been converted in HealthData
-            this.CreateMap<PatientDataHospitalVisit, HospitalVisitModel>();
+            this.CreateMap<PatientDataHospitalVisit, HospitalVisitModel>()
+                .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians == null
+                    ? null
+                    : src.Clinicians.Select(c => c.DisplayName).FirstOrDefault()));
         }
     }
 }

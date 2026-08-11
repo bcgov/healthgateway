@@ -351,7 +351,7 @@ namespace HealthGateway.PatientTests.Services
                 HealthAuthority = "Provincial Health Services Authority",
                 AdmitDateTime = new DateTime(2022, 5, 2, 13, 42, 59, DateTimeKind.Unspecified),
                 EndDateTime = new DateTime(2022, 5, 2, 14, 27, 0, DateTimeKind.Unspecified),
-                Provider = "Plisvci, B",
+                Clinicians = [new() { DisplayName = "Plisvci, B" }],
             };
 
             Mock<IPatientDataRepository> patientDataRepository = new();
@@ -377,7 +377,7 @@ namespace HealthGateway.PatientTests.Services
                 actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
                 actual.AdmitDateTime.ShouldBe(expected.AdmitDateTime);
                 actual.EndDateTime.ShouldBe(expected.EndDateTime);
-                actual.Provider.ShouldBe(expected.Provider);
+                actual.Provider.ShouldBe(expected.Clinicians!.First().DisplayName);
             }
             else
             {

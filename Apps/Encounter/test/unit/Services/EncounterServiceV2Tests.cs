@@ -72,6 +72,7 @@ namespace HealthGateway.EncounterTests.Services
                 Facility = "Vancouver General Hospital",
                 AdmitDateTime = rawAdmitDateTime,
                 EndDateTime = rawEndDateTime,
+                Clinicians = [new() { DisplayName = "Dr. Smith" }],
             };
 
             TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(Configuration);
@@ -108,6 +109,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(hospitalVisit.Facility, actual.Facility);
             Assert.Equal(expectedAdmitDateTime, actual.AdmitDateTime);
             Assert.Equal(expectedEndDateTime, actual.EndDateTime);
+            Assert.Equal("Dr. Smith", actual.Provider);
         }
 
         [Fact]
