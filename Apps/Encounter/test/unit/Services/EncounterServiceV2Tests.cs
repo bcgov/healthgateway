@@ -17,11 +17,13 @@ namespace HealthGateway.EncounterTests.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Models;
@@ -60,18 +62,21 @@ namespace HealthGateway.EncounterTests.Services
                 },
             };
 
+            DateTime rawAdmitDateTime = DateTime.Parse("2020-01-15T10:00:00", CultureInfo.InvariantCulture);
+            DateTime rawEndDateTime = DateTime.Parse("2020-01-16T08:00:00", CultureInfo.InvariantCulture);
+
             HospitalVisit hospitalVisit = new()
             {
                 Id = "123",
                 EncounterId = "encounter-id",
                 Facility = "Vancouver General Hospital",
+                AdmitDateTime = rawAdmitDateTime,
+                EndDateTime = rawEndDateTime,
             };
 
-            HospitalVisitModel mappedHospitalVisit = new()
-            {
-                EncounterId = "encounter-id",
-                Facility = "Vancouver General Hospital",
-            };
+            TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(Configuration);
+            DateTime expectedAdmitDateTime = DateFormatter.SpecifyTimeZone(rawAdmitDateTime, localTimeZone);
+            DateTime expectedEndDateTime = DateFormatter.SpecifyTimeZone(rawEndDateTime, localTimeZone);
 
             patientRepository
                 .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit, ct))
@@ -99,8 +104,10 @@ namespace HealthGateway.EncounterTests.Services
 
             // Assert
             HospitalVisitModel actual = Assert.Single(result);
-            Assert.Equal(mappedHospitalVisit.EncounterId, actual.EncounterId);
-            Assert.Equal(mappedHospitalVisit.Facility, actual.Facility);
+            Assert.Equal(hospitalVisit.EncounterId, actual.EncounterId);
+            Assert.Equal(hospitalVisit.Facility, actual.Facility);
+            Assert.Equal(expectedAdmitDateTime, actual.AdmitDateTime);
+            Assert.Equal(expectedEndDateTime, actual.EndDateTime);
         }
 
         [Fact]

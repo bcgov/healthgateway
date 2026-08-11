@@ -18,10 +18,8 @@ namespace PatientDataAccessTests
     using System.Globalization;
     using System.Net;
     using AutoMapper;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess;
     using HealthGateway.PatientDataAccess.Api;
-    using Microsoft.Extensions.Configuration;
     using Moq;
     using Refit;
     using BcCancerScreening = HealthGateway.PatientDataAccess.Api.BcCancerScreening;
@@ -160,8 +158,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.DiagnosticImaging, HealthCategory.BcCancerScreening]), CancellationToken.None)
-                ;
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.DiagnosticImaging, HealthCategory.BcCancerScreening]), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.DiagnosticImagingExam diExam = result.Items.First().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
@@ -186,13 +183,6 @@ namespace PatientDataAccessTests
                 Clinicians = [new() { DisplayName = "Display", RoleDescription = "Role" }],
             };
 
-            // Converting to local time
-            TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(GetIConfigurationRoot());
-            DateTime expectedAdmitDateTime =
-                DateFormatter.SpecifyTimeZone(
-                    hospitalVisit.AdmitDateTime.Value,
-                    localTimeZone);
-
             patientApi
                 .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
@@ -209,7 +199,7 @@ namespace PatientDataAccessTests
             visit.Id.ShouldBe(hospitalVisit.HealthDataId);
             visit.FileId.ShouldBe(hospitalVisit.HealthDataFileId);
             visit.EncounterId.ShouldBe(hospitalVisit.EncounterId);
-            visit.AdmitDateTime.ShouldBe(expectedAdmitDateTime);
+            visit.AdmitDateTime.ShouldBe(hospitalVisit.AdmitDateTime);
             visit.EndDateTime.ShouldBeNull();
             visit.Provider.ShouldBe("Display");
         }
@@ -308,20 +298,7 @@ namespace PatientDataAccessTests
         {
             IMapper? mapper = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Mappings))).CreateMapper();
 
-            return new PatientDataRepository(api, mapper, GetIConfigurationRoot());
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            Dictionary<string, string?> configuration = new()
-            {
-                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
-                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
-                .Build();
+            return new PatientDataRepository(api, mapper);
         }
 
         private sealed record UnsupportedPatientDataQuery : PatientDataQuery;

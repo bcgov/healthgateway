@@ -47,7 +47,10 @@ namespace HealthGateway.Encounter.Services
         /// <inheritdoc/>
         public HospitalVisitModel MapToHospitalVisitModel(PatientDataAccess.HospitalVisit source)
         {
-            return mapper.Map<PatientDataAccess.HospitalVisit, HospitalVisitModel>(source);
+            HospitalVisitModel dest = mapper.Map<PatientDataAccess.HospitalVisit, HospitalVisitModel>(source);
+            dest.AdmitDateTime = dest.AdmitDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.AdmitDateTime.Value, this.LocalTimeZone);
+            dest.EndDateTime = dest.EndDateTime == null ? null : DateFormatter.SpecifyTimeZone(dest.EndDateTime.Value, this.LocalTimeZone);
+            return dest;
         }
     }
 }
