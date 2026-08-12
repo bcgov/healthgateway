@@ -13,6 +13,7 @@
 // so they won't take precedence over utility classes like "my-0"
 // which are applied in the vuetify-utilities layer
 // https://vuetifyjs.com/en/styles/layers/
+// our layer order is specified in /public/layers.css
 @layer hg-overrides {
     :is(p, ol, ul) {
         margin-top: 0;
