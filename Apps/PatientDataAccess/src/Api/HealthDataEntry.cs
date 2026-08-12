@@ -196,8 +196,6 @@ namespace HealthGateway.PatientDataAccess.Api
         public string? LotNumber { get; init; }
 
         public string? ProductName { get; init; }
-
-        public string? System { get; init; }
     }
 
     [ExcludeFromCodeCoverage]
@@ -209,11 +207,11 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public string? DisplayName { get; init; }
 
-        public string? EligibleDate { get; init; }
+        public DateTime? EligibleDate { get; init; }
 
-        public string? DueDate { get; init; }
+        public DateTime? DueDate { get; init; }
 
-        public string? ForecastCreateDate { get; init; }
+        public DateTime? ForecastCreateDate { get; init; }
     }
 }
 #pragma warning restore SA1600

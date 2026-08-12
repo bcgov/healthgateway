@@ -20,7 +20,6 @@ namespace HealthGateway.Immunization.Services
     using System.Globalization;
     using System.Linq;
     using AutoMapper;
-    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
@@ -88,7 +87,11 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source)
         {
-            return mapper.Map<PatientDataImmunizationRecord, ImmunizationEvent>(source);
+            ImmunizationEvent dest = mapper.Map<PatientDataImmunizationRecord, ImmunizationEvent>(source);
+
+            dest.DateOfImmunization = DateFormatter.SpecifyTimeZone(dest.DateOfImmunization, this.LocalTimeZone);
+
+            return dest;
         }
     }
 }

@@ -15,15 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.MapProfiles
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
     using AutoMapper;
     using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.PatientDataAccess;
-    using CommonImmunizationAgent = HealthGateway.Common.Models.Immunization.ImmunizationAgent;
-    using CommonImmunizationForecast = HealthGateway.Common.Models.Immunization.ImmunizationForecast;
     using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
     using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
 
@@ -37,47 +31,33 @@ namespace HealthGateway.Immunization.MapProfiles
         /// </summary>
         public ImmunizationModelProfile()
         {
-            // Immunization → ImmunizationEvent
             // V2 field names differ from the ClientApp model shape, so explicit mappings are required.
             this.CreateMap<PatientDataImmunizationRecord, ImmunizationEvent>()
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.ImmunizationId))
                 .ForMember(dest => dest.DateOfImmunization, opts => opts.MapFrom(src => src.OccurrenceDateTime))
                 .ForMember(
                     dest => dest.Immunization,
-                    opts => opts.MapFrom(src => new ImmunizationDefinition
-                    {
-                        Name = src.VaccineName ?? string.Empty,
-                        ImmunizationAgents = src.Agents != null
-                            ? src.Agents.Select(a => new CommonImmunizationAgent
-                            {
-                                Code = a.Code ?? string.Empty,
-                                Name = a.Name ?? string.Empty,
-                                LotNumber = a.LotNumber ?? string.Empty,
-                                ProductName = a.ProductName ?? string.Empty,
-                            })
-                            : Enumerable.Empty<CommonImmunizationAgent>(),
-                    }))
-                .ForMember(
-                    dest => dest.Forecast,
-                    opts => opts.MapFrom(src => src.Forecast != null ? MapForecast(src.Forecast) : null));
-        }
+                    opts => opts.MapFrom(
+                        (src, _, _, context) => new ImmunizationDefinition
+                        {
+                            Name = src.VaccineName ?? string.Empty,
+                            ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.Agents ?? []),
+                        }))
+                .ForMember(dest => dest.Forecast, opts =>
+                {
+                    opts.PreCondition(src => HasCompleteDates(src.Forecast));
+                    opts.MapFrom(src => src.Forecast);
+                });
 
-        private static CommonImmunizationForecast? MapForecast(PatientDataImmunizationForecast source)
-        {
-            return new CommonImmunizationForecast
+            static bool HasCompleteDates(PatientDataImmunizationForecast? forecast)
             {
-                Status = source.ForecastStatus ?? string.Empty,
-                DisplayName = source.DisplayName ?? string.Empty,
-                CreateDate = DateOnly.TryParse(source.ForecastCreateDate, CultureInfo.InvariantCulture, out DateOnly createDate)
-                    ? createDate
-                    : default,
-                EligibleDate = DateOnly.TryParse(source.EligibleDate, CultureInfo.InvariantCulture, out DateOnly eligibleDate)
-                    ? eligibleDate
-                    : default,
-                DueDate = DateOnly.TryParse(source.DueDate, CultureInfo.InvariantCulture, out DateOnly dueDate)
-                    ? dueDate
-                    : default,
-            };
+                return forecast is
+                {
+                    ForecastCreateDate: not null,
+                    EligibleDate: not null,
+                    DueDate: not null,
+                };
+            }
         }
     }
 }

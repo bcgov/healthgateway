@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientDataAccess
 {
 #pragma warning disable SA1600 // Disables documentation for internal class.
+    using System;
     using AutoMapper;
     using HealthGateway.PatientDataAccess.Api;
 
@@ -49,7 +50,10 @@ namespace HealthGateway.PatientDataAccess
 
             this.CreateMap<Api.ImmunizationAgent, ImmunizationAgent>();
 
-            this.CreateMap<Api.ImmunizationForecast, ImmunizationForecast>();
+            this.CreateMap<Api.ImmunizationForecast, ImmunizationForecast>()
+                .ForMember(d => d.EligibleDate, opts => opts.MapFrom(s => s.EligibleDate.HasValue ? DateOnly.FromDateTime(s.EligibleDate.Value) : (DateOnly?)null))
+                .ForMember(d => d.DueDate, opts => opts.MapFrom(s => s.DueDate.HasValue ? DateOnly.FromDateTime(s.DueDate.Value) : (DateOnly?)null))
+                .ForMember(d => d.ForecastCreateDate, opts => opts.MapFrom(s => s.ForecastCreateDate.HasValue ? DateOnly.FromDateTime(s.ForecastCreateDate.Value) : (DateOnly?)null));
         }
     }
 }

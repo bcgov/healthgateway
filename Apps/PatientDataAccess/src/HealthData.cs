@@ -242,11 +242,6 @@ namespace HealthGateway.PatientDataAccess
         /// Gets the product name.
         /// </summary>
         public string? ProductName { get; init; }
-
-        /// <summary>
-        /// Gets the system.
-        /// </summary>
-        public string? System { get; init; }
     }
 
     /// <summary>
@@ -273,17 +268,17 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets the eligible date.
         /// </summary>
-        public string? EligibleDate { get; init; }
+        public DateOnly? EligibleDate { get; init; }
 
         /// <summary>
         /// Gets the due date.
         /// </summary>
-        public string? DueDate { get; init; }
+        public DateOnly? DueDate { get; init; }
 
         /// <summary>
         /// Gets the forecast create date.
         /// </summary>
-        public string? ForecastCreateDate { get; init; }
+        public DateOnly? ForecastCreateDate { get; init; }
     }
 
     /// <summary>

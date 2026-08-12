@@ -229,7 +229,6 @@ namespace PatientDataAccessTests
                         Name = "Influenza Agent",
                         LotNumber = "LOT123",
                         ProductName = "FluShield",
-                        System = "http://hl7.org/fhir",
                     },
                 ],
                 Forecast = new ImmunizationForecastApi
@@ -237,9 +236,9 @@ namespace PatientDataAccessTests
                     ForecastStatus = "Due",
                     VaccineCode = "FLU-BOOSTER",
                     DisplayName = "Influenza Booster",
-                    EligibleDate = "2024-01-01",
-                    DueDate = "2024-01-10",
-                    ForecastCreateDate = "2023-01-10",
+                    EligibleDate = DateTime.Parse("2024-01-01", CultureInfo.InvariantCulture),
+                    DueDate = DateTime.Parse("2024-01-10", CultureInfo.InvariantCulture),
+                    ForecastCreateDate = DateTime.Parse("2023-01-10", CultureInfo.InvariantCulture),
                 },
             };
 
@@ -269,12 +268,14 @@ namespace PatientDataAccessTests
             agent.Name.ShouldBe("Influenza Agent");
             agent.LotNumber.ShouldBe("LOT123");
             agent.ProductName.ShouldBe("FluShield");
-            agent.System.ShouldBe("http://hl7.org/fhir");
 
             HealthGateway.PatientDataAccess.ImmunizationForecast forecast = imms.Forecast.ShouldNotBeNull();
             forecast.ForecastStatus.ShouldBe("Due");
             forecast.VaccineCode.ShouldBe("FLU-BOOSTER");
             forecast.DisplayName.ShouldBe("Influenza Booster");
+            forecast.EligibleDate.ShouldBe(DateOnly.Parse("2024-01-01", CultureInfo.InvariantCulture));
+            forecast.DueDate.ShouldBe(DateOnly.Parse("2024-01-10", CultureInfo.InvariantCulture));
+            forecast.ForecastCreateDate.ShouldBe(DateOnly.Parse("2023-01-10", CultureInfo.InvariantCulture));
         }
 
         [Fact]

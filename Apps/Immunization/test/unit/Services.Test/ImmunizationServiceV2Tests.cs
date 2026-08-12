@@ -23,6 +23,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -66,15 +67,18 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 },
             };
 
+            DateTime rawOccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture);
+            TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(Configuration);
+            DateTime expectedOccurrenceDateTime = DateFormatter.SpecifyTimeZone(rawOccurrenceDateTime, localTimeZone);
+
             PatientDataImmunization immunization = new()
             {
                 Id = "imms_123",
                 ImmunizationId = "imms_123",
                 VaccineName = "Influenza",
                 Status = "Completed",
-                OccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture),
-                ProviderOrClinic = "Vancouver Clinic",
-                Agents =
+                OccurrenceDateTime = rawOccurrenceDateTime,
+                ProviderOrClinic = "Vancouver Clinic",                Agents =
                 [
                     new PatientDataImmunizationAgent
                     {
@@ -88,9 +92,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 {
                     ForecastStatus = "Due",
                     DisplayName = "Influenza Booster",
-                    DueDate = "2024-01-10",
-                    EligibleDate = "2024-01-01",
-                    ForecastCreateDate = "2023-01-10",
+                    DueDate = DateOnly.Parse("2024-01-10", CultureInfo.InvariantCulture),
+                    EligibleDate = DateOnly.Parse("2024-01-01", CultureInfo.InvariantCulture),
+                    ForecastCreateDate = DateOnly.Parse("2023-01-10", CultureInfo.InvariantCulture),
                     VaccineCode = "FLU-BOOSTER",
                 },
             };
@@ -121,7 +125,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Assert.Equal(immunization.ImmunizationId, actual.Id);
             Assert.Equal(immunization.VaccineName, actual.Immunization.Name);
             Assert.Equal(immunization.Status, actual.Status);
-            Assert.Equal(immunization.OccurrenceDateTime, actual.DateOfImmunization);
+            Assert.Equal(expectedOccurrenceDateTime, actual.DateOfImmunization);
             Assert.Equal(immunization.ProviderOrClinic, actual.ProviderOrClinic);
 
             CommonImmunizationAgent agent = Assert.Single(actual.Immunization.ImmunizationAgents);
@@ -168,6 +172,48 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             patientDataRepository.Verify(
                 s => s.QueryAsync(It.IsAny<PatientDataQuery>(), It.IsAny<CancellationToken>()),
                 Times.Never);
+        }
+
+        [Fact]
+        public async Task GetImmunizationsAsyncOmitsForecastWithMissingDates()
+        {
+            // Arrange
+            const string hdid = "test-hdid";
+            Guid pid = Guid.NewGuid();
+            CancellationToken ct = CancellationToken.None;
+            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            Mock<IPatientRepository> patientRepository = new();
+            PatientDataImmunization immunization = new()
+            {
+                ImmunizationId = "imms_123",
+                OccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture),
+                Forecast = new PatientDataImmunizationForecast
+                {
+                    ForecastStatus = "Due",
+                    DisplayName = "Influenza Booster",
+                    EligibleDate = DateOnly.Parse("2024-01-01", CultureInfo.InvariantCulture),
+                    ForecastCreateDate = DateOnly.Parse("2023-01-10", CultureInfo.InvariantCulture),
+                },
+            };
+
+            patientRepository
+                .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
+                .ReturnsAsync(true);
+            personalAccountsService
+                .Setup(s => s.GetPersonalAccountAsync(hdid, ct))
+                .ReturnsAsync(new PersonalAccount { PatientIdentity = new PatientIdentity { Pid = pid } });
+            patientDataRepository
+                .Setup(s => s.QueryAsync(It.IsAny<HealthQuery>(), ct))
+                .ReturnsAsync(new PatientDataQueryResult([immunization]));
+
+            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+
+            // Act
+            ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
+
+            // Assert
+            Assert.Null(Assert.Single(result.Immunizations).Forecast);
         }
 
         [Fact]
