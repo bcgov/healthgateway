@@ -68,14 +68,14 @@ namespace HealthGateway.Immunization.MapProfiles
             {
                 Status = source.ForecastStatus ?? string.Empty,
                 DisplayName = source.DisplayName ?? string.Empty,
-                CreateDate = source.ForecastCreateDate != null
-                    ? DateOnly.Parse(source.ForecastCreateDate, CultureInfo.InvariantCulture)
+                CreateDate = DateOnly.TryParse(source.ForecastCreateDate, CultureInfo.InvariantCulture, out DateOnly createDate)
+                    ? createDate
                     : default,
-                EligibleDate = source.EligibleDate != null
-                    ? DateOnly.Parse(source.EligibleDate, CultureInfo.InvariantCulture)
+                EligibleDate = DateOnly.TryParse(source.EligibleDate, CultureInfo.InvariantCulture, out DateOnly eligibleDate)
+                    ? eligibleDate
                     : default,
-                DueDate = source.DueDate != null
-                    ? DateOnly.Parse(source.DueDate, CultureInfo.InvariantCulture)
+                DueDate = DateOnly.TryParse(source.DueDate, CultureInfo.InvariantCulture, out DateOnly dueDate)
+                    ? dueDate
                     : default,
             };
         }

@@ -17,7 +17,8 @@ namespace HealthGateway.Patient.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;    using System.Runtime.Serialization;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
@@ -297,7 +298,7 @@ namespace HealthGateway.Patient.Services
         public ImmunizationForecast? Forecast { get; init; }
 
         /// <inheritdoc/>
-        public override string Type { get; } = "Immunization";
+        public override string Type { get; } = nameof(Immunization);
     }
 
     /// <summary>
