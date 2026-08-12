@@ -21,6 +21,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Models;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
 
     /// <summary>
     /// Service to map between models at different layers.
@@ -41,5 +42,10 @@ namespace HealthGateway.Immunization.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         LoadStateModel MapToLoadStateModel(PhsaLoadState source);
+
+        /// <summary>Maps a PatientDataAccess ImmunizationRecord to an ImmunizationEvent.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source);
     }
 }

@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\..\PatientDataAccess\src\PatientDataAccess.csproj" />
   </ItemGroup>
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">

@@ -44,6 +44,12 @@ namespace HealthGateway.PatientDataAccess
             this.CreateMap<Api.HospitalVisit, HospitalVisit>();
 
             this.CreateMap<Api.Clinician, Clinician>();
+
+            this.CreateMap<Api.Immunization, Immunization>();
+
+            this.CreateMap<Api.ImmunizationAgent, ImmunizationAgent>();
+
+            this.CreateMap<Api.ImmunizationForecast, ImmunizationForecast>();
         }
     }
 }

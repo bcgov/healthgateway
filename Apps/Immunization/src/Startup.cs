@@ -19,15 +19,19 @@ namespace HealthGateway.Immunization
     using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Api;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
+    using HealthGateway.PatientDataAccess;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Refit;
+    using PersonalAccountModule = HealthGateway.Common.AspNetConfiguration.Modules.PersonalAccount;
 
     /// <summary>
     /// Configures the application during startup.
@@ -69,6 +73,7 @@ namespace HealthGateway.Immunization
             // Add Services
             services.AddTransient<IImmunizationMappingService, ImmunizationMappingService>();
             services.AddTransient<IImmunizationService, ImmunizationService>();
+            services.AddTransient<IImmunizationServiceV2, ImmunizationServiceV2>();
 
             // Add delegates
             services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
@@ -83,8 +88,14 @@ namespace HealthGateway.Immunization
             PhsaConfigV2 phsaConfigV2 = new();
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
 
-            // Access patient repository
+            ILogger logger = ProgramConfiguration.GetInitialLogger(this.startupConfig.Configuration);
+            PersonalAccountModule.ConfigurePersonalAccountAccess(services, logger, this.startupConfig.Configuration);
+
+            // Access patient repository (V1)
             services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
+
+            // Access patient data repository (V2)
+            services.AddPatientDataAccess(new PatientDataAccessConfiguration(phsaConfigV2.BaseUrl));
 
             services.AddAutoMapper(typeof(Startup));
         }

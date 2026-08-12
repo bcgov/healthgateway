@@ -27,6 +27,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Models;
     using Microsoft.Extensions.Configuration;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
 
     /// <inheritdoc/>
     public class ImmunizationMappingService(IMapper mapper, IConfiguration configuration) : IImmunizationMappingService
@@ -82,6 +83,12 @@ namespace HealthGateway.Immunization.Services
         public LoadStateModel MapToLoadStateModel(PhsaLoadState source)
         {
             return mapper.Map<PhsaLoadState, LoadStateModel>(source);
+        }
+
+        /// <inheritdoc/>
+        public ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source)
+        {
+            return mapper.Map<PatientDataImmunizationRecord, ImmunizationEvent>(source);
         }
     }
 }

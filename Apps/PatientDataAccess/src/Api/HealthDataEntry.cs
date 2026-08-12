@@ -167,6 +167,54 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public string? RoleDescription { get; init; }
     }
+
+    [ExcludeFromCodeCoverage]
+    internal record Immunization : HealthDataEntry
+    {
+        public string? ImmunizationId { get; init; }
+
+        public string? VaccineName { get; init; }
+
+        public string? Status { get; init; }
+
+        public DateTime? OccurrenceDateTime { get; init; }
+
+        public string? ProviderOrClinic { get; init; }
+
+        public IEnumerable<ImmunizationAgent>? Agents { get; init; }
+
+        public ImmunizationForecast? Forecast { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record ImmunizationAgent
+    {
+        public string? Code { get; init; }
+
+        public string? Name { get; init; }
+
+        public string? LotNumber { get; init; }
+
+        public string? ProductName { get; init; }
+
+        public string? System { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record ImmunizationForecast
+    {
+        public string? ForecastStatus { get; init; }
+
+        public string? VaccineCode { get; init; }
+
+        public string? DisplayName { get; init; }
+
+        public string? EligibleDate { get; init; }
+
+        public string? DueDate { get; init; }
+
+        public string? ForecastCreateDate { get; init; }
+    }
 }
 #pragma warning restore SA1600
 #pragma warning restore SA1602

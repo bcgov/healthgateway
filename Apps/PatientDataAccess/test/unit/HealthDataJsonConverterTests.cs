@@ -36,6 +36,7 @@ namespace PatientDataAccessTests
         [InlineData("{\"healthDataType\":\"DiagnosticImaging\"}", typeof(DiagnosticImagingExam))]
         [InlineData("{\"healthDataType\":\"BcCancerScreening\"}", typeof(BcCancerScreening))]
         [InlineData("{\"healthDataType\":\"HospitalVisits\"}", typeof(HospitalVisit))]
+        [InlineData("{\"healthDataType\":\"Immunization\"}", typeof(Immunization))]
         public void TestValidHealthDataJsonConversions(string json, Type expectedType)
         {
             // Create Utf8JsonReader from json string.

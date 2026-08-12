@@ -38,6 +38,7 @@ namespace HealthGateway.PatientTests.Utils
                 cfg.AddProfile(new PatientDataAccessMappings());
                 cfg.AddProfile(new AccountDataAccessMappings());
                 cfg.AddProfile(new HospitalVisitProfile());
+                cfg.AddProfile(new ImmunizationProfile());
             });
 
             return config.CreateMapper();

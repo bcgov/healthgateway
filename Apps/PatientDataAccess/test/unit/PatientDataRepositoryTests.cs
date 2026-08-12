@@ -27,6 +27,9 @@ namespace PatientDataAccessTests
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
     using HospitalVisit = HealthGateway.PatientDataAccess.Api.HospitalVisit;
+    using ImmunizationAgentApi = HealthGateway.PatientDataAccess.Api.ImmunizationAgent;
+    using ImmunizationApi = HealthGateway.PatientDataAccess.Api.Immunization;
+    using ImmunizationForecastApi = HealthGateway.PatientDataAccess.Api.ImmunizationForecast;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
 
@@ -202,6 +205,76 @@ namespace PatientDataAccessTests
             visit.AdmitDateTime.ShouldBe(hospitalVisit.AdmitDateTime);
             visit.EndDateTime.ShouldBeNull();
             visit.Clinicians.ShouldNotBeNull().ShouldHaveSingleItem().DisplayName.ShouldBe("Display");
+        }
+
+        [Fact]
+        public async Task CanGetImmunizationData()
+        {
+            Mock<IPatientApi> patientApi = new();
+
+            ImmunizationApi immunization = new()
+            {
+                HealthDataId = "imms_7202674_93701284",
+                HealthDataFileId = "file_7202674_93701284",
+                ImmunizationId = "imms_7202674_93701284",
+                VaccineName = "Influenza",
+                Status = "Completed",
+                OccurrenceDateTime = DateTime.Parse("2023-01-10", CultureInfo.InvariantCulture),
+                ProviderOrClinic = "Vancouver Clinic",
+                Agents =
+                [
+                    new ImmunizationAgentApi
+                    {
+                        Code = "FLU",
+                        Name = "Influenza Agent",
+                        LotNumber = "LOT123",
+                        ProductName = "FluShield",
+                        System = "http://hl7.org/fhir",
+                    },
+                ],
+                Forecast = new ImmunizationForecastApi
+                {
+                    ForecastStatus = "Due",
+                    VaccineCode = "FLU-BOOSTER",
+                    DisplayName = "Influenza Booster",
+                    EligibleDate = "2024-01-01",
+                    DueDate = "2024-01-10",
+                    ForecastCreateDate = "2023-01-10",
+                },
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new HealthDataResult(
+                        new HealthDataMetadata(),
+                        [immunization]));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.Immunization]), CancellationToken.None);
+
+            result.ShouldNotBeNull();
+            HealthGateway.PatientDataAccess.Immunization imms = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.Immunization>();
+            imms.Id.ShouldBe(immunization.HealthDataId);
+            imms.FileId.ShouldBe(immunization.HealthDataFileId);
+            imms.ImmunizationId.ShouldBe(immunization.ImmunizationId);
+            imms.VaccineName.ShouldBe(immunization.VaccineName);
+            imms.Status.ShouldBe(immunization.Status);
+            imms.OccurrenceDateTime.ShouldBe(immunization.OccurrenceDateTime);
+            imms.ProviderOrClinic.ShouldBe(immunization.ProviderOrClinic);
+
+            HealthGateway.PatientDataAccess.ImmunizationAgent agent = imms.Agents.ShouldNotBeNull().ShouldHaveSingleItem();
+            agent.Code.ShouldBe("FLU");
+            agent.Name.ShouldBe("Influenza Agent");
+            agent.LotNumber.ShouldBe("LOT123");
+            agent.ProductName.ShouldBe("FluShield");
+            agent.System.ShouldBe("http://hl7.org/fhir");
+
+            HealthGateway.PatientDataAccess.ImmunizationForecast forecast = imms.Forecast.ShouldNotBeNull();
+            forecast.ForecastStatus.ShouldBe("Due");
+            forecast.VaccineCode.ShouldBe("FLU-BOOSTER");
+            forecast.DisplayName.ShouldBe("Influenza Booster");
         }
 
         [Fact]

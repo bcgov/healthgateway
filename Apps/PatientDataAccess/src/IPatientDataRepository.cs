@@ -72,6 +72,11 @@ namespace HealthGateway.PatientDataAccess
         /// Hospital Visits.
         /// </summary>
         HospitalVisits,
+
+        /// <summary>
+        /// Immunization data.
+        /// </summary>
+        Immunization,
     }
 
     /// <summary>

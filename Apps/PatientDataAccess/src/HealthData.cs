@@ -176,6 +176,117 @@ namespace HealthGateway.PatientDataAccess
     }
 
     /// <summary>
+    /// The details of an immunization record.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record Immunization : HealthData
+    {
+        /// <summary>
+        /// Gets the immunization id.
+        /// </summary>
+        public string? ImmunizationId { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine name.
+        /// </summary>
+        public string? VaccineName { get; init; }
+
+        /// <summary>
+        /// Gets the immunization status.
+        /// </summary>
+        public string? Status { get; init; }
+
+        /// <summary>
+        /// Gets the occurrence date time.
+        /// </summary>
+        public DateTime? OccurrenceDateTime { get; init; }
+
+        /// <summary>
+        /// Gets the provider or clinic.
+        /// </summary>
+        public string? ProviderOrClinic { get; init; }
+
+        /// <summary>
+        /// Gets the immunization agents.
+        /// </summary>
+        public IEnumerable<ImmunizationAgent>? Agents { get; init; }
+
+        /// <summary>
+        /// Gets the immunization forecast.
+        /// </summary>
+        public ImmunizationForecast? Forecast { get; init; }
+    }
+
+    /// <summary>
+    /// Represents an immunization agent.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationAgent
+    {
+        /// <summary>
+        /// Gets the agent code.
+        /// </summary>
+        public string? Code { get; init; }
+
+        /// <summary>
+        /// Gets the agent name.
+        /// </summary>
+        public string? Name { get; init; }
+
+        /// <summary>
+        /// Gets the lot number.
+        /// </summary>
+        public string? LotNumber { get; init; }
+
+        /// <summary>
+        /// Gets the product name.
+        /// </summary>
+        public string? ProductName { get; init; }
+
+        /// <summary>
+        /// Gets the system.
+        /// </summary>
+        public string? System { get; init; }
+    }
+
+    /// <summary>
+    /// Represents an immunization forecast.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationForecast
+    {
+        /// <summary>
+        /// Gets the forecast status.
+        /// </summary>
+        public string? ForecastStatus { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine code.
+        /// </summary>
+        public string? VaccineCode { get; init; }
+
+        /// <summary>
+        /// Gets the display name.
+        /// </summary>
+        public string? DisplayName { get; init; }
+
+        /// <summary>
+        /// Gets the eligible date.
+        /// </summary>
+        public string? EligibleDate { get; init; }
+
+        /// <summary>
+        /// Gets the due date.
+        /// </summary>
+        public string? DueDate { get; init; }
+
+        /// <summary>
+        /// Gets the forecast create date.
+        /// </summary>
+        public string? ForecastCreateDate { get; init; }
+    }
+
+    /// <summary>
     /// Diagnostic image exam statuses.
     /// </summary>
     public enum DiagnosticImagingStatus

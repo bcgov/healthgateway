@@ -37,6 +37,7 @@ namespace HealthGateway.PatientTests.Services
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using HospitalVisit = HealthGateway.Patient.Services.HospitalVisit;
+    using ImmunizationService = HealthGateway.Patient.Services.Immunization;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
@@ -203,6 +204,34 @@ namespace HealthGateway.PatientTests.Services
                 hospitalVisit.EndDateTime);
             actualHospitalVisit.Provider.ShouldBe(
                 hospitalVisit.Provider);
+        }
+
+        [Fact]
+        public void CanSerializeImmunization()
+        {
+            ImmunizationService immunization = new()
+            {
+                ImmunizationId = "imms_123",
+                VaccineName = "Influenza",
+                Status = "Completed",
+                OccurrenceDateTime = DateTime.UtcNow,
+                ProviderOrClinic = "Vancouver Clinic",
+            };
+
+            PatientData[] data = [immunization];
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
+
+            ImmunizationService actual = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationService>();
+            actual.ImmunizationId.ShouldBe(immunization.ImmunizationId);
+            actual.VaccineName.ShouldBe(immunization.VaccineName);
+            actual.Status.ShouldBe(immunization.Status);
+            actual.OccurrenceDateTime.ShouldBe(immunization.OccurrenceDateTime);
+            actual.ProviderOrClinic.ShouldBe(immunization.ProviderOrClinic);
         }
 
         [Theory]
@@ -378,6 +407,61 @@ namespace HealthGateway.PatientTests.Services
                 actual.AdmitDateTime.ShouldBe(expected.AdmitDateTime);
                 actual.EndDateTime.ShouldBe(expected.EndDateTime);
                 actual.Provider.ShouldBe(expected.Clinicians!.First().DisplayName);
+            }
+            else
+            {
+                result.Items.ShouldBeEmpty();
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetImmunizationData(bool canAccessDataSource)
+        {
+            PatientDataAccess.Immunization expected = new()
+            {
+                Id = "imms_7202674_93701284",
+                ImmunizationId = "imms_7202674_93701284",
+                VaccineName = "Influenza",
+                Status = "Completed",
+                OccurrenceDateTime = new DateTime(2023, 1, 10, 12, 0, 0, DateTimeKind.Unspecified),
+                ProviderOrClinic = "Vancouver Clinic",
+                Agents =
+                [
+                    new PatientDataAccess.ImmunizationAgent
+                    {
+                        Code = "FLU",
+                        Name = "Influenza Agent",
+                        LotNumber = "LOT123",
+                        ProductName = "FluShield",
+                    },
+                ],
+            };
+
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.Immunization),
+                expected);
+
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, MappingService);
+
+            PatientDataResponse result = await sut.QueryAsync(new PatientDataQuery(this.hdid, [PatientDataType.Immunization]), CancellationToken.None);
+
+            if (canAccessDataSource)
+            {
+                ImmunizationService actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationService>();
+                actual.ImmunizationId.ShouldBe(expected.ImmunizationId);
+                actual.VaccineName.ShouldBe(expected.VaccineName);
+                actual.Status.ShouldBe(expected.Status);
+                actual.OccurrenceDateTime.ShouldBe(expected.OccurrenceDateTime);
+                actual.ProviderOrClinic.ShouldBe(expected.ProviderOrClinic);
+                actual.Agents.ShouldNotBeNull().ShouldHaveSingleItem().Code.ShouldBe("FLU");
             }
             else
             {
