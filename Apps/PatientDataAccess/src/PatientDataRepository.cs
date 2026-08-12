@@ -23,9 +23,7 @@ namespace HealthGateway.PatientDataAccess
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess.Api;
-    using Microsoft.Extensions.Configuration;
     using Refit;
 
     /// <summary>
@@ -33,8 +31,7 @@ namespace HealthGateway.PatientDataAccess
     /// </summary>
     /// <param name="patientApi">The patient API to use.</param>
     /// <param name="mapper">The injected mapper.</param>
-    /// <param name="configuration">The injected configuration provider.</param>
-    internal class PatientDataRepository(IPatientApi patientApi, IMapper mapper, IConfiguration configuration) : IPatientDataRepository
+    internal class PatientDataRepository(IPatientApi patientApi, IMapper mapper) : IPatientDataRepository
     {
         /// <summary>
         /// Performs a query against the data repository.
@@ -154,22 +151,6 @@ namespace HealthGateway.PatientDataAccess
 
         private HealthData Map(HealthDataEntry healthDataEntry)
         {
-            if (healthDataEntry is Api.HospitalVisit hospitalVisit)
-            {
-                TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(configuration);
-
-                healthDataEntry = hospitalVisit with
-                {
-                    AdmitDateTime = hospitalVisit.AdmitDateTime == null
-                        ? null
-                        : DateFormatter.SpecifyTimeZone(hospitalVisit.AdmitDateTime.Value, localTimeZone),
-
-                    EndDateTime = hospitalVisit.EndDateTime == null
-                        ? null
-                        : DateFormatter.SpecifyTimeZone(hospitalVisit.EndDateTime.Value, localTimeZone),
-                };
-            }
-
             return mapper.Map<HealthData>(healthDataEntry);
         }
     }
