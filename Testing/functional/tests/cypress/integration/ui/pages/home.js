@@ -173,13 +173,12 @@ describe("Authenticated User - Home Page", () => {
     it("Home - BC Cancer notifications banner shown if last login predates notifications implementation", () => {
         cy.configureSettings({});
 
-        setupStandardFixtures();
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
             data.lastLoginDateTimes = [
                 new Date().toISOString(),
                 "2026-05-19T15:59:00Z", // previous login was before May 19, 2026 9:00AM Pacific Time
             ];
-            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+            setupStandardFixtures({ userProfileBody: data });
         });
 
         cy.login(
@@ -197,13 +196,12 @@ describe("Authenticated User - Home Page", () => {
     it("Home - BC Cancer notifications banner hidden if last login is more recent", () => {
         cy.configureSettings({});
 
-        setupStandardFixtures();
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
             data.lastLoginDateTimes = [
                 new Date().toISOString(),
                 "2026-05-19T16:01:00Z", // previous login was after May 19, 2026 9:00AM Pacific Time
             ];
-            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+            setupStandardFixtures({ userProfileBody: data });
         });
 
         cy.login(
@@ -222,10 +220,9 @@ describe("Authenticated User - Home Page", () => {
     it("Home - BC Cancer notifications banner hidden for new users", () => {
         cy.configureSettings({});
 
-        setupStandardFixtures();
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
             data.lastLoginDateTimes = [new Date().toISOString()];
-            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+            setupStandardFixtures({ userProfileBody: data });
         });
 
         cy.login(
