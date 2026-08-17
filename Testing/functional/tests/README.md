@@ -23,7 +23,7 @@ Create a cypress.env.json and update with passwords or any other environment var
 
 ```bash
 {
-    "baseUrl": "https://dev-classic.healthgateway.gov.bc.ca",
+    "baseUrl": "https://dev.healthgateway.gov.bc.ca",
     "bcsc.password": "THE PASSWORD",
     "keycloak.password": "THE PASSWORD",
     "idir.password": "THE PASSWORD",
@@ -60,9 +60,9 @@ npx cypress open --e2e --browser chrome
 
 Tip: If you encounter crashes or sluggish performance with npx cypress open, use CYPRESS_numTestsKeptInMemory=1 to reduce memory usage.
 
-Note: This flag is only applicable for local testing (e.g., http://localhost:5002). It should not be used against deployed environments like https://dev-classic.healthgateway.gov.bc.ca.
+Note: This flag is only applicable for local testing (e.g., http://localhost:5002). It should not be used against deployed environments like https://dev.healthgateway.gov.bc.ca.
 
-If you want to verify the tests against <https://dev-classic.healthgateway.gov.bc.ca> then do not set the CYPRESS_BASE_URL environment variable.
+If you want to verify the tests against <https://dev.healthgateway.gov.bc.ca> then do not set the CYPRESS_BASE_URL environment variable.
 
 e2e: contains tests that will be run in the dev environment only.
 ui: contains tests that are either stubbed or cosmetic only and can be run in any environment

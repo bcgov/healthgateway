@@ -112,7 +112,7 @@
                 "id": "cypressBaseUrl",
                 "description": "Choose your environment.",
                 "options": [
-                    "https://dev-classic.healthgateway.gov.bc.ca",
+                    "https://dev.healthgateway.gov.bc.ca",
                     "http://localhost:5002"
                 ]
             }
