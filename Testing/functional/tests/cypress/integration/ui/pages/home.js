@@ -4,6 +4,7 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const otherRecordSourcesUrl = "/otherRecordSources";
+const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
@@ -167,5 +168,76 @@ describe("Authenticated User - Home Page", () => {
         // Notes has 0 records and will return quickly so content placeholders will not have enough time to display.
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=timeline-record-count]").should("not.exist");
+    });
+
+    it("Home - BC Cancer notifications banner shown if last login predates notifications implementation", () => {
+        cy.configureSettings({});
+
+        setupStandardFixtures();
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.lastLoginDateTimes = [
+                new Date().toISOString(),
+                "2026-05-19T15:59:00Z", // previous login was before May 19, 2026 9:00AM Pacific Time
+            ];
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "be.visible"
+        );
+    });
+
+    it("Home - BC Cancer notifications banner hidden if last login is more recent", () => {
+        cy.configureSettings({});
+
+        setupStandardFixtures();
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.lastLoginDateTimes = [
+                new Date().toISOString(),
+                "2026-05-19T16:01:00Z", // previous login was after May 19, 2026 9:00AM Pacific Time
+            ];
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "not.exist"
+        );
+    });
+
+    it("Home - BC Cancer notifications banner hidden for new users", () => {
+        cy.configureSettings({});
+
+        setupStandardFixtures();
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.lastLoginDateTimes = [new Date().toISOString()];
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "not.exist"
+        );
     });
 });
