@@ -4,7 +4,6 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const otherRecordSourcesUrl = "/otherRecordSources";
-const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
