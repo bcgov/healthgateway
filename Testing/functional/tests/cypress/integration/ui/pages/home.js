@@ -168,4 +168,72 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=timeline-record-count]").should("not.exist");
     });
+
+    it("Home - BC Cancer notifications banner shown if last login predates notifications implementation", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.lastLoginDateTimes = [
+                new Date().toISOString(),
+                "2026-05-19T15:59:00Z", // previous login was before May 19, 2026 9:00AM Pacific Time
+            ];
+            setupStandardFixtures({ userProfileBody: data });
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "be.visible"
+        );
+    });
+
+    it("Home - BC Cancer notifications banner hidden if last login is more recent", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.lastLoginDateTimes = [
+                new Date().toISOString(),
+                "2026-05-19T16:01:00Z", // previous login was after May 19, 2026 9:00AM Pacific Time
+            ];
+            setupStandardFixtures({ userProfileBody: data });
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "not.exist"
+        );
+    });
+
+    it("Home - BC Cancer notifications banner hidden for new users", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.lastLoginDateTimes = [new Date().toISOString()];
+            setupStandardFixtures({ userProfileBody: data });
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "not.exist"
+        );
+    });
 });
