@@ -5,7 +5,17 @@ const {
 } = require("../../../support/functions/timeline");
 
 describe("COVID-19 Test Results", () => {
+    function waitForCovid19TestResults() {
+        return cy
+            .wait("@getCovid19TestResults", { timeout: 120000 })
+            .its("response.statusCode")
+            .should("eq", 200);
+    }
+
     beforeEach(() => {
+        cy.intercept("GET", "**/Laboratory/Covid19Orders?hdid=*").as(
+            "getCovid19TestResults"
+        );
         cy.configureSettings({
             datasets: [
                 {
@@ -19,6 +29,7 @@ describe("COVID-19 Test Results", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        waitForCovid19TestResults();
         cy.checkTimelineHasLoaded();
     });
 
@@ -28,7 +39,11 @@ describe("COVID-19 Test Results", () => {
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
-                validateFileDownload("[data-testid=covid-result-download-btn]");
+                validateFileDownload(
+                    "[data-testid=covid-result-download-btn]",
+                    true,
+                    60000
+                );
             });
     });
 

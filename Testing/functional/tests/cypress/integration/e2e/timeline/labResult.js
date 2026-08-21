@@ -5,7 +5,17 @@ const {
 } = require("../../../support/functions/timeline");
 
 describe("Laboratory Orders", () => {
+    function waitForLabResults() {
+        return cy
+            .wait("@getLabResults", { timeout: 120000 })
+            .its("response.statusCode")
+            .should("eq", 200);
+    }
+
     beforeEach(() => {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders?hdid=*").as(
+            "getLabResults"
+        );
         cy.configureSettings({
             datasets: [
                 {
@@ -19,6 +29,7 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        waitForLabResults();
         cy.checkTimelineHasLoaded();
     });
 

@@ -43,6 +43,13 @@ describe("Disabled Filters", () => {
 });
 
 describe("Filters", () => {
+    function waitForLabResults() {
+        return cy
+            .wait("@getLabResult", { timeout: 120000 })
+            .its("response.statusCode")
+            .should("eq", 200);
+    }
+
     function testDatasetTimelineFiltering(
         filterTestId,
         titleTestId,
@@ -125,11 +132,15 @@ describe("Filters", () => {
                 },
             ],
         });
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders?hdid=*").as(
+            "getLabResult"
+        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        waitForLabResults();
         cy.checkTimelineHasLoaded();
     });
 

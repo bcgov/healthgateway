@@ -15,7 +15,11 @@ export function validateAttachmentDownload() {
     });
 }
 
-export function validateFileDownload(buttonSelector, clickEntryCard = true) {
+export function validateFileDownload(
+    buttonSelector,
+    clickEntryCard = true,
+    downloadTimeout = 20000
+) {
     getEntryCardDateString().then((dateString) => {
         if (clickEntryCard) {
             cy.get("[data-testid=entryCardDetailsTitle]")
@@ -23,13 +27,14 @@ export function validateFileDownload(buttonSelector, clickEntryCard = true) {
                 .click({ force: true });
         }
         cy.get(buttonSelector).should("be.visible").click();
-        validateSensitiveDocumentDownload(dateString);
+        validateSensitiveDocumentDownload(dateString, false, downloadTimeout);
     });
 }
 
 export function validateSensitiveDocumentDownload(
     filename,
-    exactMatch = false
+    exactMatch = false,
+    downloadTimeout = 20000
 ) {
     cy.document()
         .find("[data-testid=generic-message-submit-btn]")
@@ -43,6 +48,6 @@ export function validateSensitiveDocumentDownload(
     cy.verifyDownload(filename, {
         contains: !exactMatch,
         interval: 500,
-        timeout: 20000,
+        timeout: downloadTimeout,
     });
 }

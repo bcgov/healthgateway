@@ -1,4 +1,5 @@
 describe("Encounter Service", () => {
+    const providerResponseTimeout = 120000;
     beforeEach(() => {
         cy.readConfig().as("config");
         cy.getTokens(
@@ -145,6 +146,7 @@ describe("Encounter Service", () => {
                 cy.request({
                     url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/${HDID}`,
                     followRedirect: false,
+                    timeout: providerResponseTimeout,
                     auth: {
                         bearer: tokens.access_token,
                     },
@@ -170,7 +172,7 @@ describe("Encounter Service", () => {
                     method: "GET",
                     url: `${encounterEndpoint}Encounter/HospitalVisit/${HDID}?api-version=2`,
                     followRedirect: false,
-                    timeout: 120000,
+                    timeout: providerResponseTimeout,
                     auth: {
                         bearer: tokens.access_token,
                     },

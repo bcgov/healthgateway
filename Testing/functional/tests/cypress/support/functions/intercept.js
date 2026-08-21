@@ -172,8 +172,10 @@ export function waitForInitialDataLoad(username, config, path) {
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);
     cy.log(`Path: ${path}`);
 
-    cy.log("Wait on patient.");
-    cy.wait("@getPatient", { timeout: defaultTimeout });
+    if (!isDependents(path) && !isDependentsTimeline(path)) {
+        cy.log("Wait on patient.");
+        cy.wait("@getPatient", { timeout: defaultTimeout });
+    }
 
     waitForUserProfile(username).then((blockedDataSources) => {
         waitForClinicalDocument(featureToggle, path, blockedDataSources);

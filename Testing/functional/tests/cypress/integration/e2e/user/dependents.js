@@ -701,14 +701,11 @@ describe("CRUD Operations", () => {
         cy.log("Validating Immunization tab");
 
         cy.setupDownloads();
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
         cy.get("@newDependentCard").within(() => {
             cy.get(
                 `[data-testid=immunization-tab-title-${validDependent.hdid}]`
             ).click();
         });
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
-
         cy.get(
             `[data-testid=immunization-tab-div-${validDependent.hdid}]`
         ).within(() => {
