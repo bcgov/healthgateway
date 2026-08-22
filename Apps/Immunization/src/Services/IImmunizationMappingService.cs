@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;

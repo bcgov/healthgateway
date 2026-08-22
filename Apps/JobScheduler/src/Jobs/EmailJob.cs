@@ -156,7 +156,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 _ = email.Template ?? throw new MissingFieldException("TemplateId is null");
                 EmailRequest emailRequest = new()
                 {
-                    EmailAddress = email.To!,
+                    EmailAddress = email.To,
                     TemplateId = this.notifyConfiguration.Templates[email.Template],
                     Personalization = email.Personalization,
                     Reference = email.Id.ToString("D"),

@@ -20,7 +20,6 @@ namespace HealthGateway.Immunization.Services
     using System.Globalization;
     using System.Linq;
     using AutoMapper;
-    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
