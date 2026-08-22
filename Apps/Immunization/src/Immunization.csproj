@@ -26,7 +26,8 @@
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Refit" Version="13.1.0" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="13.1.0" />
+    <PackageReference Include="Refit" Version="15.2.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="15.2.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
   </ItemGroup>
 </Project>

@@ -6,9 +6,10 @@
     <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.R4" Version="6.3.0" />
-    <PackageReference Include="Refit" Version="13.1.0" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="13.1.0" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="6.4.0" />
+    <PackageReference Include="Refit" Version="15.2.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="15.2.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />

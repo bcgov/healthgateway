@@ -12,9 +12,10 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.10" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.10" />
-        <PackageReference Include="Refit.HttpClientFactory" Version="13.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.11" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="15.2.0" />
+        <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -20,4 +20,8 @@
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
+    </ItemGroup>
+
 </Project>
