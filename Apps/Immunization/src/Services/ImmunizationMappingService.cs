@@ -74,7 +74,7 @@ namespace HealthGateway.Immunization.Services
             static DateOnly? GetDateFromCriterions(IEnumerable<DateCriterion> criterions, string code)
             {
                 DateCriterion? criterion = criterions.FirstOrDefault(x => x.DateCriterionCode.Text == code);
-                return criterion?.Value != null ? DateOnly.Parse(criterion.Value, CultureInfo.CurrentCulture) : null;
+                return DateOnly.TryParse(criterion?.Value, CultureInfo.CurrentCulture, out DateOnly date) ? date : null;
             }
         }
 

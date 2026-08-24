@@ -32,8 +32,10 @@ namespace HealthGateway.Immunization.MapProfiles
         {
             // V2 field names differ from the ClientApp model shape, so explicit mappings are required.
             this.CreateMap<PatientDataImmunizationRecord, ImmunizationEvent>()
-                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.ImmunizationId))
+                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.ImmunizationId ?? string.Empty))
                 .ForMember(dest => dest.DateOfImmunization, opts => opts.MapFrom(src => src.OccurrenceDateTime))
+                .ForMember(dest => dest.Status, opts => opts.MapFrom(src => src.Status ?? string.Empty))
+                .ForMember(dest => dest.ProviderOrClinic, opts => opts.MapFrom(src => src.ProviderOrClinic ?? string.Empty))
                 .ForMember(
                     dest => dest.Immunization,
                     opts => opts.MapFrom(

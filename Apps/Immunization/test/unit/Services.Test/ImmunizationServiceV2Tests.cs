@@ -153,6 +153,34 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         [Fact]
+        public async Task GetImmunizationsAsyncMapsMissingEventTextToEmptyStrings()
+        {
+            // Arrange
+            const string hdid = "test-hdid";
+            Guid pid = Guid.NewGuid();
+            CancellationToken ct = CancellationToken.None;
+            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            Mock<IPatientRepository> patientRepository = new();
+            PatientDataImmunization immunization = new()
+            {
+                OccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture),
+            };
+
+            SetupPatientDataQuery(patientRepository, personalAccountsService, patientDataRepository, hdid, pid, [immunization], ct);
+            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+
+            // Act
+            ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
+
+            // Assert
+            ImmunizationEvent actual = Assert.Single(result.Immunizations);
+            Assert.Equal(string.Empty, actual.Id);
+            Assert.Equal(string.Empty, actual.Status);
+            Assert.Equal(string.Empty, actual.ProviderOrClinic);
+        }
+
+        [Fact]
         public async Task GetImmunizationsAsyncWhenAccessDeniedReturnsEmptyResult()
         {
             // Arrange
@@ -212,6 +240,50 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Assert.Equal("Due", actual.Status);
             Assert.Equal("Influenza", actual.Immunization.Name);
             Assert.Empty(actual.TargetDiseases);
+        }
+
+        [Fact]
+        public async Task GetImmunizationsAsyncMapsInvalidRecommendationDateToNull()
+        {
+            // Arrange
+            const string hdid = "test-hdid";
+            Guid pid = Guid.NewGuid();
+            CancellationToken ct = CancellationToken.None;
+            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            Mock<IPatientRepository> patientRepository = new();
+            PatientDataImmunizationRecommendation recommendation = CreateRecommendation() with
+            {
+                Recommendations =
+                [
+                    new PatientDataRecommendationForecast
+                    {
+                        VaccineCode = new PatientDataRecommendationVaccineCode
+                        {
+                            VaccineCodeText = "Influenza",
+                            VaccineCodes = [new PatientDataRecommendationSystemCode { Display = "Influenza" }],
+                        },
+                        DateCriterion =
+                        [
+                            new PatientDataRecommendationDateCriterion
+                            {
+                                DateCriterionCode = new PatientDataRecommendationDateCriterionCode { Text = "Forecast by Agent Due Date" },
+                                Value = "invalid-date",
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            SetupPatientDataQuery(patientRepository, personalAccountsService, patientDataRepository, hdid, pid, [recommendation], ct);
+            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+
+            // Act
+            ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
+
+            // Assert
+            HealthGateway.Immunization.Models.ImmunizationRecommendation actual = Assert.Single(result.Recommendations);
+            Assert.Null(actual.AgentDueDate);
         }
 
         [Fact]
