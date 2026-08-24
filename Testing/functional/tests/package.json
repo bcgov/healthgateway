@@ -22,15 +22,15 @@
     "devDependencies": {
         "@cypress/skip-test": "^2.6.1",
         "cy-verify-downloads": "^0.3.0",
-        "cypress": "^15.19.0",
+        "cypress": "^15.21.0",
         "cypress-multi-reporters": "^2.0.5",
-        "eslint": "^10.8.0",
+        "eslint": "^10.9.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-chai-friendly": "^1.2.1",
-        "eslint-plugin-cypress": "^6.4.3",
+        "eslint-plugin-cypress": "^7.0.1",
         "eslint-plugin-simple-import-sort": "^14.0.0",
         "eslint-plugin-unused-imports": "^4.4.1",
-        "mocha": "^11.7.6",
+        "mocha": "^11.8.0",
         "mocha-junit-reporter": "^2.2.1",
         "prettier": "^3.9.6"
     }
