@@ -77,6 +77,11 @@ namespace HealthGateway.PatientDataAccess
         /// Immunization data.
         /// </summary>
         Immunization,
+
+        /// <summary>
+        /// Immunization recommendation data.
+        /// </summary>
+        ImmunizationRecommendation,
     }
 
     /// <summary>

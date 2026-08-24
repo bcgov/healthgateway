@@ -35,6 +35,7 @@ namespace HealthGateway.PatientDataAccess.Api
                 "BcCancerScreening" => typeof(BcCancerScreening),
                 "HospitalVisits" => typeof(HospitalVisit),
                 "Immunization" => typeof(Immunization),
+                "ImmunizationRecommendation" => typeof(ImmunizationRecommendation),
                 _ => null,
             };
         }

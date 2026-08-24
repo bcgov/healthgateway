@@ -69,6 +69,7 @@ namespace HealthGateway.PatientDataAccess
                 HealthCategory.BcCancerScreening => "BcCancerScreening",
                 HealthCategory.HospitalVisits => "HospitalVisits",
                 HealthCategory.Immunization => "Immunization",
+                HealthCategory.ImmunizationRecommendation => "ImmunizationRecommendation",
                 _ => null,
             };
         }

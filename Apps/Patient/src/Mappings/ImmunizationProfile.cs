@@ -36,11 +36,23 @@ namespace HealthGateway.Patient.Mappings
             this.CreateMap<PatientDataImmunizationRecord, Services.Immunization>()
                 .ForMember(
                     d => d.OccurrenceDateTime,
-                    opts => opts.MapFrom(s => s.OccurrenceDateTime.HasValue ? DateFormatter.SpecifyUtc(s.OccurrenceDateTime.Value) : (DateTime?)null));
+                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.OccurrenceDateTime)));
 
             this.CreateMap<PatientDataImmunizationAgent, Services.ImmunizationAgent>();
 
-            this.CreateMap<PatientDataImmunizationForecast, Services.ImmunizationForecast>();
+            this.CreateMap<PatientDataImmunizationForecast, Services.ImmunizationForecast>()
+                .ForMember(
+                    dest => dest.VaccineCode,
+                    opts => opts.MapFrom(src => src.VaccineCode ?? string.Empty))
+                .ForMember(
+                    dest => dest.EligibleDate,
+                    opts => opts.MapFrom(src => src.EligibleDate.HasValue ? DateFormatter.ToShortDate(src.EligibleDate.Value) : null))
+                .ForMember(
+                    dest => dest.DueDate,
+                    opts => opts.MapFrom(src => DateFormatter.ToShortDate(src.DueDate)))
+                .ForMember(
+                    dest => dest.ForecastCreateDate,
+                    opts => opts.MapFrom(src => src.ForecastCreateDate.HasValue ? DateFormatter.ToShortDate(src.ForecastCreateDate.Value) : null));
         }
     }
 }

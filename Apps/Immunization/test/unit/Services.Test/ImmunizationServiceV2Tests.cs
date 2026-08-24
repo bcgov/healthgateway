@@ -21,6 +21,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
@@ -38,6 +39,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using PatientDataImmunization = HealthGateway.PatientDataAccess.Immunization;
     using PatientDataImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
     using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
+    using PatientDataImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;
+    using PatientDataRecommendationDateCriterion = HealthGateway.PatientDataAccess.RecommendationDateCriterion;
+    using PatientDataRecommendationDateCriterionCode = HealthGateway.PatientDataAccess.RecommendationDateCriterionCode;
+    using PatientDataRecommendationForecast = HealthGateway.PatientDataAccess.RecommendationForecast;
+    using PatientDataRecommendationForecastStatus = HealthGateway.PatientDataAccess.RecommendationForecastStatus;
+    using PatientDataRecommendationSystemCode = HealthGateway.PatientDataAccess.RecommendationSystemCode;
+    using PatientDataRecommendationTargetDisease = HealthGateway.PatientDataAccess.RecommendationTargetDisease;
+    using PatientDataRecommendationVaccineCode = HealthGateway.PatientDataAccess.RecommendationVaccineCode;
 
     /// <summary>
     /// ImmunizationServiceV2 Unit Tests.
@@ -45,7 +54,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     public class ImmunizationServiceV2Tests
     {
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
-        private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(MapperUtil.InitializeAutoMapper(), Configuration);
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
+        private static readonly IImmunizationMappingService MappingService = new ImmunizationMappingService(Mapper, Configuration);
 
         [Fact]
         public async Task GetImmunizationsAsyncReturnsMappedImmunizations()
@@ -111,7 +121,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .Setup(s => s.QueryAsync(
                     It.Is<HealthQuery>(q =>
                         q.Pid == pid &&
-                        q.Categories.Single() == HealthCategory.Immunization),
+                        q.Categories.Contains(HealthCategory.Immunization) &&
+                        q.Categories.Contains(HealthCategory.ImmunizationRecommendation)),
                     ct))
                 .ReturnsAsync(new PatientDataQueryResult([immunization]));
 
@@ -175,7 +186,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         [Fact]
-        public async Task GetImmunizationsAsyncOmitsForecastWithMissingDates()
+        public async Task GetImmunizationsAsyncReturnsMappedRecommendations()
         {
             // Arrange
             const string hdid = "test-hdid";
@@ -184,36 +195,23 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Mock<IPersonalAccountsService> personalAccountsService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
-            PatientDataImmunization immunization = new()
-            {
-                ImmunizationId = "imms_123",
-                OccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture),
-                Forecast = new PatientDataImmunizationForecast
-                {
-                    ForecastStatus = "Due",
-                    DisplayName = "Influenza Booster",
-                    EligibleDate = DateOnly.Parse("2024-01-01", CultureInfo.InvariantCulture),
-                    ForecastCreateDate = DateOnly.Parse("2023-01-10", CultureInfo.InvariantCulture),
-                },
-            };
+            PatientDataImmunizationRecommendation recommendation = CreateRecommendation();
 
-            patientRepository
-                .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
-                .ReturnsAsync(true);
-            personalAccountsService
-                .Setup(s => s.GetPersonalAccountAsync(hdid, ct))
-                .ReturnsAsync(new PersonalAccount { PatientIdentity = new PatientIdentity { Pid = pid } });
-            patientDataRepository
-                .Setup(s => s.QueryAsync(It.IsAny<HealthQuery>(), ct))
-                .ReturnsAsync(new PatientDataQueryResult([immunization]));
-
+            SetupPatientDataQuery(patientRepository, personalAccountsService, patientDataRepository, hdid, pid, [recommendation], ct);
             ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
 
             // Assert
-            Assert.Null(Assert.Single(result.Immunizations).Forecast);
+            HealthGateway.Immunization.Models.ImmunizationRecommendation actual = result.Recommendations.Single(
+                item => !string.IsNullOrEmpty(item.RecommendedVaccinations));
+            Assert.Equal("recommendation-set-1", actual.RecommendationSetId);
+            Assert.Equal("Influenza (Influenza vaccine)", actual.RecommendedVaccinations);
+            Assert.Equal(DateOnly.Parse("2025-01-15", CultureInfo.InvariantCulture), actual.AgentDueDate);
+            Assert.Equal("Due", actual.Status);
+            Assert.Equal("Influenza", actual.Immunization.Name);
+            Assert.Empty(actual.TargetDiseases);
         }
 
         [Fact]
@@ -280,7 +278,70 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 personalAccountsService.Object,
                 patientDataRepository.Object,
                 patientRepository.Object,
-                MappingService);
+                MappingService,
+                Mapper);
+        }
+
+        private static void SetupPatientDataQuery(
+            Mock<IPatientRepository> patientRepository,
+            Mock<IPersonalAccountsService> personalAccountsService,
+            Mock<IPatientDataRepository> patientDataRepository,
+            string hdid,
+            Guid pid,
+            IEnumerable<HealthData> items,
+            CancellationToken ct)
+        {
+            patientRepository
+                .Setup(service => service.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
+                .ReturnsAsync(true);
+            personalAccountsService
+                .Setup(service => service.GetPersonalAccountAsync(hdid, ct))
+                .ReturnsAsync(new PersonalAccount { PatientIdentity = new PatientIdentity { Pid = pid } });
+            patientDataRepository
+                .Setup(service => service.QueryAsync(
+                    It.Is<HealthQuery>(query =>
+                        query.Pid == pid &&
+                        query.Categories.Contains(HealthCategory.Immunization) &&
+                        query.Categories.Contains(HealthCategory.ImmunizationRecommendation)),
+                    ct))
+                .ReturnsAsync(new PatientDataQueryResult(items));
+        }
+
+        private static PatientDataImmunizationRecommendation CreateRecommendation()
+        {
+            return new()
+            {
+                RecommendationId = "recommendation-set-1",
+                ForecastCreationDate = DateOnly.Parse("2024-01-01", CultureInfo.InvariantCulture),
+                Recommendations =
+                [
+                    new PatientDataRecommendationForecast
+                    {
+                        VaccineCode = new PatientDataRecommendationVaccineCode
+                        {
+                            VaccineCodeText = "Influenza",
+                            VaccineCodes = [new PatientDataRecommendationSystemCode { Display = "Influenza" }],
+                        },
+                        DateCriterion =
+                        [
+                            new PatientDataRecommendationDateCriterion
+                            {
+                                DateCriterionCode = new PatientDataRecommendationDateCriterionCode { Text = "Forecast by Agent Due Date" },
+                                Value = "2025-01-15",
+                            },
+                        ],
+                        ForecastStatus = new PatientDataRecommendationForecastStatus { ForecastStatusText = "Due" },
+                    },
+                    new PatientDataRecommendationForecast
+                    {
+                        VaccineCode = new PatientDataRecommendationVaccineCode { VaccineCodeText = "Influenza vaccine" },
+                        TargetDisease = new PatientDataRecommendationTargetDisease
+                        {
+                            TargetDiseaseCodes = [new PatientDataRecommendationSystemCode { Code = "FLU", Display = "Influenza" }],
+                        },
+                    },
+                ],
+            };
         }
     }
 }

@@ -18,7 +18,6 @@ namespace HealthGateway.Immunization.MapProfiles
     using System.Collections.Generic;
     using AutoMapper;
     using HealthGateway.Common.Models.Immunization;
-    using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
     using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
 
     /// <summary>
@@ -43,21 +42,7 @@ namespace HealthGateway.Immunization.MapProfiles
                             Name = src.VaccineName ?? string.Empty,
                             ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.Agents ?? []),
                         }))
-                .ForMember(dest => dest.Forecast, opts =>
-                {
-                    opts.PreCondition(src => HasCompleteDates(src.Forecast));
-                    opts.MapFrom(src => src.Forecast);
-                });
-
-            static bool HasCompleteDates(PatientDataImmunizationForecast? forecast)
-            {
-                return forecast is
-                {
-                    ForecastCreateDate: not null,
-                    EligibleDate: not null,
-                    DueDate: not null,
-                };
-            }
+                .ForMember(dest => dest.Forecast, opts => opts.MapFrom(src => src.Forecast));
         }
     }
 }

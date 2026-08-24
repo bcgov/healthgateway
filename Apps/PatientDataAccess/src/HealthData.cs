@@ -199,7 +199,7 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets the occurrence date time.
         /// </summary>
-        public DateTime? OccurrenceDateTime { get; init; }
+        public DateTime OccurrenceDateTime { get; init; }
 
         /// <summary>
         /// Gets the provider or clinic.
@@ -273,13 +273,91 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets the due date.
         /// </summary>
-        public DateOnly? DueDate { get; init; }
+        public DateOnly DueDate { get; init; }
 
         /// <summary>
         /// Gets the forecast create date.
         /// </summary>
         public DateOnly? ForecastCreateDate { get; init; }
     }
+
+#pragma warning disable CS1591 // Recommendation payload models mirror the producer contract.
+#pragma warning disable SA1600 // Recommendation payload models mirror the producer contract.
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationRecommendation : HealthData
+    {
+        public string? RecommendationId { get; init; }
+
+        public string? RecommendationSourceSystem { get; init; }
+
+        public string? RecommendationSourceSystemId { get; init; }
+
+        public DateOnly? ForecastCreationDate { get; init; }
+
+        public IEnumerable<RecommendationForecast>? Recommendations { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationForecast
+    {
+        public RecommendationVaccineCode? VaccineCode { get; init; }
+
+        public RecommendationTargetDisease? TargetDisease { get; init; }
+
+        public RecommendationForecastStatus? ForecastStatus { get; init; }
+
+        public IEnumerable<RecommendationDateCriterion>? DateCriterion { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationVaccineCode
+    {
+        public string? VaccineCodeText { get; init; }
+
+        public IEnumerable<RecommendationSystemCode>? VaccineCodes { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationTargetDisease
+    {
+        public IEnumerable<RecommendationSystemCode>? TargetDiseaseCodes { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationForecastStatus
+    {
+        public IEnumerable<RecommendationSystemCode>? ForecastCodes { get; init; }
+
+        public string? ForecastStatusText { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationDateCriterion
+    {
+        public RecommendationDateCriterionCode? DateCriterionCode { get; init; }
+
+        public string? Value { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationDateCriterionCode
+    {
+        public string? Text { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationSystemCode
+    {
+        public string? System { get; init; }
+
+        public string? Code { get; init; }
+
+        public string? Display { get; init; }
+
+        public string? CommonType { get; init; }
+    }
+#pragma warning restore SA1600
+#pragma warning restore CS1591
 
     /// <summary>
     /// Diagnostic image exam statuses.

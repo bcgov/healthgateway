@@ -177,7 +177,7 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public string? Status { get; init; }
 
-        public DateTime? OccurrenceDateTime { get; init; }
+        public DateTime OccurrenceDateTime { get; init; }
 
         public string? ProviderOrClinic { get; init; }
 
@@ -209,9 +209,83 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public DateTime? EligibleDate { get; init; }
 
-        public DateTime? DueDate { get; init; }
+        public DateTime DueDate { get; init; }
 
         public DateTime? ForecastCreateDate { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record ImmunizationRecommendation : HealthDataEntry
+    {
+        public string? RecommendationId { get; init; }
+
+        public string? RecommendationSourceSystem { get; init; }
+
+        public string? RecommendationSourceSystemId { get; init; }
+
+        public DateTime? ForecastCreationDate { get; init; }
+
+        public IEnumerable<RecommendationForecast>? Recommendations { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationForecast
+    {
+        public RecommendationVaccineCode? VaccineCode { get; init; }
+
+        public RecommendationTargetDisease? TargetDisease { get; init; }
+
+        public RecommendationForecastStatus? ForecastStatus { get; init; }
+
+        public IEnumerable<RecommendationDateCriterion>? DateCriterion { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationVaccineCode
+    {
+        public string? VaccineCodeText { get; init; }
+
+        public IEnumerable<RecommendationSystemCode>? VaccineCodes { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationTargetDisease
+    {
+        public IEnumerable<RecommendationSystemCode>? TargetDiseaseCodes { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationForecastStatus
+    {
+        public IEnumerable<RecommendationSystemCode>? ForecastCodes { get; init; }
+
+        public string? ForecastStatusText { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationDateCriterion
+    {
+        public RecommendationDateCriterionCode? DateCriterionCode { get; init; }
+
+        public string? Value { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationDateCriterionCode
+    {
+        public string? Text { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record RecommendationSystemCode
+    {
+        public string? System { get; init; }
+
+        public string? Code { get; init; }
+
+        public string? Display { get; init; }
+
+        public string? CommonType { get; init; }
     }
 }
 #pragma warning restore SA1600

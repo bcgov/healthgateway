@@ -40,7 +40,7 @@ namespace HealthGateway.Immunization.MapProfiles
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DisplayName ?? string.Empty))
                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.ForecastCreateDate ?? default))
                 .ForMember(dest => dest.EligibleDate, opt => opt.MapFrom(src => src.EligibleDate ?? default))
-                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DueDate ?? default))
+                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DueDate))
                 .ForMember(dest => dest.RecommendationId, opt => opt.Ignore());
         }
     }

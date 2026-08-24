@@ -15,15 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
     using HealthGateway.PatientDataAccess;
+    using PatientDataImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;
     using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
 
     /// <inheritdoc/>
@@ -31,7 +35,8 @@ namespace HealthGateway.Immunization.Services
         IPersonalAccountsService personalAccountsService,
         IPatientDataRepository patientDataRepository,
         IPatientRepository patientRepository,
-        IImmunizationMappingService mappingService) : IImmunizationServiceV2
+        IImmunizationMappingService mappingService,
+        IMapper mapper) : IImmunizationServiceV2
     {
         /// <inheritdoc/>
         public async Task<ImmunizationResultV2> GetImmunizationsAsync(string hdid, CancellationToken ct = default)
@@ -42,7 +47,9 @@ namespace HealthGateway.Immunization.Services
             }
 
             PersonalAccount account = await personalAccountsService.GetPersonalAccountAsync(hdid, ct);
-            HealthQuery healthQuery = new(account.PatientIdentity.Pid, [HealthCategory.Immunization]);
+            HealthQuery healthQuery = new(
+                account.PatientIdentity.Pid,
+                [HealthCategory.Immunization, HealthCategory.ImmunizationRecommendation]);
             PatientDataQueryResult result = await patientDataRepository.QueryAsync(healthQuery, ct);
 
             return new ImmunizationResultV2
@@ -51,6 +58,10 @@ namespace HealthGateway.Immunization.Services
                     .OfType<PatientDataImmunizationRecord>()
                     .Select(mappingService.MapToImmunizationEvent)
                     .ToList(),
+                Recommendations = mappingService.MapToImmunizationRecommendations(
+                    mapper.Map<IEnumerable<ImmunizationRecommendationResponse>>(
+                        result.Items
+                            .OfType<PatientDataImmunizationRecommendation>())),
             };
         }
     }

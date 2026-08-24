@@ -52,8 +52,18 @@ namespace HealthGateway.PatientDataAccess
 
             this.CreateMap<Api.ImmunizationForecast, ImmunizationForecast>()
                 .ForMember(d => d.EligibleDate, opts => opts.MapFrom(s => s.EligibleDate.HasValue ? DateOnly.FromDateTime(s.EligibleDate.Value) : (DateOnly?)null))
-                .ForMember(d => d.DueDate, opts => opts.MapFrom(s => s.DueDate.HasValue ? DateOnly.FromDateTime(s.DueDate.Value) : (DateOnly?)null))
+                .ForMember(d => d.DueDate, opts => opts.MapFrom(s => DateOnly.FromDateTime(s.DueDate)))
                 .ForMember(d => d.ForecastCreateDate, opts => opts.MapFrom(s => s.ForecastCreateDate.HasValue ? DateOnly.FromDateTime(s.ForecastCreateDate.Value) : (DateOnly?)null));
+
+            this.CreateMap<Api.ImmunizationRecommendation, ImmunizationRecommendation>()
+                .ForMember(d => d.ForecastCreationDate, opts => opts.MapFrom(s => s.ForecastCreationDate.HasValue ? DateOnly.FromDateTime(s.ForecastCreationDate.Value) : (DateOnly?)null));
+            this.CreateMap<Api.RecommendationForecast, RecommendationForecast>();
+            this.CreateMap<Api.RecommendationVaccineCode, RecommendationVaccineCode>();
+            this.CreateMap<Api.RecommendationTargetDisease, RecommendationTargetDisease>();
+            this.CreateMap<Api.RecommendationForecastStatus, RecommendationForecastStatus>();
+            this.CreateMap<Api.RecommendationDateCriterion, RecommendationDateCriterion>();
+            this.CreateMap<Api.RecommendationDateCriterionCode, RecommendationDateCriterionCode>();
+            this.CreateMap<Api.RecommendationSystemCode, RecommendationSystemCode>();
         }
     }
 }
