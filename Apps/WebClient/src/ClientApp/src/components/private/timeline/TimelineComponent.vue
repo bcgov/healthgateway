@@ -675,23 +675,19 @@ setPageFromDate(linearDate.value);
             >
                 <p class="text-body-large">
                     Information is from the billing claim and may show a
-                    different practitioner or clinic from the one you visited.
-                    For more information, visit the
+                    different practitioner or clinic than the one you visited.
+                    For more information, see our
                     <a
-                        href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80#healthandhospital"
+                        href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide/healthrecords#healthandhospital"
                         target="_blank"
                         rel="noopener"
                         class="text-link"
-                        >FAQ</a
-                    >
-                    page.
+                        >Support Guide</a
+                    >.
                 </p>
                 <p class="text-body-large">
                     Health Gateway shows your health visits billed to the BC
-                    Medical Services Plan (MSP) for the past seven years. You
-                    can also get your hospital visits since 2021 for everywhere
-                    except Interior Health. We are working on adding Interior
-                    visits in the future.
+                    Medical Services Plan (MSP) for the past seven years.
                 </p>
             </HgAlertComponent>
             <HgAlertComponent
