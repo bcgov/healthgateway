@@ -71,7 +71,7 @@ namespace HealthGateway.Patient.Services
     [KnownType(typeof(DiagnosticImagingExam))]
     [KnownType(typeof(BcCancerScreening))]
     [KnownType(typeof(HospitalVisit))]
-    [KnownType(typeof(Immunization))]
+    [KnownType(typeof(ImmunizationRecord))]
     [ExcludeFromCodeCoverage]
     public abstract record PatientData
     {
@@ -260,7 +260,7 @@ namespace HealthGateway.Patient.Services
     /// The details of an immunization record.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record Immunization : PatientData
+    public record ImmunizationRecord : PatientData
     {
         /// <summary>
         /// Gets the immunization id.
@@ -298,7 +298,7 @@ namespace HealthGateway.Patient.Services
         public ImmunizationForecast? Forecast { get; init; }
 
         /// <inheritdoc/>
-        public override string Type { get; } = nameof(Immunization);
+        public override string Type { get; } = "Immunization";
     }
 
     /// <summary>
@@ -403,7 +403,7 @@ namespace HealthGateway.Patient.Services
                 nameof(DiagnosticImagingExam) => typeof(DiagnosticImagingExam),
                 nameof(BcCancerScreening) => typeof(BcCancerScreening),
                 nameof(HospitalVisit) => typeof(HospitalVisit),
-                nameof(Immunization) => typeof(Immunization),
+                "Immunization" => typeof(ImmunizationRecord),
                 _ => null,
             };
         }

@@ -26,7 +26,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Models;
     using Microsoft.Extensions.Configuration;
-    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
 
     /// <inheritdoc/>
     public class ImmunizationMappingService(IMapper mapper, IConfiguration configuration) : IImmunizationMappingService

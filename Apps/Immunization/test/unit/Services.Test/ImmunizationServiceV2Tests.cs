@@ -37,7 +37,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using Xunit;
     using CommonImmunizationAgent = HealthGateway.Common.Models.Immunization.ImmunizationAgent;
     using ImmunizationRecommendation = HealthGateway.Immunization.Models.ImmunizationRecommendation;
-    using PatientDataImmunization = HealthGateway.PatientDataAccess.Immunization;
+    using PatientDataImmunization = HealthGateway.PatientDataAccess.ImmunizationRecord;
     using PatientDataImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
     using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
     using PatientDataImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;

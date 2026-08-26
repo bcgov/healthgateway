@@ -28,7 +28,6 @@ namespace PatientDataAccessTests
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
     using ForecastCode = HealthGateway.PatientDataAccess.Api.ForecastCode;
     using HospitalVisit = HealthGateway.PatientDataAccess.Api.HospitalVisit;
-    using Immunization = HealthGateway.PatientDataAccess.Immunization;
     using ImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
     using ImmunizationAgentApi = HealthGateway.PatientDataAccess.Api.ImmunizationAgent;
     using ImmunizationApi = HealthGateway.PatientDataAccess.Api.Immunization;
@@ -36,6 +35,7 @@ namespace PatientDataAccessTests
     using ImmunizationForecastApi = HealthGateway.PatientDataAccess.Api.ImmunizationForecast;
     using ImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;
     using ImmunizationRecommendationApi = HealthGateway.PatientDataAccess.Api.ImmunizationRecommendation;
+    using ImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
     using RecommendationDateCriterion = HealthGateway.PatientDataAccess.RecommendationDateCriterion;
@@ -330,7 +330,7 @@ namespace PatientDataAccessTests
             PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.Immunization]), CancellationToken.None);
 
             result.ShouldNotBeNull();
-            Immunization imms = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Immunization>();
+            ImmunizationRecord imms = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationRecord>();
             imms.Id.ShouldBe(immunization.HealthDataId);
             imms.FileId.ShouldBe(immunization.HealthDataFileId);
             imms.ImmunizationId.ShouldBe(immunization.ImmunizationId);

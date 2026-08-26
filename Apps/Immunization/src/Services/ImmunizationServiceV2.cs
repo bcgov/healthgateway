@@ -28,7 +28,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Immunization.Models;
     using HealthGateway.PatientDataAccess;
     using PatientDataImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;
-    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
 
     /// <inheritdoc/>
     public class ImmunizationServiceV2(

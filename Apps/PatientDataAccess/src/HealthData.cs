@@ -179,7 +179,7 @@ namespace HealthGateway.PatientDataAccess
     /// The details of an immunization record.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record Immunization : HealthData
+    public record ImmunizationRecord : HealthData
     {
         /// <summary>
         /// Gets the immunization id.

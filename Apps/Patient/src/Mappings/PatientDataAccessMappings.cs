@@ -24,7 +24,7 @@ namespace HealthGateway.Patient.Mappings
     using BcCancerScreening = HealthGateway.PatientDataAccess.BcCancerScreening;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
     using HospitalVisit = HealthGateway.PatientDataAccess.HospitalVisit;
-    using ImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
+    using ImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
 
     /// <summary>
@@ -79,7 +79,7 @@ namespace HealthGateway.Patient.Mappings
                     DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
                     BcCancerScreening hd => context.Mapper.Map<Services.BcCancerScreening>(hd),
                     HospitalVisit hd => context.Mapper.Map<Services.HospitalVisit>(hd),
-                    ImmunizationRecord hd => context.Mapper.Map<Services.Immunization>(hd),
+                    ImmunizationRecord hd => context.Mapper.Map<Services.ImmunizationRecord>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }

@@ -18,7 +18,7 @@ namespace HealthGateway.Immunization.MapProfiles
     using System.Collections.Generic;
     using AutoMapper;
     using HealthGateway.Common.Models.Immunization;
-    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between PatientDataAccess and V2 models.

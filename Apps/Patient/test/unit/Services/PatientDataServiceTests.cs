@@ -37,7 +37,7 @@ namespace HealthGateway.PatientTests.Services
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using HospitalVisit = HealthGateway.Patient.Services.HospitalVisit;
-    using ImmunizationService = HealthGateway.Patient.Services.Immunization;
+    using ImmunizationService = HealthGateway.Patient.Services.ImmunizationRecord;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
@@ -419,7 +419,7 @@ namespace HealthGateway.PatientTests.Services
         [InlineData(false)]
         public async Task CanGetImmunizationData(bool canAccessDataSource)
         {
-            PatientDataAccess.Immunization expected = new()
+            PatientDataAccess.ImmunizationRecord expected = new()
             {
                 Id = "imms_7202674_93701284",
                 ImmunizationId = "imms_7202674_93701284",

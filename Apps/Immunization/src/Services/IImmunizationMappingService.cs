@@ -21,7 +21,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Models;
-    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
 
     /// <summary>
     /// Service to map between models at different layers.

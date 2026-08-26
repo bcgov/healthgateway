@@ -20,7 +20,7 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.PatientDataAccess;
     using PatientDataImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
     using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
-    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.Immunization;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
 
     /// <summary>
     /// The AutoMapper profile for Immunization Records.
@@ -32,7 +32,7 @@ namespace HealthGateway.Patient.Mappings
         /// </summary>
         public ImmunizationProfile()
         {
-            this.CreateMap<PatientDataImmunizationRecord, Services.Immunization>()
+            this.CreateMap<PatientDataImmunizationRecord, Services.ImmunizationRecord>()
                 .ForMember(
                     d => d.OccurrenceDateTime,
                     opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.OccurrenceDateTime)));
