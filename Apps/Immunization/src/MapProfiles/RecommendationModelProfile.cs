@@ -18,12 +18,12 @@ namespace HealthGateway.Immunization.MapProfiles
     using System.Linq;
     using AutoMapper;
     using HealthGateway.Common.Models.PHSA.Recommendation;
+    using HealthGateway.PatientDataAccess;
     using PatientDataImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;
     using PatientDataRecommendationDateCriterion = HealthGateway.PatientDataAccess.RecommendationDateCriterion;
     using PatientDataRecommendationDateCriterionCode = HealthGateway.PatientDataAccess.RecommendationDateCriterionCode;
     using PatientDataRecommendationForecast = HealthGateway.PatientDataAccess.RecommendationForecast;
     using PatientDataRecommendationForecastStatus = HealthGateway.PatientDataAccess.RecommendationForecastStatus;
-    using PatientDataRecommendationSystemCode = HealthGateway.PatientDataAccess.RecommendationSystemCode;
     using PatientDataRecommendationTargetDisease = HealthGateway.PatientDataAccess.RecommendationTargetDisease;
     using PatientDataRecommendationVaccineCode = HealthGateway.PatientDataAccess.RecommendationVaccineCode;
 
@@ -49,18 +49,18 @@ namespace HealthGateway.Immunization.MapProfiles
                 .ForMember(dest => dest.TargetDisease, opts => opts.PreCondition(src => src.TargetDisease != null));
             this.CreateMap<PatientDataRecommendationVaccineCode, VaccineCode>()
                 .ForMember(dest => dest.VaccineCodeText, opts => opts.MapFrom(src => src.VaccineCodeText ?? string.Empty))
-                .ForMember(dest => dest.VaccineCodes, opts => opts.MapFrom(src => src.VaccineCodes ?? Enumerable.Empty<PatientDataRecommendationSystemCode>()));
+                .ForMember(dest => dest.VaccineCodes, opts => opts.MapFrom(src => src.VaccineCodes ?? Enumerable.Empty<ForecastCode>()));
             this.CreateMap<PatientDataRecommendationTargetDisease, TargetDiseaseResponse>()
-                .ForMember(dest => dest.TargetDiseaseCodes, opts => opts.MapFrom(src => src.TargetDiseaseCodes ?? Enumerable.Empty<PatientDataRecommendationSystemCode>()));
+                .ForMember(dest => dest.TargetDiseaseCodes, opts => opts.MapFrom(src => src.TargetDiseaseCodes ?? Enumerable.Empty<ForecastCode>()));
             this.CreateMap<PatientDataRecommendationForecastStatus, ForecastStatusModel>()
                 .ForMember(dest => dest.ForecastStatusText, opts => opts.MapFrom(src => src.ForecastStatusText ?? string.Empty))
-                .ForMember(dest => dest.ForcastCodes, opts => opts.MapFrom(src => src.ForecastCodes ?? Enumerable.Empty<PatientDataRecommendationSystemCode>()));
+                .ForMember(dest => dest.ForcastCodes, opts => opts.MapFrom(src => src.ForecastCodes ?? Enumerable.Empty<ForecastCode>()));
             this.CreateMap<PatientDataRecommendationDateCriterion, DateCriterion>()
                 .ForMember(dest => dest.DateCriterionCode, opts => opts.MapFrom(src => src.DateCriterionCode ?? new PatientDataRecommendationDateCriterionCode()))
                 .ForMember(dest => dest.Value, opts => opts.MapFrom(src => src.Value ?? string.Empty));
             this.CreateMap<PatientDataRecommendationDateCriterionCode, DateCriterionCode>()
                 .ForMember(dest => dest.Text, opts => opts.MapFrom(src => src.Text ?? string.Empty));
-            this.CreateMap<PatientDataRecommendationSystemCode, SystemCode>()
+            this.CreateMap<ForecastCode, SystemCode>()
                 .ForMember(dest => dest.System, opts => opts.MapFrom(src => src.System ?? string.Empty))
                 .ForMember(dest => dest.Code, opts => opts.MapFrom(src => src.Code ?? string.Empty))
                 .ForMember(dest => dest.Display, opts => opts.MapFrom(src => src.Display ?? string.Empty))

@@ -36,6 +36,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using Moq;
     using Xunit;
     using CommonImmunizationAgent = HealthGateway.Common.Models.Immunization.ImmunizationAgent;
+    using ImmunizationRecommendation = HealthGateway.Immunization.Models.ImmunizationRecommendation;
     using PatientDataImmunization = HealthGateway.PatientDataAccess.Immunization;
     using PatientDataImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
     using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
@@ -44,7 +45,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using PatientDataRecommendationDateCriterionCode = HealthGateway.PatientDataAccess.RecommendationDateCriterionCode;
     using PatientDataRecommendationForecast = HealthGateway.PatientDataAccess.RecommendationForecast;
     using PatientDataRecommendationForecastStatus = HealthGateway.PatientDataAccess.RecommendationForecastStatus;
-    using PatientDataRecommendationSystemCode = HealthGateway.PatientDataAccess.RecommendationSystemCode;
     using PatientDataRecommendationTargetDisease = HealthGateway.PatientDataAccess.RecommendationTargetDisease;
     using PatientDataRecommendationVaccineCode = HealthGateway.PatientDataAccess.RecommendationVaccineCode;
 
@@ -88,7 +88,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 VaccineName = "Influenza",
                 Status = "Completed",
                 OccurrenceDateTime = rawOccurrenceDateTime,
-                ProviderOrClinic = "Vancouver Clinic",                Agents =
+                ProviderOrClinic = "Vancouver Clinic", Agents =
                 [
                     new PatientDataImmunizationAgent
                     {
@@ -232,8 +232,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
 
             // Assert
-            HealthGateway.Immunization.Models.ImmunizationRecommendation actual = result.Recommendations.Single(
-                item => !string.IsNullOrEmpty(item.RecommendedVaccinations));
+            ImmunizationRecommendation actual = result.Recommendations.Single(item => !string.IsNullOrEmpty(item.RecommendedVaccinations));
             Assert.Equal("recommendation-set-1", actual.RecommendationSetId);
             Assert.Equal("Influenza (Influenza vaccine)", actual.RecommendedVaccinations);
             Assert.Equal(DateOnly.Parse("2025-01-15", CultureInfo.InvariantCulture), actual.AgentDueDate);
@@ -261,7 +260,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                         VaccineCode = new PatientDataRecommendationVaccineCode
                         {
                             VaccineCodeText = "Influenza",
-                            VaccineCodes = [new PatientDataRecommendationSystemCode { Display = "Influenza" }],
+                            VaccineCodes = [new ForecastCode { Display = "Influenza" }],
                         },
                         DateCriterion =
                         [
@@ -282,7 +281,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
 
             // Assert
-            HealthGateway.Immunization.Models.ImmunizationRecommendation actual = Assert.Single(result.Recommendations);
+            ImmunizationRecommendation actual = Assert.Single(result.Recommendations);
             Assert.Null(actual.AgentDueDate);
         }
 
@@ -392,7 +391,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                         VaccineCode = new PatientDataRecommendationVaccineCode
                         {
                             VaccineCodeText = "Influenza",
-                            VaccineCodes = [new PatientDataRecommendationSystemCode { Display = "Influenza" }],
+                            VaccineCodes = [new ForecastCode { Display = "Influenza" }],
                         },
                         DateCriterion =
                         [
@@ -409,7 +408,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                         VaccineCode = new PatientDataRecommendationVaccineCode { VaccineCodeText = "Influenza vaccine" },
                         TargetDisease = new PatientDataRecommendationTargetDisease
                         {
-                            TargetDiseaseCodes = [new PatientDataRecommendationSystemCode { Code = "FLU", Display = "Influenza" }],
+                            TargetDiseaseCodes = [new ForecastCode { Code = "FLU", Display = "Influenza" }],
                         },
                     },
                 ],

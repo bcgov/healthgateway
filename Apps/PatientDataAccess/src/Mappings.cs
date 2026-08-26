@@ -63,7 +63,7 @@ namespace HealthGateway.PatientDataAccess
             this.CreateMap<Api.RecommendationForecastStatus, RecommendationForecastStatus>();
             this.CreateMap<Api.RecommendationDateCriterion, RecommendationDateCriterion>();
             this.CreateMap<Api.RecommendationDateCriterionCode, RecommendationDateCriterionCode>();
-            this.CreateMap<Api.RecommendationSystemCode, RecommendationSystemCode>();
+            this.CreateMap<Api.ForecastCode, ForecastCode>();
         }
     }
 }

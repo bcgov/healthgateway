@@ -314,19 +314,19 @@ namespace HealthGateway.PatientDataAccess
     {
         public string? VaccineCodeText { get; init; }
 
-        public IEnumerable<RecommendationSystemCode>? VaccineCodes { get; init; }
+        public IEnumerable<ForecastCode>? VaccineCodes { get; init; }
     }
 
     [ExcludeFromCodeCoverage]
     public record RecommendationTargetDisease
     {
-        public IEnumerable<RecommendationSystemCode>? TargetDiseaseCodes { get; init; }
+        public IEnumerable<ForecastCode>? TargetDiseaseCodes { get; init; }
     }
 
     [ExcludeFromCodeCoverage]
     public record RecommendationForecastStatus
     {
-        public IEnumerable<RecommendationSystemCode>? ForecastCodes { get; init; }
+        public IEnumerable<ForecastCode>? ForecastCodes { get; init; }
 
         public string? ForecastStatusText { get; init; }
     }
@@ -346,7 +346,7 @@ namespace HealthGateway.PatientDataAccess
     }
 
     [ExcludeFromCodeCoverage]
-    public record RecommendationSystemCode
+    public record ForecastCode
     {
         public string? System { get; init; }
 

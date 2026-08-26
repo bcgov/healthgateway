@@ -30,29 +30,6 @@ namespace HealthGateway.PatientTests.Mappings
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
-        /// Verifies populated forecast dates use the Patient Data API's ISO date format.
-        /// </summary>
-        [Fact]
-        public void ShouldMapForecastDatesToIsoFormat()
-        {
-            // Arrange
-            ImmunizationForecast forecast = new()
-            {
-                EligibleDate = new DateOnly(2024, 1, 2),
-                DueDate = new DateOnly(2024, 2, 3),
-                ForecastCreateDate = new DateOnly(2023, 12, 4),
-            };
-
-            // Act
-            PatientImmunizationForecast actual = Mapper.Map<PatientImmunizationForecast>(forecast);
-
-            // Assert
-            Assert.Equal("2024-01-02", actual.EligibleDate);
-            Assert.Equal("2024-02-03", actual.DueDate);
-            Assert.Equal("2023-12-04", actual.ForecastCreateDate);
-        }
-
-        /// <summary>
         /// Verifies optional forecast dates remain absent in the Patient Data API response.
         /// </summary>
         [Fact]
@@ -64,7 +41,7 @@ namespace HealthGateway.PatientTests.Mappings
             // Assert
             Assert.Null(actual.EligibleDate);
             Assert.Null(actual.ForecastCreateDate);
-            Assert.Equal("0001-01-01", actual.DueDate);
+            Assert.Equal(DateOnly.MinValue, actual.DueDate);
         }
 
         /// <summary>

@@ -38,13 +38,11 @@ namespace HealthGateway.Immunization.MapProfiles
                 .ForMember(dest => dest.ProviderOrClinic, opts => opts.MapFrom(src => src.ProviderOrClinic ?? string.Empty))
                 .ForMember(
                     dest => dest.Immunization,
-                    opts => opts.MapFrom(
-                        (src, _, _, context) => new ImmunizationDefinition
-                        {
-                            Name = src.VaccineName ?? string.Empty,
-                            ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.Agents ?? []),
-                        }))
-                .ForMember(dest => dest.Forecast, opts => opts.MapFrom(src => src.Forecast));
+                    opts => opts.MapFrom((src, _, _, context) => new ImmunizationDefinition
+                    {
+                        Name = src.VaccineName ?? string.Empty,
+                        ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.Agents ?? []),
+                    }));
         }
     }
 }

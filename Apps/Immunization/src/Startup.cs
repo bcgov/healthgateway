@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization
     using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Api;
     using HealthGateway.Immunization.Delegates;
@@ -91,7 +90,7 @@ namespace HealthGateway.Immunization
             ILogger logger = ProgramConfiguration.GetInitialLogger(this.startupConfig.Configuration);
             PersonalAccountModule.ConfigurePersonalAccountAccess(services, logger, this.startupConfig.Configuration);
 
-            // Access patient repository (V1)
+            // Access patient repository
             services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
 
             // Access patient data repository (V2)
