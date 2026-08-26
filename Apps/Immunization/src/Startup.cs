@@ -87,7 +87,7 @@ namespace HealthGateway.Immunization
             PhsaConfigV2 phsaConfigV2 = new();
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
 
-            ILogger logger = ProgramConfiguration.GetInitialLogger(this.startupConfig.Configuration);
+            ILogger logger = this.startupConfig.Logger;
             PersonalAccountModule.ConfigurePersonalAccountAccess(services, logger, this.startupConfig.Configuration);
 
             // Access patient repository

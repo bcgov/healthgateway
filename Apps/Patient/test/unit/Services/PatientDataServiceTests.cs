@@ -37,7 +37,6 @@ namespace HealthGateway.PatientTests.Services
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using HospitalVisit = HealthGateway.Patient.Services.HospitalVisit;
-    using ImmunizationService = HealthGateway.Patient.Services.ImmunizationRecord;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
@@ -46,6 +45,7 @@ namespace HealthGateway.PatientTests.Services
         HealthGateway.Patient.Services.BcCancerScreening;
     using ServiceBcCancerScreeningType =
         HealthGateway.Patient.Models.BcCancerScreeningType;
+    using ServiceImmunizationRecord = HealthGateway.Patient.Services.ImmunizationRecord;
 
     public class PatientDataServiceTests
     {
@@ -209,7 +209,7 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public void CanSerializeImmunization()
         {
-            ImmunizationService immunization = new()
+            ServiceImmunizationRecord immunization = new()
             {
                 ImmunizationId = "imms_123",
                 VaccineName = "Influenza",
@@ -226,7 +226,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
 
-            ImmunizationService actual = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationService>();
+            ServiceImmunizationRecord actual = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<ServiceImmunizationRecord>();
             actual.ImmunizationId.ShouldBe(immunization.ImmunizationId);
             actual.VaccineName.ShouldBe(immunization.VaccineName);
             actual.Status.ShouldBe(immunization.Status);
@@ -455,7 +455,7 @@ namespace HealthGateway.PatientTests.Services
 
             if (canAccessDataSource)
             {
-                ImmunizationService actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationService>();
+                ServiceImmunizationRecord actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ServiceImmunizationRecord>();
                 actual.ImmunizationId.ShouldBe(expected.ImmunizationId);
                 actual.VaccineName.ShouldBe(expected.VaccineName);
                 actual.Status.ShouldBe(expected.Status);

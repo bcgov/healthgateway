@@ -319,7 +319,10 @@ namespace PatientDataAccessTests
             };
 
             patientApi
-                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetHealthDataAsync(
+                    this.pid,
+                    It.Is<string[]>(categories => categories.Length == 1 && categories[0] == "Immunization"),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new HealthDataResult(
                         new HealthDataMetadata(),
