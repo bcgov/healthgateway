@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -62,25 +63,31 @@ namespace HealthGateway.Immunization.Services
 
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationsAsync(hdid, ct);
 
-            return delegateResult.ResultStatus == ResultType.Success
-                ? new RequestResult<ImmunizationResult>
-                {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = new ImmunizationResult
-                    {
-                        LoadState = this.mappingService.MapToLoadStateModel(delegateResult.ResourcePayload!.LoadState),
-                        Immunizations = [.. delegateResult.ResourcePayload.Result!.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent)],
-                        Recommendations = this.mappingService.MapToImmunizationRecommendations(delegateResult.ResourcePayload.Result.Recommendations),
-                    },
-                    PageIndex = delegateResult.PageIndex,
-                    PageSize = delegateResult.PageSize,
-                    TotalResultCount = delegateResult.TotalResultCount,
-                }
-                : new RequestResult<ImmunizationResult>
+            if (delegateResult.ResultStatus != ResultType.Success)
+            {
+                return new RequestResult<ImmunizationResult>
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResultError = delegateResult.ResultError,
                 };
+            }
+
+            PhsaResult<ImmunizationResponse> resourcePayload = delegateResult.ResourcePayload ?? throw new InvalidOperationException("A successful immunization response must include a resource payload.");
+            ImmunizationResponse result = resourcePayload.Result ?? throw new InvalidOperationException("A successful immunization response must include a result.");
+
+            return new RequestResult<ImmunizationResult>
+            {
+                ResultStatus = delegateResult.ResultStatus,
+                ResourcePayload = new ImmunizationResult
+                {
+                    LoadState = this.mappingService.MapToLoadStateModel(resourcePayload.LoadState),
+                    Immunizations = [.. result.ImmunizationViews.Select(this.mappingService.MapToImmunizationEvent)],
+                    Recommendations = this.mappingService.MapToImmunizationRecommendations(result.Recommendations),
+                },
+                PageIndex = delegateResult.PageIndex,
+                PageSize = delegateResult.PageSize,
+                TotalResultCount = delegateResult.TotalResultCount,
+            };
         }
     }
 }

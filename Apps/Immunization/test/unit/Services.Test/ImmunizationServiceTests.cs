@@ -223,6 +223,36 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             actualResult.ShouldDeepEqual(expectedResult);
         }
 
+        /// <summary>
+        /// GetImmunizations - Successful response with missing data.
+        /// </summary>
+        /// <param name="hasResourcePayload">Whether the delegate response includes a resource payload.</param>
+        /// <param name="expectedMessage">The expected exception message.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(false, "A successful immunization response must include a resource payload.")]
+        [InlineData(true, "A successful immunization response must include a result.")]
+        public async Task ValidateSuccessfulResponseWithMissingData(bool hasResourcePayload, string expectedMessage)
+        {
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = hasResourcePayload ? new PhsaResult<ImmunizationResponse>() : null,
+            };
+
+            Mock<IImmunizationDelegate> mockDelegate = new();
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
+
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetImmunizationsAsync(It.IsAny<string>()));
+
+            Assert.Equal(expectedMessage, exception.Message);
+        }
+
         private static RequestResult<PhsaResult<ImmunizationResponse>> GetPhsaResult(ImmunizationRecommendationResponse immzRecommendationResponse)
         {
             return new RequestResult<PhsaResult<ImmunizationResponse>>

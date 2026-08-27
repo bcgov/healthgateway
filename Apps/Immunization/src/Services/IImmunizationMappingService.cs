@@ -32,6 +32,11 @@ namespace HealthGateway.Immunization.Services
         /// <returns>The destination object.</returns>
         ImmunizationEvent MapToImmunizationEvent(ImmunizationViewResponse source);
 
+        /// <summary>Maps a PatientDataAccess ImmunizationRecord to an ImmunizationEvent.</summary>
+        /// <param name="source">The source object to transform.</param>
+        /// <returns>The destination object.</returns>
+        ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source);
+
         /// <summary>Maps model.</summary>
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
@@ -41,10 +46,5 @@ namespace HealthGateway.Immunization.Services
         /// <param name="source">The source object to transform.</param>
         /// <returns>The destination object.</returns>
         LoadStateModel MapToLoadStateModel(PhsaLoadState source);
-
-        /// <summary>Maps a PatientDataAccess ImmunizationRecord to an ImmunizationEvent.</summary>
-        /// <param name="source">The source object to transform.</param>
-        /// <returns>The destination object.</returns>
-        ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source);
     }
 }

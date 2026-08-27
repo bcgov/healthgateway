@@ -44,6 +44,16 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
+        public ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source)
+        {
+            ImmunizationEvent dest = mapper.Map<PatientDataImmunizationRecord, ImmunizationEvent>(source);
+
+            dest.DateOfImmunization = DateFormatter.SpecifyTimeZone(dest.DateOfImmunization, this.LocalTimeZone);
+
+            return dest;
+        }
+
+        /// <inheritdoc/>
         public IList<ImmunizationRecommendation> MapToImmunizationRecommendations(IEnumerable<ImmunizationRecommendationResponse> source)
         {
             return source.SelectMany(s => s.Recommendations.Select(r => MapToImmunizationRecommendation(s, r))).ToList();
@@ -82,16 +92,6 @@ namespace HealthGateway.Immunization.Services
         public LoadStateModel MapToLoadStateModel(PhsaLoadState source)
         {
             return mapper.Map<PhsaLoadState, LoadStateModel>(source);
-        }
-
-        /// <inheritdoc/>
-        public ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source)
-        {
-            ImmunizationEvent dest = mapper.Map<PatientDataImmunizationRecord, ImmunizationEvent>(source);
-
-            dest.DateOfImmunization = DateFormatter.SpecifyTimeZone(dest.DateOfImmunization, this.LocalTimeZone);
-
-            return dest;
         }
     }
 }
