@@ -24,6 +24,7 @@ namespace HealthGateway.Patient.Mappings
     using BcCancerScreening = HealthGateway.PatientDataAccess.BcCancerScreening;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
     using HospitalVisit = HealthGateway.PatientDataAccess.HospitalVisit;
+    using ImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
 
     /// <summary>
@@ -45,6 +46,7 @@ namespace HealthGateway.Patient.Mappings
                         PatientDataType.DiagnosticImaging => HealthCategory.DiagnosticImaging,
                         PatientDataType.BcCancerScreening => HealthCategory.BcCancerScreening,
                         PatientDataType.HospitalVisits => HealthCategory.HospitalVisits,
+                        PatientDataType.Immunization => HealthCategory.Immunization,
                         _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
                     };
                 });
@@ -59,6 +61,7 @@ namespace HealthGateway.Patient.Mappings
                         PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
                         PatientDataType.BcCancerScreening => DataSource.BcCancerScreening,
                         PatientDataType.HospitalVisits => DataSource.HospitalVisit,
+                        PatientDataType.Immunization => DataSource.Immunization,
                         _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
                     };
                 });
@@ -76,6 +79,7 @@ namespace HealthGateway.Patient.Mappings
                     DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
                     BcCancerScreening hd => context.Mapper.Map<Services.BcCancerScreening>(hd),
                     HospitalVisit hd => context.Mapper.Map<Services.HospitalVisit>(hd),
+                    ImmunizationRecord hd => context.Mapper.Map<Services.ImmunizationRecord>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }

@@ -176,6 +176,190 @@ namespace HealthGateway.PatientDataAccess
     }
 
     /// <summary>
+    /// The details of an immunization record.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationRecord : HealthData
+    {
+        /// <summary>
+        /// Gets the immunization id.
+        /// </summary>
+        public string? ImmunizationId { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine name.
+        /// </summary>
+        public string? VaccineName { get; init; }
+
+        /// <summary>
+        /// Gets the immunization status.
+        /// </summary>
+        public string? Status { get; init; }
+
+        /// <summary>
+        /// Gets the occurrence date time.
+        /// </summary>
+        public DateTime OccurrenceDateTime { get; init; }
+
+        /// <summary>
+        /// Gets the provider or clinic.
+        /// </summary>
+        public string? ProviderOrClinic { get; init; }
+
+        /// <summary>
+        /// Gets the immunization agents.
+        /// </summary>
+        public IEnumerable<ImmunizationAgent>? Agents { get; init; }
+
+        /// <summary>
+        /// Gets the immunization forecast.
+        /// </summary>
+        public ImmunizationForecast? Forecast { get; init; }
+    }
+
+    /// <summary>
+    /// Represents an immunization agent.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationAgent
+    {
+        /// <summary>
+        /// Gets the agent code.
+        /// </summary>
+        public string? Code { get; init; }
+
+        /// <summary>
+        /// Gets the agent name.
+        /// </summary>
+        public string? Name { get; init; }
+
+        /// <summary>
+        /// Gets the lot number.
+        /// </summary>
+        public string? LotNumber { get; init; }
+
+        /// <summary>
+        /// Gets the product name.
+        /// </summary>
+        public string? ProductName { get; init; }
+    }
+
+    /// <summary>
+    /// Represents an immunization forecast.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationForecast
+    {
+        /// <summary>
+        /// Gets the forecast status.
+        /// </summary>
+        public string? ForecastStatus { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine code.
+        /// </summary>
+        public string? VaccineCode { get; init; }
+
+        /// <summary>
+        /// Gets the display name.
+        /// </summary>
+        public string? DisplayName { get; init; }
+
+        /// <summary>
+        /// Gets the eligible date.
+        /// </summary>
+        public DateOnly? EligibleDate { get; init; }
+
+        /// <summary>
+        /// Gets the due date.
+        /// </summary>
+        public DateOnly DueDate { get; init; }
+
+        /// <summary>
+        /// Gets the forecast create date.
+        /// </summary>
+        public DateOnly? ForecastCreateDate { get; init; }
+    }
+
+#pragma warning disable CS1591 // Recommendation payload models mirror the producer contract.
+#pragma warning disable SA1600 // Recommendation payload models mirror the producer contract.
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationRecommendation : HealthData
+    {
+        public string? RecommendationId { get; init; }
+
+        public string? RecommendationSourceSystem { get; init; }
+
+        public string? RecommendationSourceSystemId { get; init; }
+
+        public DateOnly? ForecastCreationDate { get; init; }
+
+        public IEnumerable<RecommendationForecast>? Recommendations { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationForecast
+    {
+        public RecommendationVaccineCode? VaccineCode { get; init; }
+
+        public RecommendationTargetDisease? TargetDisease { get; init; }
+
+        public RecommendationForecastStatus? ForecastStatus { get; init; }
+
+        public IEnumerable<RecommendationDateCriterion>? DateCriterion { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationVaccineCode
+    {
+        public string? VaccineCodeText { get; init; }
+
+        public IEnumerable<ForecastCode>? VaccineCodes { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationTargetDisease
+    {
+        public IEnumerable<ForecastCode>? TargetDiseaseCodes { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationForecastStatus
+    {
+        public IEnumerable<ForecastCode>? ForecastCodes { get; init; }
+
+        public string? ForecastStatusText { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationDateCriterion
+    {
+        public RecommendationDateCriterionCode? DateCriterionCode { get; init; }
+
+        public string? Value { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record RecommendationDateCriterionCode
+    {
+        public string? Text { get; init; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public record ForecastCode
+    {
+        public string? System { get; init; }
+
+        public string? Code { get; init; }
+
+        public string? Display { get; init; }
+
+        public string? CommonType { get; init; }
+    }
+#pragma warning restore SA1600
+#pragma warning restore CS1591
+
+    /// <summary>
     /// Diagnostic image exam statuses.
     /// </summary>
     public enum DiagnosticImagingStatus

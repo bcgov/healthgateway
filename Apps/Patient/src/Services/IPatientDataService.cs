@@ -71,6 +71,7 @@ namespace HealthGateway.Patient.Services
     [KnownType(typeof(DiagnosticImagingExam))]
     [KnownType(typeof(BcCancerScreening))]
     [KnownType(typeof(HospitalVisit))]
+    [KnownType(typeof(ImmunizationRecord))]
     [ExcludeFromCodeCoverage]
     public abstract record PatientData
     {
@@ -256,6 +257,120 @@ namespace HealthGateway.Patient.Services
     }
 
     /// <summary>
+    /// The details of an immunization record.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationRecord : PatientData
+    {
+        /// <summary>
+        /// Gets the immunization id.
+        /// </summary>
+        public string? ImmunizationId { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine name.
+        /// </summary>
+        public string? VaccineName { get; init; }
+
+        /// <summary>
+        /// Gets the immunization status.
+        /// </summary>
+        public string? Status { get; init; }
+
+        /// <summary>
+        /// Gets the occurrence date time.
+        /// </summary>
+        public DateTime? OccurrenceDateTime { get; init; }
+
+        /// <summary>
+        /// Gets the provider or clinic.
+        /// </summary>
+        public string? ProviderOrClinic { get; init; }
+
+        /// <summary>
+        /// Gets the immunization agents.
+        /// </summary>
+        public IEnumerable<ImmunizationAgent>? Agents { get; init; }
+
+        /// <summary>
+        /// Gets the immunization forecast.
+        /// </summary>
+        public ImmunizationForecast? Forecast { get; init; }
+
+        /// <inheritdoc/>
+        public override string Type { get; } = "Immunization";
+    }
+
+    /// <summary>
+    /// Represents an immunization agent.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationAgent
+    {
+        /// <summary>
+        /// Gets the agent code.
+        /// </summary>
+        public string? Code { get; init; }
+
+        /// <summary>
+        /// Gets the agent name.
+        /// </summary>
+        public string? Name { get; init; }
+
+        /// <summary>
+        /// Gets the lot number.
+        /// </summary>
+        public string? LotNumber { get; init; }
+
+        /// <summary>
+        /// Gets the product name.
+        /// </summary>
+        public string? ProductName { get; init; }
+
+        /// <summary>
+        /// Gets the system.
+        /// </summary>
+        public string? System { get; init; }
+    }
+
+    /// <summary>
+    /// Represents an immunization forecast.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record ImmunizationForecast
+    {
+        /// <summary>
+        /// Gets the forecast status.
+        /// </summary>
+        public string? ForecastStatus { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine code.
+        /// </summary>
+        public string? VaccineCode { get; init; }
+
+        /// <summary>
+        /// Gets the display name.
+        /// </summary>
+        public string? DisplayName { get; init; }
+
+        /// <summary>
+        /// Gets the eligible date.
+        /// </summary>
+        public DateOnly? EligibleDate { get; init; }
+
+        /// <summary>
+        /// Gets the due date.
+        /// </summary>
+        public DateOnly DueDate { get; init; }
+
+        /// <summary>
+        /// Gets the forecast create date.
+        /// </summary>
+        public DateOnly? ForecastCreateDate { get; init; }
+    }
+
+    /// <summary>
     /// Query patient files.
     /// </summary>
     /// <param name="Hdid">Patient's hdid.</param>
@@ -288,6 +403,7 @@ namespace HealthGateway.Patient.Services
                 nameof(DiagnosticImagingExam) => typeof(DiagnosticImagingExam),
                 nameof(BcCancerScreening) => typeof(BcCancerScreening),
                 nameof(HospitalVisit) => typeof(HospitalVisit),
+                "Immunization" => typeof(ImmunizationRecord),
                 _ => null,
             };
         }

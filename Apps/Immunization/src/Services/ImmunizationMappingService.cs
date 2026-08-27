@@ -26,6 +26,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Models;
     using Microsoft.Extensions.Configuration;
+    using PatientDataImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
 
     /// <inheritdoc/>
     public class ImmunizationMappingService(IMapper mapper, IConfiguration configuration) : IImmunizationMappingService
@@ -73,7 +74,7 @@ namespace HealthGateway.Immunization.Services
             static DateOnly? GetDateFromCriterions(IEnumerable<DateCriterion> criterions, string code)
             {
                 DateCriterion? criterion = criterions.FirstOrDefault(x => x.DateCriterionCode.Text == code);
-                return criterion?.Value != null ? DateOnly.Parse(criterion.Value, CultureInfo.CurrentCulture) : null;
+                return DateOnly.TryParse(criterion?.Value, CultureInfo.CurrentCulture, out DateOnly date) ? date : null;
             }
         }
 
@@ -81,6 +82,16 @@ namespace HealthGateway.Immunization.Services
         public LoadStateModel MapToLoadStateModel(PhsaLoadState source)
         {
             return mapper.Map<PhsaLoadState, LoadStateModel>(source);
+        }
+
+        /// <inheritdoc/>
+        public ImmunizationEvent MapToImmunizationEvent(PatientDataImmunizationRecord source)
+        {
+            ImmunizationEvent dest = mapper.Map<PatientDataImmunizationRecord, ImmunizationEvent>(source);
+
+            dest.DateOfImmunization = DateFormatter.SpecifyTimeZone(dest.DateOfImmunization, this.LocalTimeZone);
+
+            return dest;
         }
     }
 }

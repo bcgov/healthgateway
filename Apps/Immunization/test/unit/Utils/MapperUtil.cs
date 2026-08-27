@@ -38,7 +38,9 @@ namespace HealthGateway.ImmunizationTests.Utils
                     cfg.AddProfile(new DefinitionProfile());
                     cfg.AddProfile(new EventProfile());
                     cfg.AddProfile(new ForecastProfile());
+                    cfg.AddProfile(new ImmunizationModelProfile());
                     cfg.AddProfile(new LoadStateProfile());
+                    cfg.AddProfile(new RecommendationModelProfile());
                     cfg.AddProfile(new TargetDiseaseProfile());
                 });
 

@@ -19,6 +19,7 @@ namespace HealthGateway.Immunization.MapProfiles
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
+    using PatientDataImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between PHSA Immunization and Common Models.
@@ -33,6 +34,11 @@ namespace HealthGateway.Immunization.MapProfiles
             this.CreateMap<ImmunizationAgentResponse, ImmunizationAgent>();
             this.CreateMap<SystemCode, ImmunizationAgent>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Display));
+            this.CreateMap<PatientDataImmunizationAgent, ImmunizationAgent>()
+                .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code ?? string.Empty))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name ?? string.Empty))
+                .ForMember(dest => dest.LotNumber, opt => opt.MapFrom(src => src.LotNumber ?? string.Empty))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductName ?? string.Empty));
         }
     }
 }

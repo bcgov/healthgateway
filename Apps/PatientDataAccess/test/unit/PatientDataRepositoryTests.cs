@@ -26,13 +26,92 @@ namespace PatientDataAccessTests
     using BcCancerScreeningType = HealthGateway.PatientDataAccess.Api.CancerScreeningType;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
+    using ForecastCode = HealthGateway.PatientDataAccess.Api.ForecastCode;
     using HospitalVisit = HealthGateway.PatientDataAccess.Api.HospitalVisit;
+    using ImmunizationAgent = HealthGateway.PatientDataAccess.ImmunizationAgent;
+    using ImmunizationAgentApi = HealthGateway.PatientDataAccess.Api.ImmunizationAgent;
+    using ImmunizationApi = HealthGateway.PatientDataAccess.Api.Immunization;
+    using ImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
+    using ImmunizationForecastApi = HealthGateway.PatientDataAccess.Api.ImmunizationForecast;
+    using ImmunizationRecommendation = HealthGateway.PatientDataAccess.ImmunizationRecommendation;
+    using ImmunizationRecommendationApi = HealthGateway.PatientDataAccess.Api.ImmunizationRecommendation;
+    using ImmunizationRecord = HealthGateway.PatientDataAccess.ImmunizationRecord;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
+    using RecommendationDateCriterion = HealthGateway.PatientDataAccess.RecommendationDateCriterion;
+    using RecommendationDateCriterionApi = HealthGateway.PatientDataAccess.Api.RecommendationDateCriterion;
+    using RecommendationDateCriterionCodeApi = HealthGateway.PatientDataAccess.Api.RecommendationDateCriterionCode;
+    using RecommendationForecast = HealthGateway.PatientDataAccess.RecommendationForecast;
+    using RecommendationForecastApi = HealthGateway.PatientDataAccess.Api.RecommendationForecast;
+    using RecommendationForecastStatusApi = HealthGateway.PatientDataAccess.Api.RecommendationForecastStatus;
+    using RecommendationTargetDiseaseApi = HealthGateway.PatientDataAccess.Api.RecommendationTargetDisease;
+    using RecommendationVaccineCodeApi = HealthGateway.PatientDataAccess.Api.RecommendationVaccineCode;
 
     public class PatientDataRepositoryTests
     {
         private readonly Guid pid = Guid.NewGuid();
+
+        [Fact]
+        public async Task CanGetImmunizationRecommendationData()
+        {
+            Mock<IPatientApi> patientApi = new();
+            ImmunizationRecommendationApi recommendation = new()
+            {
+                HealthDataId = "recommendation-1",
+                RecommendationId = "recommendation-set-1",
+                ForecastCreationDate = DateTime.Parse("2024-01-01", CultureInfo.InvariantCulture),
+                Recommendations =
+                [
+                    new RecommendationForecastApi
+                    {
+                        VaccineCode = new RecommendationVaccineCodeApi
+                        {
+                            VaccineCodeText = "Influenza vaccine",
+                            VaccineCodes = [new ForecastCode { Code = "FLU", Display = "Influenza" }],
+                        },
+                        TargetDisease = new RecommendationTargetDiseaseApi
+                        {
+                            TargetDiseaseCodes = [new ForecastCode { Code = "FLU", Display = "Influenza" }],
+                        },
+                        ForecastStatus = new RecommendationForecastStatusApi { ForecastStatusText = "Due" },
+                        DateCriterion =
+                        [
+                            new RecommendationDateCriterionApi
+                            {
+                                DateCriterionCode = new RecommendationDateCriterionCodeApi { Text = "Forecast by Agent Due Date" },
+                                Value = "2025-01-15",
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.Is<string[]>(categories => categories.Length == 1 && categories[0] == "ImmunizationRecommendation"), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), [recommendation]));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.ImmunizationRecommendation]), CancellationToken.None);
+
+            ImmunizationRecommendation actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationRecommendation>();
+            actual.Id.ShouldBe(recommendation.HealthDataId);
+            actual.RecommendationId.ShouldBe(recommendation.RecommendationId);
+            actual.ForecastCreationDate.ShouldBe(DateOnly.FromDateTime(recommendation.ForecastCreationDate.Value));
+
+            RecommendationForecast forecast = actual.Recommendations.ShouldHaveSingleItem();
+            Assert.NotNull(forecast.VaccineCode);
+            Assert.NotNull(forecast.TargetDisease);
+            Assert.NotNull(forecast.ForecastStatus);
+            Assert.NotNull(forecast.DateCriterion);
+            forecast.VaccineCode.VaccineCodeText.ShouldBe("Influenza vaccine");
+            forecast.TargetDisease.TargetDiseaseCodes.ShouldHaveSingleItem().Display.ShouldBe("Influenza");
+            forecast.ForecastStatus.ForecastStatusText.ShouldBe("Due");
+
+            RecommendationDateCriterion criterion = forecast.DateCriterion.ShouldHaveSingleItem();
+            Assert.NotNull(criterion.DateCriterionCode);
+            criterion.DateCriterionCode.Text.ShouldBe("Forecast by Agent Due Date");
+        }
 
         [Fact]
         public async Task CanGetOrganDonorData()
@@ -202,6 +281,80 @@ namespace PatientDataAccessTests
             visit.AdmitDateTime.ShouldBe(hospitalVisit.AdmitDateTime);
             visit.EndDateTime.ShouldBeNull();
             visit.Clinicians.ShouldNotBeNull().ShouldHaveSingleItem().DisplayName.ShouldBe("Display");
+        }
+
+        [Fact]
+        public async Task CanGetImmunizationData()
+        {
+            Mock<IPatientApi> patientApi = new();
+
+            ImmunizationApi immunization = new()
+            {
+                HealthDataId = "imms_7202674_93701284",
+                HealthDataFileId = "file_7202674_93701284",
+                ImmunizationId = "imms_7202674_93701284",
+                VaccineName = "Influenza",
+                Status = "Completed",
+                OccurrenceDateTime = DateTime.Parse("2023-01-10", CultureInfo.InvariantCulture),
+                ProviderOrClinic = "Vancouver Clinic",
+                Agents =
+                [
+                    new ImmunizationAgentApi
+                    {
+                        Code = "FLU",
+                        Name = "Influenza Agent",
+                        LotNumber = "LOT123",
+                        ProductName = "FluShield",
+                    },
+                ],
+                Forecast = new ImmunizationForecastApi
+                {
+                    ForecastStatus = "Due",
+                    VaccineCode = "FLU-BOOSTER",
+                    DisplayName = "Influenza Booster",
+                    EligibleDate = DateTime.Parse("2024-01-01", CultureInfo.InvariantCulture),
+                    DueDate = DateTime.Parse("2024-01-10", CultureInfo.InvariantCulture),
+                    ForecastCreateDate = DateTime.Parse("2023-01-10", CultureInfo.InvariantCulture),
+                },
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(
+                    this.pid,
+                    It.Is<string[]>(categories => categories.Length == 1 && categories[0] == "Immunization"),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new HealthDataResult(
+                        new HealthDataMetadata(),
+                        [immunization]));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.QueryAsync(new HealthQuery(this.pid, [HealthCategory.Immunization]), CancellationToken.None);
+
+            result.ShouldNotBeNull();
+            ImmunizationRecord imms = result.Items.ShouldHaveSingleItem().ShouldBeOfType<ImmunizationRecord>();
+            imms.Id.ShouldBe(immunization.HealthDataId);
+            imms.FileId.ShouldBe(immunization.HealthDataFileId);
+            imms.ImmunizationId.ShouldBe(immunization.ImmunizationId);
+            imms.VaccineName.ShouldBe(immunization.VaccineName);
+            imms.Status.ShouldBe(immunization.Status);
+            imms.OccurrenceDateTime.ShouldBe(immunization.OccurrenceDateTime);
+            imms.ProviderOrClinic.ShouldBe(immunization.ProviderOrClinic);
+
+            ImmunizationAgent agent = imms.Agents.ShouldNotBeNull().ShouldHaveSingleItem();
+            agent.Code.ShouldBe("FLU");
+            agent.Name.ShouldBe("Influenza Agent");
+            agent.LotNumber.ShouldBe("LOT123");
+            agent.ProductName.ShouldBe("FluShield");
+
+            ImmunizationForecast forecast = imms.Forecast.ShouldNotBeNull();
+            forecast.ForecastStatus.ShouldBe("Due");
+            forecast.VaccineCode.ShouldBe("FLU-BOOSTER");
+            forecast.DisplayName.ShouldBe("Influenza Booster");
+            forecast.EligibleDate.ShouldBe(DateOnly.Parse("2024-01-01", CultureInfo.InvariantCulture));
+            forecast.DueDate.ShouldBe(DateOnly.Parse("2024-01-10", CultureInfo.InvariantCulture));
+            forecast.ForecastCreateDate.ShouldBe(DateOnly.Parse("2023-01-10", CultureInfo.InvariantCulture));
         }
 
         [Fact]

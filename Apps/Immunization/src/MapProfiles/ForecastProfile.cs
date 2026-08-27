@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.MapProfiles
     using AutoMapper;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
+    using PatientDataImmunizationForecast = HealthGateway.PatientDataAccess.ImmunizationForecast;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between PHSA Immunization and Common Models.
@@ -33,6 +34,14 @@ namespace HealthGateway.Immunization.MapProfiles
                 .ForMember(dest => dest.RecommendationId, opt => opt.MapFrom(src => src.ImmsId))
                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.ForecastCreateDate))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.ForecastStatus));
+
+            this.CreateMap<PatientDataImmunizationForecast, ImmunizationForecast>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.ForecastStatus ?? string.Empty))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DisplayName ?? string.Empty))
+                .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.ForecastCreateDate ?? default))
+                .ForMember(dest => dest.EligibleDate, opt => opt.MapFrom(src => src.EligibleDate ?? default))
+                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DueDate))
+                .ForMember(dest => dest.RecommendationId, opt => opt.Ignore());
         }
     }
 }

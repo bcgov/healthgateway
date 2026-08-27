@@ -42,5 +42,10 @@ namespace HealthGateway.Patient.Constants
         /// Hospital Visits.
         /// </summary>
         HospitalVisits,
+
+        /// <summary>
+        /// Immunization data.
+        /// </summary>
+        Immunization,
     }
 }
