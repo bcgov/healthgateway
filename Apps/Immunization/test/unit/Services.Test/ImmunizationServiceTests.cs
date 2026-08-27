@@ -248,7 +248,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, MappingService);
 
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetImmunizationsAsync(It.IsAny<string>()));
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetImmunizationsAsync("mock-hdid"));
 
             Assert.Equal(expectedMessage, exception.Message);
         }
