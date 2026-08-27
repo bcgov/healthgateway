@@ -54,10 +54,12 @@ namespace HealthGateway.Immunization.Services
 
             return new ImmunizationResultV2
             {
-                Immunizations = result.Items
-                    .OfType<PatientDataImmunizationRecord>()
-                    .Select(mappingService.MapToImmunizationEvent)
-                    .ToList(),
+                Immunizations =
+                [
+                    .. result.Items
+                        .OfType<PatientDataImmunizationRecord>()
+                        .Select(mappingService.MapToImmunizationEvent),
+                ],
                 Recommendations = mappingService.MapToImmunizationRecommendations(
                     mapper.Map<IEnumerable<ImmunizationRecommendationResponse>>(
                         result.Items
