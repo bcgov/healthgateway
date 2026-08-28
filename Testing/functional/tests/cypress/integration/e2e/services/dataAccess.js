@@ -14,9 +14,14 @@ describe("Gateway Api Data Access Service", () => {
             cy.log(
                 `Verifying Swagger exists for Gateway Api Endpoint: ${config.serviceEndpoints.GatewayApi}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.GatewayApi}swagger`).contains(
-                "Health Gateway API Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.GatewayApi}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway API Services documentation"
+                );
+            });
         });
     });
 

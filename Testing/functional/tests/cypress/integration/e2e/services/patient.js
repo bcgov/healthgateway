@@ -15,9 +15,14 @@ describe("Patient Service", () => {
             cy.log(
                 `Verifying Swagger exists for Patient at Endpoint: ${config.serviceEndpoints.Patient}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Patient}swagger`).contains(
-                "Health Gateway Patient Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.Patient}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Patient Services documentation"
+                );
+            });
         });
     });
 

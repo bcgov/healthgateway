@@ -1,4 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
+import { waitForImmunizations } from "../../../support/functions/timeline";
 
 const defaultTimeout = 120000;
 
@@ -339,7 +340,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
+        waitForImmunizations("@getImmunization", defaultTimeout);
 
         // History tab
         cy.log("Validating history tab");
@@ -452,7 +453,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
+        waitForImmunizations("@getImmunization", defaultTimeout);
 
         // Schedule tab
         cy.log("Validating schedule tab");
@@ -707,7 +708,7 @@ describe("CRUD Operations", () => {
                 `[data-testid=immunization-tab-title-${validDependent.hdid}]`
             ).click();
         });
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
+        waitForImmunizations("@getImmunization", defaultTimeout);
 
         cy.get(
             `[data-testid=immunization-tab-div-${validDependent.hdid}]`

@@ -14,11 +14,14 @@ describe("Clinical Documents Service", () => {
             cy.log(
                 `Verifying Swagger exists for Clinical Documents at Endpoint: ${config.serviceEndpoints.ClinicalDocument}swagger`
             );
-            cy.visit(
-                `${config.serviceEndpoints.ClinicalDocument}swagger`
-            ).contains(
-                "Health Gateway Clinical Document Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.ClinicalDocument}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Clinical Document Services documentation"
+                );
+            });
         });
     });
 

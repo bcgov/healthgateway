@@ -12,9 +12,14 @@ describe("Medication Service", () => {
             cy.log(
                 `Verifying Swagger exists for Medication at Endpoint: ${config.serviceEndpoints.Medication}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Medication}swagger`).contains(
-                "Health Gateway Medication Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.Medication}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Medication Services documentation"
+                );
+            });
         });
     });
 

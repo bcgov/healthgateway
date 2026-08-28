@@ -1,5 +1,7 @@
 const { AuthMethod } = require("../../../../support/constants");
 
+const defaultTimeout = 120000;
+
 describe("Laboratory Orders Queued", () => {
     beforeEach(() => {
         cy.configureSettings({
@@ -11,11 +13,17 @@ describe("Laboratory Orders Queued", () => {
             ],
         });
         cy.viewport("iphone-6");
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
+            "getLaboratoryOrders"
+        );
         cy.login(
             Cypress.env("keycloak.laboratory.queued.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getLaboratoryOrders", { timeout: defaultTimeout })
+            .its("response.statusCode")
+            .should("eq", 200);
         cy.checkTimelineHasLoaded();
     });
 

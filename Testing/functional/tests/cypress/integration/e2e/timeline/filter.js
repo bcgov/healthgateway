@@ -1,9 +1,43 @@
 const { AuthMethod } = require("../../../support/constants");
+const { waitForCovid19Orders } = require("../../../support/functions/timeline");
 
 function verifyActiveFilters(filterLabels) {
     filterLabels.forEach((label) => {
         cy.contains("[data-testid=filter-label]", label);
     });
+}
+
+function testDatasetTimelineFiltering(
+    filterTestId,
+    titleTestId,
+    activeFilters
+) {
+    const isVisibleOrNonExistent = (titleId, testingTitleId) =>
+        titleId === testingTitleId ? "be.visible" : "not.exist";
+
+    cy.get("[data-testid=filterContainer]").should("not.exist");
+    cy.get("[data-testid=filterDropdown]").click();
+    cy.get(`${filterTestId}`).click({ force: true });
+    cy.get("[data-testid=btnFilterApply]").click();
+
+    const titleIds = [
+        "[data-testid=healthvisitTitle]",
+        "[data-testid=noteTitle]",
+        "[data-testid=immunizationTitle]",
+        "[data-testid=covid19testresultTitle]",
+        "[data-testid=labresultTitle]",
+        "[data-testid=medicationTitle]",
+        "[data-testid=specialauthorityrequestTitle]",
+        "[data-testid=clinicaldocumentTitle]",
+        "[data-testid=hospitalvisitTitle]",
+        "[data-testid=diagnosticimagingTitle]",
+    ];
+    for (var i = 0; i < titleIds.length; i++) {
+        cy.get(titleIds[i]).should(
+            isVisibleOrNonExistent(titleIds[i], titleTestId)
+        );
+    }
+    verifyActiveFilters(activeFilters);
 }
 
 describe("Disabled Filters", () => {
@@ -43,39 +77,6 @@ describe("Disabled Filters", () => {
 });
 
 describe("Filters", () => {
-    function testDatasetTimelineFiltering(
-        filterTestId,
-        titleTestId,
-        activeFilters
-    ) {
-        const isVisibleOrNonExistent = (titleId, testingTitleId) =>
-            titleId === testingTitleId ? "be.visible" : "not.exist";
-
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get(`${filterTestId}`).click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        const titleIds = [
-            "[data-testid=healthvisitTitle]",
-            "[data-testid=noteTitle]",
-            "[data-testid=immunizationTitle]",
-            "[data-testid=covid19testresultTitle]",
-            "[data-testid=labresultTitle]",
-            "[data-testid=medicationTitle]",
-            "[data-testid=specialauthorityrequestTitle]",
-            "[data-testid=clinicaldocumentTitle]",
-            "[data-testid=hospitalvisitTitle]",
-            "[data-testid=diagnosticimagingTitle]",
-        ];
-        for (var i = 0; i < titleIds.length; i++) {
-            cy.get(titleIds[i]).should(
-                isVisibleOrNonExistent(titleIds[i], titleTestId)
-            );
-        }
-        verifyActiveFilters(activeFilters);
-    }
-
     beforeEach(() => {
         cy.configureSettings({
             datasets: [
@@ -125,11 +126,19 @@ describe("Filters", () => {
                 },
             ],
         });
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
+            "getCovid19Orders"
+        );
+        cy.intercept("GET", "**/MedicationStatement/*").as("getMedications");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        waitForCovid19Orders("@getCovid19Orders");
+        cy.wait("@getMedications", { timeout: 120000 })
+            .its("response.statusCode")
+            .should("eq", 200);
         cy.checkTimelineHasLoaded();
     });
 
@@ -335,14 +344,6 @@ describe("Filters", () => {
         );
     });
 
-    it("Filter Diagnostic Imaging", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=DiagnosticImaging-filter]",
-            "[data-testid=diagnosticimagingTitle]",
-            ["Imaging Reports"]
-        );
-    });
-
     it("Filter Cancer Screening", () => {
         testDatasetTimelineFiltering(
             "[data-testid=BcCancerScreening-filter]",
@@ -465,5 +466,32 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=filterContainer]").should("not.exist");
+    });
+});
+
+describe("Diagnostic Imaging Filter", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "diagnosticImaging",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Filter Diagnostic Imaging", () => {
+        testDatasetTimelineFiltering(
+            "[data-testid=DiagnosticImaging-filter]",
+            "[data-testid=diagnosticimagingTitle]",
+            ["Imaging Reports"]
+        );
     });
 });

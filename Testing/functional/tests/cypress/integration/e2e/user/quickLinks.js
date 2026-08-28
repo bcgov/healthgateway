@@ -1,4 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
+import { waitForCovid19Orders } from "../../../support/functions/timeline";
 
 const homePath = "/home";
 
@@ -34,24 +35,15 @@ function getQuickLinkCard(title) {
         .parents(quickLinkCardSelector);
 }
 
-function clickRemoveQuickLinkSelector(isPost = false) {
-    if (isPost) {
-        cy.intercept("POST", "**/UserProfile/*/preference*").as(
-            "postUserProfilePreference"
-        );
-    } else {
-        cy.intercept("PUT", "**/UserProfile/*/preference*").as(
-            "putUserProfilePreference"
-        );
-    }
+function clickRemoveQuickLinkSelector(method = "PUT") {
+    cy.intercept(method, "**/UserProfile/*/preference*").as(
+        "setUserProfilePreference"
+    );
 
     cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
-
-    if (isPost) {
-        cy.wait("@postUserProfilePreference", { timeout: defaultTimeout });
-    } else {
-        cy.wait("@putUserProfilePreference", { timeout: defaultTimeout });
-    }
+    cy.wait("@setUserProfilePreference", { timeout: defaultTimeout })
+        .its("response.statusCode")
+        .should("eq", 200);
 }
 
 describe("Quick Links", () => {
@@ -103,7 +95,7 @@ describe("Quick Links", () => {
             .click();
 
         cy.wait("@getCommunication", { timeout: defaultTimeout });
-        cy.wait("@getCovid19Orders", { timeout: defaultTimeout });
+        waitForCovid19Orders("@getCovid19Orders", defaultTimeout);
         cy.checkTimelineHasLoaded();
 
         cy.log("Verifying filter is active");
@@ -338,7 +330,7 @@ describe("Organ Donor Quick Link", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        clickRemoveQuickLinkSelector(true);
+        clickRemoveQuickLinkSelector("POST");
 
         cy.log("Verifying organ donor quick link no longer exists");
         cy.get(organDonorQuickLinkCardSelector).should("not.exist");
@@ -460,7 +452,7 @@ describe("Health Connect Registry Card", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        clickRemoveQuickLinkSelector(true);
+        clickRemoveQuickLinkSelector("POST");
 
         cy.log("Verifying health connect quick link no longer exists");
         cy.get(healthConnectQuickLinkCardSelector).should("not.exist");

@@ -1,4 +1,5 @@
 describe("Laboratory Service", () => {
+    const defaultTimeout = 120000;
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const EXPIREDELEGATEDHDID = "232434345442257";
     const DELEGATEDHDID = "162346565465464564565463257";
@@ -16,9 +17,15 @@ describe("Laboratory Service", () => {
             cy.log(
                 `Verifying Swagger exists for Laboratory at Endpoint: ${config.serviceEndpoints.Laboratory}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Laboratory}swagger`).contains(
-                "Health Gateway Laboratory Services documentation"
-            );
+            cy.request({
+                url: `${config.serviceEndpoints.Laboratory}swagger/v1/swagger.json`,
+                timeout: defaultTimeout,
+            }).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Laboratory Services documentation"
+                );
+            });
         });
     });
 
@@ -29,6 +36,7 @@ describe("Laboratory Service", () => {
             );
             cy.request({
                 url: `${config.serviceEndpoints.Laboratory}Laboratory/LaboratoryOrders?hdid=${HDID}`,
+                timeout: defaultTimeout,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -46,6 +54,7 @@ describe("Laboratory Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/LaboratoryOrders?hdid=${EXPIREDELEGATEDHDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -70,6 +79,7 @@ describe("Laboratory Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/LaboratoryOrders?hdid=${HDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -95,6 +105,7 @@ describe("Laboratory Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/LaboratoryOrders?hdid=${DELEGATEDHDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -118,6 +129,7 @@ describe("Laboratory Service", () => {
             );
             cy.request({
                 url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${HDID}`,
+                timeout: defaultTimeout,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -135,6 +147,7 @@ describe("Laboratory Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${EXPIREDELEGATEDHDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -159,6 +172,7 @@ describe("Laboratory Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${HDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -184,6 +198,7 @@ describe("Laboratory Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${DELEGATEDHDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {

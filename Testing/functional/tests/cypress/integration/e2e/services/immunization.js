@@ -12,9 +12,14 @@ describe("Immunization Service", () => {
             cy.log(
                 `Verifying Swagger exists for Immunization at Endpoint: ${config.serviceEndpoints.Immunization}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Immunization}swagger`).contains(
-                "Health Gateway Immunization Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.Immunization}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Immunization Services documentation"
+                );
+            });
         });
     });
 });

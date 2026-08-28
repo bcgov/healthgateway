@@ -1,9 +1,10 @@
 const { AuthMethod } = require("../../../support/constants");
+const { waitForImmunizations } = require("../../../support/functions/timeline");
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const downloadUrl = "/reports";
 const profileUrl = "/profile";
-const defaultTimeout = 60000;
+const defaultTimeout = 120000;
 
 describe("Home Page", () => {
     beforeEach(() => {
@@ -66,7 +67,7 @@ describe("Home Page", () => {
             .click();
 
         cy.url().should("include", downloadUrl);
-        cy.wait("@getImmunizations", { timeout: defaultTimeout });
+        waitForImmunizations("@getImmunizations", defaultTimeout);
         cy.get("[data-testid=immunization-history-report-table]").should(
             "be.visible"
         );
@@ -205,7 +206,11 @@ describe("Home page - Recommendations", () => {
     });
 
     it("Link should open recommendations dialog", () => {
+        cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunizations");
+
         cy.get("[data-testid=recommendations-card-button]").click();
+        waitForImmunizations("@getImmunizations", defaultTimeout);
+
         cy.get("[data-testid=recommendations-dialog]")
             .should("be.visible")
             .within(() => {
@@ -243,7 +248,11 @@ describe("MOBILE - Home page - Recommendations", () => {
     });
 
     it("Mobile - Link should open recommendations dialog with content", () => {
+        cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunizations");
+
         cy.get("[data-testid=recommendations-card-button]").click();
+        waitForImmunizations("@getImmunizations", defaultTimeout);
+
         cy.get("[data-testid=recommendations-dialog]")
             .should("be.visible")
             .within(() => {

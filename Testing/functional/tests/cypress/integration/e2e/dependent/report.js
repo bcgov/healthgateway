@@ -3,6 +3,12 @@ import {
     getCardSelector,
     getTabButtonSelector,
 } from "../../../support/functions/dependent";
+import {
+    waitForCovid19Orders,
+    waitForImmunizations,
+} from "../../../support/functions/timeline";
+
+const defaultTimeout = 120000;
 
 // JENNIFER T
 const dependent1 = {
@@ -35,7 +41,8 @@ function testReportSelection(
                 reportTableTest();
 
                 cy.get(`[data-testid=export-record-btn]`)
-                    .should("be.enabled", "be.visible")
+                    .should("be.visible")
+                    .and("be.enabled")
                     .click();
             });
         });
@@ -112,6 +119,10 @@ describe("Reports", () => {
     it("Validate Service Selection - Desktop", () => {
         const hdid = dependent1.hdid;
 
+        cy.intercept("GET", `**/Immunization?hdid=${hdid}`).as(
+            "getDependentImmunizations"
+        );
+
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
         const tabSelector = `[data-testid=report-tab]`;
@@ -125,10 +136,9 @@ describe("Reports", () => {
                     .click();
 
                 cy.get(tabSelector).within(() => {
-                    cy.get(`[data-testid=export-record-btn]`).should(
-                        "be.disabled",
-                        "be.visible"
-                    );
+                    cy.get(`[data-testid=export-record-btn]`)
+                        .should("be.visible")
+                        .and("be.disabled");
 
                     cy.get(`[data-testid=info-text]`).should("be.visible");
 
@@ -136,16 +146,24 @@ describe("Reports", () => {
                     cy.get(`[data-testid=info-image]`).should("be.visible");
                     cy.vSelect(`[data-testid=report-type]`, "Immunizations");
 
-                    cy.get(`[data-testid=export-record-btn]`).should(
-                        "be.enabled",
-                        "be.visible"
+                    waitForImmunizations(
+                        "@getDependentImmunizations",
+                        defaultTimeout
                     );
+
+                    cy.get(`[data-testid=export-record-btn]`)
+                        .should("be.visible")
+                        .and("be.enabled");
                 });
             });
     });
 
     it("Validate Service Selection - Mobile", () => {
         const hdid = dependent1.hdid;
+
+        cy.intercept("GET", `**/Immunization?hdid=${hdid}`).as(
+            "getDependentImmunizations"
+        );
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -162,10 +180,9 @@ describe("Reports", () => {
                     .click();
 
                 cy.get(tabSelector).within(() => {
-                    cy.get(`[data-testid=export-record-btn]`).should(
-                        "be.disabled",
-                        "be.visible"
-                    );
+                    cy.get(`[data-testid=export-record-btn]`)
+                        .should("be.visible")
+                        .and("be.disabled");
 
                     cy.get(`[data-testid=info-text]`).should("be.visible");
 
@@ -173,10 +190,14 @@ describe("Reports", () => {
                     cy.get(`[data-testid=info-image]`).should("be.visible");
                     cy.vSelect(`[data-testid=report-type]`, "Immunizations");
 
-                    cy.get(`[data-testid=export-record-btn]`).should(
-                        "be.enabled",
-                        "be.visible"
+                    waitForImmunizations(
+                        "@getDependentImmunizations",
+                        defaultTimeout
                     );
+
+                    cy.get(`[data-testid=export-record-btn]`)
+                        .should("be.visible")
+                        .and("be.enabled");
                 });
             });
     });
@@ -249,6 +270,10 @@ describe("Reports", () => {
     it("Validate COVID-19 Report", () => {
         const hdid = dependent1.hdid;
 
+        cy.intercept("GET", `**/Laboratory/Covid19Orders?hdid=${hdid}`).as(
+            "getDependentCovid19Tests"
+        );
+
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
         const tabSelector = `[data-testid=report-tab]`;
@@ -259,6 +284,11 @@ describe("Reports", () => {
             tabSelector,
             "COVID‑19 Tests",
             () => {
+                waitForCovid19Orders(
+                    "@getDependentCovid19Tests",
+                    defaultTimeout
+                );
+
                 cy.get(
                     `${tabSelector} [data-testid=covid19-report-table]`
                 ).should("not.exist");
@@ -268,6 +298,10 @@ describe("Reports", () => {
 
     it("Validate Immunization Report", () => {
         const hdid = dependent1.hdid;
+
+        cy.intercept("GET", `**/Immunization?hdid=${hdid}`).as(
+            "getDependentImmunizations"
+        );
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -279,6 +313,11 @@ describe("Reports", () => {
             tabSelector,
             "Immunizations",
             () => {
+                waitForImmunizations(
+                    "@getDependentImmunizations",
+                    defaultTimeout
+                );
+
                 cy.get(
                     `${tabSelector} [data-testid=immunization-history-report-table]`
                 ).should("not.exist");

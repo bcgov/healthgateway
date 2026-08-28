@@ -4,6 +4,8 @@ const {
     validateFileDownload,
 } = require("../../../support/functions/timeline");
 
+const defaultTimeout = 120000;
+
 describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.configureSettings({
@@ -14,16 +16,22 @@ describe("Laboratory Orders", () => {
                 },
             ],
         });
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
+            "getLaboratoryOrders"
+        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getLaboratoryOrders", { timeout: defaultTimeout })
+            .its("response.statusCode")
+            .should("eq", 200);
         cy.checkTimelineHasLoaded();
     });
 
     it("Validate file download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.get("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
@@ -34,7 +42,7 @@ describe("Laboratory Orders", () => {
     });
 
     it("Validate attachment download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.get("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
