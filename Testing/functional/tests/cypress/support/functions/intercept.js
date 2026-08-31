@@ -182,7 +182,7 @@ export function waitForInitialDataLoad(
     }
 
     const featureToggle = config.webClient.featureToggleConfiguration;
-    const shouldWaitForPatient = waitForPatient ?? false;
+    const shouldWaitForPatient = waitForPatient ?? true;
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);

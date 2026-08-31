@@ -67,7 +67,7 @@ describe("Authentication", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/home",
-            { waitForPatient: true, waitForUserProfile: false }
+            { waitForUserProfile: false }
         );
         cy.url().should("include", "/patientRetrievalError");
     });

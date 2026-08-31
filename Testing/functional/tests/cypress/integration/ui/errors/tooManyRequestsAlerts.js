@@ -528,8 +528,7 @@ describe("Dependents", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents",
-            { waitForDependent: false }
+            "/dependents"
         );
     });
 

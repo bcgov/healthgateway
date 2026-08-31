@@ -12,6 +12,23 @@ import {
     setupStandardAliases,
     waitForInitialDataLoad,
 } from "./functions/intercept";
+
+let cachedEnvironmentConfig;
+
+function cloneConfig(config) {
+    return Cypress._.cloneDeep(config);
+}
+
+function getInitialDataWaitOptions(initialDataWaitOptions) {
+    const normalizedSpecPath = Cypress.spec.relative.replaceAll("\\", "/");
+    const isUiSpec = /(^|\/)ui\//.test(normalizedSpecPath);
+
+    return {
+        waitForInitialDataLoad: !isUiSpec,
+        ...initialDataWaitOptions,
+    };
+}
+
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
@@ -249,6 +266,10 @@ Cypress.Commands.add(
         path = "/timeline",
         initialDataWaitOptions = {}
     ) => {
+        initialDataWaitOptions = getInitialDataWaitOptions(
+            initialDataWaitOptions
+        );
+
         if (authMethod == AuthMethod.KeyCloak) {
             const baseWebClientUrl = Cypress.config("baseUrl");
 
@@ -518,17 +539,22 @@ Cypress.Commands.add("getTokens", (username, password) => {
 
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
+
+    if (cachedEnvironmentConfig) {
+        cy.log(`Using cached Environment Configuration`);
+        return cy.wrap(cloneConfig(cachedEnvironmentConfig));
+    }
+
     let baseWebClientUrl = Cypress.config("baseUrl");
     if (baseWebClientUrl == localDevUri) {
         baseWebClientUrl = Cypress.env("baseWebClientUrl");
     }
 
-    return cy
-        .request(`${baseWebClientUrl}/configuration`)
-        .should((response) => {
-            expect(response.status).to.eq(200);
-        })
-        .its("body");
+    return cy.request(`${baseWebClientUrl}/configuration`).then((response) => {
+        expect(response.status).to.eq(200);
+        cachedEnvironmentConfig = cloneConfig(response.body);
+        return cloneConfig(cachedEnvironmentConfig);
+    });
 });
 
 Cypress.Commands.add("checkOnTimeline", () => {

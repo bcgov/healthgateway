@@ -37,8 +37,7 @@ describe("Breadcrumbs", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home",
-            { waitForPatient: true }
+            "/home"
         );
     });
     it("Breadcrumbs present on timeline", () =>

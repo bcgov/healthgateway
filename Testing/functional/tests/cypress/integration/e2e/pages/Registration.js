@@ -123,7 +123,7 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             homePath,
-            { waitForPatient: true, waitForUserProfile: false }
+            { waitForUserProfile: false }
         );
         cy.get("[data-testid=patient-retrieval-error]")
             .should("exist")

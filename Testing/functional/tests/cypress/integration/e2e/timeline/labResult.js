@@ -23,8 +23,7 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline",
-            { waitForPatient: true }
+            "/timeline"
         );
         cy.wait("@getLaboratoryOrders", { timeout: defaultTimeout })
             .its("response.statusCode")

@@ -1,12 +1,18 @@
 declare namespace Cypress {
     interface InitialDataWaitOptions {
-        /** Skip every initial-data wait when false. Defaults to true. */
+        /**
+         * Skip every initial-data wait when false. Defaults to false for UI
+         * fixture specs and true for live E2E specs.
+         */
         waitForInitialDataLoad?: boolean;
-        /** Wait for dependent data on dependent routes. Defaults to true. */
+        /**
+         * Wait for dependent data on dependent management and timeline routes.
+         * Defaults to true for live E2E specs.
+         */
         waitForDependent?: boolean;
         /**
-         * Wait explicitly for Patient. Defaults to false because the normal
-         * User Profile request is only made after Patient succeeds.
+         * Wait explicitly for Patient. Defaults to true for live E2E specs so
+         * Patient completes before waiting for User Profile.
          */
         waitForPatient?: boolean;
         /** Wait for User Profile. Defaults to true. */
