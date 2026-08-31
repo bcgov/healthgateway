@@ -1,7 +1,16 @@
 declare namespace Cypress {
     interface InitialDataWaitOptions {
+        /** Skip every initial-data wait when false. Defaults to true. */
+        waitForInitialDataLoad?: boolean;
+        /** Wait for dependent data on dependent routes. Defaults to true. */
         waitForDependent?: boolean;
+        /**
+         * Wait explicitly for Patient. Defaults to false because the normal
+         * User Profile request is only made after Patient succeeds.
+         */
         waitForPatient?: boolean;
+        /** Wait for User Profile. Defaults to true. */
+        waitForUserProfile?: boolean;
     }
 
     interface Chainable {

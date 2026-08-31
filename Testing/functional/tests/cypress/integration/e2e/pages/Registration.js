@@ -12,7 +12,8 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            { waitForInitialDataLoad: false }
         );
         cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
         cy.location("pathname").should("eq", registrationPath);
@@ -121,7 +122,8 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.accountclosure.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            { waitForPatient: true, waitForUserProfile: false }
         );
         cy.get("[data-testid=patient-retrieval-error]")
             .should("exist")

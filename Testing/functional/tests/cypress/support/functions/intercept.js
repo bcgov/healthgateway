@@ -169,11 +169,20 @@ export function waitForInitialDataLoad(
     username,
     config,
     path,
-    { waitForPatient, waitForDependent: shouldWaitForDependent = true } = {}
+    {
+        waitForInitialDataLoad: shouldWaitForInitialDataLoad = true,
+        waitForPatient,
+        waitForUserProfile: shouldWaitForUserProfile = true,
+        waitForDependent: shouldWaitForDependent = true,
+    } = {}
 ) {
+    if (!shouldWaitForInitialDataLoad) {
+        cy.log("Skipping initial data waits.");
+        return;
+    }
+
     const featureToggle = config.webClient.featureToggleConfiguration;
-    const shouldWaitForPatient =
-        waitForPatient ?? isPatientRetrievalErrorUser(username);
+    const shouldWaitForPatient = waitForPatient ?? false;
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);
@@ -184,7 +193,7 @@ export function waitForInitialDataLoad(
         cy.wait("@getPatient", { timeout: defaultTimeout });
     }
 
-    waitForUserProfile(username).then((blockedDataSources) => {
+    waitForUserProfile(shouldWaitForUserProfile).then((blockedDataSources) => {
         waitForClinicalDocument(featureToggle, path, blockedDataSources);
         waitForOrganDonorRegistratonStatusService(
             featureToggle,
@@ -213,18 +222,11 @@ export function waitForInitialDataLoad(
     }
 }
 
-function isPatientRetrievalErrorUser(username) {
-    return (
-        username === Cypress.env("keycloak.deceased.username") ||
-        username === Cypress.env("keycloak.accountclosure.username")
-    );
-}
-
-function waitForUserProfile(username) {
+function waitForUserProfile(shouldWaitForUserProfile) {
     return new Cypress.Promise((resolve) => {
         let blockedDataSources;
 
-        if (!isPatientRetrievalErrorUser(username)) {
+        if (shouldWaitForUserProfile) {
             cy.log("Wait on user profile.");
             cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
                 (interception) => {
