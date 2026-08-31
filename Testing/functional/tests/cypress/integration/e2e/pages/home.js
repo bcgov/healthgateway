@@ -113,8 +113,12 @@ describe("Home page - notification settings alert", () => {
             Cypress.env("keycloak.hthgtwy06.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            profileUrl
         );
+        cy.intercept("PUT", "**/UserProfile/*/preference?api-version=2.0").as(
+            "setSmsRemovedPreference"
+        );
+        cy.visit(homeUrl);
 
         cy.log("The alert should be visible when first logging in.");
         cy.get("[data-testid=incomplete-profile-banner]")
@@ -128,6 +132,7 @@ describe("Home page - notification settings alert", () => {
                     "not.exist"
                 );
             });
+        cy.wait("@setSmsRemovedPreference");
 
         cy.log("The link in the alert should go to the profile page.");
         cy.get("[data-testid=profile-preferences-link]")
