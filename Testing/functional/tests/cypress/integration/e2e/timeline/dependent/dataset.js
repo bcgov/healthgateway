@@ -1,4 +1,8 @@
 import { AuthMethod, Dataset } from "../../../../support/constants";
+import {
+    waitForCovid19Orders,
+    waitForImmunizations,
+} from "../../../../support/functions/timeline";
 
 const authorizedSpecialAuthorityDependentHdid = "IASGH65211V6WHXKGQDSEJAHYMYR";
 const authorizedDependentHdid = "162346565465464564565463257";
@@ -27,6 +31,26 @@ function toPascalCase(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function setupDatasetIntercept(dataset) {
+    if (dataset === Dataset.Covid19TestResult) {
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
+            "getDependentCovid19Orders"
+        );
+    } else if (dataset === Dataset.Immunization) {
+        cy.intercept("GET", "**/Immunization?hdid=*").as(
+            "getDependentImmunizations"
+        );
+    }
+}
+
+function waitForDataset(dataset) {
+    if (dataset === Dataset.Covid19TestResult) {
+        waitForCovid19Orders("@getDependentCovid19Orders");
+    } else if (dataset === Dataset.Immunization) {
+        waitForImmunizations("@getDependentImmunizations");
+    }
+}
+
 function enabledDatasetShouldBePresent(dataset, overrideDependentHdid = null) {
     const hdid = overrideDependentHdid ?? authorizedDependentHdid;
     cy.configureSettings({
@@ -42,12 +66,15 @@ function enabledDatasetShouldBePresent(dataset, overrideDependentHdid = null) {
         },
     });
 
+    setupDatasetIntercept(dataset);
+
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
         `/dependents/${hdid}/timeline`
     );
+    waitForDataset(dataset);
     cy.checkTimelineHasLoaded();
 
     cy.log(`Checking ${dataset} dataset is present when enabled`);

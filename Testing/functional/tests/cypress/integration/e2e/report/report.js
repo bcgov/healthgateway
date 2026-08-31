@@ -2,6 +2,7 @@ import { AuthMethod } from "../../../support/constants";
 import {
     waitForCovid19Orders,
     waitForImmunizations,
+    waitForLaboratoryOrders,
 } from "../../../support/functions/timeline";
 
 const defaultTimeout = 60000;
@@ -256,7 +257,7 @@ describe("Reports", () => {
 
     it("Validate Laboratory Report", () => {
         cy.vSelect("[data-testid=report-type]", "Lab Results");
-        cy.wait("@getLabResults", { timeout: defaultTimeout });
+        waitForLaboratoryOrders("@getLabResults", defaultTimeout);
 
         cy.get("[data-testid=laboratory-report-table]").should("be.visible");
         cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })

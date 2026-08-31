@@ -30,6 +30,28 @@ export function waitForCovid19Orders(
     });
 }
 
+export function waitForLaboratoryOrders(
+    alias,
+    timeout = 120000,
+    attemptsRemaining = maxDeferredLoadAttempts
+) {
+    return cy.wait(alias, { timeout }).then((interception) => {
+        const payload = interception.response.body.resourcePayload;
+        if (!payload.loaded && payload.retryin > 0) {
+            if (attemptsRemaining <= 1) {
+                throw new Error("Laboratory orders did not finish loading");
+            }
+            return waitForLaboratoryOrders(
+                alias,
+                timeout,
+                attemptsRemaining - 1
+            );
+        }
+
+        expect(payload.loaded).to.be.true;
+    });
+}
+
 export function waitForImmunizations(
     alias,
     timeout = 120000,

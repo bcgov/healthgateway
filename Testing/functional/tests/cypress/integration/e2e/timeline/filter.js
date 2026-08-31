@@ -1,5 +1,9 @@
 const { AuthMethod } = require("../../../support/constants");
-const { waitForCovid19Orders } = require("../../../support/functions/timeline");
+const {
+    waitForCovid19Orders,
+    waitForImmunizations,
+    waitForLaboratoryOrders,
+} = require("../../../support/functions/timeline");
 
 function verifyActiveFilters(filterLabels) {
     filterLabels.forEach((label) => {
@@ -129,6 +133,10 @@ describe("Filters", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
             "getCovid19Orders"
         );
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
+            "getLaboratoryOrders"
+        );
+        cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunizations");
         cy.intercept("GET", "**/MedicationStatement/*").as("getMedications");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -136,6 +144,8 @@ describe("Filters", () => {
             AuthMethod.KeyCloak
         );
         waitForCovid19Orders("@getCovid19Orders");
+        waitForLaboratoryOrders("@getLaboratoryOrders");
+        waitForImmunizations("@getImmunizations");
         cy.wait("@getMedications", { timeout: 120000 })
             .its("response.statusCode")
             .should("eq", 200);

@@ -10,11 +10,13 @@ describe("Medication", () => {
                 },
             ],
         });
+        cy.intercept("GET", "**/MedicationStatement/*").as("getMedications");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getMedications", { timeout: 120000 });
         cy.checkTimelineHasLoaded();
     });
 

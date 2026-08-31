@@ -46,8 +46,44 @@ function clickRemoveQuickLinkSelector(method = "PUT") {
         .should("eq", 200);
 }
 
+function removeQuickLinksIfPresent(titles) {
+    titles.forEach((title) => {
+        cy.get("body").then(($body) => {
+            const matchingTitles = $body
+                .find(cardButtonTitleSelector)
+                .filter((_, element) => element.textContent.trim() === title);
+
+            if (matchingTitles.length === 0) {
+                return;
+            }
+
+            getQuickLinkCard(title).within(() => {
+                cy.get(quickLinkMenuButtonSelector)
+                    .should("be.visible")
+                    .should("be.enabled")
+                    .click();
+            });
+            clickRemoveQuickLinkSelector();
+            cy.contains(cardButtonTitleSelector, title).should("not.exist");
+        });
+    });
+}
+
 describe("Quick Links", () => {
+    let quickLinkTitlesUnderTest = [];
+
+    afterEach(() => {
+        if (quickLinkTitlesUnderTest.length === 0) {
+            return;
+        }
+
+        cy.visit(homePath);
+        cy.get("[data-testid=health-records-card]").should("be.visible");
+        removeQuickLinksIfPresent(quickLinkTitlesUnderTest);
+    });
+
     it("Add, Verify Timeline Link and Remove Quick Link", () => {
+        quickLinkTitlesUnderTest = [laboratoryTitle];
         cy.configureSettings({
             datasets: [
                 {
@@ -65,6 +101,7 @@ describe("Quick Links", () => {
 
         // Validate home page has displayed before clicking on quick link.
         cy.get("[data-testid=health-records-card]").should("be.visible");
+        removeQuickLinksIfPresent(quickLinkTitlesUnderTest);
 
         cy.log("Adding a quick link");
         cy.get(addQuickLinkButtonSelector)
@@ -133,6 +170,11 @@ describe("Quick Links", () => {
     });
 
     it("Add, Cancel, Add and Remove Multiple Quick Links", () => {
+        quickLinkTitlesUnderTest = [
+            encounterTitle,
+            immunizationTitle,
+            laboratoryTitle,
+        ];
         cy.configureSettings({
             datasets: [
                 {
@@ -158,6 +200,7 @@ describe("Quick Links", () => {
 
         // Validate home page has displayed before clicking on quick link.
         cy.get("[data-testid=health-records-card]").should("be.visible");
+        removeQuickLinksIfPresent(quickLinkTitlesUnderTest);
 
         cy.log("Opening add quick link modal");
         cy.get(addQuickLinkButtonSelector)
