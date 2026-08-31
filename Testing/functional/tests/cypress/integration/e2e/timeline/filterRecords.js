@@ -5,7 +5,6 @@ const {
 
 const filterTests = [
     {
-        name: "Medication",
         dataset: "medication",
         filterSelector: "[data-testid=Medication-filter]",
         titleSelector: "[data-testid=medicationTitle]",
@@ -17,35 +16,30 @@ const filterTests = [
         },
     },
     {
-        name: "Encounter",
         dataset: "healthVisit",
         filterSelector: "[data-testid=HealthVisit-filter]",
         titleSelector: "[data-testid=healthvisitTitle]",
         activeFilter: "Health Visits",
     },
     {
-        name: "Special Authority",
         dataset: "specialAuthorityRequest",
         filterSelector: "[data-testid=SpecialAuthorityRequest-filter]",
         titleSelector: "[data-testid=specialauthorityrequestTitle]",
         activeFilter: "Special Authority",
     },
     {
-        name: "Clinical Documents",
         dataset: "clinicalDocument",
         filterSelector: "[data-testid=ClinicalDocument-filter]",
         titleSelector: "[data-testid=clinicaldocumentTitle]",
         activeFilter: "Clinical Documents",
     },
     {
-        name: "Hospital Visits",
         dataset: "hospitalVisit",
         filterSelector: "[data-testid=HospitalVisit-filter]",
         titleSelector: "[data-testid=hospitalvisitTitle]",
         activeFilter: "Hospital Visits",
     },
     {
-        name: "Cancer Screening",
         dataset: "bcCancerScreening",
         filterSelector: "[data-testid=BcCancerScreening-filter]",
         titleSelector: "[data-testid=bccancerscreeningTitle]",
@@ -54,14 +48,24 @@ const filterTests = [
 ];
 
 describe("Record Filters", () => {
-    filterTests.forEach((filterTest) => {
-        it(`Filter ${filterTest.name}`, () => {
-            setupTimelineFilter(filterTest.dataset, filterTest.request);
+    before(() => {
+        setupTimelineFilter(
+            filterTests.map((filterTest) => filterTest.dataset),
+            filterTests.map((filterTest) => filterTest.request).filter(Boolean)
+        );
+    });
+
+    it("Validate record filters", () => {
+        filterTests.forEach((filterTest, index) => {
             testDatasetTimelineFiltering(
                 filterTest.filterSelector,
                 filterTest.titleSelector,
                 [filterTest.activeFilter]
             );
+
+            if (index < filterTests.length - 1) {
+                cy.get("[data-testid=clear-filters-button]").click();
+            }
         });
     });
 });

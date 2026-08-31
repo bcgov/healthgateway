@@ -8,25 +8,32 @@ const {
 } = require("../../../support/functions/filter");
 
 describe("Laboratory Filters", () => {
-    it("Filter COVID-19", () => {
-        setupTimelineFilter("covid19TestResult", {
-            endpoint: "**/Laboratory/Covid19Orders*",
-            alias: "getCovid19Orders",
-            waitForData: waitForCovid19Orders,
-        });
+    before(() => {
+        setupTimelineFilter(
+            ["covid19TestResult", "labResult"],
+            [
+                {
+                    endpoint: "**/Laboratory/Covid19Orders*",
+                    alias: "getCovid19Orders",
+                    waitForData: waitForCovid19Orders,
+                },
+                {
+                    endpoint: "**/Laboratory/LaboratoryOrders*",
+                    alias: "getLaboratoryOrders",
+                    waitForData: waitForLaboratoryOrders,
+                },
+            ]
+        );
+    });
+
+    it("Validate Laboratory filters", () => {
         testDatasetTimelineFiltering(
             "[data-testid=Covid19TestResult-filter]",
             "[data-testid=covid19testresultTitle]",
             ["COVID‑19 Tests"]
         );
-    });
+        cy.get("[data-testid=clear-filters-button]").click();
 
-    it("Filter Laboratory", () => {
-        setupTimelineFilter("labResult", {
-            endpoint: "**/Laboratory/LaboratoryOrders*",
-            alias: "getLaboratoryOrders",
-            waitForData: waitForLaboratoryOrders,
-        });
         testDatasetTimelineFiltering(
             "[data-testid=LabResult-filter]",
             "[data-testid=labresultTitle]",

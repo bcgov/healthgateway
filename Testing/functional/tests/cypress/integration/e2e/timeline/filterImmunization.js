@@ -13,17 +13,16 @@ function setupImmunizationFilter() {
 }
 
 describe("Immunization Filters", () => {
-    beforeEach(setupImmunizationFilter);
+    before(setupImmunizationFilter);
 
-    it("Filter Immunization", () => {
+    it("Validate Immunization filters", () => {
         testDatasetTimelineFiltering(
             "[data-testid=Immunization-filter]",
             "[data-testid=immunizationTitle]",
             ["Immunization"]
         );
-    });
+        cy.get("[data-testid=clear-filters-button]").click();
 
-    it("Filter Immunization By Text", () => {
         ["COVID", "EK4241", "Polio"].forEach((filterText, index, values) => {
             cy.get("[data-testid=filterDropdown]").click();
             cy.get("[data-testid=filterTextInput]").type(filterText);

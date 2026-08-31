@@ -1,16 +1,23 @@
 import { AuthMethod } from "../constants";
 
-export function setupTimelineFilter(dataset, request = null) {
+export function setupTimelineFilter(datasets, requests = []) {
+    const datasetNames = Array.isArray(datasets) ? datasets : [datasets];
+    const requestConfigs = Array.isArray(requests)
+        ? requests
+        : requests
+          ? [requests]
+          : [];
+
     cy.configureSettings({
         datasets: [
-            { name: dataset, enabled: true },
+            ...datasetNames.map((name) => ({ name, enabled: true })),
             { name: "note", enabled: true },
         ],
     });
 
-    if (request) {
+    requestConfigs.forEach((request) => {
         cy.intercept("GET", request.endpoint).as(request.alias);
-    }
+    });
 
     cy.login(
         Cypress.env("keycloak.username"),
@@ -18,9 +25,9 @@ export function setupTimelineFilter(dataset, request = null) {
         AuthMethod.KeyCloak
     );
 
-    if (request) {
+    requestConfigs.forEach((request) => {
         request.waitForData(`@${request.alias}`);
-    }
+    });
 
     cy.checkTimelineHasLoaded();
 }

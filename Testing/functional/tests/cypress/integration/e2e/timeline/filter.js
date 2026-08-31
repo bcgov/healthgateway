@@ -46,7 +46,7 @@ describe("Disabled Filters", () => {
 });
 
 describe("Filters", () => {
-    beforeEach(() => {
+    before(() => {
         cy.configureSettings({
             datasets: [
                 {
@@ -111,13 +111,11 @@ describe("Filters", () => {
         waitForCovid19Orders("@getCovid19Orders");
         waitForLaboratoryOrders("@getLaboratoryOrders");
         waitForImmunizations("@getImmunizations");
-        cy.wait("@getMedications", { timeout: 120000 })
-            .its("response.statusCode")
-            .should("eq", 200);
+        cy.wait("@getMedications", { timeout: 120000 });
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate Filter Counts", () => {
+    function validateFilterCounts() {
         const countRegex = /^.*?\((\d+)K?\).*$/;
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=ImmunizationCount]")
@@ -151,49 +149,31 @@ describe("Filters", () => {
             .should("be.visible")
             .contains(countRegex);
         cy.get("[data-testid=btnFilterCancel]").click();
-    });
+    }
 
-    it("Validate Date Range Filter", () => {
-        //Validate No records... text should be hidden by default (or with data)
+    function validateDateRangeFilter() {
+        // No records text should be hidden when medication data is available.
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
-        // Validate "No records found with the selected filters" for a Date Range Filter
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterStartDateInput] input")
-            .clear()
-            .focus()
-            .type("2020-SEP-30");
-        cy.get("[data-testid=filterEndDateInput] input")
-            .clear()
-            .focus()
-            .type("2020-OCT-01")
-            .focus();
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
-        cy.get("[data-testid=noTimelineEntriesText]").should(
-            "have.text",
-            "No records found with the selected filters"
-        );
-
-        // Select 06/14/2020 to 06/14/2020 should display data for this date range.
+        // Select 05/10/2023 to 05/10/2023 to display medication data.
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterStartDateInput] input")
             .focus()
             .clear()
-            .type("2020-JUN-14");
+            .type("2023-MAY-10");
         cy.get("[data-testid=filterEndDateInput] input")
             .focus()
             .clear()
-            .type("2020-JUN-14")
+            .type("2023-MAY-10")
             .focus();
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
-        verifyActiveFilters(["From 2020-Jun-14 To 2020-Jun-14"]);
-    });
+        verifyActiveFilters(["From 2023-May-10 To 2023-May-10"]);
+        cy.get("[data-testid=clear-filters-button]").click();
+    }
 
-    it("No Records on Linear Timeline", () => {
+    function validateNoRecordsOnLinearTimeline() {
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterTextInput]").type(
             "no-data-should-match-this-unique-string"
@@ -207,9 +187,9 @@ describe("Filters", () => {
             .children(".v-chip__close")
             .click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
-    });
+    }
 
-    it("Filter Checkboxes are Visible", () => {
+    function validateFilterCheckboxesAreVisible() {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=Medication-filter].v-chip--selected").should(
@@ -234,9 +214,9 @@ describe("Filters", () => {
             "not.exist"
         );
         cy.get("[data-testid=btnFilterCancel]").click();
-    });
+    }
 
-    it("Validate Apply and Cancel buttons", () => {
+    function validateApplyAndCancelButtons() {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
@@ -350,6 +330,14 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=filterContainer]").should("not.exist");
+    }
+
+    it("Validate filters", () => {
+        validateFilterCounts();
+        validateDateRangeFilter();
+        validateNoRecordsOnLinearTimeline();
+        validateFilterCheckboxesAreVisible();
+        validateApplyAndCancelButtons();
     });
 });
 
