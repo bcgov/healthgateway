@@ -8,8 +8,6 @@ import {
     waitForImmunizations,
 } from "../../../support/functions/timeline";
 
-const defaultTimeout = 120000;
-
 // JENNIFER T
 const dependent1 = {
     hdid: "162346565465464564565463257",
@@ -146,10 +144,7 @@ describe("Reports", () => {
                     cy.get(`[data-testid=info-image]`).should("be.visible");
                     cy.vSelect(`[data-testid=report-type]`, "Immunizations");
 
-                    waitForImmunizations(
-                        "@getDependentImmunizations",
-                        defaultTimeout
-                    );
+                    waitForImmunizations("@getDependentImmunizations");
 
                     cy.get(`[data-testid=export-record-btn]`)
                         .should("be.visible")
@@ -190,10 +185,7 @@ describe("Reports", () => {
                     cy.get(`[data-testid=info-image]`).should("be.visible");
                     cy.vSelect(`[data-testid=report-type]`, "Immunizations");
 
-                    waitForImmunizations(
-                        "@getDependentImmunizations",
-                        defaultTimeout
-                    );
+                    waitForImmunizations("@getDependentImmunizations");
 
                     cy.get(`[data-testid=export-record-btn]`)
                         .should("be.visible")
@@ -284,10 +276,7 @@ describe("Reports", () => {
             tabSelector,
             "COVID‑19 Tests",
             () => {
-                waitForCovid19Orders(
-                    "@getDependentCovid19Tests",
-                    defaultTimeout
-                );
+                waitForCovid19Orders("@getDependentCovid19Tests");
 
                 cy.get(
                     `${tabSelector} [data-testid=covid19-report-table]`
@@ -313,10 +302,7 @@ describe("Reports", () => {
             tabSelector,
             "Immunizations",
             () => {
-                waitForImmunizations(
-                    "@getDependentImmunizations",
-                    defaultTimeout
-                );
+                waitForImmunizations("@getDependentImmunizations");
 
                 cy.get(
                     `${tabSelector} [data-testid=immunization-history-report-table]`

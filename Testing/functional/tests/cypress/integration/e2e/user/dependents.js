@@ -35,6 +35,41 @@ const validDependent = {
     hdid: "645645767756756767",
 };
 
+function removeValidDependentIfPresent(username) {
+    cy.logout();
+    cy.configureSettings({
+        dependents: {
+            enabled: true,
+        },
+        datasets: [
+            {
+                name: "immunization",
+                enabled: true,
+            },
+        ],
+    });
+    cy.login(
+        username,
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/dependents"
+    );
+
+    const cardSelector = `[data-testid=dependent-card-${validDependent.phn}]`;
+    cy.get("body").then(($body) => {
+        if ($body.find(cardSelector).length === 0) {
+            return;
+        }
+
+        cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
+            "deleteDependentCleanup"
+        );
+        deleteDependent(cardSelector, true);
+        cy.wait("@deleteDependentCleanup", { timeout: defaultTimeout });
+        cy.get(cardSelector).should("not.exist");
+    });
+}
+
 const protectedDependentWithAllowedDelegation = {
     firstName: "Leroy Desmond",
     lastName: "Tobias",
@@ -340,7 +375,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
-        waitForImmunizations("@getImmunization", defaultTimeout);
+        waitForImmunizations("@getImmunization");
 
         // History tab
         cy.log("Validating history tab");
@@ -453,7 +488,7 @@ describe("dependents", () => {
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
-        waitForImmunizations("@getImmunization", defaultTimeout);
+        waitForImmunizations("@getImmunization");
 
         // Schedule tab
         cy.log("Validating schedule tab");
@@ -646,6 +681,19 @@ describe("CRUD Operations", () => {
         );
     });
 
+    afterEach(function cleanupFailedDependentTest() {
+        if (this.currentTest.state !== "failed") {
+            return;
+        }
+
+        // A failed attempt can leave the dependent registered for either user,
+        // causing Cypress retries to fail validation before cleanup is reached.
+        removeValidDependentIfPresent(
+            Cypress.env("keycloak.protected.username")
+        );
+        removeValidDependentIfPresent(Cypress.env("keycloak.username"));
+    });
+
     it("Validate Adding, Viewing, and Removing Dependents", () => {
         cy.log("Adding dependent");
 
@@ -708,7 +756,7 @@ describe("CRUD Operations", () => {
                 `[data-testid=immunization-tab-title-${validDependent.hdid}]`
             ).click();
         });
-        waitForImmunizations("@getImmunization", defaultTimeout);
+        waitForImmunizations("@getImmunization");
 
         cy.get(
             `[data-testid=immunization-tab-div-${validDependent.hdid}]`

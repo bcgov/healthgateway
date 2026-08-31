@@ -4,7 +4,6 @@ const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const downloadUrl = "/reports";
 const profileUrl = "/profile";
-const defaultTimeout = 120000;
 
 describe("Home Page", () => {
     beforeEach(() => {
@@ -67,7 +66,7 @@ describe("Home Page", () => {
             .click();
 
         cy.url().should("include", downloadUrl);
-        waitForImmunizations("@getImmunizations", defaultTimeout);
+        waitForImmunizations("@getImmunizations");
         cy.get("[data-testid=immunization-history-report-table]").should(
             "be.visible"
         );
@@ -209,7 +208,7 @@ describe("Home page - Recommendations", () => {
         cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunizations");
 
         cy.get("[data-testid=recommendations-card-button]").click();
-        waitForImmunizations("@getImmunizations", defaultTimeout);
+        waitForImmunizations("@getImmunizations");
 
         cy.get("[data-testid=recommendations-dialog]")
             .should("be.visible")
@@ -251,7 +250,7 @@ describe("MOBILE - Home page - Recommendations", () => {
         cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunizations");
 
         cy.get("[data-testid=recommendations-card-button]").click();
-        waitForImmunizations("@getImmunizations", defaultTimeout);
+        waitForImmunizations("@getImmunizations");
 
         cy.get("[data-testid=recommendations-dialog]")
             .should("be.visible")

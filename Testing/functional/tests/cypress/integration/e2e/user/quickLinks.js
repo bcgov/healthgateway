@@ -132,7 +132,7 @@ describe("Quick Links", () => {
             .click();
 
         cy.wait("@getCommunication", { timeout: defaultTimeout });
-        waitForCovid19Orders("@getCovid19Orders", defaultTimeout);
+        waitForCovid19Orders("@getCovid19Orders");
         cy.checkTimelineHasLoaded();
 
         cy.log("Verifying filter is active");

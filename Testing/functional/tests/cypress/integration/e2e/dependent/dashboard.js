@@ -84,7 +84,7 @@ describe("dependents - dashboard", () => {
             .should("be.visible")
             .click();
 
-        waitForImmunizations("@getDependentImmunizations", defaultTimeout);
+        waitForImmunizations("@getDependentImmunizations");
 
         cy.get(recommendationsTableSelector).should("exist");
         cy.get(recommendationsDownloadButtonSelector)

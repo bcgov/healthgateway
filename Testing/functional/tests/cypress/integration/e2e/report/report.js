@@ -159,7 +159,7 @@ describe("Reports", () => {
 
     it("Validate COVID-19 Report", () => {
         cy.vSelect("[data-testid=report-type]", "COVID‑19 Tests");
-        waitForCovid19Orders("@getCovid19Tests", defaultTimeout);
+        waitForCovid19Orders("@getCovid19Tests");
 
         cy.get("[data-testid=covid19-report-table]").should("be.visible");
         cy.get("[data-testid=covid19DateItem]", { timeout: 60000 })
@@ -190,7 +190,7 @@ describe("Reports", () => {
 
     it("Validate Immunization Report", () => {
         cy.vSelect("[data-testid=report-type]", "Immunizations");
-        waitForImmunizations("@getImmunizations", defaultTimeout);
+        waitForImmunizations("@getImmunizations");
 
         cy.get("[data-testid=immunization-history-report-table]").should(
             "be.visible"
@@ -257,7 +257,7 @@ describe("Reports", () => {
 
     it("Validate Laboratory Report", () => {
         cy.vSelect("[data-testid=report-type]", "Lab Results");
-        waitForLaboratoryOrders("@getLabResults", defaultTimeout);
+        waitForLaboratoryOrders("@getLabResults");
 
         cy.get("[data-testid=laboratory-report-table]").should("be.visible");
         cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
