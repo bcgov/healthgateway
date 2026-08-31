@@ -1,11 +1,17 @@
 declare namespace Cypress {
+    interface InitialDataWaitOptions {
+        waitForDependent?: boolean;
+        waitForPatient?: boolean;
+    }
+
     interface Chainable {
         logout(): void;
         login(
             username: string,
             password: string,
             authMethod?: string,
-            path?: string
+            path?: string,
+            initialDataWaitOptions?: InitialDataWaitOptions
         ): void;
         getTokens(username: string, password: string): void;
         readConfig(): Chainable<any>;

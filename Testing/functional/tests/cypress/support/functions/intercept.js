@@ -165,15 +165,24 @@ export function setupStandardAliases() {
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 }
 
-export function waitForInitialDataLoad(username, config, path) {
+export function waitForInitialDataLoad(
+    username,
+    config,
+    path,
+    { waitForPatient, waitForDependent: shouldWaitForDependent = true } = {}
+) {
     const featureToggle = config.webClient.featureToggleConfiguration;
+    const shouldWaitForPatient =
+        waitForPatient ?? isPatientRetrievalErrorUser(username);
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);
     cy.log(`Path: ${path}`);
 
-    cy.log("Wait on patient.");
-    cy.wait("@getPatient", { timeout: defaultTimeout });
+    if (shouldWaitForPatient) {
+        cy.log("Wait on patient.");
+        cy.wait("@getPatient", { timeout: defaultTimeout });
+    }
 
     waitForUserProfile(username).then((blockedDataSources) => {
         waitForClinicalDocument(featureToggle, path, blockedDataSources);
@@ -199,17 +208,23 @@ export function waitForInitialDataLoad(username, config, path) {
     cy.wait("@getCommunication", { timeout: defaultTimeout });
 
     waitForNotification(featureToggle);
-    waitForDependent(featureToggle, path);
+    if (shouldWaitForDependent) {
+        waitForDependent(featureToggle, path);
+    }
+}
+
+function isPatientRetrievalErrorUser(username) {
+    return (
+        username === Cypress.env("keycloak.deceased.username") ||
+        username === Cypress.env("keycloak.accountclosure.username")
+    );
 }
 
 function waitForUserProfile(username) {
     return new Cypress.Promise((resolve) => {
         let blockedDataSources;
 
-        if (
-            username !== Cypress.env("keycloak.deceased.username") &&
-            username !== Cypress.env("keycloak.accountclosure.username")
-        ) {
+        if (!isPatientRetrievalErrorUser(username)) {
             cy.log("Wait on user profile.");
             cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
                 (interception) => {

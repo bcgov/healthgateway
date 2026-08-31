@@ -87,7 +87,13 @@ function generateRandomString(length) {
 //     );
 // }
 
-function loginWithKeycloakUI(username, password, config, path = "/home") {
+function loginWithKeycloakUI(
+    username,
+    password,
+    config,
+    path = "/home",
+    initialDataWaitOptions = {}
+) {
     const defaultPath = "/home";
 
     cy.log(
@@ -147,7 +153,12 @@ function loginWithKeycloakUI(username, password, config, path = "/home") {
                     }
 
                     // Wait on all registered intercepts
-                    waitForInitialDataLoad(username, resolvedConfig, path);
+                    waitForInitialDataLoad(
+                        username,
+                        resolvedConfig,
+                        path,
+                        initialDataWaitOptions
+                    );
                 });
             });
     });
@@ -171,7 +182,12 @@ function logoutWithUI() {
     });
 }
 
-function postLoginInitialization(configSettings, username, path) {
+function postLoginInitialization(
+    configSettings,
+    username,
+    path,
+    initialDataWaitOptions = {}
+) {
     // Setup standard aliases for busy endpoint calls
     setupStandardAliases();
 
@@ -188,7 +204,12 @@ function postLoginInitialization(configSettings, username, path) {
             );
 
             // Make sure to wait on busy endpoint calls
-            waitForInitialDataLoad(username, config, path);
+            waitForInitialDataLoad(
+                username,
+                config,
+                path,
+                initialDataWaitOptions
+            );
         });
     } else {
         cy.visit(path, { timeout: 60000 });
@@ -196,7 +217,12 @@ function postLoginInitialization(configSettings, username, path) {
         cy.log(`Use config from session: ${configSettings}`);
 
         // Make sure to wait on busy endpoint calls
-        waitForInitialDataLoad(username, configSettings, path);
+        waitForInitialDataLoad(
+            username,
+            configSettings,
+            path,
+            initialDataWaitOptions
+        );
     }
 }
 
@@ -221,7 +247,13 @@ Cypress.Commands.add("logout", () => {
 
 Cypress.Commands.add(
     "login",
-    (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
+    (
+        username,
+        password,
+        authMethod = AuthMethod.BCSC,
+        path = "/timeline",
+        initialDataWaitOptions = {}
+    ) => {
         if (authMethod == AuthMethod.KeyCloak) {
             const baseWebClientUrl = Cypress.config("baseUrl");
 
@@ -233,7 +265,13 @@ Cypress.Commands.add(
                 : undefined;
 
             if (baseWebClientUrl == localDevUri) {
-                loginWithKeycloakUI(username, password, configSettings, path);
+                loginWithKeycloakUI(
+                    username,
+                    password,
+                    configSettings,
+                    path,
+                    initialDataWaitOptions
+                );
             } else {
                 cy.window().then((window) => {
                     cy.session([username, authMethod], () => {
@@ -321,7 +359,12 @@ Cypress.Commands.add(
                         });
                     });
 
-                    postLoginInitialization(configSettings, username, path);
+                    postLoginInitialization(
+                        configSettings,
+                        username,
+                        path,
+                        initialDataWaitOptions
+                    );
                 });
             }
         } else if (authMethod == AuthMethod.BCSC) {
