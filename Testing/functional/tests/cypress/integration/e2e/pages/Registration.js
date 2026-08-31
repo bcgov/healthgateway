@@ -1,4 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
+const defaultTimeout = 60000;
 const logoutCompletePath = "/logoutComplete";
 const registrationPath = "/registration";
 const homePath = "/home";
@@ -8,6 +9,9 @@ const invalidPhone = "250";
 describe("Registration Page", () => {
     it("Minimum age error and logout", () => {
         cy.configureSettings({});
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
+            "getTermsOfService"
+        );
         cy.login(
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
@@ -15,8 +19,10 @@ describe("Registration Page", () => {
             homePath,
             { waitForInitialDataLoad: false }
         );
-        cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
+
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
         cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
         cy.get("[data-testid=registration-logout-button]")
             .should("be.visible")
             .click();
