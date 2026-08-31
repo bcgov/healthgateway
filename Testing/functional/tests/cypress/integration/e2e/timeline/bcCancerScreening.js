@@ -22,7 +22,9 @@ describe("BC Cancer", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            { waitForPatient: true }
         );
         cy.checkTimelineHasLoaded();
     }

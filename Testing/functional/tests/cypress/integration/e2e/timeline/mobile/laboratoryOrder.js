@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../../../support/constants");
-
-const defaultTimeout = 120000;
+const {
+    waitForLaboratoryOrders,
+} = require("../../../../support/functions/timeline");
 
 describe("Laboratory Orders", () => {
     beforeEach(() => {
@@ -13,7 +14,6 @@ describe("Laboratory Orders", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.intercept("GET", "**/Patient/*").as("getPatient");
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
             "getLaboratoryOrders"
         );
@@ -22,9 +22,7 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.wait("@getLaboratoryOrders", { timeout: defaultTimeout })
-            .its("response.statusCode")
-            .should("eq", 200);
+        waitForLaboratoryOrders("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();
     });
 

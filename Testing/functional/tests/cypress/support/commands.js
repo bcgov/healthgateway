@@ -143,8 +143,6 @@ function loginWithKeycloakUI(
                         );
                     });
 
-                    setupStandardAliases();
-
                     // Optional re-navigation only if path is different from default
                     if (path !== defaultPath) {
                         cy.visit(path, { timeout: 60000 });
@@ -262,6 +260,7 @@ Cypress.Commands.add(
                 : undefined;
 
             if (baseWebClientUrl == localDevUri) {
+                setupStandardAliases();
                 loginWithKeycloakUI(
                     username,
                     password,
