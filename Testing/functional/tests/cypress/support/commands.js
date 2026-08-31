@@ -188,9 +188,6 @@ function postLoginInitialization(
     path,
     initialDataWaitOptions = {}
 ) {
-    // Setup standard aliases for busy endpoint calls
-    setupStandardAliases();
-
     cy.log(`Visit path: ${path}`);
 
     if (!configSettings) {
@@ -273,6 +270,7 @@ Cypress.Commands.add(
                     initialDataWaitOptions
                 );
             } else {
+                setupStandardAliases();
                 cy.window().then((window) => {
                     cy.session([username, authMethod], () => {
                         cy.readConfig().then((config) => {
