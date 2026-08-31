@@ -1,0 +1,64 @@
+import { AuthMethod } from "../constants";
+
+export function setupTimelineFilter(dataset, request = null) {
+    cy.configureSettings({
+        datasets: [
+            { name: dataset, enabled: true },
+            { name: "note", enabled: true },
+        ],
+    });
+
+    if (request) {
+        cy.intercept("GET", request.endpoint).as(request.alias);
+    }
+
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak
+    );
+
+    if (request) {
+        request.waitForData(`@${request.alias}`);
+    }
+
+    cy.checkTimelineHasLoaded();
+}
+
+export function verifyActiveFilters(filterLabels) {
+    filterLabels.forEach((label) => {
+        cy.contains("[data-testid=filter-label]", label);
+    });
+}
+
+export function testDatasetTimelineFiltering(
+    filterTestId,
+    titleTestId,
+    activeFilters
+) {
+    const titleIds = [
+        "[data-testid=healthvisitTitle]",
+        "[data-testid=noteTitle]",
+        "[data-testid=immunizationTitle]",
+        "[data-testid=covid19testresultTitle]",
+        "[data-testid=labresultTitle]",
+        "[data-testid=medicationTitle]",
+        "[data-testid=specialauthorityrequestTitle]",
+        "[data-testid=clinicaldocumentTitle]",
+        "[data-testid=hospitalvisitTitle]",
+        "[data-testid=diagnosticimagingTitle]",
+        "[data-testid=bccancerscreeningTitle]",
+    ];
+
+    cy.get("[data-testid=filterContainer]").should("not.exist");
+    cy.get("[data-testid=filterDropdown]").click();
+    cy.get(filterTestId).click({ force: true });
+    cy.get("[data-testid=btnFilterApply]").click();
+
+    titleIds.forEach((titleId) => {
+        cy.get(titleId).should(
+            titleId === titleTestId ? "be.visible" : "not.exist"
+        );
+    });
+    verifyActiveFilters(activeFilters);
+}

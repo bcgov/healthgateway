@@ -4,45 +4,10 @@ const {
     waitForImmunizations,
     waitForLaboratoryOrders,
 } = require("../../../support/functions/timeline");
-
-function verifyActiveFilters(filterLabels) {
-    filterLabels.forEach((label) => {
-        cy.contains("[data-testid=filter-label]", label);
-    });
-}
-
-function testDatasetTimelineFiltering(
-    filterTestId,
-    titleTestId,
-    activeFilters
-) {
-    const isVisibleOrNonExistent = (titleId, testingTitleId) =>
-        titleId === testingTitleId ? "be.visible" : "not.exist";
-
-    cy.get("[data-testid=filterContainer]").should("not.exist");
-    cy.get("[data-testid=filterDropdown]").click();
-    cy.get(`${filterTestId}`).click({ force: true });
-    cy.get("[data-testid=btnFilterApply]").click();
-
-    const titleIds = [
-        "[data-testid=healthvisitTitle]",
-        "[data-testid=noteTitle]",
-        "[data-testid=immunizationTitle]",
-        "[data-testid=covid19testresultTitle]",
-        "[data-testid=labresultTitle]",
-        "[data-testid=medicationTitle]",
-        "[data-testid=specialauthorityrequestTitle]",
-        "[data-testid=clinicaldocumentTitle]",
-        "[data-testid=hospitalvisitTitle]",
-        "[data-testid=diagnosticimagingTitle]",
-    ];
-    for (var i = 0; i < titleIds.length; i++) {
-        cy.get(titleIds[i]).should(
-            isVisibleOrNonExistent(titleIds[i], titleTestId)
-        );
-    }
-    verifyActiveFilters(activeFilters);
-}
+const {
+    testDatasetTimelineFiltering,
+    verifyActiveFilters,
+} = require("../../../support/functions/filter");
 
 describe("Disabled Filters", () => {
     beforeEach(() => {
@@ -269,97 +234,6 @@ describe("Filters", () => {
             "not.exist"
         );
         cy.get("[data-testid=btnFilterCancel]").click();
-    });
-
-    it("Filter Immunization", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=Immunization-filter]",
-            "[data-testid=immunizationTitle]",
-            ["Immunization"]
-        );
-    });
-
-    it("Filter Immunization By Text", () => {
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterTextInput]").type("COVID");
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        cy.get("[data-testid=clear-filters-button]").click();
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterTextInput]").type("EK4241");
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        cy.get("[data-testid=clear-filters-button]").click();
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterTextInput]").type("Polio");
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=immunizationTitle]").should("be.visible");
-    });
-
-    it("Filter Medication", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=Medication-filter]",
-            "[data-testid=medicationTitle]",
-            ["Medication"]
-        );
-    });
-
-    it("Filter Encounter", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=HealthVisit-filter]",
-            "[data-testid=healthvisitTitle]",
-            ["Health Visits"]
-        );
-    });
-
-    it("Filter COVID-19", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=Covid19TestResult-filter]",
-            "[data-testid=covid19testresultTitle]",
-            ["COVID‑19 Tests"]
-        );
-    });
-
-    it("Filter Laboratory", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=LabResult-filter]",
-            "[data-testid=labresultTitle]",
-            ["Lab Results"]
-        );
-    });
-
-    it("Filter Special Authority", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=SpecialAuthorityRequest-filter]",
-            "[data-testid=specialauthorityrequestTitle]",
-            ["Special Authority"]
-        );
-    });
-
-    it("Filter Clinical Documents", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=ClinicalDocument-filter]",
-            "[data-testid=clinicaldocumentTitle]",
-            ["Clinical Documents"]
-        );
-    });
-
-    it("Filter Hospital Visits", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=HospitalVisit-filter]",
-            "[data-testid=hospitalvisitTitle]",
-            ["Hospital Visits"]
-        );
-    });
-
-    it("Filter Cancer Screening", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=BcCancerScreening-filter]",
-            "[data-testid=bccancerscreeningTitle]",
-            ["BC Cancer Screening"]
-        );
     });
 
     it("Validate Apply and Cancel buttons", () => {
