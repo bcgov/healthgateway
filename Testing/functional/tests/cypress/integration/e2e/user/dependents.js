@@ -1,7 +1,7 @@
 import { AuthMethod } from "../../../support/constants";
 import { waitForImmunizations } from "../../../support/functions/timeline";
 
-const defaultTimeout = 120000;
+const defaultTimeout = 60000;
 
 function triggerEmptyValidation(vuetifySelector) {
     cy.get(vuetifySelector + " input")

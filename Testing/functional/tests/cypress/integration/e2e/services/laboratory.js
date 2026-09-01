@@ -1,5 +1,5 @@
 describe("Laboratory Service", () => {
-    const defaultTimeout = 120000;
+    const defaultTimeout = 60000;
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const EXPIREDELEGATEDHDID = "232434345442257";
     const DELEGATEDHDID = "162346565465464564565463257";

@@ -8,41 +8,30 @@ export function getEntryCardDateString() {
         });
 }
 
-const maxDeferredLoadAttempts = 10;
+const deferredLoadTimeout = 60000;
+const maxDeferredLoadAttempts = 3;
 
-export function waitForCovid19Orders(
+function waitForLoadedOrders(
     alias,
-    timeout = 120000,
+    errorMessage,
+    validateStatusCode,
+    timeout = deferredLoadTimeout,
     attemptsRemaining = maxDeferredLoadAttempts
 ) {
     return cy.wait(alias, { timeout }).then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-
-        const payload = interception.response.body.resourcePayload;
-        if (!payload.loaded && payload.retryin > 0) {
-            if (attemptsRemaining <= 1) {
-                throw new Error("COVID-19 orders did not finish loading");
-            }
-            return waitForCovid19Orders(alias, timeout, attemptsRemaining - 1);
+        if (validateStatusCode) {
+            expect(interception.response.statusCode).to.eq(200);
         }
 
-        expect(payload.loaded).to.be.true;
-    });
-}
-
-export function waitForLaboratoryOrders(
-    alias,
-    timeout = 120000,
-    attemptsRemaining = maxDeferredLoadAttempts
-) {
-    return cy.wait(alias, { timeout }).then((interception) => {
         const payload = interception.response.body.resourcePayload;
         if (!payload.loaded && payload.retryin > 0) {
             if (attemptsRemaining <= 1) {
-                throw new Error("Laboratory orders did not finish loading");
+                throw new Error(errorMessage);
             }
-            return waitForLaboratoryOrders(
+            return waitForLoadedOrders(
                 alias,
+                errorMessage,
+                validateStatusCode,
                 timeout,
                 attemptsRemaining - 1
             );
@@ -52,9 +41,27 @@ export function waitForLaboratoryOrders(
     });
 }
 
+export function waitForCovid19Orders(alias, timeout = deferredLoadTimeout) {
+    return waitForLoadedOrders(
+        alias,
+        "COVID-19 orders did not finish loading",
+        true,
+        timeout
+    );
+}
+
+export function waitForLaboratoryOrders(alias, timeout = deferredLoadTimeout) {
+    return waitForLoadedOrders(
+        alias,
+        "Laboratory orders did not finish loading",
+        false,
+        timeout
+    );
+}
+
 export function waitForImmunizations(
     alias,
-    timeout = 120000,
+    timeout = deferredLoadTimeout,
     attemptsRemaining = maxDeferredLoadAttempts
 ) {
     return cy.wait(alias, { timeout }).then((interception) => {

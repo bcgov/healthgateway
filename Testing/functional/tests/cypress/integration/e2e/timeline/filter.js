@@ -111,7 +111,7 @@ describe("Filters", () => {
         waitForCovid19Orders("@getCovid19Orders");
         waitForLaboratoryOrders("@getLaboratoryOrders");
         waitForImmunizations("@getImmunizations");
-        cy.wait("@getMedications", { timeout: 120000 });
+        cy.wait("@getMedications", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
     });
 

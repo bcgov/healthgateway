@@ -12,7 +12,7 @@ const filterTests = [
         request: {
             endpoint: "**/MedicationStatement/*",
             alias: "getMedications",
-            waitForData: (alias) => cy.wait(alias, { timeout: 120000 }),
+            waitForData: (alias) => cy.wait(alias, { timeout: 60000 }),
         },
     },
     {

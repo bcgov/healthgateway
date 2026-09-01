@@ -1,5 +1,5 @@
 describe("Encounter Service", () => {
-    const defaultTimeout = 120000;
+    const defaultTimeout = 60000;
 
     beforeEach(() => {
         cy.readConfig().as("config");

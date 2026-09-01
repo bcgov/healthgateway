@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-const defaultTimeout = 120000;
+const defaultTimeout = 60000;
 
 describe("Laboratory Orders Queued", () => {
     beforeEach(() => {

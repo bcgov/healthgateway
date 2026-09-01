@@ -16,7 +16,7 @@ describe("Medication", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.wait("@getMedications", { timeout: 120000 });
+        cy.wait("@getMedications", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
     });
 

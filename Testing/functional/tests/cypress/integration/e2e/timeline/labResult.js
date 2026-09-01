@@ -4,7 +4,7 @@ const {
     validateFileDownload,
 } = require("../../../support/functions/timeline");
 
-const defaultTimeout = 120000;
+const defaultTimeout = 60000;
 
 describe("Laboratory Orders", () => {
     beforeEach(() => {
