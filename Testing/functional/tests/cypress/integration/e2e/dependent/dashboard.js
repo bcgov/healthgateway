@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { waitForImmunizations } from "../../../support/functions/timeline";
+import { prepareImmunizationWait } from "../../../support/functions/timeline";
 
 const defaultTimeout = 60000;
 
@@ -64,7 +64,8 @@ describe("dependents - dashboard", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents"
+            "/dependents",
+            { waitForPatient: false }
         );
     });
 
@@ -76,15 +77,15 @@ describe("dependents - dashboard", () => {
     });
 
     it("Validate download of vaccine recommendations", () => {
-        cy.intercept("GET", `**/Immunization?hdid=${validDependent.hdid}`).as(
-            "getDependentImmunizations"
+        const waitForImmunizationLoad = prepareImmunizationWait(
+            validDependent.hdid
         );
 
         cy.get(validDependent.recommendationsCardSelector)
             .should("be.visible")
             .click();
 
-        waitForImmunizations("@getDependentImmunizations");
+        waitForImmunizationLoad();
 
         cy.get(recommendationsTableSelector).should("exist");
         cy.get(recommendationsDownloadButtonSelector)

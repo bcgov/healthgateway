@@ -119,9 +119,9 @@ export function setupTimelineFilter(datasets, requests = []) {
           ? [requests]
           : [];
 
-    // Notes provide a known second record type so selecting another dataset
+    // Health Visits provide a known second record type so selecting another dataset
     // proves that the filter removes unrelated timeline cards.
-    const enabledDatasets = [...new Set([...datasetNames, "note"])];
+    const enabledDatasets = [...new Set([...datasetNames, "healthVisit"])];
     cy.configureSettings({
         datasets: enabledDatasets.map((name) => ({ name, enabled: true })),
     });

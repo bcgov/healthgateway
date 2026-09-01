@@ -1,5 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
-import { waitForImmunizations } from "../../../support/functions/timeline";
+import { prepareImmunizationWait } from "../../../support/functions/timeline";
 
 const defaultTimeout = 60000;
 
@@ -48,6 +48,9 @@ function removeValidDependentIfPresent(username) {
             },
         ],
     });
+    cy.intercept("GET", "**/UserProfile/*/Dependent*").as(
+        "getDependentsForCleanup"
+    );
     cy.login(
         username,
         Cypress.env("keycloak.password"),
@@ -56,18 +59,31 @@ function removeValidDependentIfPresent(username) {
     );
 
     const cardSelector = `[data-testid=dependent-card-${validDependent.phn}]`;
-    cy.get("body").then(($body) => {
-        if ($body.find(cardSelector).length === 0) {
-            return;
-        }
+    cy.wait("@getDependentsForCleanup", { timeout: defaultTimeout }).then(
+        (interception) => {
+            const dependents =
+                interception.response?.body?.resourcePayload ?? [];
+            const dependentExists = dependents.some(
+                (dependent) =>
+                    dependent.dependentInformation.PHN === validDependent.phn
+            );
 
-        cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
-            "deleteDependentCleanup"
-        );
-        deleteDependent(cardSelector, true);
-        cy.wait("@deleteDependentCleanup", { timeout: defaultTimeout });
-        cy.get(cardSelector).should("not.exist");
-    });
+            if (!dependentExists) {
+                return;
+            }
+
+            cy.get(cardSelector, { timeout: defaultTimeout }).should(
+                "be.visible"
+            );
+
+            cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
+                "deleteDependentCleanup"
+            );
+            deleteDependent(cardSelector, true);
+            cy.wait("@deleteDependentCleanup", { timeout: defaultTimeout });
+            cy.get(cardSelector).should("not.exist");
+        }
+    );
 }
 
 const protectedDependentWithAllowedDelegation = {
@@ -371,11 +387,12 @@ describe("dependents", () => {
             "Validating Immunization History Tab - Verify result and download"
         );
 
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
+        const waitForImmunizationLoad =
+            prepareImmunizationWait(validDependentHdid);
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
-        waitForImmunizations("@getImmunization");
+        waitForImmunizationLoad();
 
         // History tab
         cy.log("Validating history tab");
@@ -385,7 +402,12 @@ describe("dependents", () => {
             cy.contains(".v-btn .v-btn__content", "History").click();
         });
         // Expecting more than 1 row to return because we also need to consider the table headers.
-        cy.get(`[data-testid=immunization-history-table-${validDependentHdid}]`)
+        cy.get(
+            `[data-testid=immunization-history-table-${validDependentHdid}]`,
+            {
+                timeout: defaultTimeout,
+            }
+        )
             .find("tr")
             .should("have.length.greaterThan", 1);
 
@@ -484,11 +506,12 @@ describe("dependents", () => {
             "Validating Immunization Schedule Tab - Verify result and download"
         );
 
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
+        const waitForImmunizationLoad =
+            prepareImmunizationWait(validDependentHdid);
         cy.get(
             `[data-testid=immunization-tab-title-${validDependentHdid}]`
         ).click();
-        waitForImmunizations("@getImmunization");
+        waitForImmunizationLoad();
 
         // Schedule tab
         cy.log("Validating schedule tab");
@@ -500,7 +523,8 @@ describe("dependents", () => {
 
         // Expecting more than 1 row to return because we also need to consider the table headers.
         cy.get(
-            `[data-testid=immunization-schedule-table-${validDependentHdid}]`
+            `[data-testid=immunization-schedule-table-${validDependentHdid}]`,
+            { timeout: defaultTimeout }
         )
             .find("tr")
             .should("have.length.greaterThan", 1);
@@ -750,13 +774,15 @@ describe("CRUD Operations", () => {
         cy.log("Validating Immunization tab");
 
         cy.setupDownloads();
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
+        const waitForImmunizationLoad = prepareImmunizationWait(
+            validDependent.hdid
+        );
         cy.get("@newDependentCard").within(() => {
             cy.get(
                 `[data-testid=immunization-tab-title-${validDependent.hdid}]`
             ).click();
         });
-        waitForImmunizations("@getImmunization");
+        waitForImmunizationLoad();
 
         cy.get(
             `[data-testid=immunization-tab-div-${validDependent.hdid}]`
@@ -765,7 +791,8 @@ describe("CRUD Operations", () => {
         });
 
         cy.get(
-            `[data-testid=immunization-history-table-${validDependent.hdid}]`
+            `[data-testid=immunization-history-table-${validDependent.hdid}]`,
+            { timeout: defaultTimeout }
         )
             .find("tr")
             .should("have.length.greaterThan", 1);

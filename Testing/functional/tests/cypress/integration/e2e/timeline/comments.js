@@ -1,5 +1,5 @@
 const { AuthMethod } = require("../../../support/constants");
-const { waitForCovid19Orders } = require("../../../support/functions/timeline");
+const { waitForTimelineCard } = require("../../../support/functions/timeline");
 
 describe("Comments Disable", () => {
     beforeEach(() => {
@@ -37,16 +37,13 @@ describe("Comments Enable", () => {
                 },
             ],
         });
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
-            "getCovid19Orders"
-        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        waitForCovid19Orders("@getCovid19Orders");
         cy.checkTimelineHasLoaded();
+        waitForTimelineCard();
     });
 
     it("Validate Add", () => {

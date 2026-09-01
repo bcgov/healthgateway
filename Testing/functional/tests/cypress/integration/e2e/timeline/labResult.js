@@ -2,9 +2,9 @@ const { AuthMethod } = require("../../../support/constants");
 const {
     validateAttachmentDownload,
     validateFileDownload,
+    waitForLaboratoryOrders,
+    waitForTimelineCard,
 } = require("../../../support/functions/timeline");
-
-const defaultTimeout = 60000;
 
 describe("Laboratory Orders", () => {
     beforeEach(() => {
@@ -23,12 +23,12 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline"
+            "/timeline",
+            { waitForInitialDataLoad: false }
         );
-        cy.wait("@getLaboratoryOrders", { timeout: defaultTimeout })
-            .its("response.statusCode")
-            .should("eq", 200);
+        waitForLaboratoryOrders("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();
+        waitForTimelineCard();
     });
 
     it("Validate file download", () => {

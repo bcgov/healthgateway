@@ -530,6 +530,7 @@ describe("Dependents", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+        cy.wait("@getDependent");
     });
 
     it("Delete Dependent: Too Many Requests Error", () => {

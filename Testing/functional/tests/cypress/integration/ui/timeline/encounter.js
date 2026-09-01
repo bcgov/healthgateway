@@ -7,7 +7,7 @@ describe("MSP Visits Rolloff", () => {
             req.reply({
                 fixture: "EncounterService/encountersrolloff.json",
             });
-        });
+        }).as("getEncounters");
         cy.configureSettings({
             datasets: [
                 {
@@ -24,6 +24,7 @@ describe("MSP Visits Rolloff", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getEncounters");
         cy.checkTimelineHasLoaded();
     });
 

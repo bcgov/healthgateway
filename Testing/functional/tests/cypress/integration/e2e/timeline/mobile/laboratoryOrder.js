@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../../../support/constants");
 const {
-    waitForLaboratoryOrders,
+    waitForTimelineCard,
 } = require("../../../../support/functions/timeline");
 
 describe("Laboratory Orders", () => {
@@ -14,16 +14,13 @@ describe("Laboratory Orders", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
-            "getLaboratoryOrders"
-        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        waitForLaboratoryOrders("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();
+        waitForTimelineCard();
     });
 
     it("Validate Card", () => {
