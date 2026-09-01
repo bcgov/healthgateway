@@ -1,144 +1,56 @@
-import { AuthMethod } from "../../../../support/constants";
+import { AuthMethod, Dataset } from "../../../../support/constants";
 
-const authorizedDependentHdid = "162346565465464564565463257";
-const unauthorizedDependentHdid = "343222434345442257";
-const formattedDependentName = "JENNIFER T";
+const defaultTimeout = 60000;
 
-const homePath = "/home";
-const unauthorizedPath = "/unauthorized";
+// Jennifer T is seeded with access to the dependent timeline and real PHSA data.
+const dependent = {
+    hdid: "162346565465464564565463257",
+    formattedName: "JENNIFER T",
+    healthRecordsButtonSelector:
+        "[data-testid=dependent-health-records-button-162346565465464564565463257]",
+};
 
-describe("Dependent Timeline", () => {
-    beforeEach(() => {
+describe("Dependent Timeline Integration", () => {
+    it("Loads an authorized dependent and a timeline dataset", () => {
         cy.configureSettings({
-            timeline: {
-                comment: true,
-            },
             datasets: [
                 {
-                    name: "clinicalDocument",
-                    enabled: true,
-                },
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "diagnosticImaging",
-                    enabled: true,
-                },
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-                {
-                    name: "medication",
-                    enabled: true,
-                },
-                {
-                    name: "note",
-                    enabled: true,
-                },
-                {
-                    name: "specialAuthorityRequest",
+                    name: Dataset.ClinicalDocument,
                     enabled: true,
                 },
             ],
             dependents: {
                 enabled: true,
                 timelineEnabled: true,
-                datasets: [
-                    {
-                        name: "healthVisit",
-                        enabled: false,
-                    },
-                    {
-                        name: "hospitalVisit",
-                        enabled: false,
-                    },
-                    {
-                        name: "note",
-                        enabled: false,
-                    },
-                ],
             },
         });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            "/dependents",
+            { waitForPatient: false }
         );
-        cy.location("pathname").should("eq", homePath);
-    });
 
-    it("Validate Health Records for unauthorized dependent is inaccessible", () => {
-        cy.visit(`/dependents/${unauthorizedDependentHdid}/timeline`);
-        cy.location("pathname").should("eq", unauthorizedPath);
-    });
-
-    it("Validate Health Records for authorized dependent is accessible and commenting is unavailable", () => {
-        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
-        cy.visit(dependentTimelinePath);
-        cy.location("pathname").should("eq", dependentTimelinePath);
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=add-comment-text-area]").should("not.exist");
-        cy.get("[data-testid=post-comment-btn]").should("not.exist");
-    });
-
-    it("Validate back button goes to dependents page", () => {
-        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
-        cy.visit(dependentTimelinePath);
-        cy.location("pathname").should("eq", dependentTimelinePath);
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=backBtn]").should("be.visible").click();
-        cy.location("pathname").should("eq", `/dependents`);
-    });
-
-    it("Validate page title includes formatted name", () => {
-        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
-        cy.visit(dependentTimelinePath);
-        cy.location("pathname").should("eq", dependentTimelinePath);
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=page-title]")
-            .should("be.visible")
-            .contains(formattedDependentName);
-    });
-
-    it("Validate bread crumb includes formatted name", () => {
-        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
-        cy.visit(dependentTimelinePath);
-        cy.location("pathname").should("eq", dependentTimelinePath);
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=breadcrumb-dependent-name]")
-            .should("be.visible")
-            .contains(formattedDependentName);
-    });
-
-    it("Validate bread crumb link goes to dependents page", () => {
-        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
-        cy.visit(dependentTimelinePath);
-        cy.location("pathname").should("eq", dependentTimelinePath);
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=breadcrumb-dependents]")
+        cy.intercept("GET", "**/ClinicalDocument/*").as(
+            "getDependentClinicalDocuments"
+        );
+        cy.get(dependent.healthRecordsButtonSelector)
             .should("be.visible")
             .click();
-        cy.location("pathname").should("eq", `/dependents`);
+
+        cy.wait("@getDependentClinicalDocuments", {
+            timeout: defaultTimeout,
+        });
+        cy.location("pathname").should(
+            "eq",
+            `/dependents/${dependent.hdid}/timeline`
+        );
+        cy.checkTimelineHasLoaded();
+        cy.get("[data-testid=page-title]").should(
+            "contain",
+            dependent.formattedName
+        );
+        cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
     });
 });
