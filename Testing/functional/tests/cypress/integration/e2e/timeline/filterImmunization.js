@@ -4,25 +4,20 @@ const {
     testDatasetTimelineFiltering,
 } = require("../../../support/functions/filter");
 
-function setupImmunizationFilter() {
-    setupTimelineFilter("immunization", {
-        endpoint: "**/Immunization?hdid=*",
-        alias: "getImmunizations",
-        waitForData: waitForImmunizations,
-    });
-}
-
 describe("Immunization Filters", () => {
-    before(setupImmunizationFilter);
+    before(() => {
+        setupTimelineFilter("immunization", {
+            endpoint: "**/Immunization?hdid=*",
+            alias: "getImmunizations",
+            waitForData: waitForImmunizations,
+        });
+    });
 
     it("Validate Immunization filters", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=Immunization-filter]",
-            "[data-testid=immunizationTitle]",
-            ["Immunization"]
-        );
+        testDatasetTimelineFiltering("immunization");
         cy.get("[data-testid=clear-filters-button]").click();
 
+        // Verify text matching against disease, vaccine code, and description.
         ["COVID", "EK4241", "Polio"].forEach((filterText, index, values) => {
             cy.get("[data-testid=filterDropdown]").click();
             cy.get("[data-testid=filterTextInput]").type(filterText);

@@ -8,36 +8,31 @@ const {
 } = require("../../../support/functions/filter");
 
 describe("Laboratory Filters", () => {
+    const laboratoryDatasets = ["covid19TestResult", "labResult"];
+
     before(() => {
-        setupTimelineFilter(
-            ["covid19TestResult", "labResult"],
-            [
-                {
-                    endpoint: "**/Laboratory/Covid19Orders*",
-                    alias: "getCovid19Orders",
-                    waitForData: waitForCovid19Orders,
-                },
-                {
-                    endpoint: "**/Laboratory/LaboratoryOrders*",
-                    alias: "getLaboratoryOrders",
-                    waitForData: waitForLaboratoryOrders,
-                },
-            ]
-        );
+        setupTimelineFilter(laboratoryDatasets, [
+            {
+                endpoint: "**/Laboratory/Covid19Orders*",
+                alias: "getCovid19Orders",
+                waitForData: waitForCovid19Orders,
+            },
+            {
+                endpoint: "**/Laboratory/LaboratoryOrders*",
+                alias: "getLaboratoryOrders",
+                waitForData: waitForLaboratoryOrders,
+            },
+        ]);
     });
 
     it("Validate Laboratory filters", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=Covid19TestResult-filter]",
-            "[data-testid=covid19testresultTitle]",
-            ["COVID‑19 Tests"]
-        );
-        cy.get("[data-testid=clear-filters-button]").click();
+        laboratoryDatasets.forEach((dataset, index) => {
+            testDatasetTimelineFiltering(dataset);
 
-        testDatasetTimelineFiltering(
-            "[data-testid=LabResult-filter]",
-            "[data-testid=labresultTitle]",
-            ["Lab Results"]
-        );
+            // Clear the first selection before validating the next dataset.
+            if (index < laboratoryDatasets.length - 1) {
+                cy.get("[data-testid=clear-filters-button]").click();
+            }
+        });
     });
 });

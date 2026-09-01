@@ -5,9 +5,56 @@ const {
     waitForLaboratoryOrders,
 } = require("../../../support/functions/timeline");
 const {
+    applyTimelineFilters,
+    cancelTimelineFilters,
+    openTimelineFilters,
+    selectTimelineFilters,
     testDatasetTimelineFiltering,
+    timelineFilterDefinitions,
     verifyActiveFilters,
+    verifyTimelineFilterSelection,
 } = require("../../../support/functions/filter");
+
+// Dataset names match the ClientApp configuration. The shared definitions map
+// each name to its filter chip, count, card title, and active-filter label.
+const enabledFilterDatasets = [
+    "clinicalDocument",
+    "covid19TestResult",
+    "healthVisit",
+    "hospitalVisit",
+    "immunization",
+    "labResult",
+    "medication",
+    "note",
+    "specialAuthorityRequest",
+    "diagnosticImaging",
+    "bcCancerScreening",
+];
+
+// These datasets expose both a selectable chip and a count in the filter menu.
+const selectableFilterDatasets = [
+    "medication",
+    "note",
+    "immunization",
+    "covid19TestResult",
+    "labResult",
+    "healthVisit",
+    "specialAuthorityRequest",
+    "clinicalDocument",
+    "hospitalVisit",
+];
+const countedFilterDatasets = [
+    "immunization",
+    "medication",
+    "labResult",
+    "covid19TestResult",
+    "healthVisit",
+    "note",
+    "specialAuthorityRequest",
+    "clinicalDocument",
+    "hospitalVisit",
+    "diagnosticImaging",
+];
 
 describe("Disabled Filters", () => {
     beforeEach(() => {
@@ -28,72 +75,30 @@ describe("Disabled Filters", () => {
     });
 
     it("Validate disabled filters", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=MedicationCount]").should("be.visible");
-        cy.get("[data-testid=ImmunizationCount]").should("not.exist");
-        cy.get("[data-testid=HealthVisitCount]").should("not.exist");
-        cy.get("[data-testid=NoteCount]").should("not.exist");
-        cy.get("[data-testid=Covid19TestResultCount]").should("not.exist");
-        cy.get("[data-testid=LabResultCount]").should("not.exist");
-        cy.get("[data-testid=SpecialAuthorityRequestCount]").should(
-            "not.exist"
+        openTimelineFilters();
+        cy.get(timelineFilterDefinitions.medication.countSelector).should(
+            "be.visible"
         );
-        cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
-        cy.get("[data-testid=HospitalVisitCount]").should("not.exist");
-        cy.get("[data-testid=btnFilterCancel]").click();
+
+        // Only Medication is enabled for this scenario.
+        selectableFilterDatasets
+            .filter((dataset) => dataset !== "medication")
+            .forEach((dataset) => {
+                cy.get(timelineFilterDefinitions[dataset].countSelector).should(
+                    "not.exist"
+                );
+            });
+        cancelTimelineFilters();
     });
 });
 
 describe("Filters", () => {
     before(() => {
         cy.configureSettings({
-            datasets: [
-                {
-                    name: "clinicalDocument",
-                    enabled: true,
-                },
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-                {
-                    name: "medication",
-                    enabled: true,
-                },
-                {
-                    name: "note",
-                    enabled: true,
-                },
-                {
-                    name: "specialAuthorityRequest",
-                    enabled: true,
-                },
-                {
-                    name: "diagnosticImaging",
-                    enabled: true,
-                },
-                {
-                    name: "bcCancerScreening",
-                    enabled: true,
-                },
-            ],
+            datasets: enabledFilterDatasets.map((name) => ({
+                name,
+                enabled: true,
+            })),
         });
         cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
             "getCovid19Orders"
@@ -117,38 +122,13 @@ describe("Filters", () => {
 
     function validateFilterCounts() {
         const countRegex = /^.*?\((\d+)K?\).*$/;
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=ImmunizationCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=MedicationCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=LabResultCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=Covid19TestResultCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=HealthVisitCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=NoteCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=SpecialAuthorityRequestCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=ClinicalDocumentCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=HospitalVisitCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=DiagnosticImagingCount]")
-            .should("be.visible")
-            .contains(countRegex);
-        cy.get("[data-testid=btnFilterCancel]").click();
+        openTimelineFilters();
+        countedFilterDatasets.forEach((dataset) => {
+            cy.get(timelineFilterDefinitions[dataset].countSelector)
+                .should("be.visible")
+                .contains(countRegex);
+        });
+        cancelTimelineFilters();
     }
 
     function validateDateRangeFilter() {
@@ -156,8 +136,7 @@ describe("Filters", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
         // Select 05/10/2023 to 05/10/2023 to display medication data.
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
+        openTimelineFilters();
         cy.get("[data-testid=filterStartDateInput] input")
             .focus()
             .clear()
@@ -167,18 +146,18 @@ describe("Filters", () => {
             .clear()
             .type("2023-MAY-10")
             .focus();
-        cy.get("[data-testid=btnFilterApply]").click();
+        applyTimelineFilters();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
         verifyActiveFilters(["From 2023-May-10 To 2023-May-10"]);
         cy.get("[data-testid=clear-filters-button]").click();
     }
 
     function validateNoRecordsOnLinearTimeline() {
-        cy.get("[data-testid=filterDropdown]").click();
+        openTimelineFilters();
         cy.get("[data-testid=filterTextInput]").type(
             "no-data-should-match-this-unique-string"
         );
-        cy.get("[data-testid=btnFilterApply]").click();
+        applyTimelineFilters();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.contains(
             "[data-testid=filter-label]",
@@ -190,146 +169,26 @@ describe("Filters", () => {
     }
 
     function validateFilterCheckboxesAreVisible() {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Medication-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=Note-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=Immunization-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get(
-            "[data-testid=Covid19TestResult-filter].v-chip--selected"
-        ).should("not.exist");
-        cy.get("[data-testid=HealthVisit-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=ClinicalDocument-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=HospitalVisit-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=btnFilterCancel]").click();
+        openTimelineFilters();
+        verifyTimelineFilterSelection(selectableFilterDatasets, false);
+        cancelTimelineFilters();
     }
 
     function validateApplyAndCancelButtons() {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Medication-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=Note-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=Immunization-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get(
-            "[data-testid=Covid19TestResult-filter].v-chip--selected"
-        ).should("not.exist");
-        cy.get("[data-testid=LabResult-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=HealthVisit-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get(
-            "[data-testid=SpecialAuthorityRequest-filter].v-chip--selected"
-        ).should("not.exist");
-        cy.get("[data-testid=ClinicalDocument-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=HospitalVisit-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=filterContainer]").should("not.exist");
+        // Applying with no selections keeps the timeline unfiltered.
+        openTimelineFilters();
+        verifyTimelineFilterSelection(selectableFilterDatasets, false);
+        applyTimelineFilters();
 
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Immunization-filter]").click({
-            force: true,
-        });
-        cy.get("[data-testid=Medication-filter]").click({ force: true });
-        cy.get("[data-testid=HealthVisit-filter]").click({ force: true });
-        cy.get("[data-testid=Covid19TestResult-filter]").click({
-            force: true,
-        });
-        cy.get("[data-testid=LabResult-filter]").click({ force: true });
-        cy.get("[data-testid=Note-filter]").click({ force: true });
-        cy.get("[data-testid=SpecialAuthorityRequest-filter]").click({
-            force: true,
-        });
-        cy.get("[data-testid=ClinicalDocument-filter]").click({
-            force: true,
-        });
-        cy.get("[data-testid=HospitalVisit-filter]").click({
-            force: true,
-        });
-        cy.get("[data-testid=Medication-filter].v-chip--selected").should(
-            "exist"
-        );
-        cy.get("[data-testid=Note-filter].v-chip--selected").should("exist");
-        cy.get("[data-testid=Immunization-filter].v-chip--selected").should(
-            "exist"
-        );
-        cy.get(
-            "[data-testid=Covid19TestResult-filter].v-chip--selected"
-        ).should("exist");
-        cy.get("[data-testid=LabResult-filter].v-chip--selected").should(
-            "exist"
-        );
-        cy.get("[data-testid=HealthVisit-filter].v-chip--selected").should(
-            "exist"
-        );
-        cy.get(
-            "[data-testid=SpecialAuthorityRequest-filter].v-chip--selected"
-        ).should("exist");
-        cy.get("[data-testid=ClinicalDocument-filter].v-chip--selected").should(
-            "exist"
-        );
-        cy.get("[data-testid=HospitalVisit-filter].v-chip--selected").should(
-            "exist"
-        );
-        cy.get("[data-testid=btnFilterCancel]").click();
-        cy.get("[data-testid=filterContainer]").should("not.exist");
+        // Cancelling discards all pending chip selections.
+        openTimelineFilters();
+        selectTimelineFilters(selectableFilterDatasets);
+        verifyTimelineFilterSelection(selectableFilterDatasets, true);
+        cancelTimelineFilters();
 
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Medication-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=Note-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=Immunization-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get(
-            "[data-testid=Covid19TestResult-filter].v-chip--selected"
-        ).should("not.exist");
-        cy.get("[data-testid=LabResult-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=HealthVisit-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get(
-            "[data-testid=SpecialAuthorityRequest-filter].v-chip--selected"
-        ).should("not.exist");
-        cy.get("[data-testid=ClinicalDocument-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=HospitalVisit-filter].v-chip--selected").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=btnFilterCancel]").click();
-        cy.get("[data-testid=filterContainer]").should("not.exist");
+        openTimelineFilters();
+        verifyTimelineFilterSelection(selectableFilterDatasets, false);
+        cancelTimelineFilters();
     }
 
     it("Validate filters", () => {
@@ -360,10 +219,6 @@ describe("Diagnostic Imaging Filter", () => {
     });
 
     it("Filter Diagnostic Imaging", () => {
-        testDatasetTimelineFiltering(
-            "[data-testid=DiagnosticImaging-filter]",
-            "[data-testid=diagnosticimagingTitle]",
-            ["Imaging Reports"]
-        );
+        testDatasetTimelineFiltering("diagnosticImaging");
     });
 });
