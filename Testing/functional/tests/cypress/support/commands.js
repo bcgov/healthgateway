@@ -87,23 +87,6 @@ function generateRandomString(length) {
     return text;
 }
 
-// function loginWithKeycloakUICached(username, password, config, path = "/home") {
-//     cy.session(
-//         [`keycloak-${username}`, path], // unique key (array form allows multiple args)
-//         () => {
-//             // Call your full UI-based login function
-//             loginWithKeycloakUI(username, password, config, path);
-//         },
-//         {
-//             validate: () => {
-//                 // Minimal check that you're still authenticated
-//                 cy.visit(path, { failOnStatusCode: false });
-//                 cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
-//             },
-//         }
-//     );
-// }
-
 function loginWithKeycloakUI(
     username,
     password,
@@ -162,7 +145,7 @@ function loginWithKeycloakUI(
 
                     // Optional re-navigation only if path is different from default
                     if (path !== defaultPath) {
-                        cy.visit(path, { timeout: 60000 });
+                        cy.visit(path);
                     } else {
                         cy.reload(); // if already on home, just reload to trigger page load with config + intercepts
                     }
@@ -207,7 +190,7 @@ function postLoginInitialization(
 
     if (!configSettings) {
         cy.readConfig().then((config) => {
-            cy.visit(path, { timeout: 60000 });
+            cy.visit(path);
 
             cy.log(
                 `Config not found in session so fetched actual config: ${JSON.stringify(
@@ -224,7 +207,7 @@ function postLoginInitialization(
             );
         });
     } else {
-        cy.visit(path, { timeout: 60000 });
+        cy.visit(path);
 
         cy.log(`Use config from session: ${configSettings}`);
 
@@ -294,7 +277,6 @@ Cypress.Commands.add(
                 cy.window().then((window) => {
                     cy.session([username, authMethod], () => {
                         cy.readConfig().then((config) => {
-                            cy.logout();
                             let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                             let codeVerifier = generateRandomString(96);
                             cy.log(
@@ -327,6 +309,7 @@ Cypress.Commands.add(
                             cy.log("Requesting Keycloak Authentication form");
                             cy.request({
                                 url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+                                timeout: 60000,
                                 followRedirect: false,
                                 qs: {
                                     scope: config.openIdConnect.scope,
@@ -349,6 +332,7 @@ Cypress.Commands.add(
                                     return cy.request({
                                         method: "POST",
                                         url,
+                                        timeout: 60000,
                                         followRedirect: false,
                                         form: true,
                                         body: {
@@ -365,7 +349,7 @@ Cypress.Commands.add(
                                         `Visiting Callback ${callBackQS}`,
                                         response
                                     );
-                                    cy.visit(callbackURL, { timeout: 60000 });
+                                    cy.visit(callbackURL);
 
                                     // store auth cookies
                                     cy.getCookies({ timeout: 60000 }).then(
