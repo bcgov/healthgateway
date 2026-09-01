@@ -4,6 +4,23 @@ import { setupStandardFixtures } from "../../../support/functions/intercept";
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const otherRecordSourcesUrl = "/otherRecordSources";
+const profileUrl = "/profile";
+const reportsUrl = "/reports";
+
+function setupImmunizationFixture() {
+    cy.intercept("GET", "**/Immunization?hdid=*", {
+        fixture: "ImmunizationService/immunization.json",
+    });
+}
+
+function loginToHome() {
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        homeUrl
+    );
+}
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
@@ -46,6 +63,30 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=immunization-record-card-button]").should(
             "be.visible"
         );
+    });
+
+    it("Home - Immunization Record Card links to the immunization report", () => {
+        cy.configureSettings({
+            homepage: {
+                showImmunizationRecordLink: true,
+            },
+            datasets: [{ name: "immunization", enabled: true }],
+        });
+        setupImmunizationFixture();
+        setupStandardFixtures();
+        loginToHome();
+
+        cy.get("[data-testid=immunization-record-card-button]")
+            .should("be.visible")
+            .click();
+
+        cy.location("pathname").should("eq", reportsUrl);
+        cy.get("[data-testid=immunization-history-report-table]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=immunizationDateItem]")
+            .last()
+            .contains(/\d{4}-[A-Z][a-z]{2}-\d{2}/);
     });
 
     it("Home - Other Record Sources Card button enabled", () => {
@@ -235,5 +276,144 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=bc-cancer-notifications-banner]").should(
             "not.exist"
         );
+    });
+});
+
+describe("Home page - notification settings alert", () => {
+    it("shows the SMS removed alert once and saves it as dismissed", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((profile) => {
+            profile.preferences.showSmsRemoved = {
+                hdId: profile.hdId,
+                preference: "showSmsRemoved",
+                value: "true",
+                version: 1,
+            };
+            setupStandardFixtures({ userProfileBody: profile });
+        });
+
+        cy.intercept(
+            "PUT",
+            "**/UserProfile/*/preference?api-version=2.0",
+            (request) => {
+                expect(request.body).to.include({
+                    preference: "showSmsRemoved",
+                    value: "false",
+                });
+                request.reply({ statusCode: 200, body: request.body });
+            }
+        ).as("dismissSmsRemovedAlert");
+
+        loginToHome();
+
+        cy.get("[data-testid=incomplete-profile-banner]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=sms-removed-message]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=unverified-email-sms-message]").should(
+                    "not.exist"
+                );
+            });
+        cy.wait("@dismissSmsRemovedAlert");
+
+        cy.get("[data-testid=profile-preferences-link]").click();
+        cy.location("pathname").should("eq", profileUrl);
+        cy.get("[data-testid=menu-btn-home-link]").click();
+        cy.location("pathname").should("eq", homeUrl);
+        cy.get("[data-testid=sms-removed-message]").should("not.exist");
+    });
+});
+
+describe("Home page - Recommendations", () => {
+    function setupRecommendations(standardFixtureOptions = {}) {
+        cy.configureSettings({
+            homepage: {
+                showRecommendationsLink: true,
+            },
+            datasets: [{ name: "immunization", enabled: true }],
+        });
+        setupImmunizationFixture();
+        setupStandardFixtures(standardFixtureOptions);
+    }
+
+    function verifyRecommendationsDialog() {
+        cy.get("[data-testid=recommendations-card-button]").click();
+        cy.get("[data-testid=recommendations-dialog]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=recommendation-history-report-table]")
+                    .should("be.visible")
+                    .find("tbody tr")
+                    .should("have.length.at.least", 1);
+                cy.get(
+                    "[data-testid=close-recommendations-dialog-button]"
+                ).click();
+            });
+        cy.get("[data-testid=recommendations-dialog]").should("not.exist");
+    }
+
+    it("removes and restores the Recommendations quick link", () => {
+        cy.fixture("UserProfileService/userProfileQuickLinks.json").then(
+            (profile) => {
+                profile.preferences.hideRecommendationsQuickLink = {
+                    hdId: profile.hdId,
+                    preference: "hideRecommendationsQuickLink",
+                    value: "false",
+                    version: 1,
+                };
+                setupRecommendations({ userProfileBody: profile });
+            }
+        );
+
+        cy.intercept(
+            "PUT",
+            "**/UserProfile/*/preference?api-version=2.0",
+            (request) => {
+                request.alias =
+                    request.body.preference === "hideRecommendationsQuickLink"
+                        ? "saveRecommendationPreference"
+                        : "saveQuickLinks";
+                request.reply({
+                    statusCode: 200,
+                    body: request.body,
+                });
+            }
+        );
+
+        loginToHome();
+
+        cy.get("[data-testid=recommendations-card-button]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=card-menu-button]").click();
+            });
+        cy.get("[data-testid=remove-quick-link-button]").click();
+        cy.wait("@saveRecommendationPreference");
+        cy.get("[data-testid=recommendations-card-button]").should("not.exist");
+
+        cy.get("[data-testid=add-quick-link-button]").click();
+        cy.get("[data-testid=recommendations-dialog-filter]").click();
+        cy.get("[data-testid=add-quick-link-btn]").click();
+        cy.wait("@saveQuickLinks");
+        cy.wait("@saveRecommendationPreference");
+        cy.get("[data-testid=recommendations-card-button]").should(
+            "be.visible"
+        );
+    });
+
+    it("opens the Recommendations dialog with fixture content", () => {
+        setupRecommendations();
+        loginToHome();
+        verifyRecommendationsDialog();
+    });
+
+    it("opens the Recommendations dialog on mobile", () => {
+        setupRecommendations();
+        cy.viewport("iphone-6");
+        loginToHome();
+        verifyRecommendationsDialog();
     });
 });
