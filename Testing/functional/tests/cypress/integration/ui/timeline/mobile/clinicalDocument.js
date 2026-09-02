@@ -33,6 +33,26 @@ describe("Clinical Document", () => {
         cy.checkTimelineHasLoaded();
     });
 
+    it("Validate Card Details for Mobile", () => {
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
+
+        cy.get("[data-testid=entryDetailsCard]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=entryCardDate]").should("be.visible");
+                cy.get("[data-testid=clinical-document-discipline]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=clinical-document-facility]").should(
+                    "be.visible"
+                );
+            });
+    });
+
     it("Validate Download", () => {
         cy.log("Verifying Clinical Document PDF download");
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();

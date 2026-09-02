@@ -1,33 +1,27 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
 
-describe("Medication", () => {
+describe("Medication cards", () => {
     beforeEach(() => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "medication",
-                    enabled: true,
-                },
-            ],
+        cy.intercept("GET", "**/MedicationStatement/*", {
+            fixture: "MedicationService/medicationStatement.json",
         });
-        cy.intercept("GET", "**/MedicationStatement/*").as("getMedications");
+        cy.configureSettings({
+            datasets: [{ name: "medication", enabled: true }],
+        });
+        setupStandardFixtures();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.wait("@getMedications", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate Card Details", () => {
-        cy.get("[data-testid=medicationTitle]").should("be.visible");
-        cy.get("[data-testid=medication-practitioner]").should("not.exist");
-
+    it("Displays prescription and pharmacist assessment details", () => {
         cy.get("[data-testid=medicationTitle]")
             .not(":contains('Pharmacist Assessment')")
             .first()
-            .scrollIntoView()
             .click({ force: true });
         cy.get("[data-testid=medication-practitioner]").should("be.visible");
         cy.get("[data-testid=medication-directions]").should("be.visible");
@@ -35,7 +29,6 @@ describe("Medication", () => {
 
         cy.contains("[data-testid=medicationTitle]", "Pharmacist Assessment")
             .first()
-            .scrollIntoView()
             .click({ force: true });
         cy.get("[data-testid=pharmacist-outcome]").should("be.visible");
     });

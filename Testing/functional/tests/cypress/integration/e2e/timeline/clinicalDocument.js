@@ -26,17 +26,6 @@ describe("Clinical Document", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate Card Details", () => {
-        cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle")
-            .first()
-            .click({ force: true });
-        cy.get("[data-testid=clinical-document-discipline").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=clinical-document-facility").should("be.visible");
-    });
-
     it("Validate file download", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")

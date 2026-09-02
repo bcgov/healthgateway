@@ -92,6 +92,31 @@ describe("BC Cancer Screening cards", () => {
         cy.checkTimelineHasLoaded();
     }
 
+    it("Displays the supported cancer program cards", () => {
+        fixtureToUse = "PatientData/bcCancerPrograms.json";
+        sharedSetup();
+
+        [
+            ["Breast", "breast cancer"],
+            ["Cervix", "cervix cancer"],
+            ["Colon", "colon cancer"],
+            ["Lung", "lung cancer"],
+        ].forEach(([displayName, bodyProgram]) => {
+            validateReminderCard(
+                `${displayName} Screening Reminder Letter`,
+                `${displayName} Screening`,
+                "View Letter",
+                fillTemplate(ReminderBody, { program: bodyProgram })
+            );
+            validateResultCard(
+                `${displayName} Screening Result Letter`,
+                `${displayName} Screening`,
+                "View Letter",
+                fillTemplate(ResultBody, { program: bodyProgram })
+            );
+        });
+    });
+
     it("Should display different cards for different types - program name is Unknown Cancer", () => {
         fixtureToUse = "PatientData/bcCancerTypesUnknownCancer.json";
         sharedSetup();
