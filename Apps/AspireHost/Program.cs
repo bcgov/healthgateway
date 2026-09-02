@@ -24,7 +24,7 @@ NpgsqlConnectionStringBuilder gatewayDb = new(gatewayConnection);
 
 IResourceBuilder<ParameterResource> postgresUser = builder.AddParameter("postgres-user", gatewayDb.Username!);
 IResourceBuilder<ParameterResource> postgresPassword = builder.AddParameter("postgres-password", gatewayDb.Password!, secret: true);
-IResourceBuilder<PostgresServerResource> postgres = builder.AddPostgres("gatewaydb", userName: postgresUser, password: postgresPassword, port: gatewayDb.Port)
+IResourceBuilder<PostgresServerResource> postgres = builder.AddPostgres("GatewayDb", userName: postgresUser, password: postgresPassword, port: gatewayDb.Port)
     .WithImageTag("15")
     .WithContainerName("GatewayDB")
     .WithArgs("-c", "max_connections=500")
@@ -37,7 +37,7 @@ int redisPort = redisEndpoint.Contains(':', StringComparison.Ordinal) ? int.Pars
 string? redisPasswordValue = redisConnection.Split(',')
     .Select(part => part.Trim())
     .FirstOrDefault(part => part.StartsWith("password=", StringComparison.OrdinalIgnoreCase))?["password=".Length..];
-IResourceBuilder<RedisResource> redis = builder.AddRedis("gatewaycache", port: redisPort)
+IResourceBuilder<RedisResource> redis = builder.AddRedis("GatewayCache", port: redisPort)
     .WithPassword(redisPasswordValue is null ? null : builder.AddParameter("redis-password", redisPasswordValue, secret: true))
     .WithImageTag("6.2")
     .WithContainerName("GatewayCache")
@@ -51,19 +51,19 @@ IResourceBuilder<ParameterResource> redisConnectionParam = builder.AddParameter(
 // Requires the dotnet-ef global tool. The connection string is not passed on the command
 // line; DBMaintainer resolves GatewayConnection from the same shared user secrets.
 IResourceBuilder<ExecutableResource> migrations = builder
-    .AddExecutable("db-migrations", "dotnet", "../DBMaintainer")
+    .AddExecutable("DbMigrations", "dotnet", "../DBMaintainer")
     .WithArgs("ef", "database", "update", "--project", "../Database/src")
     .WaitFor(postgres);
 
-AddApp<Projects.Patient>("patient");
-AddApp<Projects.GatewayApi>("gateway-api");
-AddApp<Projects.Immunization>("immunization");
-AddApp<Projects.Medication>("medication");
-AddApp<Projects.Laboratory>("laboratory");
-AddApp<Projects.Encounter>("encounter");
-AddApp<Projects.ClinicalDocument>("clinical-document");
-AddApp<Projects.JobScheduler>("job-scheduler");
-AddApp<Projects.WebClient>("web-client");
+AddApp<Projects.Patient>("Patient");
+AddApp<Projects.GatewayApi>("GatewayApi");
+AddApp<Projects.Immunization>("Immunization");
+AddApp<Projects.Medication>("Medication");
+AddApp<Projects.Laboratory>("Laboratory");
+AddApp<Projects.Encounter>("Encounter");
+AddApp<Projects.ClinicalDocument>("ClinicalDocument");
+AddApp<Projects.JobScheduler>("JobScheduler");
+AddApp<Projects.WebClient>("WebClient");
 
 builder.Build().Run();
 

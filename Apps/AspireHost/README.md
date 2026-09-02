@@ -8,7 +8,7 @@ Aspire AppHost that orchestrates the full local Health Gateway development envir
   When the data volume is first created, `postgres-init/00_CreateExtensions.sql` adds the
   `uuid-ossp` extension (as `Tools/Dev/Postgres/init/00_SetupDevDB.sql` does), which the
   audit trigger functions in the migrations depend on.
-- **db-migrations** — initializes/updates the schema by running
+- **DbMigrations** — initializes/updates the schema by running
   `dotnet ef database update --project ../Database/src` from the DBMaintainer directory
   (DBMaintainer is the migrations startup project). This is the only database
   initialization; all apps wait for it to finish before starting.
