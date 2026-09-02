@@ -6,8 +6,8 @@ declare namespace Cypress {
          */
         waitForInitialDataLoad?: boolean;
         /**
-         * Wait for dependent data on dependent management and timeline routes.
-         * Defaults to true for live E2E specs.
+         * Wait for dependent data on the dependent management route. Defaults
+         * to true for live E2E specs.
          */
         waitForDependent?: boolean;
         /**

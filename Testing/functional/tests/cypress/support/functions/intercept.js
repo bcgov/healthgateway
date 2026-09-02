@@ -223,31 +223,27 @@ export function waitForInitialDataLoad(
 }
 
 function waitForUserProfile(shouldWaitForUserProfile) {
-    return new Cypress.Promise((resolve) => {
-        let blockedDataSources;
+    if (!shouldWaitForUserProfile) {
+        return cy.wrap(undefined);
+    }
 
-        if (shouldWaitForUserProfile) {
-            cy.log("Wait on user profile.");
-            cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
-                (interception) => {
-                    const responseBody = interception.response.body;
-                    blockedDataSources = responseBody.blockedDataSources;
+    cy.log("Wait on user profile.");
+    return cy
+        .wait("@getUserProfile", { timeout: defaultTimeout })
+        .then((interception) => {
+            const blockedDataSources =
+                interception.response.body.blockedDataSources;
 
-                    cy.log(
-                        `Get User Profile Blocked Data Sources: ${
-                            blockedDataSources
-                                ? JSON.stringify(blockedDataSources)
-                                : "Blocked data sources are not available"
-                        }`
-                    );
-
-                    resolve(blockedDataSources);
-                }
+            cy.log(
+                `Get User Profile Blocked Data Sources: ${
+                    blockedDataSources
+                        ? JSON.stringify(blockedDataSources)
+                        : "Blocked data sources are not available"
+                }`
             );
-        } else {
-            resolve(blockedDataSources);
-        }
-    });
+
+            return cy.wrap(blockedDataSources);
+        });
 }
 
 function waitForNotification(featureToggle) {
