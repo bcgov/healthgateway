@@ -44,6 +44,10 @@ IResourceBuilder<RedisResource> redis = builder.AddRedis("gatewaycache", port: r
     .WithDataVolume("gatewaycache.local")
     .WithPersistence(TimeSpan.FromSeconds(60));
 
+// Secret parameters so the dashboard's Environment view masks the injected values.
+IResourceBuilder<ParameterResource> gatewayConnectionParam = builder.AddParameter("gateway-connection", gatewayConnection, secret: true);
+IResourceBuilder<ParameterResource> redisConnectionParam = builder.AddParameter("redis-connection", redisConnection, secret: true);
+
 // Requires the dotnet-ef global tool. The connection string is not passed on the command
 // line; DBMaintainer resolves GatewayConnection from the same shared user secrets.
 IResourceBuilder<ExecutableResource> migrations = builder
@@ -69,8 +73,8 @@ IResourceBuilder<ProjectResource> AddApp<TProject>(string name)
     // HealthGateway_-prefixed environment variables are loaded last by ProgramConfiguration,
     // so these override user secrets and appsettings.local.json in every app.
     return builder.AddProject<TProject>(name)
-        .WithEnvironment("HealthGateway_ConnectionStrings__GatewayConnection", gatewayConnection)
-        .WithEnvironment("HealthGateway_RedisConnection", redisConnection)
+        .WithEnvironment("HealthGateway_ConnectionStrings__GatewayConnection", gatewayConnectionParam)
+        .WithEnvironment("HealthGateway_RedisConnection", redisConnectionParam)
         .WaitFor(postgres)
         .WaitFor(redis)
         .WaitForCompletion(migrations);
