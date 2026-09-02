@@ -1,6 +1,10 @@
 describe("Login Page", () => {
     beforeEach(() => {
-        cy.logout();
+        // These tests only validate the local login page. Clearing browser state
+        // avoids an unnecessary request to the external Keycloak logout endpoint.
+        cy.clearCookies();
+        cy.clearLocalStorage();
+        cy.clearAllSessionStorage();
         cy.visit("/login");
     });
 
