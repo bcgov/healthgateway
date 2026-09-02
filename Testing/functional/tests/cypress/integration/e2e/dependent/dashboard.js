@@ -64,8 +64,7 @@ describe("dependents - dashboard", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents",
-            { waitForPatient: false }
+            "/dependents"
         );
     });
 

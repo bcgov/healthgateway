@@ -11,8 +11,9 @@ declare namespace Cypress {
          */
         waitForDependent?: boolean;
         /**
-         * Wait explicitly for Patient. Defaults to true for live E2E specs so
-         * Patient completes before waiting for User Profile.
+         * Wait explicitly for Patient. By default, User Profile is waited on
+         * instead because ClientApp requests it only after Patient completes.
+         * Patient defaults to true when the User Profile wait is disabled.
          */
         waitForPatient?: boolean;
         /** Wait for User Profile. Defaults to true. */

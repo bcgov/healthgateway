@@ -28,8 +28,7 @@ describe("Dependent Timeline Integration", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents",
-            { waitForPatient: false }
+            "/dependents"
         );
 
         cy.intercept("GET", "**/ClinicalDocument/*").as(

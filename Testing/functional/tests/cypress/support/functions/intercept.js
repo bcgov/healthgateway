@@ -182,7 +182,10 @@ export function waitForInitialDataLoad(
     }
 
     const featureToggle = config.webClient.featureToggleConfiguration;
-    const shouldWaitForPatient = waitForPatient ?? true;
+    // ClientApp retrieves Patient before User Profile. Waiting for User Profile
+    // therefore also proves that Patient finished. Wait for Patient directly
+    // only when a flow intentionally does not request User Profile.
+    const shouldWaitForPatient = waitForPatient ?? !shouldWaitForUserProfile;
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);

@@ -11,7 +11,8 @@ describe("Need to accept terms of service", () => {
             Cypress.env("keycloak.accept.tos.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            "/home",
+            { waitForInitialDataLoad: false }
         );
         cy.wait("@getTermsOfService", { timeout: defaultTimeout });
 

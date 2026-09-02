@@ -534,11 +534,16 @@ Cypress.Commands.add("readConfig", () => {
         baseWebClientUrl = Cypress.env("baseWebClientUrl");
     }
 
-    return cy.request(`${baseWebClientUrl}/configuration`).then((response) => {
-        expect(response.status).to.eq(200);
-        cachedEnvironmentConfig = cloneConfig(response.body);
-        return cloneConfig(cachedEnvironmentConfig);
-    });
+    return cy
+        .request({
+            url: `${baseWebClientUrl}/configuration`,
+            timeout: 60000,
+        })
+        .then((response) => {
+            expect(response.status).to.eq(200);
+            cachedEnvironmentConfig = cloneConfig(response.body);
+            return cloneConfig(cachedEnvironmentConfig);
+        });
 });
 
 Cypress.Commands.add("checkOnTimeline", () => {
