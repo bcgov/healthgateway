@@ -47,6 +47,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     /// Methods to configure observability dependencies and settings.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Central observability wiring necessarily touches many types")]
     public static class Observability
     {
         /// <summary>
@@ -120,9 +121,17 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddOpenTelemetry()
                 .WithTracing(builder =>
                 {
+                    builder.SetSampler(new AlwaysOnSampler());
+
+                    // When a host such as the Aspire AppHost injects OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES,
+                    // the SDK's environment detectors must supply the service identity so telemetry is attributed
+                    // to that host's resource; overriding it here splits each service into two dashboard entries.
+                    if (!OtelServiceNameEnvironmentExists())
+                    {
+                        builder.ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion));
+                    }
+
                     builder
-                        .SetSampler(new AlwaysOnSampler())
-                        .ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
                         .AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation(options =>
                         {
@@ -158,9 +167,18 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             config.Endpoint = otlpConfig.Endpoint;
                         });
                     }
+                    else if (OtlpEnvironmentEndpointExists())
+                    {
+                        builder.AddOtlpExporter();
+                    }
                 })
                 .WithMetrics(builder =>
                 {
+                    if (!OtelServiceNameEnvironmentExists())
+                    {
+                        builder.ConfigureResource(resourceBuilder => resourceBuilder.AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion));
+                    }
+
                     builder
                         .AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation()
@@ -183,6 +201,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             config.Protocol = otlpConfig.ExportProtocol;
                             config.Endpoint = otlpConfig.Endpoint;
                         });
+                    }
+                    else if (OtlpEnvironmentEndpointExists())
+                    {
+                        builder.AddOtlpExporter();
                     }
                 })
                 ;
@@ -215,6 +237,18 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     await next();
                 });
             }
+        }
+
+        private static bool OtelServiceNameEnvironmentExists()
+        {
+            return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME"));
+        }
+
+        private static bool OtlpEnvironmentEndpointExists()
+        {
+            // Standard OTLP variable injected by hosts such as the Aspire AppHost; the parameterless
+            // exporter reads the OTEL_EXPORTER_OTLP_* variables (endpoint, protocol, headers) itself.
+            return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT"));
         }
 
         private static string GetRequestHdid(HttpContext context)
@@ -255,6 +289,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .Enrich.WithClientIp()
                 .Enrich.WithSpan(new SpanOptions { IncludeBaggage = true, IncludeTags = true, IncludeOperationName = true, IncludeTraceFlags = true })
                 .ReadFrom.Configuration(configuration);
+
+            // Exports structured logs alongside traces and metrics when a host such as the Aspire AppHost
+            // injects the OTLP endpoint; the sink reads the OTEL_EXPORTER_OTLP_* and OTEL_RESOURCE_ATTRIBUTES
+            // variables itself, attributing entries to the same resource as the other signals.
+            if (OtlpEnvironmentEndpointExists())
+            {
+                loggerConfiguration.WriteTo.OpenTelemetry();
+            }
         }
 
         private static LogEventLevel ExcludePaths(HttpContext ctx, Exception? ex, string[] excludedPaths)
