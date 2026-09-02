@@ -1,6 +1,10 @@
 import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
+// These fixture-backed specs own dataset-specific report presentation and
+// sorting coverage. E2E report specs intentionally retain only representative
+// user and dependent download flows.
+
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Reports - Medication", () => {
