@@ -349,14 +349,20 @@ Cypress.Commands.add(
                                         `Visiting Callback ${callBackQS}`,
                                         response
                                     );
+
                                     cy.visit(callbackURL);
 
-                                    // store auth cookies
-                                    cy.getCookies({ timeout: 60000 }).then(
-                                        (cookies) => {
-                                            globalStorage.authCookies = cookies;
-                                        }
-                                    );
+                                    // LoginCallbackView processes the OIDC response and retrieves the essential
+                                    // user data before ClientApp navigates to the appropriate destination.
+                                    // Do not save the Cypress session while still processing the callback.
+                                    cy.location("pathname", {
+                                        timeout: 60000,
+                                    }).should("not.eq", "/loginCallback");
+
+                                    // Store authentication cookies only after login has completed.
+                                    cy.getCookies().then((cookies) => {
+                                        globalStorage.authCookies = cookies;
+                                    });
                                 });
                         });
                     });
