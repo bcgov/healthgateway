@@ -361,6 +361,10 @@ Cypress.Commands.add(
                         });
                     });
 
+                    // Register aliases again because cy.session may clear interception
+                    // state before the post-login application visit.
+                    setupStandardAliases();
+
                     postLoginInitialization(
                         configSettings,
                         username,
