@@ -2,8 +2,9 @@
 
 Aspire AppHost that orchestrates the full local Health Gateway development environment:
 
-- **PostgreSQL 15** (container `GatewayDB`) on `localhost:5432`, bootstrapped with the
-  credentials and database from the `ConnectionStrings:GatewayConnection` user secret.
+- **PostgreSQL 15** (container `GatewayDB`), bootstrapped with the credentials, database,
+  and port from the `ConnectionStrings:GatewayConnection` user secret (`localhost:5432`
+  with the standard secret).
   When the data volume is first created, `postgres-init/00_CreateExtensions.sql` adds the
   `uuid-ossp` extension (as `Tools/Dev/Postgres/init/00_SetupDevDB.sql` does), which the
   audit trigger functions in the migrations depend on.
@@ -11,8 +12,8 @@ Aspire AppHost that orchestrates the full local Health Gateway development envir
   `dotnet ef database update --project ../Database/src` from the DBMaintainer directory
   (DBMaintainer is the migrations startup project). This is the only database
   initialization; all apps wait for it to finish before starting.
-- **Redis 6.2** (container `GatewayCache`) on `localhost:6379`, mirroring the
-  `RedisConnection` user secret (including its password, if one is set).
+- **Redis 6.2** (container `GatewayCache`), mirroring the `RedisConnection` user secret's
+  port and password, if one is set (`localhost:6379` with the standard secret).
 - **Apps** — everything except Admin: Patient, GatewayApi, Immunization, Medication,
   Laboratory, Encounter, ClinicalDocument, JobScheduler, and WebClient (SpaProxy launches
   the Vite dev server). Each app keeps the port from its own launch profile (GatewayApi

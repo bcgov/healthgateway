@@ -85,7 +85,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountDataAccess", "Accoun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountDataAccessTests", "AccountDataAccess\test\unit\AccountDataAccessTests.csproj", "{E4CD0A9C-196B-4CDD-97B8-4D3666BB582F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireHost", "AspireHost\AspireHost.csproj", "{BE3C3E8A-6B14-4954-A6F8-C2209130D500}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireHost", "AspireHost\AspireHost.csproj", "{BE3C3E8A-6B14-4954-A6F8-C2209130D500}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
