@@ -44,10 +44,11 @@ IResourceBuilder<RedisResource> redis = builder.AddRedis("gatewaycache", port: r
     .WithDataVolume("gatewaycache.local")
     .WithPersistence(TimeSpan.FromSeconds(60));
 
-// Requires the dotnet-ef global tool.
+// Requires the dotnet-ef global tool. The connection string is not passed on the command
+// line; DBMaintainer resolves GatewayConnection from the same shared user secrets.
 IResourceBuilder<ExecutableResource> migrations = builder
     .AddExecutable("db-migrations", "dotnet", "../DBMaintainer")
-    .WithArgs("ef", "database", "update", "--project", "../Database/src", "--connection", gatewayConnection)
+    .WithArgs("ef", "database", "update", "--project", "../Database/src")
     .WaitFor(postgres);
 
 AddApp<Projects.Patient>("patient");
