@@ -85,6 +85,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountDataAccess", "Accoun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountDataAccessTests", "AccountDataAccess\test\unit\AccountDataAccessTests.csproj", "{E4CD0A9C-196B-4CDD-97B8-4D3666BB582F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireHost", "AspireHost\AspireHost.csproj", "{BE3C3E8A-6B14-4954-A6F8-C2209130D500}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -515,6 +517,18 @@ Global
 		{E4CD0A9C-196B-4CDD-97B8-4D3666BB582F}.Release|x64.Build.0 = Release|Any CPU
 		{E4CD0A9C-196B-4CDD-97B8-4D3666BB582F}.Release|x86.ActiveCfg = Release|Any CPU
 		{E4CD0A9C-196B-4CDD-97B8-4D3666BB582F}.Release|x86.Build.0 = Release|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Debug|x64.Build.0 = Debug|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Debug|x86.Build.0 = Debug|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Release|x64.ActiveCfg = Release|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Release|x64.Build.0 = Release|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE3C3E8A-6B14-4954-A6F8-C2209130D500}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

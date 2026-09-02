@@ -27,14 +27,24 @@ namespace HealthGateway.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // The hangfire schema is created by Hangfire when the JobScheduler first starts,
+            // so it may not exist yet on a freshly initialized database.
             string schema = "hangfire";
             string sql = @$"
-            DELETE FROM {schema}.hash
-            WHERE key = 'recurring-job:NotificationBackfill-BcCancerScreening-Email';
+            DO $$
+            BEGIN
+                IF to_regclass('{schema}.hash') IS NOT NULL THEN
+                    DELETE FROM {schema}.hash
+                    WHERE key = 'recurring-job:NotificationBackfill-BcCancerScreening-Email';
+                END IF;
 
-            DELETE FROM {schema}.set
-            WHERE key = 'recurring-jobs'
-              AND value = 'NotificationBackfill-BcCancerScreening-Email';
+                IF to_regclass('{schema}.set') IS NOT NULL THEN
+                    DELETE FROM {schema}.set
+                    WHERE key = 'recurring-jobs'
+                      AND value = 'NotificationBackfill-BcCancerScreening-Email';
+                END IF;
+            END
+            $$;
             ";
 
             migrationBuilder.Sql(sql);
