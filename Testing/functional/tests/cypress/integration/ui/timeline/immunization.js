@@ -63,44 +63,20 @@ describe("Immunization - With Refresh", () => {
     });
 });
 
-describe("Immunization", () => {
-    it("Validate Empty Title", () => {
-        cy.intercept("GET", "**/Immunization?hdid=*", {
-            fixture: "ImmunizationService/immunizationEmptyName.json",
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-            ],
-        });
-
-        setupStandardFixtures();
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=immunizationTitle]")
-            .should("be.visible")
-            .should("include.text", "2013-Sep-20")
-            .should("include.text", "Immunizations");
-    });
-});
-
-describe("Timeline - Immunization - Invalid Doses", () => {
-    it("Timeline - Partially Vaccinated 1 Valid Dose and 1 Invalid Dose", () => {
+describe("Immunization presentation", () => {
+    it("Displays an empty title and valid and invalid doses", () => {
+        const emptyTitleDate = "1988-Aug-08";
         const validDoseDate1 = "2021-Jul-14";
         const invalidDoseDate1 = "2021-Mar-30";
 
-        cy.intercept("GET", "**/Immunization?hdid=*", {
-            fixture: "ImmunizationService/immunizationInvalidDoses.json",
-        });
+        cy.fixture("ImmunizationService/immunizationInvalidDoses.json").then(
+            (fixture) => {
+                // Reuse one response to cover both presentation cases so the
+                // application and fixture-backed dataset only load once.
+                fixture.resourcePayload.immunizations[0].immunization.name = "";
+                cy.intercept("GET", "**/Immunization?hdid=*", fixture);
+            }
+        );
         cy.configureSettings({
             datasets: [
                 {
@@ -119,6 +95,9 @@ describe("Timeline - Immunization - Invalid Doses", () => {
             "/timeline"
         );
 
+        cy.contains("[data-testid=immunizationTitle]", emptyTitleDate)
+            .should("be.visible")
+            .should("include.text", "Immunizations");
         cy.get("[data-testid=entryCardDate]")
             .contains(validDoseDate1)
             .should("be.visible");

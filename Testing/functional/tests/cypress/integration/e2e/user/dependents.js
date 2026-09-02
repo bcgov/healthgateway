@@ -596,25 +596,17 @@ describe("CRUD Operations", () => {
         removeValidDependentIfPresent(Cypress.env("keycloak.username"));
     });
 
-    it("Loads Immunization records for a newly registered dependent", () => {
-        cy.setupDownloads();
-        registerValidDependent();
-        assertValidDependentCard();
-
-        openImmunizationTab(validDependent.hdid, "@newDependentCard");
-        verifyImmunizationTab(validDependent.hdid, "History", ["pdf"]);
-
-        cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
-            "deleteDependent"
-        );
-        deleteDependent("@newDependentCard", true);
-        cy.wait("@deleteDependent", { timeout: defaultTimeout });
-    });
-
     it("Validate Adding, Viewing, and Removing Dependents", () => {
+        cy.setupDownloads();
         cy.log("Adding dependent");
         registerValidDependent();
         assertValidDependentCard();
+
+        // Keep one real PHSA integration check for a newly registered
+        // dependent without repeating registration and cleanup in another test.
+        openImmunizationTab(validDependent.hdid, "@newDependentCard");
+        verifyImmunizationTab(validDependent.hdid, "History", ["pdf"]);
+
         cy.log("Adding same dependent as another user");
         cy.logout();
 

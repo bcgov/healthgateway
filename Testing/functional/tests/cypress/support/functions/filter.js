@@ -1,5 +1,3 @@
-import { AuthMethod } from "../constants";
-
 // Centralizes the selectors and labels used by timeline filter tests. Specs refer
 // to dataset names so ClientApp test IDs are maintained in one place.
 export const timelineFilterDefinitions = {
@@ -109,40 +107,6 @@ export function verifyTimelineFilterSelection(datasets, selected) {
             `${getFilterDefinition(dataset).filterSelector}.v-chip--selected`
         ).should(selected ? "exist" : "not.exist");
     });
-}
-
-export function setupTimelineFilter(datasets, requests = []) {
-    const datasetNames = Array.isArray(datasets) ? datasets : [datasets];
-    const requestConfigs = Array.isArray(requests)
-        ? requests
-        : requests
-          ? [requests]
-          : [];
-
-    // Health Visits provide a known second record type so selecting another dataset
-    // proves that the filter removes unrelated timeline cards.
-    const enabledDatasets = [...new Set([...datasetNames, "healthVisit"])];
-    cy.configureSettings({
-        datasets: enabledDatasets.map((name) => ({ name, enabled: true })),
-    });
-
-    // Deferred PHSA datasets provide their own waiter; ordinary datasets can
-    // use a single cy.wait supplied by the spec.
-    requestConfigs.forEach((request) => {
-        cy.intercept("GET", request.endpoint).as(request.alias);
-    });
-
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak
-    );
-
-    requestConfigs.forEach((request) => {
-        request.waitForData(`@${request.alias}`);
-    });
-
-    cy.checkTimelineHasLoaded();
 }
 
 export function verifyActiveFilters(filterLabels) {

@@ -26,7 +26,7 @@ describe("Clinical Document", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate file download", () => {
+    it("Validate file and attachment downloads", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")
             .first()
@@ -34,14 +34,6 @@ describe("Clinical Document", () => {
                 validateFileDownload(
                     "[data-testid=clinical-document-download-button]"
                 );
-            });
-    });
-
-    it("Validate attachment download", () => {
-        cy.get("[data-testid=timelineCard")
-            .filter(":has([data-testid=attachment-button])")
-            .first()
-            .within(() => {
                 validateAttachmentDownload();
             });
     });

@@ -100,7 +100,8 @@ describe("Organ Donor Details Card Disabled", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            { waitForInitialDataLoad: false }
         );
     });
 

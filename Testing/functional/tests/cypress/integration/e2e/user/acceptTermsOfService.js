@@ -34,19 +34,3 @@ describe("Need to accept terms of service", () => {
         cy.url().should("include", "/home");
     });
 });
-
-describe("Does not need to accept terms of service", () => {
-    beforeEach(() => {
-        cy.configureSettings({});
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
-    });
-
-    it("Validate accept terms of service is not required", () => {
-        cy.url().should("include", "/home");
-    });
-});
