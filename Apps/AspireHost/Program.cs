@@ -64,6 +64,7 @@ AddApp<Projects.Encounter>("Encounter");
 AddApp<Projects.ClinicalDocument>("ClinicalDocument");
 AddApp<Projects.JobScheduler>("JobScheduler");
 AddApp<Projects.WebClient>("WebClient");
+AddApp<Projects.Admin_Server>("Admin");
 
 builder.Build().Run();
 

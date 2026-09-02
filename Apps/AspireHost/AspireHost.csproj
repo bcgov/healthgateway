@@ -28,6 +28,7 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Admin\Server\Admin.Server.csproj" />
     <ProjectReference Include="..\ClinicalDocument\src\ClinicalDocument.csproj" />
     <ProjectReference Include="..\Encounter\src\Encounter.csproj" />
     <ProjectReference Include="..\GatewayApi\src\GatewayApi.csproj" />

@@ -14,11 +14,12 @@ Aspire AppHost that orchestrates the full local Health Gateway development envir
   initialization; all apps wait for it to finish before starting.
 - **Redis 6.2** (container `GatewayCache`), mirroring the `RedisConnection` user secret's
   port and password, if one is set (`localhost:6379` with the standard secret).
-- **Apps** — everything except Admin: Patient, GatewayApi, Immunization, Medication,
-  Laboratory, Encounter, ClinicalDocument, JobScheduler, and WebClient (SpaProxy launches
-  the Vite dev server). Each app keeps the port from its own launch profile (GatewayApi
-  3000, WebClient 3025, JobScheduler 5005, etc.), so existing inter-service URLs work
-  unchanged. Drug data loads via JobScheduler's recurring Hangfire jobs.
+- **Apps** — Patient, GatewayApi, Immunization, Medication, Laboratory, Encounter,
+  ClinicalDocument, JobScheduler, WebClient (SpaProxy launches the Vite dev server),
+  and Admin (Blazor WASM portal). Each app keeps the port from its own launch profile
+  (GatewayApi 3000, WebClient 3025, JobScheduler 5005, Admin 5027, etc.), so existing
+  inter-service URLs work unchanged. Drug data loads via JobScheduler's recurring
+  Hangfire jobs.
 
 The containers are removed when the AppHost stops; their data persists in the
 `gatewaydb.local` and `gatewaycache.local` Docker volumes — the same volumes used by
