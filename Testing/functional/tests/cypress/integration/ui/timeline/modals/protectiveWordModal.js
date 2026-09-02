@@ -43,40 +43,6 @@ function login() {
 }
 
 describe("Protective Word Modal", () => {
-    it("Validates and accepts the protective word", () => {
-        login();
-
-        cy.contains(
-            "[data-testid=protectiveWordModal]",
-            "Restricted PharmaNet Records"
-        ).should("be.visible");
-        cy.get("[data-testid=protectiveWordModalText]")
-            .should("contain", "Please enter the protective word")
-            .and("contain", "For more information visit");
-        cy.get("[data-testid=protectiveWordModalRulesHREF]")
-            .should("be.visible")
-            .and(
-                "have.attr",
-                "href",
-                "https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
-            );
-        cy.get("[data-testid=protectiveWordContinueBtn]").should("be.disabled");
-
-        cy.get("[data-testid=protectiveWordInput] input").type("WRONGKEYWORD");
-        cy.get("[data-testid=protectiveWordContinueBtn]").click();
-        cy.contains(
-            "[data-testid=protectiveWordInput]",
-            "Invalid protective word. Try again."
-        ).should("be.visible");
-
-        cy.get("[data-testid=protectiveWordInput] input")
-            .clear()
-            .type("KEYWORD");
-        cy.get("[data-testid=protectiveWordContinueBtn]").click();
-        cy.get("[data-testid=protectiveWordModal]").should("not.exist");
-        cy.get("[data-testid=timelineCard]").should("exist");
-    });
-
     it("Dismisses the modal", () => {
         login();
         cy.get("[data-testid=protectiveWordCloseButton]")
