@@ -2,6 +2,7 @@ import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const dependentHdid = "645645767756756767";
+const dependentPhn = "9874307168";
 const tooManyRequestsStatusCode = 429;
 
 // Each entry exercises the store handling for a distinct timeline endpoint.
@@ -31,6 +32,30 @@ function loginWithDatasetError(endpoint, dataset) {
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak
     );
+}
+
+function setupDependentsPage(datasets, setupDatasetFixtures) {
+    setupStandardFixtures();
+    cy.intercept("GET", "**/UserProfile/*/Dependent", {
+        fixture: "UserProfileService/dependent.json",
+    });
+    setupDatasetFixtures?.();
+    cy.configureSettings({
+        dependents: {
+            enabled: true,
+        },
+        datasets,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/dependents"
+    );
+
+    // UI specs use fixtures and skip endpoint waits. The rendered dependent
+    // card is the authoritative signal that the page is ready for interaction.
+    cy.get(`[data-testid=dependent-card-${dependentPhn}]`).should("be.visible");
 }
 
 describe("Landing Page - Too Many Requests", () => {
@@ -263,19 +288,8 @@ describe("Dependents", () => {
     };
 
     beforeEach(() => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
-            fixture: "LaboratoryService/covid19Orders.json",
-        });
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
-            fixture: "UserProfileService/dependent.json",
-        });
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-            },
-            datasets: [
+        setupDependentsPage(
+            [
                 {
                     name: "covid19TestResult",
                     enabled: true,
@@ -285,15 +299,12 @@ describe("Dependents", () => {
                     enabled: true,
                 },
             ],
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+            () => {
+                cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+                    fixture: "LaboratoryService/covid19Orders.json",
+                });
+            }
         );
-        cy.wait("@getDependent");
     });
 
     it("Delete Dependent: Too Many Requests Error", () => {
@@ -343,30 +354,18 @@ describe("Dependents", () => {
 
 describe("Dependent - Immunizaation History Tab - report download error handling", () => {
     beforeEach(() => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
-            fixture: "UserProfileService/dependent.json",
-        });
-        cy.intercept("GET", "**/Immunization?hdid=*", {
-            fixture: "ImmunizationService/dependentImmunization.json",
-        });
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-            },
-            datasets: [
+        setupDependentsPage(
+            [
                 {
                     name: "immunization",
                     enabled: true,
                 },
             ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+            () => {
+                cy.intercept("GET", "**/Immunization?hdid=*", {
+                    fixture: "ImmunizationService/dependentImmunization.json",
+                });
+            }
         );
     });
 
@@ -375,7 +374,9 @@ describe("Dependent - Immunizaation History Tab - report download error handling
             statusCode: 429,
         });
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
+            .should("be.visible")
+            .click();
 
         // History tab
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
@@ -411,7 +412,9 @@ describe("Dependent - Immunizaation History Tab - report download error handling
             statusCode: 500,
         });
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
+            .should("be.visible")
+            .click();
 
         // History tab
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
