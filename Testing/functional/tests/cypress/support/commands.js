@@ -13,6 +13,8 @@ import {
     waitForInitialDataLoad,
 } from "./functions/intercept";
 
+// Cache the baseline configuration and return a copy because
+// configureSettings mutates the configuration for each test.
 let cachedEnvironmentConfig;
 
 function cloneConfig(config) {
@@ -150,7 +152,7 @@ function loginWithKeycloakUI(
                         cy.reload(); // if already on home, just reload to trigger page load with config + intercepts
                     }
 
-                    // Wait on all registered intercepts
+                    // Wait for the initial data requests configured for this test.
                     waitForInitialDataLoad(
                         username,
                         resolvedConfig,
@@ -367,8 +369,8 @@ Cypress.Commands.add(
                         });
                     });
 
-                    // Register aliases again because cy.session may clear interception
-                    // state before the post-login application visit.
+                    // Register aliases for the post-session visit; login callback requests may
+                    // have already consumed aliases registered before session initialization.
                     setupStandardAliases();
 
                     postLoginInitialization(

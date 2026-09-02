@@ -10,14 +10,6 @@ declare namespace Cypress {
          * to true for live E2E specs.
          */
         waitForDependent?: boolean;
-        /**
-         * Wait explicitly for Patient. By default, User Profile is waited on
-         * instead because ClientApp requests it only after Patient completes.
-         * Patient defaults to true when the User Profile wait is disabled.
-         */
-        waitForPatient?: boolean;
-        /** Wait for User Profile. Defaults to true. */
-        waitForUserProfile?: boolean;
     }
 
     interface Chainable {

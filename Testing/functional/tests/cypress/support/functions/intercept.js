@@ -170,9 +170,10 @@ export function waitForInitialDataLoad(
     config,
     path,
     {
+        // Skip every initial-data wait when false.
         waitForInitialDataLoad: shouldWaitForInitialDataLoad = true,
-        waitForPatient,
-        waitForUserProfile: shouldWaitForUserProfile = true,
+
+        // Skip only the optional Dependent request when false.
         waitForDependent: shouldWaitForDependent = true,
     } = {}
 ) {
@@ -182,21 +183,14 @@ export function waitForInitialDataLoad(
     }
 
     const featureToggle = config.webClient.featureToggleConfiguration;
-    // ClientApp retrieves Patient before User Profile. Waiting for User Profile
-    // therefore also proves that Patient finished. Wait for Patient directly
-    // only when a flow intentionally does not request User Profile.
-    const shouldWaitForPatient = waitForPatient ?? !shouldWaitForUserProfile;
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);
     cy.log(`Path: ${path}`);
 
-    if (shouldWaitForPatient) {
-        cy.log("Wait on patient.");
-        cy.wait("@getPatient", { timeout: defaultTimeout });
-    }
-
-    waitForUserProfile(shouldWaitForUserProfile).then((blockedDataSources) => {
+    // ClientApp requests User Profile only after Patient completes, so waiting
+    // for User Profile also confirms that Patient finished loading.
+    waitForUserProfile().then((blockedDataSources) => {
         waitForClinicalDocument(featureToggle, path, blockedDataSources);
         waitForOrganDonorRegistratonStatusService(
             featureToggle,
@@ -225,11 +219,7 @@ export function waitForInitialDataLoad(
     }
 }
 
-function waitForUserProfile(shouldWaitForUserProfile) {
-    if (!shouldWaitForUserProfile) {
-        return cy.wrap(undefined);
-    }
-
+function waitForUserProfile() {
     cy.log("Wait on user profile.");
     return cy
         .wait("@getUserProfile", { timeout: defaultTimeout })
