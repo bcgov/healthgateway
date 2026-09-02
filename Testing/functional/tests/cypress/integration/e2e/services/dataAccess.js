@@ -4,9 +4,17 @@ describe("Gateway Api Data Access Service", () => {
     const DELEGATE_HDID =
         "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
+    let tokens;
+
+    before(() => {
+        cy.getTokens().then((result) => {
+            tokens = result;
+        });
+    });
+
     beforeEach(() => {
         cy.readConfig().as("config");
-        cy.getTokens().as("tokens");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Swagger", () => {

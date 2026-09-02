@@ -1,8 +1,6 @@
 import { AuthMethod } from "../../../support/constants";
-import { waitForImmunizations } from "../../../support/functions/timeline";
 
 const defaultTimeout = 60000;
-const immunizationTimeout = 90000;
 
 function triggerEmptyValidation(vuetifySelector) {
     cy.get(vuetifySelector + " input")
@@ -161,16 +159,12 @@ function assertValidDependentCard() {
 }
 
 function openImmunizationTab(hdid, cardSelector) {
-    cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
-
     const tabSelector = `[data-testid=immunization-tab-title-${hdid}]`;
     if (cardSelector) {
         cy.get(cardSelector).within(() => cy.get(tabSelector).click());
     } else {
         cy.get(tabSelector).click();
     }
-
-    waitForImmunizations("@getImmunization", immunizationTimeout);
 }
 
 function verifyImmunizationReportDownloads(hdid, tab, formats) {
@@ -203,13 +197,13 @@ function verifyImmunizationReportDownloads(hdid, tab, formats) {
     }
 }
 
-function verifyImmunizationTab(hdid, tab, formats, cardSelector) {
-    openImmunizationTab(hdid, cardSelector);
-
+function verifyImmunizationTab(hdid, tab, formats) {
     cy.get(`[data-testid=immunization-tab-div-${hdid}]`).within(() => {
         cy.contains(".v-btn .v-btn__content", tab).click();
     });
-    cy.get(`[data-testid=immunization-${tab.toLowerCase()}-table-${hdid}]`)
+    cy.get(`[data-testid=immunization-${tab.toLowerCase()}-table-${hdid}]`, {
+        timeout: defaultTimeout,
+    })
         .find("tr")
         .should("have.length.greaterThan", 1);
 
@@ -488,17 +482,14 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Immunization History - Verify result and download", () => {
+    it("Validate Immunization History and Schedule - Verify result and download", () => {
         cy.setupDownloads();
+        openImmunizationTab(validDependentHdid);
         verifyImmunizationTab(
             validDependentHdid,
             "History",
             immunizationReportFormats
         );
-    });
-
-    it("Validate Immunization Schedule - Verify result and download", () => {
-        cy.setupDownloads();
         verifyImmunizationTab(
             validDependentHdid,
             "Schedule",
@@ -610,12 +601,8 @@ describe("CRUD Operations", () => {
         registerValidDependent();
         assertValidDependentCard();
 
-        verifyImmunizationTab(
-            validDependent.hdid,
-            "History",
-            ["pdf"],
-            "@newDependentCard"
-        );
+        openImmunizationTab(validDependent.hdid, "@newDependentCard");
+        verifyImmunizationTab(validDependent.hdid, "History", ["pdf"]);
 
         cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
             "deleteDependent"
