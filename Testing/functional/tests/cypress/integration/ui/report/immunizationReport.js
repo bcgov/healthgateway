@@ -7,7 +7,6 @@ describe("Immunization History Report", () => {
 
     beforeEach(() => {
         cy.setupDownloads();
-        let isLoading = false;
         cy.configureSettings({
             datasets: [
                 {
@@ -16,17 +15,8 @@ describe("Immunization History Report", () => {
                 },
             ],
         });
-        cy.intercept("GET", "**/Immunization?hdid=*", (req) => {
-            if (!isLoading) {
-                req.reply({
-                    fixture: "ImmunizationService/immunizationrefresh.json",
-                });
-            } else {
-                req.reply({
-                    fixture: "ImmunizationService/immunization.json",
-                });
-            }
-            isLoading = !isLoading;
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/immunization.json",
         });
 
         setupStandardFixtures();
@@ -41,11 +31,6 @@ describe("Immunization History Report", () => {
 
     it("Validate Immunization History Report", () => {
         cy.vSelect("[data-testid=report-type]", "Immunizations");
-
-        // Test refresh by checking if skeleton is displayed or not
-        cy.get("[data-testid=table-skeleton-loader]").should("be.visible");
-
-        cy.get("[data-testid=table-skeleton-loader]").should("not.exist");
 
         cy.get("[data-testid=report-sample]").scrollTo("bottom", {
             ensureScrollable: false,

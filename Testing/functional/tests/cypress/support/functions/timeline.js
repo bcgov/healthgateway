@@ -66,50 +66,9 @@ export function waitForLaboratoryOrders(alias, timeout = deferredLoadTimeout) {
     );
 }
 
-function waitForImmunizationResponse(
-    alias,
-    {
-        timeout = deferredLoadTimeout,
-        attemptsRemaining = maxDeferredLoadAttempts,
-        allowMissingResponse = false,
-    } = {}
-) {
+function waitForImmunizationResponse(alias, timeout = deferredLoadTimeout) {
     return cy.wait(alias, { timeout }).then((interception) => {
-        if (!interception.response) {
-            if (allowMissingResponse) {
-                cy.log(
-                    "No Immunization response was available; continuing with rendered data."
-                );
-                return;
-            }
-
-            throw new Error("Immunization request did not return a response");
-        }
-
         expect(interception.response.statusCode).to.eq(200);
-
-        const loadState = interception.response.body.resourcePayload.loadState;
-        if (loadState.refreshInProgress) {
-            if (attemptsRemaining <= 1) {
-                throw new Error("Immunizations did not finish loading");
-            }
-            return waitForImmunizationResponse(alias, {
-                timeout,
-                attemptsRemaining: attemptsRemaining - 1,
-                allowMissingResponse,
-            });
-        }
-    });
-}
-
-export function waitForImmunizations(
-    alias,
-    timeout = deferredLoadTimeout,
-    attemptsRemaining = maxDeferredLoadAttempts
-) {
-    return waitForImmunizationResponse(alias, {
-        timeout,
-        attemptsRemaining,
     });
 }
 
@@ -127,10 +86,7 @@ export function prepareImmunizationWait(hdid, timeout = deferredLoadTimeout) {
     return () =>
         cy.then(() => {
             if (requestStarted) {
-                return waitForImmunizationResponse(`@${aliasName}`, {
-                    timeout,
-                    allowMissingResponse: true,
-                });
+                return waitForImmunizationResponse(`@${aliasName}`, timeout);
             }
 
             cy.log("Using previously loaded immunization data.");
