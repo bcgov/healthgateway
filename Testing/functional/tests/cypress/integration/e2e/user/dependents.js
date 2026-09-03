@@ -1,6 +1,6 @@
 import { AuthMethod } from "../../../support/constants";
 
-const defaultTimeout = 120000;
+const defaultTimeout = 60000;
 
 function triggerEmptyValidation(vuetifySelector) {
     cy.get(vuetifySelector + " input")
@@ -34,6 +34,57 @@ const validDependent = {
     hdid: "645645767756756767",
 };
 
+function removeValidDependentIfPresent(username) {
+    cy.logout();
+    cy.configureSettings({
+        dependents: {
+            enabled: true,
+        },
+        datasets: [
+            {
+                name: "immunization",
+                enabled: true,
+            },
+        ],
+    });
+    cy.intercept("GET", "**/UserProfile/*/Dependent*").as(
+        "getDependentsForCleanup"
+    );
+    cy.login(
+        username,
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/dependents"
+    );
+
+    const cardSelector = `[data-testid=dependent-card-${validDependent.phn}]`;
+    cy.wait("@getDependentsForCleanup", { timeout: defaultTimeout }).then(
+        (interception) => {
+            const dependents =
+                interception.response?.body?.resourcePayload ?? [];
+            const dependentExists = dependents.some(
+                (dependent) =>
+                    dependent.dependentInformation.PHN === validDependent.phn
+            );
+
+            if (!dependentExists) {
+                return;
+            }
+
+            cy.get(cardSelector, { timeout: defaultTimeout }).should(
+                "be.visible"
+            );
+
+            cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
+                "deleteDependentCleanup"
+            );
+            deleteDependent(cardSelector, true);
+            cy.wait("@deleteDependentCleanup", { timeout: defaultTimeout });
+            cy.get(cardSelector).should("not.exist");
+        }
+    );
+}
+
 const protectedDependentWithAllowedDelegation = {
     firstName: "Leroy Desmond",
     lastName: "Tobias",
@@ -57,6 +108,107 @@ const noHdidDependent = {
 };
 
 const validDependentHdid = "162346565465464564565463257";
+
+const immunizationReportFormats = ["pdf", "csv", "xlsx"];
+
+function registerValidDependent() {
+    cy.get("[data-testid=add-dependent-button]").click();
+    cy.get("[data-testid=new-dependent-modal-form]").should(
+        "exist",
+        "be.visible"
+    );
+
+    cy.get("[data-testid=dependent-first-name-input] input")
+        .clear()
+        .type(validDependent.firstName);
+    cy.get("[data-testid=dependent-last-name-input] input")
+        .clear()
+        .type(validDependent.lastName);
+    cy.get("[data-testid=dependent-date-of-birth-input] input")
+        .clear()
+        .type(validDependent.doB);
+    cy.get("[data-testid=dependent-phn-input] input")
+        .clear()
+        .type(validDependent.phn);
+    cy.get("[data-testid=dependent-terms-checkbox] input").check({
+        force: true,
+    });
+
+    cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
+    cy.get("[data-testid=register-dependent-btn]").click();
+    cy.wait("@postDependent", { timeout: defaultTimeout });
+    cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
+}
+
+function assertValidDependentCard() {
+    cy.get(`[data-testid=dependent-card-${validDependent.phn}]`)
+        .as("newDependentCard")
+        .within(() => {
+            cy.get("[data-testid=dependentName]")
+                .contains(validDependent.firstName.trim())
+                .contains(validDependent.lastName.trim());
+            cy.get("[data-testid=dependentPHN] input").should(
+                "have.value",
+                validDependent.phn
+            );
+            cy.get("[data-testid=dependentDOB] input").should(
+                "have.value",
+                validDependent.doB
+            );
+        });
+}
+
+function openImmunizationTab(hdid, cardSelector) {
+    const tabSelector = `[data-testid=immunization-tab-title-${hdid}]`;
+    if (cardSelector) {
+        cy.get(cardSelector).within(() => cy.get(tabSelector).click());
+    } else {
+        cy.get(tabSelector).click();
+    }
+}
+
+function verifyImmunizationReportDownloads(hdid, tab, formats) {
+    cy.intercept("POST", "**/Report").as("postReport");
+
+    for (const format of formats) {
+        cy.get(`[data-testid=download-immunization-${tab}-report-btn-${hdid}]`)
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get(
+            `[data-testid=download-immunization-${tab}-report-${format}-btn-${hdid}]`
+        )
+            .should("be.visible")
+            .click();
+
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.wait("@postReport", { timeout: defaultTimeout }).then(
+            ({ response }) => {
+                expect(response.statusCode).to.eq(200);
+                cy.verifyDownload(
+                    `HealthGatewayDependentImmunizationReport.${format}`,
+                    {
+                        timeout: defaultTimeout,
+                        interval: 5000,
+                    }
+                );
+            }
+        );
+    }
+}
+
+function verifyImmunizationTab(hdid, tab, formats) {
+    cy.get(`[data-testid=immunization-tab-div-${hdid}]`).within(() => {
+        cy.contains(".v-btn .v-btn__content", tab).click();
+    });
+    cy.get(`[data-testid=immunization-${tab.toLowerCase()}-table-${hdid}]`, {
+        timeout: defaultTimeout,
+    })
+        .find("tr")
+        .should("have.length.greaterThan", 1);
+
+    verifyImmunizationReportDownloads(hdid, tab.toLowerCase(), formats);
+}
 
 describe("dependents", () => {
     beforeEach(() => {
@@ -330,233 +482,19 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Immunization History - Verify result and download", () => {
-        cy.log(
-            "Validating Immunization History Tab - Verify result and download"
+    it("Validate Immunization History and Schedule - Verify result and download", () => {
+        cy.setupDownloads();
+        openImmunizationTab(validDependentHdid);
+        verifyImmunizationTab(
+            validDependentHdid,
+            "History",
+            immunizationReportFormats
         );
-
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
-        cy.get(
-            `[data-testid=immunization-tab-title-${validDependentHdid}]`
-        ).click();
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
-
-        // History tab
-        cy.log("Validating history tab");
-        cy.get(
-            `[data-testid=immunization-tab-div-${validDependentHdid}]`
-        ).within(() => {
-            cy.contains(".v-btn .v-btn__content", "History").click();
-        });
-        // Expecting more than 1 row to return because we also need to consider the table headers.
-        cy.get(`[data-testid=immunization-history-table-${validDependentHdid}]`)
-            .find("tr")
-            .should("have.length.greaterThan", 1);
-
-        // Click download dropdown under History tab
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
-
-        // Click PDF
-        cy.get(
-            `[data-testid=download-immunization-history-report-pdf-btn-${validDependentHdid}]`
-        )
-            .should("be.visible")
-            .click();
-
-        // Confirmation modal for PDF
-        cy.intercept("POST", "**/Report").as("postReport");
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.wait("@postReport", { timeout: defaultTimeout })
-            .then(() => {
-                cy.verifyDownload(
-                    "HealthGatewayDependentImmunizationReport.pdf",
-                    {
-                        timeout: 60000,
-                        interval: 5000,
-                    }
-                );
-            })
-            .then(() => {
-                // Click download dropdown under History tab for CSV
-                cy.get(
-                    `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible", "be.enabled")
-                    .click();
-
-                // Click CSV
-                cy.get(
-                    `[data-testid=download-immunization-history-report-csv-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible")
-                    .click();
-
-                // Confirmation modal for CSV
-                cy.get("[data-testid=generic-message-modal]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=generic-message-submit-btn]").click();
-                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
-                    cy.verifyDownload(
-                        "HealthGatewayDependentImmunizationReport.csv",
-                        {
-                            timeout: 60000,
-                            interval: 5000,
-                        }
-                    );
-                });
-            })
-            .then(() => {
-                // Click download dropdown under History tab for XLSX
-                cy.get(
-                    `[data-testid=download-immunization-history-report-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible", "be.enabled")
-                    .click();
-
-                // Click XLSX
-                cy.get(
-                    `[data-testid=download-immunization-history-report-xlsx-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible")
-                    .click();
-
-                // Confirmation modal for XLSX
-                cy.get("[data-testid=generic-message-modal]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=generic-message-submit-btn]").click();
-                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
-                    cy.verifyDownload(
-                        "HealthGatewayDependentImmunizationReport.xlsx",
-                        {
-                            timeout: 60000,
-                            interval: 5000,
-                        }
-                    );
-                });
-            });
-    });
-
-    it("Validate Immunization Schedule - Verify result and download", () => {
-        cy.log(
-            "Validating Immunization Schedule Tab - Verify result and download"
+        verifyImmunizationTab(
+            validDependentHdid,
+            "Schedule",
+            immunizationReportFormats
         );
-
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
-        cy.get(
-            `[data-testid=immunization-tab-title-${validDependentHdid}]`
-        ).click();
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
-
-        // Schedule tab
-        cy.log("Validating schedule tab");
-        cy.get(
-            `[data-testid=immunization-tab-div-${validDependentHdid}]`
-        ).within(() => {
-            cy.contains(".v-btn .v-btn__content", "Schedule").click();
-        });
-
-        // Expecting more than 1 row to return because we also need to consider the table headers.
-        cy.get(
-            `[data-testid=immunization-schedule-table-${validDependentHdid}]`
-        )
-            .find("tr")
-            .should("have.length.greaterThan", 1);
-
-        // Click download dropdown under Schedule tab
-        cy.get(
-            `[data-testid=download-immunization-schedule-report-btn-${validDependentHdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
-
-        // Click PDF
-        cy.get(
-            `[data-testid=download-immunization-schedule-report-pdf-btn-${validDependentHdid}]`
-        )
-            .should("be.visible")
-            .click();
-
-        // Confirmation modal for PDF
-        cy.intercept("POST", "**/Report").as("postReport");
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.wait("@postReport", { timeout: defaultTimeout })
-            .then(() => {
-                cy.verifyDownload(
-                    "HealthGatewayDependentImmunizationReport.pdf",
-                    {
-                        timeout: 60000,
-                        interval: 5000,
-                    }
-                );
-            })
-            .then(() => {
-                // Click download dropdown under Schedule tab for CSV
-                cy.get(
-                    `[data-testid=download-immunization-schedule-report-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible", "be.enabled")
-                    .click();
-
-                // Click CSV
-                cy.get(
-                    `[data-testid=download-immunization-schedule-report-csv-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible")
-                    .click();
-
-                // Confirmation modal for CSV
-                cy.get("[data-testid=generic-message-modal]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=generic-message-submit-btn]").click();
-                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
-                    cy.verifyDownload(
-                        "HealthGatewayDependentImmunizationReport.csv",
-                        {
-                            timeout: 60000,
-                            interval: 5000,
-                        }
-                    );
-                });
-            })
-            .then(() => {
-                // Click download dropdown under Schedule tab for XLSX
-                cy.get(
-                    `[data-testid=download-immunization-schedule-report-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible", "be.enabled")
-                    .click();
-
-                // Click XLSX
-                cy.get(
-                    `[data-testid=download-immunization-schedule-report-xlsx-btn-${validDependentHdid}]`
-                )
-                    .should("be.visible")
-                    .click();
-
-                // Confirmation modal for XLSX
-                cy.get("[data-testid=generic-message-modal]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=generic-message-submit-btn]").click();
-                cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
-                    cy.verifyDownload(
-                        "HealthGatewayDependentImmunizationReport.xlsx",
-                        {
-                            timeout: 60000,
-                            interval: 5000,
-                        }
-                    );
-                });
-            });
     });
 
     // test should be skipped until PHSA fixes test data for this dependent
@@ -645,103 +583,29 @@ describe("CRUD Operations", () => {
         );
     });
 
-    it("Validate Adding, Viewing, and Removing Dependents", () => {
-        cy.log("Adding dependent");
+    afterEach(function cleanupFailedDependentTest() {
+        if (this.currentTest.state !== "failed") {
+            return;
+        }
 
-        cy.get("[data-testid=add-dependent-button]").click();
-        cy.get("[data-testid=new-dependent-modal-form]").should(
-            "exist",
-            "be.visible"
+        // A failed attempt can leave the dependent registered for either user,
+        // causing Cypress retries to fail validation before cleanup is reached.
+        removeValidDependentIfPresent(
+            Cypress.env("keycloak.protected.username")
         );
+        removeValidDependentIfPresent(Cypress.env("keycloak.username"));
+    });
 
-        cy.get("[data-testid=dependent-first-name-input] input")
-            .clear()
-            .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input] input")
-            .clear()
-            .type(validDependent.lastName);
-        cy.get("[data-testid=dependent-date-of-birth-input] input")
-            .clear()
-            .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input] input")
-            .clear()
-            .type(validDependent.phn);
-        cy.get("[data-testid=dependent-terms-checkbox] input").check({
-            force: true,
-        });
-
-        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
-        cy.get("[data-testid=register-dependent-btn]").click();
-        cy.wait("@postDependent", { timeout: defaultTimeout });
-
-        // Validate the modal is done
-        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
-
-        cy.log("Validating dependent tab");
-
-        cy.get(`[data-testid=dependent-card-${validDependent.phn}]`)
-            .as("newDependentCard")
-            .within(() => {
-                // Validate the newly added dependent tab and elements are present
-                cy.get("[data-testid=dependentName]")
-                    .contains(validDependent.firstName.trim())
-                    .contains(validDependent.lastName.trim());
-
-                cy.get("[data-testid=dependentPHN] input").should(
-                    "have.value",
-                    validDependent.phn
-                );
-
-                cy.get("[data-testid=dependentDOB] input").should(
-                    "have.value",
-                    validDependent.doB
-                );
-            });
-
-        cy.log("Validating Immunization tab");
-
+    it("Validate Adding, Viewing, and Removing Dependents", () => {
         cy.setupDownloads();
-        cy.intercept("GET", "**/Immunization?hdid*").as("getImmunization");
-        cy.get("@newDependentCard").within(() => {
-            cy.get(
-                `[data-testid=immunization-tab-title-${validDependent.hdid}]`
-            ).click();
-        });
-        cy.wait("@getImmunization", { timeout: defaultTimeout });
+        cy.log("Adding dependent");
+        registerValidDependent();
+        assertValidDependentCard();
 
-        cy.get(
-            `[data-testid=immunization-tab-div-${validDependent.hdid}]`
-        ).within(() => {
-            cy.contains(".v-btn .v-btn__content", "History").click();
-        });
-
-        cy.get(
-            `[data-testid=immunization-history-table-${validDependent.hdid}]`
-        )
-            .find("tr")
-            .should("have.length.greaterThan", 1);
-
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${validDependent.hdid}]`
-        )
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.get(
-            `[data-testid=download-immunization-history-report-pdf-btn-${validDependent.hdid}]`
-        )
-            .should("be.visible")
-            .click();
-
-        cy.intercept("POST", "**/Report").as("postReport");
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.wait("@postReport", { timeout: defaultTimeout }).then(() => {
-            cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-                timeout: 60000,
-                interval: 5000,
-            });
-        });
+        // Keep one real PHSA integration check for a newly registered
+        // dependent without repeating registration and cleanup in another test.
+        openImmunizationTab(validDependent.hdid, "@newDependentCard");
+        verifyImmunizationTab(validDependent.hdid, "History", ["pdf"]);
 
         cy.log("Adding same dependent as another user");
         cy.logout();
@@ -763,36 +627,8 @@ describe("CRUD Operations", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
-        cy.get("[data-testid=add-dependent-button]").click();
-
-        cy.get("[data-testid=new-dependent-modal-form]").should(
-            "exist",
-            "be.visible"
-        );
-
-        cy.get("[data-testid=dependent-first-name-input] input")
-            .clear()
-            .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input] input")
-            .clear()
-            .type(validDependent.lastName);
-        cy.get("[data-testid=dependent-date-of-birth-input] input")
-            .clear()
-            .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input] input")
-            .clear()
-            .type(validDependent.phn);
-        cy.get("[data-testid=dependent-terms-checkbox] input").check({
-            force: true,
-        });
-
-        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
-        cy.get("[data-testid=register-dependent-btn]").click();
-        cy.wait("@postDependent", { timeout: defaultTimeout });
-
-        // Validate the modal is done
-        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
-
+        registerValidDependent();
+        assertValidDependentCard();
         cy.log("Removing dependent from other user");
 
         deleteDependent("@newDependentCard", true);
@@ -818,6 +654,7 @@ describe("CRUD Operations", () => {
             "/dependents"
         );
 
+        assertValidDependentCard();
         deleteDependent("@newDependentCard", false);
         deleteDependent("@newDependentCard", true);
 

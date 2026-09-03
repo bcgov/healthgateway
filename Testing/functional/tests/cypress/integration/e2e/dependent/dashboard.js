@@ -1,6 +1,7 @@
 import { AuthMethod } from "../../../support/constants";
+import { prepareImmunizationWait } from "../../../support/functions/timeline";
 
-const defaultTimeout = 120000;
+const defaultTimeout = 60000;
 
 const validDependent = {
     hdid: "162346565465464564565463257",
@@ -75,13 +76,20 @@ describe("dependents - dashboard", () => {
     });
 
     it("Validate download of vaccine recommendations", () => {
+        const waitForImmunizationLoad = prepareImmunizationWait(
+            validDependent.hdid
+        );
+
         cy.get(validDependent.recommendationsCardSelector)
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
             .click();
+
+        waitForImmunizationLoad();
 
         cy.get(recommendationsTableSelector).should("exist");
         cy.get(recommendationsDownloadButtonSelector)
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .and("be.enabled")
             .click();
         cy.get(recommendationsDownloadPdfButtonSelector).first().click();
 

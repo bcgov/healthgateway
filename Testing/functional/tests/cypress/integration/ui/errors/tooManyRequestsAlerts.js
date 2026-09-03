@@ -2,7 +2,61 @@ import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 const dependentHdid = "645645767756756767";
-const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+const dependentPhn = "9874307168";
+const tooManyRequestsStatusCode = 429;
+
+// Each entry exercises the store handling for a distinct timeline endpoint.
+// The warning is a shared responsive component, so repeating these scenarios
+// at a mobile viewport would repeat the same behavior and require extra logins.
+const timelineTooManyRequestsScenarios = [
+    ["Immunization", "**/Immunization?hdid*", "immunization"],
+    ["MSP Visits", "**/Encounter/*", "healthVisit"],
+    ["Hospital Visits", "**/HospitalVisit/*", "hospitalVisit"],
+    [
+        "Special Authority Requests",
+        "**/MedicationRequest/*",
+        "specialAuthorityRequest",
+    ],
+    ["COVID-19 Orders", "**/Laboratory/Covid19Orders*", "covid19TestResult"],
+    ["Laboratory Orders", "**/Laboratory/LaboratoryOrders*", "labResult"],
+];
+
+function loginWithDatasetError(endpoint, dataset) {
+    setupStandardFixtures();
+    cy.intercept("GET", endpoint, { statusCode: tooManyRequestsStatusCode });
+    cy.configureSettings({
+        datasets: [{ name: dataset, enabled: true }],
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak
+    );
+}
+
+function setupDependentsPage(datasets, setupDatasetFixtures) {
+    setupStandardFixtures();
+    cy.intercept("GET", "**/UserProfile/*/Dependent", {
+        fixture: "UserProfileService/dependent.json",
+    });
+    setupDatasetFixtures?.();
+    cy.configureSettings({
+        dependents: {
+            enabled: true,
+        },
+        datasets,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/dependents"
+    );
+
+    // UI specs use fixtures and skip endpoint waits. The rendered dependent
+    // card is the authoritative signal that the page is ready for interaction.
+    cy.get(`[data-testid=dependent-card-${dependentPhn}]`).should("be.visible");
+}
 
 describe("Landing Page - Too Many Requests", () => {
     it("Too Many Requests Banner Appears on 429 Response", () => {
@@ -28,235 +82,21 @@ describe("Landing Page - Too Many Requests", () => {
     });
 });
 
-describe("Immunization", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
+describe("Timeline - Too Many Requests", () => {
+    timelineTooManyRequestsScenarios.forEach(([name, endpoint, dataset]) => {
+        it(`Displays the warning when ${name} returns 429`, () => {
+            loginWithDatasetError(endpoint, dataset);
 
-        cy.intercept("GET", "**/Immunization?hdid*", {
-            statusCode: 429,
+            cy.get("[data-testid=too-many-requests-warning]").should(
+                "be.visible"
+            );
         });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
 });
 
-describe("Encounter", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Encounter/*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Hospital Visits", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/HospitalVisit/*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Medication Request", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/MedicationRequest/*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "specialAuthorityRequest",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Mobile - COVID-19 Orders", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Mobile - Immunization: Unsuccessful Response", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Immunization?hdid*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Mobile - Encounter", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Encounter/*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Mobile - Hospital Visits", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/HospitalVisit/*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Mobile - Laboratory Orders", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
+// Profile email-update and SMS-validation 429 responses are intentionally
+// covered by the parameterized helpers in errorAlerts.js. Those helpers verify
+// both the general server-error path and the 429-specific alert for each action.
 
 describe("Mobile - Laboratory Orders Report Download", () => {
     beforeEach(() => {
@@ -425,58 +265,6 @@ describe("Mobile - Covid19 Orders Report Download", () => {
     });
 });
 
-describe("User Profile", () => {
-    beforeEach(() => {
-        cy.configureSettings({});
-
-        setupStandardFixtures();
-
-        cy.intercept("PUT", `**/UserProfile/${HDID}/sms?api-version=2.0`, {
-            statusCode: 200,
-            body: true,
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
-    });
-
-    it("Edit email address: Too Many Requests Error", () => {
-        cy.intercept("PUT", `**/UserProfile/${HDID}/email?api-version=2.0`, {
-            statusCode: 429,
-        });
-
-        cy.log("Edit email address");
-        cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=email-input] input").type(
-            Cypress.env("emailAddress")
-        );
-        cy.get("[data-testid=editEmailSaveBtn]").click();
-
-        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
-    });
-
-    it("Verify SMS number: Too Many Requests Error", () => {
-        cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
-            statusCode: 429,
-        });
-        cy.get("[data-testid=verifySMSBtn]")
-            .should("be.visible")
-            .should("be.enabled")
-            .click();
-
-        cy.get("[data-testid=verifySMSModalCodeInput]")
-            .should("be.visible")
-            .find("input")
-            .should("have.focus")
-            .type("123456");
-
-        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
-    });
-});
-
 describe("Dependents", () => {
     const validDependent = {
         firstName: "Sam ", // Add end space to ensure field is trimmed
@@ -500,19 +288,8 @@ describe("Dependents", () => {
     };
 
     beforeEach(() => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
-            fixture: "LaboratoryService/covid19Orders.json",
-        });
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
-            fixture: "UserProfileService/dependent.json",
-        });
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-            },
-            datasets: [
+        setupDependentsPage(
+            [
                 {
                     name: "covid19TestResult",
                     enabled: true,
@@ -522,13 +299,11 @@ describe("Dependents", () => {
                     enabled: true,
                 },
             ],
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+            () => {
+                cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+                    fixture: "LaboratoryService/covid19Orders.json",
+                });
+            }
         );
     });
 
@@ -579,30 +354,18 @@ describe("Dependents", () => {
 
 describe("Dependent - Immunizaation History Tab - report download error handling", () => {
     beforeEach(() => {
-        setupStandardFixtures();
-
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
-            fixture: "UserProfileService/dependent.json",
-        });
-        cy.intercept("GET", "**/Immunization?hdid=*", {
-            fixture: "ImmunizationService/dependentImmunization.json",
-        });
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-            },
-            datasets: [
+        setupDependentsPage(
+            [
                 {
                     name: "immunization",
                     enabled: true,
                 },
             ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+            () => {
+                cy.intercept("GET", "**/Immunization?hdid=*", {
+                    fixture: "ImmunizationService/dependentImmunization.json",
+                });
+            }
         );
     });
 
@@ -611,7 +374,9 @@ describe("Dependent - Immunizaation History Tab - report download error handling
             statusCode: 429,
         });
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
+            .should("be.visible")
+            .click();
 
         // History tab
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
@@ -647,7 +412,9 @@ describe("Dependent - Immunizaation History Tab - report download error handling
             statusCode: 500,
         });
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
+            .should("be.visible")
+            .click();
 
         // History tab
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(

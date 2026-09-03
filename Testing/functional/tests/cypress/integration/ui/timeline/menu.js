@@ -121,7 +121,23 @@ describe("Menu System", () => {
             "Download"
         );
         cy.get("[data-testid=navbar-toggle-button]").should("be.visible");
-        cy.get("[data-testid=menu-btn-feedback-link]").should("be.visible");
+        // The standard user-profile fixture has no verified email. Exercise
+        // that presentation branch here while the sidebar is already loaded;
+        // one verified-email submission remains covered by E2E.
+        cy.intercept("POST", "**/UserFeedback/*", { statusCode: 200 }).as(
+            "postUserFeedback"
+        );
+        cy.get("[data-testid=menu-btn-feedback-link]")
+            .should("be.visible")
+            .click();
+        cy.get("[data-testid=feedback-comment-input]").type("Great job team!");
+        cy.get("[data-testid=send-feedback-message-btn]").click();
+        cy.wait("@postUserFeedback");
+        cy.get("[data-testid=feedback-got-it-btn]").should("not.exist");
+        cy.get("[data-testid=feedback-no-need-btn]").should("be.visible");
+        cy.get("[data-testid=feedback-update-my-email-btn]").should(
+            "be.visible"
+        );
     });
 
     it("Validate Side bar Timeline link", () => {

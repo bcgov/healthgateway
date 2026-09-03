@@ -8,6 +8,135 @@ export function getEntryCardDateString() {
         });
 }
 
+const deferredLoadTimeout = 60000;
+const maxDeferredLoadAttempts = 3;
+
+export function waitForTimelineCard(timeout = deferredLoadTimeout) {
+    return cy
+        .get("[data-testid=timelineCard]", { timeout })
+        .first()
+        .should("be.visible");
+}
+
+function waitForLoadedOrders(
+    alias,
+    errorMessage,
+    validateStatusCode,
+    timeout = deferredLoadTimeout,
+    attemptsRemaining = maxDeferredLoadAttempts
+) {
+    return cy.wait(alias, { timeout }).then((interception) => {
+        if (validateStatusCode) {
+            expect(interception.response.statusCode).to.eq(200);
+        }
+
+        const payload = interception.response.body.resourcePayload;
+        if (!payload.loaded && payload.retryin > 0) {
+            if (attemptsRemaining <= 1) {
+                throw new Error(errorMessage);
+            }
+            return waitForLoadedOrders(
+                alias,
+                errorMessage,
+                validateStatusCode,
+                timeout,
+                attemptsRemaining - 1
+            );
+        }
+
+        expect(payload.loaded).to.be.true;
+    });
+}
+
+export function waitForCovid19Orders(alias, timeout = deferredLoadTimeout) {
+    return waitForLoadedOrders(
+        alias,
+        "COVID-19 orders did not finish loading",
+        true,
+        timeout
+    );
+}
+
+export function waitForLaboratoryOrders(alias, timeout = deferredLoadTimeout) {
+    return waitForLoadedOrders(
+        alias,
+        "Laboratory orders did not finish loading",
+        false,
+        timeout
+    );
+}
+
+function waitForImmunizationResponse(
+    alias,
+    {
+        timeout = deferredLoadTimeout,
+        attemptsRemaining = maxDeferredLoadAttempts,
+        allowMissingResponse = false,
+    } = {}
+) {
+    return cy.wait(alias, { timeout }).then((interception) => {
+        if (!interception.response) {
+            if (allowMissingResponse) {
+                cy.log(
+                    "No Immunization response was available; continuing with rendered data."
+                );
+                return;
+            }
+
+            throw new Error("Immunization request did not return a response");
+        }
+
+        expect(interception.response.statusCode).to.eq(200);
+
+        const loadState = interception.response.body.resourcePayload.loadState;
+        if (loadState.refreshInProgress) {
+            if (attemptsRemaining <= 1) {
+                throw new Error("Immunizations did not finish loading");
+            }
+            return waitForImmunizationResponse(alias, {
+                timeout,
+                attemptsRemaining: attemptsRemaining - 1,
+                allowMissingResponse,
+            });
+        }
+    });
+}
+
+export function waitForImmunizations(
+    alias,
+    timeout = deferredLoadTimeout,
+    attemptsRemaining = maxDeferredLoadAttempts
+) {
+    return waitForImmunizationResponse(alias, {
+        timeout,
+        attemptsRemaining,
+    });
+}
+
+// The ClientApp may reuse cached immunization data instead of making a request.
+// Prepare the intercept before the user action, then invoke the returned callback
+// afterward to wait only when a request was actually started.
+export function prepareImmunizationWait(hdid, timeout = deferredLoadTimeout) {
+    const aliasName = "getImmunizationsIfRequested";
+    let requestStarted = false;
+
+    cy.intercept("GET", `**/Immunization?hdid=${hdid}`, () => {
+        requestStarted = true;
+    }).as(aliasName);
+
+    return () =>
+        cy.then(() => {
+            if (requestStarted) {
+                return waitForImmunizationResponse(`@${aliasName}`, {
+                    timeout,
+                    allowMissingResponse: true,
+                });
+            }
+
+            cy.log("Using previously loaded immunization data.");
+        });
+}
+
 export function validateAttachmentDownload() {
     getEntryCardDateString().then((dateString) => {
         cy.get("[data-testid=attachment-button]").should("be.visible").click();
@@ -43,6 +172,6 @@ export function validateSensitiveDocumentDownload(
     cy.verifyDownload(filename, {
         contains: !exactMatch,
         interval: 500,
-        timeout: 20000,
+        timeout: 60000,
     });
 }

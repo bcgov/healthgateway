@@ -1,10 +1,18 @@
 describe("Medication Service", () => {
-    beforeEach(() => {
-        cy.readConfig().as("config");
+    let tokens;
+
+    before(() => {
         cy.getTokens(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password")
-        ).as("tokens");
+        ).then((result) => {
+            tokens = result;
+        });
+    });
+
+    beforeEach(() => {
+        cy.readConfig().as("config");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -12,9 +20,14 @@ describe("Medication Service", () => {
             cy.log(
                 `Verifying Swagger exists for Medication at Endpoint: ${config.serviceEndpoints.Medication}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Medication}swagger`).contains(
-                "Health Gateway Medication Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.Medication}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Medication Services documentation"
+                );
+            });
         });
     });
 

@@ -1,12 +1,20 @@
 describe("Clinical Documents Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-    beforeEach(() => {
-        cy.readConfig().as("config");
+    let tokens;
+
+    before(() => {
         cy.getTokens(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password")
-        ).as("tokens");
+        ).then((result) => {
+            tokens = result;
+        });
+    });
+
+    beforeEach(() => {
+        cy.readConfig().as("config");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -14,11 +22,14 @@ describe("Clinical Documents Service", () => {
             cy.log(
                 `Verifying Swagger exists for Clinical Documents at Endpoint: ${config.serviceEndpoints.ClinicalDocument}swagger`
             );
-            cy.visit(
-                `${config.serviceEndpoints.ClinicalDocument}swagger`
-            ).contains(
-                "Health Gateway Clinical Document Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.ClinicalDocument}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Clinical Document Services documentation"
+                );
+            });
         });
     });
 

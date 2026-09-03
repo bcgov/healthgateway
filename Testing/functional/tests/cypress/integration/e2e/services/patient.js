@@ -2,12 +2,20 @@ describe("Patient Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUSHDID = "BOGUSHDID";
 
-    beforeEach(() => {
-        cy.readConfig().as("config");
+    let tokens;
+
+    before(() => {
         cy.getTokens(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password")
-        ).as("tokens");
+        ).then((result) => {
+            tokens = result;
+        });
+    });
+
+    beforeEach(() => {
+        cy.readConfig().as("config");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -15,9 +23,14 @@ describe("Patient Service", () => {
             cy.log(
                 `Verifying Swagger exists for Patient at Endpoint: ${config.serviceEndpoints.Patient}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Patient}swagger`).contains(
-                "Health Gateway Patient Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.Patient}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Patient Services documentation"
+                );
+            });
         });
     });
 

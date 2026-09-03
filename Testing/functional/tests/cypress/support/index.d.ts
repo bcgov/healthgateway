@@ -1,11 +1,25 @@
 declare namespace Cypress {
+    interface InitialDataWaitOptions {
+        /**
+         * Skip every initial-data wait when false. Defaults to false for UI
+         * fixture specs and true for live E2E specs.
+         */
+        waitForInitialDataLoad?: boolean;
+        /**
+         * Wait for dependent data on the dependent management route. Defaults
+         * to true for live E2E specs.
+         */
+        waitForDependent?: boolean;
+    }
+
     interface Chainable {
         logout(): void;
         login(
             username: string,
             password: string,
             authMethod?: string,
-            path?: string
+            path?: string,
+            initialDataWaitOptions?: InitialDataWaitOptions
         ): void;
         getTokens(username: string, password: string): void;
         readConfig(): Chainable<any>;

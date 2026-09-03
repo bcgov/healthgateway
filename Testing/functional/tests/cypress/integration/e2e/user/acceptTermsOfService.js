@@ -11,7 +11,8 @@ describe("Need to accept terms of service", () => {
             Cypress.env("keycloak.accept.tos.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            "/home",
+            { waitForInitialDataLoad: false }
         );
         cy.wait("@getTermsOfService", { timeout: defaultTimeout });
 
@@ -30,22 +31,6 @@ describe("Need to accept terms of service", () => {
             .should("be.enabled")
             .check({ force: true });
         cy.get("[data-testid=continue-btn]").should("be.enabled").click();
-        cy.url().should("include", "/home");
-    });
-});
-
-describe("Does not need to accept terms of service", () => {
-    beforeEach(() => {
-        cy.configureSettings({});
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
-    });
-
-    it("Validate accept terms of service is not required", () => {
         cy.url().should("include", "/home");
     });
 });

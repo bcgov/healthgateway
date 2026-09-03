@@ -1,11 +1,19 @@
 describe("GatewayApi UserFeedback Service", () => {
     const BASEURL = "UserFeedback/";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-    beforeEach(() => {
+    let tokens;
+
+    before(() => {
         cy.getTokens(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password")
-        ).as("tokens");
+        ).then((result) => {
+            tokens = result;
+        });
+    });
+
+    beforeEach(() => {
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Post UserFeedback Unauthorized", () => {

@@ -1,4 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
+import { waitForCovid19Orders } from "../../../support/functions/timeline";
 
 const homePath = "/home";
 
@@ -34,28 +35,55 @@ function getQuickLinkCard(title) {
         .parents(quickLinkCardSelector);
 }
 
-function clickRemoveQuickLinkSelector(isPost = false) {
-    if (isPost) {
-        cy.intercept("POST", "**/UserProfile/*/preference*").as(
-            "postUserProfilePreference"
-        );
-    } else {
-        cy.intercept("PUT", "**/UserProfile/*/preference*").as(
-            "putUserProfilePreference"
-        );
-    }
+function clickRemoveQuickLinkSelector(method = "PUT") {
+    cy.intercept(method, "**/UserProfile/*/preference*").as(
+        "setUserProfilePreference"
+    );
 
     cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+    cy.wait("@setUserProfilePreference", { timeout: defaultTimeout })
+        .its("response.statusCode")
+        .should("eq", 200);
+}
 
-    if (isPost) {
-        cy.wait("@postUserProfilePreference", { timeout: defaultTimeout });
-    } else {
-        cy.wait("@putUserProfilePreference", { timeout: defaultTimeout });
-    }
+function removeQuickLinksIfPresent(titles) {
+    titles.forEach((title) => {
+        cy.get("body").then(($body) => {
+            const matchingTitles = $body
+                .find(cardButtonTitleSelector)
+                .filter((_, element) => element.textContent.trim() === title);
+
+            if (matchingTitles.length === 0) {
+                return;
+            }
+
+            getQuickLinkCard(title).within(() => {
+                cy.get(quickLinkMenuButtonSelector)
+                    .should("be.visible")
+                    .should("be.enabled")
+                    .click();
+            });
+            clickRemoveQuickLinkSelector();
+            cy.contains(cardButtonTitleSelector, title).should("not.exist");
+        });
+    });
 }
 
 describe("Quick Links", () => {
+    let quickLinkTitlesUnderTest = [];
+
+    afterEach(() => {
+        if (quickLinkTitlesUnderTest.length === 0) {
+            return;
+        }
+
+        cy.visit(homePath);
+        cy.get("[data-testid=health-records-card]").should("be.visible");
+        removeQuickLinksIfPresent(quickLinkTitlesUnderTest);
+    });
+
     it("Add, Verify Timeline Link and Remove Quick Link", () => {
+        quickLinkTitlesUnderTest = [laboratoryTitle];
         cy.configureSettings({
             datasets: [
                 {
@@ -73,6 +101,7 @@ describe("Quick Links", () => {
 
         // Validate home page has displayed before clicking on quick link.
         cy.get("[data-testid=health-records-card]").should("be.visible");
+        removeQuickLinksIfPresent(quickLinkTitlesUnderTest);
 
         cy.log("Adding a quick link");
         cy.get(addQuickLinkButtonSelector)
@@ -103,7 +132,7 @@ describe("Quick Links", () => {
             .click();
 
         cy.wait("@getCommunication", { timeout: defaultTimeout });
-        cy.wait("@getCovid19Orders", { timeout: defaultTimeout });
+        waitForCovid19Orders("@getCovid19Orders");
         cy.checkTimelineHasLoaded();
 
         cy.log("Verifying filter is active");
@@ -141,6 +170,11 @@ describe("Quick Links", () => {
     });
 
     it("Add, Cancel, Add and Remove Multiple Quick Links", () => {
+        quickLinkTitlesUnderTest = [
+            encounterTitle,
+            immunizationTitle,
+            laboratoryTitle,
+        ];
         cy.configureSettings({
             datasets: [
                 {
@@ -166,6 +200,7 @@ describe("Quick Links", () => {
 
         // Validate home page has displayed before clicking on quick link.
         cy.get("[data-testid=health-records-card]").should("be.visible");
+        removeQuickLinksIfPresent(quickLinkTitlesUnderTest);
 
         cy.log("Opening add quick link modal");
         cy.get(addQuickLinkButtonSelector)
@@ -338,7 +373,7 @@ describe("Organ Donor Quick Link", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        clickRemoveQuickLinkSelector(true);
+        clickRemoveQuickLinkSelector("POST");
 
         cy.log("Verifying organ donor quick link no longer exists");
         cy.get(organDonorQuickLinkCardSelector).should("not.exist");
@@ -460,7 +495,7 @@ describe("Health Connect Registry Card", () => {
                 .should("be.visible", "be.enabled")
                 .click();
         });
-        clickRemoveQuickLinkSelector(true);
+        clickRemoveQuickLinkSelector("POST");
 
         cy.log("Verifying health connect quick link no longer exists");
         cy.get(healthConnectQuickLinkCardSelector).should("not.exist");

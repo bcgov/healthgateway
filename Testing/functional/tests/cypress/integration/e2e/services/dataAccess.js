@@ -4,9 +4,17 @@ describe("Gateway Api Data Access Service", () => {
     const DELEGATE_HDID =
         "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
+    let tokens;
+
+    before(() => {
+        cy.getTokens().then((result) => {
+            tokens = result;
+        });
+    });
+
     beforeEach(() => {
         cy.readConfig().as("config");
-        cy.getTokens().as("tokens");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -14,9 +22,14 @@ describe("Gateway Api Data Access Service", () => {
             cy.log(
                 `Verifying Swagger exists for Gateway Api Endpoint: ${config.serviceEndpoints.GatewayApi}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.GatewayApi}swagger`).contains(
-                "Health Gateway API Services documentation"
-            );
+            cy.request(
+                `${config.serviceEndpoints.GatewayApi}swagger/v1/swagger.json`
+            ).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway API Services documentation"
+                );
+            });
         });
     });
 

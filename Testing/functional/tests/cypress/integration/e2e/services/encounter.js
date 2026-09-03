@@ -1,10 +1,20 @@
 describe("Encounter Service", () => {
-    beforeEach(() => {
-        cy.readConfig().as("config");
+    const defaultTimeout = 60000;
+
+    let tokens;
+
+    before(() => {
         cy.getTokens(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password")
-        ).as("tokens");
+        ).then((result) => {
+            tokens = result;
+        });
+    });
+
+    beforeEach(() => {
+        cy.readConfig().as("config");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -12,9 +22,15 @@ describe("Encounter Service", () => {
             cy.log(
                 `Verifying Swagger exists for Encounter at Endpoint: ${config.serviceEndpoints.Encounter}swagger`
             );
-            cy.visit(`${config.serviceEndpoints.Encounter}swagger`).contains(
-                "Health Gateway Encounter Services documentation"
-            );
+            cy.request({
+                url: `${config.serviceEndpoints.Encounter}swagger/v1/swagger.json`,
+                timeout: defaultTimeout,
+            }).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Encounter Services documentation"
+                );
+            });
         });
     });
 
@@ -25,6 +41,7 @@ describe("Encounter Service", () => {
             );
             cy.request({
                 url: `${config.serviceEndpoints.Encounter}Encounter/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+                timeout: defaultTimeout,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -43,6 +60,7 @@ describe("Encounter Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Encounter}Encounter/${HDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -68,6 +86,7 @@ describe("Encounter Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Encounter}Encounter/${HDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -101,6 +120,7 @@ describe("Encounter Service", () => {
             );
             cy.request({
                 url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+                timeout: defaultTimeout,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -119,6 +139,7 @@ describe("Encounter Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/${HDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -144,6 +165,7 @@ describe("Encounter Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/${HDID}`,
+                    timeout: defaultTimeout,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -170,7 +192,7 @@ describe("Encounter Service", () => {
                     method: "GET",
                     url: `${encounterEndpoint}Encounter/HospitalVisit/${HDID}?api-version=2`,
                     followRedirect: false,
-                    timeout: 120000,
+                    timeout: defaultTimeout,
                     auth: {
                         bearer: tokens.access_token,
                     },

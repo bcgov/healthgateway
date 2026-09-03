@@ -1,16 +1,20 @@
 describe("GatewayApi Communication Service", () => {
-    const BASEURL = "Communication/";
+    const communicationTypes = [
+        ["Banner", 0],
+        ["In-App", 2],
+    ];
 
-    it("Verify Get Communication", () => {
-        cy.logout();
-        cy.readConfig().then((config) => {
-            cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}0`,
-                followRedirect: false,
-                failOnStatusCode: false,
-            }).should((response) => {
-                expect(response.status).to.eq(200);
-                expect(response.body).to.not.be.null;
+    communicationTypes.forEach(([name, type]) => {
+        it(`Verify Get ${name} Communication`, () => {
+            cy.readConfig().then((config) => {
+                cy.request({
+                    url: `${config.serviceEndpoints.GatewayApi}Communication/${type}`,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                }).should((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                });
             });
         });
     });

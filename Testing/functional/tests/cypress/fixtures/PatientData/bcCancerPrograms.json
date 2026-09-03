@@ -1,0 +1,84 @@
+{
+    "items": [
+        {
+            "eventType": "Recall",
+            "programName": "Breast Cancer",
+            "fileId": "breast-recall",
+            "eventDateTime": "2023-08-08T10:00:00Z",
+            "resultDateTime": "2023-08-08T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "breast-recall",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Result",
+            "programName": "Breast Cancer",
+            "fileId": "breast-result",
+            "eventDateTime": "2023-08-07T10:00:00Z",
+            "resultDateTime": "2023-08-07T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "breast-result",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Recall",
+            "programName": "Cervical Cancer",
+            "fileId": "cervical-recall",
+            "eventDateTime": "2023-08-06T10:00:00Z",
+            "resultDateTime": "2023-08-06T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "cervical-recall",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Result",
+            "programName": "Cervical Cancer",
+            "fileId": "cervical-result",
+            "eventDateTime": "2023-08-05T10:00:00Z",
+            "resultDateTime": "2023-08-05T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "cervical-result",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Recall",
+            "programName": "Colon Cancer",
+            "fileId": "colon-recall",
+            "eventDateTime": "2023-08-04T10:00:00Z",
+            "resultDateTime": "2023-08-04T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "colon-recall",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Result",
+            "programName": "Colon Cancer",
+            "fileId": "colon-result",
+            "eventDateTime": "2023-08-03T10:00:00Z",
+            "resultDateTime": "2023-08-03T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "colon-result",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Recall",
+            "programName": "Lung Cancer",
+            "fileId": "lung-recall",
+            "eventDateTime": "2023-08-02T10:00:00Z",
+            "resultDateTime": "2023-08-02T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "lung-recall",
+            "$type": "BcCancerScreening"
+        },
+        {
+            "eventType": "Result",
+            "programName": "Lung Cancer",
+            "fileId": "lung-result",
+            "eventDateTime": "2023-08-01T10:00:00Z",
+            "resultDateTime": "2023-08-01T10:00:00Z",
+            "type": "BcCancerScreening",
+            "id": "lung-result",
+            "$type": "BcCancerScreening"
+        }
+    ]
+}

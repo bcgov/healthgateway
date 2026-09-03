@@ -1,4 +1,13 @@
 import { AuthMethod } from "../../../support/constants";
+import {
+    applyTimelineFilters,
+    cancelTimelineFilters,
+    openTimelineFilters,
+    selectTimelineFilters,
+    testDatasetTimelineFiltering,
+    timelineFilterDefinitions,
+    verifyTimelineFilterSelection,
+} from "../../../support/functions/filter";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("Filters", () => {
@@ -74,6 +83,13 @@ describe("Filters", () => {
     it("Verify filtered record count", () => {
         const totalRecordsUnfiltered = 37;
         const pageSize = 25;
+        const expectedFilterCounts = {
+            clinicalDocument: 2,
+            healthVisit: 23,
+            immunization: 9,
+            diagnosticImaging: 2,
+            bcCancerScreening: 1,
+        };
         const recordDisplayMessage = (lower, upper, total) =>
             `Displaying ${lower} to ${upper} out of ${total} records`;
 
@@ -82,6 +98,11 @@ describe("Filters", () => {
         );
 
         cy.get("[data-testid=filterDropdown]").click();
+        Object.entries(expectedFilterCounts).forEach(([dataset, count]) => {
+            cy.get(timelineFilterDefinitions[dataset].countSelector).contains(
+                count
+            );
+        });
         cy.get("[data-testid=Immunization-filter]").click();
         cy.get("[data-testid=btnFilterApply]").click();
 
@@ -123,6 +144,56 @@ describe("Filters", () => {
         cy.get("[data-testid=timeline-record-count]").contains(
             recordDisplayMessage(1, pageSize, totalRecordsUnfiltered)
         );
+    });
+
+    it("Verify filtering by record type", () => {
+        // One representative dataset verifies the generic record-type filter.
+        // Dataset-specific rendering is covered by the individual timeline specs.
+        testDatasetTimelineFiltering("immunization");
+    });
+
+    it("Verify cancelling discards pending filter selections", () => {
+        const datasets = [
+            "clinicalDocument",
+            "healthVisit",
+            "immunization",
+            "diagnosticImaging",
+            "bcCancerScreening",
+        ];
+
+        // Applying without selecting a type keeps the timeline unfiltered.
+        openTimelineFilters();
+        verifyTimelineFilterSelection(datasets, false);
+        applyTimelineFilters();
+
+        openTimelineFilters();
+        selectTimelineFilters(datasets);
+        verifyTimelineFilterSelection(datasets, true);
+        cancelTimelineFilters();
+
+        // Reopening the dialog proves Cancel did not change the active filter.
+        openTimelineFilters();
+        verifyTimelineFilterSelection(datasets, false);
+        cancelTimelineFilters();
+    });
+
+    it("Verify immunization text filtering", () => {
+        // The fixture includes COVID and Polio in different immunization fields.
+        ["COVID", "Polio"].forEach((filterText) => {
+            openTimelineFilters();
+            cy.get("[data-testid=filterTextInput]").type(filterText);
+            applyTimelineFilters();
+            cy.get("[data-testid=immunizationTitle]").should("be.visible");
+            cy.get("[data-testid=clear-filters-button]").click();
+        });
+
+        // A unique value verifies the empty-results path without relying on dates.
+        openTimelineFilters();
+        cy.get("[data-testid=filterTextInput]").type(
+            "no-data-should-match-this-unique-string"
+        );
+        applyTimelineFilters();
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 
     it(`Verify health visit alert appears when the health visit filter is the only active filter`, () => {

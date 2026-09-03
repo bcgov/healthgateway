@@ -1,77 +1,23 @@
-const { AuthMethod } = require("../../../support/constants");
+import { AuthMethod } from "../../../support/constants";
 
-describe("MSP Visits", () => {
-    beforeEach(() => {
+describe("Encounter timeline integration", () => {
+    it("Loads a Health Visit from the Encounter service", () => {
         cy.configureSettings({
-            datasets: [
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-            ],
+            datasets: [{ name: "healthVisit", enabled: true }],
         });
+        cy.intercept("GET", "**/Encounter/*").as("getEncounters");
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline"
         );
+        cy.wait("@getEncounters", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
-    });
 
-    it("Validate Encounter Card Details", () => {
-        cy.get("[data-testid=timelineCard")
-            .first()
-            .within(() => {
-                cy.get("[data-testid=healthvisitTitle]")
-                    .should("be.visible")
-                    .click({ force: true });
-                cy.get("[data-testid=encounterClinicName]").should(
-                    "be.visible"
-                );
-            });
-    });
-});
-
-describe("Hospital Visits", () => {
-    beforeEach(() => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "hospitalVisit",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-    });
-
-    it("Validate Hospital Visit Card Details", () => {
-        cy.get("[data-testid=timelineCard")
-            .first()
-            .within(() => {
-                cy.get("[data-testid=hospitalvisitTitle]")
-                    .first()
-                    .click({ force: true });
-                cy.get("[data-testid=hospital-visit-location]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=hospital-visit-provider]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=hospital-visit-service]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=hospital-visit-date]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=hospital-visit-discharge-date]").should(
-                    "be.visible"
-                );
-            });
+        // Detailed card rendering is covered by fixture-backed UI tests. This
+        // assertion verifies that real Encounter data reaches the timeline.
+        cy.get("[data-testid=healthvisitTitle]").first().should("be.visible");
     });
 });

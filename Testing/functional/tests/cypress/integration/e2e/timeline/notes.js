@@ -10,11 +10,15 @@ describe("Notes", () => {
                 },
             ],
         });
+        cy.intercept("GET", "**/Note/*").as("getNotes");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            { waitForInitialDataLoad: false }
         );
+        cy.wait("@getNotes", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
     });
 

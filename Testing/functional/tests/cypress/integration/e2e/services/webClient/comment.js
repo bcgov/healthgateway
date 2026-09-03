@@ -2,12 +2,20 @@ describe("GatewayApi Comment Service", () => {
     const BASEURL = "UserProfile/";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUSHDID = "BOGUSHDID";
-    beforeEach(() => {
-        cy.readConfig().as("config");
+    let tokens;
+
+    before(() => {
         cy.getTokens(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password")
-        ).as("tokens");
+        ).then((result) => {
+            tokens = result;
+        });
+    });
+
+    beforeEach(() => {
+        cy.readConfig().as("config");
+        cy.wrap(tokens).as("tokens");
     });
 
     it("Verify Get Comment Unauthorized", () => {
@@ -59,9 +67,17 @@ describe("GatewayApi Comment Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    expect(response.body.resourcePayload).to.be.an("object")
-                        .that.is.empty;
-                    expect(response.body.totalResultCount).to.eq(0);
+
+                    // Other specs may create comments for this shared user, so
+                    // validate the response contract instead of assuming it is empty.
+                    const payload = response.body.resourcePayload;
+                    expect(payload).to.be.an("object");
+                    expect(response.body.totalResultCount).to.eq(
+                        Object.keys(payload).length
+                    );
+                    Object.values(payload).forEach((comments) => {
+                        expect(comments).to.be.an("array").and.not.be.empty;
+                    });
                     expect(response.body.resultStatus).to.eq(1);
                     expect(response.body.resultError).to.eq(null);
                 });

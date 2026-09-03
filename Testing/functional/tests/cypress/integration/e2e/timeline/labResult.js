@@ -2,6 +2,8 @@ const { AuthMethod } = require("../../../support/constants");
 const {
     validateAttachmentDownload,
     validateFileDownload,
+    waitForLaboratoryOrders,
+    waitForTimelineCard,
 } = require("../../../support/functions/timeline");
 
 describe("Laboratory Orders", () => {
@@ -14,16 +16,23 @@ describe("Laboratory Orders", () => {
                 },
             ],
         });
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
+            "getLaboratoryOrders"
+        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            { waitForInitialDataLoad: false }
         );
+        waitForLaboratoryOrders("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();
+        waitForTimelineCard();
     });
 
     it("Validate file download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.get("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
@@ -34,7 +43,7 @@ describe("Laboratory Orders", () => {
     });
 
     it("Validate attachment download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.get("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {

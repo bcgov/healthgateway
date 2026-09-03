@@ -238,8 +238,8 @@ jobs:
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
 
-  - job: "HG_Functional_Tests"
-    displayName: "HG Functional Tests"
+  - job: "HG_UI_Functional_Tests"
+    displayName: "HG UI Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     dependsOn:
@@ -247,24 +247,65 @@ jobs:
       - "HG_Auth_Functional_Tests"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
-      parallel: 9
+      parallel: 6
     timeoutInMinutes: 15
     steps:
       - checkout: self
         fetchDepth: 1
         clean: true
       - task: Cache@2
-        displayName: Cache npm (HG Functional)
+        displayName: Cache npm (HG UI Functional)
         inputs:
           key: 'npm | "$(Agent.OS)" | Testing/functional/tests/package-lock.json'
           restoreKeys: |
             npm | "$(Agent.OS)"
           path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
-        displayName: "Run HG Functional Tests"
+        displayName: "Run HG UI Functional Tests"
         inputs:
           targetType: filePath
-          filePath: "./Tools/Pipelines/scripts/azp_runFunctionalTests.sh"
+          filePath: "./Tools/Pipelines/scripts/azp_runUiFunctionalTests.sh"
+          arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+        env: # Required environment settings and secrets for HG tests
+          TERM: xterm
+          CYPRESS_KEY: $(cypress.key)
+          BCSC_PW: $(bcsc.pw)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          PHONENUMBER: $(phoneNumber)
+          KEYCLOAK_EREBUS_CLIENT: $(keycloak.erebus.client)
+          KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
+          KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
+          KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
+
+  - job: "HG_E2E_Functional_Tests"
+    displayName: "HG E2E Functional Tests"
+    pool:
+      vmImage: "ubuntu-latest"
+    dependsOn:
+      - "HG_Seed"
+      - "HG_UI_Functional_Tests"
+    condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    strategy:
+      parallel: 6
+    timeoutInMinutes: 15
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Cache@2
+        displayName: Cache npm (HG E2E Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Testing/functional/tests/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
+      - task: Bash@3
+        displayName: "Run HG E2E Functional Tests"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_runE2eFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
           TERM: xterm

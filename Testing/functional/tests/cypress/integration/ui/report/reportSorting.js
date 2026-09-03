@@ -1,6 +1,10 @@
 import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
+// These fixture-backed specs own dataset-specific report presentation and
+// sorting coverage. E2E report specs intentionally retain only representative
+// user and dependent download flows.
+
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Reports - Medication", () => {
@@ -20,6 +24,10 @@ describe("Reports - Medication", () => {
 
         setupStandardFixtures();
 
+        cy.intercept("GET", `**/MedicationStatement/${HDID}`, {
+            fixture: "Report/medicationStatementUnSorted.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -29,9 +37,6 @@ describe("Reports - Medication", () => {
     });
 
     it("Validate Medication Statement Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/MedicationStatement/${HDID}`, {
-            fixture: "Report/medicationStatementUnSorted.json",
-        });
         cy.vSelect("[data-testid=report-type]", "Medications");
         cy.get("[data-testid=report-sample]").should("be.visible");
 
@@ -132,6 +137,10 @@ describe("Reports - Immunization", () => {
 
         setupStandardFixtures();
 
+        cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
+            fixture: "Report/immunizationUnSorted.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -141,9 +150,6 @@ describe("Reports - Immunization", () => {
     });
 
     it("Validate Immunization Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
-            fixture: "Report/immunizationUnSorted.json",
-        });
         cy.vSelect("[data-testid=report-type]", "Immunizations");
 
         cy.get("[data-testid=report-sample]").should("be.visible");
@@ -219,6 +225,10 @@ describe("Reports - MSP Visit", () => {
 
         setupStandardFixtures();
 
+        cy.intercept("GET", `**/Encounter/${HDID}`, {
+            fixture: "Report/mspVisitUnSorted.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -228,9 +238,6 @@ describe("Reports - MSP Visit", () => {
     });
 
     it("Validate MSP Visit Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Encounter/${HDID}`, {
-            fixture: "Report/mspVisitUnSorted.json",
-        });
         cy.vSelect("[data-testid=report-type]", "Health Visits");
 
         cy.get("[data-testid=report-sample]").should("be.visible");
@@ -275,6 +282,14 @@ describe("Reports - Hospital Visits", () => {
 
         setupStandardFixtures();
 
+        cy.intercept(
+            "GET",
+            `**/Encounter/HospitalVisit/${HDID}?api-version=2.0`,
+            {
+                fixture: "Report/hospitalVisitUnSorted.json",
+            }
+        );
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -284,13 +299,6 @@ describe("Reports - Hospital Visits", () => {
     });
 
     it("Validate Hospital Visit Report with Unsorted Data", () => {
-        cy.intercept(
-            "GET",
-            `**/Encounter/HospitalVisit/${HDID}?api-version=2.0`,
-            {
-                fixture: "Report/hospitalVisitUnSorted.json",
-            }
-        );
         cy.vSelect("[data-testid=report-type]", "Hospital Visits");
 
         cy.get("[data-testid=report-sample]").should("be.visible");
@@ -335,6 +343,10 @@ describe("Reports - Notes (User-Entered)", () => {
 
         setupStandardFixtures();
 
+        cy.intercept("GET", `**/Note/${HDID}`, {
+            fixture: "Report/noteUnSorted.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -344,9 +356,6 @@ describe("Reports - Notes (User-Entered)", () => {
     });
 
     it("Validate Note (User-Entered) Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Note/${HDID}`, {
-            fixture: "Report/noteUnSorted.json",
-        });
         cy.vSelect("[data-testid=report-type]", "My Notes");
 
         cy.get("[data-testid=report-sample]").should("be.visible");
@@ -391,6 +400,10 @@ describe("Reports - Laboratory Tests", () => {
 
         setupStandardFixtures();
 
+        cy.intercept("GET", `**/Laboratory/LaboratoryOrders?hdid=${HDID}`, {
+            fixture: "Report/laboratoryUnSorted.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -400,9 +413,6 @@ describe("Reports - Laboratory Tests", () => {
     });
 
     it("Validate Laboratory Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Laboratory/LaboratoryOrders?hdid=${HDID}`, {
-            fixture: "Report/laboratoryUnSorted.json",
-        });
         cy.vSelect("[data-testid=report-type]", "Lab Results");
 
         cy.get("[data-testid=report-sample]").should("be.visible");

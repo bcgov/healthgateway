@@ -165,17 +165,32 @@ export function setupStandardAliases() {
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 }
 
-export function waitForInitialDataLoad(username, config, path) {
+export function waitForInitialDataLoad(
+    username,
+    config,
+    path,
+    {
+        // Skip every initial-data wait when false.
+        waitForInitialDataLoad: shouldWaitForInitialDataLoad = true,
+
+        // Skip only the optional Dependent request when false.
+        waitForDependent: shouldWaitForDependent = true,
+    } = {}
+) {
+    if (!shouldWaitForInitialDataLoad) {
+        cy.log("Skipping initial data waits.");
+        return;
+    }
+
     const featureToggle = config.webClient.featureToggleConfiguration;
 
     cy.log(`Username: ${username}`);
     cy.log(`Feature Toggle: ${JSON.stringify(featureToggle)}`);
     cy.log(`Path: ${path}`);
 
-    cy.log("Wait on patient.");
-    cy.wait("@getPatient", { timeout: defaultTimeout });
-
-    waitForUserProfile(username).then((blockedDataSources) => {
+    // ClientApp requests User Profile only after Patient completes, so waiting
+    // for User Profile also confirms that Patient finished loading.
+    waitForUserProfile().then((blockedDataSources) => {
         waitForClinicalDocument(featureToggle, path, blockedDataSources);
         waitForOrganDonorRegistratonStatusService(
             featureToggle,
@@ -199,38 +214,29 @@ export function waitForInitialDataLoad(username, config, path) {
     cy.wait("@getCommunication", { timeout: defaultTimeout });
 
     waitForNotification(featureToggle);
-    waitForDependent(featureToggle, path);
+    if (shouldWaitForDependent) {
+        waitForDependent(featureToggle, path);
+    }
 }
 
-function waitForUserProfile(username) {
-    return new Cypress.Promise((resolve) => {
-        let blockedDataSources;
+function waitForUserProfile() {
+    cy.log("Wait on user profile.");
+    return cy
+        .wait("@getUserProfile", { timeout: defaultTimeout })
+        .then((interception) => {
+            const blockedDataSources =
+                interception.response.body.blockedDataSources;
 
-        if (
-            username !== Cypress.env("keycloak.deceased.username") &&
-            username !== Cypress.env("keycloak.accountclosure.username")
-        ) {
-            cy.log("Wait on user profile.");
-            cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
-                (interception) => {
-                    const responseBody = interception.response.body;
-                    blockedDataSources = responseBody.blockedDataSources;
-
-                    cy.log(
-                        `Get User Profile Blocked Data Sources: ${
-                            blockedDataSources
-                                ? JSON.stringify(blockedDataSources)
-                                : "Blocked data sources are not available"
-                        }`
-                    );
-
-                    resolve(blockedDataSources);
-                }
+            cy.log(
+                `Get User Profile Blocked Data Sources: ${
+                    blockedDataSources
+                        ? JSON.stringify(blockedDataSources)
+                        : "Blocked data sources are not available"
+                }`
             );
-        } else {
-            resolve(blockedDataSources);
-        }
-    });
+
+            return cy.wrap(blockedDataSources);
+        });
 }
 
 function waitForNotification(featureToggle) {

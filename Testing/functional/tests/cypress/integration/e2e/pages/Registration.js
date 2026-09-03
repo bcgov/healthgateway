@@ -1,4 +1,5 @@
 import { AuthMethod } from "../../../support/constants";
+const defaultTimeout = 60000;
 const logoutCompletePath = "/logoutComplete";
 const registrationPath = "/registration";
 const homePath = "/home";
@@ -8,14 +9,20 @@ const invalidPhone = "250";
 describe("Registration Page", () => {
     it("Minimum age error and logout", () => {
         cy.configureSettings({});
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
+            "getTermsOfService"
+        );
         cy.login(
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            { waitForInitialDataLoad: false }
         );
-        cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
+
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
         cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
         cy.get("[data-testid=registration-logout-button]")
             .should("be.visible")
             .click();
@@ -28,7 +35,8 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            { waitForInitialDataLoad: false }
         );
 
         cy.contains("#subject", "Registration").should("be.visible");
@@ -121,7 +129,8 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.accountclosure.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            { waitForInitialDataLoad: false }
         );
         cy.get("[data-testid=patient-retrieval-error]")
             .should("exist")
