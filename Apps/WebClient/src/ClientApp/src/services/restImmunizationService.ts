@@ -1,10 +1,8 @@
 import { EntryType } from "@/constants/entryType";
-import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import ImmunizationResult from "@/models/immunizationResult";
-import RequestResult from "@/models/requestResult";
 import {
     IHttpDelegate,
     IImmunizationService,
@@ -14,6 +12,7 @@ import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestImmunizationService implements IImmunizationService {
+    private readonly API_VERSION: string = "2.0";
     private readonly IMMS_BASE_URI: string = "Immunization";
     private readonly logger;
     private readonly http;
@@ -31,27 +30,18 @@ export class RestImmunizationService implements IImmunizationService {
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Immunization);
     }
 
-    public getPatientImmunizations(
-        hdid: string
-    ): Promise<RequestResult<ImmunizationResult>> {
-        this.logger.debug(`Get patient inmmunization for hdid::  ${hdid}`);
+    public getPatientImmunizations(hdid: string): Promise<ImmunizationResult> {
+        this.logger.debug(`Get patient immunizations for hdid: ${hdid}`);
         if (!this.isEnabled) {
             return Promise.resolve({
-                pageIndex: 0,
-                pageSize: 0,
-                resourcePayload: {
-                    loadState: { refreshInProgress: false },
-                    immunizations: [],
-                    recommendations: [],
-                },
-                resultStatus: ResultType.Success,
-                totalResultCount: 0,
+                immunizations: [],
+                recommendations: [],
             });
         }
 
         return this.http
-            .getWithCors<RequestResult<ImmunizationResult>>(
-                `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}`
+            .getWithCors<ImmunizationResult>(
+                `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}&api-version=${this.API_VERSION}`
             )
             .catch((err: HttpError) => {
                 this.logger.error(

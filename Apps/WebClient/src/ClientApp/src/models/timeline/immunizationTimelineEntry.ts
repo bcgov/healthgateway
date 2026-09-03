@@ -66,26 +66,18 @@ class ForecastViewModel {
 
 class ImmunizationViewModel {
     public id: string;
-    public isSelfReported: boolean;
-    public location: string;
     public name: string;
     public status: string;
-    public valid: boolean;
     public dateOfImmunization: DateWrapper;
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
     public forecast?: ForecastViewModel;
-    public targetedDisease: string;
-
     public searchableAgentsText: string;
 
     constructor(model: ImmunizationEvent) {
         this.id = model.id;
-        this.isSelfReported = model.isSelfReported;
-        this.location = model.location;
         this.name = model.immunization.name;
         this.status = model.status;
-        this.valid = model.valid;
         this.dateOfImmunization = DateWrapper.fromIsoDate(
             model.dateOfImmunization
         );
@@ -98,8 +90,6 @@ class ImmunizationViewModel {
         if (model.forecast) {
             this.forecast = new ForecastViewModel(model.forecast);
         }
-
-        this.targetedDisease = model.targetedDisease;
 
         this.searchableAgentsText = this.immunizationAgents.reduce(
             (accumulator: string, current: ImmunizationAgentViewModel) =>
