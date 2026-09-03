@@ -29,7 +29,7 @@ TZ=America/Vancouver npx cypress run \
   --record \
   --key "$CYPRESS_KEY" \
   --parallel \
-  --ci-build-id "$buildId-ui" \
+  --ci-build-id "${buildId}-ui" \
   --group "ui" \
   --tag "$tags" \
   --spec "cypress/integration/ui/**/!(auth.js)" \
