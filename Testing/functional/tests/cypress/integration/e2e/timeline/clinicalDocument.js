@@ -27,7 +27,7 @@ describe("Clinical Document", () => {
     });
 
     it("Validate file and attachment downloads", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.get("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
