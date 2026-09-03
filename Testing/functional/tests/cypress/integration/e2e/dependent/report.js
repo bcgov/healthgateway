@@ -4,7 +4,7 @@ import {
     getTabButtonSelector,
 } from "../../../support/functions/dependent";
 import { confirmAndVerifyReportDownload } from "../../../support/functions/report";
-import { waitForImmunizations } from "../../../support/functions/timeline";
+import { prepareImmunizationWait } from "../../../support/functions/timeline";
 
 // Jennifer T is seeded with dependent Immunization report data.
 const dependentHdid = "162346565465464564565463257";
@@ -21,6 +21,9 @@ describe("Dependent report download integration", () => {
             },
             datasets: [{ name: "immunization", enabled: true }],
         });
+
+        const waitForImmunizations = prepareImmunizationWait(dependentHdid);
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -28,14 +31,11 @@ describe("Dependent report download integration", () => {
             "/dependents"
         );
 
-        cy.intercept("GET", `**/Immunization?hdid=${dependentHdid}`).as(
-            "getDependentImmunizations"
-        );
         cy.get(getCardSelector(dependentHdid)).within(() => {
             cy.get(getTabButtonSelector(dependentHdid, "report")).click();
             cy.get("[data-testid=report-tab]").within(() => {
                 cy.vSelect("[data-testid=report-type]", "Immunizations");
-                waitForImmunizations("@getDependentImmunizations");
+                waitForImmunizations();
                 cy.get("[data-testid=export-record-btn]").click();
             });
         });
