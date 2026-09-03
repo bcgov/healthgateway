@@ -27,7 +27,7 @@ echo "Running Cypress UI Functional Tests"
 TZ=America/Vancouver npx cypress run \
   --env "bcsc.password=$BCSC_PW,keycloak.password=$KEYCLOAK_PW,idir.password=$IDIR_PASSWORD,phoneNumber=$PHONENUMBER,keycloak.erebus.client=$KEYCLOAK_EREBUS_CLIENT,keycloak.erebus.secret=$KEYCLOAK_EREBUS_SECRET,keycloak.phsa.client=$KEYCLOAK_PHSA_CLIENT,keycloak.phsa.secret=$KEYCLOAK_PHSA_SECRET" \
   --record \
-  --key $CYPRESS_KEY \
+  --key "$CYPRESS_KEY" \
   --parallel \
   --ci-build-id "$buildId-ui" \
   --group "ui" \
