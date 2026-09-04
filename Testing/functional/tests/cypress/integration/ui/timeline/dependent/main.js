@@ -7,13 +7,36 @@ const formattedDependentName = "Sam T";
 const dependentsPath = "/dependents";
 
 function loginToDependentTimeline(dependentHdid) {
+    const waitForDependentFixture = prepareDependentFixtureWait();
+
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
         `/dependents/${dependentHdid}/timeline`
     );
-    cy.wait("@getDependentFixture");
+
+    waitForDependentFixture();
+}
+
+function prepareDependentFixtureWait() {
+    let requestStarted = false;
+
+    cy.intercept("GET", "**/UserProfile/*/Dependent*", (req) => {
+        requestStarted = true;
+        req.reply({
+            fixture: "UserProfileService/dependent.json",
+        });
+    }).as("getDependentFixture");
+
+    return () =>
+        cy.then(() => {
+            if (requestStarted) {
+                return cy.wait("@getDependentFixture");
+            }
+
+            cy.log("Using previously loaded dependent data.");
+        });
 }
 
 describe("Dependent Timeline", () => {
@@ -28,9 +51,6 @@ describe("Dependent Timeline", () => {
             },
         });
         setupStandardFixtures();
-        cy.intercept("GET", "**/UserProfile/*/Dependent*", {
-            fixture: "UserProfileService/dependent.json",
-        }).as("getDependentFixture");
     });
 
     it("Redirects an unauthorized dependent timeline", () => {

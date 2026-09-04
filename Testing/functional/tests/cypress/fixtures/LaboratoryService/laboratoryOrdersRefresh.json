@@ -71,7 +71,7 @@
     "totalResultCount": 1,
     "pageIndex": null,
     "pageSize": 25,
-    "resultStatus": 1,
+    "resultStatus": 2,
     "resultError": {
         "actionCode": "REFRESH"
     }
