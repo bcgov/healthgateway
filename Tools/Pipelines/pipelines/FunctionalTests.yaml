@@ -25,6 +25,35 @@ variables:
     value: ${{ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) }}
 
 jobs:
+  # Resolve latest once so every worker uses the same image during this run.
+  - job: "Resolve_Cypress_Image"
+    displayName: "Resolve Cypress browser image"
+    pool:
+      vmImage: "ubuntu-latest"
+    timeoutInMinutes: 5
+    steps:
+      - checkout: none
+      - task: Bash@3
+        name: resolveImage
+        displayName: "Resolve current Linux AMD64 image digest"
+        inputs:
+          targetType: inline
+          script: |
+            set -euo pipefail
+            digest=$(curl --fail --silent --show-error --retry 3 \
+              --connect-timeout 15 --max-time 60 \
+              'https://hub.docker.com/v2/repositories/cypress/browsers/tags/latest' | \
+              jq -er '[.images[] | select(.os == "linux" and .architecture == "amd64") | .digest] | unique | if length == 1 then .[0] else error("Expected one Linux AMD64 image digest") end')
+
+            if [[ ! "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+              echo "##vso[task.logissue type=error]Invalid Cypress image digest."
+              exit 1
+            fi
+
+            image="cypress/browsers@$digest"
+            echo "Cypress image for this run: $image"
+            echo "##vso[task.setvariable variable=image;isOutput=true]$image"
+
   - job: "Admin_Seed"
     displayName: "Re-seed DB and PHSA data for Admin"
     pool:
@@ -48,8 +77,15 @@ jobs:
     displayName: "Admin Unauthorized Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
-    condition: and(succeeded(), eq(variables['Admin'], true))
-    dependsOn: "Admin_Seed"
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded(), eq(variables['Admin'], true))
+    dependsOn:
+      - "Resolve_Cypress_Image"
+      - "Admin_Seed"
     timeoutInMinutes: 10
     steps:
       - checkout: self
@@ -79,8 +115,14 @@ jobs:
     displayName: "Admin Authentication Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
-    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
+      - "Resolve_Cypress_Image"
       - "Admin_Seed"
       - "Admin_Unauthorized_Tests"
     timeoutInMinutes: 10
@@ -112,8 +154,14 @@ jobs:
     displayName: "Admin Ui Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
-    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
+      - "Resolve_Cypress_Image"
       - "Admin_Seed"
       - "Admin_Authentication_Tests"
     strategy:
@@ -148,8 +196,14 @@ jobs:
     displayName: "Admin Read Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
-    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
+      - "Resolve_Cypress_Image"
       - "Admin_Seed"
       - "Admin_Authentication_Tests"
     strategy:
@@ -184,8 +238,14 @@ jobs:
     displayName: "Admin Write Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
-    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
     dependsOn:
+      - "Resolve_Cypress_Image"
       - "Admin_Seed"
       - "Admin_Read_Tests"
     strategy:
@@ -241,8 +301,15 @@ jobs:
     displayName: "HG Auth Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
-    condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
-    dependsOn: "HG_Seed"
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    dependsOn:
+      - "Resolve_Cypress_Image"
+      - "HG_Seed"
     timeoutInMinutes: 10
     steps:
       - checkout: self
@@ -278,10 +345,16 @@ jobs:
     displayName: "HG UI Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
     dependsOn:
+      - "Resolve_Cypress_Image"
       - "HG_Seed"
       - "HG_Auth_Functional_Tests"
-    condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
       parallel: 6
     timeoutInMinutes: 15
@@ -319,10 +392,16 @@ jobs:
     displayName: "HG E2E Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
     dependsOn:
+      - "Resolve_Cypress_Image"
       - "HG_Seed"
       - "HG_UI_Functional_Tests"
-    condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
       parallel: 6
     timeoutInMinutes: 15
