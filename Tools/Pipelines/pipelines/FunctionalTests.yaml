@@ -108,6 +108,42 @@ jobs:
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
+  - job: "Admin_Ui_Tests"
+    displayName: "Admin Ui Functional Tests"
+    pool:
+      vmImage: "ubuntu-latest"
+    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    dependsOn:
+      - "Admin_Seed"
+      - "Admin_Authentication_Tests"
+    strategy:
+      parallel: 2
+    timeoutInMinutes: 15
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Cache@2
+        displayName: Cache npm (Admin Ui Functional)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
+      - task: Bash@3
+        displayName: "Run Admin Ui Functional Tests"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_runAdminUiFunctionalTests.sh"
+          arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+        env: # Required environment settings and secrets for admin tests
+          TERM: xterm
+          CYPRESS_ADMIN_KEY: $(cypress.admin.key)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
+
   - job: "Admin_Read_Tests"
     displayName: "Admin Read Functional Tests"
     pool:
@@ -117,7 +153,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Authentication_Tests"
     strategy:
-      parallel: 9
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -153,7 +189,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Read_Tests"
     strategy:
-      parallel: 5
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self

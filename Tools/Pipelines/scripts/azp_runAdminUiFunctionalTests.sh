@@ -40,10 +40,9 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
-echo "Running Cypress e2e Read Functional Tests"
-
-# Gather only `-read.cy.js` files in the `e2e` folder
-e2e_files=$(find cypress/integration/e2e -name '*-read.cy.js' | tr '\n' ',')
+echo "Running Cypress e2e UI Functional Tests"
+# Gather all test files in the `ui` folder
+ui_files=$(find cypress/integration/ui -name '*.cy.js' | tr '\n' ',')
 
 # Run Cypress with the combined spec list
 TZ=America/Vancouver npx cypress run \
@@ -51,10 +50,10 @@ TZ=America/Vancouver npx cypress run \
     --record \
     --key $CYPRESS_ADMIN_KEY \
     --parallel \
-    --ci-build-id "$buildId-AdminRead" \
-    --group "$buildId-AdminRead" \
+    --ci-build-id "$buildId-AdminUi" \
+    --group "$buildId-AdminUi" \
     --tag "$tags" \
-    --spec "${e2e_files%,}" \
+    --spec "${ui_files%,}" \
     --headless \
     --browser chrome
 popd
