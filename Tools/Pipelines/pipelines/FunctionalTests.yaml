@@ -25,7 +25,15 @@ variables:
     value: ${{ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) }}
 
 jobs:
-  # Resolve latest once so every worker uses the same image during this run.
+  # Azure rolling image update issue.
+  #
+  # The first agent establishes the environment for the parallel Cypress run.
+  # All other agents must match its OS version, browser major version, and spec list.
+  # During an Azure image rollout, agents may receive different OS versions,
+  # causing Cypress to reject workers with a mismatched environment.
+  #
+  # Resolve cypress/browsers:latest to a digest once per pipeline run,
+  # so all Cypress workers use the same container OS and browser versions.
   - job: "Resolve_Cypress_Image"
     displayName: "Resolve Cypress browser image"
     pool:
