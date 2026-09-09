@@ -2,9 +2,27 @@ import { removeUserIfExists } from "../../utilities/kcUtilities";
 
 const user = "FncTstUser1";
 const defaultTimeout = 60000;
+const rowSelector = "[data-testid=agent-table] tbody tr.mud-table-row";
+
+function createUser() {
+    cy.log("Create user.");
+    cy.get("[data-testid=create-btn]").click();
+    cy.get("[data-testid=provision-dialog-modal-text]").should("be.visible");
+    cy.get("[data-testid=username-input]").clear().type(user);
+    cy.get("[data-testid=identity-provider-select]").click({ force: true });
+    cy.get("[data-testid=identity-provider]").contains("IDIR").click();
+    cy.get("[data-testid=roles-select]").click();
+    cy.get("[data-testid=role]").contains("AdminUser").click();
+    cy.get("body").type("{esc}");
+    cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
+    cy.get("[data-testid=save-btn]").click();
+    cy.wait("@postAgentAccess", { timeout: defaultTimeout });
+    cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
+}
 
 describe("Provision", () => {
     beforeEach(() => {
+        removeUserIfExists(user);
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
@@ -12,28 +30,14 @@ describe("Provision", () => {
         );
     });
 
-    it("Create and Validate User", () => {
-        // Clean User
+    afterEach(() => {
         removeUserIfExists(user);
+    });
 
-        cy.log("Create user.");
-        cy.get("[data-testid=create-btn]").click();
-        cy.get("[data-testid=provision-dialog-modal-text]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=username-input]").clear().type(user);
-        cy.get("[data-testid=identity-provider-select]").click({ force: true });
-        cy.get("[data-testid=identity-provider]").contains("IDIR").click();
-        cy.get("[data-testid=roles-select]").click();
-        cy.get("[data-testid=role]").contains("AdminUser").click();
-        cy.get("body").type("{esc}");
-        cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
-        cy.get("[data-testid=save-btn]").click();
-        cy.wait("@postAgentAccess", { timeout: defaultTimeout });
-        cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
+    it("Create, edit, and delete user", () => {
+        createUser();
 
         cy.log("Validate user was created.");
-        const rowSelector = "[data-testid=agent-table] tbody tr.mud-table-row";
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -47,30 +51,7 @@ describe("Provision", () => {
                     "AdminUser"
                 );
             });
-    });
 
-    it("Create Duplicate User", () => {
-        cy.get("[data-testid=create-btn]").click();
-        cy.get("[data-testid=provision-dialog-modal-text]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=username-input]").clear().type(user);
-        cy.get("[data-testid=identity-provider-select]").click({ force: true });
-        cy.get("[data-testid=identity-provider]").contains("IDIR").click();
-        cy.get("[data-testid=roles-select]").click();
-        cy.get("[data-testid=role]").contains("AdminUser").click();
-        cy.get("body").type("{esc}");
-        cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
-        cy.get("[data-testid=save-btn]").click();
-        cy.wait("@postAgentAccess", { timeout: defaultTimeout });
-
-        cy.log("Validate duplicate user error.");
-        cy.get("[data-testid=add-error-alert]").should("exist");
-        cy.get("[data-testid=cancel-btn]").click();
-        cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
-    });
-
-    it("Edit User", () => {
         cy.intercept("GET", `**/AgentAccess/?query=${user}`).as("getUser");
         cy.get("[data-testid=query-input]").clear().type(user);
         cy.get("[data-testid=search-btn]").click();
@@ -102,7 +83,6 @@ describe("Provision", () => {
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate user edit.");
-        const rowSelector = "[data-testid=agent-table] tbody tr.mud-table-row";
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -116,9 +96,7 @@ describe("Provision", () => {
                     "AdminAnalyst, AdminUser"
                 );
             });
-    });
 
-    it("Delete User", () => {
         cy.intercept("GET", `**/AgentAccess/?query=${user}`).as("getUser");
         cy.get("[data-testid=query-input]").clear().type(user);
         cy.get("[data-testid=search-btn]").click();
@@ -135,8 +113,32 @@ describe("Provision", () => {
         cy.get("[data-testid=confirm-delete-message]").should("not.exist");
 
         cy.log("Validate user delete.");
-        cy.contains("[data-testid=agent-table-username-]", user).should(
-            "not.exist"
+        cy.get("[data-testid=agent-table]").should(
+            "not.contain",
+            user.toLowerCase()
         );
+    });
+
+    it("Create duplicate user", () => {
+        createUser();
+
+        cy.get("[data-testid=create-btn]").click();
+        cy.get("[data-testid=provision-dialog-modal-text]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=username-input]").clear().type(user);
+        cy.get("[data-testid=identity-provider-select]").click({ force: true });
+        cy.get("[data-testid=identity-provider]").contains("IDIR").click();
+        cy.get("[data-testid=roles-select]").click();
+        cy.get("[data-testid=role]").contains("AdminUser").click();
+        cy.get("body").type("{esc}");
+        cy.intercept("POST", "**/AgentAccess/").as("postAgentAccess");
+        cy.get("[data-testid=save-btn]").click();
+        cy.wait("@postAgentAccess", { timeout: defaultTimeout });
+
+        cy.log("Validate duplicate user error.");
+        cy.get("[data-testid=add-error-alert]").should("exist");
+        cy.get("[data-testid=cancel-btn]").click();
+        cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
     });
 });

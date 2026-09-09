@@ -106,7 +106,7 @@ describe("Delegation Search", () => {
         performSearch(dependentWithAudit);
 
         // Click delegation change header to show dependent audit
-        cy.get("[data-testid=delegation-changes-header")
+        cy.get("[data-testid=delegation-changes-header]")
             .should("be.visible")
             .click();
 
@@ -147,7 +147,7 @@ describe("Delegation Search", () => {
             });
 
         // Click delegation change header to not show dependent audit
-        cy.get("[data-testid=delegation-changes-header").click();
+        cy.get("[data-testid=delegation-changes-header]").click();
 
         cy.get("[data-testid=delegation-change-0]").should("not.be.visible");
         cy.get("[data-testid=delegation-change-1]").should("not.be.visible");
