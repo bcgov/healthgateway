@@ -205,7 +205,7 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
-      - "Admin_Authentication_Tests"
+      - "Admin_Ui_Tests"
     strategy:
       parallel: 4
     timeoutInMinutes: 15
