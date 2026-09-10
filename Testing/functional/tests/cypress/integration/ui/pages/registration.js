@@ -34,7 +34,9 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            {},
+            "registration-validation-success"
         );
 
         cy.contains("#subject", "Registration").should("be.visible");
@@ -89,7 +91,9 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath
+            homePath,
+            {},
+            "registration-validation-failure"
         );
 
         cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
