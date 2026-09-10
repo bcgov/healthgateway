@@ -19,7 +19,8 @@ declare namespace Cypress {
             password: string,
             authMethod?: string,
             path?: string,
-            initialDataWaitOptions?: InitialDataWaitOptions
+            initialDataWaitOptions?: InitialDataWaitOptions,
+            sessionId?: string
         ): void;
         getTokens(username: string, password: string): void;
         readConfig(): Chainable<any>;
