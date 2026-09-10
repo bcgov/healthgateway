@@ -249,7 +249,8 @@ Cypress.Commands.add(
         password,
         authMethod = AuthMethod.BCSC,
         path = "/timeline",
-        initialDataWaitOptions = {}
+        initialDataWaitOptions = {},
+        sessionId = ""
     ) => {
         initialDataWaitOptions = getInitialDataWaitOptions(
             initialDataWaitOptions
@@ -278,7 +279,7 @@ Cypress.Commands.add(
                 } else {
                     setupStandardAliases();
                     cy.window().then((window) => {
-                        cy.session([username, authMethod], () => {
+                        cy.session([username, authMethod, sessionId], () => {
                             cy.readConfig().then((config) => {
                                 let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                                 let codeVerifier = generateRandomString(96);
