@@ -204,7 +204,7 @@ describe("Patient details as admin", () => {
             .should("exist", "be.visible")
             .click();
 
-        cy.get("[data-testid=audit-reason-input")
+        cy.get("[data-testid=audit-reason-input]")
             .should("be.visible")
             .type(auditReasonInput);
 

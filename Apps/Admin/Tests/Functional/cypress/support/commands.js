@@ -134,7 +134,6 @@ Cypress.Commands.add("login", (username, password, path) => {
 
                 cy.log("Creating OIDC StateStore in local storage.");
                 cy.log(`State ID:  ${stateId}`);
-                cy.log(`Generated Code Verifier: ${codeVerifier}`);
                 window.sessionStorage.setItem(
                     `oidc.${stateStore.id}`,
                     JSON.stringify(stateStore)
@@ -216,11 +215,15 @@ Cypress.Commands.add("disableServiceWorker", () => {
     cy.log("Unregistering ServiceWorker.");
     cy.window().then((_win) => {
         if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.getRegistrations().then((registrations) => {
-                registrations.forEach((registration) => {
-                    registration.unregister();
-                });
-            });
+            return navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) =>
+                    Promise.all(
+                        registrations.map((registration) =>
+                            registration.unregister()
+                        )
+                    )
+                );
         }
     });
 });
