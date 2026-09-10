@@ -2,7 +2,7 @@ const defaultTimeout = 60000;
 
 export function setupStandardAliases(page) {
     cy.log("Setting up configuration alias.");
-    cy.intercept("GET", "**/Configuration/").as("getConfiguration");
+    cy.intercept("GET", "**/api/Configuration*").as("getConfiguration");
 
     switch (page) {
         case "/dashboard":
