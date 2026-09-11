@@ -2,7 +2,6 @@
 import { ref } from "vue";
 
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ImmunizationDatasetState } from "@/models/datasetState";
@@ -28,12 +27,6 @@ const defaultImmunizationDatasetState: ImmunizationDatasetState = {
     error: undefined,
     recommendations: [],
 };
-
-const immunizationSort = (a: ImmunizationEvent, b: ImmunizationEvent): number =>
-    DateSortUtility.ascending(
-        DateWrapper.fromIsoDate(a.dateOfImmunization),
-        DateWrapper.fromIsoDate(b.dateOfImmunization)
-    );
 
 const recommendationSort = (a: Recommendation, b: Recommendation): number =>
     DateSortUtility.descending(
@@ -65,16 +58,6 @@ export const useImmunizationStore = defineStore("immunization", () => {
         return getImmunizationDatasetState(hdid).data;
     }
 
-    function covidImmunizations(hdid: string): ImmunizationEvent[] {
-        return immunizations(hdid)
-            .filter(
-                (i) =>
-                    i.targetedDisease?.toLowerCase().includes("covid") &&
-                    i.valid
-            )
-            .sort(immunizationSort);
-    }
-
     function recommendations(hdid: string): Recommendation[] {
         return getImmunizationDatasetState(hdid).recommendations;
     }
@@ -89,18 +72,6 @@ export const useImmunizationStore = defineStore("immunization", () => {
         );
     }
 
-    function immunizationsAreDeferred(hdid: string): boolean {
-        const datasetState = getImmunizationDatasetState(hdid);
-        return (
-            datasetState.status === LoadStatus.DEFERRED ||
-            datasetState.status === LoadStatus.ASYNC_REQUESTED
-        );
-    }
-
-    function immunizationsError(hdid: string): ResultError | undefined {
-        return getImmunizationDatasetState(hdid).error;
-    }
-
     function setImmunizations(
         hdid: string,
         immunizationResult: ImmunizationResult
@@ -113,9 +84,7 @@ export const useImmunizationStore = defineStore("immunization", () => {
                 recommendations: immunizationResult.recommendations
                     .filter((x) => x.recommendedVaccinations)
                     .sort(recommendationSort),
-                status: immunizationResult.loadState.refreshInProgress
-                    ? LoadStatus.DEFERRED
-                    : LoadStatus.LOADED,
+                status: LoadStatus.LOADED,
             }
         );
     }
@@ -151,32 +120,14 @@ export const useImmunizationStore = defineStore("immunization", () => {
         return immunizationService
             .getPatientImmunizations(hdid)
             .then((result) => {
-                if (result.resultStatus === ResultType.Success) {
-                    return result.resourcePayload;
-                } else {
-                    throw result.resultError
-                        ? ResultError.fromModel(result.resultError)
-                        : new ResultError(
-                              "ImmunizationStore",
-                              "Unknown API error on retrieve immunizations"
-                          );
-                }
-            })
-            .then((payload) => {
-                if (payload.loadState.refreshInProgress) {
-                    logger.info(`Immunizations load deferred`);
-                    setTimeout(() => {
-                        logger.info(`Re-querying for immunizations`);
-                        retrieveImmunizations(hdid);
-                    }, 10000);
-                } else if (payload.immunizations.length > 0) {
+                if (result.immunizations.length > 0) {
                     trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.Immunizations,
                     });
                 }
-                setImmunizations(hdid, payload);
+                setImmunizations(hdid, result);
             })
             .catch((error: ResultError) => {
                 handleError(hdid, error, ErrorType.Retrieve);
@@ -186,12 +137,9 @@ export const useImmunizationStore = defineStore("immunization", () => {
 
     return {
         immunizations,
-        covidImmunizations,
         recommendations,
         immunizationsCount,
         immunizationsAreLoading,
-        immunizationsAreDeferred,
-        immunizationsError,
         retrieveImmunizations,
     };
 });

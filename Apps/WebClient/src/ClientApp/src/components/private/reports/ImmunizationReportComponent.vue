@@ -129,10 +129,8 @@ const isEmpty = computed(() => visibleImmunizations.value.length === 0);
 const isRecommendationEmpty = computed(
     () => visibleRecommendations.value.length === 0
 );
-const isLoading = computed(
-    () =>
-        immunizationStore.immunizationsAreDeferred(props.hdid) ||
-        immunizationStore.immunizationsAreLoading(props.hdid)
+const isLoading = computed(() =>
+    immunizationStore.immunizationsAreLoading(props.hdid)
 );
 const visibleImmunizations = computed(() =>
     immunizationStore

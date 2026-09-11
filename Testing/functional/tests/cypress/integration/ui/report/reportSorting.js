@@ -137,7 +137,7 @@ describe("Reports - Immunization", () => {
 
         setupStandardFixtures();
 
-        cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
+        cy.intercept("GET", `**/Immunization?hdid=${HDID}&api-version=2.0`, {
             fixture: "Report/immunizationUnSorted.json",
         });
 
