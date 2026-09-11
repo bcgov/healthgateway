@@ -79,7 +79,7 @@ export function prepareImmunizationWait(hdid, timeout = deferredLoadTimeout) {
     const aliasName = "getImmunizationsIfRequested";
     let requestStarted = false;
 
-    cy.intercept("GET", `**/Immunization?hdid=${hdid}`, () => {
+    cy.intercept("GET", `**/Immunization?hdid=${hdid}&api-version=2.0`, () => {
         requestStarted = true;
     }).as(aliasName);
 

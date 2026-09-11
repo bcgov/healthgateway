@@ -3,9 +3,8 @@ import { prepareImmunizationWait } from "../../../support/functions/timeline";
 
 const homeUrl = "/home";
 const reportsUrl = "/reports";
-const healthGatewayHdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3JLWMGUMERKI72A";
-const recommendationsHdid =
-    "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
+const healthGatewayHdid =
+    "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Home Page", () => {
     it("Home - Immunization Card Link to Download Immunization", () => {
@@ -45,8 +44,7 @@ describe("Home Page", () => {
             },
             datasets: [{ name: "immunization", enabled: true }],
         });
-        const waitForImmunizations =
-            prepareImmunizationWait(recommendationsHdid);
+        const waitForImmunizations = prepareImmunizationWait(healthGatewayHdid);
 
         cy.login(
             Cypress.env("keycloak.username"),
