@@ -90,51 +90,42 @@ describe("Dependent Timeline Datasets", () => {
         });
     });
 
-    it("Hides a dataset when it is globally disabled", () => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: Dataset.ClinicalDocument,
-                    enabled: false,
-                },
-            ],
-            dependents: {
-                enabled: true,
-                timelineEnabled: true,
-            },
-        });
-
-        loginToDependentTimeline();
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=filterDropdown]").should("not.exist");
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-    });
-
-    it("Hides a globally enabled dataset when it is disabled for dependents", () => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: Dataset.ClinicalDocument,
+    enabledDatasets.forEach((dataset) => {
+        it(`Hides ${dataset} when it is globally disabled`, () => {
+            cy.configureSettings({
+                datasets: [{ name: dataset, enabled: false }],
+                dependents: {
                     enabled: true,
+                    timelineEnabled: true,
                 },
-            ],
-            dependents: {
-                enabled: true,
-                timelineEnabled: true,
-                datasets: [
-                    {
-                        name: Dataset.ClinicalDocument,
-                        enabled: false,
-                    },
-                ],
-            },
+            });
+
+            loginToDependentTimeline();
+            cy.checkTimelineHasLoaded();
+
+            cy.get("[data-testid=filterDropdown]").should("not.exist");
+            cy.get(`[data-testid=${dataset.toLowerCase()}Title]`).should(
+                "not.exist"
+            );
         });
 
-        loginToDependentTimeline();
-        cy.checkTimelineHasLoaded();
+        it(`Hides ${dataset} when it is disabled for dependents`, () => {
+            cy.configureSettings({
+                datasets: [{ name: dataset, enabled: true }],
+                dependents: {
+                    enabled: true,
+                    timelineEnabled: true,
+                    datasets: [{ name: dataset, enabled: false }],
+                },
+            });
 
-        cy.get("[data-testid=filterDropdown]").should("not.exist");
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
+            loginToDependentTimeline();
+            cy.checkTimelineHasLoaded();
+
+            cy.get("[data-testid=filterDropdown]").should("not.exist");
+            cy.get(`[data-testid=${dataset.toLowerCase()}Title]`).should(
+                "not.exist"
+            );
+        });
     });
 });

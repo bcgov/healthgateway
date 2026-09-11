@@ -2,10 +2,12 @@ import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
 describe("Immunization presentation", () => {
-    it("Displays an empty title and valid and invalid doses", () => {
+    it("Displays an empty title, valid and invalid doses, and forecast details", () => {
         const emptyTitleDate = "1988-Aug-08";
         const validDoseDate1 = "2021-Jul-14";
         const invalidDoseDate1 = "2021-Mar-30";
+        const forecastImmunization = "COVID-19 Non-replicating Viral Vector";
+        const forecastDueDate = "2021-08-11";
 
         cy.fixture("ImmunizationService/immunizationInvalidDoses.json").then(
             (fixture) => {
@@ -42,5 +44,27 @@ describe("Immunization presentation", () => {
         cy.get("[data-testid=entryCardDate]")
             .contains(invalidDoseDate1)
             .should("be.visible");
+
+        cy.contains("[data-testid=timelineCard]", validDoseDate1)
+            .click()
+            .within(() => {
+                cy.contains("h3", "Forecast").should("be.visible");
+                cy.get("[data-testid=forecastDisplayName]").should(
+                    "contain.text",
+                    forecastImmunization
+                );
+                cy.get("[data-testid=forecastDueDate]").should(
+                    "contain.text",
+                    forecastDueDate
+                );
+            });
+
+        cy.contains("[data-testid=timelineCard]", invalidDoseDate1)
+            .click()
+            .within(() => {
+                cy.contains("h3", "Forecast").should("not.exist");
+                cy.get("[data-testid=forecastDisplayName]").should("not.exist");
+                cy.get("[data-testid=forecastDueDate]").should("not.exist");
+            });
     });
 });
