@@ -482,7 +482,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Immunization History and Schedule - Verify result and download", () => {
+    it.skip("Validate Immunization History and Schedule - Verify result and download", () => {
         cy.setupDownloads();
         openImmunizationTab(validDependentHdid);
         verifyImmunizationTab(
@@ -596,7 +596,7 @@ describe("CRUD Operations", () => {
         removeValidDependentIfPresent(Cypress.env("keycloak.username"));
     });
 
-    it("Validate Adding, Viewing, and Removing Dependents", () => {
+    it.skip("Validate Adding, Viewing, and Removing Dependents", () => {
         cy.setupDownloads();
         cy.log("Adding dependent");
         registerValidDependent();

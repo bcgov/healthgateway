@@ -62,6 +62,7 @@ describe("Report Filtering", () => {
             AuthMethod.KeyCloak,
             "/reports"
         );
+        cy.get("[data-testid=reports-page]").should("be.visible");
     });
 
     it("Validate Dates, Cancel and Apply", () => {

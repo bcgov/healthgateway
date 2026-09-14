@@ -393,7 +393,7 @@ for (const [entryType] of reportComponentMap) {
 </script>
 
 <template>
-    <div>
+    <div data-testid="reports-page">
         <HgAlertComponent
             v-show="showLabResultsQueuedMessage"
             closable
