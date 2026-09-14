@@ -129,9 +129,6 @@ const immunizations = computed(() =>
 const immunizationsAreLoading = computed(() =>
     immunizationStore.immunizationsAreLoading(props.hdid)
 );
-const immunizationsAreDeferred = computed(() =>
-    immunizationStore.immunizationsAreDeferred(props.hdid)
-);
 const covid19TestResults = computed(() =>
     covid19TestResultStore.covid19TestResults(props.hdid)
 );
@@ -333,11 +330,7 @@ const isFullyLoaded = computed(() => {
     const loadingComments =
         props.commentsAreEnabled && commentsAreLoading.value;
 
-    const loadingMoreImmunizations =
-        props.entryTypes.includes(EntryType.Immunization) &&
-        immunizationsAreDeferred.value;
-
-    return !loadingDatasets && !loadingComments && !loadingMoreImmunizations;
+    return !loadingDatasets && !loadingComments;
 });
 const isOnlyClinicalDocumentSelected = computed(
     () =>

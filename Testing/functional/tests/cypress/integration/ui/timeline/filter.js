@@ -144,12 +144,38 @@ describe("Filters", () => {
         cy.get("[data-testid=timeline-record-count]").contains(
             recordDisplayMessage(1, pageSize, totalRecordsUnfiltered)
         );
+
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=filterStartDateInput] input")
+            .clear()
+            .focus()
+            .type("2013-SEP-20");
+        cy.get("[data-testid=filterEndDateInput] input")
+            .clear()
+            .focus()
+            .type("2013-SEP-20");
+        cy.get("[data-testid=btnFilterApply]").focus().click();
+
+        cy.contains(
+            "[data-testid=filter-label]",
+            "From 2013-Sep-20 To 2013-Sep-20"
+        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
+        cy.contains("[data-testid=immunizationTitle]", "2013-Sep-20").should(
+            "be.visible"
+        );
     });
 
-    it("Verify filtering by record type", () => {
-        // One representative dataset verifies the generic record-type filter.
-        // Dataset-specific rendering is covered by the individual timeline specs.
-        testDatasetTimelineFiltering("immunization");
+    [
+        "clinicalDocument",
+        "healthVisit",
+        "immunization",
+        "diagnosticImaging",
+        "bcCancerScreening",
+    ].forEach((dataset) => {
+        it(`Filters the timeline to ${timelineFilterDefinitions[dataset].label}`, () => {
+            testDatasetTimelineFiltering(dataset);
+        });
     });
 
     it("Verify cancelling discards pending filter selections", () => {

@@ -46,9 +46,7 @@ export interface IAuthenticationService {
 }
 
 export interface IImmunizationService {
-    getPatientImmunizations(
-        hdid: string
-    ): Promise<RequestResult<ImmunizationResult>>;
+    getPatientImmunizations(hdid: string): Promise<ImmunizationResult>;
 }
 
 export interface IPatientService {

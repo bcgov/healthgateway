@@ -7,12 +7,14 @@ const defaultTimeout = 60000;
 // report rendering and sorting are covered by fixture-backed UI specs. Add
 // another E2E report only when it exercises a distinct integration path.
 describe("Report download integration", () => {
-    it("Downloads a Medication report", () => {
+    it("Downloads a Special Authority report", () => {
         cy.setupDownloads();
         cy.configureSettings({
-            datasets: [{ name: "medication", enabled: true }],
+            datasets: [{ name: "specialAuthorityRequest", enabled: true }],
         });
-        cy.intercept("GET", "**/MedicationStatement/*").as("getMedications");
+        cy.intercept("GET", "**/MedicationRequest/*").as(
+            "getSpecialAuthorityRequests"
+        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -20,9 +22,9 @@ describe("Report download integration", () => {
             "/reports"
         );
 
-        cy.vSelect("[data-testid=report-type]", "Medications");
-        cy.wait("@getMedications", { timeout: defaultTimeout });
-        cy.get("[data-testid=medication-history-report-table]").should(
+        cy.vSelect("[data-testid=report-type]", "Special Authority");
+        cy.wait("@getSpecialAuthorityRequests", { timeout: defaultTimeout });
+        cy.get("[data-testid=medication-request-report-table]").should(
             "be.visible"
         );
 

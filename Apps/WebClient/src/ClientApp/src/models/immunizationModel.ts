@@ -14,14 +14,10 @@ export interface ImmunizationAgent {
 
 export interface ImmunizationEvent {
     id: string;
-    isSelfReported: boolean;
-    location: string;
     immunization: Immunization;
     status: string;
-    valid: boolean;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
-    targetedDisease: string;
     forecast?: Forecast;
 }
 
@@ -45,7 +41,6 @@ export interface TargetDisease {
 }
 
 export interface Forecast {
-    recommendationId: string;
     createDate: StringISODate;
     status: string;
     displayName: string;

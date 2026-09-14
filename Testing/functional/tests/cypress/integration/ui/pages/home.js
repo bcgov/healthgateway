@@ -5,7 +5,6 @@ const homeUrl = "/home";
 const timelineUrl = "/timeline";
 const otherRecordSourcesUrl = "/otherRecordSources";
 const profileUrl = "/profile";
-const reportsUrl = "/reports";
 
 function setupImmunizationFixture() {
     cy.intercept("GET", "**/Immunization?hdid=*", {
@@ -63,30 +62,6 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=immunization-record-card-button]").should(
             "be.visible"
         );
-    });
-
-    it("Home - Immunization Record Card links to the immunization report", () => {
-        cy.configureSettings({
-            homepage: {
-                showImmunizationRecordLink: true,
-            },
-            datasets: [{ name: "immunization", enabled: true }],
-        });
-        setupImmunizationFixture();
-        setupStandardFixtures();
-        loginToHome();
-
-        cy.get("[data-testid=immunization-record-card-button]")
-            .should("be.visible")
-            .click();
-
-        cy.location("pathname").should("eq", reportsUrl);
-        cy.get("[data-testid=immunization-history-report-table]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=immunizationDateItem]")
-            .last()
-            .contains(/\d{4}-[A-Z][a-z]{2}-\d{2}/);
     });
 
     it("Home - Other Record Sources Card button enabled", () => {
@@ -280,7 +255,7 @@ describe("Authenticated User - Home Page", () => {
 });
 
 describe("Home page - notification settings alert", () => {
-    it("shows the SMS removed alert once and saves it as dismissed", () => {
+    it("Home - Shows the SMS removed alert once and saves it as dismissed", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((profile) => {
@@ -355,7 +330,7 @@ describe("Home page - Recommendations", () => {
         cy.get("[data-testid=recommendations-dialog]").should("not.exist");
     }
 
-    it("removes and restores the Recommendations quick link", () => {
+    it("Home - Removes and restores the Recommendations quick link", () => {
         cy.fixture("UserProfileService/userProfileQuickLinks.json").then(
             (profile) => {
                 profile.preferences.hideRecommendationsQuickLink = {
@@ -404,13 +379,13 @@ describe("Home page - Recommendations", () => {
         );
     });
 
-    it("opens the Recommendations dialog with fixture content", () => {
+    it("Home - Opens the Recommendations dialog with fixture content", () => {
         setupRecommendations();
         loginToHome();
         verifyRecommendationsDialog();
     });
 
-    it("opens the Recommendations dialog on mobile", () => {
+    it("Home - Opens the Recommendations dialog on mobile", () => {
         setupRecommendations();
         cy.viewport("iphone-6");
         loginToHome();

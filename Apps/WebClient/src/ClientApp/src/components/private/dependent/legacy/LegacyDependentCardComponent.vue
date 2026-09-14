@@ -183,10 +183,8 @@ const clinicalDocuments = computed(() =>
 const isImmunizationTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
 );
-const immunizationsAreLoading = computed(
-    () =>
-        immunizationStore.immunizationsAreLoading(dependentHdid.value) ||
-        immunizationStore.immunizationsAreDeferred(dependentHdid.value)
+const immunizationsAreLoading = computed(() =>
+    immunizationStore.immunizationsAreLoading(dependentHdid.value)
 );
 const immunizationItems = computed(() =>
     immunizationStore
