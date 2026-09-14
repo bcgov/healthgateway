@@ -38,9 +38,15 @@ namespace HealthGateway.Immunization.MapProfiles
             this.CreateMap<PatientDataImmunizationForecast, ImmunizationForecast>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.ForecastStatus ?? string.Empty))
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DisplayName ?? string.Empty))
+
+                // PHSA allows null for these dates, but ImmunizationForecast and existing mobile
+                // client models define them as non-nullable. Map null to default(DateOnly)
+                // ("0001-01-01") to preserve the current API contract.
+                // Returning null requires coordination with the Mobile team to update client
+                // models and confirm compatibility with supported app versions.
+                // Remove these fallbacks once the API and clients support nullable dates.
                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.ForecastCreateDate ?? default))
                 .ForMember(dest => dest.EligibleDate, opt => opt.MapFrom(src => src.EligibleDate ?? default))
-                .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DueDate))
                 .ForMember(dest => dest.RecommendationId, opt => opt.Ignore());
         }
     }
