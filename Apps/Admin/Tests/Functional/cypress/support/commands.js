@@ -177,10 +177,12 @@ Cypress.Commands.add("login", (username, password, path) => {
         cy.disableServiceWorker();
 
         cy.visit(path, { timeout: 60000 });
-        waitForInitialDataLoad(path);
 
         // wait for log in to complete
-        cy.get("[data-testid=user-account-icon]").should("exist");
+        cy.get("[data-testid=user-account-icon]", { timeout: 60000 }).should(
+            "exist"
+        );
+        waitForInitialDataLoad(path);
     }
 });
 

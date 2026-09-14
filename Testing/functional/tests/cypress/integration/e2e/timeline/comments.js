@@ -158,24 +158,27 @@ describe("Comments Enable", () => {
                 cy.get("[data-testid=entryCardDetailsTitle]").click({
                     force: true,
                 });
-
-                // Add comment
-                cy.get("[data-testid=add-comment-text-area]")
-                    .should("be.visible")
-                    .type(testComment);
-
-                cy.get("[data-testid=post-comment-btn]")
-                    .should("be.visible")
-                    .and("not.be.disabled")
-                    .click();
-
-                cy.wait("@postComment");
-
-                // Verify
-                cy.get("[data-testid=commentText]").contains(testComment);
-                cy.get("[data-testid=commentIcon]").should("exist");
-                cy.get("[data-testid=commentCount]").should("not.exist");
             });
+
+        // Expanding the card re-renders its textarea, so query it after the
+        // expansion completes rather than retaining the pre-render element.
+        cy.get("[data-testid=add-comment-text-area]")
+            .filter(":visible")
+            .should("be.visible")
+            .type(testComment);
+
+        cy.get("[data-testid=post-comment-btn]")
+            .filter(":visible")
+            .should("be.visible")
+            .and("not.be.disabled")
+            .click();
+
+        cy.wait("@postComment");
+
+        // Verify
+        cy.get("[data-testid=commentText]").contains(testComment);
+        cy.get("[data-testid=commentIcon]").should("exist");
+        cy.get("[data-testid=commentCount]").should("not.exist");
 
         // Edit while the card is in its normal, unfiltered state. Applying a
         // text filter re-renders the card and closes Vuetify's teleported menu.
