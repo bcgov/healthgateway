@@ -1,5 +1,7 @@
 const { defineConfig } = require("cypress");
 const { verifyDownloadTasks } = require("cy-verify-downloads");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = defineConfig({
     defaultCommandTimeout: 30000,
@@ -47,6 +49,35 @@ module.exports = defineConfig({
     e2e: {
         setupNodeEvents(on, _config) {
             on("task", verifyDownloadTasks);
+            on("after:spec", (spec, results) => {
+                if (!results) {
+                    return;
+                }
+
+                const resultsDirectory = path.join("reports", "spec-results");
+                fs.mkdirSync(resultsDirectory, { recursive: true });
+                fs.writeFileSync(
+                    path.join(
+                        resultsDirectory,
+                        `${Buffer.from(spec.relative).toString("base64url")}.json`
+                    ),
+                    JSON.stringify({
+                        spec: spec.relative,
+                        failedTests: results.tests
+                            // A beforeEach failure marks affected tests as skipped, but
+                            // Cypress still attaches the setup error to each test result.
+                            .filter(
+                                (test) =>
+                                    test.state === "failed" ||
+                                    test.displayError !== null
+                            )
+                            .map((test) => ({
+                                displayError: test.displayError,
+                                title: test.title,
+                            })),
+                    })
+                );
+            });
         },
         baseUrl: "https://dev.healthgateway.gov.bc.ca",
         specPattern: "cypress/integration/**/*.{js,jsx,ts,tsx}",

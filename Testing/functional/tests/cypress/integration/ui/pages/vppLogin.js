@@ -7,6 +7,7 @@ describe("VPP Login View", () => {
     beforeEach(() => {
         cy.configureSettings({});
         cy.visit(path);
+        cy.get("[data-testid=vpp-login-page]").should("be.visible");
     });
 
     it("Navigates to login", () => {
