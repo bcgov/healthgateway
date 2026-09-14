@@ -395,7 +395,62 @@ jobs:
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish UI Cypress results"
+        condition: always()
+        inputs:
+          targetPath: "$(Build.SourcesDirectory)/Testing/functional/tests/reports"
+          artifact: "ui-cypress-results-$(System.JobPositionInPhase)"
 
+  - job: "HG_UI_Keycloak_Retry"
+    displayName: "Retry transient UI setup failures"
+    pool:
+      vmImage: "ubuntu-latest"
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    dependsOn:
+      - "Resolve_Cypress_Image"
+      - "HG_Seed"
+      - "HG_UI_Functional_Tests"
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    timeoutInMinutes: 15
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: DownloadPipelineArtifact@2
+        displayName: "Download UI Cypress results"
+        inputs:
+          buildType: current
+          targetPath: "$(Pipeline.Workspace)/ui-cypress-results"
+      - task: Cache@2
+        displayName: Cache npm (UI setup retry)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Testing/functional/tests/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
+      - task: Bash@3
+        displayName: "Retry transient UI setup failures"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_retryKeycloakFunctionalTests.sh"
+          arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)" "$(Pipeline.Workspace)/ui-cypress-results" ui
+        env:
+          TERM: xterm
+          CYPRESS_KEY: $(cypress.key)
+          BCSC_PW: $(bcsc.pw)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          PHONENUMBER: $(phoneNumber)
+          KEYCLOAK_EREBUS_CLIENT: $(keycloak.erebus.client)
+          KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
+          KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
+          KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
   - job: "HG_E2E_Functional_Tests"
     displayName: "HG E2E Functional Tests"
     pool:
@@ -408,7 +463,7 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
-      - "HG_UI_Functional_Tests"
+      - "HG_UI_Keycloak_Retry"
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
       parallel: 6
@@ -431,6 +486,62 @@ jobs:
           filePath: "./Tools/Pipelines/scripts/azp_runE2eFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
+          TERM: xterm
+          CYPRESS_KEY: $(cypress.key)
+          BCSC_PW: $(bcsc.pw)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          PHONENUMBER: $(phoneNumber)
+          KEYCLOAK_EREBUS_CLIENT: $(keycloak.erebus.client)
+          KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
+          KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
+          KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
+          npm_config_cache: $(Pipeline.Workspace)/.npm
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish E2E Cypress results"
+        condition: always()
+        inputs:
+          targetPath: "$(Build.SourcesDirectory)/Testing/functional/tests/reports"
+          artifact: "e2e-cypress-results-$(System.JobPositionInPhase)"
+
+  - job: "HG_E2E_Keycloak_Retry"
+    displayName: "Retry transient E2E setup failures"
+    pool:
+      vmImage: "ubuntu-latest"
+    variables:
+      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
+    container:
+      image: $(cypressImage)
+      options: --shm-size=2g
+    dependsOn:
+      - "Resolve_Cypress_Image"
+      - "HG_Seed"
+      - "HG_E2E_Functional_Tests"
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    timeoutInMinutes: 15
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: DownloadPipelineArtifact@2
+        displayName: "Download E2E Cypress results"
+        inputs:
+          buildType: current
+          targetPath: "$(Pipeline.Workspace)/e2e-cypress-results"
+      - task: Cache@2
+        displayName: Cache npm (E2E setup retry)
+        inputs:
+          key: 'npm | "$(Agent.OS)" | Testing/functional/tests/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(Pipeline.Workspace)/.npm
+      - task: Bash@3
+        displayName: "Retry transient E2E setup failures"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_retryKeycloakFunctionalTests.sh"
+          arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)" "$(Pipeline.Workspace)/e2e-cypress-results" e2e
+        env:
           TERM: xterm
           CYPRESS_KEY: $(cypress.key)
           BCSC_PW: $(bcsc.pw)

@@ -70,7 +70,10 @@ function trackNavigationClick(
 </script>
 
 <template>
-    <div class="h-100 bg-grey-lighten-4 flex-grow-1 d-flex flex-column">
+    <div
+        class="h-100 bg-grey-lighten-4 flex-grow-1 d-flex flex-column"
+        data-testid="vpp-login-page"
+    >
         <div class="bg-primary d-print-none">
             <router-link id="homeLink" to="/" aria-label="Return to home page">
                 <img
