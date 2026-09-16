@@ -1,6 +1,7 @@
 const path = "/vppLogin";
 const accessMyHealthUrl =
     "https://dev.vpp.patientportal.ca-1.healtheintent.com/";
+const accessMyHealthWebsiteUrl = "https://www.accessmyhealth.ca";
 const healthGatewayUrl = "https://www.healthgateway.gov.bc.ca";
 
 describe("VPP Login View", () => {
@@ -27,6 +28,8 @@ describe("VPP Login View", () => {
             "webClient.accessMyHealthUrl",
             accessMyHealthUrl
         );
-        cy.get("[data-testid=cancel-button]").should("be.visible");
+        cy.get("[data-testid=cancel-button]")
+            .should("be.visible")
+            .should("have.attr", "data-url", accessMyHealthWebsiteUrl);
     });
 });

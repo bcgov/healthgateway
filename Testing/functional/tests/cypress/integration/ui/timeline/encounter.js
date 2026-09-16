@@ -1,6 +1,8 @@
 import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
+const defaultTimeout = 60000;
+
 describe("MSP Visits", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Encounter/*", (req) => {
@@ -24,7 +26,7 @@ describe("MSP Visits", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.wait("@getEncounters");
+        cy.wait("@getEncounters", { timeout: defaultTimeout });
         cy.checkTimelineHasLoaded();
     });
 
@@ -66,7 +68,7 @@ describe("Hospital Visits", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.wait("@getHospitalVisitsFixture");
+        cy.wait("@getHospitalVisitsFixture", { timeout: defaultTimeout });
         cy.checkTimelineHasLoaded();
     });
 

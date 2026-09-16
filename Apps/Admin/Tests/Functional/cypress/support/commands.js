@@ -113,64 +113,88 @@ Cypress.Commands.add("login", (username, password, path) => {
     if (baseWebClientUrl == localDevUri) {
         loginWithKeycloakUI(username, password, path);
     } else {
-        cy.session(username, () => {
-            cy.log("Logging in using Keycloak.");
-            cy.readConfig().then((config) => {
-                logout(config);
+        cy.session(
+            username,
+            () => {
+                cy.log("Logging in using Keycloak.");
+                cy.readConfig().then((config) => {
+                    logout(config);
 
-                const stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
-                const codeVerifier = generateRandomString(96);
-                const stateStore = {
-                    id: stateId,
-                    created: new Date().getTime(),
-                    request_type: "si:r",
-                    code_verifier: codeVerifier,
-                    redirect_uri: config.openIdConnect.callbacks.Logon,
-                    authority: config.openIdConnect.authority,
-                    client_id: openIdConnectClientId,
-                    response_mode: "query",
-                    extraTokenParams: {},
-                };
-
-                cy.log("Creating OIDC StateStore in local storage.");
-                cy.log(`State ID:  ${stateId}`);
-                window.sessionStorage.setItem(
-                    `oidc.${stateStore.id}`,
-                    JSON.stringify(stateStore)
-                );
-
-                cy.log(`Requesting Keycloak Authentication form.`);
-                cy.request({
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
-                    followRedirect: false,
-                    qs: {
-                        response_type: config.openIdConnect.responseType,
-                        approval_prompt: "auto",
+                    const stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
+                    const codeVerifier = generateRandomString(96);
+                    const stateStore = {
+                        id: stateId,
+                        created: new Date().getTime(),
+                        request_type: "si:r",
+                        code_verifier: codeVerifier,
                         redirect_uri: config.openIdConnect.callbacks.Logon,
+                        authority: config.openIdConnect.authority,
                         client_id: openIdConnectClientId,
                         response_mode: "query",
-                        state: stateStore.id,
-                    },
-                }).then((response) => {
-                    cy.log("Posting credentials.");
-                    const html = document.createElement("html");
-                    html.innerHTML = response.body;
-                    const form = html.getElementsByTagName("form")[0];
-                    const body = {
-                        username: username,
-                        password: password,
+                        extraTokenParams: {},
                     };
-                    const url = form.action;
-                    return cy.request({
-                        method: "POST",
-                        url,
+
+                    cy.log("Creating OIDC StateStore in local storage.");
+                    cy.log(`State ID:  ${stateId}`);
+                    window.sessionStorage.setItem(
+                        `oidc.${stateStore.id}`,
+                        JSON.stringify(stateStore)
+                    );
+
+                    cy.log(`Requesting Keycloak Authentication form.`);
+                    cy.request({
+                        url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
                         followRedirect: false,
-                        form: true,
-                        body,
-                    });
+                        qs: {
+                            response_type: config.openIdConnect.responseType,
+                            approval_prompt: "auto",
+                            redirect_uri: config.openIdConnect.callbacks.Logon,
+                            client_id: openIdConnectClientId,
+                            response_mode: "query",
+                            state: stateStore.id,
+                        },
+                    })
+                        .then((response) => {
+                            cy.log("Posting credentials.");
+                            const html = document.createElement("html");
+                            html.innerHTML = response.body;
+                            const form = html.getElementsByTagName("form")[0];
+                            const body = {
+                                username: username,
+                                password: password,
+                            };
+                            const url = form.action;
+                            return cy.request({
+                                method: "POST",
+                                url,
+                                followRedirect: false,
+                                form: true,
+                                body,
+                            });
+                        })
+                        .then((response) => {
+                            const callbackUrl = response.headers.location;
+
+                            expect(
+                                callbackUrl,
+                                "Keycloak callback URL"
+                            ).to.be.a("string");
+                            cy.visit(callbackUrl);
+                            cy.get("[data-testid=user-account-icon]", {
+                                timeout: 60000,
+                            }).should("exist");
+                        });
                 });
-            });
-        });
+            },
+            {
+                validate() {
+                    cy.visit("/");
+                    cy.get("[data-testid=user-account-icon]", {
+                        timeout: 60000,
+                    }).should("exist");
+                },
+            }
+        );
         cy.log(`Visiting ${path}`);
         setupStandardAliases(path);
 

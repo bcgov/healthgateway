@@ -19,6 +19,7 @@ parameters:
       - HG Auth
       - HG UI
       - HG E2E
+      - Dev Availability Probe
     default: WebClient
 
 # Build variables
@@ -47,6 +48,8 @@ variables:
     value: ${{ eq(parameters.appType, 'HG UI') }}
   - name: HgE2e
     value: ${{ eq(parameters.appType, 'HG E2E') }}
+  - name: DevAvailabilityProbe
+    value: ${{ eq(parameters.appType, 'Dev Availability Probe') }}
 
 jobs:
   # Azure rolling image update issue.
@@ -85,6 +88,23 @@ jobs:
             image="cypress/browsers@$digest"
             echo "Cypress image for this run: $image"
             echo "##vso[task.setvariable variable=image;isOutput=true]$image"
+
+  - job: "Dev_Availability_Probe"
+    displayName: "Probe Dev availability"
+    pool:
+      vmImage: "ubuntu-latest"
+    condition: eq(variables['DevAvailabilityProbe'], true)
+    timeoutInMinutes: 2
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Bash@3
+        displayName: "Probe Dev availability"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_probeDevAvailability.sh"
+          arguments: "Manual"
 
   - job: "Admin_Seed"
     displayName: "Re-seed DB and PHSA data for Admin"
@@ -215,7 +235,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Authentication_Probe"
     strategy:
-      parallel: 3
+      parallel: 2
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -275,7 +295,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Ui_Probe"
     strategy:
-      parallel: 4
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -335,7 +355,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Read_Probe"
     strategy:
-      parallel: 4
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -460,7 +480,7 @@ jobs:
       - "HG_Auth_Probe"
     condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
     strategy:
-      parallel: 4
+      parallel: 2
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -525,7 +545,7 @@ jobs:
       - "HG_UI_Probe"
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true)))
     strategy:
-      parallel: 4
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self

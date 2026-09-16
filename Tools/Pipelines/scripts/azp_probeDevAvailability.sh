@@ -7,10 +7,13 @@ if [ "$#" -eq 0 ]; then
 fi
 
 boundaryName="$*"
+# Website probes request HTML so the SPA fallback handles them as browser navigations.
 endpoints=(
-    "Admin|https://dev-admin.healthgateway.gov.bc.ca/"
-    "WebClient configuration|https://dev.healthgateway.gov.bc.ca/configuration"
-    "Keycloak OpenID configuration|https://dev.loginproxy.gov.bc.ca/auth/realms/health-gateway-gold/.well-known/openid-configuration"
+    "Admin|https://dev-admin.healthgateway.gov.bc.ca/|text/html"
+    "Admin configuration|https://dev-admin.healthgateway.gov.bc.ca/v1/api/Configuration|application/json"
+    "WebClient|https://dev.healthgateway.gov.bc.ca/|text/html"
+    "WebClient configuration|https://dev.healthgateway.gov.bc.ca/configuration|application/json"
+    "Keycloak OpenID configuration|https://dev.loginproxy.gov.bc.ca/auth/realms/health-gateway-gold/.well-known/openid-configuration|application/json"
 )
 resultsDirectory="$(mktemp -d)"
 trap 'rm -rf "$resultsDirectory"' EXIT
@@ -18,9 +21,10 @@ trap 'rm -rf "$resultsDirectory"' EXIT
 echo "Probing Dev availability after $boundaryName"
 
 for endpoint in "${endpoints[@]}"; do
-    IFS='|' read -r name url <<< "$endpoint"
+    IFS='|' read -r name url accept <<< "$endpoint"
     (
         curl --silent --show-error --output /dev/null \
+            --header "Accept: $accept" \
             --write-out "%{http_code} %{time_connect} %{time_total}" \
             --connect-timeout 10 --max-time 30 --retry 1 --retry-all-errors \
             "$url" > "$resultsDirectory/$name" 2>&1 || true
