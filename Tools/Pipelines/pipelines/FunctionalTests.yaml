@@ -182,6 +182,24 @@ jobs:
           IDIR_PASSWORD: $(idir.password)
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
+  - job: "Admin_Authentication_Probe"
+    displayName: "Probe Dev after Admin Authentication"
+    pool:
+      vmImage: "ubuntu-latest"
+    dependsOn: "Admin_Authentication_Tests"
+    condition: and(not(canceled()), eq(variables['Admin'], true))
+    timeoutInMinutes: 2
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Bash@3
+        displayName: "Probe Dev availability"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_probeDevAvailability.sh"
+          arguments: "Admin Authentication"
+
   - job: "Admin_Ui_Tests"
     displayName: "Admin Ui Functional Tests"
     pool:
@@ -195,7 +213,7 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
-      - "Admin_Authentication_Tests"
+      - "Admin_Authentication_Probe"
     strategy:
       parallel: 3
     timeoutInMinutes: 15
@@ -224,6 +242,24 @@ jobs:
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
 
+  - job: "Admin_Ui_Probe"
+    displayName: "Probe Dev after Admin UI"
+    pool:
+      vmImage: "ubuntu-latest"
+    dependsOn: "Admin_Ui_Tests"
+    condition: and(not(canceled()), eq(variables['Admin'], true))
+    timeoutInMinutes: 2
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Bash@3
+        displayName: "Probe Dev availability"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_probeDevAvailability.sh"
+          arguments: "Admin UI"
+
   - job: "Admin_Read_Tests"
     displayName: "Admin Read Functional Tests"
     pool:
@@ -237,7 +273,7 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
-      - "Admin_Ui_Tests"
+      - "Admin_Ui_Probe"
     strategy:
       parallel: 4
     timeoutInMinutes: 15
@@ -266,6 +302,24 @@ jobs:
           KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
 
+  - job: "Admin_Read_Probe"
+    displayName: "Probe Dev after Admin Read"
+    pool:
+      vmImage: "ubuntu-latest"
+    dependsOn: "Admin_Read_Tests"
+    condition: and(not(canceled()), eq(variables['Admin'], true))
+    timeoutInMinutes: 2
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Bash@3
+        displayName: "Probe Dev availability"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_probeDevAvailability.sh"
+          arguments: "Admin Read"
+
   - job: "Admin_Write_Tests"
     displayName: "Admin Write Functional Tests"
     pool:
@@ -279,7 +333,7 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
-      - "Admin_Read_Tests"
+      - "Admin_Read_Probe"
     strategy:
       parallel: 4
     timeoutInMinutes: 15
@@ -373,6 +427,24 @@ jobs:
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
 
+  - job: "HG_Auth_Probe"
+    displayName: "Probe Dev after HG Auth"
+    pool:
+      vmImage: "ubuntu-latest"
+    dependsOn: "HG_Auth_Functional_Tests"
+    condition: and(not(canceled()), eq(variables['WebClient'], true))
+    timeoutInMinutes: 2
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Bash@3
+        displayName: "Probe Dev availability"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_probeDevAvailability.sh"
+          arguments: "HG Auth"
+
   - job: "HG_UI_Functional_Tests"
     displayName: "HG UI Functional Tests"
     pool:
@@ -385,10 +457,10 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
-      - "HG_Auth_Functional_Tests"
+      - "HG_Auth_Probe"
     condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
     strategy:
-      parallel: 6
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -419,6 +491,25 @@ jobs:
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
+
+  - job: "HG_UI_Probe"
+    displayName: "Probe Dev after HG UI"
+    pool:
+      vmImage: "ubuntu-latest"
+    dependsOn: "HG_UI_Functional_Tests"
+    condition: and(not(canceled()), eq(variables['WebClient'], true))
+    timeoutInMinutes: 2
+    steps:
+      - checkout: self
+        fetchDepth: 1
+        clean: true
+      - task: Bash@3
+        displayName: "Probe Dev availability"
+        inputs:
+          targetType: filePath
+          filePath: "./Tools/Pipelines/scripts/azp_probeDevAvailability.sh"
+          arguments: "HG UI"
+
   - job: "HG_E2E_Functional_Tests"
     displayName: "HG E2E Functional Tests"
     pool:
@@ -431,10 +522,10 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
-      - "HG_UI_Functional_Tests"
+      - "HG_UI_Probe"
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true)))
     strategy:
-      parallel: 6
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self
