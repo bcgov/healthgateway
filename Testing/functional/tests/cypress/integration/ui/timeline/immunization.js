@@ -13,8 +13,11 @@ describe("Immunization presentation", () => {
             (fixture) => {
                 // Reuse one response to cover both presentation cases so the
                 // application and fixture-backed dataset only load once.
-                fixture.immunizations[0].immunization.name = "";
-                cy.intercept("GET", "**/Immunization?hdid=*", fixture);
+                const response = Cypress._.cloneDeep(fixture);
+                response.immunizations[0].immunization.name = "";
+                cy.intercept("GET", "**/Immunization?hdid=*", response).as(
+                    "getImmunizations"
+                );
             }
         );
         cy.configureSettings({
@@ -34,6 +37,7 @@ describe("Immunization presentation", () => {
             AuthMethod.KeyCloak,
             "/timeline"
         );
+        cy.wait("@getImmunizations");
 
         cy.contains("[data-testid=immunizationTitle]", emptyTitleDate)
             .should("be.visible")

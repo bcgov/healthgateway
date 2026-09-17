@@ -40,6 +40,7 @@ describe("Need to accept terms of service", () => {
 
 describe("Does not need to accept terms of service", () => {
     beforeEach(() => {
+        cy.configureSettings({});
         setupStandardFixtures();
         cy.login(
             Cypress.env("keycloak.username"),

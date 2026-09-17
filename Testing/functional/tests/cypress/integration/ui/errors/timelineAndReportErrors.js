@@ -303,6 +303,9 @@ describe("Dependents", () => {
                 cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
                     fixture: "LaboratoryService/covid19Orders.json",
                 });
+                cy.intercept("GET", "**/Immunization?hdid=*", {
+                    fixture: "ImmunizationService/dependentImmunization.json",
+                });
             }
         );
     });
@@ -314,11 +317,11 @@ describe("Dependents", () => {
         cy.get(`[data-testid=dependent-card-${validDependent.phn}]`).within(
             () => {
                 cy.get("[data-testid=dependentMenuBtn]").click();
-                cy.document()
-                    .find("[data-testid=deleteDependentMenuBtn]")
-                    .click();
             }
         );
+        cy.get("[data-testid=deleteDependentMenuBtn]")
+            .should("be.visible")
+            .click();
         cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
@@ -452,7 +455,11 @@ describe("Comments", () => {
 
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
-        });
+        }).as("getCovid19Orders");
+
+        cy.intercept("GET", "**/UserProfile/*/Comment", {
+            fixture: "UserProfileService/commentNoResult.json",
+        }).as("getComments");
 
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
@@ -473,6 +480,7 @@ describe("Comments", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait(["@getCovid19Orders", "@getComments"]);
         var testComment = "Test Add Comment";
 
         cy.get("[data-testid=entryCardDetailsTitle]")

@@ -9,8 +9,11 @@ const breadcrumbPages = [
     ["/termsOfService", "breadcrumb-terms-of-service"],
 ];
 
-function verifyBreadcrumb(path, activeBreadcrumbTestId) {
-    cy.visit(path);
+function verifyBreadcrumb(path, activeBreadcrumbTestId, shouldVisit = true) {
+    if (shouldVisit) {
+        cy.visit(path);
+    }
+
     cy.get("[data-testid=breadcrumbs]").should("be.visible");
     cy.get(
         `[data-testid=${activeBreadcrumbTestId}].v-breadcrumbs-item--active`
@@ -20,7 +23,15 @@ function verifyBreadcrumb(path, activeBreadcrumbTestId) {
 }
 
 describe("Breadcrumbs", () => {
-    beforeEach(() => {
+    it("Breadcrumbs hidden when logged out", () => {
+        cy.configureSettings({});
+        cy.visit("/termsOfService");
+        cy.get("[data-testid=breadcrumbs]", { timeout: 2500 }).should(
+            "not.exist"
+        );
+    });
+
+    it("Displays the active breadcrumb and navigates home", () => {
         cy.configureSettings({
             dependents: {
                 enabled: true,
@@ -33,24 +44,17 @@ describe("Breadcrumbs", () => {
         cy.intercept("GET", "**/UserProfile/termsofservice*", {
             fixture: "UserProfileService/termsOfService.json",
         });
-    });
 
-    it("Breadcrumbs hidden when logged out", () => {
-        cy.visit("/termsOfService");
-        cy.get("[data-testid=breadcrumbs]", { timeout: 2500 }).should(
-            "not.exist"
-        );
-    });
-
-    it("Displays the active breadcrumb and navigates home", () => {
+        const [firstPath, firstTestId] = breadcrumbPages[0];
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            firstPath
         );
+        verifyBreadcrumb(firstPath, firstTestId, false);
 
-        breadcrumbPages.forEach(([path, testId]) => {
+        breadcrumbPages.slice(1).forEach(([path, testId]) => {
             verifyBreadcrumb(path, testId);
         });
     });

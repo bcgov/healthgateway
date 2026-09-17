@@ -15,3 +15,16 @@
 import "./commands";
 
 require("cy-verify-downloads").addCustomCommand();
+
+Cypress.on("window:before:load", (window) => {
+    window.snowplow = () => undefined;
+});
+
+beforeEach(() => {
+    cy.intercept("GET", "**/snowplow.js", {
+        body: "window.snowplow = () => undefined;",
+        headers: {
+            "content-type": "application/javascript",
+        },
+    });
+});

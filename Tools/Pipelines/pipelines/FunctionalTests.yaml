@@ -480,7 +480,7 @@ jobs:
       - "HG_Auth_Probe"
     condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
     strategy:
-      parallel: 2
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self

@@ -17,7 +17,7 @@ describe("Immunization History Report", () => {
         });
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
-        });
+        }).as("getImmunizations");
 
         setupStandardFixtures();
 
@@ -31,6 +31,7 @@ describe("Immunization History Report", () => {
 
     it("Validate Immunization History Report", () => {
         cy.vSelect("[data-testid=report-type]", "Immunizations");
+        cy.wait("@getImmunizations");
 
         cy.get("[data-testid=report-sample]").scrollTo("bottom", {
             ensureScrollable: false,
@@ -90,7 +91,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
 
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationInvalidDoses.json",
-        });
+        }).as("getImmunizations");
         cy.configureSettings({
             datasets: [
                 {
@@ -110,8 +111,9 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
         );
 
         cy.vSelect("[data-testid=report-type]", "Immunizations");
+        cy.wait("@getImmunizations");
 
-        cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
+        cy.get("[data-testid=immunizationDateItem]")
             .contains(validDoseDate1)
             .should("be.visible");
         cy.get("[data-testid=immunizationDateItem]")

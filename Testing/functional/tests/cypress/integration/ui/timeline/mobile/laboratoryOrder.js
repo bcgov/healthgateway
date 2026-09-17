@@ -21,7 +21,7 @@ describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
-        });
+        }).as("getLaboratoryOrders");
         cy.configureSettings({
             datasets: [
                 {
@@ -39,6 +39,7 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();
     });
 
@@ -228,6 +229,37 @@ describe("Laboratory Orders", () => {
                 });
                 cy.get("[data-testid=backBtn]").click({ force: true });
             });
+    });
+});
+
+describe("Laboratory Orders Queued", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrdersQueued.json",
+        }).as("getLaboratoryOrders");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
+        setupStandardFixtures();
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.wait("@getLaboratoryOrders");
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Shows the queued alert and an empty timeline", () => {
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
 
