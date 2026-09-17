@@ -1,0 +1,167 @@
+{
+    "openIdConnect": {
+        "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/health-gateway-gold",
+        "clientId": "hg",
+        "responseType": "code",
+        "scope": "openid profile web-origins email",
+        "callbacks": null
+    },
+    "identityProviders": [
+        {
+            "id": "BCSC",
+            "name": "BC Services Card",
+            "icon": "address-card",
+            "hint": "bcsc",
+            "disabled": false
+        },
+        {
+            "id": "IDIR",
+            "name": "BC Government IDIR",
+            "icon": "user",
+            "hint": "idir",
+            "disabled": false
+        },
+        {
+            "id": "KeyCloak",
+            "name": "KeyCloak",
+            "icon": "user-secret",
+            "hint": "",
+            "disabled": false
+        }
+    ],
+    "webClient": {
+        "logLevel": "Debug",
+        "timeouts": {
+            "idle": 300000,
+            "logoutRedirect": "10000",
+            "resendSMS": 1
+        },
+        "accessMyHealthUrl": "https://dev.vpp.patientportal.ca-1.healtheintent.com/",
+        "betaUrl": "https://dev-secure.healthgateway.gov.bc.ca/",
+        "externalURLs": {
+            "HealthLinkImmunizationSchedule": "https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules",
+            "HealthLinkVaccineSearch": "https://www.healthlinkbc.ca/search/"
+        },
+        "featureToggleConfiguration": {
+            "homepage": {
+                "showRecommendationsLink": false,
+                "showImmunizationRecordLink": true,
+                "otherRecordSources": {
+                    "enabled": true,
+                    "sources": [
+                        {
+                            "name": "accessMyHealth",
+                            "enabled": true
+                        }
+                    ]
+                }
+            },
+            "notificationCentre": {
+                "enabled": true
+            },
+            "timeline": {
+                "comment": true
+            },
+            "datasets": [
+                {
+                    "name": "clinicalDocument",
+                    "enabled": true
+                },
+                {
+                    "name": "covid19TestResult",
+                    "enabled": false
+                },
+                {
+                    "name": "diagnosticImaging",
+                    "enabled": true
+                },
+                {
+                    "name": "healthVisit",
+                    "enabled": true
+                },
+                {
+                    "name": "hospitalVisit",
+                    "enabled": true
+                },
+                {
+                    "name": "immunization",
+                    "enabled": true
+                },
+                {
+                    "name": "labResult",
+                    "enabled": true
+                },
+                {
+                    "name": "medication",
+                    "enabled": true
+                },
+                {
+                    "name": "note",
+                    "enabled": true
+                },
+                {
+                    "name": "specialAuthorityRequest",
+                    "enabled": true
+                },
+                {
+                    "name": "bcCancerScreening",
+                    "enabled": true
+                }
+            ],
+            "dependents": {
+                "enabled": true,
+                "timelineEnabled": false,
+                "datasets": [
+                    {
+                        "name": "note",
+                        "enabled": false
+                    }
+                ]
+            },
+            "services": {
+                "enabled": true,
+                "services": [
+                    {
+                        "name": "organDonorRegistration",
+                        "enabled": true
+                    },
+                    {
+                        "name": "healthConnectRegistry",
+                        "enabled": true
+                    }
+                ]
+            },
+            "profile": {
+                "notifications": {
+                    "enabled": true,
+                    "type": [
+                        {
+                            "name": "bcCancerScreening",
+                            "enabled": true,
+                            "preferences": {
+                                "email": true,
+                                "sms": true
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "hoursForDeletion": 720,
+        "minPatientAge": 12,
+        "maxDependentAge": 12,
+        "offlineMode": null
+    },
+    "serviceEndpoints": {
+        "ClinicalDocument": "https://hg.dev.api.gov.bc.ca/api/clinicaldocumentservice/",
+        "Encounter": "https://hg.dev.api.gov.bc.ca/api/encounterservice/",
+        "GatewayApi": "https://hg.dev.api.gov.bc.ca/api/gatewayapiservice/",
+        "HospitalVisit": "https://hg.dev.api.gov.bc.ca/api/encounterservice/",
+        "Immunization": "https://hg.dev.api.gov.bc.ca/api/immunizationservice/",
+        "Laboratory": "https://hg.dev.api.gov.bc.ca/api/laboratoryservice/",
+        "Medication": "https://hg.dev.api.gov.bc.ca/api/medicationservice/",
+        "Patient": "https://hg.dev.api.gov.bc.ca/api/patientservice/",
+        "PatientData": "https://hg.dev.api.gov.bc.ca/api/patientservice/",
+        "SpecialAuthority": "https://hg.dev.api.gov.bc.ca/api/medicationservice/"
+    }
+}

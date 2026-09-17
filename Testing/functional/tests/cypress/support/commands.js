@@ -16,6 +16,7 @@ import {
 // Cache the baseline configuration and return a copy because
 // configureSettings mutates the configuration for each test.
 let cachedEnvironmentConfig;
+let cachedUiConfiguration;
 
 function cloneConfig(config) {
     return Cypress._.cloneDeep(config);
@@ -559,6 +560,20 @@ Cypress.Commands.add("getTokens", (username, password) => {
 
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
+
+    if (isUiSpec()) {
+        if (cachedUiConfiguration) {
+            cy.log(`Using cached UI Configuration`);
+            return cy.wrap(cloneConfig(cachedUiConfiguration));
+        }
+
+        return cy
+            .fixture("ConfigurationService/configuration.json")
+            .then((config) => {
+                cachedUiConfiguration = cloneConfig(config);
+                return cloneConfig(cachedUiConfiguration);
+            });
+    }
 
     if (cachedEnvironmentConfig) {
         cy.log(`Using cached Environment Configuration`);

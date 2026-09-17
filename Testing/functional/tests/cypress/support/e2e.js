@@ -20,6 +20,11 @@ Cypress.on("window:before:load", (window) => {
     window.snowplow = () => undefined;
 });
 
+function isUiSpec() {
+    const normalizedSpecPath = Cypress.spec.relative.replaceAll("\\", "/");
+    return /(^|\/)ui\//.test(normalizedSpecPath);
+}
+
 beforeEach(() => {
     cy.intercept("GET", "**/snowplow.js", {
         body: "window.snowplow = () => undefined;",
@@ -27,4 +32,13 @@ beforeEach(() => {
             "content-type": "application/javascript",
         },
     });
+
+    if (isUiSpec()) {
+        cy.fixture("ConfigurationService/configuration.json").then((config) => {
+            cy.intercept("GET", "**/configuration", {
+                statusCode: 200,
+                body: Cypress._.cloneDeep(config),
+            });
+        });
+    }
 });
