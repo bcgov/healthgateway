@@ -474,7 +474,7 @@ describe("Error Alerts", () => {
 // These cases deliberately reuse the action helpers above with a 429 response.
 // This keeps the 500 and 429 behavior for the same user action together. Do not
 // duplicate the profile email-update or SMS-validation cases in
-// tooManyRequestsAlerts.js; that suite owns dataset warnings and report errors.
+// timelineAndReportErrors.js; that suite owns dataset warnings and report errors.
 describe("429 Alerts", () => {
     it("429 Error Retrieving Configuration", () => {
         testGetConfigurationError(429);

@@ -95,7 +95,7 @@ describe("Timeline - Too Many Requests", () => {
 });
 
 // Profile email-update and SMS-validation 429 responses are intentionally
-// covered by the parameterized helpers in errorAlerts.js. Those helpers verify
+// covered by the parameterized helpers in applicationAndUserActionErrors.js. Those helpers verify
 // both the general server-error path and the 429-specific alert for each action.
 
 describe("Mobile - Laboratory Orders Report Download", () => {
