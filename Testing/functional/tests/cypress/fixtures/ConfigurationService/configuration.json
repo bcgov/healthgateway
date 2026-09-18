@@ -38,6 +38,7 @@
         },
         "accessMyHealthUrl": "https://dev.vpp.patientportal.ca-1.healtheintent.com/",
         "betaUrl": "https://dev-secure.healthgateway.gov.bc.ca/",
+        "classicUrl": "https://dev-classic.healthgateway.gov.bc.ca/",
         "externalURLs": {
             "HealthLinkImmunizationSchedule": "https://www.healthlinkbc.ca/tools-videos/bc-immunization-schedules",
             "HealthLinkVaccineSearch": "https://www.healthlinkbc.ca/search/"
@@ -147,10 +148,13 @@
                 }
             }
         },
+        "featureToggleFilePath": "/app/config/featuretoggleconfig.json",
         "hoursForDeletion": 720,
         "minPatientAge": 12,
         "maxDependentAge": 12,
-        "offlineMode": null
+        "emailVerificationExpirySeconds": 43200,
+        "offlineMode": null,
+        "robotsFilePath": "/app/config/robots.txt"
     },
     "serviceEndpoints": {
         "ClinicalDocument": "https://hg.dev.api.gov.bc.ca/api/clinicaldocumentservice/",

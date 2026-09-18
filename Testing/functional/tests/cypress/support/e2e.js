@@ -18,12 +18,43 @@ require("cy-verify-downloads").addCustomCommand();
 
 Cypress.on("window:before:load", (window) => {
     window.snowplow = () => undefined;
+
+    const startupErrors = [];
+    const consoleError = window.console.error.bind(window.console);
+
+    window.console.error = (...args) => {
+        startupErrors.push(
+            args
+                .map((arg) =>
+                    arg instanceof Error
+                        ? arg.stack || arg.message
+                        : typeof arg === "string"
+                          ? arg
+                          : JSON.stringify(arg)
+                )
+                .join(" ")
+        );
+        consoleError(...args);
+    };
+    window.__healthGatewayStartupErrors = startupErrors;
 });
 
 function isUiSpec() {
     const normalizedSpecPath = Cypress.spec.relative.replaceAll("\\", "/");
     return /(^|\/)ui\//.test(normalizedSpecPath);
 }
+
+Cypress.on("fail", (error) => {
+    const startupErrors =
+        Cypress.state("window")?.__healthGatewayStartupErrors ?? [];
+    if (startupErrors.length > 0) {
+        error.message += `\n\nApplication startup errors:\n${startupErrors.join(
+            "\n"
+        )}`;
+    }
+
+    throw error;
+});
 
 beforeEach(() => {
     cy.intercept("GET", "**/snowplow.js", {
