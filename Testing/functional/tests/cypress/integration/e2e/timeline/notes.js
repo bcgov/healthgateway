@@ -66,12 +66,12 @@ describe("Notes", () => {
         // Delete Note
         cy.intercept("DELETE", "**/Note/*").as("deleteNote");
         cy.log("Deleting Note.");
-        cy.get("[data-testid=noteMenuBtn]").last().click();
-        cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
         cy.on("window:confirm", (str) => {
             expect(str).to.eq("Are you sure you want to delete this note?");
-            return true; // Stubbing the confirmation to return true (OK clicked)
+            return true;
         });
+        cy.get("[data-testid=noteMenuBtn]").last().click();
+        cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
 
         // Confirm deleted note
         cy.wait("@deleteNote");

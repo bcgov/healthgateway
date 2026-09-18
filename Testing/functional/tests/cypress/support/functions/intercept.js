@@ -143,7 +143,8 @@ export function setupStandardAliases() {
 
     cy.intercept("GET", "**/Encounter/HospitalVisit/*").as("getHospitalVisit");
     cy.intercept("GET", "**/ClinicalDocument/*").as("getClinicalDocument");
-    cy.intercept("GET", `**/Communication/*`).as("getCommunication");
+    cy.intercept("GET", "**/Communication/0").as("getBannerCommunication");
+    cy.intercept("GET", "**/Communication/2").as("getInAppCommunication");
     cy.intercept("GET", "**/Notification/*").as("getNotification");
     cy.intercept("GET", "**/Patient/*").as("getPatient");
     cy.intercept(
@@ -211,7 +212,9 @@ export function waitForInitialDataLoad(
     });
 
     cy.log("Wait on communication.");
-    cy.wait("@getCommunication", { timeout: defaultTimeout });
+    cy.wait(["@getBannerCommunication", "@getInAppCommunication"], {
+        timeout: defaultTimeout,
+    });
 
     waitForNotification(featureToggle);
     if (shouldWaitForDependent) {
