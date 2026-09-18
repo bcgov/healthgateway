@@ -65,6 +65,16 @@ beforeEach(() => {
     });
 
     if (isUiSpec()) {
+        cy.intercept(
+            "GET",
+            "**/protocol/openid-connect/3p-cookies/step1.html",
+            { fixture: "KeycloakService/thirdPartyCookiesSupported.html" }
+        );
+        cy.intercept(
+            "GET",
+            "**/protocol/openid-connect/3p-cookies/step2.html",
+            { fixture: "KeycloakService/thirdPartyCookiesSupported.html" }
+        );
         cy.fixture("ConfigurationService/configuration.json").then((config) => {
             cy.intercept("GET", "**/configuration", {
                 statusCode: 200,
