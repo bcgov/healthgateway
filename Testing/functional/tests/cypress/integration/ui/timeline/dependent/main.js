@@ -75,7 +75,10 @@ describe("Dependent Timeline", () => {
         cy.get("[data-testid=add-comment-text-area]").should("not.exist");
         cy.get("[data-testid=post-comment-btn]").should("not.exist");
 
-        cy.get("[data-testid=breadcrumb-dependents]").click();
+        cy.get("[data-testid=breadcrumb-dependents]")
+            .find("a")
+            .should("have.attr", "href", dependentsPath)
+            .click();
         cy.location("pathname").should("eq", dependentsPath);
 
         cy.visit(dependentTimelinePath);

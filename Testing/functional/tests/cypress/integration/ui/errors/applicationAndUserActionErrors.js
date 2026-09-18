@@ -91,10 +91,10 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
         .type(Cypress.env("phoneNumber"));
     cy.get("[data-testid=acceptCheckbox] input")
         .should("be.enabled")
-        .check({ force: true })
-        .wait(500);
+        .check({ force: true });
     cy.get("[data-testid=registerButton]")
-        .should("be.visible", "be.enabled")
+        .should("be.visible")
+        .and("be.enabled")
         .click();
 
     if (statusCode === tooManyRequestsStatusCode) {
@@ -313,7 +313,8 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
 
     getQuickLinkCard("Medications").within(() => {
         cy.get("[data-testid=card-menu-button]")
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .and("be.enabled")
             .click();
         cy.document()
             .find("[data-testid=remove-quick-link-button]")
@@ -377,9 +378,12 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
         AuthMethod.KeyCloak,
         "/profile"
     );
+    cy.wait("@getUserProfile");
+    cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
 
     cy.get("[data-testid=verifySMSBtn]")
-        .should("be.visible", "be.enabled")
+        .should("be.visible")
+        .and("be.enabled")
         .click();
 
     cy.get("[data-testid=verifySMSModalCodeInput]")

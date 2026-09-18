@@ -602,6 +602,7 @@ Cypress.Commands.add("checkOnTimeline", () => {
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
+    cy.get("[data-testid=app-error]").should("not.exist");
     cy.contains("#subject", "Health Records").should("exist");
     cy.get("[data-testid=loadingSpinner]").should("not.exist");
     cy.get("[data-testid=loading-toast]").should(($el) => {

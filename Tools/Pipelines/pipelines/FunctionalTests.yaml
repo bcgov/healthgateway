@@ -386,7 +386,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool:
       name: "HGGoldDev"
-    condition: or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true))
+    condition: or(eq(variables['WebClient'], true), eq(variables['HgUi'], true), eq(variables['HgE2e'], true))
     dependsOn: "Admin_Write_Tests"
     timeoutInMinutes: 5
     steps:
@@ -478,7 +478,7 @@ jobs:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
       - "HG_Auth_Probe"
-    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
     strategy:
       parallel: 3
     timeoutInMinutes: 15

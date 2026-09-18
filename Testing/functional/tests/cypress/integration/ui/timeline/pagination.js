@@ -7,8 +7,9 @@ const recordCount = 30;
 function setupMedicationRecords() {
     cy.fixture("MedicationService/medicationStatement.json").then(
         (response) => {
-            const template = response.resourcePayload[0];
-            response.resourcePayload = Array.from(
+            const fixture = Cypress._.cloneDeep(response);
+            const template = fixture.resourcePayload[0];
+            fixture.resourcePayload = Array.from(
                 { length: recordCount },
                 (_, index) => ({
                     ...template,
@@ -18,8 +19,8 @@ function setupMedicationRecords() {
                         .slice(0, 10),
                 })
             );
-            response.totalResultCount = recordCount;
-            cy.intercept("GET", "**/MedicationStatement/*", response);
+            fixture.totalResultCount = recordCount;
+            cy.intercept("GET", "**/MedicationStatement/*", fixture);
         }
     );
 }

@@ -40,5 +40,11 @@ beforeEach(() => {
                 body: Cypress._.cloneDeep(config),
             });
         });
+        cy.intercept("GET", "**/Communication/0", {
+            fixture: "CommunicationService/communicationBanner.json",
+        });
+        cy.intercept("GET", "**/Communication/2", {
+            fixture: "CommunicationService/communicationInApp.json",
+        });
     }
 });

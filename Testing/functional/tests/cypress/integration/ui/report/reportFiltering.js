@@ -6,7 +6,8 @@ const endDateId = "[data-testid=end-date-input] input";
 
 function enterDate(selector, currentDate, newDate) {
     cy.get(selector)
-        .should("be.enabled", "be.visible")
+        .should("be.enabled")
+        .and("be.visible")
         .should("have.value", currentDate)
         .click()
         .focus()
@@ -26,8 +27,8 @@ function verifyAdvancedFiltersVisible(visible) {
     if (visible) {
         cy.get("[data-testid=clear-btn]").should("be.visible");
         cy.get("[data-testid=apply-filter-btn]").should("be.visible");
-        cy.get(startDateId).should("be.enabled", "be.visible");
-        cy.get(endDateId).should("be.enabled", "be.visible");
+        cy.get(startDateId).should("be.enabled").and("be.visible");
+        cy.get(endDateId).should("be.enabled").and("be.visible");
     } else {
         cy.get("[data-testid=clear-btn]").should("not.be.visible");
         cy.get("[data-testid=apply-filter-btn]").should("not.be.visible");
@@ -69,7 +70,8 @@ describe("Report Filtering", () => {
         verifyAdvancedFiltersVisible(false);
 
         cy.get("[data-testid=advanced-btn]")
-            .should("be.enabled", "be.visible")
+            .should("be.enabled")
+            .and("be.visible")
             .click();
 
         verifyAdvancedFiltersVisible(true);
@@ -81,7 +83,7 @@ describe("Report Filtering", () => {
         verifyDateRange("From 2020-Feb-03 Up To 2020-Feb-05");
 
         // Validate filters - Cancel  button
-        cy.get("[data-testid=clear-btn").click();
+        cy.get("[data-testid=clear-btn]").click();
         verifyAdvancedFiltersVisible(false);
 
         // Click on Advanced button see advanced filter options
@@ -120,7 +122,8 @@ describe("Report Filtering", () => {
         cy.vSelect("[data-testid=report-type]", "Medications");
         cy.get("[data-testid=advancedPanel]").should("not.exist");
         cy.get("[data-testid=advanced-btn]")
-            .should("be.enabled", "be.visible")
+            .should("be.enabled")
+            .and("be.visible")
             .click();
         cy.get("[data-testid=medication-exclusion-filter]").should(
             "be.visible"

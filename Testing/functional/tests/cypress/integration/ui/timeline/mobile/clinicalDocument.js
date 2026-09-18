@@ -5,7 +5,7 @@ describe("Clinical Document", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/ClinicalDocument/*", {
             fixture: "ClinicalDocumentService/clinicalDocument.json",
-        });
+        }).as("getClinicalDocuments");
         cy.intercept(
             "GET",
             "**/ClinicalDocument/*/file/14bac0b6-9e95-4a1b-b6fd-d354edfce4e7-710b28fa980440fd93c426e25c0ce52f",
@@ -30,6 +30,7 @@ describe("Clinical Document", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getClinicalDocuments");
         cy.checkTimelineHasLoaded();
     });
 
