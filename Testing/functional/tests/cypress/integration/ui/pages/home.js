@@ -286,8 +286,8 @@ describe("Home page - notification settings alert", () => {
             }
         ).as("dismissSmsRemovedAlert");
 
-        // The modified profile fixture must not share the default cross-spec
-        // session with tests that use the same Keycloak account.
+        // Use a distinct session because this fixture differs from the default
+        // profile used earlier in this spec.
         loginToHome("sms-removed-alert");
 
         cy.get("[data-testid=incomplete-profile-banner]")
@@ -303,9 +303,13 @@ describe("Home page - notification settings alert", () => {
         cy.wait("@dismissSmsRemovedAlert");
 
         cy.get("[data-testid=profile-preferences-link]")
-            .should("have.attr", "href", profileUrl)
-            .click();
-        cy.location("pathname").should("eq", profileUrl);
+            .should("be.visible")
+            .should("have.attr", "href", profileUrl);
+
+        // Recreate HomeView to verify the updated preference without coupling
+        // this preference test to Profile route navigation.
+        cy.get("[data-testid=menu-btn-health-records-link]").click();
+        cy.location("pathname").should("eq", timelineUrl);
         cy.get("[data-testid=menu-btn-home-link]").click();
         cy.location("pathname").should("eq", homeUrl);
         cy.get("[data-testid=sms-removed-message]").should("not.exist");

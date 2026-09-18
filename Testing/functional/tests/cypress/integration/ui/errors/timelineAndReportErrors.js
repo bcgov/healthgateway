@@ -34,7 +34,16 @@ function loginWithDatasetError(endpoint, dataset) {
     );
 }
 
-function setupDependentsPage(datasets, setupDatasetFixtures) {
+function getDependentCardSelector(timelineEnabled) {
+    const dependentId = timelineEnabled ? dependentHdid : dependentPhn;
+    return `[data-testid=dependent-card-${dependentId}]`;
+}
+
+function setupDependentsPage(
+    datasets,
+    setupDatasetFixtures,
+    timelineEnabled = false
+) {
     setupStandardFixtures();
     cy.intercept("GET", "**/UserProfile/*/Dependent", {
         fixture: "UserProfileService/dependent.json",
@@ -43,6 +52,7 @@ function setupDependentsPage(datasets, setupDatasetFixtures) {
     cy.configureSettings({
         dependents: {
             enabled: true,
+            timelineEnabled,
         },
         datasets,
     });
@@ -53,9 +63,7 @@ function setupDependentsPage(datasets, setupDatasetFixtures) {
         "/dependents"
     );
 
-    // UI specs use fixtures and skip endpoint waits. The rendered dependent
-    // card is the authoritative signal that the page is ready for interaction.
-    cy.get(`[data-testid=dependent-card-${dependentPhn}]`).should("be.visible");
+    cy.get(getDependentCardSelector(timelineEnabled)).should("be.visible");
 }
 
 describe("Landing Page - Too Many Requests", () => {
@@ -266,18 +274,8 @@ describe("Mobile - Covid19 Orders Report Download", () => {
 });
 
 describe("Dependents", () => {
-    const validDependent = {
-        firstName: "Sam ", // Add end space to ensure field is trimmed
-        lastName: "Testfive ", // Add end space to ensure field is trimmed
-        wrongLastName: "Testfive2",
-        invalidDoB: "2007-Aug-05",
-        doB: "2025-Mar-15",
-        testDate: "2020-Mar-21",
-        phn: "9874307168",
-        hdid: "645645767756756767",
-    };
-
-    // This should not be the same in order to test Add dependent too many requests error, the new duplicate dependent check prevents using validDependent
+    const timelineEnabled = false;
+    // Use a different dependent because the fixture dependent would fail duplicate validation.
     const alternativeDependent = {
         firstName: "Sammy",
         lastName: "Testfivey",
@@ -306,7 +304,8 @@ describe("Dependents", () => {
                 cy.intercept("GET", "**/Immunization?hdid=*", {
                     fixture: "ImmunizationService/dependentImmunization.json",
                 });
-            }
+            },
+            timelineEnabled
         );
     });
 
@@ -314,11 +313,9 @@ describe("Dependents", () => {
         cy.intercept("DELETE", "**/UserProfile/*/Dependent/*", {
             statusCode: 429,
         });
-        cy.get(`[data-testid=dependent-card-${validDependent.phn}]`).within(
-            () => {
-                cy.get("[data-testid=dependentMenuBtn]").click();
-            }
-        );
+        cy.get(getDependentCardSelector(timelineEnabled)).within(() => {
+            cy.get("[data-testid=dependentMenuBtn]").click();
+        });
         cy.get("[data-testid=deleteDependentMenuBtn]")
             .should("be.visible")
             .click();

@@ -6,7 +6,7 @@ module.exports = defineConfig({
     pageLoadTimeout: 120000,
     blockHosts: ["spt.apps.gov.bc.ca"],
     retries: {
-        runMode: 2,
+        runMode: 1,
         openMode: 0,
     },
     viewportWidth: 1920,

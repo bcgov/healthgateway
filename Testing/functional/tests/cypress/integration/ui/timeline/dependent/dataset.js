@@ -4,7 +4,7 @@ import { setupStandardFixtures } from "../../../../support/functions/intercept";
 const dependentHdid = "645645767756756767";
 const dependentTimelinePath = `/dependents/${dependentHdid}/timeline`;
 
-const enabledDatasets = [
+const supportedDependentDatasets = [
     Dataset.ClinicalDocument,
     Dataset.Covid19TestResult,
     Dataset.Immunization,
@@ -52,9 +52,11 @@ describe("Dependent Timeline Datasets", () => {
         setupDependentFixture();
     });
 
-    it("Displays enabled dependent datasets", () => {
+    it("Displays globally enabled datasets when no dependent override disables them", () => {
+        // Dependent timelines inherit globally enabled datasets unless a
+        // dependents.datasets entry explicitly disables one.
         cy.configureSettings({
-            datasets: enabledDatasets.map((name) => ({
+            datasets: supportedDependentDatasets.map((name) => ({
                 name,
                 enabled: true,
             })),
@@ -76,22 +78,22 @@ describe("Dependent Timeline Datasets", () => {
 
         // Dataset rendering is checked here; generic filter behavior is covered
         // by the UI filter suite and does not need to be repeated per dataset.
-        enabledDatasets.forEach((dataset) => {
+        supportedDependentDatasets.forEach((dataset) => {
             cy.get(`[data-testid=${dataset.toLowerCase()}Title]`).should(
                 "be.visible"
             );
         });
 
         cy.get("[data-testid=filterDropdown]").click();
-        enabledDatasets.forEach((dataset) => {
+        supportedDependentDatasets.forEach((dataset) => {
             cy.get(`[data-testid=${toPascalCase(dataset)}-filter]`).should(
                 "exist"
             );
         });
     });
 
-    enabledDatasets.forEach((dataset) => {
-        it(`Hides ${dataset} when it is globally disabled`, () => {
+    supportedDependentDatasets.forEach((dataset) => {
+        it(`Hides ${dataset} on the dependent timeline when it is globally disabled`, () => {
             cy.configureSettings({
                 datasets: [{ name: dataset, enabled: false }],
                 dependents: {
@@ -109,7 +111,7 @@ describe("Dependent Timeline Datasets", () => {
             );
         });
 
-        it(`Hides ${dataset} when it is disabled for dependents`, () => {
+        it(`Hides ${dataset} on the dependent timeline when the dependent override disables it`, () => {
             cy.configureSettings({
                 datasets: [{ name: dataset, enabled: true }],
                 dependents: {
