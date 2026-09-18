@@ -65,6 +65,12 @@ beforeEach(() => {
     });
 
     if (isUiSpec()) {
+        cy.intercept("GET", "**/layers.css", {
+            body: "@layer vuetify-core, vuetify-components, vuetify-overrides, hg-overrides, vuetify-utilities, vuetify-final;",
+            headers: {
+                "content-type": "text/css",
+            },
+        });
         cy.intercept(
             "GET",
             "**/protocol/openid-connect/3p-cookies/step1.html",

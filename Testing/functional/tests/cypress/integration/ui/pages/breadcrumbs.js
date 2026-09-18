@@ -50,7 +50,8 @@ describe("Breadcrumbs", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            firstPath
+            firstPath,
+            { waitForInitialDataLoad: true }
         );
         verifyBreadcrumb(firstPath, firstTestId, false);
 

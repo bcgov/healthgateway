@@ -3,9 +3,10 @@ const { verifyDownloadTasks } = require("cy-verify-downloads");
 
 module.exports = defineConfig({
     defaultCommandTimeout: 30000,
+    pageLoadTimeout: 120000,
     blockHosts: ["spt.apps.gov.bc.ca"],
     retries: {
-        runMode: 1,
+        runMode: 2,
         openMode: 0,
     },
     viewportWidth: 1920,

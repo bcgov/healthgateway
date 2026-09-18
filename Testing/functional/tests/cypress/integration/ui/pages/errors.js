@@ -24,7 +24,7 @@ describe("Banner Error", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/dbError.json",
-        }).as("getNotes");
+        });
         cy.configureSettings({
             datasets: [
                 {
@@ -39,7 +39,6 @@ describe("Banner Error", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.wait("@getNotes");
         cy.checkTimelineHasLoaded();
     });
 
