@@ -390,7 +390,9 @@ Cypress.Commands.add(
                                         });
                                 });
                             },
-                            { cacheAcrossSpecs: isUiSpec() }
+                            // UI specs mutate fixture configuration in session storage. Keep the
+                            // session scoped to its spec so another spec cannot restore it.
+                            { cacheAcrossSpecs: false }
                         );
 
                         // Register aliases for the post-session visit; login callback requests may
