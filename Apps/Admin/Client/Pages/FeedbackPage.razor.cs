@@ -200,8 +200,8 @@ public partial class FeedbackPage : FluxorComponent
 
     private async Task NavigateToSupportAsync(string hdid)
     {
-        await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, hdid);
         this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
+        await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, hdid);
     }
 
     private void NavigateToPatientDetails(PatientSupportActions.LoadSuccessAction action)

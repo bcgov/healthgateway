@@ -18,3 +18,19 @@ import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+function isUiSpec() {
+    const normalizedSpecPath = Cypress.spec.relative.replaceAll("\\", "/");
+    return /(^|\/)ui\//.test(normalizedSpecPath);
+}
+
+beforeEach(() => {
+    if (isUiSpec()) {
+        cy.fixture("ConfigurationService/configuration.json").then((config) => {
+            cy.intercept("GET", "**/v1/api/Configuration*", {
+                statusCode: 200,
+                body: Cypress._.cloneDeep(config),
+            });
+        });
+    }
+});

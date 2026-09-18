@@ -28,6 +28,9 @@ describe("System Analytics", () => {
         cy.intercept("GET", "**/CsvExport/GetUserFeedback").as(
             "getUserFeedback"
         );
+        cy.intercept("GET", "**/CsvExport/GetYearOfBirthCounts*").as(
+            "getYearOfBirthCounts"
+        );
 
         cy.login(
             Cypress.env("keycloak_username"),
@@ -79,6 +82,7 @@ describe("System Analytics", () => {
         cy.get("[data-testid=year-of-birth-download-btn]")
             .should("be.visible")
             .click();
+        cy.wait("@getYearOfBirthCounts", { timeout });
 
         const fromDate = getTodayPlusDaysDate(-30);
         const toDate = getTodayPlusDaysDate(0);

@@ -59,11 +59,13 @@ export function verifySupportTableResults(
 ) {
     getTableRows("[data-testid=user-table]")
         .should("have.length", expectedRowCount)
-        .first((_$rows) => {
-            cy.get(`[data-testid=user-table-hdid-${expectedHdid}]`).contains(
-                expectedHdid
-            );
-
+        .then(() =>
+            cy
+                .get(`[data-testid=user-table-hdid-${expectedHdid}]`)
+                .contains(expectedHdid)
+                .parents("tr")
+        )
+        .within(() => {
             cy.get(`[data-testid=user-table-phn-${expectedHdid}]`).contains(
                 expectedPhn
             );

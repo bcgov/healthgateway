@@ -1,0 +1,31 @@
+{
+    "environment": "hgdev",
+    "features": {
+        "ShowApiRegistration": true,
+        "Showcase": true,
+        "ShowImagingRefresh": true,
+        "ShowLabsRefresh": true,
+        "UserInfo": true
+    },
+    "openIdConnect": {
+        "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/health-gateway-gold",
+        "clientId": "hg-admin",
+        "responseType": "code",
+        "scope": "openid profile email",
+        "callbacks": {
+            "Logon": "https://dev-admin.healthgateway.gov.bc.ca/",
+            "Logout": "https://dev-admin.healthgateway.gov.bc.ca/authentication/login"
+        },
+        "saveTokens": true,
+        "getClaimsFromUserInfoEndpoint": true,
+        "signedOutRedirectUri": "/signoff",
+        "requireHttpsMetadata": null
+    },
+    "clientLogging": {
+        "logLevel": {
+            "Default": "Debug",
+            "Microsoft": "Debug"
+        }
+    },
+    "enableReduxDevTools": false
+}

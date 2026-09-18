@@ -16,6 +16,11 @@ require("cy-verify-downloads").addCustomCommand();
 const openIdConnectClientId = "hg-admin";
 const resizeObserverLoopErr = "ResizeObserver loop limit exceeded";
 
+function isUiSpec() {
+    const normalizedSpecPath = Cypress.spec.relative.replaceAll("\\", "/");
+    return /(^|\/)ui\//.test(normalizedSpecPath);
+}
+
 function generateRandomString(length) {
     var text = "";
     var possible =
@@ -212,6 +217,10 @@ Cypress.Commands.add("login", (username, password, path) => {
 
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
+    if (isUiSpec()) {
+        return cy.fixture("ConfigurationService/configuration.json");
+    }
+
     return cy
         .request(`${Cypress.config("baseUrl")}/v1/api/Configuration`)
         .should((response) => {
@@ -223,7 +232,7 @@ Cypress.Commands.add("readConfig", () => {
 Cypress.Commands.overwrite(
     "select",
     (originalFn, subject, valueOrTextOrIndex, options) => {
-        cy.wrap(subject).should("be.visible", "be.enabled");
+        cy.wrap(subject).should("be.visible").and("be.enabled");
         cy.wrap(originalFn(subject, valueOrTextOrIndex, options));
     }
 );

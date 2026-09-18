@@ -111,8 +111,8 @@ public partial class ReportsPage : FluxorComponent
     {
         if (args.Item?.Hdid != null)
         {
-            await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, args.Item.Hdid);
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
+            await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, args.Item.Hdid);
         }
     }
 
