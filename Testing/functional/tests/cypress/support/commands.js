@@ -286,6 +286,8 @@ Cypress.Commands.add(
                             [username, authMethod, sessionId],
                             () => {
                                 cy.readConfig().then((config) => {
+                                    // Start each new Keycloak session from a clean IdP state.
+                                    cy.logout();
                                     let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                                     let codeVerifier = generateRandomString(96);
                                     cy.log(
