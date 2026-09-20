@@ -14,15 +14,12 @@ describe("Clinical Document", () => {
                 },
             ],
         });
-        cy.intercept("GET", "**/ClinicalDocument/*").as("getClinicalDocument");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline",
-            { waitForInitialDataLoad: false }
+            "/timeline"
         );
-        cy.wait("@getClinicalDocument", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
     });
 

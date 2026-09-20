@@ -1,5 +1,5 @@
-import { AuthMethod } from "../../../support/constants";
-import { setupStandardFixtures } from "../../../support/functions/intercept";
+import { AuthMethod } from "../constants";
+import { setupStandardFixtures } from "./intercept";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkChipSelector = "[data-testid=quick-link-modal-text] .v-chip";
@@ -7,7 +7,7 @@ const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
 const tooManyRequestsStatusCode = 429;
 const serverErrorStatusCode = 500;
 
-function testGetConfigurationError(statusCode = serverErrorStatusCode) {
+export function testGetConfigurationError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
     cy.intercept("GET", "/configuration", {
         statusCode,
@@ -21,7 +21,7 @@ function testGetConfigurationError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
+export function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
     setupStandardFixtures({
@@ -43,7 +43,7 @@ function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testRegisterError(statusCode = serverErrorStatusCode) {
+export function testRegisterError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
     const hdid = "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA";
 
@@ -104,7 +104,7 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testValidateEmailError(statusCode = serverErrorStatusCode) {
+export function testValidateEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
     cy.intercept(
         "GET",
@@ -130,7 +130,7 @@ function testValidateEmailError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
+export function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({
         datasets: [
             {
@@ -203,7 +203,7 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testAddCommentError(statusCode = serverErrorStatusCode) {
+export function testAddCommentError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({
         timeline: {
             comment: true,
@@ -256,7 +256,7 @@ function getQuickLinkCard(title) {
         .parents("[data-testid=quick-link-card]");
 }
 
-function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
+export function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({
         datasets: [
             {
@@ -329,7 +329,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testEditSmsError(statusCode = serverErrorStatusCode) {
+export function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
     setupStandardFixtures();
@@ -361,7 +361,7 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testVerifySmsError(statusCode = serverErrorStatusCode) {
+export function testVerifySmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
     setupStandardFixtures();
@@ -401,7 +401,7 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
     }
 }
 
-function testEditEmailError(statusCode = serverErrorStatusCode) {
+export function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
 
     setupStandardFixtures();
@@ -432,90 +432,3 @@ function testEditEmailError(statusCode = serverErrorStatusCode) {
         cy.get("[data-testid=errorBanner]").should("be.visible");
     }
 }
-
-describe("Error Alerts", () => {
-    it("Error Retrieving Configuration", () => {
-        testGetConfigurationError();
-    });
-
-    it("Error Retrieving Profile on Load", () => {
-        testGetProfileErrorOnLoad();
-    });
-
-    it("Error Registering", () => {
-        testRegisterError();
-    });
-
-    it("Error Validating Email", () => {
-        testValidateEmailError();
-    });
-
-    it("Error Adding Quick Link", () => {
-        testAddQuickLinkError();
-    });
-
-    it("Error Adding Comment", () => {
-        testAddCommentError();
-    });
-
-    it("Error Removing Quick Link", () => {
-        testRemoveQuickLinkError();
-    });
-
-    it("Error Editing SMS Number", () => {
-        testEditSmsError();
-    });
-
-    it("Error On SMS Verification", () => {
-        testVerifySmsError();
-    });
-
-    it("Error Editing Email", () => {
-        testEditEmailError();
-    });
-});
-
-// These cases deliberately reuse the action helpers above with a 429 response.
-// This keeps the 500 and 429 behavior for the same user action together. Do not
-// duplicate the profile email-update or SMS-validation cases in
-// timelineAndReportErrors.js; that suite owns dataset warnings and report errors.
-describe("429 Alerts", () => {
-    it("429 Error Retrieving Configuration", () => {
-        testGetConfigurationError(429);
-    });
-
-    it("429 Error Retrieving Profile on Load", () => {
-        testGetProfileErrorOnLoad(429);
-    });
-
-    it("429 Error Registering", () => {
-        testRegisterError(429);
-    });
-
-    it("429 Error Validating Email", () => {
-        testValidateEmailError(429);
-    });
-    it("429 Error Adding Quick Link", () => {
-        testAddQuickLinkError(429);
-    });
-
-    it("429 Error Adding Comment", () => {
-        testAddCommentError(429);
-    });
-
-    it("429 Error Removing Quick Link", () => {
-        testRemoveQuickLinkError(429);
-    });
-
-    it("429 Error Editing SMS Number", () => {
-        testEditSmsError(429);
-    });
-
-    it("429 Error On SMS Verification", () => {
-        testVerifySmsError(429);
-    });
-
-    it("429 Error Editing Email", () => {
-        testEditEmailError(429);
-    });
-});

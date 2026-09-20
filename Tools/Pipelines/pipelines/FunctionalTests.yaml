@@ -482,8 +482,8 @@ jobs:
       - "HG_Auth_Probe"
     condition: and(succeeded('HG_Seed'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
     strategy:
-      parallel: 3
-    timeoutInMinutes: 15
+      parallel: 1
+    timeoutInMinutes: 30
     steps:
       - checkout: self
         fetchDepth: 1
