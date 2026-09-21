@@ -19,7 +19,6 @@ const sms = "2506715000";
 function verifyParameterIsRequired(queryType) {
     performSearch(queryType, null, {
         waitForUser: false,
-        waitForPatientSupportDetails: false,
     });
     cy.get("div").contains("Search parameter is required").should("be.visible");
     cy.get("[data-testid=user-table]").should("not.exist");
@@ -34,7 +33,7 @@ describe("Support", () => {
             {
                 fixture: "SupportService/users.json",
             }
-        );
+        ).as("getUsers");
 
         // HDID with results
         cy.intercept(
@@ -43,7 +42,7 @@ describe("Support", () => {
             {
                 fixture: "SupportService/users.json",
             }
-        );
+        ).as("getUsers");
 
         // SMS with results
         cy.intercept(
@@ -52,7 +51,7 @@ describe("Support", () => {
             {
                 fixture: "SupportService/users-sms.json",
             }
-        );
+        ).as("getUsers");
 
         // Email with results
         cy.intercept(
@@ -61,7 +60,7 @@ describe("Support", () => {
             {
                 fixture: "SupportService/users-email.json",
             }
-        );
+        ).as("getUsers");
 
         // PHN error
         cy.intercept(
@@ -76,7 +75,7 @@ describe("Support", () => {
                     detail: "Communication error",
                 },
             }
-        );
+        ).as("getUsers");
 
         // PHN duplicate
         cy.intercept(
@@ -85,12 +84,12 @@ describe("Support", () => {
             {
                 fixture: "SupportService/users-phn-duplicate.json",
             }
-        );
+        ).as("getUsers");
 
         // Patient support details
         cy.intercept("GET", "**/PatientSupportDetails*", {
             fixture: "SupportService/patient-details.json",
-        });
+        }).as("getPatientSupportDetails");
 
         cy.login(
             Cypress.env("keycloak_username"),
@@ -134,7 +133,6 @@ describe("Support", () => {
     it("Verify error handling", () => {
         performSearch("PHN", phnError, {
             waitForUser: false,
-            waitForPatientSupportDetails: false,
         });
         cy.get("[data-testid=user-banner-feedback-error-message]").should(
             "be.visible"
@@ -150,7 +148,6 @@ describe("Support", () => {
     it("Verify query fails on invalid PHN", () => {
         performSearch("PHN", phnInvalid, {
             waitForUser: false,
-            waitForPatientSupportDetails: false,
         });
         cy.get(".d-flex").contains("Invalid PHN").should("be.visible");
         cy.get("[data-testid=user-table]").should("not.exist");
@@ -165,9 +162,7 @@ describe("Support", () => {
     });
 
     it("Verify clear button", () => {
-        performSearch("SMS", sms, {
-            waitForPatientSupportDetails: false,
-        });
+        performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
         cy.get("[data-testid=clear-btn]").click();
         cy.get("[data-testid=query-type-select]").should("have.value", "Sms");

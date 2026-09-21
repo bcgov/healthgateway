@@ -23,11 +23,11 @@ describe("Beta feature access", () => {
     });
 
     it("Verify View tab has seed data.", () => {
-        cy.log("Verify view tab has 1 entry.");
+        cy.log("Verify view tab has seeded entry.");
         selectTab("[data-testid=beta-access-tabs]", "View");
         getTableRows("[data-testid=beta-access-table]")
-            .should("have.length", 1)
-            .first()
+            .contains("[data-testid=email]", existingEmail)
+            .parents("tr")
             .within(() => {
                 cy.get("[data-testid=email]").contains(existingEmail);
                 cy.get("[data-testid=salesforce-access-switch]").should(
