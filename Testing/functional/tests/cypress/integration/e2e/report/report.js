@@ -29,7 +29,10 @@ describe("Report download integration", () => {
         );
 
         cy.get("[data-testid=export-record-btn]").click();
-        cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
+        cy.contains(
+            "[data-testid=export-record-menu] .v-list-item",
+            "PDF"
+        ).click();
         confirmAndVerifyReportDownload();
     });
 });

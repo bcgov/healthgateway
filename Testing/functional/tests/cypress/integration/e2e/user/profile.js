@@ -177,7 +177,9 @@ describe("User Profile Notification Settings", () => {
         cy.intercept("PUT", `**/UserProfile/*/email?api-version=2.0`).as(
             "updateUserProfile"
         );
-        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+        cy.intercept("GET", /\/UserProfile\/[^/?]+\?api-version=2\.0$/).as(
+            "getUserProfile"
+        );
 
         cy.log("Edit email address");
         cy.get("[data-testid=email-input] input").should(
@@ -233,7 +235,9 @@ describe("User Profile Notification Settings", () => {
         cy.intercept("PUT", `**/UserProfile/*/email?api-version=2.0`).as(
             "updateUserEmail"
         );
-        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+        cy.intercept("GET", /\/UserProfile\/[^/?]+\?api-version=2\.0$/).as(
+            "getUserProfile"
+        );
 
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=email-input] input").clear();
@@ -272,7 +276,9 @@ describe("User Profile Notification Settings", () => {
         cy.intercept("PUT", `**/UserProfile/*/sms?api-version=2.0`).as(
             "updateUserSms"
         );
-        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
+        cy.intercept("GET", /\/UserProfile\/[^/?]+\?api-version=2\.0$/).as(
+            "getUserProfile"
+        );
 
         cy.get("[data-testid=editSMSBtn]").click();
         cy.get("[data-testid=smsNumberInput] input").clear();

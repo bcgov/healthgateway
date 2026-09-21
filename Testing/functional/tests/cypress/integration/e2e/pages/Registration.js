@@ -49,14 +49,18 @@ describe("Registration Page", () => {
             .should("be.enabled")
             .check();
         cy.get("[data-testid=emailInput]")
-            .should("be.visible", "be.enabled")
+            .find("input")
+            .should("be.visible")
+            .and("be.enabled")
             .type(invalidEmail);
         cy.get("[data-testid=emailInput]").within(() => {
             cy.get("div").contains("Invalid email").should("be.visible");
         });
 
         cy.get("[data-testid=emailConfirmationInput]")
-            .should("be.visible", "be.enabled")
+            .find("input")
+            .should("be.visible")
+            .and("be.enabled")
             .type(invalidEmail);
         cy.get("[data-testid=emailConfirmationInput]").within(() => {
             cy.get("div").contains("Invalid email").should("be.visible");
@@ -64,14 +68,18 @@ describe("Registration Page", () => {
 
         cy.get("[data-testid=sms-checkbox] input").should("be.enabled").check();
         cy.get("[data-testid=smsNumberInput]")
-            .should("be.visible", "be.enabled")
+            .find("input")
+            .should("be.visible")
+            .and("be.enabled")
             .type(invalidPhone);
         cy.get("[data-testid=smsNumberInput]").within(() => {
             cy.get("div").contains("Invalid phone number").should("be.visible");
         });
 
         cy.get("[data-testid=emailInput]")
-            .should("be.visible", "be.enabled")
+            .find("input")
+            .should("be.visible")
+            .and("be.enabled")
             .clear()
             .type(Cypress.env("emailAddress"));
         cy.get("[data-testid=emailInput]").within(() => {
@@ -79,7 +87,9 @@ describe("Registration Page", () => {
         });
 
         cy.get("[data-testid=emailConfirmationInput]")
-            .should("be.visible", "be.enabled")
+            .find("input")
+            .should("be.visible")
+            .and("be.enabled")
             .clear()
             .type(Cypress.env("emailAddress"));
         cy.get("[data-testid=emailConfirmationInput]").within(() => {
@@ -87,7 +97,9 @@ describe("Registration Page", () => {
         });
 
         cy.get("[data-testid=smsNumberInput]")
-            .should("be.visible", "be.enabled")
+            .find("input")
+            .should("be.visible")
+            .and("be.enabled")
             .clear()
             .type(Cypress.env("phoneNumber"));
         cy.get("[data-testid=smsNumberInput]").within(() => {
@@ -106,10 +118,11 @@ describe("Registration Page", () => {
             .should("be.enabled")
             .check();
         cy.get("[data-testid=registerButton]")
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .and("be.enabled")
             .click();
         cy.location("pathname").should("eq", homePath);
-        cy.get("[data-testid=app-tour-modal").should("be.visible");
+        cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
         // AB#16942 Disable full App Tour and display only one slide - change back to original once App Tour has been redesigned.
         // cy.get("[data-testid=app-tour-skip]").click();
