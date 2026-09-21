@@ -147,7 +147,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
     });
 });
 
-describe("Dependent - Immunizaation History Tab - report download error handling", () => {
+describe("Dependent - Immunization History Tab - report download error handling", () => {
     beforeEach(() => {
         setupDependentsPage(
             [
