@@ -1,4 +1,5 @@
 describe("Immunization Service", () => {
+    const AGED_OUT_HDID = "232434345442257";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUS_HDID = "BOGUSHDID";
 
@@ -30,6 +31,29 @@ describe("Immunization Service", () => {
                 expect(response.body.info.title).to.eq(
                     "Health Gateway Immunization Services documentation"
                 );
+            });
+        });
+    });
+
+    it("Verify Immunization V1 Expired Delegate Forbidden", () => {
+        cy.get("@tokens").then((tokens) => {
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Immunization Service V1 Endpoint: ${config.serviceEndpoints.Immunization}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Immunization}Immunization?hdid=${AGED_OUT_HDID}&api-version=1.0`,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
             });
         });
     });
@@ -72,6 +96,29 @@ describe("Immunization Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Immunization}Immunization?hdid=${BOGUS_HDID}&api-version=2.0`,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
+        });
+    });
+
+    it("Verify Immunization V2 Expired Delegate Forbidden", () => {
+        cy.get("@tokens").then((tokens) => {
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Immunization Service V2 Endpoint: ${config.serviceEndpoints.Immunization}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Immunization}Immunization?hdid=${AGED_OUT_HDID}&api-version=2.0`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {

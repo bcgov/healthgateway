@@ -41,6 +41,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Immunization.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../src/appsettings.json" LogicalName="Immunization.AppSettings.json" />
+  </ItemGroup>
   <Target Name="CopyKeyDerivationAssembly" BeforeTargets="VSTest">
     <ItemGroup>
       <KeyDerivationDll Include="$(PkgMicrosoft_AspNetCore_Cryptography_KeyDerivation)/lib/**/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll" />
