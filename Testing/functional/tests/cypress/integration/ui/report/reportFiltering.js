@@ -80,7 +80,7 @@ describe("Report Filtering", () => {
         verifyDateRange("From 2020-Feb-03 Up To 2020-Feb-05");
 
         // Validate filters - Cancel  button
-        cy.get("[data-testid=clear-btn").click();
+        cy.get("[data-testid=clear-btn]").click();
         verifyAdvancedFiltersVisible(false);
 
         // Click on Advanced button see advanced filter options

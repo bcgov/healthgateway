@@ -1,8 +1,14 @@
 import { AuthMethod } from "../../../support/constants";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
+const dependentPhn = "9874307168";
+
 function getDate(value) {
     return new Date(value && value.trim().length !== 0 ? value.trim() : 0);
+}
+
+function checkDependentsPageHasLoaded() {
+    cy.get(`[data-testid=dependent-card-${dependentPhn}]`).should("be.visible");
 }
 
 describe("Dependents - Immunization Tab - Enabled", () => {
@@ -32,6 +38,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+        checkDependentsPageHasLoaded();
     });
 
     it("Immunization - History Tab - Verify sort", () => {
@@ -168,6 +175,7 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+        checkDependentsPageHasLoaded();
     });
 
     it("Lab Results Tab - Verify result and sort", () => {
@@ -242,6 +250,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+        checkDependentsPageHasLoaded();
     });
 
     it("Clinical Document Tab - Verify result and sort", () => {
@@ -315,6 +324,7 @@ describe("Dependents - Tabs Disabled", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+        checkDependentsPageHasLoaded();
     });
 
     it("Immunization and Clinical Documents Tabs - Configuration Disabled", () => {

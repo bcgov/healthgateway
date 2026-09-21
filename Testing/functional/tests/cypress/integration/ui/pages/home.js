@@ -191,11 +191,12 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.lastLoginDateTimes = [
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [
                 new Date().toISOString(),
                 "2026-05-19T15:59:00Z", // previous login was before May 19, 2026 9:00AM Pacific Time
             ];
-            setupStandardFixtures({ userProfileBody: data });
+            setupStandardFixtures({ userProfileBody: profile });
         });
 
         cy.login(
@@ -214,11 +215,12 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.lastLoginDateTimes = [
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [
                 new Date().toISOString(),
                 "2026-05-19T16:01:00Z", // previous login was after May 19, 2026 9:00AM Pacific Time
             ];
-            setupStandardFixtures({ userProfileBody: data });
+            setupStandardFixtures({ userProfileBody: profile });
         });
 
         cy.login(
@@ -238,8 +240,9 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.lastLoginDateTimes = [new Date().toISOString()];
-            setupStandardFixtures({ userProfileBody: data });
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [new Date().toISOString()];
+            setupStandardFixtures({ userProfileBody: profile });
         });
 
         cy.login(
@@ -261,6 +264,7 @@ describe("Home page - notification settings alert", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((profile) => {
+            profile = Cypress._.cloneDeep(profile);
             profile.preferences.showSmsRemoved = {
                 hdId: profile.hdId,
                 preference: "showSmsRemoved",
@@ -339,6 +343,7 @@ describe("Home page - Recommendations", () => {
     it("Home - Removes and restores the Recommendations quick link", () => {
         cy.fixture("UserProfileService/userProfileQuickLinks.json").then(
             (profile) => {
+                profile = Cypress._.cloneDeep(profile);
                 profile.preferences.hideRecommendationsQuickLink = {
                     hdId: profile.hdId,
                     preference: "hideRecommendationsQuickLink",
