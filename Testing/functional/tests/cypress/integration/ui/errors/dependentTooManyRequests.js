@@ -114,7 +114,7 @@ describe("Dependents", () => {
     });
 });
 
-describe("Dependent - Immunizaation History Tab - report download error handling", () => {
+describe("Dependent - Immunization History Tab - report download error handling", () => {
     beforeEach(() => {
         setupDependentsPage(
             [
