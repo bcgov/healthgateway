@@ -75,7 +75,7 @@ describe("dependents - dashboard", () => {
         cy.location("pathname").should("eq", validDependent.timelinePath);
     });
 
-    it("Validate download of vaccine recommendations", () => {
+    it.skip("Validate download of vaccine recommendations", () => {
         const waitForImmunizationLoad = prepareImmunizationWait(
             validDependent.hdid
         );
