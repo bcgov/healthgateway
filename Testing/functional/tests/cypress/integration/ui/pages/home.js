@@ -12,12 +12,14 @@ function setupImmunizationFixture() {
     });
 }
 
-function loginToHome() {
+function loginToHome(sessionId = "") {
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        homeUrl
+        homeUrl,
+        {},
+        sessionId
     );
 }
 
@@ -189,11 +191,12 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.lastLoginDateTimes = [
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [
                 new Date().toISOString(),
                 "2026-05-19T15:59:00Z", // previous login was before May 19, 2026 9:00AM Pacific Time
             ];
-            setupStandardFixtures({ userProfileBody: data });
+            setupStandardFixtures({ userProfileBody: profile });
         });
 
         cy.login(
@@ -212,11 +215,12 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.lastLoginDateTimes = [
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [
                 new Date().toISOString(),
                 "2026-05-19T16:01:00Z", // previous login was after May 19, 2026 9:00AM Pacific Time
             ];
-            setupStandardFixtures({ userProfileBody: data });
+            setupStandardFixtures({ userProfileBody: profile });
         });
 
         cy.login(
@@ -236,8 +240,9 @@ describe("Authenticated User - Home Page", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.lastLoginDateTimes = [new Date().toISOString()];
-            setupStandardFixtures({ userProfileBody: data });
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [new Date().toISOString()];
+            setupStandardFixtures({ userProfileBody: profile });
         });
 
         cy.login(
@@ -259,6 +264,7 @@ describe("Home page - notification settings alert", () => {
         cy.configureSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((profile) => {
+            profile = Cypress._.cloneDeep(profile);
             profile.preferences.showSmsRemoved = {
                 hdId: profile.hdId,
                 preference: "showSmsRemoved",
@@ -280,7 +286,9 @@ describe("Home page - notification settings alert", () => {
             }
         ).as("dismissSmsRemovedAlert");
 
-        loginToHome();
+        // The modified profile fixture must not share the default cross-spec
+        // session with tests that use the same Keycloak account.
+        loginToHome("sms-removed-alert");
 
         cy.get("[data-testid=incomplete-profile-banner]")
             .should("be.visible")
@@ -294,7 +302,9 @@ describe("Home page - notification settings alert", () => {
             });
         cy.wait("@dismissSmsRemovedAlert");
 
-        cy.get("[data-testid=profile-preferences-link]").click();
+        cy.get("[data-testid=profile-preferences-link]")
+            .should("have.attr", "href", profileUrl)
+            .click();
         cy.location("pathname").should("eq", profileUrl);
         cy.get("[data-testid=menu-btn-home-link]").click();
         cy.location("pathname").should("eq", homeUrl);
@@ -333,6 +343,7 @@ describe("Home page - Recommendations", () => {
     it("Home - Removes and restores the Recommendations quick link", () => {
         cy.fixture("UserProfileService/userProfileQuickLinks.json").then(
             (profile) => {
+                profile = Cypress._.cloneDeep(profile);
                 profile.preferences.hideRecommendationsQuickLink = {
                     hdId: profile.hdId,
                     preference: "hideRecommendationsQuickLink",

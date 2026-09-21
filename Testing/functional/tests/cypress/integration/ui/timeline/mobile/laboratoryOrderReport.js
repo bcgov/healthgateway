@@ -5,7 +5,7 @@ describe("Laboratory Orders - Report", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
-        });
+        }).as("getLaboratoryOrdersFixture");
         cy.intercept(
             "GET",
             "**/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
@@ -30,6 +30,7 @@ describe("Laboratory Orders - Report", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.wait("@getLaboratoryOrdersFixture");
         cy.checkTimelineHasLoaded();
     });
 

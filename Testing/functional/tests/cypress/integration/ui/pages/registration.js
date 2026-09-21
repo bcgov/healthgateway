@@ -49,22 +49,29 @@ describe("Registration Page", () => {
             .uncheck()
             .should("not.be.checked");
         cy.get("[data-testid=emailInput]")
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .find("input")
+            .should("be.disabled")
             .should("have.value", "");
         cy.get("[data-testid=emailConfirmationInput]")
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .find("input")
+            .should("be.disabled")
             .should("have.value", "");
         cy.get("[data-testid=sms-checkbox] input")
             .uncheck()
             .should("not.be.checked");
         cy.get("[data-testid=smsNumberInput]")
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .find("input")
+            .should("be.disabled")
             .should("have.value", "");
         cy.get("[data-testid=acceptCheckbox] input")
             .should("be.enabled")
             .check();
         cy.get("[data-testid=registerButton]")
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
+            .and("be.enabled")
             .click();
         cy.location("pathname").should("eq", homePath);
     });

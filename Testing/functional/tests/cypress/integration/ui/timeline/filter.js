@@ -314,7 +314,7 @@ describe("Describe Filters when all datasets blocked", () => {
 
     it("Validate Filter Counts and Error Message", () => {
         cy.get("[data-testid=filterDropdown]").should("not.exist");
-        cy.get("[data-testid=errorBanner")
+        cy.get("[data-testid=errorBanner]")
             .should("be.visible")
             .contains(
                 "Multiple records are unavailable at this time. Please try again later."
@@ -379,7 +379,7 @@ describe("Describe Filters when clinical doc dataset is blocked but immunization
 
         cy.get("[data-testid=btnFilterCancel]").click();
 
-        cy.get("[data-testid=errorBanner")
+        cy.get("[data-testid=errorBanner]")
             .should("be.visible")
             .contains(
                 "Clinical Documents are unavailable at this time. Please try again later."

@@ -13,9 +13,11 @@ describe("User Feedback with verified email", () => {
     });
 
     it("Send feedback", () => {
+        cy.intercept("POST", "**/UserFeedback/*").as("sendFeedback");
         cy.get("[data-testid=menu-btn-feedback-link]").click();
         cy.get("[data-testid=feedback-comment-input]").type("Great job team!");
         cy.get("[data-testid=send-feedback-message-btn]").click();
+        cy.wait("@sendFeedback").its("response.statusCode").should("eq", 200);
         cy.get("[data-testid=feedback-got-it-btn]").should("be.visible");
         cy.get("[data-testid=feedback-no-need-btn]").should("not.exist");
         cy.get("[data-testid=feedback-update-my-email-btn]").should(

@@ -7,7 +7,7 @@ function selectPatientTab(tabText) {
 }
 
 export function performSearch(queryType, queryString, options = {}) {
-    const { waitForUser = true, waitForPatientSupportDetails = true } = options;
+    const { waitForUser = true } = options;
 
     cy.get("[data-testid=query-type-select]").click({ force: true });
     cy.get("[data-testid=query-type]")
@@ -20,19 +20,10 @@ export function performSearch(queryType, queryString, options = {}) {
         cy.get("[data-testid=query-input]").clear();
     }
 
-    cy.intercept("GET", "**/Support/Users*").as("getUsers");
-    cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
-        "getPatientSupportDetails"
-    );
-
     cy.get("[data-testid=search-btn]").click();
 
     if (waitForUser) {
         cy.wait("@getUsers", { timeout: defaultTimeout });
-    }
-
-    if (waitForPatientSupportDetails) {
-        cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
     }
 }
 
@@ -43,6 +34,7 @@ export function verifySearchInput(queryType, queryString) {
 }
 
 export function verifySingleSupportResult(expectedHdid, expectedPhn) {
+    cy.wait("@getPatientSupportDetails", { timeout: defaultTimeout });
     cy.url().should("include", "/patient-details");
     cy.get("[data-testid=patient-phn]")
         .should("be.visible")

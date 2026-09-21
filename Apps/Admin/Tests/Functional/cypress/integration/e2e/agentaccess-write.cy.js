@@ -59,7 +59,7 @@ describe("Provision", () => {
         cy.get("[data-testid^=agent-table-username-]")
             .contains(user.toLowerCase())
             .parents(".mud-table-row")
-            .get("[data-testid^=agent-table-edit-btn]")
+            .find("[data-testid^=agent-table-edit-btn]")
             .click();
         cy.get("[data-testid=provision-dialog-modal-text]").should(
             "be.visible"
@@ -83,12 +83,10 @@ describe("Provision", () => {
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate user edit.");
-        cy.get(rowSelector)
-            .first()
+        cy.get("[data-testid^=agent-table-username-]")
+            .contains(user.toLowerCase())
+            .parents(".mud-table-row")
             .within(() => {
-                cy.get("[data-testid^=agent-table-username-]").contains(
-                    user.toLowerCase()
-                );
                 cy.get(
                     "[data-testid^=agent-table-identity-provider-]"
                 ).contains("IDIR");
@@ -104,7 +102,7 @@ describe("Provision", () => {
         cy.get("[data-testid^=agent-table-username-]")
             .contains(user.toLowerCase())
             .parents(".mud-table-row")
-            .get("[data-testid^=agent-table-delete-btn]")
+            .find("[data-testid^=agent-table-delete-btn]")
             .click();
         cy.get("[data-testid=confirm-delete-message]").should("be.visible");
         cy.intercept("DELETE", "**/AgentAccess/?id=*").as("deleteAgentAccess");

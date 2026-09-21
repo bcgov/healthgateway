@@ -11,6 +11,14 @@ parameters:
       - WebClient
       - Admin
       - Both
+      - Admin Unauthorized
+      - Admin Authentication
+      - Admin UI
+      - Admin Read
+      - Admin Write
+      - HG Auth
+      - HG UI
+      - HG E2E
     default: WebClient
 
 # Build variables
@@ -23,6 +31,22 @@ variables:
     value: ${{ or(eq(parameters.appType, 'WebClient'), eq(parameters.appType, 'Both')) }}
   - name: Admin
     value: ${{ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) }}
+  - name: AdminUnauthorized
+    value: ${{ eq(parameters.appType, 'Admin Unauthorized') }}
+  - name: AdminAuthentication
+    value: ${{ eq(parameters.appType, 'Admin Authentication') }}
+  - name: AdminUi
+    value: ${{ eq(parameters.appType, 'Admin UI') }}
+  - name: AdminRead
+    value: ${{ eq(parameters.appType, 'Admin Read') }}
+  - name: AdminWrite
+    value: ${{ eq(parameters.appType, 'Admin Write') }}
+  - name: HgAuth
+    value: ${{ eq(parameters.appType, 'HG Auth') }}
+  - name: HgUi
+    value: ${{ eq(parameters.appType, 'HG UI') }}
+  - name: HgE2e
+    value: ${{ eq(parameters.appType, 'HG E2E') }}
 
 jobs:
   # Azure rolling image update issue.
@@ -66,7 +90,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Admin"
     pool:
       name: "HGGoldDev"
-    condition: eq(variables['Admin'], true)
+    condition: or(eq(variables['Admin'], true), eq(variables['AdminRead'], true), eq(variables['AdminWrite'], true))
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
@@ -90,7 +114,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded(), eq(variables['Admin'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(eq(variables['Admin'], true), eq(variables['AdminUnauthorized'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -128,7 +152,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminAuthentication'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -167,7 +191,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminUi'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -209,7 +233,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminRead'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -251,7 +275,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminWrite'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -288,7 +312,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool:
       name: "HGGoldDev"
-    condition: eq(variables['WebClient'], true)
+    condition: or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true))
     dependsOn: "Admin_Write_Tests"
     timeoutInMinutes: 5
     steps:
@@ -314,7 +338,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgAuth'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
@@ -362,7 +386,7 @@ jobs:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
       - "HG_Auth_Functional_Tests"
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
     strategy:
       parallel: 6
     timeoutInMinutes: 15
@@ -395,7 +419,6 @@ jobs:
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
-
   - job: "HG_E2E_Functional_Tests"
     displayName: "HG E2E Functional Tests"
     pool:
@@ -409,7 +432,7 @@ jobs:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
       - "HG_UI_Functional_Tests"
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), eq(variables['WebClient'], true))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true)))
     strategy:
       parallel: 6
     timeoutInMinutes: 15

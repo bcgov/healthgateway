@@ -206,7 +206,7 @@ describe("User Profile - Validate Address", () => {
             .should("be.visible")
             .contains("CHATHAM, BC, V0G8B8");
 
-        cy.get("[data-testid=physical-address-section").should("not.exist");
+        cy.get("[data-testid=physical-address-section]").should("not.exist");
     });
 
     it("Verify user has different addresses", () => {
@@ -259,7 +259,7 @@ describe("User Profile - Validate Address", () => {
         cy.get("[data-testid=no-postal-address-text]").should("be.visible");
 
         // Physical Address
-        cy.get("[data-testid=physical-address-section").should("not.exist");
+        cy.get("[data-testid=physical-address-section]").should("not.exist");
     });
 
     it("Verify user has only physical address", () => {

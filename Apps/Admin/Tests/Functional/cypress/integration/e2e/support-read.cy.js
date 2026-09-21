@@ -20,6 +20,10 @@ const dependentPhn = "9874307175";
 
 describe("Support", () => {
     beforeEach(() => {
+        cy.intercept("GET", "**/Support/Users*").as("getUsers");
+        cy.intercept("GET", "**/Support/PatientSupportDetails*").as(
+            "getPatientSupportDetails"
+        );
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
@@ -47,23 +51,17 @@ describe("Support", () => {
     });
 
     it("Verify no results hdid query.", () => {
-        performSearch("HDID", hdidNotFound, {
-            waitForPatientSupportDetails: false,
-        });
+        performSearch("HDID", hdidNotFound);
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 
     it("Verify no results sms query.", () => {
-        performSearch("SMS", smsNotFound, {
-            waitForPatientSupportDetails: false,
-        });
+        performSearch("SMS", smsNotFound);
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 
     it("Verify no results email query.", () => {
-        performSearch("Email", emailNotFound, {
-            waitForPatientSupportDetails: false,
-        });
+        performSearch("Email", emailNotFound);
         getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 

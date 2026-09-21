@@ -28,7 +28,7 @@ describe("Patient details as admin", () => {
             {
                 fixture: "SupportService/users.json",
             }
-        );
+        ).as("getUsers");
 
         // PHN deceased
         cy.intercept(
@@ -37,7 +37,7 @@ describe("Patient details as admin", () => {
             {
                 fixture: "SupportService/users-patient-deceased.json",
             }
-        );
+        ).as("getUsers");
 
         // PHN not a user
         cy.intercept(
@@ -46,7 +46,7 @@ describe("Patient details as admin", () => {
             {
                 fixture: "SupportService/users-patient-not-user.json",
             }
-        );
+        ).as("getUsers");
 
         // Patient Details
         cy.intercept(
@@ -55,7 +55,7 @@ describe("Patient details as admin", () => {
             {
                 fixture: "SupportService/patient-details.json",
             }
-        );
+        ).as("getPatientSupportDetails");
 
         // Patient Details with deceased PHN
         cy.intercept(
@@ -64,7 +64,7 @@ describe("Patient details as admin", () => {
             {
                 fixture: "SupportService/patient-details.json",
             }
-        );
+        ).as("getPatientSupportDetails");
 
         // Patient Details with not a user PHN
         cy.intercept(
@@ -73,7 +73,7 @@ describe("Patient details as admin", () => {
             {
                 fixture: "SupportService/patient-details.json",
             }
-        );
+        ).as("getPatientSupportDetails");
 
         // Block Access
         cy.intercept(
@@ -232,7 +232,7 @@ describe("Patient details as support", () => {
             {
                 fixture: "SupportService/users-patient-deceased.json",
             }
-        );
+        ).as("getUsers");
 
         // PHN not a user
         cy.intercept(
@@ -241,7 +241,7 @@ describe("Patient details as support", () => {
             {
                 fixture: "SupportService/users-patient-not-user.json",
             }
-        );
+        ).as("getUsers");
 
         // Patient Details with deceased PHN
         cy.intercept(
@@ -250,7 +250,7 @@ describe("Patient details as support", () => {
             {
                 fixture: "SupportService/patient-details.json",
             }
-        );
+        ).as("getPatientSupportDetails");
 
         // Patient Details with not a user PHN
         cy.intercept(
@@ -259,7 +259,7 @@ describe("Patient details as support", () => {
             {
                 fixture: "SupportService/patient-details.json",
             }
-        );
+        ).as("getPatientSupportDetails");
 
         cy.login(
             Cypress.env("keycloak_support_username"),

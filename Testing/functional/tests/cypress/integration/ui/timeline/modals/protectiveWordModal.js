@@ -24,7 +24,7 @@ function setupProtectiveWordResponse() {
                 } else {
                     request.reply(protectedResponse);
                 }
-            });
+            }).as("getProtectedMedications");
         }
     );
 }
@@ -40,6 +40,7 @@ function login() {
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak
     );
+    cy.wait("@getProtectedMedications");
 }
 
 describe("Protective Word Modal", () => {
