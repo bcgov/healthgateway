@@ -24,13 +24,11 @@ function login(isMobile) {
 describe("Menu System when services are enabled", () => {
     beforeEach(() => {
         toggleServices(true);
-
         setupStandardFixtures();
+        login(false);
     });
 
     it("Side bar contains services nav link and toggle validated", () => {
-        login(false);
-
         cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
             "have.class",
@@ -47,9 +45,16 @@ describe("Menu System when services are enabled", () => {
             .click();
         cy.location("pathname", { timeout: 10000 }).should("eq", "/services");
     });
+});
+
+describe("Menu System when services are enabled on mobile", () => {
+    beforeEach(() => {
+        toggleServices(true);
+        setupStandardFixtures();
+        login(true);
+    });
 
     it("Side navigation bar does not expand on mobile", () => {
-        login(true);
         cy.get("[data-testid=sidenavbar]").should("not.be.visible");
     });
 });
@@ -57,16 +62,10 @@ describe("Menu System when services are enabled", () => {
 describe("Menu system when services are disabled", () => {
     beforeEach(() => {
         toggleServices(false);
-
         setupStandardFixtures();
+        login(false);
     });
     it("Side bar does not contain services nav link when services is disabled", () => {
-        cy.configureSettings({
-            services: {
-                enabled: false,
-            },
-        });
-        login(false);
         cy.get("[data-testid=menu-btn-services-link]").should("not.be.visible");
     });
 });

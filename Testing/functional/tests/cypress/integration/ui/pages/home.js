@@ -12,12 +12,14 @@ function setupImmunizationFixture() {
     });
 }
 
-function loginToHome() {
+function loginToHome(sessionId = "") {
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        homeUrl
+        homeUrl,
+        {},
+        sessionId
     );
 }
 
@@ -280,7 +282,9 @@ describe("Home page - notification settings alert", () => {
             }
         ).as("dismissSmsRemovedAlert");
 
-        loginToHome();
+        // The modified profile fixture must not share the default cross-spec
+        // session with tests that use the same Keycloak account.
+        loginToHome("sms-removed-alert");
 
         cy.get("[data-testid=incomplete-profile-banner]")
             .should("be.visible")
@@ -294,7 +298,9 @@ describe("Home page - notification settings alert", () => {
             });
         cy.wait("@dismissSmsRemovedAlert");
 
-        cy.get("[data-testid=profile-preferences-link]").click();
+        cy.get("[data-testid=profile-preferences-link]")
+            .should("have.attr", "href", profileUrl)
+            .click();
         cy.location("pathname").should("eq", profileUrl);
         cy.get("[data-testid=menu-btn-home-link]").click();
         cy.location("pathname").should("eq", homeUrl);

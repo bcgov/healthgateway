@@ -3,6 +3,7 @@ import { setupStandardFixtures } from "../../../../support/functions/intercept";
 
 const authorizedDependentHdid = "645645767756756767";
 const unauthorizedDependentHdid = "343222434345442257";
+// The fixture's "Sam Testfive" is displayed as first name plus last initial.
 const formattedDependentName = "Sam T";
 const dependentsPath = "/dependents";
 
