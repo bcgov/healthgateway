@@ -16,8 +16,7 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath,
-            { waitForInitialDataLoad: false }
+            homePath
         );
 
         cy.wait("@getTermsOfService", { timeout: defaultTimeout });
@@ -35,8 +34,7 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath,
-            { waitForInitialDataLoad: false }
+            homePath
         );
 
         cy.contains("#subject", "Registration").should("be.visible");
@@ -142,8 +140,7 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.accountclosure.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homePath,
-            { waitForInitialDataLoad: false }
+            homePath
         );
         cy.get("[data-testid=patient-retrieval-error]")
             .should("exist")

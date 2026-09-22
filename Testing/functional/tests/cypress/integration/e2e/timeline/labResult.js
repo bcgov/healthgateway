@@ -23,8 +23,7 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline",
-            { waitForInitialDataLoad: false }
+            "/timeline"
         );
         waitForLaboratoryOrders("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();

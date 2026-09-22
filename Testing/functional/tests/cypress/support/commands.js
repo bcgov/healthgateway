@@ -12,27 +12,6 @@ import {
     setupStandardAliases,
     waitForInitialDataLoad,
 } from "./functions/intercept";
-
-// Cache the baseline configuration and return a copy because
-// configureSettings mutates the configuration for each test.
-let cachedEnvironmentConfig;
-
-function cloneConfig(config) {
-    return Cypress._.cloneDeep(config);
-}
-
-function getInitialDataWaitOptions(initialDataWaitOptions) {
-    return {
-        waitForInitialDataLoad: !isUiSpec(),
-        ...initialDataWaitOptions,
-    };
-}
-
-function isUiSpec() {
-    const normalizedSpecPath = Cypress.spec.relative.replaceAll("\\", "/");
-    return /(^|\/)ui\//.test(normalizedSpecPath);
-}
-
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
@@ -91,13 +70,24 @@ function generateRandomString(length) {
     return text;
 }
 
-function loginWithKeycloakUI(
-    username,
-    password,
-    config,
-    path = "/home",
-    initialDataWaitOptions = {}
-) {
+// function loginWithKeycloakUICached(username, password, config, path = "/home") {
+//     cy.session(
+//         [`keycloak-${username}`, path], // unique key (array form allows multiple args)
+//         () => {
+//             // Call your full UI-based login function
+//             loginWithKeycloakUI(username, password, config, path);
+//         },
+//         {
+//             validate: () => {
+//                 // Minimal check that you're still authenticated
+//                 cy.visit(path, { failOnStatusCode: false });
+//                 cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
+//             },
+//         }
+//     );
+// }
+
+function loginWithKeycloakUI(username, password, config, path = "/home") {
     const defaultPath = "/home";
 
     cy.log(
@@ -147,20 +137,17 @@ function loginWithKeycloakUI(
                         );
                     });
 
+                    setupStandardAliases();
+
                     // Optional re-navigation only if path is different from default
                     if (path !== defaultPath) {
-                        cy.visit(path);
+                        cy.visit(path, { timeout: 60000 });
                     } else {
                         cy.reload(); // if already on home, just reload to trigger page load with config + intercepts
                     }
 
-                    // Wait for the initial data requests configured for this test.
-                    waitForInitialDataLoad(
-                        username,
-                        resolvedConfig,
-                        path,
-                        initialDataWaitOptions
-                    );
+                    // Wait on all registered intercepts
+                    waitForInitialDataLoad(username, resolvedConfig, path);
                 });
             });
     });
@@ -184,17 +171,15 @@ function logoutWithUI() {
     });
 }
 
-function postLoginInitialization(
-    configSettings,
-    username,
-    path,
-    initialDataWaitOptions = {}
-) {
+function postLoginInitialization(configSettings, username, path) {
+    // Setup standard aliases for busy endpoint calls
+    setupStandardAliases();
+
     cy.log(`Visit path: ${path}`);
 
     if (!configSettings) {
         cy.readConfig().then((config) => {
-            cy.visit(path);
+            cy.visit(path, { timeout: 60000 });
 
             cy.log(
                 `Config not found in session so fetched actual config: ${JSON.stringify(
@@ -203,25 +188,15 @@ function postLoginInitialization(
             );
 
             // Make sure to wait on busy endpoint calls
-            waitForInitialDataLoad(
-                username,
-                config,
-                path,
-                initialDataWaitOptions
-            );
+            waitForInitialDataLoad(username, config, path);
         });
     } else {
-        cy.visit(path);
+        cy.visit(path, { timeout: 60000 });
 
         cy.log(`Use config from session: ${configSettings}`);
 
         // Make sure to wait on busy endpoint calls
-        waitForInitialDataLoad(
-            username,
-            configSettings,
-            path,
-            initialDataWaitOptions
-        );
+        waitForInitialDataLoad(username, configSettings, path);
     }
 }
 
@@ -246,165 +221,109 @@ Cypress.Commands.add("logout", () => {
 
 Cypress.Commands.add(
     "login",
-    (
-        username,
-        password,
-        authMethod = AuthMethod.BCSC,
-        path = "/timeline",
-        initialDataWaitOptions = {},
-        sessionId = ""
-    ) => {
-        initialDataWaitOptions = getInitialDataWaitOptions(
-            initialDataWaitOptions
-        );
-
+    (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
             const baseWebClientUrl = Cypress.config("baseUrl");
 
             cy.log("Calling session storage");
-            cy.window().then((currentWindow) => {
-                const configSettingsString =
-                    currentWindow.sessionStorage.getItem("configSettingsKey");
-                const configSettings = configSettingsString
-                    ? JSON.parse(configSettingsString)
-                    : undefined;
+            const configSettingsString =
+                window.sessionStorage.getItem("configSettingsKey");
+            const configSettings = configSettingsString
+                ? JSON.parse(configSettingsString)
+                : undefined;
 
-                if (baseWebClientUrl == localDevUri) {
-                    setupStandardAliases();
-                    loginWithKeycloakUI(
-                        username,
-                        password,
-                        configSettings,
-                        path,
-                        initialDataWaitOptions
-                    );
-                } else {
-                    setupStandardAliases();
-                    cy.window().then((window) => {
-                        cy.session(
-                            [username, authMethod, sessionId],
-                            () => {
-                                cy.readConfig().then((config) => {
-                                    let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
-                                    let codeVerifier = generateRandomString(96);
-                                    cy.log(
-                                        `State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`
-                                    );
-                                    const loginCallback =
-                                        config.openIdConnect.callbacks?.Logon ||
-                                        `${Cypress.config().baseUrl}/loginCallback`;
-                                    const stateStore = {
-                                        id: stateId,
-                                        created: new Date().getTime(),
-                                        request_type: "si:r",
-                                        code_verifier: codeVerifier,
-                                        redirect_uri: loginCallback,
-                                        authority:
-                                            config.openIdConnect.authority,
-                                        client_id:
-                                            config.openIdConnect.clientId,
-                                        response_mode: "query",
-                                        scope: config.openIdConnect.scope,
-                                        extraTokenParams: {},
-                                    };
-                                    cy.log(
-                                        "Creating OIDC StateStore in Local storage"
-                                    );
-                                    window.sessionStorage.setItem(
-                                        `oidc.${stateStore.id}`,
-                                        JSON.stringify(stateStore)
-                                    );
+            if (baseWebClientUrl == localDevUri) {
+                loginWithKeycloakUI(username, password, configSettings, path);
+            } else {
+                cy.window().then((window) => {
+                    cy.session([username, authMethod], () => {
+                        cy.readConfig().then((config) => {
+                            cy.logout();
+                            let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
+                            let codeVerifier = generateRandomString(96);
+                            cy.log(
+                                `State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`
+                            );
+                            const loginCallback =
+                                config.openIdConnect.callbacks?.Logon ||
+                                `${Cypress.config().baseUrl}/loginCallback`;
+                            const stateStore = {
+                                id: stateId,
+                                created: new Date().getTime(),
+                                request_type: "si:r",
+                                code_verifier: codeVerifier,
+                                redirect_uri: loginCallback,
+                                authority: config.openIdConnect.authority,
+                                client_id: config.openIdConnect.clientId,
+                                response_mode: "query",
+                                scope: config.openIdConnect.scope,
+                                extraTokenParams: {},
+                            };
+                            cy.log("Creating OIDC StateStore in Local storage");
+                            window.sessionStorage.setItem(
+                                `oidc.${stateStore.id}`,
+                                JSON.stringify(stateStore)
+                            );
 
-                                    const escapedRedirectPath = encodeURI(path);
-                                    const redirectUri = `${loginCallback}?redirect=${escapedRedirectPath}`;
+                            const escapedRedirectPath = encodeURI(path);
+                            const redirectUri = `${loginCallback}?redirect=${escapedRedirectPath}`;
 
-                                    cy.log(
-                                        "Requesting Keycloak Authentication form"
-                                    );
-                                    cy.request({
-                                        url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
-                                        timeout: 60000,
+                            cy.log("Requesting Keycloak Authentication form");
+                            cy.request({
+                                url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+                                followRedirect: false,
+                                qs: {
+                                    scope: config.openIdConnect.scope,
+                                    response_type:
+                                        config.openIdConnect.responseType,
+                                    approval_prompt: "auto",
+                                    redirect_uri: redirectUri,
+                                    client_id: config.openIdConnect.clientId,
+                                    response_mode: "query",
+                                    state: stateStore.id,
+                                },
+                            })
+                                .then((response) => {
+                                    cy.log("Posting credentials");
+                                    const html = document.createElement("html");
+                                    html.innerHTML = response.body;
+                                    const form =
+                                        html.getElementsByTagName("form")[0];
+                                    const url = form.action;
+                                    return cy.request({
+                                        method: "POST",
+                                        url,
                                         followRedirect: false,
-                                        qs: {
-                                            scope: config.openIdConnect.scope,
-                                            response_type:
-                                                config.openIdConnect
-                                                    .responseType,
-                                            approval_prompt: "auto",
-                                            redirect_uri: redirectUri,
-                                            client_id:
-                                                config.openIdConnect.clientId,
-                                            response_mode: "query",
-                                            state: stateStore.id,
+                                        form: true,
+                                        body: {
+                                            username: username,
+                                            password: password,
                                         },
-                                    })
-                                        .then((response) => {
-                                            cy.log("Posting credentials");
-                                            const html =
-                                                document.createElement("html");
-                                            html.innerHTML = response.body;
-                                            const form =
-                                                html.getElementsByTagName(
-                                                    "form"
-                                                )[0];
-                                            const url = form.action;
-                                            return cy.request({
-                                                method: "POST",
-                                                url,
-                                                timeout: 60000,
-                                                followRedirect: false,
-                                                form: true,
-                                                body: {
-                                                    username: username,
-                                                    password: password,
-                                                },
-                                            });
-                                        })
-                                        .then((response) => {
-                                            let callBackQS =
-                                                response.headers["location"];
-                                            const callbackURL = `${callBackQS}`;
-                                            cy.log(
-                                                `Visiting Callback ${callBackQS}`,
-                                                response
-                                            );
+                                    });
+                                })
+                                .then((response) => {
+                                    let callBackQS =
+                                        response.headers["location"];
+                                    const callbackURL = `${callBackQS}`;
+                                    cy.log(
+                                        `Visiting Callback ${callBackQS}`,
+                                        response
+                                    );
+                                    cy.visit(callbackURL, { timeout: 60000 });
 
-                                            cy.visit(callbackURL);
-
-                                            // LoginCallbackView processes the OIDC response and retrieves the essential
-                                            // user data before ClientApp navigates to the appropriate destination.
-                                            // Do not save the Cypress session while still processing the callback.
-                                            cy.location("pathname", {
-                                                timeout: 60000,
-                                            }).should(
-                                                "not.eq",
-                                                "/loginCallback"
-                                            );
-
-                                            // Store authentication cookies only after login has completed.
-                                            cy.getCookies().then((cookies) => {
-                                                globalStorage.authCookies =
-                                                    cookies;
-                                            });
-                                        });
+                                    // store auth cookies
+                                    cy.getCookies({ timeout: 60000 }).then(
+                                        (cookies) => {
+                                            globalStorage.authCookies = cookies;
+                                        }
+                                    );
                                 });
-                            },
-                            { cacheAcrossSpecs: isUiSpec() }
-                        );
-
-                        // Register aliases for the post-session visit; login callback requests may
-                        // have already consumed aliases registered before session initialization.
-                        setupStandardAliases();
-
-                        postLoginInitialization(
-                            configSettings,
-                            username,
-                            path,
-                            initialDataWaitOptions
-                        );
+                        });
                     });
-                }
-            });
+
+                    postLoginInitialization(configSettings, username, path);
+                });
+            }
         } else if (authMethod == AuthMethod.BCSC) {
             cy.log(
                 `Authenticating as BC Services Card user ${username} using the UI`
@@ -559,27 +478,17 @@ Cypress.Commands.add("getTokens", (username, password) => {
 
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
-
-    if (cachedEnvironmentConfig) {
-        cy.log(`Using cached Environment Configuration`);
-        return cy.wrap(cloneConfig(cachedEnvironmentConfig));
-    }
-
     let baseWebClientUrl = Cypress.config("baseUrl");
     if (baseWebClientUrl == localDevUri) {
         baseWebClientUrl = Cypress.env("baseWebClientUrl");
     }
 
     return cy
-        .request({
-            url: `${baseWebClientUrl}/configuration`,
-            timeout: 60000,
-        })
-        .then((response) => {
+        .request(`${baseWebClientUrl}/configuration`)
+        .should((response) => {
             expect(response.status).to.eq(200);
-            cachedEnvironmentConfig = cloneConfig(response.body);
-            return cloneConfig(cachedEnvironmentConfig);
-        });
+        })
+        .its("body");
 });
 
 Cypress.Commands.add("checkOnTimeline", () => {

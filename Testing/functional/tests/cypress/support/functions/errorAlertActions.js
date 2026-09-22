@@ -378,7 +378,6 @@ export function testVerifySmsError(statusCode = serverErrorStatusCode) {
         AuthMethod.KeyCloak,
         "/profile"
     );
-    cy.wait("@getUserProfile");
     cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
 
     cy.get("[data-testid=verifySMSBtn]")

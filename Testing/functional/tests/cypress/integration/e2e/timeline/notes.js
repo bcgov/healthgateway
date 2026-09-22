@@ -15,8 +15,7 @@ describe("Notes", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline",
-            { waitForInitialDataLoad: false }
+            "/timeline"
         );
         cy.wait("@getNotes", { timeout: 60000 });
         cy.checkTimelineHasLoaded();
