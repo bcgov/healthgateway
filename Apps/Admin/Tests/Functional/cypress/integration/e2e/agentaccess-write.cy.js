@@ -22,7 +22,7 @@ function createUser() {
 
 describe("Provision", () => {
     beforeEach(() => {
-        removeUserIfExists(user);
+        removeUserIfExists(user, "Pre-test cleanup");
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
@@ -31,7 +31,7 @@ describe("Provision", () => {
     });
 
     afterEach(() => {
-        removeUserIfExists(user);
+        removeUserIfExists(user, "Post-test cleanup");
     });
 
     it("Create, edit, and delete user", () => {

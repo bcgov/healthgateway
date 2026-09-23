@@ -434,7 +434,7 @@ jobs:
       - "HG_UI_Functional_Tests"
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true)))
     strategy:
-      parallel: 4
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self
