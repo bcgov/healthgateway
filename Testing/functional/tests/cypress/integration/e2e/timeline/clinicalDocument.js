@@ -21,7 +21,7 @@ describe("Clinical Document", () => {
             AuthMethod.KeyCloak,
             "/timeline"
         );
-        cy.wait("@getClinicalDocument", { timeout: 60000 });
+
         cy.checkTimelineHasLoaded();
     });
 
