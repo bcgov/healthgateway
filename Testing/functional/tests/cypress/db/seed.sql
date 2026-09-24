@@ -794,6 +794,7 @@ VALUES (
 );
 
 /* Add Resource Delegates */
+/* John Tester - Aged out */
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
 	"ProfileHdid", 
@@ -815,6 +816,30 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
 );
+
+/* Tory D'Bill Nicodemus - Aged out */
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'286338699276932223', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'Guardian', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2021-01-20T00:00:00"'
+); 
+
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
 	"ProfileHdid", 
