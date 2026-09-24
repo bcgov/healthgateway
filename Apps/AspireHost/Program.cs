@@ -37,12 +37,18 @@ int redisPort = redisEndpoint.Contains(':', StringComparison.Ordinal) ? int.Pars
 string? redisPasswordValue = redisConnection.Split(',')
     .Select(part => part.Trim())
     .FirstOrDefault(part => part.StartsWith("password=", StringComparison.OrdinalIgnoreCase))?["password=".Length..];
+// Aspire 13.5 enables TLS on the Redis endpoint by default when a trusted ASP.NET developer
+// certificate exists. The apps connect with the plaintext RedisConnection user secret, so opt out.
+// WithoutHttpsCertificate is still marked experimental (ASPIRECERTIFICATES001).
+#pragma warning disable ASPIRECERTIFICATES001
 IResourceBuilder<RedisResource> redis = builder.AddRedis("GatewayCache", port: redisPort)
+    .WithoutHttpsCertificate()
     .WithPassword(redisPasswordValue is null ? null : builder.AddParameter("redis-password", redisPasswordValue, secret: true))
     .WithImageTag("6.2")
     .WithContainerName("GatewayCache")
     .WithDataVolume("gatewaycache.local")
     .WithPersistence(TimeSpan.FromSeconds(60));
+#pragma warning restore ASPIRECERTIFICATES001
 
 // Secret parameters so the dashboard's Environment view masks the injected values.
 IResourceBuilder<ParameterResource> gatewayConnectionParam = builder.AddParameter("gateway-connection", gatewayConnection, secret: true);
