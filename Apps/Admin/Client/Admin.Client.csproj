@@ -20,13 +20,13 @@
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="Refit" Version="15.2.0" />
     <PackageReference Include="Refit.HttpClientFactory" Version="15.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.12" />
     <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
     <PackageReference Include="Refit.Reflection" Version="15.2.0" />
   </ItemGroup>
