@@ -36,6 +36,9 @@ export AZURE_DEVOPS_EXT_PAT="$SYSTEM_ACCESSTOKEN"
 az devops configure --defaults organization="$organizationUrl" project="$project"
 
 runId="$(az pipelines run \
+    --organization "$organizationUrl" \
+    --project "$project" \
+    --detect false \
     --id "$pipelineId" \
     --branch "$branchOrTag" \
     --parameters "appType=$appType" \
@@ -52,12 +55,18 @@ echo "View it at: $organizationUrl/$project/_build/results?buildId=$runId"
 
 while true; do
     runStatus="$(az pipelines runs show \
+        --organization "$organizationUrl" \
+        --project "$project" \
+        --detect false \
         --id "$runId" \
         --query status \
         --output tsv)"
 
     if [ "$runStatus" = "completed" ]; then
         runResult="$(az pipelines runs show \
+            --organization "$organizationUrl" \
+            --project "$project" \
+            --detect false \
             --id "$runId" \
             --query result \
             --output tsv)"
