@@ -46,7 +46,7 @@ namespace HealthGateway.Admin.Server.Services
             string email = access.Email;
             ISet<BetaFeature> betaFeatures = access.BetaFeatures;
 
-            logger.LogDebug("Email: {Email} - Beta Features: {Features}", email, betaFeatures);
+            logger.LogDebug("Setting beta feature access for user with {FeatureCount} feature(s)", betaFeatures.Count);
             IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfilesAsync(email, true, ct);
 
             if (userProfiles.Count == 0)

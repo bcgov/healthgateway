@@ -311,7 +311,7 @@ export function authenticateUser(user) {
             "Authentication Error " +
             res.status +
             res.body +
-            " User: [" + user.username + "," + user.password + "]"
+            " User: [" + user.username + "]"
         );
         AuthSuccess.add(0);
         user.token = null;

@@ -37,8 +37,6 @@ namespace HealthGateway.WebClient.Server.Controllers
         [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Deferred")]
         public ActionResult MapSalesforceRedirect(string oldPath)
         {
-            string baseUrl = $"{this.Request.Scheme}://{this.Request.Host}";
-
             string newPath = oldPath.ToLower(CultureInfo.InvariantCulture) switch
             {
                 "timeline" => "timeline",
@@ -49,7 +47,7 @@ namespace HealthGateway.WebClient.Server.Controllers
                 _ => "home",
             };
 
-            return this.Redirect($"{baseUrl}/{newPath}");
+            return this.LocalRedirect($"/{newPath}");
         }
     }
 }
