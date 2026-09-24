@@ -25,9 +25,9 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.17.0-beta.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.19.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.17.0-beta.1" />
-    <PackageReference Include="Refit" Version="15.2.0" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="15.2.0" />
-    <PackageReference Include="Refit.Reflection" Version="15.2.0" />
+    <PackageReference Include="Refit" Version="16.1.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="16.1.0" />
+    <PackageReference Include="Refit.Reflection" Version="16.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="2.9.0" />
     <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
