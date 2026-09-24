@@ -66,8 +66,7 @@ describe("Authentication", () => {
             Cypress.env("keycloak.deceased.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home",
-            { waitForInitialDataLoad: false }
+            "/home"
         );
         cy.url().should("include", "/patientRetrievalError");
     });

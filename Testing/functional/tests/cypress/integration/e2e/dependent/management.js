@@ -1,8 +1,4 @@
 const { AuthMethod } = require("../../../support/constants");
-import {
-    getCardSelector,
-    getTabButtonSelector,
-} from "../../../support/functions/dependent";
 
 const validDependent = {
     firstName: "Sam ", // Append space to ensure field is trimmed
@@ -21,11 +17,6 @@ const noHdidDependent = {
     doB: "2018-Feb-04",
     phn: "9879187222",
 };
-
-const agedOutDependentHdid = "232434345442257";
-const agedOutDependentDivId = `[data-testid=dependent-is-expired-div-${agedOutDependentHdid}]`;
-const agedOutDependentName = "John T";
-const agedOutDependentRemoveButtonId = `[data-testid=remove-dependent-btn-${agedOutDependentHdid}]`;
 
 describe("dependents - dashboard", () => {
     beforeEach(() => {
@@ -59,34 +50,6 @@ describe("dependents - dashboard", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
-    });
-
-    it("Validate and remove aged out dependent", () => {
-        const hdid = agedOutDependentHdid;
-
-        cy.get(getCardSelector(hdid))
-            .as("agedOutDependentCard")
-            .within(() => {
-                cy.get("[data-testid=dependentName]").contains(
-                    agedOutDependentName
-                );
-                cy.get(agedOutDependentDivId).should("be.visible");
-
-                const profileTabButtonSelector = getTabButtonSelector(
-                    hdid,
-                    "profile"
-                );
-                cy.get(profileTabButtonSelector).should(
-                    "be.visible",
-                    "be.disabled"
-                );
-            });
-
-        cy.get("@agedOutDependentCard").within(() => {
-            cy.get(agedOutDependentRemoveButtonId).click();
-        });
-
-        cy.get("@agedOutDependentCard").should("not.exist");
     });
 
     // test should be skipped until the similar test for the old dependent page is removed

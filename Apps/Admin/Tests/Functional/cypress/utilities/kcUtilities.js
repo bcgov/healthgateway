@@ -49,12 +49,14 @@ function authenticate(config) {
         });
 }
 
-export function removeUserIfExists(username) {
+export function removeUserIfExists(username, phase = "Cleanup") {
     getConfig().then((config) => {
         const adminUri = `${config.baseUri}/auth/admin/realms/${config.realm}`;
         username = `${username}@idir`;
         authenticate(config).then((auth) => {
-            cy.log(`Querying user ${username} in Keycloak.`);
+            cy.log(
+                `${phase}: Checking whether test account ${username} exists in Keycloak.`
+            );
             cy.request({
                 method: "GET",
                 url: `${adminUri}/users?briefRepresentation=true&username=${username}&exact=true`,
@@ -64,11 +66,13 @@ export function removeUserIfExists(username) {
                 },
             }).then((response) => {
                 expect(response.status).to.eq(200);
-                cy.log(`Inspecting query response for user ${username}.`);
+                cy.log(
+                    `${phase}: Inspecting Keycloak response for test account ${username}.`
+                );
                 let user = response.body[0];
                 if (user && Object.keys(user).length > 0) {
                     cy.log(
-                        `User ${username} found with id ${user.id}. Deleting...`
+                        `${phase}: Test account ${username} found with id ${user.id}. Deleting...`
                     );
                     cy.request({
                         method: "DELETE",
@@ -79,10 +83,12 @@ export function removeUserIfExists(username) {
                         },
                     }).then((response) => {
                         expect(response.status).to.eq(204);
-                        cy.log(`User ${username} deleted.`);
+                        cy.log(`${phase}: Test account ${username} deleted.`);
                     });
                 } else {
-                    cy.log(`User ${username} not found.`);
+                    cy.log(
+                        `${phase}: Test account ${username} does not exist. No deletion needed.`
+                    );
                 }
             });
         });

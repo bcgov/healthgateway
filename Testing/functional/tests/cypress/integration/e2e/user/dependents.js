@@ -1,4 +1,8 @@
 import { AuthMethod } from "../../../support/constants";
+import {
+    getCardSelector,
+    getTabButtonSelector,
+} from "../../../support/functions/dependent";
 
 const defaultTimeout = 60000;
 
@@ -108,6 +112,10 @@ const noHdidDependent = {
 };
 
 const validDependentHdid = "162346565465464564565463257";
+const agedOutDependentHdid = "232434345442257";
+const agedOutDependentDivId = `[data-testid=dependent-is-expired-div-${agedOutDependentHdid}]`;
+const agedOutDependentName = "John T";
+const agedOutDependentRemoveButtonId = `[data-testid=remove-dependent-btn-${agedOutDependentHdid}]`;
 
 const immunizationReportFormats = ["pdf", "csv", "xlsx"];
 
@@ -243,9 +251,81 @@ describe("dependents", () => {
         );
     });
 
-    // Ensure this test executes before any dependent-adding tests to maintain accurate count validation.
-    it("Validate only non-deceased dependents (4 of 5) are rendered", () => {
-        cy.get("[data-testid^=dependent-card-]").should("have.length", 4);
+    // Ensure this test executes before any dependent-adding tests to validate the seeded baseline.
+    // John Tester and Tory D'Bill Nicodemus are expired as dependents from seed data.
+    // John Tester will be removed when Validate and remove aged out dependent is executed.
+    // Tory D'Bill Nicodemus is used by Swagger immunization and laboratory tests so do not use to delete in any dependent tests.
+    // ROMIL SWAN, Jeffrey Lawrence Stallings and Jennifer Testfour are non-deceased and non-expired dependents.
+    // Leroy Tobias will be added when Validate Add Protected PHN With Allowed Delegation test is executed.
+    // Hdid: MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ is deceased and should not show up.
+    // Sam Testfive is used in CRUD Operations test.
+    it("Validate only non-deceased dependents (5 of 6) are rendered", () => {
+        cy.get("[data-testid^=dependent-card-]").should("have.length", 5);
+    });
+
+    it("Validate and remove aged out dependent", () => {
+        const hdid = agedOutDependentHdid;
+
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+                timelineEnabled: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+
+        cy.get(getCardSelector(hdid))
+            .scrollIntoView()
+            .as("agedOutDependentCard")
+            .within(() => {
+                cy.get("[data-testid=dependentName]").contains(
+                    agedOutDependentName
+                );
+                cy.get(agedOutDependentDivId).should("be.visible");
+
+                const profileTabButtonSelector = getTabButtonSelector(
+                    hdid,
+                    "profile"
+                );
+                cy.get(profileTabButtonSelector)
+                    .should("be.visible")
+                    .and("be.disabled");
+            });
+
+        cy.intercept("DELETE", "**/UserProfile/*/Dependent/*").as(
+            "deleteAgedOutDependent"
+        );
+        cy.get("@agedOutDependentCard").within(() => {
+            cy.get(agedOutDependentRemoveButtonId).click();
+        });
+
+        cy.wait("@deleteAgedOutDependent", { timeout: defaultTimeout })
+            .its("response.statusCode")
+            .should("eq", 200);
+        cy.get(getCardSelector(hdid)).should("not.exist");
     });
 
     it("Validate Text Fields on Add Dependent Modal", () => {
@@ -391,59 +471,6 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Add Protected PHN With Allowed Delegation", () => {
-        cy.get("[data-testid=add-dependent-button]").click();
-
-        cy.get("[data-testid=new-dependent-modal-form]").should(
-            "exist",
-            "be.visible"
-        );
-
-        cy.get("[data-testid=dependent-first-name-input] input")
-            .clear()
-            .type(protectedDependentWithAllowedDelegation.firstName);
-        cy.get("[data-testid=dependent-last-name-input] input")
-            .clear()
-            .type(protectedDependentWithAllowedDelegation.lastName);
-        cy.get("[data-testid=dependent-date-of-birth-input] input")
-            .clear()
-            .type(protectedDependentWithAllowedDelegation.doB);
-        cy.get("[data-testid=dependent-phn-input] input")
-            .clear()
-            .type(protectedDependentWithAllowedDelegation.phn);
-        cy.get("[data-testid=dependent-terms-checkbox] input").check({
-            force: true,
-        });
-
-        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
-        cy.get("[data-testid=register-dependent-btn]").click();
-        cy.wait("@postDependent", { timeout: defaultTimeout });
-
-        // Validate the modal is done
-        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
-
-        cy.get(
-            `[data-testid=dependent-card-${protectedDependentWithAllowedDelegation.phn}]`
-        )
-            .as("newDependentCard")
-            .within(() => {
-                // Validate the newly added dependent tab and elements are present
-                cy.get("[data-testid=dependentName]")
-                    .contains(protectedDependentWithAllowedDelegation.firstName)
-                    .contains(protectedDependentWithAllowedDelegation.lastName);
-
-                cy.get("[data-testid=dependentPHN] input").should(
-                    "have.value",
-                    protectedDependentWithAllowedDelegation.phn
-                );
-
-                cy.get("[data-testid=dependentDOB] input").should(
-                    "have.value",
-                    protectedDependentWithAllowedDelegation.doB
-                );
-            });
-    });
-
     it("Validate No HDID", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
@@ -551,6 +578,91 @@ describe("dependents", () => {
             timeout: 60000,
             interval: 5000,
         });
+    });
+});
+
+describe("Protected Dependents", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Validate Add Protected PHN With Allowed Delegation", () => {
+        cy.get("[data-testid=add-dependent-button]").click();
+
+        cy.get("[data-testid=new-dependent-modal-form]").should(
+            "exist",
+            "be.visible"
+        );
+
+        cy.get("[data-testid=dependent-first-name-input] input")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.firstName);
+        cy.get("[data-testid=dependent-last-name-input] input")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.lastName);
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.doB);
+        cy.get("[data-testid=dependent-phn-input] input")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
+
+        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
+        cy.get("[data-testid=register-dependent-btn]").click();
+        cy.wait("@postDependent", { timeout: defaultTimeout });
+
+        // Validate the modal is done
+        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
+
+        cy.get(
+            `[data-testid=dependent-card-${protectedDependentWithAllowedDelegation.phn}]`
+        )
+            .as("newDependentCard")
+            .within(() => {
+                // Validate the newly added dependent tab and elements are present
+                cy.get("[data-testid=dependentName]")
+                    .contains(protectedDependentWithAllowedDelegation.firstName)
+                    .contains(protectedDependentWithAllowedDelegation.lastName);
+                cy.get("[data-testid=dependentPHN] input").should(
+                    "have.value",
+                    protectedDependentWithAllowedDelegation.phn
+                );
+                cy.get("[data-testid=dependentDOB] input").should(
+                    "have.value",
+                    protectedDependentWithAllowedDelegation.doB
+                );
+            });
     });
 });
 

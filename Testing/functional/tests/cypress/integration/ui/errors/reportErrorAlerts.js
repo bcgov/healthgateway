@@ -221,8 +221,7 @@ describe("Export Records - Immunizaation - report download error handling", () =
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports",
-            { waitForInitialDataLoad: true }
+            "/reports"
         );
     });
 

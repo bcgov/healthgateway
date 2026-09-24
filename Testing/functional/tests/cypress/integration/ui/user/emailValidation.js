@@ -62,8 +62,11 @@ describe("User Email Verification", () => {
         );
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=alreadyVerifiedInvite]").should("be.visible");
-        cy.get("[data-testid=continueButton]").click();
-        cy.url().should("include", "/home");
+        cy.get("[data-testid=continueButton]")
+            .should("be.visible")
+            .and("not.be.disabled")
+            .click();
+        cy.location("pathname").should("eq", "/home");
     });
 
     it("Check expired email invite", () => {

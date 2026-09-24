@@ -90,7 +90,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Admin"
     pool:
       name: "HGGoldDev"
-    condition: or(eq(variables['Admin'], true), eq(variables['AdminRead'], true), eq(variables['AdminWrite'], true))
+    condition: or(eq(variables['Admin'], true), eq(variables['AdminUi'], true), eq(variables['AdminRead'], true), eq(variables['AdminWrite'], true))
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
@@ -191,7 +191,7 @@ jobs:
     container:
       image: $(cypressImage)
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminUi'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminUi'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -312,7 +312,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool:
       name: "HGGoldDev"
-    condition: or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true))
+    condition: or(eq(variables['WebClient'], true), eq(variables['HgUi'], true), eq(variables['HgE2e'], true))
     dependsOn: "Admin_Write_Tests"
     timeoutInMinutes: 5
     steps:
@@ -386,9 +386,9 @@ jobs:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
       - "HG_Auth_Functional_Tests"
-    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgUi'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgUi'], true)))
     strategy:
-      parallel: 4
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -434,7 +434,7 @@ jobs:
       - "HG_UI_Functional_Tests"
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true)))
     strategy:
-      parallel: 4
+      parallel: 3
     timeoutInMinutes: 15
     steps:
       - checkout: self

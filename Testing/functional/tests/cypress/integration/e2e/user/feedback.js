@@ -7,8 +7,7 @@ describe("User Feedback with verified email", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home",
-            { waitForDependent: false }
+            "/home"
         );
     });
 
