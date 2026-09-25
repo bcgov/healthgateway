@@ -3,25 +3,27 @@ const { waitForTimelineCard } = require("../../../support/functions/timeline");
 
 const commentSelector = "[data-testid=commentText]";
 
+function getSpecialAuthorityCard() {
+    return cy
+        .get("[data-testid=specialauthorityrequestTitle]")
+        .first()
+        .closest('[data-testid="timelineCard"]');
+}
+
 function removeTestCommentsIfPresent(
     commentTexts,
     matchPrefixes = false,
     collapseWhenDone = false
 ) {
-    cy.get("body").then(($body) => {
-        const $card = $body.find('[data-testid="timelineCard"]').first();
-        if (!$card.length) {
-            return;
-        }
-
+    getSpecialAuthorityCard().then(($card) => {
         // A failed assertion can leave the card either expanded or collapsed.
         if (!$card.find("[data-testid=add-comment-text-area]:visible").length) {
-            cy.wrap($card)
-                .find("[data-testid=entryCardDetailsTitle]")
+            getSpecialAuthorityCard()
+                .find("[data-testid=specialauthorityrequestTitle]")
                 .click({ force: true });
         }
 
-        cy.wrap($card).then(($expandedCard) => {
+        getSpecialAuthorityCard().then(($expandedCard) => {
             const $showCommentsButton = $expandedCard
                 .find("[data-testid=showCommentsBtn]:visible")
                 .filter((_, element) => element.textContent.includes("Show"));
@@ -31,9 +33,9 @@ function removeTestCommentsIfPresent(
             }
         });
 
-        cy.get("body").then(($updatedBody) => {
+        getSpecialAuthorityCard().then(($updatedCard) => {
             const matchingComment = [
-                ...$updatedBody.find(commentSelector),
+                ...$updatedCard.find(commentSelector),
             ].find((element) => {
                 const commentText = element.textContent.trim();
                 return commentTexts.some((candidate) =>
@@ -46,13 +48,12 @@ function removeTestCommentsIfPresent(
             if (!matchingComment) {
                 if (
                     collapseWhenDone &&
-                    $updatedBody.find(
-                        '[data-testid="timelineCard"]:first [data-testid=add-comment-text-area]:visible'
+                    $updatedCard.find(
+                        "[data-testid=add-comment-text-area]:visible"
                     ).length
                 ) {
-                    cy.get('[data-testid="timelineCard"]')
-                        .first()
-                        .find("[data-testid=entryCardDetailsTitle]")
+                    getSpecialAuthorityCard()
+                        .find("[data-testid=specialauthorityrequestTitle]")
                         .click({ force: true });
                 }
                 return;
@@ -85,7 +86,7 @@ describe("Comments Disable", () => {
         cy.configureSettings({
             datasets: [
                 {
-                    name: "medication",
+                    name: "specialAuthorityRequest",
                     enabled: true,
                 },
             ],
@@ -114,7 +115,7 @@ describe("Comments Enable", () => {
             },
             datasets: [
                 {
-                    name: "medication",
+                    name: "specialAuthorityRequest",
                     enabled: true,
                 },
             ],
@@ -145,29 +146,27 @@ describe("Comments Enable", () => {
         const testComment = `Test Add Comment ${uniqueId}`;
         const testEditComment = `Test Edit Comment ${uniqueId}`;
 
-        cy.get('[data-testid="timelineCard"]')
-            .first()
-            .within(() => {
-                cy.get("[data-testid=commentIcon]").should("not.exist");
-                cy.get("[data-testid=commentCount]").should("not.exist");
-            });
+        getSpecialAuthorityCard().within(() => {
+            cy.get("[data-testid=commentIcon]").should("not.exist");
+            cy.get("[data-testid=commentCount]").should("not.exist");
+        });
 
-        cy.get('[data-testid="timelineCard"]')
-            .first()
-            .within(() => {
-                cy.get("[data-testid=entryCardDetailsTitle]").click({
-                    force: true,
-                });
+        getSpecialAuthorityCard().within(() => {
+            cy.get("[data-testid=specialauthorityrequestTitle]").click({
+                force: true,
             });
+        });
 
-        // Expanding the card re-renders its textarea, so query it after the
-        // expansion completes rather than retaining the pre-render element.
-        cy.get("[data-testid=add-comment-text-area]")
+        // Re-query the Special Authority card and target its editable textarea.
+        getSpecialAuthorityCard()
+            .find("[data-testid=add-comment-text-area] textarea")
             .filter(":visible")
-            .should("be.visible")
+            .should("have.length", 1)
+            .and("be.visible")
             .type(testComment);
 
-        cy.get("[data-testid=post-comment-btn]")
+        getSpecialAuthorityCard()
+            .find("[data-testid=post-comment-btn]")
             .filter(":visible")
             .should("be.visible")
             .and("not.be.disabled")
@@ -176,13 +175,20 @@ describe("Comments Enable", () => {
         cy.wait("@postComment");
 
         // Verify
-        cy.get("[data-testid=commentText]").contains(testComment);
-        cy.get("[data-testid=commentIcon]").should("exist");
-        cy.get("[data-testid=commentCount]").should("not.exist");
+        getSpecialAuthorityCard().find(commentSelector).contains(testComment);
+        getSpecialAuthorityCard()
+            .find("[data-testid=commentIcon]")
+            .should("exist");
+        getSpecialAuthorityCard()
+            .find("[data-testid=commentCount]")
+            .should("not.exist");
 
         // Edit while the card is in its normal, unfiltered state. Applying a
         // text filter re-renders the card and closes Vuetify's teleported menu.
-        cy.get("[data-testid=commentMenuBtn]").first().click({ force: true });
+        getSpecialAuthorityCard()
+            .find("[data-testid=commentMenuBtn]")
+            .first()
+            .click({ force: true });
         cy.document()
             .find("[data-testid=commentMenuEditBtn]")
             .click({ force: true });
@@ -193,13 +199,11 @@ describe("Comments Enable", () => {
         cy.get("[data-testid=saveCommentBtn]").filter(":visible").click();
         cy.wait("@updateComment");
 
-        cy.get('[data-testid="timelineCard"]')
-            .first()
-            .within(() => {
-                cy.contains("[data-testid=commentText]", testEditComment);
-                cy.get("[data-testid=commentIcon]").should("exist");
-                cy.get("[data-testid=commentCount]").should("not.exist");
-            });
+        getSpecialAuthorityCard().within(() => {
+            cy.contains("[data-testid=commentText]", testEditComment);
+            cy.get("[data-testid=commentIcon]").should("exist");
+            cy.get("[data-testid=commentCount]").should("not.exist");
+        });
 
         // Filtering causes the card to render again in its collapsed state.
         cy.get("[data-testid=filterDropdown]").click();
@@ -207,33 +211,37 @@ describe("Comments Enable", () => {
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
-        cy.get('[data-testid="timelineCard"]')
-            .first()
-            .within(() => {
-                cy.get("[data-testid=entryCardDetailsTitle]").click({
-                    force: true,
-                });
-                cy.get("[data-testid=showCommentsBtn]").click();
-
-                // Verify the generic timeline text filter searches comments.
-                cy.contains("[data-testid=commentText]", testEditComment);
-                cy.get("[data-testid=commentIcon]").should("exist");
-                cy.get("[data-testid=commentCount]").should("not.exist");
+        getSpecialAuthorityCard().within(() => {
+            cy.get("[data-testid=specialauthorityrequestTitle]").click({
+                force: true,
             });
+            cy.get("[data-testid=showCommentsBtn]")
+                .should("be.visible")
+                .click({ waitForAnimations: false });
+
+            // Verify the generic timeline text filter searches comments.
+            cy.contains("[data-testid=commentText]", testEditComment);
+            cy.get("[data-testid=commentIcon]").should("exist");
+            cy.get("[data-testid=commentCount]").should("not.exist");
+        });
 
         // Return to the normal timeline before using the comment menu again.
         cy.get("[data-testid=clear-filters-button]").click();
-        cy.get('[data-testid="timelineCard"]')
-            .first()
-            .within(() => {
-                cy.get("[data-testid=entryCardDetailsTitle]").click({
-                    force: true,
-                });
-                cy.get("[data-testid=showCommentsBtn]").click();
-                cy.contains("[data-testid=commentText]", testEditComment);
+        getSpecialAuthorityCard().within(() => {
+            cy.get("[data-testid=specialauthorityrequestTitle]").click({
+                force: true,
             });
+            cy.get("[data-testid=showCommentsBtn]")
+                .should("be.visible")
+                .click({ waitForAnimations: false });
 
-        cy.get("[data-testid=commentMenuBtn]").first().click({ force: true });
+            cy.contains("[data-testid=commentText]", testEditComment);
+        });
+
+        getSpecialAuthorityCard()
+            .find("[data-testid=commentMenuBtn]")
+            .first()
+            .click({ force: true });
         cy.on("window:confirm", (str) => {
             expect(str).to.eq("Are you sure you want to delete this comment?");
         });
@@ -243,16 +251,13 @@ describe("Comments Enable", () => {
             .click({ force: true });
         cy.wait("@deleteComment");
 
-        cy.get('[data-testid="timelineCard"]')
-            .first()
-            .within(() => {
-                // Verify
-                cy.contains(
-                    "[data-testid=commentText]",
-                    testEditComment
-                ).should("not.exist");
-                cy.get("[data-testid=commentIcon]").should("not.exist");
-                cy.get("[data-testid=commentCount]").should("not.exist");
-            });
+        getSpecialAuthorityCard().within(() => {
+            // Verify
+            cy.contains("[data-testid=commentText]", testEditComment).should(
+                "not.exist"
+            );
+            cy.get("[data-testid=commentIcon]").should("not.exist");
+            cy.get("[data-testid=commentCount]").should("not.exist");
+        });
     });
 });

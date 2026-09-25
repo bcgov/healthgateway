@@ -15,3 +15,14 @@
 import "./commands";
 
 require("cy-verify-downloads").addCustomCommand();
+
+Cypress.on("uncaught:exception", (error) => {
+    if (
+        error.message.includes("ResizeObserver loop limit exceeded") ||
+        error.message.includes(
+            "ResizeObserver loop completed with undelivered notifications"
+        )
+    ) {
+        return false;
+    }
+});

@@ -95,7 +95,10 @@ export function prepareImmunizationWait(hdid, timeout = deferredLoadTimeout) {
 
 export function validateAttachmentDownload() {
     getEntryCardDateString().then((dateString) => {
-        cy.get("[data-testid=attachment-button]").should("be.visible").click();
+        cy.get("[data-testid=attachment-button]")
+            .should("be.visible")
+            .and("not.be.disabled")
+            .click({ force: true });
         validateSensitiveDocumentDownload(dateString);
     });
 }
@@ -105,9 +108,13 @@ export function validateFileDownload(buttonSelector, clickEntryCard = true) {
         if (clickEntryCard) {
             cy.get("[data-testid=entryCardDetailsTitle]")
                 .should("be.visible")
+                .and("not.be.disabled")
                 .click({ force: true });
         }
-        cy.get(buttonSelector).should("be.visible").click();
+        cy.get(buttonSelector)
+            .should("be.visible")
+            .and("not.be.disabled")
+            .click({ force: true });
         validateSensitiveDocumentDownload(dateString);
     });
 }
