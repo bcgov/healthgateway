@@ -53,8 +53,9 @@ describe("Landing Page", () => {
         cy.visit("/");
         cy.get("[data-testid=btnLogin]")
             .should("be.visible")
-            .contains("Log in with BC Services Card")
-            .click();
+            .and("not.be.disabled")
+            .and("contain", "Log in with BC Services Card")
+            .click({ force: true });
         cy.location("pathname", { timeout: 10000 }).should("eq", "/login");
     });
 

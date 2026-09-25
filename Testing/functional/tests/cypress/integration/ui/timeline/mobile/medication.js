@@ -7,7 +7,8 @@ function selectCardByDate(date) {
         .scrollIntoView()
         .should("be.visible")
         .parents("[data-testid=timelineCard]")
-        .click();
+        .find("[data-testid=entryCardDetailsTitle]")
+        .click({ force: true });
 }
 
 describe("Medication", () => {

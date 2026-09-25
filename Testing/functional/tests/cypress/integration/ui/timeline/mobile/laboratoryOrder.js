@@ -190,7 +190,14 @@ describe("Laboratory Orders", () => {
 
     it("Should have valid collection dates", () => {
         // Validate collection date time when not null in json
-        cy.get("[data-testid=timelineCard]").eq(6).scrollIntoView().click();
+        cy.get("[data-testid=timelineCard]")
+            .eq(6)
+            .scrollIntoView()
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
+            });
         cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
@@ -202,7 +209,13 @@ describe("Laboratory Orders", () => {
             });
 
         // Validate collection date time when attribute is not passed in json
-        cy.get("[data-testid=timelineCard]").eq(7).click();
+        cy.get("[data-testid=timelineCard]")
+            .eq(7)
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
+            });
         cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
@@ -216,7 +229,13 @@ describe("Laboratory Orders", () => {
             });
 
         // Validate collection date time when attribute value is null in json
-        cy.get("[data-testid=timelineCard]").eq(8).click();
+        cy.get("[data-testid=timelineCard]")
+            .eq(8)
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
+            });
         cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
