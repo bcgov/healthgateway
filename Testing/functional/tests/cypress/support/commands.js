@@ -12,13 +12,22 @@ import {
     setupStandardAliases,
     waitForInitialDataLoad,
 } from "./functions/intercept";
+import {
+    startLoginDiagnostics,
+    stopLoginDiagnostics,
+} from "./functions/loginDiagnostics";
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
 // Test configuration must not be saved/restored with authentication storage.
 let configuredSettings;
 beforeEach(() => {
+    stopLoginDiagnostics();
     configuredSettings = undefined;
+});
+
+afterEach(() => {
+    stopLoginDiagnostics();
 });
 
 function setBooleanProperties(object, enabled) {
@@ -119,8 +128,16 @@ function assertAuthenticatedPage(path) {
 
 function loginWithApplicationKeycloak(username, password, config, path) {
     // Let keycloak-js create and consume its own state, nonce and PKCE verifier.
+    const diagnostics = startLoginDiagnostics();
+    cy.then(() => diagnostics.stage("opening-hg-login"));
     cy.visit(`/login?redirect=${encodeURIComponent(path)}`);
-    cy.get("#KeyCloakBtn").should("be.visible").and("not.be.disabled").click();
+    cy.get("#KeyCloakBtn")
+        .should("be.visible")
+        .and("not.be.disabled")
+        .then(() => {
+            diagnostics.stage("leaving-hg-for-keycloak");
+        })
+        .click();
     cy.origin(
         new URL(config.openIdConnect.authority).origin,
         { args: { username, password } },
@@ -132,7 +149,9 @@ function loginWithApplicationKeycloak(username, password, config, path) {
             cy.get("#kc-login").click();
         }
     );
+    cy.then(() => diagnostics.stage("keycloak-commands-completed"));
     assertAuthenticatedPage(path);
+    cy.then(() => diagnostics.stage("callback-completed"));
 }
 
 function loginWithKeycloakUI(username, password, config, path = "/home") {
@@ -293,6 +312,8 @@ Cypress.Commands.add(
 
                 // Authenticate on a neutral route; only the final visit should
                 // execute the caller's destination (e.g. an email invite).
+                const diagnostics = startLoginDiagnostics();
+                cy.then(() => diagnostics.stage("session-setup-or-restore"));
                 let authenticatedDuringSetup = false;
                 cy.session(
                     [
@@ -329,8 +350,10 @@ Cypress.Commands.add(
 
                 // Session setup/validation may consume requests. Register fresh
                 // aliases before the final visit used by the test's data waits.
+                cy.then(() => diagnostics.stage("opening-requested-hg-page"));
                 postLoginInitialization(settings, username, path);
                 assertAuthenticatedPage(path);
+                cy.then(() => diagnostics.stage("requested-hg-page-ready"));
                 cy.getCookies({ log: false }).then((cookies) => {
                     globalStorage.authCookies = cookies;
                 });
@@ -494,8 +517,19 @@ Cypress.Commands.add("readConfig", () => {
         baseWebClientUrl = Cypress.env("baseWebClientUrl");
     }
 
+    const diagnostics = startLoginDiagnostics();
+    let recordResponse;
     return cy
+        .then(() => {
+            recordResponse = diagnostics.configurationRequest(
+                `${baseWebClientUrl}/configuration`
+            );
+        })
         .request(`${baseWebClientUrl}/configuration`)
+        .then((response) => {
+            recordResponse(response);
+            return response;
+        })
         .should((response) => {
             expect(response.status).to.eq(200);
         })
