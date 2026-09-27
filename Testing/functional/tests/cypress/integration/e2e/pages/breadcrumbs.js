@@ -22,7 +22,9 @@ function testPageBreadcrumb(url, dataTestId) {
     cy.get(`[data-testid='${dataTestId}'].v-breadcrumbs-item--active`).should(
         "be.visible"
     );
-    cy.get("[data-testid=breadcrumb-home]").should("be.visible").click();
+    cy.get("[data-testid=breadcrumb-home]")
+        .should("be.visible")
+        .click({ waitForAnimations: false });
     cy.url().should("include", "/home");
 }
 
