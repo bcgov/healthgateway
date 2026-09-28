@@ -16,6 +16,7 @@ module.exports = defineConfig({
         testsuitesTitle: false,
     },
     env: {
+        loginDiagnostics: false,
         baseWebClientUrl: "",
         "bcsc.username": "hthgtwy11",
         "bcsc.password": "",

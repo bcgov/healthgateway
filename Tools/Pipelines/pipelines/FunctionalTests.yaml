@@ -21,6 +21,11 @@ parameters:
       - HG E2E
     default: WebClient
 
+  - name: loginDiagnostics
+    displayName: "Enable HG login failure diagnostics"
+    type: boolean
+    default: false
+
 # Build variables
 variables:
   - group: Cypress
@@ -408,6 +413,7 @@ jobs:
           filePath: "./Tools/Pipelines/scripts/azp_runUiFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
+          LOGIN_DIAGNOSTICS: ${{ parameters.loginDiagnostics }}
           TERM: xterm
           CYPRESS_KEY: $(cypress.key)
           BCSC_PW: $(bcsc.pw)
@@ -455,6 +461,7 @@ jobs:
           filePath: "./Tools/Pipelines/scripts/azp_runE2eFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
+          LOGIN_DIAGNOSTICS: ${{ parameters.loginDiagnostics }}
           TERM: xterm
           CYPRESS_KEY: $(cypress.key)
           BCSC_PW: $(bcsc.pw)
