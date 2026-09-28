@@ -205,34 +205,30 @@ export function waitForInitialDataLoad(username, config, path) {
 }
 
 function waitForUserProfile(username) {
-    return new Cypress.Promise((resolve) => {
-        let blockedDataSources;
+    if (
+        username === Cypress.env("keycloak.deceased.username") ||
+        username === Cypress.env("keycloak.accountclosure.username")
+    ) {
+        return cy.wrap(undefined, { log: false });
+    }
 
-        if (
-            username !== Cypress.env("keycloak.deceased.username") &&
-            username !== Cypress.env("keycloak.accountclosure.username")
-        ) {
-            cy.log("Wait on user profile.");
-            cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
-                (interception) => {
-                    const responseBody = interception.response.body;
-                    blockedDataSources = responseBody.blockedDataSources;
+    cy.log("Wait on user profile.");
+    return cy.wait("@getUserProfile", { timeout: defaultTimeout }).then(
+        (interception) => {
+            const blockedDataSources =
+                interception.response.body.blockedDataSources;
 
-                    cy.log(
-                        `Get User Profile Blocked Data Sources: ${
-                            blockedDataSources
-                                ? JSON.stringify(blockedDataSources)
-                                : "Blocked data sources are not available"
-                        }`
-                    );
-
-                    resolve(blockedDataSources);
-                }
+            cy.log(
+                `Get User Profile Blocked Data Sources: ${
+                    blockedDataSources
+                        ? JSON.stringify(blockedDataSources)
+                        : "Blocked data sources are not available"
+                }`
             );
-        } else {
-            resolve(blockedDataSources);
+
+            return cy.wrap(blockedDataSources, { log: false });
         }
-    });
+    );
 }
 
 function waitForNotification(featureToggle) {
