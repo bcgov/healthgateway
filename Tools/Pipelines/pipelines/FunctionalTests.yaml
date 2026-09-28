@@ -405,10 +405,9 @@ jobs:
         displayName: "Run HG UI Functional Tests"
         inputs:
           targetType: filePath
-          filePath: "./Tools/Pipelines/scripts/azp_withHttpDiagnostics.sh"
-          arguments: ./Tools/Pipelines/scripts/azp_runUiFunctionalTests.sh Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+          filePath: "./Tools/Pipelines/scripts/azp_runUiFunctionalTests.sh"
+          arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
-          HG_HTTP_DIAGNOSTICS_DIR: $(Build.ArtifactStagingDirectory)/hg-http-diagnostics
           TERM: xterm
           CYPRESS_KEY: $(cypress.key)
           BCSC_PW: $(bcsc.pw)
@@ -420,12 +419,6 @@ jobs:
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
-      - task: PublishPipelineArtifact@1
-        displayName: "Publish HG HTTP diagnostics"
-        condition: always()
-        inputs:
-          targetPath: $(Build.ArtifactStagingDirectory)/hg-http-diagnostics
-          artifact: hg-http-ui-$(System.JobId)-$(System.JobAttempt)
 
   - job: "HG_E2E_Functional_Tests"
     displayName: "HG E2E Functional Tests"
@@ -459,10 +452,9 @@ jobs:
         displayName: "Run HG E2E Functional Tests"
         inputs:
           targetType: filePath
-          filePath: "./Tools/Pipelines/scripts/azp_withHttpDiagnostics.sh"
-          arguments: ./Tools/Pipelines/scripts/azp_runE2eFunctionalTests.sh Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+          filePath: "./Tools/Pipelines/scripts/azp_runE2eFunctionalTests.sh"
+          arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
-          HG_HTTP_DIAGNOSTICS_DIR: $(Build.ArtifactStagingDirectory)/hg-http-diagnostics
           TERM: xterm
           CYPRESS_KEY: $(cypress.key)
           BCSC_PW: $(bcsc.pw)
@@ -474,10 +466,3 @@ jobs:
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
-
-      - task: PublishPipelineArtifact@1
-        displayName: "Publish HG HTTP diagnostics"
-        condition: always()
-        inputs:
-          targetPath: $(Build.ArtifactStagingDirectory)/hg-http-diagnostics
-          artifact: hg-http-e2e-$(System.JobId)-$(System.JobAttempt)
