@@ -120,9 +120,10 @@ function assertAuthenticatedPage(path) {
         "be.oneOf",
         destinations
     );
-    // HeaderComponent displays this only when oidcIsAuthenticated is true.
+    // HeaderComponent renders this only when oidcIsAuthenticated is true.
+    // Expected dialogs (e.g. Protective Word) may cover the authenticated header.
     cy.get("[data-testid=headerDropdownBtn]", { timeout: 60000 }).should(
-        "be.visible"
+        "exist"
     );
 }
 
