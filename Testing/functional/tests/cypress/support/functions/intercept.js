@@ -158,10 +158,12 @@ export function setupStandardAliases() {
         "GET",
         "**/PatientData/*?patientDataTypes=OrganDonorRegistrationStatus*"
     ).as("getOrganDonorRegistrationStatus");
-    cy.intercept(
-        "GET",
-        /\/UserProfile\/[^/?]+(\/login)?\?.*api-version=2\.0/
-    ).as("getUserProfile");
+    // Terms of service is not a profile response (it has no blockedDataSources).
+    cy.intercept({
+        method: "GET",
+        pathname: /\/UserProfile\/(?!termsofservice(?:\/|$))[^/]+(?:\/login)?$/,
+        query: { "api-version": "2.0" },
+    }).as("getUserProfile");
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as("getDependent");
 }
 

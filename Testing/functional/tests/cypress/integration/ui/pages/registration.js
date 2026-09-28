@@ -35,7 +35,6 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             homePath,
-            {},
             "registration-validation-success"
         );
 
@@ -99,7 +98,6 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             homePath,
-            {},
             "registration-validation-failure"
         );
 
