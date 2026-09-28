@@ -1,11 +1,23 @@
 // One bounded collector per test attempt; never retain credentials or URL queries.
 let collector;
+const disabledDiagnostics = {
+    stop() {},
+    stage() {},
+    configurationRequest() {
+        return () => {};
+    },
+};
 
 export function stopLoginDiagnostics() {
     collector?.stop();
     collector = undefined;
 }
 export function startLoginDiagnostics() {
+    // Azure environment values may arrive as strings rather than booleans.
+    if (String(Cypress.env("loginDiagnostics")).toLowerCase() !== "true") {
+        stopLoginDiagnostics();
+        return disabledDiagnostics;
+    }
     if (collector) {
         return collector;
     }
