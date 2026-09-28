@@ -526,7 +526,10 @@ Cypress.Commands.add("readConfig", () => {
                 `${baseWebClientUrl}/configuration`
             );
         })
-        .request(`${baseWebClientUrl}/configuration`)
+        .request({
+            url: `${baseWebClientUrl}/configuration`,
+            failOnStatusCode: false,
+        })
         .then((response) => {
             recordResponse(response);
             return response;
