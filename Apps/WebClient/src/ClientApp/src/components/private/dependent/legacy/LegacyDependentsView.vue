@@ -51,9 +51,7 @@ retrieveDependents(userStore.hdid, false);
     </PageTitleComponent>
     <h5 class="text-body-large font-weight-bold">
         You can add your dependents under the age of
-        {{ webClientConfig.maxDependentAge }} to view their health records. Make
-        sure you include all given names exactly as shown on their BC Services
-        Card.
+        {{ webClientConfig.maxDependentAge }} to view their health records.
     </h5>
     <LegacyDependentCardComponent
         v-for="dependent in dependents"
