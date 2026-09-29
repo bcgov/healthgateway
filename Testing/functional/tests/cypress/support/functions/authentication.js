@@ -52,14 +52,14 @@ export function ensureKeycloakSession(username, password, settings, sessionId) {
         {
             validate() {
                 // Setup already opened and authenticated this page.
-                // Restored sessions still need a real SSO check.
+                // Restored sessions are checked with Keycloak without loading the app.
                 if (authenticatedDuringSetup) {
                     // Cypress reuses these callbacks on restoration.
                     authenticatedDuringSetup = false;
-                } else {
-                    cy.visit("/profile");
+                    assertAuthenticatedPage("/profile");
+                    return;
                 }
-                assertAuthenticatedPage("/profile");
+                return validateKeycloakSession(settings);
             },
         }
     );
@@ -88,4 +88,68 @@ export function assertAuthenticatedPage(path) {
     cy.get("[data-testid=headerDropdownBtn]", { timeout: 60000 }).should(
         "exist"
     );
+}
+
+export function validateKeycloakSession(config) {
+    const oidc = config.openIdConnect;
+    const callback =
+        oidc.callbacks?.Logon || `${Cypress.config("baseUrl")}/loginCallback`;
+    const state = crypto.randomUUID();
+
+    // Use S256 PKCE without persisting a verifier or redeeming the returned code.
+    return cy
+        .then(async () => {
+            const verifier = crypto.randomUUID() + crypto.randomUUID();
+            const digest = await crypto.subtle.digest(
+                "SHA-256",
+                new TextEncoder().encode(verifier)
+            );
+            return btoa(String.fromCharCode(...new Uint8Array(digest)))
+                .replaceAll("+", "-")
+                .replaceAll("/", "_")
+                .replaceAll("=", "");
+        })
+        .then((challenge) => {
+            return cy.request({
+                url: `${oidc.authority}/protocol/openid-connect/auth`,
+                qs: {
+                    client_id: oidc.clientId,
+                    redirect_uri: callback,
+                    response_type: "code",
+                    response_mode: "query",
+                    scope: oidc.scope,
+                    prompt: "none",
+                    state,
+                    code_challenge: challenge,
+                    code_challenge_method: "S256",
+                },
+                followRedirect: false,
+                failOnStatusCode: false,
+                log: false,
+            });
+        })
+        .then((response) => {
+            expect(response.status, "authorization response").to.eq(302);
+            // Never log a Location header or authorization code.
+            expect(Boolean(response.headers.location), "redirect exists").to.eq(
+                true
+            );
+            const redirect = new URL(response.headers.location);
+            const expected = new URL(callback);
+            expect(redirect.origin, "callback origin").to.eq(expected.origin);
+            expect(redirect.pathname, "callback path").to.eq(expected.pathname);
+            expect(
+                redirect.searchParams.get("state") === state,
+                "state matches"
+            ).to.eq(true);
+            const error = redirect.searchParams.get("error");
+            const hasCode = Boolean(redirect.searchParams.get("code"));
+            if (error === "login_required" && !hasCode) {
+                // Yielding false tells cy.session to recreate an invalid session.
+                return false;
+            }
+            expect(error, "authorization error").to.eq(null);
+            expect(hasCode, "authorization code present").to.eq(true);
+            return true;
+        });
 }

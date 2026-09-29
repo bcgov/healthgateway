@@ -1,70 +1,12 @@
 import { AuthMethod, localDevUri } from "../support/constants";
+import { validateKeycloakSession } from "../support/functions/authentication";
 import { setupStandardFixtures } from "../support/functions/intercept";
 
-// Compatibility probe only: production session validation is unchanged.
+// Exercise the same HTTP validation used by restored production test sessions.
 // Run with existing credentials and:
 // --config specPattern=cypress/regression/keycloakSessionValidation.cy.js
 function probeSession(config, authenticated) {
-    const oidc = config.openIdConnect;
-    const callback =
-        oidc.callbacks?.Logon || `${Cypress.config("baseUrl")}/loginCallback`;
-    const state = crypto.randomUUID();
-
-    // Use S256 PKCE without persisting a verifier or redeeming the returned code.
-    return cy
-        .then(async () => {
-            const verifier = crypto.randomUUID() + crypto.randomUUID();
-            const digest = await crypto.subtle.digest(
-                "SHA-256",
-                new TextEncoder().encode(verifier)
-            );
-            return btoa(String.fromCharCode(...new Uint8Array(digest)))
-                .replaceAll("+", "-")
-                .replaceAll("/", "_")
-                .replaceAll("=", "");
-        })
-        .then((challenge) => {
-            return cy.request({
-                url: `${oidc.authority}/protocol/openid-connect/auth`,
-                qs: {
-                    client_id: oidc.clientId,
-                    redirect_uri: callback,
-                    response_type: "code",
-                    response_mode: "query",
-                    scope: oidc.scope,
-                    prompt: "none",
-                    state,
-                    code_challenge: challenge,
-                    code_challenge_method: "S256",
-                },
-                followRedirect: false,
-                failOnStatusCode: false,
-                log: false,
-            });
-        })
-        .then((response) => {
-            expect(response.status, "authorization response").to.eq(302);
-            // Never log a Location header or authorization code.
-            expect(Boolean(response.headers.location), "redirect exists").to.eq(
-                true
-            );
-            const redirect = new URL(response.headers.location);
-            const expected = new URL(callback);
-            expect(redirect.origin, "callback origin").to.eq(expected.origin);
-            expect(redirect.pathname, "callback path").to.eq(expected.pathname);
-            expect(
-                redirect.searchParams.get("state") === state,
-                "state matches"
-            ).to.eq(true);
-            expect(
-                Boolean(redirect.searchParams.get("code")),
-                "authorization code present"
-            ).to.eq(authenticated);
-            expect(
-                redirect.searchParams.get("error"),
-                "authorization error"
-            ).to.eq(authenticated ? null : "login_required");
-        });
+    return validateKeycloakSession(config).should("eq", authenticated);
 }
 
 describe(
