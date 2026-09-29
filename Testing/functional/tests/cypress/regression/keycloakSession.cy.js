@@ -73,3 +73,79 @@ describe("Keycloak session regression", { retries: 0 }, () => {
         });
     });
 });
+
+// Seed authentication explicitly: neither test depends on another test passing.
+describe(
+    "Configuration isolation with a saved Keycloak session",
+    { retries: 0 },
+    () => {
+        const sessionId = "configuration-isolation-regression";
+        const notificationHeader =
+            "[data-testid=profile-notification-preferences-label]";
+        let credentialSubmissions = 0;
+
+        function login() {
+            cy.login(
+                Cypress.env("keycloak.username"),
+                Cypress.env("keycloak.password"),
+                AuthMethod.KeyCloak,
+                "/profile",
+                sessionId
+            );
+            cy.location("pathname").should("eq", "/profile");
+            cy.get("[data-testid=headerDropdownBtn]").should("exist");
+        }
+
+        before(() => {
+            expect(
+                Cypress.config("baseUrl"),
+                "use the deployed login path"
+            ).not.to.eq(localDevUri);
+            expect(
+                Boolean(Cypress.env("keycloak.password")),
+                "Keycloak password is configured"
+            ).to.eq(true);
+            cy.then(() => Cypress.session.clearAllSavedSessions());
+            cy.then(() => Cypress.session.clearCurrentSessionData());
+            cy.configureSettings({
+                profile: { notifications: { enabled: true } },
+            });
+            setupStandardFixtures();
+            login();
+            cy.get(notificationHeader).should("be.visible");
+        });
+
+        beforeEach(() => {
+            credentialSubmissions = 0;
+            setupStandardFixtures();
+            cy.readConfig().then((config) => {
+                cy.intercept(
+                    "POST",
+                    `${config.openIdConnect.authority}/login-actions/authenticate*`,
+                    () => {
+                        credentialSubmissions += 1;
+                    }
+                );
+            });
+        });
+
+        [false, true].forEach((enabled) => {
+            it(`uses this test's notification setting (${enabled}) when restoring authentication`, () => {
+                cy.configureSettings({
+                    profile: { notifications: { enabled } },
+                });
+                login();
+                // Check rendered behavior, not merely the configuration object.
+                cy.get(notificationHeader).should(
+                    enabled ? "be.visible" : "not.exist"
+                );
+                cy.then(() => {
+                    expect(
+                        credentialSubmissions,
+                        "the seeded session was reused"
+                    ).to.eq(0);
+                });
+            });
+        });
+    }
+);
