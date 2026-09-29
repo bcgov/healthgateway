@@ -12,16 +12,13 @@ import {
     assertAuthenticatedPage,
     ensureKeycloakSession,
 } from "./functions/authentication";
-import {
-    setupStandardAliases,
-    waitForInitialDataLoad,
-} from "./functions/intercept";
+import { setupStandardAliases } from "./functions/intercept";
 import {
     startLoginDiagnostics,
     stopLoginDiagnostics,
 } from "./functions/loginDiagnostics";
 import { visitTestPage } from "./functions/navigation";
-import { waitForScenarioData } from "./functions/pageReadiness";
+import { waitForInitialDataLoad } from "./functions/pageReadiness";
 import {
     configureTestSettings,
     readEnvironmentConfig,
@@ -199,7 +196,7 @@ Cypress.Commands.add(
                 // aliases before the final visit used by the test's data waits.
                 cy.then(() => diagnostics.stage("opening-requested-hg-page"));
                 visitTestPage(path);
-                waitForScenarioData(username, settings, path);
+                waitForInitialDataLoad(username, settings, path);
                 assertAuthenticatedPage(path);
                 cy.then(() => diagnostics.stage("requested-hg-page-ready"));
                 cy.getCookies({ log: false }).then((cookies) => {
