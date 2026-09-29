@@ -8,7 +8,10 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 import { AuthMethod, localDevUri } from "./constants";
-import { ensureKeycloakSession } from "./functions/authentication";
+import {
+    assertAuthenticatedPage,
+    ensureKeycloakSession,
+} from "./functions/authentication";
 import {
     setupStandardAliases,
     waitForInitialDataLoad,
@@ -18,10 +21,7 @@ import {
     stopLoginDiagnostics,
 } from "./functions/loginDiagnostics";
 import { visitTestPage } from "./functions/navigation";
-import {
-    assertAuthenticatedPage,
-    waitForScenarioData,
-} from "./functions/pageReadiness";
+import { waitForScenarioData } from "./functions/pageReadiness";
 import {
     configureTestSettings,
     readEnvironmentConfig,

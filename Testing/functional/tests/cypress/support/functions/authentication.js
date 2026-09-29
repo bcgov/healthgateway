@@ -1,5 +1,4 @@
 import { startLoginDiagnostics } from "./loginDiagnostics";
-import { assertAuthenticatedPage } from "./pageReadiness";
 
 function loginWithApplicationKeycloak(username, password, config, path) {
     // Let keycloak-js create and consume its own state, nonce and PKCE verifier.
@@ -63,5 +62,30 @@ export function ensureKeycloakSession(username, password, settings, sessionId) {
                 assertAuthenticatedPage("/profile");
             },
         }
+    );
+}
+
+export function assertAuthenticatedPage(path) {
+    // Account-state redirects are valid authenticated destinations too.
+    const destinations = [
+        new URL(path, Cypress.config("baseUrl")).pathname,
+        "/registration",
+        "/acceptTermsOfService",
+        "/profile",
+        "/patientRetrievalError",
+        "/unauthorized",
+    ];
+    cy.location("origin").should(
+        "eq",
+        new URL(Cypress.config("baseUrl")).origin
+    );
+    cy.location("pathname", { timeout: 60000 }).should(
+        "be.oneOf",
+        destinations
+    );
+    // HeaderComponent renders this only when oidcIsAuthenticated is true.
+    // Expected dialogs (e.g. Protective Word) may cover the authenticated header.
+    cy.get("[data-testid=headerDropdownBtn]", { timeout: 60000 }).should(
+        "exist"
     );
 }
