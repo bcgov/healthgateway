@@ -43,7 +43,7 @@ const entryIcon = computed(() => {
         >
             <v-divider v-if="agentIndex > 0" class="my-4" />
             <v-row>
-                <v-col :cols="cols">
+                <v-col v-if="agent.productName" :cols="cols">
                     <DisplayFieldComponent
                         data-testid="immunizationProductTitle"
                         name="Product"
@@ -59,7 +59,7 @@ const entryIcon = computed(() => {
                         :value="agent.name"
                     />
                 </v-col>
-                <v-col :cols="cols">
+                <v-col v-if="entry.immunization.providerOrClinic" :cols="cols">
                     <DisplayFieldComponent
                         data-testid="immunizationProviderTitle"
                         name="Provider / Clinic"
@@ -67,7 +67,7 @@ const entryIcon = computed(() => {
                         :value="entry.immunization.providerOrClinic"
                     />
                 </v-col>
-                <v-col :cols="cols">
+                <v-col v-if="agent.lotNumber" :cols="cols">
                     <DisplayFieldComponent
                         data-testid="immunizationLotTitle"
                         name="Lot Number"
