@@ -4,6 +4,7 @@ import { setupStandardFixtures } from "../support/functions/intercept";
 // Opt-in baseline for the deployed Keycloak path used by Azure Pipelines.
 // Run with the existing Keycloak credentials supplied through Cypress env:
 // npx cypress run --browser chrome --config specPattern=cypress/regression/keycloakSession.cy.js
+// Add --env sessionBaseline=true only when collecting the temporary baseline report.
 // This folder is outside the normal integration spec pattern.
 describe("Keycloak session regression", { retries: 0 }, () => {
     it("authenticates once and restores the saved session for another destination", () => {
@@ -103,13 +104,16 @@ describe("Keycloak session regression", { retries: 0 }, () => {
             ).to.eq(submissionsAfterLogin);
             finishMeasurement(credentialSubmissions - submissionsAfterLogin);
         });
+        // Temporary diagnostic output is opt-in; ordinary runs write no baseline.
         // Contains paths and counts only; never write credentials, cookies or tokens.
-        cy.then(() => {
-            return cy.writeFile(
-                "reports/keycloak-session-baseline.json",
-                measurements
-            );
-        });
+        if (String(Cypress.env("sessionBaseline")).toLowerCase() === "true") {
+            cy.then(() => {
+                return cy.writeFile(
+                    "reports/keycloak-session-baseline.json",
+                    measurements
+                );
+            });
+        }
     });
 });
 
