@@ -2,6 +2,7 @@ const { defineConfig } = require("cypress");
 const { isFileExist, findFiles } = require("cy-verify-downloads");
 
 module.exports = defineConfig({
+    defaultBrowser: "chrome",
     projectId: "rccf87",
     e2e: {
         baseUrl: "https://dev-admin.healthgateway.gov.bc.ca",

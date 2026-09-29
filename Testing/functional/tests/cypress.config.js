@@ -2,6 +2,7 @@ const { defineConfig } = require("cypress");
 const { verifyDownloadTasks } = require("cy-verify-downloads");
 
 module.exports = defineConfig({
+    defaultBrowser: "chrome",
     defaultCommandTimeout: 30000,
     blockHosts: ["spt.apps.gov.bc.ca"],
     retries: {
