@@ -1,3 +1,6 @@
+import { localDevUri } from "../constants";
+import { startLoginDiagnostics } from "./loginDiagnostics";
+
 // Per-test settings are deliberately kept outside authentication storage.
 let configuredSettings;
 
@@ -92,4 +95,33 @@ export function configureTestSettings(overriddenFeatures) {
 
             configuredSettings = config;
         });
+}
+
+export function readEnvironmentConfig() {
+    cy.log(`Reading Environment Configuration`);
+    let baseWebClientUrl = Cypress.config("baseUrl");
+    if (baseWebClientUrl == localDevUri) {
+        baseWebClientUrl = Cypress.env("baseWebClientUrl");
+    }
+
+    const diagnostics = startLoginDiagnostics();
+    let recordResponse;
+    return cy
+        .then(() => {
+            recordResponse = diagnostics.configurationRequest(
+                `${baseWebClientUrl}/configuration`
+            );
+        })
+        .request({
+            url: `${baseWebClientUrl}/configuration`,
+            failOnStatusCode: false,
+        })
+        .then((response) => {
+            recordResponse(response);
+            return response;
+        })
+        .should((response) => {
+            expect(response.status).to.eq(200);
+        })
+        .its("body");
 }

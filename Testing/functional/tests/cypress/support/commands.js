@@ -24,6 +24,7 @@ import {
 } from "./functions/pageReadiness";
 import {
     configureTestSettings,
+    readEnvironmentConfig,
     resetTestSettings,
     resolveTestSettings,
 } from "./functions/testConfiguration";
@@ -357,34 +358,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
     });
 });
 
-Cypress.Commands.add("readConfig", () => {
-    cy.log(`Reading Environment Configuration`);
-    let baseWebClientUrl = Cypress.config("baseUrl");
-    if (baseWebClientUrl == localDevUri) {
-        baseWebClientUrl = Cypress.env("baseWebClientUrl");
-    }
-
-    const diagnostics = startLoginDiagnostics();
-    let recordResponse;
-    return cy
-        .then(() => {
-            recordResponse = diagnostics.configurationRequest(
-                `${baseWebClientUrl}/configuration`
-            );
-        })
-        .request({
-            url: `${baseWebClientUrl}/configuration`,
-            failOnStatusCode: false,
-        })
-        .then((response) => {
-            recordResponse(response);
-            return response;
-        })
-        .should((response) => {
-            expect(response.status).to.eq(200);
-        })
-        .its("body");
-});
+Cypress.Commands.add("readConfig", readEnvironmentConfig);
 
 Cypress.Commands.add("checkOnTimeline", () => {
     cy.contains("#subject", "Health Records").should("be.visible");
