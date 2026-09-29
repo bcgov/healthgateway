@@ -45,10 +45,11 @@ describe(
             cy.get("[data-testid=headerDropdownBtn]").should("exist");
         });
 
-        it("rejects old cookies after their server session is logged out", () => {
+        it("rejects and recreates a revoked cached session", () => {
             let idToken;
             let savedCookies;
             let configuration;
+            let credentialSubmissions = 0;
             expect(
                 Boolean(Cypress.env("keycloak.password")),
                 "Keycloak password is configured"
@@ -57,6 +58,13 @@ describe(
             setupStandardFixtures();
             cy.readConfig().then((config) => {
                 configuration = config;
+                cy.intercept(
+                    "POST",
+                    `${config.openIdConnect.authority}/login-actions/authenticate*`,
+                    () => {
+                        credentialSubmissions += 1;
+                    }
+                );
                 cy.intercept(
                     "POST",
                     `${config.openIdConnect.authority}/protocol/openid-connect/token`,
@@ -77,6 +85,9 @@ describe(
                 "/profile",
                 "revoked-session-regression"
             );
+            cy.then(() => {
+                expect(credentialSubmissions, "initial login").to.eq(1);
+            });
             cy.then(() => probeSession(configuration, true));
             cy.getAllCookies({ log: false }).then((cookies) => {
                 const host = new URL(configuration.openIdConnect.authority)
@@ -147,6 +158,22 @@ describe(
                 ).to.eq(true);
             });
             cy.then(() => probeSession(configuration, false));
+
+            // Keep the saved Cypress session and its ID: login must detect that
+            // the cached server session was revoked and recreate it automatically.
+            cy.login(
+                Cypress.env("keycloak.username"),
+                Cypress.env("keycloak.password"),
+                AuthMethod.KeyCloak,
+                "/home",
+                "revoked-session-regression"
+            );
+            cy.location("pathname").should("eq", "/home");
+            cy.get("[data-testid=headerDropdownBtn]").should("exist");
+            cy.then(() => {
+                expect(credentialSubmissions, "one recovery login").to.eq(2);
+            });
+            cy.then(() => probeSession(configuration, true));
         });
     }
 );
