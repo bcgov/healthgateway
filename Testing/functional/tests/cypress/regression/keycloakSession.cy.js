@@ -25,6 +25,34 @@ describe("Keycloak session regression", { retries: 0 }, () => {
 
         let credentialSubmissions = 0;
         let submissionsAfterLogin;
+        let phase;
+        let startedAt;
+        const measurements = {};
+        // Count explicit cy.visit calls only, not redirects or SPA route changes.
+        // The test-scoped listener is removed automatically when the test ends.
+        cy.on("command:start", (command) => {
+            if (phase && command.attributes.name === "visit") {
+                const path = new URL(
+                    command.attributes.args[0],
+                    Cypress.config("baseUrl")
+                ).pathname;
+                measurements[phase].visitPaths.push(path);
+            }
+        });
+
+        function startMeasurement(name) {
+            phase = name;
+            measurements[name] = { visitPaths: [] };
+            startedAt = performance.now();
+        }
+
+        function finishMeasurement(submissions) {
+            measurements[phase].elapsedMs = Math.round(
+                performance.now() - startedAt
+            );
+            measurements[phase].credentialSubmissions = submissions;
+            phase = undefined;
+        }
         cy.readConfig().then((config) => {
             cy.intercept(
                 "POST",
@@ -36,6 +64,7 @@ describe("Keycloak session regression", { retries: 0 }, () => {
             );
         });
 
+        cy.then(() => startMeasurement("freshLogin"));
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -51,11 +80,13 @@ describe("Keycloak session regression", { retries: 0 }, () => {
                 "fresh login submits credentials"
             ).to.be.greaterThan(0);
             submissionsAfterLogin = credentialSubmissions;
+            finishMeasurement(credentialSubmissions);
         });
 
         // Remove active browser authentication while retaining the saved session.
         // Both phases are in one test so this also works when run in isolation.
         cy.then(() => Cypress.session.clearCurrentSessionData());
+        cy.then(() => startMeasurement("restoredSession"));
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -70,6 +101,14 @@ describe("Keycloak session regression", { retries: 0 }, () => {
                 credentialSubmissions,
                 "restoring the session does not resubmit credentials"
             ).to.eq(submissionsAfterLogin);
+            finishMeasurement(credentialSubmissions - submissionsAfterLogin);
+        });
+        // Contains paths and counts only; never write credentials, cookies or tokens.
+        cy.then(() => {
+            return cy.writeFile(
+                "reports/keycloak-session-baseline.json",
+                measurements
+            );
         });
     });
 });
