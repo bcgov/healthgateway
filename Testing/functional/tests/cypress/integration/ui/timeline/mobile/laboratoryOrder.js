@@ -37,7 +37,10 @@ describe("Laboratory Orders", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -281,7 +284,10 @@ describe("Laboratory Orders Refresh", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.checkOnTimeline();

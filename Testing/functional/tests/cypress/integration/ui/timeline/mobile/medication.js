@@ -32,7 +32,9 @@ describe("Medication", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline"
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 

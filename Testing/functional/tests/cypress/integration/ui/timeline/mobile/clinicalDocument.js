@@ -28,7 +28,10 @@ describe("Clinical Document", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         cy.wait("@getClinicalDocuments");
         cy.checkTimelineHasLoaded();
