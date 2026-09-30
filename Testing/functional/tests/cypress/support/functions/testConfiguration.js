@@ -41,6 +41,18 @@ function populateFallbackValues(baseArray, fallbackArray, idProperty = "name") {
 function overrideProperties(baseObject, overrideObject) {
     const properties = Object.keys(overrideObject ?? {});
     for (const property of properties) {
+        if (
+            property === "__proto__" ||
+            property === "constructor" ||
+            property === "prototype"
+        ) {
+            throw new Error(`Can't override unsafe property '${property}'`);
+        }
+
+        if (!Object.hasOwn(baseObject, property)) {
+            throw new Error(`Can't override unknown property '${property}'`);
+        }
+
         const value = baseObject[property];
 
         if (value === undefined) {
