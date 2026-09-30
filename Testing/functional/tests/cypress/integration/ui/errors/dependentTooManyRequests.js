@@ -29,7 +29,9 @@ function setupDependentsPage(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        "/dependents"
+        "/dependents",
+        "default",
+        { cacheAcrossSpecs: true }
     );
 
     cy.get(getDependentCardSelector(timelineEnabled)).should("be.visible");
