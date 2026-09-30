@@ -40,7 +40,10 @@ function loginWithDatasetError(endpoint, dataset) {
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak
+        AuthMethod.KeyCloak,
+        "/timeline",
+        "default",
+        { cacheAcrossSpecs: true }
     );
 }
 
@@ -141,7 +144,10 @@ describe("Mobile - Laboratory Orders Report Download", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -194,7 +200,10 @@ describe("Mobile - Covid19 Orders Report Download", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -257,7 +266,10 @@ describe("Comments", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         cy.wait(["@getCovid19Orders", "@getComments"]);
         var testComment = "Test Add Comment";
@@ -299,7 +311,10 @@ describe("Notes", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=addNoteBtn]").click();
@@ -335,7 +350,10 @@ describe("Notes", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.log("Editing Note.");
@@ -368,7 +386,10 @@ describe("Notes", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=noteMenuBtn]").last().click();
@@ -396,7 +417,9 @@ describe("Export Records - Immunizaation - report download error handling", () =
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
