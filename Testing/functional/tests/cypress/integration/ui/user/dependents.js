@@ -36,7 +36,9 @@ describe("Dependents - Immunization Tab - Enabled", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents"
+            "/dependents",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         checkDependentsPageHasLoaded();
     });
@@ -173,7 +175,9 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents"
+            "/dependents",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         checkDependentsPageHasLoaded();
     });
@@ -248,7 +252,9 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents"
+            "/dependents",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         checkDependentsPageHasLoaded();
     });
@@ -322,7 +328,9 @@ describe("Dependents - Tabs Disabled", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/dependents"
+            "/dependents",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         checkDependentsPageHasLoaded();
     });
