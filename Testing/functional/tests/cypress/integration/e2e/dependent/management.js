@@ -266,6 +266,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
         cy.log("Adding same dependent as another user");
+        cy.logout();
 
         cy.login(
             Cypress.env("keycloak.protected.username"),
@@ -310,6 +311,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=confirmDeleteBtn]").click();
 
         cy.log("Removing dependent from original user");
+        cy.logout();
 
         cy.configureSettings({
             dependents: {
