@@ -41,7 +41,9 @@ function loginToDependentTimeline() {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        dependentTimelinePath
+        dependentTimelinePath,
+        "default",
+        { cacheAcrossSpecs: true }
     );
     cy.wait("@getDependentFixture");
 }
