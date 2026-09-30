@@ -175,7 +175,8 @@ Cypress.Commands.add(
         password,
         authMethod = AuthMethod.BCSC,
         path = "/timeline",
-        sessionId = "default"
+        sessionId = "default",
+        { cacheAcrossSpecs = false } = {}
     ) => {
         if (authMethod == AuthMethod.KeyCloak) {
             return resolveTestSettings().then((settings) => {
@@ -190,7 +191,9 @@ Cypress.Commands.add(
 
                 const diagnostics = startLoginDiagnostics();
                 cy.then(() => diagnostics.stage("session-setup-or-restore"));
-                ensureKeycloakSession(username, password, settings, sessionId);
+                ensureKeycloakSession(username, password, settings, sessionId, {
+                    cacheAcrossSpecs,
+                });
 
                 // Session setup/validation may consume requests. Register fresh
                 // aliases before the final visit used by the test's data waits.

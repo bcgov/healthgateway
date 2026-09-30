@@ -1,16 +1,10 @@
-import { localDevUri } from "../support/constants";
-import {
-    assertAuthenticatedPage,
-    ensureKeycloakSession,
-} from "../support/functions/authentication";
+import { AuthMethod, localDevUri } from "../support/constants";
 import { setupStandardFixtures } from "../support/functions/intercept";
-import { visitTestPage } from "../support/functions/navigation";
-import { waitForInitialDataLoad } from "../support/functions/pageReadiness";
 
 // Run only this pair together, in filename order, in one Cypress process:
 // --config 'specPattern=cypress/regression/keycloakSessionAcrossSpecs*.cy.js'
 // Spec 02 deliberately requires spec 01: a fresh login there must fail the test.
-// This exercises the opt-in helper before ordinary cy.login callers enable it.
+// Exercise the public login command before ordinary pipeline specs opt in.
 describe("Keycloak session reuse across specs", { retries: 0 }, () => {
     it("restores the previous spec session with notifications disabled", () => {
         expect(
@@ -59,20 +53,14 @@ describe("Keycloak session reuse across specs", { retries: 0 }, () => {
                     credentialSubmissions += 1;
                 }
             );
-            ensureKeycloakSession(
+            cy.login(
                 Cypress.env("keycloak.username"),
                 Cypress.env("keycloak.password"),
-                settings,
+                AuthMethod.KeyCloak,
+                "/profile",
                 "cross-spec-session-regression",
                 { cacheAcrossSpecs: true }
             );
-            visitTestPage("/profile");
-            waitForInitialDataLoad(
-                Cypress.env("keycloak.username"),
-                settings,
-                "/profile"
-            );
-            assertAuthenticatedPage("/profile");
         });
         cy.location("pathname").should("eq", "/profile");
         cy.get("[data-testid=profile-notification-preferences-label]").should(
