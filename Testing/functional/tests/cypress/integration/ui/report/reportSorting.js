@@ -32,7 +32,9 @@ describe("Reports - Medication", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -84,7 +86,9 @@ describe("Reports - Covid19", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -145,7 +149,9 @@ describe("Reports - Immunization", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -233,7 +239,9 @@ describe("Reports - MSP Visit", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -294,7 +302,9 @@ describe("Reports - Hospital Visits", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -351,7 +361,9 @@ describe("Reports - Notes (User-Entered)", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -408,7 +420,9 @@ describe("Reports - Laboratory Tests", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 

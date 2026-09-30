@@ -60,7 +60,9 @@ describe("Report Filtering", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 

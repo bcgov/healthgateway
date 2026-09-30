@@ -25,7 +25,9 @@ describe("Immunization History Report", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
     });
 
@@ -106,7 +108,9 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.vSelect("[data-testid=report-type]", "Immunizations");
