@@ -29,7 +29,15 @@ function loginWithApplicationKeycloak(username, password, config, path) {
 }
 
 // Session management owns the neutral authentication route, never the test destination.
-export function ensureKeycloakSession(username, password, settings, sessionId) {
+// Cross-spec reuse is opt-in; account-changing and authentication tests stay scoped
+// to their spec unless their caller explicitly chooses otherwise.
+export function ensureKeycloakSession(
+    username,
+    password,
+    settings,
+    sessionId,
+    { cacheAcrossSpecs = false } = {}
+) {
     let authenticatedDuringSetup = false;
     cy.session(
         [
@@ -39,6 +47,8 @@ export function ensureKeycloakSession(username, password, settings, sessionId) {
             settings.openIdConnect.clientId,
             username,
             sessionId,
+            // Keep shared and spec-scoped entries distinct for the same user/ID.
+            cacheAcrossSpecs ? "run" : "spec",
         ],
         () => {
             loginWithApplicationKeycloak(
@@ -50,6 +60,7 @@ export function ensureKeycloakSession(username, password, settings, sessionId) {
             authenticatedDuringSetup = true;
         },
         {
+            cacheAcrossSpecs,
             validate() {
                 // Setup already opened and authenticated this page.
                 // Restored sessions are checked with Keycloak without loading the app.
