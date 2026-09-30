@@ -17,7 +17,9 @@ function login(isMobile) {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        "/home"
+        "/home",
+        "default",
+        { cacheAcrossSpecs: true }
     );
 }
 

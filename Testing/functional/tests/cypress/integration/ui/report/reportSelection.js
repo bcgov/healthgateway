@@ -14,7 +14,9 @@ describe("Report selection", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/reports"
+            "/reports",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=export-record-btn]").should("be.disabled");

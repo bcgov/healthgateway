@@ -14,7 +14,9 @@ function loginToHome() {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        homeUrl
+        homeUrl,
+        "default",
+        { cacheAcrossSpecs: true }
     );
 }
 

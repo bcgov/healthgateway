@@ -219,10 +219,14 @@ function verifyImmunizationTab(hdid, tab, formats) {
 }
 
 describe("dependents", () => {
-    beforeEach(() => {
+    beforeEach(function () {
         cy.configureSettings({
             dependents: {
                 enabled: true,
+                // Apply the test configuration before authenticating once.
+                timelineEnabled:
+                    this.currentTest.title ===
+                    "Validate and remove aged out dependent",
             },
             datasets: [
                 {
@@ -265,37 +269,6 @@ describe("dependents", () => {
 
     it("Validate and remove aged out dependent", () => {
         const hdid = agedOutDependentHdid;
-
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-                timelineEnabled: true,
-            },
-            datasets: [
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "clinicalDocument",
-                    enabled: true,
-                },
-                {
-                    name: "labResult",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
-        );
 
         cy.get(getCardSelector(hdid))
             .scrollIntoView()

@@ -73,12 +73,14 @@ describe("User Profile Notification Settings", () => {
         };
     }
 
-    function login() {
+    function login(options = {}) {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/profile"
+            "/profile",
+            "default",
+            options
         );
     }
 
@@ -212,7 +214,7 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login();
+            login({ cacheAcrossSpecs: true });
 
             cy.get(notificationSel.header).should("not.exist");
         });
@@ -228,7 +230,7 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login();
+            login({ cacheAcrossSpecs: true });
 
             cy.get(notificationSel.header).should("be.visible");
             cy.get(notificationSel.empty).should("be.visible");
@@ -251,7 +253,7 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login();
+            login({ cacheAcrossSpecs: true });
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("not.exist");
@@ -275,7 +277,7 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login();
+            login({ cacheAcrossSpecs: true });
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("be.visible");
@@ -394,7 +396,7 @@ describe("User Profile Notification Settings", () => {
                     userProfileBody: buildUserProfileFixture(scenario.profile),
                 });
 
-                login();
+                login({ cacheAcrossSpecs: true });
 
                 cy.get(notificationSel.label).should("be.visible");
 
@@ -622,7 +624,7 @@ describe("User Profile Notification Settings", () => {
                     userProfileBody: buildUserProfileFixture(scenario.profile),
                 });
 
-                login();
+                login({ cacheAcrossSpecs: true });
 
                 cy.get(notificationSel.header).should("be.visible");
 
@@ -649,7 +651,7 @@ describe("User Profile Notification Settings", () => {
                 }),
             });
 
-            login();
+            login({ cacheAcrossSpecs: true });
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("be.visible");
@@ -688,7 +690,7 @@ describe("User Profile Notification Settings", () => {
                 }),
             });
 
-            login();
+            login({ cacheAcrossSpecs: true });
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("be.visible");

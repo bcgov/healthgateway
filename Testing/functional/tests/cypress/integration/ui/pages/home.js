@@ -15,7 +15,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=health-records-card]").should("be.visible");
@@ -40,7 +42,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=immunization-record-card-button]").should(
@@ -63,7 +67,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=other-record-sources-card]")
@@ -82,7 +88,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=health-records-card]")
@@ -105,7 +113,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=immunization-record-card-button]").should(
@@ -128,7 +138,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=other-record-sources-card]").should("not.exist");
@@ -155,7 +167,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.contains("[data-testid=card-button-title]", "My Notes")
@@ -185,7 +199,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=bc-cancer-notifications-banner]").should(
@@ -209,7 +225,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.contains("#subject", "Home").should("exist");
@@ -231,7 +249,9 @@ describe("Authenticated User - Home Page", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homeUrl,
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.contains("#subject", "Home").should("exist");

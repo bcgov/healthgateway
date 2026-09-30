@@ -22,7 +22,9 @@ describe("Authenticated Services View", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.url().should("include", servicesTestsConstants.servicesUrl);
@@ -35,7 +37,9 @@ describe("Authenticated Services View", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.url().should("include", servicesTestsConstants.unauthorized);

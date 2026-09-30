@@ -6,7 +6,8 @@ declare namespace Cypress {
             password: string,
             authMethod?: string,
             path?: string,
-            sessionId?: string
+            sessionId?: string,
+            options?: { cacheAcrossSpecs?: boolean }
         ): void;
         getTokens(username: string, password: string): void;
         readConfig(): Chainable<any>;

@@ -42,4 +42,14 @@ TZ=America/Vancouver npx cypress run \
   --spec "cypress/integration/e2e/authentication/auth.js" \
   --headless \
   --browser chrome
+# Keep these specs in one unrecorded, non-parallel run. Cloud spec
+# prioritization must not reorder the session creation/restoration pair.
+echo "Running Keycloak session regressions (8 tests)"
+TZ=America/Vancouver npx cypress run \
+  --env "keycloak.password=$KEYCLOAK_PW" \
+  --config 'specPattern=cypress/regression/*.cy.js' \
+  --spec 'cypress/regression/keycloakSession.cy.js,cypress/regression/keycloakSessionAcrossSpecs01-create.cy.js,cypress/regression/keycloakSessionAcrossSpecs02-restore.cy.js,cypress/regression/keycloakSessionValidation.cy.js' \
+  --record false \
+  --headless \
+  --browser chrome
 popd

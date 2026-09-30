@@ -30,7 +30,9 @@ describe("Services - Organ Donor Registration Card", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
@@ -63,7 +65,9 @@ describe("Services - Organ Donor Registration Card", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
@@ -109,7 +113,9 @@ describe("Services - Organ Donor Registration Card", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
@@ -148,7 +154,9 @@ describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () =>
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/services"
+            "/services",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=organ-donor-registration-card]").should(

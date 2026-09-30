@@ -11,7 +11,11 @@ module.exports = defineConfig({
     },
     viewportWidth: 1920,
     viewportHeight: 1080,
-    reporter: "mocha-junit-reporter",
+    // Keep Azure reporting; local runs can opt in with --reporter mocha-junit-reporter.
+    reporter:
+        process.env.TF_BUILD?.toLowerCase() === "true"
+            ? "mocha-junit-reporter"
+            : "spec",
     reporterOptions: {
         mochaFile: "reports/junit/test-results.[hash].xml",
         testsuitesTitle: false,

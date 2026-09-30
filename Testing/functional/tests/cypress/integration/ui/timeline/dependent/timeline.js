@@ -14,7 +14,9 @@ function loginToDependentTimeline(dependentHdid) {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        `/dependents/${dependentHdid}/timeline`
+        `/dependents/${dependentHdid}/timeline`,
+        "default",
+        { cacheAcrossSpecs: true }
     );
 
     waitForDependentFixture();

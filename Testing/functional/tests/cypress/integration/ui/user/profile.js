@@ -193,7 +193,9 @@ describe("User Profile - Validate Address", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/profile"
+            "/profile",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         cy.get("[data-testid=postal-address-label]")
@@ -217,7 +219,9 @@ describe("User Profile - Validate Address", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/profile"
+            "/profile",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         // Postal Address
@@ -249,7 +253,9 @@ describe("User Profile - Validate Address", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/profile"
+            "/profile",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         // Postal Address
@@ -270,7 +276,9 @@ describe("User Profile - Validate Address", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/profile"
+            "/profile",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         // Postal Address
@@ -297,7 +305,9 @@ describe("User Profile - Validate Address", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/profile"
+            "/profile",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         // Postal Address

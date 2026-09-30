@@ -35,7 +35,9 @@ describe("Immunization presentation", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/timeline"
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
         );
         cy.wait("@getImmunizations");
 

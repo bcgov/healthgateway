@@ -9,71 +9,34 @@
 // ***********************************************
 import { AuthMethod, localDevUri } from "./constants";
 import {
-    setupStandardAliases,
-    waitForInitialDataLoad,
-} from "./functions/intercept";
+    assertAuthenticatedPage,
+    ensureKeycloakSession,
+} from "./functions/authentication";
+import { setupStandardAliases } from "./functions/intercept";
 import {
     startLoginDiagnostics,
     stopLoginDiagnostics,
 } from "./functions/loginDiagnostics";
+import { visitTestPage } from "./functions/navigation";
+import { waitForInitialDataLoad } from "./functions/pageReadiness";
+import {
+    configureTestSettings,
+    readEnvironmentConfig,
+    resetTestSettings,
+    resolveTestSettings,
+} from "./functions/testConfiguration";
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
 // Test configuration must not be saved/restored with authentication storage.
-let configuredSettings;
 beforeEach(() => {
     stopLoginDiagnostics();
-    configuredSettings = undefined;
+    resetTestSettings();
 });
 
 afterEach(() => {
     stopLoginDiagnostics();
 });
-
-function setBooleanProperties(object, enabled) {
-    const properties = Object.keys(object);
-    for (const property of properties) {
-        const value = object[property];
-        if (typeof value === "object" && value !== null) {
-            setBooleanProperties(value, enabled);
-        } else if (typeof value === "boolean") {
-            object[property] = enabled;
-        }
-    }
-}
-
-function populateFallbackValues(baseArray, fallbackArray, idProperty = "name") {
-    if (!baseArray) {
-        return;
-    }
-
-    for (const f of fallbackArray) {
-        if (!baseArray.some((b) => b[idProperty] === f[idProperty])) {
-            baseArray.push(f);
-        }
-    }
-}
-
-function overrideProperties(baseObject, overrideObject) {
-    const properties = Object.keys(overrideObject ?? {});
-    for (const property of properties) {
-        const value = baseObject[property];
-
-        if (value === undefined) {
-            throw new Error(`Can't override unknown property '${property}'`);
-        }
-
-        if (
-            typeof value === "object" &&
-            value !== null &&
-            !Array.isArray(value)
-        ) {
-            overrideProperties(value, overrideObject[property]);
-        } else {
-            baseObject[property] = overrideObject[property];
-        }
-    }
-}
 
 function generateRandomString(length) {
     let text = "";
@@ -101,59 +64,6 @@ function generateRandomString(length) {
 //         }
 //     );
 // }
-
-function assertAuthenticatedPage(path) {
-    // Account-state redirects are valid authenticated destinations too.
-    const destinations = [
-        new URL(path, Cypress.config("baseUrl")).pathname,
-        "/registration",
-        "/acceptTermsOfService",
-        "/profile",
-        "/patientRetrievalError",
-        "/unauthorized",
-    ];
-    cy.location("origin").should(
-        "eq",
-        new URL(Cypress.config("baseUrl")).origin
-    );
-    cy.location("pathname", { timeout: 60000 }).should(
-        "be.oneOf",
-        destinations
-    );
-    // HeaderComponent renders this only when oidcIsAuthenticated is true.
-    // Expected dialogs (e.g. Protective Word) may cover the authenticated header.
-    cy.get("[data-testid=headerDropdownBtn]", { timeout: 60000 }).should(
-        "exist"
-    );
-}
-
-function loginWithApplicationKeycloak(username, password, config, path) {
-    // Let keycloak-js create and consume its own state, nonce and PKCE verifier.
-    const diagnostics = startLoginDiagnostics();
-    cy.then(() => diagnostics.stage("opening-hg-login"));
-    cy.visit(`/login?redirect=${encodeURIComponent(path)}`);
-    cy.get("#KeyCloakBtn")
-        .should("be.visible")
-        .and("not.be.disabled")
-        .then(() => {
-            diagnostics.stage("leaving-hg-for-keycloak");
-        })
-        .click();
-    cy.origin(
-        new URL(config.openIdConnect.authority).origin,
-        { args: { username, password } },
-        ({ username, password }) => {
-            cy.get("#username").should("be.visible").clear().type(username);
-            cy.get("#password").should("be.visible").clear().type(password, {
-                log: false,
-            });
-            cy.get("#kc-login").click();
-        }
-    );
-    cy.then(() => diagnostics.stage("keycloak-commands-completed"));
-    assertAuthenticatedPage(path);
-    cy.then(() => diagnostics.stage("callback-completed"));
-}
 
 function loginWithKeycloakUI(username, password, config, path = "/home") {
     const defaultPath = "/home";
@@ -239,35 +149,6 @@ function logoutWithUI() {
     });
 }
 
-function postLoginInitialization(configSettings, username, path) {
-    // Setup standard aliases for busy endpoint calls
-    setupStandardAliases();
-
-    cy.log(`Visit path: ${path}`);
-
-    if (!configSettings) {
-        cy.readConfig().then((config) => {
-            cy.visit(path, { timeout: 60000 });
-
-            cy.log(
-                `Config not found in session so fetched actual config: ${JSON.stringify(
-                    config
-                )}`
-            );
-
-            // Make sure to wait on busy endpoint calls
-            waitForInitialDataLoad(username, config, path);
-        });
-    } else {
-        cy.visit(path, { timeout: 60000 });
-
-        cy.log(`Use config from session: ${configSettings}`);
-
-        // Make sure to wait on busy endpoint calls
-        waitForInitialDataLoad(username, configSettings, path);
-    }
-}
-
 Cypress.Commands.add("logout", () => {
     let baseWebClientUrl = Cypress.config("baseUrl");
 
@@ -294,14 +175,11 @@ Cypress.Commands.add(
         password,
         authMethod = AuthMethod.BCSC,
         path = "/timeline",
-        sessionId = "default"
+        sessionId = "default",
+        { cacheAcrossSpecs = false } = {}
     ) => {
         if (authMethod == AuthMethod.KeyCloak) {
-            const config = configuredSettings
-                ? cy.wrap(configuredSettings, { log: false })
-                : cy.readConfig();
-
-            return config.then((settings) => {
+            return resolveTestSettings().then((settings) => {
                 if (Cypress.config("baseUrl") === localDevUri) {
                     return loginWithKeycloakUI(
                         username,
@@ -311,48 +189,17 @@ Cypress.Commands.add(
                     );
                 }
 
-                // Authenticate on a neutral route; only the final visit should
-                // execute the caller's destination (e.g. an email invite).
                 const diagnostics = startLoginDiagnostics();
                 cy.then(() => diagnostics.stage("session-setup-or-restore"));
-                let authenticatedDuringSetup = false;
-                cy.session(
-                    [
-                        "keycloak-ui",
-                        Cypress.config("baseUrl"),
-                        settings.openIdConnect.authority,
-                        settings.openIdConnect.clientId,
-                        username,
-                        sessionId,
-                    ],
-                    () => {
-                        loginWithApplicationKeycloak(
-                            username,
-                            password,
-                            settings,
-                            "/profile"
-                        );
-                        authenticatedDuringSetup = true;
-                    },
-                    {
-                        validate() {
-                            // Setup already opened and authenticated this page.
-                            // Restored sessions still need a real SSO check.
-                            if (authenticatedDuringSetup) {
-                                // Cypress reuses these callbacks on restoration.
-                                authenticatedDuringSetup = false;
-                            } else {
-                                cy.visit("/profile");
-                            }
-                            assertAuthenticatedPage("/profile");
-                        },
-                    }
-                );
+                ensureKeycloakSession(username, password, settings, sessionId, {
+                    cacheAcrossSpecs,
+                });
 
                 // Session setup/validation may consume requests. Register fresh
                 // aliases before the final visit used by the test's data waits.
                 cy.then(() => diagnostics.stage("opening-requested-hg-page"));
-                postLoginInitialization(settings, username, path);
+                visitTestPage(path);
+                waitForInitialDataLoad(username, settings, path);
                 assertAuthenticatedPage(path);
                 cy.then(() => diagnostics.stage("requested-hg-page-ready"));
                 cy.getCookies({ log: false }).then((cookies) => {
@@ -511,34 +358,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
     });
 });
 
-Cypress.Commands.add("readConfig", () => {
-    cy.log(`Reading Environment Configuration`);
-    let baseWebClientUrl = Cypress.config("baseUrl");
-    if (baseWebClientUrl == localDevUri) {
-        baseWebClientUrl = Cypress.env("baseWebClientUrl");
-    }
-
-    const diagnostics = startLoginDiagnostics();
-    let recordResponse;
-    return cy
-        .then(() => {
-            recordResponse = diagnostics.configurationRequest(
-                `${baseWebClientUrl}/configuration`
-            );
-        })
-        .request({
-            url: `${baseWebClientUrl}/configuration`,
-            failOnStatusCode: false,
-        })
-        .then((response) => {
-            recordResponse(response);
-            return response;
-        })
-        .should((response) => {
-            expect(response.status).to.eq(200);
-        })
-        .its("body");
-});
+Cypress.Commands.add("readConfig", readEnvironmentConfig);
 
 Cypress.Commands.add("checkOnTimeline", () => {
     cy.contains("#subject", "Health Records").should("be.visible");
@@ -551,43 +371,7 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=loading-toast].v-overlay--active").should("not.exist");
 });
 
-Cypress.Commands.add("configureSettings", (overriddenFeatures) => {
-    return cy
-        .readConfig()
-        .as("config")
-        .then((config) => {
-            const features = config.webClient.featureToggleConfiguration;
-
-            // default all boolean settings to false (except dependent datasets)
-            setBooleanProperties(features, false);
-            setBooleanProperties(features.dependents.datasets, true);
-
-            // ensure non-overridden datasets and services are populated with default values
-            populateFallbackValues(
-                overriddenFeatures.datasets,
-                features.datasets
-            );
-            populateFallbackValues(
-                overriddenFeatures.dependents?.datasets,
-                features.dependents.datasets
-            );
-            populateFallbackValues(
-                overriddenFeatures.services?.services,
-                features.services.services
-            );
-
-            // apply overrides
-            overrideProperties(features, overriddenFeatures);
-
-            // intercept configuration calls to return the modified configuration
-            cy.intercept("GET", "**/configuration", {
-                statusCode: 200,
-                body: config,
-            });
-
-            configuredSettings = config;
-        });
-});
+Cypress.Commands.add("configureSettings", configureTestSettings);
 
 Cypress.Commands.add("setupDownloads", () => {
     const downloadsFolder = "cypress/downloads";

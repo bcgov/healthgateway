@@ -30,7 +30,9 @@ describe("Communication banners", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            "/home",
+            "default",
+            { cacheAcrossSpecs: true }
         );
 
         ["/home", "/dependents", "/reports", "/profile"].forEach((path) => {
