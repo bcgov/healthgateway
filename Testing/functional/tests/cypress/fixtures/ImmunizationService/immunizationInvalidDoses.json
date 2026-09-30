@@ -85,7 +85,7 @@
             "dateOfImmunization": "2021-07-14T07:00:00Z",
             "status": "Completed",
             "valid": true,
-            "providerOrClinic": null,
+            "providerOrClinic": "Burnaby",
             "targetedDisease": "COVID19",
             "immunization": {
                 "name": "COVID-19 Non-replicating Viral Vector",

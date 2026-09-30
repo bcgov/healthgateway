@@ -34,6 +34,7 @@ describe("Immunization", () => {
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
         cy.get("[data-testid=entryCardDate]").should("be.visible");
         cy.get("[data-testid=immunizationProductTitle]").should("be.visible");
+        cy.get("[data-testid=immunizationAgentNameTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProviderTitle]").should("be.visible");
         cy.get("[data-testid=immunizationLotTitle]").should("be.visible");
     });

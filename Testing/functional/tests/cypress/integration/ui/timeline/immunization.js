@@ -52,6 +52,19 @@ describe("Immunization presentation", () => {
         cy.contains("[data-testid=timelineCard]", validDoseDate1)
             .click()
             .within(() => {
+                cy.get("[data-testid=immunizationProductTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=immunizationAgentNameTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=immunizationProviderTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=immunizationLotTitle]").should(
+                    "be.visible"
+                );
+
                 cy.contains("h3", "Forecast").should("be.visible");
                 cy.get("[data-testid=forecastDisplayName]").should(
                     "contain.text",
@@ -66,6 +79,19 @@ describe("Immunization presentation", () => {
         cy.contains("[data-testid=timelineCard]", invalidDoseDate1)
             .click()
             .within(() => {
+                cy.get("[data-testid=immunizationProductTitle]").should(
+                    "not.exist"
+                );
+                cy.get("[data-testid=immunizationAgentNameTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=immunizationProviderTitle]").should(
+                    "not.exist"
+                );
+                cy.get("[data-testid=immunizationLotTitle]").should(
+                    "not.exist"
+                );
+
                 cy.contains("h3", "Forecast").should("not.exist");
                 cy.get("[data-testid=forecastDisplayName]").should("not.exist");
                 cy.get("[data-testid=forecastDueDate]").should("not.exist");
