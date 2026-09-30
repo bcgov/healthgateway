@@ -180,7 +180,9 @@ export function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        "/home"
+        "/home",
+        "default",
+        { cacheAcrossSpecs: true }
     );
 
     cy.get(addQuickLinkButtonSelector)
@@ -230,7 +232,10 @@ export function testAddCommentError(statusCode = serverErrorStatusCode) {
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak
+        AuthMethod.KeyCloak,
+        "/timeline",
+        "default",
+        { cacheAcrossSpecs: true }
     );
     cy.checkTimelineHasLoaded();
 
@@ -308,7 +313,9 @@ export function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        "/home"
+        "/home",
+        "default",
+        { cacheAcrossSpecs: true }
     );
 
     getQuickLinkCard("Medications").within(() => {
