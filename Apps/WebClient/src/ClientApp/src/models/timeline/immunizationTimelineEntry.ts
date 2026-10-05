@@ -39,14 +39,14 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 class ImmunizationAgentViewModel {
     public code: string;
     public name: string;
-    public lotNumber: string;
-    public productName: string;
+    public lotNumber: string | null;
+    public productName: string | null;
 
     constructor(model: ImmunizationAgent) {
         this.code = model.code;
         this.name = model.name;
-        this.lotNumber = model.lotNumber === "" ? "N/A" : model.lotNumber;
-        this.productName = model.productName === "" ? "N/A" : model.productName;
+        this.lotNumber = model.lotNumber || null;
+        this.productName = model.productName || null;
     }
 }
 
@@ -69,7 +69,7 @@ class ImmunizationViewModel {
     public name: string;
     public status: string;
     public dateOfImmunization: DateWrapper;
-    public providerOrClinic: string;
+    public providerOrClinic: string | null;
     public immunizationAgents: ImmunizationAgentViewModel[];
     public forecast?: ForecastViewModel;
     public searchableAgentsText: string;
@@ -81,8 +81,7 @@ class ImmunizationViewModel {
         this.dateOfImmunization = DateWrapper.fromIsoDate(
             model.dateOfImmunization
         );
-        this.providerOrClinic =
-            model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;
+        this.providerOrClinic = model.providerOrClinic || null;
         this.immunizationAgents = [];
         model.immunization.immunizationAgents.forEach((agent) =>
             this.immunizationAgents.push(new ImmunizationAgentViewModel(agent))
