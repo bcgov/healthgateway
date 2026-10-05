@@ -4,6 +4,7 @@ import { helpers, minLength, required, sameAs } from "@vuelidate/validators";
 import { Duration } from "luxon";
 import { vMaska } from "maska/vue";
 import { computed, nextTick, ref, watch } from "vue";
+import { useDisplay } from "vuetify";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -40,6 +41,8 @@ const emit = defineEmits<{
 }>();
 
 defineExpose({ hideDialog });
+
+const display = useDisplay();
 
 const emptyDependent = {
     firstName: "",
@@ -317,14 +320,16 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         </span>
                     </template>
                 </HgAlertComponent>
-                <v-row>
+                <p class="text-body-large font-weight-bold">
+                    Include all given names as shown on their BC Services Card.
+                </p>
+                <v-row :density="display.xs.value ? 'comfortable' : 'default'">
                     <v-col cols="12" sm="6">
                         <label for="firstName">First and Middle Names</label>
                         <v-text-field
                             id="firstName"
                             v-model.trim="dependent.firstName"
                             data-testid="dependent-first-name-input"
-                            label="First and Middle Names"
                             autofocus
                             clearable
                             type="text"
@@ -342,7 +347,6 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             id="lastName"
                             v-model.trim="dependent.lastName"
                             data-testid="dependent-last-name-input"
-                            label="Last Name"
                             clearable
                             type="text"
                             :error-messages="
@@ -358,8 +362,8 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         <HgDatePickerComponent
                             id="dateOfBirth"
                             v-model="dependent.dateOfBirth"
-                            label="Date of Birth"
                             data-testid="dependent-date-of-birth-input"
+                            label=""
                             :max-date="maxBirthdate"
                             :error-messages="
                                 ValidationUtil.getErrorMessages(
@@ -375,7 +379,6 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             id="phn"
                             v-model="dependent.PHN"
                             v-maska="phnMaskaOptions"
-                            label="PHN"
                             clearable
                             type="text"
                             data-testid="dependent-phn-input"
