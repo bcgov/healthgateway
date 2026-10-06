@@ -1,0 +1,33 @@
+{
+    "hdid": "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA",
+    "personalHealthNumber": "9746209085",
+    "commonName": {
+        "givenName": "ALONSO",
+        "surname": "WAGNER"
+    },
+    "legalName": {
+        "givenName": "ALONSO",
+        "surname": "WAGNER"
+    },
+    "preferredName": {
+        "givenName": "ALONSO",
+        "surname": "WAGNER"
+    },
+    "birthdate": "1973-04-28",
+    "gender": "Male",
+    "physicalAddress": {
+        "streetLines": ["7556 EUGENIA CANYON"],
+        "city": "KITWANCOOL",
+        "state": "BC",
+        "postalCode": "V3R 0W7",
+        "country": "CA"
+    },
+    "postalAddress": {
+        "streetLines": ["7556 EUGENIA CANYON"],
+        "city": "KITWANCOOL",
+        "state": "BC",
+        "postalCode": "V3R 0W7",
+        "country": "CA"
+    },
+    "responseCode": ""
+}
