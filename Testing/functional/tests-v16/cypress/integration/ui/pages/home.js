@@ -1,0 +1,302 @@
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+const homeUrl = "/home";
+const timelineUrl = "/timeline";
+const otherRecordSourcesUrl = "/otherRecordSources";
+
+describe("Authenticated User - Home Page", () => {
+    it("Home Page exists", () => {
+        cy.configureSettings({});
+
+        setupStandardFixtures();
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=health-records-card]").should("be.visible");
+    });
+
+    it("Home - Immunization Record Card button enabled", () => {
+        cy.configureSettings({
+            homepage: {
+                showImmunizationRecordLink: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+
+        setupStandardFixtures();
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=immunization-record-card-button]").should(
+            "be.visible"
+        );
+    });
+
+    it("Home - Other Record Sources Card button enabled", () => {
+        cy.configureSettings({
+            homepage: {
+                otherRecordSources: {
+                    enabled: true,
+                },
+            },
+        });
+
+        setupStandardFixtures();
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=other-record-sources-card]")
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.url().should("include", otherRecordSourcesUrl);
+    });
+
+    it("Home - Link to timeline page", () => {
+        cy.configureSettings({});
+
+        setupStandardFixtures();
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=health-records-card]")
+            .should("be.visible")
+            .click();
+
+        cy.url().should("include", timelineUrl);
+    });
+
+    it("Home - Immunization Record Card button disabled", () => {
+        cy.configureSettings({
+            homepage: {
+                showImmunizationRecordLink: false,
+            },
+        });
+
+        setupStandardFixtures();
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=immunization-record-card-button]").should(
+            "not.exist"
+        );
+    });
+
+    it("Home - Other Record Sources Card button disabled", () => {
+        cy.configureSettings({
+            homepage: {
+                otherRecordSources: {
+                    enabled: false,
+                },
+            },
+        });
+
+        setupStandardFixtures();
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=other-record-sources-card]").should("not.exist");
+    });
+
+    it("Home - Notes Card link to Timeline", () => {
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
+        setupStandardFixtures({
+            userProfileFixture: "UserProfileService/userProfileQuickLinks.json",
+        });
+
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "NoteService/notes-no-records.json",
+        });
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.contains("[data-testid=card-button-title]", "My Notes")
+            .parents("[data-testid=quick-link-card]")
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.url().should("include", timelineUrl);
+        // Notes has 0 records and will return quickly so content placeholders will not have enough time to display.
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
+        cy.get("[data-testid=timeline-record-count]").should("not.exist");
+    });
+
+    it("Home - BC Cancer notifications banner shown if last login predates notifications implementation", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [
+                new Date().toISOString(),
+                "2026-05-19T15:59:00Z", // previous login was before May 19, 2026 9:00AM Pacific Time
+            ];
+            setupStandardFixtures({ userProfileBody: profile });
+        });
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "be.visible"
+        );
+    });
+
+    it("Home - BC Cancer notifications banner hidden if last login is more recent", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [
+                new Date().toISOString(),
+                "2026-05-19T16:01:00Z", // previous login was after May 19, 2026 9:00AM Pacific Time
+            ];
+            setupStandardFixtures({ userProfileBody: profile });
+        });
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "not.exist"
+        );
+    });
+
+    it("Home - BC Cancer notifications banner hidden for new users", () => {
+        cy.configureSettings({});
+
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            const profile = Cypress._.cloneDeep(data);
+            profile.lastLoginDateTimes = [new Date().toISOString()];
+            setupStandardFixtures({ userProfileBody: profile });
+        });
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+
+        cy.contains("#subject", "Home").should("exist");
+        cy.get("[data-testid=bc-cancer-notifications-banner]").should(
+            "not.exist"
+        );
+    });
+});
