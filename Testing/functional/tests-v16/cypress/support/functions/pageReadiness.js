@@ -40,8 +40,8 @@ export function waitForInitialDataLoad(username, config, path) {
 
 function waitForUserProfile(username) {
     if (
-        username === Cypress.env("keycloak.deceased.username") ||
-        username === Cypress.env("keycloak.accountclosure.username")
+        username === Cypress.expose("keycloak.deceased.username") ||
+        username === Cypress.expose("keycloak.accountclosure.username")
     ) {
         return cy.wrap(undefined, { log: false });
     }
