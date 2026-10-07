@@ -1,0 +1,12 @@
+{
+    "resourcePayload": {},
+    "totalResultCount": 0,
+    "pageIndex": 0,
+    "pageSize": 0,
+    "resultStatus": 0,
+    "resultError": {
+        "resultMessage": "Error ABC",
+        "errorCode": "ClientApp-CI-DB",
+        "traceId": "123456789"
+    }
+}
