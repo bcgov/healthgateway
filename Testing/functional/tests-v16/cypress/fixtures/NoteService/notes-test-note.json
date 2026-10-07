@@ -1,0 +1,15 @@
+{
+    "resourcePayload": [
+        {
+            "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "title": "Test",
+            "text": "Test note",
+            "journalDate": "2022-08-18"
+        }
+    ],
+    "totalResultCount": 1,
+    "pageIndex": 0,
+    "pageSize": 500,
+    "resultStatus": 1,
+    "resultError": null
+}

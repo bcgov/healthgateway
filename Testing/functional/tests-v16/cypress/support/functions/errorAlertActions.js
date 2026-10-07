@@ -28,12 +28,14 @@ export function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
         userProfileStatusCode: statusCode,
     });
 
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/home"
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+    });
 
     cy.get("[data-testid=patient-retrieval-error]").should("be.visible");
     if (statusCode === tooManyRequestsStatusCode) {
@@ -64,38 +66,42 @@ export function testRegisterError(statusCode = serverErrorStatusCode) {
     cy.intercept("POST", `**/UserProfile/${hdid}?api-version=2.0`, {
         statusCode,
     });
-    cy.login(
-        Cypress.env("keycloak.unregistered.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak
-    );
+    cy.env(["keycloak.password", "emailAddress", "phoneNumber"]).then(
+        ({ "keycloak.password": password, emailAddress, phoneNumber }) => {
+            cy.login(
+                Cypress.expose("keycloak.unregistered.username"),
+                password,
+                AuthMethod.KeyCloak
+            );
 
-    cy.location("pathname").should("eq", "/registration");
-    cy.get("[data-testid=emailCheckbox] input")
-        .should("be.enabled")
-        .check({ force: true });
-    cy.get("[data-testid=emailInput]")
-        .should("be.visible")
-        .find("input")
-        .should("be.enabled")
-        .type(Cypress.env("emailAddress"));
-    cy.get("[data-testid=emailConfirmationInput]")
-        .should("be.visible")
-        .find("input")
-        .should("be.enabled")
-        .type(Cypress.env("emailAddress"));
-    cy.get("[data-testid=smsNumberInput]")
-        .should("be.visible")
-        .find("input")
-        .should("be.enabled")
-        .type(Cypress.env("phoneNumber"));
-    cy.get("[data-testid=acceptCheckbox] input")
-        .should("be.enabled")
-        .check({ force: true });
-    cy.get("[data-testid=registerButton]")
-        .should("be.visible")
-        .and("be.enabled")
-        .click();
+            cy.location("pathname").should("eq", "/registration");
+            cy.get("[data-testid=emailCheckbox] input")
+                .should("be.enabled")
+                .check({ force: true });
+            cy.get("[data-testid=emailInput]")
+                .should("be.visible")
+                .find("input")
+                .should("be.enabled")
+                .type(emailAddress);
+            cy.get("[data-testid=emailConfirmationInput]")
+                .should("be.visible")
+                .find("input")
+                .should("be.enabled")
+                .type(emailAddress);
+            cy.get("[data-testid=smsNumberInput]")
+                .should("be.visible")
+                .find("input")
+                .should("be.enabled")
+                .type(phoneNumber);
+            cy.get("[data-testid=acceptCheckbox] input")
+                .should("be.enabled")
+                .check({ force: true });
+            cy.get("[data-testid=registerButton]")
+                .should("be.visible")
+                .and("be.enabled")
+                .click();
+        }
+    );
 
     if (statusCode === tooManyRequestsStatusCode) {
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
@@ -116,12 +122,14 @@ export function testValidateEmailError(statusCode = serverErrorStatusCode) {
 
     setupStandardFixtures();
 
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/validateEmail/dummyinvitekey"
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/validateEmail/dummyinvitekey"
+        );
+    });
 
     if (statusCode === tooManyRequestsStatusCode) {
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
@@ -176,14 +184,16 @@ export function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
     cy.intercept("POST", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/home",
-        "default",
-        { cacheAcrossSpecs: true }
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/home",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
+    });
 
     cy.get(addQuickLinkButtonSelector)
         .should("be.visible")
@@ -229,14 +239,16 @@ export function testAddCommentError(statusCode = serverErrorStatusCode) {
     cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
         fixture: "LaboratoryService/covid19Orders.json",
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/timeline",
-        "default",
-        { cacheAcrossSpecs: true }
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
+    });
     cy.checkTimelineHasLoaded();
 
     cy.get("[data-testid=timelineCard]")
@@ -309,14 +321,16 @@ export function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
     cy.intercept("POST", "**/UserProfile/*/preference?api-version=2.0", {
         statusCode,
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/home",
-        "default",
-        { cacheAcrossSpecs: true }
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/home",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
+    });
 
     getQuickLinkCard("Medications").within(() => {
         cy.get("[data-testid=card-menu-button]")
@@ -350,12 +364,14 @@ export function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.intercept("POST", "**/UserProfile/*/sms?api-version=2.0", {
         statusCode,
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/profile"
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
+    });
 
     cy.get("[data-testid=editSMSBtn]").click();
     cy.get("[data-testid=smsNumberInput] input").clear().type("2506714848");
@@ -379,12 +395,14 @@ export function testVerifySmsError(statusCode = serverErrorStatusCode) {
     cy.intercept("GET", "**/UserProfile/*/sms/validate/*", {
         statusCode,
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/profile"
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
+    });
     cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
 
     cy.get("[data-testid=verifySMSBtn]")
@@ -421,16 +439,20 @@ export function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.intercept("POST", "**/UserProfile/*/email?api-version=2.0", {
         statusCode,
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/profile"
-    );
+    cy.env(["keycloak.password", "emailAddress"]).then(
+        ({ "keycloak.password": password, emailAddress }) => {
+            cy.login(
+                Cypress.expose("keycloak.username"),
+                password,
+                AuthMethod.KeyCloak,
+                "/profile"
+            );
 
-    cy.get("[data-testid=editEmailBtn]").click();
-    cy.get("[data-testid=email-input] input").type(Cypress.env("emailAddress"));
-    cy.get("[data-testid=editEmailSaveBtn]").click();
+            cy.get("[data-testid=editEmailBtn]").click();
+            cy.get("[data-testid=email-input] input").type(emailAddress);
+            cy.get("[data-testid=editEmailSaveBtn]").click();
+        }
+    );
 
     if (statusCode === tooManyRequestsStatusCode) {
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
