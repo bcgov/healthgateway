@@ -1,0 +1,13 @@
+{
+    "items": [
+        {
+            "status": "Registered",
+            "statusMessage": "Your decision about organ donation has been registered.",
+            "registrationFileId": null,
+            "organDonorRegistrationLinkText": "If needed, you can update your decision",
+            "type": "OrganDonorRegistration",
+            "id": null,
+            "$type": "OrganDonorRegistration"
+        }
+    ]
+}
