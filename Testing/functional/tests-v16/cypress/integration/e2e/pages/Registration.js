@@ -1,0 +1,179 @@
+import { AuthMethod } from "../../../support/constants";
+const defaultTimeout = 60000;
+const logoutCompletePath = "/logoutComplete";
+const registrationPath = "/registration";
+const homePath = "/home";
+const invalidEmail = "gov.bc.ca";
+const invalidPhone = "250";
+
+describe("Registration Page", () => {
+    it("Minimum age error and logout", () => {
+        cy.configureSettings({});
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
+            "getTermsOfService"
+        );
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.hlthgw401.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
+        );
+
+        cy.wait("@getTermsOfService", { timeout: defaultTimeout });
+        cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
+        cy.get("[data-testid=registration-logout-button]")
+            .should("be.visible")
+            .click();
+        cy.location("pathname").should("eq", logoutCompletePath);
+    });
+
+    it("Registering leads to home page and opens app tour", () => {
+        cy.configureSettings({});
+        cy.env(["keycloak.password", "emailAddress", "phoneNumber"]).then(
+            ({ "keycloak.password": password, emailAddress, phoneNumber }) => {
+                cy.login(
+                    Cypress.expose("keycloak.unregistered.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+
+                cy.contains("#subject", "Registration").should("be.visible");
+                cy.location("pathname").should("eq", registrationPath);
+
+                cy.get("[data-testid=sidebar]").should("not.exist");
+                cy.get("[data-testid=footer]").should("not.exist");
+
+                cy.get("[data-testid=emailCheckbox] input")
+                    .should("be.enabled")
+                    .check();
+                cy.get("[data-testid=emailInput]")
+                    .find("input")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .type(invalidEmail);
+                cy.get("[data-testid=emailInput]").within(() => {
+                    cy.get("div")
+                        .contains("Invalid email")
+                        .should("be.visible");
+                });
+
+                cy.get("[data-testid=emailConfirmationInput]")
+                    .find("input")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .type(invalidEmail);
+                cy.get("[data-testid=emailConfirmationInput]").within(() => {
+                    cy.get("div")
+                        .contains("Invalid email")
+                        .should("be.visible");
+                });
+
+                cy.get("[data-testid=sms-checkbox] input")
+                    .should("be.enabled")
+                    .check();
+                cy.get("[data-testid=smsNumberInput]")
+                    .find("input")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .type(invalidPhone);
+                cy.get("[data-testid=smsNumberInput]").within(() => {
+                    cy.get("div")
+                        .contains("Invalid phone number")
+                        .should("be.visible");
+                });
+
+                cy.get("[data-testid=emailInput]")
+                    .find("input")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .clear()
+                    .type(emailAddress);
+                cy.get("[data-testid=emailInput]").within(() => {
+                    cy.get("div").contains("Invalid email").should("not.exist");
+                });
+
+                cy.get("[data-testid=emailConfirmationInput]")
+                    .find("input")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .clear()
+                    .type(emailAddress);
+                cy.get("[data-testid=emailConfirmationInput]").within(() => {
+                    cy.get("div").contains("Invalid email").should("not.exist");
+                });
+
+                cy.get("[data-testid=smsNumberInput]")
+                    .find("input")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .clear()
+                    .type(phoneNumber);
+                cy.get("[data-testid=smsNumberInput]").within(() => {
+                    cy.get("div")
+                        .contains("Invalid phone number")
+                        .should("not.exist");
+                });
+
+                cy.get("[data-testid=smsNumberInput] input")
+                    .should("be.visible")
+                    .clear();
+                cy.get('[data-testid="sms-checkbox"] input')
+                    .should("be.enabled")
+                    .uncheck({ force: true });
+                cy.get("[data-testid=smsNumberInput] input").should(
+                    "have.value",
+                    ""
+                );
+
+                cy.get("[data-testid=acceptCheckbox] input")
+                    .should("be.enabled")
+                    .check();
+                cy.get("[data-testid=registerButton]")
+                    .should("be.visible")
+                    .and("be.enabled")
+                    .click();
+                cy.location("pathname").should("eq", homePath);
+                cy.get("[data-testid=app-tour-modal]").should("be.visible");
+
+                // AB#16942 Disable full App Tour and display only one slide - change back to original once App Tour has been redesigned.
+                // cy.get("[data-testid=app-tour-skip]").click();
+                cy.get("[data-testid=app-tour-done]").click();
+                cy.get("[data-testid=incomplete-profile-banner]")
+                    .should("be.visible")
+                    .within(() => {
+                        cy.get(
+                            "[data-testid=unverified-email-sms-message]"
+                        ).should("be.visible");
+                    });
+            }
+        );
+    });
+
+    it("Validate Closed Profile Registration", () => {
+        cy.configureSettings({});
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.accountclosure.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
+        );
+        cy.get("[data-testid=patient-retrieval-error]")
+            .should("exist")
+            .contains("Error retrieving user information");
+        cy.url().should("include", "/patientRetrievalError");
+        cy.get("[data-testid=patient-retrieval-error-logout-button]")
+            .should("be.visible")
+            .click();
+        cy.location("pathname").should("eq", logoutCompletePath);
+    });
+});
