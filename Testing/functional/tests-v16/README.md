@@ -2,7 +2,7 @@
 
 Implements functional tests for Health Gateway using Cypress.io tooling.
 
-## Prequisites
+## Prerequisites
 
 A Developer should have gone through the Health Gateway installation and configuration.
 

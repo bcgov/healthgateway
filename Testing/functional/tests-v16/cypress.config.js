@@ -69,8 +69,12 @@ module.exports = defineConfig({
     projectId: "ofnepc",
     trashAssetsBeforeRuns: true,
     e2e: {
-        setupNodeEvents(on, _config) {
+        setupNodeEvents(on, config) {
             on("task", verifyDownloadTasks);
+            // Public browser-side values must retain command-line env overrides.
+            config.expose.loginDiagnostics = config.env.loginDiagnostics;
+            config.expose.baseWebClientUrl = config.env.baseWebClientUrl;
+            return config;
         },
         baseUrl: "https://dev.healthgateway.gov.bc.ca",
         specPattern: "cypress/integration/**/*.{js,jsx,ts,tsx}",
