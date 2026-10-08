@@ -1,0 +1,37 @@
+{
+    "name": "functional",
+    "version": "1.0.0",
+    "description": "Health Gateway WebClient functional tests",
+    "main": "index.js",
+    "scripts": {
+        "launch": "cypress open",
+        "e2e": "cypress run",
+        "lint": "eslint cypress --ext .js --max-warnings 0 && prettier cypress --check",
+        "lintfix": "eslint cypress --ext .js --fix && prettier cypress --write"
+    },
+    "author": "",
+    "license": "Apache-2.0",
+    "comments": {
+        "overrides": "mocha 11.7.6 pins diff ^7, serialize-javascript ^6, and (via glob/minimatch) brace-expansion 1.x, all of which carry DoS/RCE advisories. Forced to patched majors; drop once mocha updates its own ranges."
+    },
+    "overrides": {
+        "serialize-javascript": "7.0.7",
+        "diff": "9.0.0",
+        "brace-expansion": "5.0.8"
+    },
+    "devDependencies": {
+        "@cypress/skip-test": "^2.6.1",
+        "cy-verify-downloads": "^0.3.0",
+        "cypress": "^16.0.0",
+        "cypress-multi-reporters": "^2.0.5",
+        "eslint": "^10.9.1",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-chai-friendly": "^1.2.1",
+        "eslint-plugin-cypress": "^7.0.1",
+        "eslint-plugin-simple-import-sort": "^14.0.0",
+        "eslint-plugin-unused-imports": "^4.4.1",
+        "mocha": "^11.8.0",
+        "mocha-junit-reporter": "^2.2.1",
+        "prettier": "^3.9.6"
+    }
+}

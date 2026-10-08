@@ -1,0 +1,63 @@
+import { AuthMethod } from "../../../support/constants";
+import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
+
+describe("Need to accept terms of service", () => {
+    beforeEach(() => {
+        cy.configureSettings({});
+        setupStandardFixtures({
+            userProfileHdid: HDID,
+            userProfileFixture: "UserProfileService/userProfileAcceptTos.json",
+        });
+
+        cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0", {
+            fixture: "UserProfileService/termsOfService.json",
+        });
+
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.accept.tos.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
+        );
+    });
+
+    it("Validate accept terms of service", () => {
+        cy.url().should("include", "/acceptTermsOfService");
+
+        cy.get("[data-testid=tos-page-title]").should("be.visible");
+        cy.get("[data-testid=tos-text-area-component]").should("be.visible");
+
+        cy.get("[data-testid=continue-btn]").should("be.disabled");
+
+        cy.get("[data-testid=accept-tos-checkbox] input")
+            .should("be.enabled")
+            .check({ force: true });
+        cy.get("[data-testid=continue-btn]").should("be.enabled");
+    });
+});
+
+describe("Does not need to accept terms of service", () => {
+    beforeEach(() => {
+        setupStandardFixtures();
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
+        );
+    });
+
+    it("Validate accept terms of service", () => {
+        cy.url().should("include", "/home");
+    });
+});

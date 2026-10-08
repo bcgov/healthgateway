@@ -1,0 +1,213 @@
+describe("Encounter Service", () => {
+    const defaultTimeout = 60000;
+
+    let tokens;
+
+    before(() => {
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.getTokens(
+                    Cypress.expose("keycloak.username"),
+                    password
+                ).then((result) => {
+                    tokens = result;
+                });
+            }
+        );
+    });
+
+    beforeEach(() => {
+        cy.readConfig().as("config");
+        cy.wrap(tokens).as("tokens");
+    });
+
+    it("Verify Swagger", () => {
+        cy.get("@config").then((config) => {
+            cy.log(
+                `Verifying Swagger exists for Encounter at Endpoint: ${config.serviceEndpoints.Encounter}swagger`
+            );
+            cy.request({
+                url: `${config.serviceEndpoints.Encounter}swagger/v1/swagger.json`,
+                timeout: defaultTimeout,
+            }).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.info.title).to.eq(
+                    "Health Gateway Encounter Services documentation"
+                );
+            });
+        });
+    });
+
+    it("Verify Encounter Unauthorized", () => {
+        cy.get("@config").then((config) => {
+            cy.log(
+                `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
+            );
+            cy.request({
+                url: `${config.serviceEndpoints.Encounter}Encounter/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+                timeout: defaultTimeout,
+                followRedirect: false,
+                failOnStatusCode: false,
+            }).should((response) => {
+                expect(response.status).to.eq(401);
+            });
+        });
+    });
+
+    it("Verify Encounter Forbidden", () => {
+        const HDID = "BOGUSHDID";
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Encounter}Encounter/${HDID}`,
+                    timeout: defaultTimeout,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
+        });
+    });
+
+    it("Verify Distinct Encounters", () => {
+        const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Encounter}Encounter/${HDID}`,
+                    timeout: defaultTimeout,
+                    followRedirect: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                    let distinctEncounters = new Set();
+                    let error = "";
+                    response.body.resourcePayload.forEach((enc) => {
+                        let combinedKey = `${enc.encounterDate}${enc.specialtyDescription}${enc.practitionerName}${enc.clinic.name}${enc.clinic.addressLine1}${enc.clinic.addressLine2}${enc.clinic.addressLine3}${enc.clinic.addressLine4}${enc.clinic.city}${enc.clinic.postalCode}${enc.clinic.province}`;
+                        if (distinctEncounters.has(combinedKey)) {
+                            error += `dup encounter: ${combinedKey} |`;
+                        } else {
+                            distinctEncounters.add(combinedKey);
+                        }
+                    });
+                    expect(error).to.equal("");
+                });
+            });
+        });
+    });
+
+    it("Verify Hospital Visit Unauthorized", () => {
+        cy.get("@config").then((config) => {
+            cy.log(
+                `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
+            );
+            cy.request({
+                url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+                timeout: defaultTimeout,
+                followRedirect: false,
+                failOnStatusCode: false,
+            }).should((response) => {
+                expect(response.status).to.eq(401);
+            });
+        });
+    });
+
+    it("Verify Hospital Visit Forbidden", () => {
+        const HDID = "BOGUSHDID";
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/${HDID}`,
+                    timeout: defaultTimeout,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
+        });
+    });
+
+    it("Verify Hospital Visits Delegate Authorized", () => {
+        const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Encounter}Encounter/HospitalVisit/${HDID}`,
+                    timeout: defaultTimeout,
+                    followRedirect: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                });
+            });
+        });
+    });
+
+    it("Verify Hospital Visits V2 Authorized", () => {
+        const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+
+        cy.get("@tokens").then((tokens) => {
+            cy.get("@config").then((config) => {
+                const encounterEndpoint = config.serviceEndpoints.Encounter;
+
+                cy.request({
+                    method: "GET",
+                    url: `${encounterEndpoint}Encounter/HospitalVisit/${HDID}?api-version=2`,
+                    followRedirect: false,
+                    timeout: defaultTimeout,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).then((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                });
+            });
+        });
+    });
+});

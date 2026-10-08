@@ -1,0 +1,19 @@
+{
+    "resourcePayload": [
+        {
+            "drugName": "TEST",
+            "requestStatus": "Complete",
+            "requestedDate": "2020-01-01",
+            "prescriberFirstName": "Health",
+            "prescriberLastName": "Gateway",
+            "effectiveDate": "2020-01-05",
+            "expiryDate": "2020-02-05",
+            "referenceNumber": "1234567890"
+        }
+    ],
+    "totalResultCount": 0,
+    "pageIndex": 0,
+    "pageSize": 25,
+    "resultStatus": 1,
+    "resultError": null
+}

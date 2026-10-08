@@ -1,0 +1,17 @@
+{
+    "resourcePayload": {
+        "loaded": true,
+        "retryin": 0,
+        "records": []
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 0,
+    "resultError": {
+        "resultMessage": "Invalid Data",
+        "errorCode": "LaboratoryServer-I",
+        "traceId": "b36b47a47ba33432d5596fd2bbe7701b",
+        "actionCode": "INVALID"
+    }
+}
