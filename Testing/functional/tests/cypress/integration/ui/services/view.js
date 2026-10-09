@@ -18,13 +18,17 @@ describe("Authenticated Services View", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/services",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         cy.url().should("include", servicesTestsConstants.servicesUrl);
@@ -33,13 +37,17 @@ describe("Authenticated Services View", () => {
     it("The url should be the unauthorized url if services is disabled", () => {
         cy.configureSettings({});
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/services",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         cy.url().should("include", servicesTestsConstants.unauthorized);

@@ -20,13 +20,11 @@ module.exports = defineConfig({
         mochaFile: "reports/junit/test-results.[hash].xml",
         testsuitesTitle: false,
     },
-    env: {
+    expose: {
         loginDiagnostics: false,
         baseWebClientUrl: "",
         "bcsc.username": "hthgtwy11",
-        "bcsc.password": "",
         "keycloak.username": "healthgateway",
-        "keycloak.password": "",
         "keycloak.accept.tos.username": "hthgtwy04",
         "keycloak.accountclosure.username": "AccountClosure",
         "keycloak.deceased.username": "hthgtwy19",
@@ -39,6 +37,10 @@ module.exports = defineConfig({
         "keycloak.protected.username": "protected",
         "keycloak.unregistered.username": "hthgtwy02",
         "idir.username": "hgateway",
+    },
+    env: {
+        "bcsc.password": "",
+        "keycloak.password": "",
         "idir.password": "",
         "keycloak.phsa.client": "",
         "keycloak.phsa.secret": "",
@@ -51,8 +53,15 @@ module.exports = defineConfig({
     projectId: "ofnepc",
     trashAssetsBeforeRuns: true,
     e2e: {
-        setupNodeEvents(on, _config) {
+        setupNodeEvents(on, config) {
             on("task", verifyDownloadTasks);
+            // Public browser-side values must retain environment overrides.
+            for (const key of Object.keys(config.expose)) {
+                if (Object.hasOwn(config.env, key)) {
+                    config.expose[key] = config.env[key];
+                }
+            }
+            return config;
         },
         baseUrl: "https://dev.healthgateway.gov.bc.ca",
         specPattern: "cypress/integration/**/*.{js,jsx,ts,tsx}",

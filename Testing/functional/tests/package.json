@@ -22,7 +22,7 @@
     "devDependencies": {
         "@cypress/skip-test": "^2.6.1",
         "cy-verify-downloads": "^0.3.0",
-        "cypress": "^15.21.0",
+        "cypress": "^16.0.0",
         "cypress-multi-reporters": "^2.0.5",
         "eslint": "^10.9.1",
         "eslint-config-prettier": "^10.1.8",

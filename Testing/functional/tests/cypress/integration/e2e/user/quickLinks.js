@@ -92,11 +92,15 @@ describe("Quick Links", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
         );
 
         // Validate home page has displayed before clicking on quick link.
@@ -191,11 +195,15 @@ describe("Quick Links", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
         );
 
         // Validate home page has displayed before clicking on quick link.
@@ -354,11 +362,15 @@ describe("Organ Donor Quick Link", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
         );
 
         cy.log("Verifying organ donor quick link card is present");
@@ -403,11 +415,15 @@ describe("Organ Donor Quick Link", () => {
 
 describe("Disabling organ donor services", () => {
     const testOrganDonorNotPresent = (cy) => {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
         );
         cy.log("Verifying organ donor quicklink not present");
         cy.get(organDonorQuickLinkCardSelector).should("not.exist");
@@ -476,11 +492,15 @@ describe("Health Connect Registry Card", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
         );
 
         cy.log("Verifying health connect quick link card is present");
@@ -526,11 +546,15 @@ describe("Health Connect Registry Card", () => {
 
 describe("Disabling health connect services", () => {
     const testQuickLinkNotPresent = (cy) => {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath
+                );
+            }
         );
         cy.log("Verifying health connect quicklink not present");
         cy.get(healthConnectQuickLinkCardSelector).should("not.exist");

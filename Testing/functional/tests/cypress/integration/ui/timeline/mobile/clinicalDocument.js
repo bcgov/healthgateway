@@ -25,13 +25,17 @@ describe("Clinical Document", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.wait("@getClinicalDocuments");
         cy.checkTimelineHasLoaded();

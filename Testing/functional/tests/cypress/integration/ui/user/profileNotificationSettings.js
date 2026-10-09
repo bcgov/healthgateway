@@ -74,13 +74,17 @@ describe("User Profile Notification Settings", () => {
     }
 
     function login(options = {}) {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "default",
-            options
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "default",
+                    options
+                );
+            }
         );
     }
 

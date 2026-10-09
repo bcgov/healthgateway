@@ -18,10 +18,14 @@ describe("COVID-19 Test Results", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
             "getCovid19Orders"
         );
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak
+                );
+            }
         );
         waitForCovid19Orders("@getCovid19Orders");
         cy.checkTimelineHasLoaded();

@@ -26,14 +26,16 @@ function setupDependentsPage(
         },
         datasets,
     });
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/dependents",
-        "default",
-        { cacheAcrossSpecs: true }
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/dependents",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
+    });
 
     cy.get(getDependentCardSelector(timelineEnabled)).should("be.visible");
 }
@@ -55,13 +57,17 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -113,13 +119,17 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -225,13 +235,17 @@ describe("Export Records - Immunizaation - report download error handling", () =
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 

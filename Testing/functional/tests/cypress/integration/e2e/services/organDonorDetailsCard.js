@@ -59,11 +59,15 @@ describe("Organ Donor Details Card Enabled", () => {
 
     // AB#16924 - Cypress - Disable e2e Organ Donar Registration until PHSA fixes whitelisting issue
     it.skip("Verify donor registration card is registered and download is successful", () => {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/services"
+                );
+            }
         );
 
         verifyOrganDonorRegistrationExists(true);
@@ -71,11 +75,15 @@ describe("Organ Donor Details Card Enabled", () => {
 
     // AB#16924 - Cypress - Disable e2e Organ Donar Registration until PHSA fixes whitelisting issue
     it.skip("Verify donor registration card is not registered and download button is not displayed", () => {
-        cy.login(
-            Cypress.env("keycloak.laboratory.queued.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.laboratory.queued.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/services"
+                );
+            }
         );
 
         verifyOrganDonorRegistrationExists(false);
@@ -96,11 +104,15 @@ describe("Organ Donor Details Card Disabled", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/services"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/services"
+                );
+            }
         );
     });
 

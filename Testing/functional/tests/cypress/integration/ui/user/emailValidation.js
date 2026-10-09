@@ -27,11 +27,15 @@ describe("User Email Verification", () => {
 
     it("Check verified email invite", () => {
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/validateEmail/valid"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/validateEmail/valid"
+                );
+            }
         );
 
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
@@ -54,11 +58,15 @@ describe("User Email Verification", () => {
     it("Check already verified email invite", () => {
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/validateEmail/invalid"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/validateEmail/invalid"
+                );
+            }
         );
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=alreadyVerifiedInvite]").should("be.visible");
@@ -72,11 +80,15 @@ describe("User Email Verification", () => {
     it("Check expired email invite", () => {
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/validateEmail/expired"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/validateEmail/expired"
+                );
+            }
         );
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=expiredInvite]").should("be.visible");

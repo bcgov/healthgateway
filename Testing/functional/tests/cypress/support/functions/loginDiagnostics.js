@@ -14,7 +14,7 @@ export function stopLoginDiagnostics() {
 }
 export function startLoginDiagnostics() {
     // Azure environment values may arrive as strings rather than booleans.
-    if (String(Cypress.env("loginDiagnostics")).toLowerCase() !== "true") {
+    if (String(Cypress.expose("loginDiagnostics")).toLowerCase() !== "true") {
         stopLoginDiagnostics();
         return disabledDiagnostics;
     }

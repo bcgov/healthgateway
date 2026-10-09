@@ -4,12 +4,16 @@ describe("GatewayApi UserFeedback Service", () => {
     let tokens;
 
     before(() => {
-        cy.getTokens(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password")
-        ).then((result) => {
-            tokens = result;
-        });
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.getTokens(
+                    Cypress.expose("keycloak.username"),
+                    password
+                ).then((result) => {
+                    tokens = result;
+                });
+            }
+        );
     });
 
     beforeEach(() => {

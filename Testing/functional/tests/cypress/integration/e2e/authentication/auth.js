@@ -1,5 +1,10 @@
-import { skipOn } from "@cypress/skip-test";
 const { AuthMethod } = require("../../../support/constants");
+
+function skipOnLocalhost() {
+    if (Cypress.config("baseUrl").includes("localhost")) {
+        cy.state("runnable").ctx.skip();
+    }
+}
 
 describe("Authentication", () => {
     beforeEach(() => {
@@ -11,12 +16,14 @@ describe("Authentication", () => {
     });
 
     it("BCSC UI Login", () => {
-        cy.login(
-            Cypress.env("bcsc.username"),
-            Cypress.env("bcsc.password"),
-            AuthMethod.BCSC,
-            "/home"
-        );
+        cy.env(["bcsc.password"]).then(({ "bcsc.password": password }) => {
+            cy.login(
+                Cypress.expose("bcsc.username"),
+                password,
+                AuthMethod.BCSC,
+                "/home"
+            );
+        });
 
         cy.location("pathname", { timeout: 30000 }).should((pathname) => {
             expect(["/home", "/acceptTermsOfService"]).to.include(pathname);
@@ -46,12 +53,16 @@ describe("Authentication", () => {
     });
 
     it("KeyCloak UI Login", () => {
-        skipOn("localhost");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloakUI,
-            "/home"
+        skipOnLocalhost();
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloakUI,
+                    "/home"
+                );
+            }
         );
         cy.url().should("include", "/home");
 
@@ -62,21 +73,29 @@ describe("Authentication", () => {
     });
 
     it("KeyCloak Deceased Login", () => {
-        cy.login(
-            Cypress.env("keycloak.deceased.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.deceased.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
         cy.url().should("include", "/patientRetrievalError");
     });
 
     it("Keycloak Login and Logout", () => {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
         cy.url().should("include", "/home");
         cy.get("[data-testid=headerDropdownBtn]").click();
@@ -89,33 +108,41 @@ describe("Authentication", () => {
     });
 
     it("IDIR Blocked", () => {
-        skipOn("localhost");
+        skipOnLocalhost();
         cy.logout();
         cy.visit("/login");
-        cy.log(`Authenticating as IDIR user ${Cypress.env("idir.username")}`);
+        cy.log(
+            `Authenticating as IDIR user ${Cypress.expose("idir.username")}`
+        );
         cy.url().should("include", "/login");
         cy.get("[data-testid=IDIRBtn]")
             .should("be.visible")
             .should("be.enabled")
             .click();
 
-        cy.origin(
-            "https://logontest7.gov.bc.ca",
-            {
-                args: {
-                    username: Cypress.env("idir.username"),
-                    password: Cypress.env("idir.password"),
+        cy.env(["idir.password"]).then(({ "idir.password": password }) => {
+            cy.origin(
+                "https://logontest7.gov.bc.ca",
+                {
+                    args: {
+                        username: Cypress.expose("idir.username"),
+                        password,
+                    },
                 },
-            },
-            ({ username, password }) => {
-                cy.get("#idirLogo", { timeout: 10000 }).should("be.visible");
-                cy.get("#user").should("be.visible").type(username);
-                cy.get("#password")
-                    .should("be.visible")
-                    .type(password, { log: false });
-                cy.get('input[name="btnSubmit"]').should("be.visible").click();
-            }
-        );
+                ({ username, password }) => {
+                    cy.get("#idirLogo", { timeout: 10000 }).should(
+                        "be.visible"
+                    );
+                    cy.get("#user").should("be.visible").type(username);
+                    cy.get("#password")
+                        .should("be.visible")
+                        .type(password, { log: false });
+                    cy.get('input[name="btnSubmit"]')
+                        .should("be.visible")
+                        .click();
+                }
+            );
+        });
 
         cy.url({ timeout: 10000 }).should("include", "idirLoggedIn");
         cy.contains("h1", "403");

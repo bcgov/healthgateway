@@ -7,11 +7,15 @@ describe("Need to accept terms of service", () => {
         cy.intercept("GET", "**/UserProfile/termsofservice?api-version=2.0").as(
             "getTermsOfService"
         );
-        cy.login(
-            Cypress.env("keycloak.accept.tos.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.accept.tos.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
         cy.wait("@getTermsOfService", { timeout: defaultTimeout });
 

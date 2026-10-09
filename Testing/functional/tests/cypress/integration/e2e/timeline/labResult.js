@@ -19,11 +19,15 @@ describe("Laboratory Orders", () => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*").as(
             "getLaboratoryOrders"
         );
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline"
+                );
+            }
         );
         waitForLaboratoryOrders("@getLaboratoryOrders");
         cy.checkTimelineHasLoaded();
