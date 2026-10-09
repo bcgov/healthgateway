@@ -11,11 +11,9 @@ describe("Keycloak session reuse across specs", { retries: 0 }, () => {
             Cypress.config("baseUrl"),
             "use deployed authentication"
         ).not.to.eq(localDevUri);
-        cy.env(["keycloak.username", "keycloak.password"]).then(
-            ({
-                "keycloak.username": username,
-                "keycloak.password": password,
-            }) => {
+        const username = Cypress.expose("keycloak.username");
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
                 expect(
                     Boolean(username) && Boolean(password),
                     "Keycloak credentials are configured"

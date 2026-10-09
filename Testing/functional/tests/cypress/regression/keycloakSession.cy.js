@@ -12,11 +12,9 @@ describe("Keycloak session regression", { retries: 0 }, () => {
             "use the deployed login path"
         ).not.to.eq(localDevUri);
 
-        cy.env(["keycloak.username", "keycloak.password"]).then(
-            ({
-                "keycloak.username": username,
-                "keycloak.password": password,
-            }) => {
+        const username = Cypress.expose("keycloak.username");
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
                 // Assert presence without including credentials in assertion output.
                 expect(
                     Boolean(username) && Boolean(password),
@@ -108,11 +106,9 @@ describe(
                 Cypress.config("baseUrl"),
                 "use the deployed login path"
             ).not.to.eq(localDevUri);
-            cy.env(["keycloak.username", "keycloak.password"]).then(
-                ({
-                    "keycloak.username": username,
-                    "keycloak.password": password,
-                }) => {
+            const username = Cypress.expose("keycloak.username");
+            cy.env(["keycloak.password"]).then(
+                ({ "keycloak.password": password }) => {
                     expect(
                         Boolean(password),
                         "Keycloak password is configured"
@@ -148,11 +144,9 @@ describe(
                 cy.configureSettings({
                     profile: { notifications: { enabled } },
                 });
-                cy.env(["keycloak.username", "keycloak.password"]).then(
-                    ({
-                        "keycloak.username": username,
-                        "keycloak.password": password,
-                    }) => {
+                const username = Cypress.expose("keycloak.username");
+                cy.env(["keycloak.password"]).then(
+                    ({ "keycloak.password": password }) => {
                         login(username, password);
                     }
                 );

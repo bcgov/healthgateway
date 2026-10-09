@@ -27,11 +27,9 @@ describe(
         });
 
         it("recognizes a real login without navigating to the callback", () => {
-            cy.env(["keycloak.username", "keycloak.password"]).then(
-                ({
-                    "keycloak.username": username,
-                    "keycloak.password": password,
-                }) => {
+            const username = Cypress.expose("keycloak.username");
+            cy.env(["keycloak.password"]).then(
+                ({ "keycloak.password": password }) => {
                     expect(
                         Boolean(password),
                         "Keycloak password is configured"
@@ -59,11 +57,9 @@ describe(
             let savedCookies;
             let configuration;
             let credentialSubmissions = 0;
-            cy.env(["keycloak.username", "keycloak.password"]).then(
-                ({
-                    "keycloak.username": username,
-                    "keycloak.password": password,
-                }) => {
+            const username = Cypress.expose("keycloak.username");
+            cy.env(["keycloak.password"]).then(
+                ({ "keycloak.password": password }) => {
                     expect(
                         Boolean(password),
                         "Keycloak password is configured"
