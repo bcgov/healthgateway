@@ -36,7 +36,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Get UserProfile Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}?api-version=2.0`,
@@ -57,7 +56,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Get UserProfile Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}?api-version=2.0`,
@@ -92,7 +90,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Post UserProfile Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "POST",
@@ -127,7 +124,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Delete UserProfile Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "DELETE",
@@ -173,7 +169,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Get UserProfile Validate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Validate?api-version=2.0`,
@@ -206,7 +201,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Get UserProfile Recover Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/recover?api-version=2.0`,
@@ -239,7 +233,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Get UserProfile Email Validate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/email/validate/123?api-version=2.0`,
@@ -273,7 +266,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Put UserProfile Email Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
@@ -307,7 +299,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Get UserProfile SMS Validate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/sms/validate/123?api-version=2.0`,
@@ -341,7 +332,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Put UserProfile SMS Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
@@ -376,7 +366,6 @@ describe("GatewayApi UserProfile Service", () => {
 
     it("Verify Put UserProfile Preference Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",

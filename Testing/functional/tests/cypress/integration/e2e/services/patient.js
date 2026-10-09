@@ -55,7 +55,6 @@ describe("Patient Service", () => {
 
     it("Verify Patient Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
@@ -79,7 +78,6 @@ describe("Patient Service", () => {
 
     it("Verify Patient Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`

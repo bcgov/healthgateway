@@ -308,11 +308,6 @@ Cypress.Commands.add("getTokens", (username, password) => {
                     });
                 })
                 .then((response) => {
-                    cy.log(
-                        `CALLBACK for Posting credentials : response: ${JSON.stringify(
-                            response
-                        )}`
-                    );
                     let callBackQS = response.headers["location"];
                     const url = new URL(callBackQS);
                     const params = url.search.substring(1).split("&");

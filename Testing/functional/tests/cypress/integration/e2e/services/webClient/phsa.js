@@ -51,7 +51,6 @@ describe("GatewayApi PHSA Access", () => {
                         Cypress.expose("keycloak.username"),
                         password
                     ).then((tokens) => {
-                        cy.log("Tokens", tokens);
                         cy.request({
                             url: `${config.serviceEndpoints.GatewayApi}${BASEURL}dependents/${HDID}`,
                             followRedirect: false,
@@ -111,7 +110,6 @@ describe("GatewayApi PHSA Access", () => {
                         Cypress.expose("keycloak.username"),
                         password
                     ).then((tokens) => {
-                        cy.log("Tokens", tokens);
                         cy.request({
                             url: `${config.serviceEndpoints.GatewayApi}${BASEURL}dependents`,
                             followRedirect: false,

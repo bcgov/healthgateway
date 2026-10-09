@@ -54,7 +54,6 @@ describe("Medication Service", () => {
     it("Verify MedicationStatement Forbidden", () => {
         const HDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
@@ -79,7 +78,6 @@ describe("Medication Service", () => {
     it("Verify MedicationStatement Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
@@ -127,7 +125,6 @@ describe("Medication Service", () => {
     it("Verify MedicationRequest Forbidden", () => {
         const HDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
@@ -152,7 +149,6 @@ describe("Medication Service", () => {
     it("Verify MedicationRequest Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`

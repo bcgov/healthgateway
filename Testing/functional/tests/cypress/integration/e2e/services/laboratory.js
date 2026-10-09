@@ -59,7 +59,6 @@ describe("Laboratory Service", () => {
 
     it("Verify Laboratory Orders Expired Delegate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -84,7 +83,6 @@ describe("Laboratory Service", () => {
 
     it("Verify Laboratory Orders Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -110,7 +108,6 @@ describe("Laboratory Service", () => {
 
     it("Verify Laboratory Orders Delegate Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -152,7 +149,6 @@ describe("Laboratory Service", () => {
 
     it("Verify COVID-19 Tests Expired Delegate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -177,7 +173,6 @@ describe("Laboratory Service", () => {
 
     it("Verify COVID-19 Tests Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -203,7 +198,6 @@ describe("Laboratory Service", () => {
 
     it("Verify COVID-19 Tests Delegate Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`

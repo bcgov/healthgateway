@@ -36,7 +36,6 @@ describe("GatewayApi Note Service", () => {
 
     it("Verify Get Notes Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}`,
@@ -57,7 +56,6 @@ describe("GatewayApi Note Service", () => {
 
     it("Verify Get Notes Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}`,
@@ -96,7 +94,6 @@ describe("GatewayApi Note Service", () => {
 
     it("Verify Post Note Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "POST",
@@ -131,7 +128,6 @@ describe("GatewayApi Note Service", () => {
 
     it("Verify Put Note Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
@@ -166,7 +162,6 @@ describe("GatewayApi Note Service", () => {
 
     it("Verify Delete Note Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "DELETE",

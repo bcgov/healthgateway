@@ -37,7 +37,6 @@ describe("GatewayApi UserFeedback Service", () => {
         cy.readConfig().then((config) => {
             const BOGUSHDID = "BOGUSHDID";
             cy.get("@tokens").then((tokens) => {
-                cy.log("Tokens", tokens);
                 cy.request({
                     method: "POST",
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}`,
