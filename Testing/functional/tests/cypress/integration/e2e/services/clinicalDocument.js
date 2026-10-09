@@ -55,7 +55,6 @@ describe("Clinical Documents Service", () => {
     it("Verify Clinical Document Forbidden", () => {
         const BOGUSHDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`
@@ -79,7 +78,6 @@ describe("Clinical Documents Service", () => {
 
     it("Verify Clinical Document Records Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`
@@ -110,7 +108,6 @@ describe("Clinical Documents Service", () => {
     it("Verify Clinical Document File Authorized", () => {
         const FILEID = "clinicaldocument_vpp_cer_12345678931";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`

@@ -50,7 +50,6 @@ describe("Gateway Api Data Access Service", () => {
 
     it("Verify Data Access Blocked Datasets Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets`
@@ -89,7 +88,6 @@ describe("Gateway Api Data Access Service", () => {
 
     it("Verify Data Access Contact Info Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo`
@@ -128,7 +126,6 @@ describe("Gateway Api Data Access Service", () => {
 
     it("Verify Data Access Protected Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/Protected`

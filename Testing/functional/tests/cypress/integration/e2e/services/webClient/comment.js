@@ -36,7 +36,6 @@ describe("GatewayApi Comment Service", () => {
 
     it("Verify Get Comment Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Comment/`,
@@ -57,7 +56,6 @@ describe("GatewayApi Comment Service", () => {
 
     it("Verify Get Comment Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Comment/`,
@@ -104,7 +102,6 @@ describe("GatewayApi Comment Service", () => {
 
     it("Verify Post Comment Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "POST",
@@ -139,7 +136,6 @@ describe("GatewayApi Comment Service", () => {
 
     it("Verify Put Comment Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
@@ -174,7 +170,6 @@ describe("GatewayApi Comment Service", () => {
 
     it("Verify Delete Comment Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "DELETE",

@@ -57,7 +57,6 @@ describe("Encounter Service", () => {
     it("Verify Encounter Forbidden", () => {
         const HDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
@@ -83,7 +82,6 @@ describe("Encounter Service", () => {
     it("Verify Distinct Encounters", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
@@ -136,7 +134,6 @@ describe("Encounter Service", () => {
     it("Verify Hospital Visit Forbidden", () => {
         const HDID = "BOGUSHDID";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
@@ -162,7 +159,6 @@ describe("Encounter Service", () => {
     it("Verify Hospital Visits Delegate Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`

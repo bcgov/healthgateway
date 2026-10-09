@@ -35,7 +35,6 @@ describe("GatewayApi Dependent Service", () => {
 
     it("Verify Get Dependents Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.readConfig().then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Dependent`,
@@ -56,7 +55,6 @@ describe("GatewayApi Dependent Service", () => {
 
     it("Verify Get Dependents Authorized", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.readConfig().then((config) => {
                 cy.request({
                     url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Dependent`,
@@ -90,7 +88,6 @@ describe("GatewayApi Dependent Service", () => {
 
     it("Verify Post Dependent Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.readConfig().then((config) => {
                 cy.request({
                     method: "POST",
@@ -125,7 +122,6 @@ describe("GatewayApi Dependent Service", () => {
 
     it("Verify Delete Dependent Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
-            cy.log("Tokens", tokens);
             cy.readConfig().then((config) => {
                 cy.request({
                     method: "DELETE",
