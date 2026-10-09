@@ -54,12 +54,9 @@ function removeValidDependentIfPresent(username) {
     cy.intercept("GET", "**/UserProfile/*/Dependent*").as(
         "getDependentsForCleanup"
     );
-    cy.login(
-        username,
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/dependents"
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(username, password, AuthMethod.KeyCloak, "/dependents");
+    });
 
     const cardSelector = `[data-testid=dependent-card-${validDependent.phn}]`;
     cy.wait("@getDependentsForCleanup", { timeout: defaultTimeout }).then(
@@ -247,11 +244,15 @@ describe("dependents", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
     });
 
@@ -579,11 +580,15 @@ describe("Protected Dependents", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
     });
 
@@ -660,11 +665,15 @@ describe("CRUD Operations", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
     });
 
@@ -676,9 +685,9 @@ describe("CRUD Operations", () => {
         // A failed attempt can leave the dependent registered for either user,
         // causing Cypress retries to fail validation before cleanup is reached.
         removeValidDependentIfPresent(
-            Cypress.env("keycloak.protected.username")
+            Cypress.expose("keycloak.protected.username")
         );
-        removeValidDependentIfPresent(Cypress.env("keycloak.username"));
+        removeValidDependentIfPresent(Cypress.expose("keycloak.username"));
     });
 
     it.skip("Validate Adding, Viewing, and Removing Dependents", () => {
@@ -706,11 +715,15 @@ describe("CRUD Operations", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.protected.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.protected.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
         registerValidDependent();
         assertValidDependentCard();
@@ -732,11 +745,15 @@ describe("CRUD Operations", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
 
         assertValidDependentCard();

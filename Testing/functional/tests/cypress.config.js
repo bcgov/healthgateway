@@ -20,6 +20,24 @@ module.exports = defineConfig({
         mochaFile: "reports/junit/test-results.[hash].xml",
         testsuitesTitle: false,
     },
+    expose: {
+        loginDiagnostics: false,
+        baseWebClientUrl: "",
+        "bcsc.username": "hthgtwy11",
+        "keycloak.username": "healthgateway",
+        "keycloak.accept.tos.username": "hthgtwy04",
+        "keycloak.accountclosure.username": "AccountClosure",
+        "keycloak.deceased.username": "hthgtwy19",
+        "keycloak.healthgateway12.username": "healthgateway12",
+        "keycloak.hlthgw401.username": "hlthgw401",
+        "keycloak.hthgtwy06.username": "hthgtwy06",
+        "keycloak.hthgtwy20.username": "hthgtwy20",
+        "keycloak.laboratory.queued.username": "hthgtwy09",
+        "keycloak.notfound.username": "hthgtwy03",
+        "keycloak.protected.username": "protected",
+        "keycloak.unregistered.username": "hthgtwy02",
+        "idir.username": "hgateway",
+    },
     env: {
         loginDiagnostics: false,
         baseWebClientUrl: "",
@@ -51,8 +69,12 @@ module.exports = defineConfig({
     projectId: "ofnepc",
     trashAssetsBeforeRuns: true,
     e2e: {
-        setupNodeEvents(on, _config) {
+        setupNodeEvents(on, config) {
             on("task", verifyDownloadTasks);
+            // Public browser-side values must retain command-line env overrides.
+            config.expose.loginDiagnostics = config.env.loginDiagnostics;
+            config.expose.baseWebClientUrl = config.env.baseWebClientUrl;
+            return config;
         },
         baseUrl: "https://dev.healthgateway.gov.bc.ca",
         specPattern: "cypress/integration/**/*.{js,jsx,ts,tsx}",

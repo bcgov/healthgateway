@@ -5,10 +5,14 @@ describe("Protective Word Modal", () => {
         cy.configureSettings({
             datasets: [{ name: "medication", enabled: true }],
         });
-        cy.login(
-            Cypress.env("keycloak.protected.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.protected.username"),
+                    password,
+                    AuthMethod.KeyCloak
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
 

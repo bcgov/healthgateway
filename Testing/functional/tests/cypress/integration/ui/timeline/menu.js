@@ -27,14 +27,16 @@ function login(isMobile) {
         fixture: "UserProfileService/dependent.json",
     });
 
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/timeline",
-        "default",
-        { cacheAcrossSpecs: true }
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/timeline",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
+    });
     cy.checkTimelineHasLoaded();
 }
 
@@ -101,7 +103,9 @@ describe("Menu System", () => {
 
     it("Side bar does not expand on login for mobile", () => {
         login(true);
-        cy.get("[data-testid=sidenavbar]").should("not.be.visible");
+        cy.get("[data-testid=sidenavbar]").should(($drawer) => {
+            expect($drawer[0].getBoundingClientRect().right).to.be.lessThan(0);
+        });
     });
 
     it("Side bar contains nav items", () => {

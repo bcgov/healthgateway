@@ -2,7 +2,7 @@
 
 Implements functional tests for Health Gateway using Cypress.io tooling.
 
-## Prequisites
+## Prerequisites
 
 A Developer should have gone through the Health Gateway installation and configuration.
 
@@ -31,6 +31,15 @@ Create a cypress.env.json and update with passwords or any other environment var
     "phoneNumber": "<VALID PHONE NUMBER>"
 }
 ```
+
+#### Cypress 16 environment values
+
+Keep passwords, client secrets, and other sensitive values in the ignored
+`cypress.env.json` file or provide them through the CI `--env` option. Retrieve
+sensitive values in tests with `cy.env()`; do not use `Cypress.env()`.
+
+Use `Cypress.expose()` only for public values that browser-side test code must
+read. Do not expose passwords, secrets, access tokens, or client credentials.
 
 ### Running Interactively
 

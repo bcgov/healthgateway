@@ -28,13 +28,17 @@ describe("Reports - Medication", () => {
             fixture: "Report/medicationStatementUnSorted.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 
@@ -82,13 +86,17 @@ describe("Reports - Covid19", () => {
 
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 
@@ -145,13 +153,17 @@ describe("Reports - Immunization", () => {
             fixture: "Report/immunizationUnSorted.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 
@@ -235,13 +247,17 @@ describe("Reports - MSP Visit", () => {
             fixture: "Report/mspVisitUnSorted.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 
@@ -298,13 +314,17 @@ describe("Reports - Hospital Visits", () => {
             }
         );
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 
@@ -357,13 +377,17 @@ describe("Reports - Notes (User-Entered)", () => {
             fixture: "Report/noteUnSorted.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 
@@ -416,13 +440,17 @@ describe("Reports - Laboratory Tests", () => {
             fixture: "Report/laboratoryUnSorted.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
     });
 

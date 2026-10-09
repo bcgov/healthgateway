@@ -26,13 +26,17 @@ describe("Communication banners", () => {
 
     it("Displays the in-app banner on authenticated pages", () => {
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         ["/home", "/dependents", "/reports", "/profile"].forEach((path) => {

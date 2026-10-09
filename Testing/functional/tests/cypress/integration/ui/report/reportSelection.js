@@ -10,13 +10,17 @@ describe("Report selection", () => {
             datasets: [{ name: "medication", enabled: true }],
         });
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         cy.get("[data-testid=export-record-btn]").should("be.disabled");

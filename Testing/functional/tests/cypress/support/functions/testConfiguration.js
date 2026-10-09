@@ -113,7 +113,7 @@ export function readEnvironmentConfig() {
     cy.log(`Reading Environment Configuration`);
     let baseWebClientUrl = Cypress.config("baseUrl");
     if (baseWebClientUrl == localDevUri) {
-        baseWebClientUrl = Cypress.env("baseWebClientUrl");
+        baseWebClientUrl = Cypress.expose("baseWebClientUrl");
     }
 
     const diagnostics = startLoginDiagnostics();

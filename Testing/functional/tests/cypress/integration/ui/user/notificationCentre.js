@@ -33,11 +33,15 @@ describe("Notification Centre", () => {
             notificationFixture: "NotificationService/notifications.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
 
         // Validate home page has displayed before clicking on notifications
@@ -138,11 +142,15 @@ describe("Notification Badge", () => {
             fixture: "NotificationService/notifications.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
 
         // Validate home page has displayed before clicking on notifications
@@ -205,11 +213,15 @@ describe("Categorized web alerts", () => {
 
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
 
         // Validate home page has displayed before clicking on notifications

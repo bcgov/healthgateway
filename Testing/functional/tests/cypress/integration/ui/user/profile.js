@@ -14,11 +14,15 @@ describe("User Profile", () => {
             body: true,
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile"
+                );
+            }
         );
     });
 
@@ -55,47 +59,63 @@ describe("User Profile", () => {
             body: true,
         });
 
-        cy.log("Edit email address");
-        cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=email-input] input")
-            .clear()
-            .type(Cypress.env("emailAddress"));
-        cy.fixture("UserProfileService/userProfile.json").then((data) => {
-            data.email = Cypress.env("emailAddress");
-            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
-        });
+        cy.env(["keycloak.password", "emailAddress"]).then(
+            ({ emailAddress }) => {
+                cy.log("Edit email address");
+                cy.get("[data-testid=editEmailBtn]").click();
+                cy.get("[data-testid=email-input] input")
+                    .clear()
+                    .type(emailAddress);
+                cy.fixture("UserProfileService/userProfile.json").then(
+                    (data) => {
+                        data.email = emailAddress;
+                        cy.intercept(
+                            "GET",
+                            `**/UserProfile/${HDID}?api-version=2.0`,
+                            data
+                        );
+                    }
+                );
 
-        cy.get("[data-testid=editEmailSaveBtn]").click();
-        cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
-        cy.get("[data-testid=resendEmailBtn]").should("be.visible");
+                cy.get("[data-testid=editEmailSaveBtn]").click();
+                cy.get("[data-testid=emailStatusNotVerified]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=resendEmailBtn]").should("be.visible");
 
-        cy.log("Invalid email address");
-        cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
-        cy.get("[data-testid=email-input]")
-            .find(".v-messages__message")
-            .contains("New email must be different from the previous one")
-            .should("be.visible");
-        cy.get("[data-testid=editEmailCancelBtn]").click();
-        cy.get("[data-testid=email-input] input").should(
-            "have.attr",
-            "readonly"
+                cy.log("Invalid email address");
+                cy.get("[data-testid=editEmailBtn]").click();
+                cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
+                cy.get("[data-testid=email-input]")
+                    .find(".v-messages__message")
+                    .contains(
+                        "New email must be different from the previous one"
+                    )
+                    .should("be.visible");
+                cy.get("[data-testid=editEmailCancelBtn]").click();
+                cy.get("[data-testid=email-input] input").should(
+                    "have.attr",
+                    "readonly"
+                );
+                cy.get("[data-testid=email-input] input").should(
+                    "have.value",
+                    emailAddress
+                );
+
+                cy.log("Clear/OptOut email address");
+                cy.get("[data-testid=editEmailBtn]").click();
+                cy.get("[data-testid=email-input] input").clear();
+                cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
+                cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+                    fixture: "UserProfileService/userProfile.json",
+                });
+                cy.get("[data-testid=editEmailSaveBtn]").click();
+                cy.get("[data-testid=loadingSpinner]").should("not.exist");
+                cy.get("[data-testid=emailStatusOptedOut]").should(
+                    "be.visible"
+                );
+            }
         );
-        cy.get("[data-testid=email-input] input").should(
-            "have.value",
-            Cypress.env("emailAddress")
-        );
-
-        cy.log("Clear/OptOut email address");
-        cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=email-input] input").clear();
-        cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
-        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
-            fixture: "UserProfileService/userProfile.json",
-        });
-        cy.get("[data-testid=editEmailSaveBtn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("not.exist");
-        cy.get("[data-testid=emailStatusOptedOut]").should("be.visible");
     });
 
     it("Verify SMS number", () => {
@@ -189,13 +209,17 @@ describe("User Profile - Validate Address", () => {
 
     it("Verify user has combined address", () => {
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         cy.get("[data-testid=postal-address-label]")
@@ -215,13 +239,17 @@ describe("User Profile - Validate Address", () => {
         setupStandardFixtures({
             patientFixture: "PatientService/patientDifferentAddress.json",
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         // Postal Address
@@ -249,13 +277,17 @@ describe("User Profile - Validate Address", () => {
         setupStandardFixtures({
             patientFixture: "PatientService/patientNoAddress.json",
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         // Postal Address
@@ -272,13 +304,17 @@ describe("User Profile - Validate Address", () => {
         setupStandardFixtures({
             patientFixture: "PatientService/patientOnlyPhysicalAddress.json",
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         // Postal Address
@@ -301,13 +337,17 @@ describe("User Profile - Validate Address", () => {
         setupStandardFixtures({
             patientFixture: "PatientService/patientOnlyPostalAddress.json",
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
 
         // Postal Address

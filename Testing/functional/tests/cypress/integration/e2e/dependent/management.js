@@ -44,11 +44,15 @@ describe("dependents - dashboard", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
     });
 
@@ -268,11 +272,15 @@ describe("dependents - dashboard", () => {
         cy.log("Adding same dependent as another user");
         cy.logout();
 
-        cy.login(
-            Cypress.env("keycloak.protected.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.protected.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
         cy.get("[data-testid=add-dependent-button]").click();
 
@@ -337,11 +345,15 @@ describe("dependents - dashboard", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
 
         cy.get("@newDependentCard").within(() => {

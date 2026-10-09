@@ -13,14 +13,16 @@ function login(isMobile) {
     if (isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }
-    cy.login(
-        Cypress.env("keycloak.username"),
-        Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak,
-        "/home",
-        "default",
-        { cacheAcrossSpecs: true }
-    );
+    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
+        cy.login(
+            Cypress.expose("keycloak.username"),
+            password,
+            AuthMethod.KeyCloak,
+            "/home",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
+    });
 }
 
 describe("Menu System when services are enabled", () => {
@@ -57,7 +59,9 @@ describe("Menu System when services are enabled on mobile", () => {
     });
 
     it("Side navigation bar does not expand on mobile", () => {
-        cy.get("[data-testid=sidenavbar]").should("not.be.visible");
+        cy.get("[data-testid=sidenavbar]").should(($drawer) => {
+            expect($drawer[0].getBoundingClientRect().right).to.be.lessThan(0);
+        });
     });
 });
 

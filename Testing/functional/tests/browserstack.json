@@ -6,23 +6,23 @@
     "browsers": [
         {
             "browser": "chrome",
-            "os": "Windows 10",
-            "versions": ["85"]
+            "os": "Windows 11",
+            "versions": ["latest"]
         },
         {
             "browser": "edge",
-            "os": "Windows 10",
-            "versions": ["85"]
+            "os": "Windows 11",
+            "versions": ["latest"]
         },
         {
             "browser": "firefox",
-            "os": "Windows 10",
-            "versions": ["80"]
+            "os": "Windows 11",
+            "versions": ["latest"]
         },
         {
             "browser": "chrome",
-            "os": "OS X Catalina",
-            "versions": ["85"]
+            "os": "OS X Sonoma",
+            "versions": ["latest"]
         }
     ],
     "run_settings": {

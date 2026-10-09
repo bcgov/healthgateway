@@ -15,11 +15,15 @@ describe("Report download integration", () => {
         cy.intercept("GET", "**/MedicationRequest/*").as(
             "getSpecialAuthorityRequests"
         );
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/reports"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/reports"
+                );
+            }
         );
 
         cy.vSelect("[data-testid=report-type]", "Special Authority");

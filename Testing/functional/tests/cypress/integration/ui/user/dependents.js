@@ -32,13 +32,17 @@ describe("Dependents - Immunization Tab - Enabled", () => {
 
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         checkDependentsPageHasLoaded();
     });
@@ -171,13 +175,17 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
 
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         checkDependentsPageHasLoaded();
     });
@@ -248,13 +256,17 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         checkDependentsPageHasLoaded();
     });
@@ -324,13 +336,17 @@ describe("Dependents - Tabs Disabled", () => {
 
         setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         checkDependentsPageHasLoaded();
     });

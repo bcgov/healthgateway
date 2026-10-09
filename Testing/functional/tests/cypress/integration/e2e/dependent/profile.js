@@ -19,11 +19,15 @@ describe("dependents - profile", () => {
                 timelineEnabled: true,
             },
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/dependents"
+                );
+            }
         );
     });
 

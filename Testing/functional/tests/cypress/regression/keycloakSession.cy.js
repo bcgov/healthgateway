@@ -11,66 +11,73 @@ describe("Keycloak session regression", { retries: 0 }, () => {
             Cypress.config("baseUrl"),
             "use the deployed login path"
         ).not.to.eq(localDevUri);
-        // Assert presence without including credentials in assertion output.
-        expect(
-            Boolean(Cypress.env("keycloak.username")) &&
-                Boolean(Cypress.env("keycloak.password")),
-            "Keycloak credentials are configured"
-        ).to.eq(true);
 
-        cy.then(() => Cypress.session.clearAllSavedSessions());
-        cy.then(() => Cypress.session.clearCurrentSessionData());
-        cy.configureSettings({});
-        setupStandardFixtures();
+        cy.env(["keycloak.username", "keycloak.password"]).then(
+            ({
+                "keycloak.username": username,
+                "keycloak.password": password,
+            }) => {
+                // Assert presence without including credentials in assertion output.
+                expect(
+                    Boolean(username) && Boolean(password),
+                    "Keycloak credentials are configured"
+                ).to.eq(true);
 
-        let credentialSubmissions = 0;
-        let submissionsAfterLogin;
-        cy.readConfig().then((config) => {
-            cy.intercept(
-                "POST",
-                `${config.openIdConnect.authority}/login-actions/authenticate*`,
-                () => {
-                    // Observe only; do not stub authentication or inspect credentials.
-                    credentialSubmissions += 1;
-                }
-            );
-        });
+                cy.then(() => Cypress.session.clearAllSavedSessions());
+                cy.then(() => Cypress.session.clearCurrentSessionData());
+                cy.configureSettings({});
+                setupStandardFixtures();
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile",
-            "session-regression"
+                let credentialSubmissions = 0;
+                let submissionsAfterLogin;
+                cy.readConfig().then((config) => {
+                    cy.intercept(
+                        "POST",
+                        `${config.openIdConnect.authority}/login-actions/authenticate*`,
+                        () => {
+                            // Observe only; do not stub authentication or inspect credentials.
+                            credentialSubmissions += 1;
+                        }
+                    );
+                });
+
+                cy.login(
+                    username,
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile",
+                    "session-regression"
+                );
+                cy.location("pathname").should("eq", "/profile");
+                cy.get("[data-testid=headerDropdownBtn]").should("exist");
+                cy.then(() => {
+                    expect(
+                        credentialSubmissions,
+                        "fresh login submits credentials"
+                    ).to.be.greaterThan(0);
+                    submissionsAfterLogin = credentialSubmissions;
+                });
+
+                // Remove active browser authentication while retaining the saved session.
+                // Both phases are in one test so this also works when run in isolation.
+                cy.then(() => Cypress.session.clearCurrentSessionData());
+                cy.login(
+                    username,
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home",
+                    "session-regression"
+                );
+                cy.location("pathname").should("eq", "/home");
+                cy.get("[data-testid=headerDropdownBtn]").should("exist");
+                cy.then(() => {
+                    expect(
+                        credentialSubmissions,
+                        "restoring the session does not resubmit credentials"
+                    ).to.eq(submissionsAfterLogin);
+                });
+            }
         );
-        cy.location("pathname").should("eq", "/profile");
-        cy.get("[data-testid=headerDropdownBtn]").should("exist");
-        cy.then(() => {
-            expect(
-                credentialSubmissions,
-                "fresh login submits credentials"
-            ).to.be.greaterThan(0);
-            submissionsAfterLogin = credentialSubmissions;
-        });
-
-        // Remove active browser authentication while retaining the saved session.
-        // Both phases are in one test so this also works when run in isolation.
-        cy.then(() => Cypress.session.clearCurrentSessionData());
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home",
-            "session-regression"
-        );
-        cy.location("pathname").should("eq", "/home");
-        cy.get("[data-testid=headerDropdownBtn]").should("exist");
-        cy.then(() => {
-            expect(
-                credentialSubmissions,
-                "restoring the session does not resubmit credentials"
-            ).to.eq(submissionsAfterLogin);
-        });
     });
 });
 
@@ -84,10 +91,10 @@ describe(
             "[data-testid=profile-notification-preferences-label]";
         let credentialSubmissions = 0;
 
-        function login() {
+        function login(username, password) {
             cy.login(
-                Cypress.env("keycloak.username"),
-                Cypress.env("keycloak.password"),
+                username,
+                password,
                 AuthMethod.KeyCloak,
                 "/profile",
                 sessionId
@@ -101,18 +108,25 @@ describe(
                 Cypress.config("baseUrl"),
                 "use the deployed login path"
             ).not.to.eq(localDevUri);
-            expect(
-                Boolean(Cypress.env("keycloak.password")),
-                "Keycloak password is configured"
-            ).to.eq(true);
-            cy.then(() => Cypress.session.clearAllSavedSessions());
-            cy.then(() => Cypress.session.clearCurrentSessionData());
-            cy.configureSettings({
-                profile: { notifications: { enabled: true } },
-            });
-            setupStandardFixtures();
-            login();
-            cy.get(notificationHeader).should("be.visible");
+            cy.env(["keycloak.username", "keycloak.password"]).then(
+                ({
+                    "keycloak.username": username,
+                    "keycloak.password": password,
+                }) => {
+                    expect(
+                        Boolean(password),
+                        "Keycloak password is configured"
+                    ).to.eq(true);
+                    cy.then(() => Cypress.session.clearAllSavedSessions());
+                    cy.then(() => Cypress.session.clearCurrentSessionData());
+                    cy.configureSettings({
+                        profile: { notifications: { enabled: true } },
+                    });
+                    setupStandardFixtures();
+                    login(username, password);
+                    cy.get(notificationHeader).should("be.visible");
+                }
+            );
         });
 
         beforeEach(() => {
@@ -134,7 +148,14 @@ describe(
                 cy.configureSettings({
                     profile: { notifications: { enabled } },
                 });
-                login();
+                cy.env(["keycloak.username", "keycloak.password"]).then(
+                    ({
+                        "keycloak.username": username,
+                        "keycloak.password": password,
+                    }) => {
+                        login(username, password);
+                    }
+                );
                 // Check rendered behavior, not merely the configuration object.
                 cy.get(notificationHeader).should(
                     enabled ? "be.visible" : "not.exist"

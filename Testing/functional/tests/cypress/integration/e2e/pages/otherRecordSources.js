@@ -38,11 +38,15 @@ describe("Other Record Sources Page", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            PATH
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    PATH
+                );
+            }
         );
 
         cy.location("pathname", { timeout: 10000 }).should(
@@ -61,11 +65,15 @@ describe("Other Record Sources Page", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            PATH
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    PATH
+                );
+            }
         );
 
         // We stub window.open so Cypress can intercept and assert that a new tab would have opened,
@@ -133,11 +141,15 @@ describe("Other Record Sources Page", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            PATH
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    PATH
+                );
+            }
         );
 
         cy.window().then((win) => {
@@ -187,11 +199,15 @@ describe("Other Record Sources Page", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            PATH
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    PATH
+                );
+            }
         );
 
         // Stub window.open to ensure it is NOT called
@@ -227,11 +243,15 @@ describe("Other Record Sources Page", () => {
             },
         });
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            PATH
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    PATH
+                );
+            }
         );
 
         cy.get(selectors("AccessMyHealth").card).should("not.exist");

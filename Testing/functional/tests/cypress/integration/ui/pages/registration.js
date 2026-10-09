@@ -30,12 +30,16 @@ describe("Registration Page", () => {
         });
 
         cy.configureSettings({});
-        cy.login(
-            Cypress.env("keycloak.unregistered.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath,
-            "registration-validation-success"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.unregistered.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath,
+                    "registration-validation-success"
+                );
+            }
         );
 
         cy.contains("#subject", "Registration").should("be.visible");
@@ -93,12 +97,16 @@ describe("Registration Page", () => {
         });
 
         cy.configureSettings({});
-        cy.login(
-            Cypress.env("keycloak.unregistered.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath,
-            "registration-validation-failure"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.unregistered.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homePath,
+                    "registration-validation-failure"
+                );
+            }
         );
 
         cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");

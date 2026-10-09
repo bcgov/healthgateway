@@ -15,13 +15,17 @@ describe("Clinical Document cards", () => {
             datasets: [{ name: "clinicalDocument", enabled: true }],
         });
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -47,13 +51,17 @@ describe("Diagnostic Imaging cards", () => {
             datasets: [{ name: "diagnosticImaging", enabled: true }],
         });
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -96,13 +104,17 @@ describe("Medication cards", () => {
             datasets: [{ name: "medication", enabled: true }],
         });
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -137,13 +149,17 @@ describe("Medication Request", () => {
             fixture: "MedicationService/medicationRequest.json",
         });
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     });
@@ -238,13 +254,17 @@ describe("BC Cancer Screening cards", () => {
             ],
         });
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
     }

@@ -91,10 +91,14 @@ describe("Comments Disable", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak
+                );
+            }
         );
     });
 
@@ -120,10 +124,14 @@ describe("Comments Enable", () => {
                 },
             ],
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak
+                );
+            }
         );
         cy.checkTimelineHasLoaded();
         waitForTimelineCard();

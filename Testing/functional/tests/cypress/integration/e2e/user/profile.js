@@ -4,11 +4,15 @@ const defaultTimeout = 60000;
 describe("User Profile", () => {
     beforeEach(() => {
         cy.configureSettings({});
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile"
+                );
+            }
         );
     });
 
@@ -82,11 +86,15 @@ describe("User Profile Notification Settings", () => {
 
     it("Displays profile notification section and updates preferences on toggle", () => {
         // UI profileNotificatonSettngs is using keycloak.username
-        cy.login(
-            Cypress.env("keycloak.hthgtwy20.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.hthgtwy20.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile"
+                );
+            }
         );
 
         cy.get(sel.header).should("be.visible");
@@ -167,61 +175,75 @@ describe("User Profile Notification Settings", () => {
     });
 
     it("Update email address and refresh browser", () => {
-        cy.login(
-            Cypress.env("keycloak.hthgtwy20.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
-        );
+        cy.env(["keycloak.password", "emailAddress"]).then(
+            ({ "keycloak.password": password, emailAddress }) => {
+                cy.login(
+                    Cypress.expose("keycloak.hthgtwy20.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile"
+                );
 
-        cy.intercept("PUT", `**/UserProfile/*/email?api-version=2.0`).as(
-            "updateUserProfile"
-        );
-        cy.intercept("GET", /\/UserProfile\/[^/?]+\?api-version=2\.0$/).as(
-            "getUserProfile"
-        );
+                cy.intercept(
+                    "PUT",
+                    `**/UserProfile/*/email?api-version=2.0`
+                ).as("updateUserProfile");
+                cy.intercept(
+                    "GET",
+                    /\/UserProfile\/[^/?]+\?api-version=2\.0$/
+                ).as("getUserProfile");
 
-        cy.log("Edit email address");
-        cy.get("[data-testid=email-input] input").should(
-            "have.value",
-            "nobody@healthgateway.gov.bc.ca"
-        );
-        cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=email-input] input")
-            .clear()
-            .type(Cypress.env("emailAddress"));
-        cy.get("[data-testid=editEmailSaveBtn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+                cy.log("Edit email address");
+                cy.get("[data-testid=email-input] input").should(
+                    "have.value",
+                    "nobody@healthgateway.gov.bc.ca"
+                );
+                cy.get("[data-testid=editEmailBtn]").click();
+                cy.get("[data-testid=email-input] input")
+                    .clear()
+                    .type(emailAddress);
+                cy.get("[data-testid=editEmailSaveBtn]").click();
+                cy.get("[data-testid=loadingSpinner]").should("be.visible");
 
-        cy.wait("@updateUserProfile", { timeout: defaultTimeout });
-        cy.wait("@getUserProfile", { timeout: defaultTimeout });
-        cy.get("[data-testid=loadingSpinner]").should("not.exist");
+                cy.wait("@updateUserProfile", { timeout: defaultTimeout });
+                cy.wait("@getUserProfile", { timeout: defaultTimeout });
+                cy.get("[data-testid=loadingSpinner]").should("not.exist");
 
-        cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
-        cy.get("[data-testid=resendEmailBtn]").should("be.visible");
+                cy.get("[data-testid=emailStatusNotVerified]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=resendEmailBtn]").should("be.visible");
 
-        cy.log("Click browser refresh button");
-        cy.reload();
+                cy.log("Click browser refresh button");
+                cy.reload();
 
-        cy.wait("@getUserProfile", { timeout: defaultTimeout });
-        cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
-        cy.get("[data-testid=resendEmailBtn]").should("be.visible");
-        cy.get("[data-testid=email-input] input").should(
-            "have.attr",
-            "readonly"
-        );
-        cy.get("[data-testid=email-input] input").should(
-            "have.value",
-            Cypress.env("emailAddress")
+                cy.wait("@getUserProfile", { timeout: defaultTimeout });
+                cy.get("[data-testid=emailStatusNotVerified]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=resendEmailBtn]").should("be.visible");
+                cy.get("[data-testid=email-input] input").should(
+                    "have.attr",
+                    "readonly"
+                );
+                cy.get("[data-testid=email-input] input").should(
+                    "have.value",
+                    emailAddress
+                );
+            }
         );
     });
 
     it("Deleting email disables only email notification preferences", () => {
-        cy.login(
-            Cypress.env("keycloak.notfound.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.notfound.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile"
+                );
+            }
         );
 
         cy.log("Assert email switch before delete");
@@ -258,11 +280,15 @@ describe("User Profile Notification Settings", () => {
     });
 
     it("Deleting SMS number disables only SMS notification preferences", () => {
-        cy.login(
-            Cypress.env("keycloak.protected.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/profile"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.protected.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/profile"
+                );
+            }
         );
 
         cy.log("Assert email switch before delete");

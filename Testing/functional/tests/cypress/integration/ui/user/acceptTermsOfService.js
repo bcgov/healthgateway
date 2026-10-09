@@ -15,11 +15,15 @@ describe("Need to accept terms of service", () => {
             fixture: "UserProfileService/termsOfService.json",
         });
 
-        cy.login(
-            Cypress.env("keycloak.accept.tos.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.accept.tos.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
     });
 
@@ -41,11 +45,15 @@ describe("Need to accept terms of service", () => {
 describe("Does not need to accept terms of service", () => {
     beforeEach(() => {
         setupStandardFixtures();
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/home"
+                );
+            }
         );
     });
 

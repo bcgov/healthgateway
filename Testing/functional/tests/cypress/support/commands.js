@@ -343,17 +343,25 @@ Cypress.Commands.add("getTokens", (username, password) => {
             );
 
             return cy
-                .request({
-                    method: "POST",
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
-                    form: true,
-                    body: {
-                        grant_type: "client_credentials",
-                        client_id: Cypress.env("keycloak.erebus.client"),
-                        client_secret: Cypress.env("keycloak.erebus.secret"),
-                    },
-                })
-                .its("body");
+                .env(["keycloak.erebus.client", "keycloak.erebus.secret"])
+                .then(
+                    ({
+                        "keycloak.erebus.client": clientId,
+                        "keycloak.erebus.secret": clientSecret,
+                    }) =>
+                        cy
+                            .request({
+                                method: "POST",
+                                url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
+                                form: true,
+                                body: {
+                                    grant_type: "client_credentials",
+                                    client_id: clientId,
+                                    client_secret: clientSecret,
+                                },
+                            })
+                            .its("body")
+                );
         }
     });
 });

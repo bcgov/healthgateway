@@ -16,11 +16,15 @@ describe("Home Page", () => {
         });
         const waitForImmunizations = prepareImmunizationWait(healthGatewayHdid);
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homeUrl
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl
+                );
+            }
         );
 
         cy.get("[data-testid=immunization-record-card-button]")
@@ -46,11 +50,15 @@ describe("Home Page", () => {
         });
         const waitForImmunizations = prepareImmunizationWait(healthGatewayHdid);
 
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homeUrl
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    homeUrl
+                );
+            }
         );
 
         cy.get("[data-testid=recommendations-card-button]")
