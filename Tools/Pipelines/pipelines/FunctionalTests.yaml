@@ -118,6 +118,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     condition: and(succeeded('Resolve_Cypress_Image'), or(eq(variables['Admin'], true), eq(variables['AdminUnauthorized'], true)))
     dependsOn:
@@ -156,6 +157,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminAuthentication'], true)))
     dependsOn:
@@ -195,6 +197,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminUi'], true)))
     dependsOn:
@@ -237,6 +240,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminRead'], true)))
     dependsOn:
@@ -279,6 +283,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminWrite'], true)))
     dependsOn:
@@ -342,6 +347,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgAuth'], true)))
     dependsOn:
@@ -386,6 +392,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     dependsOn:
       - "Resolve_Cypress_Image"
@@ -434,6 +441,7 @@ jobs:
       cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
     container:
       image: $(cypressImage)
+      endpoint: DockerHub-Cypress
       options: --shm-size=2g
     dependsOn:
       - "Resolve_Cypress_Image"
