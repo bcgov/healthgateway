@@ -1,28 +1,12 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Encounter Service", () => {
     const defaultTimeout = 60000;
 
-    let tokens;
-
-    before(() => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.getTokens(
-                    Cypress.expose("keycloak.username"),
-                    password
-                ).then((result) => {
-                    tokens = result;
-                });
-            }
-        );
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext();
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Encounter at Endpoint: ${config.serviceEndpoints.Encounter}swagger`
             );
@@ -39,7 +23,7 @@ describe("Encounter Service", () => {
     });
 
     it("Verify Encounter Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
             );
@@ -56,8 +40,8 @@ describe("Encounter Service", () => {
 
     it("Verify Encounter Forbidden", () => {
         const HDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
                 );
@@ -81,8 +65,8 @@ describe("Encounter Service", () => {
 
     it("Verify Distinct Encounters", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
                 );
@@ -116,7 +100,7 @@ describe("Encounter Service", () => {
     });
 
     it("Verify Hospital Visit Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
             );
@@ -133,8 +117,8 @@ describe("Encounter Service", () => {
 
     it("Verify Hospital Visit Forbidden", () => {
         const HDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
                 );
@@ -158,8 +142,8 @@ describe("Encounter Service", () => {
 
     it("Verify Hospital Visits Delegate Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
                 );
@@ -184,8 +168,8 @@ describe("Encounter Service", () => {
     it("Verify Hospital Visits V2 Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 const encounterEndpoint = config.serviceEndpoints.Encounter;
 
                 cy.request({

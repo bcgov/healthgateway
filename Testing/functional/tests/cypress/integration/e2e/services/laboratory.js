@@ -1,31 +1,15 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Laboratory Service", () => {
     const defaultTimeout = 60000;
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const EXPIREDELEGATEDHDID = "286338699276932223";
     const DELEGATEDHDID = "162346565465464564565463257";
 
-    let tokens;
-
-    before(() => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.getTokens(
-                    Cypress.expose("keycloak.username"),
-                    password
-                ).then((result) => {
-                    tokens = result;
-                });
-            }
-        );
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext();
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Laboratory at Endpoint: ${config.serviceEndpoints.Laboratory}swagger`
             );
@@ -42,7 +26,7 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify Laboratory Orders Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
             );
@@ -58,8 +42,8 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify Laboratory Orders Expired Delegate Forbidden", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
@@ -82,8 +66,8 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify Laboratory Orders Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
@@ -107,8 +91,8 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify Laboratory Orders Delegate Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
@@ -132,7 +116,7 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify COVID-19 Tests Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
             );
@@ -148,8 +132,8 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify COVID-19 Tests Expired Delegate Forbidden", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
@@ -172,8 +156,8 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify COVID-19 Tests Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
@@ -197,8 +181,8 @@ describe("Laboratory Service", () => {
     });
 
     it("Verify COVID-19 Tests Delegate Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );

@@ -1,26 +1,10 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Medication Service", () => {
-    let tokens;
-
-    before(() => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.getTokens(
-                    Cypress.expose("keycloak.username"),
-                    password
-                ).then((result) => {
-                    tokens = result;
-                });
-            }
-        );
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext();
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Medication at Endpoint: ${config.serviceEndpoints.Medication}swagger`
             );
@@ -37,7 +21,7 @@ describe("Medication Service", () => {
 
     it("Verify MedicationStatement Unauthorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
@@ -53,8 +37,8 @@ describe("Medication Service", () => {
 
     it("Verify MedicationStatement Forbidden", () => {
         const HDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
@@ -77,8 +61,8 @@ describe("Medication Service", () => {
 
     it("Verify MedicationStatement Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
@@ -108,7 +92,7 @@ describe("Medication Service", () => {
 
     it("Verify MedicationRequest Unauthorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
@@ -124,8 +108,8 @@ describe("Medication Service", () => {
 
     it("Verify MedicationRequest Forbidden", () => {
         const HDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
@@ -148,8 +132,8 @@ describe("Medication Service", () => {
 
     it("Verify MedicationRequest Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );

@@ -1,28 +1,12 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Clinical Documents Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-    let tokens;
-
-    before(() => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.getTokens(
-                    Cypress.expose("keycloak.username"),
-                    password
-                ).then((result) => {
-                    tokens = result;
-                });
-            }
-        );
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext();
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Clinical Documents at Endpoint: ${config.serviceEndpoints.ClinicalDocument}swagger`
             );
@@ -38,7 +22,7 @@ describe("Clinical Documents Service", () => {
     });
 
     it("Verify Clinical Document Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`
             );
@@ -54,8 +38,8 @@ describe("Clinical Documents Service", () => {
 
     it("Verify Clinical Document Forbidden", () => {
         const BOGUSHDID = "BOGUSHDID";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`
                 );
@@ -77,8 +61,8 @@ describe("Clinical Documents Service", () => {
     });
 
     it("Verify Clinical Document Records Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`
                 );
@@ -107,8 +91,8 @@ describe("Clinical Documents Service", () => {
 
     it("Verify Clinical Document File Authorized", () => {
         const FILEID = "clinicaldocument_vpp_cer_12345678931";
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Clinical Document Service Endpoint: ${config.serviceEndpoints.ClinicalDocument}`
                 );

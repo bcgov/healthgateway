@@ -1,24 +1,15 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Gateway Api Data Access Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const DEPENDENT_HDID = "35224807075386271";
     const DELEGATE_HDID =
         "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-    let tokens;
-
-    before(() => {
-        cy.getTokens().then((result) => {
-            tokens = result;
-        });
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext({ clientCredentials: true });
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Gateway Api Endpoint: ${config.serviceEndpoints.GatewayApi}swagger`
             );
@@ -34,7 +25,7 @@ describe("Gateway Api Data Access Service", () => {
     });
 
     it("Verify Data Access Blocked Datasets Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets`
             );
@@ -49,8 +40,8 @@ describe("Gateway Api Data Access Service", () => {
     });
 
     it("Verify Data Access Blocked Datasets Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Data Access Blocked Datasets Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/BlockedDatasets`
                 );
@@ -72,7 +63,7 @@ describe("Gateway Api Data Access Service", () => {
     });
 
     it("Verify Data Access Contact Info Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo`
             );
@@ -87,8 +78,8 @@ describe("Gateway Api Data Access Service", () => {
     });
 
     it("Verify Data Access Contact Info Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Data Access Contact Info Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/ContactInfo`
                 );
@@ -110,7 +101,7 @@ describe("Gateway Api Data Access Service", () => {
     });
 
     it("Verify Data Access Protected Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/Protected`
             );
@@ -125,8 +116,8 @@ describe("Gateway Api Data Access Service", () => {
     });
 
     it("Verify Data Access Protected Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Data Access Protected Service Endpoint: ${config.serviceEndpoints.GatewayApi}DataAccess/Protected`
                 );
