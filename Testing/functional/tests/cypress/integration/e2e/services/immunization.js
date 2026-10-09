@@ -1,30 +1,14 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Immunization Service", () => {
     const AGED_OUT_HDID = "286338699276932223";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUS_HDID = "BOGUSHDID";
 
-    let tokens;
-
-    before(() => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.getTokens(
-                    Cypress.expose("keycloak.username"),
-                    password
-                ).then((result) => {
-                    tokens = result;
-                });
-            }
-        );
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext();
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Immunization at Endpoint: ${config.serviceEndpoints.Immunization}swagger`
             );
@@ -40,8 +24,8 @@ describe("Immunization Service", () => {
     });
 
     it("Verify Immunization V1 Expired Delegate Forbidden", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Immunization Service V1 Endpoint: ${config.serviceEndpoints.Immunization}`
                 );
@@ -63,7 +47,7 @@ describe("Immunization Service", () => {
     });
 
     it("Verify V2 Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying V2 Swagger exists for Immunization at Endpoint: ${config.serviceEndpoints.Immunization}swagger`
             );
@@ -78,7 +62,7 @@ describe("Immunization Service", () => {
     });
 
     it("Verify Immunization V2 Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Immunization Service V2 Endpoint: ${config.serviceEndpoints.Immunization}`
             );
@@ -93,8 +77,8 @@ describe("Immunization Service", () => {
     });
 
     it("Verify Immunization V2 Forbidden", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Immunization Service V2 Endpoint: ${config.serviceEndpoints.Immunization}`
                 );
@@ -116,8 +100,8 @@ describe("Immunization Service", () => {
     });
 
     it("Verify Immunization V2 Expired Delegate Forbidden", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Immunization Service V2 Endpoint: ${config.serviceEndpoints.Immunization}`
                 );
@@ -139,8 +123,8 @@ describe("Immunization Service", () => {
     });
 
     it("Verify Immunization V2 Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Immunization Service V2 Endpoint: ${config.serviceEndpoints.Immunization}`
                 );

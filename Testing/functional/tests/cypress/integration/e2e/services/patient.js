@@ -1,29 +1,13 @@
+import { createServiceTestContext } from "../../../support/functions/serviceTestContext";
+
 describe("Patient Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUSHDID = "BOGUSHDID";
 
-    let tokens;
-
-    before(() => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.getTokens(
-                    Cypress.expose("keycloak.username"),
-                    password
-                ).then((result) => {
-                    tokens = result;
-                });
-            }
-        );
-    });
-
-    beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.wrap(tokens).as("tokens");
-    });
+    const service = createServiceTestContext();
 
     it("Verify Swagger", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Verifying Swagger exists for Patient at Endpoint: ${config.serviceEndpoints.Patient}swagger`
             );
@@ -39,7 +23,7 @@ describe("Patient Service", () => {
     });
 
     it("Verify Patient Unauthorized", () => {
-        cy.get("@config").then((config) => {
+        service.getConfig().then((config) => {
             cy.log(
                 `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
             );
@@ -54,8 +38,8 @@ describe("Patient Service", () => {
     });
 
     it("Verify Patient Forbidden", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
                 );
@@ -77,8 +61,8 @@ describe("Patient Service", () => {
     });
 
     it("Verify Patient Authorized", () => {
-        cy.get("@tokens").then((tokens) => {
-            cy.get("@config").then((config) => {
+        service.getTokens().then((tokens) => {
+            service.getConfig().then((config) => {
                 cy.log(
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
                 );
