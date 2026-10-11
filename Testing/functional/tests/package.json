@@ -17,7 +17,7 @@
     "overrides": {
         "serialize-javascript": "7.0.7",
         "diff": "9.0.0",
-        "brace-expansion": "5.0.8"
+        "brace-expansion": "5.0.12"
     },
     "devDependencies": {
         "@cypress/skip-test": "^2.6.1",
