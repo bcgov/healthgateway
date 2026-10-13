@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Aspire.AppHost.Sdk" Version="13.5.3" />
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.6.1" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>HealthGateway.AspireHost</RootNamespace>
