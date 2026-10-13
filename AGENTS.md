@@ -161,6 +161,10 @@ Key points:
 - Some analyzers are disabled in tests; do not rely on that in production code.
 
 ## Agent Notes
+- **Hard rule: never commit or push on behalf of the user.** Do not run `git commit`,
+  `git push`, or anything that creates commits or updates a remote (including amending,
+  merging, rebasing, tagging, or opening PRs). Leave changes in the working tree for the
+  user to review, commit, and push themselves.
 - Many apps are independent; target the closest `.sln` or `.csproj` for faster builds.
 - Prefer narrow test execution (`--filter`) to keep CI cycles fast.
 - Keep changes localized and follow existing conventions in each app.

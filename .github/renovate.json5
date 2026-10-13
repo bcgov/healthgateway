@@ -1,8 +1,11 @@
 {
     $schema: "https://docs.renovatebot.com/renovate-schema.json",
-    extends: ["config:recommended"],
+    extends: ["config:best-practices"],
 
-    // config:recommended pulls in :ignoreModulesAndTests, which ignores **/test/** and
+    // Default is 2 new PRs per hour; prConcurrentLimit is left at its default of 10.
+    prHourlyLimit: 10,
+
+    // config:recommended (via config:best-practices) pulls in :ignoreModulesAndTests, which ignores **/test/** and
     // **/tests/**. That would silently drop Testing/functional/tests and the unit-test
     // projects. We want those covered, so only ignore node_modules.
     ignorePaths: ["**/node_modules/**"],
@@ -26,6 +29,14 @@
             matchDatasources: ["docker"],
             groupName: null,
             additionalBranchPrefix: "docker-",
+        },
+        {
+            // hg-base is our own image, rebuilt nightly, and the app Dockerfiles should
+            // always build on the newest one. Keep it floating on :latest rather than
+            // letting docker:pinDigests (from config:best-practices) pin it to a digest.
+            matchDatasources: ["docker"],
+            matchPackageNames: ["healthopenshift/hg-base"],
+            pinDigests: false,
         },
         {
             // Test-only tooling: group so one PR touches all 16 test csproj files.
