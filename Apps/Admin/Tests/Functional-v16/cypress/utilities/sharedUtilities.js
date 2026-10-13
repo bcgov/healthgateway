@@ -32,3 +32,9 @@ export function getTodayPlusDaysDate(days) {
 export function selectTab(tabsSelector, tabText) {
     cy.get(tabsSelector).contains(".mud-tab", tabText).click();
 }
+
+export function skipOnLocalhost() {
+    if (Cypress.config("baseUrl").includes("localhost")) {
+        cy.state("runnable").ctx.skip();
+    }
+}

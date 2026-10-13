@@ -28,7 +28,7 @@ function generateRandomString(length) {
 
 function loginWithKeycloakUI(username, password, path = "/dashboard") {
     let defaultPath =
-        username === Cypress.env("keycloak_support_username")
+        username === Cypress.expose("keycloak_support_username")
             ? "/support"
             : "/dashboard";
 
