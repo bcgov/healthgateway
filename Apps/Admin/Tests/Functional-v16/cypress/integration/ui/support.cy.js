@@ -62,6 +62,15 @@ describe("Support", () => {
             }
         ).as("getUsers");
 
+        // PHN lookup made by the patient details page for the email user
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryType=Phn&queryString=${emailPhn}`,
+            {
+                fixture: "SupportService/users-email.json",
+            }
+        );
+
         // PHN error
         cy.intercept(
             "GET",
