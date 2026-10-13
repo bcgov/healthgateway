@@ -868,3 +868,6 @@ dotnet_diagnostic.cs1591.severity = none
 
 # SA1600: Elements should be documented
 dotnet_diagnostic.sa1600.severity = none
+
+# xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken
+dotnet_diagnostic.xunit1051.severity = none

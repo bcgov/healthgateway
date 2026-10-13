@@ -9,6 +9,7 @@
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
+        <OutputType>Exe</OutputType>
         <IsTestProject>true</IsTestProject>
         <SonarQubeTestProject>true</SonarQubeTestProject>
         <RootNamespace>HealthGateway.IntegrationTests</RootNamespace>
@@ -24,14 +25,13 @@
 
     <ItemGroup>
         <PackageReference Include="Alba" Version="8.5.3" />
-        <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.7.1" />
+        <PackageReference Include="MartinCostello.Logging.XUnit.v3" Version="0.7.1" />
         <PackageReference Include="Shouldly" Version="4.3.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
         <PackageReference Include="Testcontainers.PostgreSql" Version="4.16.0" />
         <PackageReference Include="Testcontainers.Redis" Version="4.16.0" />
-        <PackageReference Include="xunit" Version="2.9.3" />
-        <PackageReference Include="xunit.categories" Version="3.0.1" />
+        <PackageReference Include="xunit.v3.mtp-off" Version="3.2.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
