@@ -20,8 +20,6 @@ using HealthGateway.Admin.Common.Models.AdminReports;
 using HealthGateway.Admin.Server;
 using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
-using Xunit.Abstractions;
-using Xunit.Categories;
 
 [IntegrationTest]
 public class AdminApiAdminReportsTests : ScenarioContextBase<Program>

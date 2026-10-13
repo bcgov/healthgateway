@@ -114,7 +114,7 @@ namespace HealthGateway.Common.Auditing
                 "Laboratory" => ApplicationType.Laboratory,
                 "Encounter" => ApplicationType.Encounter,
                 "ClinicalDocument" => ApplicationType.ClinicalDocument,
-                "ReSharperTestRunner" or "ReSharperTestRunner64" or "ReSharperTestRunnerArm64" or "testhost" => ApplicationType.Configuration,
+                "ReSharperTestRunner" or "ReSharperTestRunner64" or "ReSharperTestRunnerArm64" or "testhost" or "CommonTests" or "IntegrationTests" => ApplicationType.Configuration,
                 _ => throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'"),
             };
         }

@@ -30,7 +30,7 @@
         {
             // Test-only tooling: group so one PR touches all 16 test csproj files.
             matchDatasources: ["nuget"],
-            matchPackageNames: ["Moq", "xunit", "xunit.runner.visualstudio", "coverlet.collector", "coverlet.msbuild", "Shouldly", "FluentAssertions", "Microsoft.NET.Test.Sdk"],
+            matchPackageNames: ["Moq", "xunit.v3.mtp-off", "xunit.runner.visualstudio", "coverlet.collector", "coverlet.msbuild", "Shouldly", "FluentAssertions", "Microsoft.NET.Test.Sdk"],
             groupName: "dotnet test tooling",
         },
         {

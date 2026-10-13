@@ -27,7 +27,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
-using Xunit.Abstractions;
 
 public class WebAppFixture : IAsyncLifetime
 {
@@ -76,7 +75,7 @@ public class WebAppFixture : IAsyncLifetime
         return host;
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (this.postgreSqlContainer.State != TestcontainersStates.Running)
         {
@@ -95,10 +94,11 @@ public class WebAppFixture : IAsyncLifetime
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await this.postgreSqlContainer.DisposeAsync();
         await this.redisContainer.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 
     private static async Task MigrateDatabase(GatewayDbContext ctx)

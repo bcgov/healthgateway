@@ -23,8 +23,6 @@ using HealthGateway.Common.Models.Events;
 using HealthGateway.Database.Models;
 using HealthGateway.GatewayApi.Models;
 using Microsoft.EntityFrameworkCore;
-using Xunit.Abstractions;
-using Xunit.Categories;
 
 [IntegrationTest]
 public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Program>

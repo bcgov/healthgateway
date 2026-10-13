@@ -21,7 +21,6 @@ using Alba;
 using Alba.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit.Abstractions;
 
 [CollectionDefinition("WebAppScenario")]
 public class ScenarioCollection : ICollectionFixture<WebAppFixture>;
@@ -54,17 +53,18 @@ public abstract class ScenarioContextBase<TProgram> : IAsyncLifetime
         this.testConfiguration = configBuilder.Build().GetSection(configSectionName).Get<TestConfiguration>()!;
     }
 
-    public virtual async Task InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         IAlbaExtension authentication = this.CreateClientCredentials(this.testConfiguration.DefaultUserName);
         this.Host = await this.fixture.CreateHost<TProgram>(this.Output, extensions: new[] { authentication });
         this.testServicesScope = Host.Services.CreateScope();
     }
 
-    public virtual async Task DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         this.testServicesScope.Dispose();
         await this.Host.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 
     public TestUser GetTestUser(string userName)

@@ -258,7 +258,7 @@ namespace HealthGateway.CommonTests.Auditing
                 m => m.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("Failed to write audit event", o.ToString(), StringComparison.OrdinalIgnoreCase)),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("Failed to write audit event", o!.ToString(), StringComparison.OrdinalIgnoreCase)),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

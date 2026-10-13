@@ -22,8 +22,6 @@ using HealthGateway.Admin.Server;
 using HealthGateway.Common.Models.Events;
 using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
-using Xunit.Abstractions;
-using Xunit.Categories;
 
 [IntegrationTest]
 public class AdminApiDependentTests : ScenarioContextBase<Program>

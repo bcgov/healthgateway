@@ -24,8 +24,6 @@ using HealthGateway.Common.Messaging;
 using HealthGateway.Common.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit.Abstractions;
-using Xunit.Categories;
 
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
@@ -46,7 +44,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
             });
     }
 
-    public override async Task InitializeAsync()
+    public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
         this.receiver = this.TestServices.GetRequiredService<IMessageReceiver>();
@@ -56,10 +54,11 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
                 this.TestServices.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection")));
     }
 
-    public override async Task DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
         this.cts.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private async Task SendMessages(IEnumerable<IEnumerable<TestMessage>> messageGroups, CancellationToken ct)
