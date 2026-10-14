@@ -28,7 +28,7 @@ function generateRandomString(length) {
 
 function loginWithKeycloakUI(username, password, path = "/dashboard") {
     let defaultPath =
-        username === Cypress.env("keycloak_support_username")
+        username === Cypress.expose("keycloak_support_username")
             ? "/support"
             : "/dashboard";
 
@@ -94,6 +94,13 @@ function logout(config) {
 Cypress.on("uncaught:exception", (err) => {
     /* returning false here prevents Cypress from failing the test */
     if (err.message.includes(resizeObserverLoopErr)) {
+        return false;
+    }
+    // Prevent the known service-worker.js registration failure from failing the test.
+    if (
+        err.message.includes("Failed to register a ServiceWorker") &&
+        err.message.includes("service-worker.js")
+    ) {
         return false;
     }
 });

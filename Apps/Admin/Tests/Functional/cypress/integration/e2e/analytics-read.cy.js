@@ -32,11 +32,13 @@ describe("System Analytics", () => {
             "getYearOfBirthCounts"
         );
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/analytics"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/analytics"
+            );
+        });
     });
 
     it("Verify system analytics stats downloads.", () => {

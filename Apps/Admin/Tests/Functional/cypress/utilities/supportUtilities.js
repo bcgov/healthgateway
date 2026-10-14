@@ -57,17 +57,18 @@ export function verifySupportTableResults(
     expectedPhn,
     expectedRowCount
 ) {
-    getTableRows("[data-testid=user-table]")
-        .should("have.length", expectedRowCount)
-        .first((_$rows) => {
-            cy.get(`[data-testid=user-table-hdid-${expectedHdid}]`).contains(
-                expectedHdid
-            );
+    getTableRows("[data-testid=user-table]").should(
+        "have.length",
+        expectedRowCount
+    );
 
-            cy.get(`[data-testid=user-table-phn-${expectedHdid}]`).contains(
-                expectedPhn
-            );
-        });
+    cy.get(`[data-testid=user-table-hdid-${expectedHdid}]`).contains(
+        expectedHdid
+    );
+
+    cy.get(`[data-testid=user-table-phn-${expectedHdid}]`).contains(
+        expectedPhn
+    );
 }
 
 export function formatPhn(phnNumber) {

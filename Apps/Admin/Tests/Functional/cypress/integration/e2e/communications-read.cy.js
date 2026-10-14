@@ -2,11 +2,13 @@ import { getTodayPlusDaysDate } from "../../utilities/sharedUtilities";
 
 describe("Communications", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/communications"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/communications"
+            );
+        });
     });
 
     it("Verify communications.", () => {

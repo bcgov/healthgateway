@@ -2,7 +2,7 @@
 
 Implements functional tests for Health Gateway Admin using Cypress.io tooling.
 
-## Prequisites
+## Prerequisites
 
 A Developer should have gone through the Health Gateway installation and configuration.
 
@@ -21,12 +21,15 @@ npm install
 
 Create a cypress.env.json and update with passwords or any other environment variables you would like to override.
 
+In Cypress v16, non-sensitive usernames are configured using `expose` in `cypress.config.js`; secure overrides such as passwords and secrets continue to use `cypress.env.json`.
+
 ```bash
 {
     "idir_username": "THE USERNAME",
     "idir_password": "THE PASSWORD",
     "keycloak_username": "THE USERNAME",
     "keycloak_password": "THE PASSWORD",
+    "keycloak_admin_secret": "THE SECRET"
 }
 ```
 

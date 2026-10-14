@@ -1,10 +1,12 @@
 describe("Dashboard", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/dashboard"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/dashboard"
+            );
+        });
     });
 
     it("Verify dashboard counts from seeded data.", () => {

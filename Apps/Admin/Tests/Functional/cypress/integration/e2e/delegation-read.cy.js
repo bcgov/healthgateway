@@ -18,11 +18,13 @@ function getTableRows(tableSelector) {
 
 describe("Delegation Search", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/delegation"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/delegation"
+            );
+        });
     });
 
     it("Verify response when searching for dependent without delegate.", () => {

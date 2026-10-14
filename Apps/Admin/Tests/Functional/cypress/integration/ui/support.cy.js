@@ -62,6 +62,15 @@ describe("Support", () => {
             }
         ).as("getUsers");
 
+        // PHN lookup made by the patient details page for the email user
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryType=Phn&queryString=${emailPhn}`,
+            {
+                fixture: "SupportService/users-email.json",
+            }
+        );
+
         // PHN error
         cy.intercept(
             "GET",
@@ -91,11 +100,13 @@ describe("Support", () => {
             fixture: "SupportService/patient-details.json",
         }).as("getPatientSupportDetails");
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/support"
+            );
+        });
     });
 
     it("Verify support queries", () => {
