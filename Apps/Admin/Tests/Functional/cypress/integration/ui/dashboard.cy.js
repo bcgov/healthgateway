@@ -81,11 +81,13 @@ describe("Dashboard", () => {
 
         setupAppLoginCountsFixtures();
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/analytics"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/analytics"
+            );
+        });
 
         // changing the date must be done after logging in
         cy.clock(localDate, ["Date"]);
@@ -182,11 +184,13 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/dashboard"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/dashboard"
+            );
+        });
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
 
@@ -211,11 +215,13 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/dashboard"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/dashboard"
+            );
+        });
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
 
@@ -240,11 +246,13 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/dashboard"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/dashboard"
+            );
+        });
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
 
@@ -269,11 +277,13 @@ describe("Dashboard Mobile Login Count Tooltip", () => {
 
         setupAppLoginCountsFixtures(mobileCount, androidCount, iosCount);
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/dashboard"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/dashboard"
+            );
+        });
 
         cy.get("[data-testid=total-mobile-users]").contains(mobileCount);
 

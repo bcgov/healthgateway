@@ -174,11 +174,13 @@ function validateDatasetAccess() {
 
 describe("Patient details page as admin user", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/support"
+            );
+        });
     });
 
     it("Verify profile, account, dataset access and manage tab details", () => {
@@ -207,7 +209,7 @@ describe("Patient details page as admin user", () => {
         cy.log("Verify API Registration");
         cy.get("[data-testid=api-registration]").should("be.visible");
 
-        cy.log("Verify Refresh Disagnoistic Image Cache ");
+        cy.log("Verify Refresh Diagnostic Image Cache ");
         cy.get("[data-testid=last-imaging-refresh-date]").should("be.visible");
 
         cy.intercept("POST", "**/Support/Patient/RefreshHealthData*").as(

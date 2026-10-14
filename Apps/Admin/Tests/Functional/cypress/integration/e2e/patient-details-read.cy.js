@@ -37,11 +37,13 @@ function validateTabDoesNotExist(tabText) {
 
 describe("Patient details page as reviewer", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_reviewer_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_reviewer_username"),
+                keycloak_password,
+                "/support"
+            );
+        });
     });
 
     // verify that the reviewer cannot use the block access controls
@@ -56,7 +58,7 @@ describe("Patient details page as reviewer", () => {
             cy.wrap($el).parent().parent().should("have.class", "mud-readonly");
         });
 
-        // Clicke any switch and check if the dirty state has exposed the save and cancel buttons
+        // Click any switch and check if the dirty state has exposed the save and cancel buttons
         cy.get(`[data-testid=block-access-switch-${switchName}]`)
             .should("exist")
             .click();
@@ -68,11 +70,13 @@ describe("Patient details page as reviewer", () => {
 
 describe("Patient Details as Support", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_support_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_support_username"),
+                keycloak_password,
+                "/support"
+            );
+        });
     });
 
     it("Verify dependent section not shown", () => {

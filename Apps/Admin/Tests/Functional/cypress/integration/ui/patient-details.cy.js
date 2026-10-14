@@ -84,11 +84,13 @@ describe("Patient details as admin", () => {
             }
         );
 
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/support"
+            );
+        });
     });
 
     it("Verify patient details", () => {
@@ -261,11 +263,13 @@ describe("Patient details as support", () => {
             }
         ).as("getPatientSupportDetails");
 
-        cy.login(
-            Cypress.env("keycloak_support_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_support_username"),
+                keycloak_password,
+                "/support"
+            );
+        });
     });
 
     it("Verify patient deceased", () => {

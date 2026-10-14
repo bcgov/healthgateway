@@ -1,7 +1,7 @@
 [
     {
         "status": "NotUser",
-        "warningMessage": "Warning: The person returned is the subject of an potential duplicate",
+        "warningMessage": "Warning: The person returned is the subject of a potential duplicate",
         "hdid": "",
         "personalHealthNumber": "9873967163",
         "commonName": null,

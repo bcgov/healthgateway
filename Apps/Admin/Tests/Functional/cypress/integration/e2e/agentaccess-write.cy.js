@@ -23,11 +23,13 @@ function createUser() {
 describe("Provision", () => {
     beforeEach(() => {
         removeUserIfExists(user, "Pre-test cleanup");
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/provision"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/provision"
+            );
+        });
     });
 
     afterEach(() => {
