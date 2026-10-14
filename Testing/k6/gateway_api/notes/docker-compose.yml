@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   k6:
-    image: grafana/k6:latest
+    image: grafana/k6:latest@sha256:e66db15b860113878fa74670e31f5e274830b7b6e42c8bff28b2f2d86a257603
     command: run /gateway_api/notes/k6_notes.js
     volumes:
       - ../../gateway_api/notes:/gateway_api/notes
