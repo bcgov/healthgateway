@@ -57,44 +57,7 @@ namespace HealthGateway.GatewayApi.Services
             CancellationToken ct = default)
         {
             UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct) ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
-
-            IReadOnlyList<UserProfileNotificationSetting> existing =
-                await notificationSettingDelegate.GetAsync(hdid, ct);
-
-            UserProfileNotificationSetting setting =
-                existing.SingleOrDefault(x => x.NotificationType == model.Type) ?? new UserProfileNotificationSetting
-                {
-                    Hdid = hdid,
-                    NotificationType = model.Type,
-                };
-
-            // Update email preference only when an email value is provided.
-            if (model.EmailEnabled.HasValue)
-            {
-                setting.EmailEnabled = model.EmailEnabled.Value;
-            }
-
-            // Update SMS preference only when an SMS value is provided.
-            if (model.SmsEnabled.HasValue)
-            {
-                setting.SmsEnabled = model.SmsEnabled.Value;
-            }
-
-            IReadOnlyCollection<NotificationTargets> emailNotificationTargets =
-                model.EmailEnabled.HasValue
-                    ? GetTargets(model.Type, model.EmailEnabled.Value, !string.IsNullOrEmpty(userProfile.Email))
-                    : [];
-
-            IReadOnlyCollection<NotificationTargets> smsNotificationTargets =
-                model.SmsEnabled.HasValue
-                    ? GetTargets(model.Type, model.SmsEnabled.Value, !string.IsNullOrEmpty(userProfile.SmsNumber))
-                    : [];
-
-            MessageEnvelope[] events =
-                [new(new NotificationChannelPreferencesChangedEvent(hdid, userProfile.SmsNumber, smsNotificationTargets, userProfile.Email, emailNotificationTargets), hdid)];
-
-            await notificationSettingDelegate.UpdateAsync(setting, false, ct);
-            await outboxStore.StoreAsync(events, ct: ct);
+            await this.UpdateAsync(userProfile, [model], ct: ct);
         }
 
         /// <inheritdoc/>
