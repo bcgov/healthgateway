@@ -15,7 +15,7 @@ services:
       - ./init:/docker-entrypoint-initdb.d
   gatewaycache:
     container_name: gatewaycache
-    image: redis:6.2
+    image: redis:6.2@sha256:a9c881672688090a1a9fee7277c69174398acd5369f0bdb8bb58726c43b98a2a
     ports:
       - "6379:6379"
     restart: unless-stopped
