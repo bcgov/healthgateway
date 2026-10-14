@@ -20,11 +20,13 @@ function getTableRows(tableSelector) {
 
 describe("Delegation Protect", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/delegation"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/delegation"
+            );
+        });
     });
 
     it("Verify protect dependent toggle and delegation cancel.", () => {
@@ -47,10 +49,9 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Confirmation dialog confirmation button
-        cy.get("[data-testid=audit-confirm-button]").should(
-            "be.visible",
-            "not.be.enabled"
-        );
+        cy.get("[data-testid=audit-confirm-button]")
+            .should("be.visible")
+            .and("not.be.enabled");
 
         // Enter protect reason
         cy.get("[data-testid=audit-reason-input]").type("test");

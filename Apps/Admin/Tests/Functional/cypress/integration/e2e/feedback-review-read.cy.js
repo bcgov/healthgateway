@@ -15,11 +15,13 @@ function waitForPatientDetailsDataLoad() {
 
 describe("Feedback Review", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/feedback"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/feedback"
+            );
+        });
     });
 
     it("Navigating to Support Page", () => {

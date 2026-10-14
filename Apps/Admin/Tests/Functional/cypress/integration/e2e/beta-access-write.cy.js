@@ -21,11 +21,13 @@ function waitForPutUserAccess() {
 
 describe("Beta feature access", () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/beta-access"
-        );
+        cy.env(["keycloak_password"]).then(({ keycloak_password }) => {
+            cy.login(
+                Cypress.expose("keycloak_username"),
+                keycloak_password,
+                "/beta-access"
+            );
+        });
     });
 
     it("Verify successful assign/un-assign feature access", () => {

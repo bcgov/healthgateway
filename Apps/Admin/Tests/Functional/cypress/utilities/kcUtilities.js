@@ -4,26 +4,29 @@ function getConfig() {
         const url = new URL(config.openIdConnect.authority);
         const baseURI = url.protocol + "//" + url.hostname;
         const realm = url.pathname.split("/").pop();
-        const client = Cypress.env("keycloak_admin_client");
-        const secret = Cypress.env("keycloak_admin_secret");
-        if (typeof client !== "string" || !client) {
-            throw new Error(
-                "Configuration: keycloak_admin_client is missing or empty"
-            );
-        }
-        if (typeof secret !== "string" || !secret) {
-            throw new Error(
-                "Configuration: keycloak_admin_secret is missing or empty"
-            );
-        }
-        const keycloakConfig = {
-            baseUri: baseURI,
-            realm: realm,
-            client: client,
-            secret: secret,
-        };
-
-        return cy.wrap(keycloakConfig);
+        return cy
+            .env(["keycloak_admin_client", "keycloak_admin_secret"])
+            .then(({ keycloak_admin_client, keycloak_admin_secret }) => {
+                const client = keycloak_admin_client;
+                const secret = keycloak_admin_secret;
+                if (typeof client !== "string" || !client) {
+                    throw new Error(
+                        "Configuration: keycloak_admin_client is missing or empty"
+                    );
+                }
+                if (typeof secret !== "string" || !secret) {
+                    throw new Error(
+                        "Configuration: keycloak_admin_secret is missing or empty"
+                    );
+                }
+                const keycloakConfig = {
+                    baseUri: baseURI,
+                    realm: realm,
+                    client: client,
+                    secret: secret,
+                };
+                return cy.wrap(keycloakConfig);
+            });
     });
 }
 
