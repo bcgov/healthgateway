@@ -1517,6 +1517,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 patientServiceMock.Object,
                 emailQueueServiceMock.Object,
                 notificationSettingsServiceMock.Object,
+                new Mock<IUserProfileNotificationSettingService>().Object,
                 userProfileDelegateMock.Object,
                 userPreferenceServiceMock.Object,
                 legalAgreementServiceMock.Object,

@@ -602,9 +602,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock
-                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfile);
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
             notificationSettingDelegateMock
@@ -672,9 +669,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock
-                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfile);
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
             notificationSettingDelegateMock
@@ -743,9 +737,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock
-                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userProfile);
 
             Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
             notificationSettingDelegateMock

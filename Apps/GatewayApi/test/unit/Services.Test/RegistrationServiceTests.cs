@@ -452,6 +452,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileModelServiceMock.Object,
                 emailQueueServiceMock.Object,
                 notificationSettingsServiceMock.Object,
+                new Mock<IUserProfileNotificationSettingService>().Object,
                 backgroundJobClientMock.Object,
                 transactionProviderMock.Object);
         }
