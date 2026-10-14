@@ -1,4 +1,4 @@
-FROM nginx:1.29
+FROM nginx:1.31
 RUN rm /usr/share/nginx/html/*.html -f
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY ./src /usr/share/nginx/html
