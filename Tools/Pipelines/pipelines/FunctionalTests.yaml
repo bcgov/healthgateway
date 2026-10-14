@@ -162,7 +162,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Auth_Tests"
     strategy:
-      parallel: 1
+      parallel: 2
     timeoutInMinutes: 15
     steps:
       - checkout: self
