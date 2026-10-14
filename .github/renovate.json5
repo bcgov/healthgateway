@@ -2,6 +2,11 @@
     $schema: "https://docs.renovatebot.com/renovate-schema.json",
     extends: ["config:best-practices"],
 
+    // config:best-practices pulls in docker:pinDigests, which opens a "Pin <image> Docker
+    // tag to <digest>" PR for every image and then a digest bump PR every time the tag is
+    // republished. Too much churn for the value; keep images on plain tags.
+    ignorePresets: ["docker:pinDigests"],
+
     // Default is 2 new PRs per hour; prConcurrentLimit is left at its default of 10.
     prHourlyLimit: 10,
 
@@ -29,14 +34,6 @@
             matchDatasources: ["docker"],
             groupName: null,
             additionalBranchPrefix: "docker-",
-        },
-        {
-            // hg-base is our own image, rebuilt nightly, and the app Dockerfiles should
-            // always build on the newest one. Keep it floating on :latest rather than
-            // letting docker:pinDigests (from config:best-practices) pin it to a digest.
-            matchDatasources: ["docker"],
-            matchPackageNames: ["healthopenshift/hg-base"],
-            pinDigests: false,
         },
         {
             // Test-only tooling: group so one PR touches all 16 test csproj files.
