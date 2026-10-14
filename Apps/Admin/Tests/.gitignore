@@ -3,3 +3,9 @@ Functional/cypress/screenshots/
 Functional/cypress/videos/
 Functional/cypress/downloads/
 Functional/cypress.env.json
+
+Functional-v16/cypress.env.json
+Functional-v16/node_modules/
+Functional-v16/cypress/screenshots/
+Functional-v16/cypress/videos/
+Functional-v16/cypress/downloads/

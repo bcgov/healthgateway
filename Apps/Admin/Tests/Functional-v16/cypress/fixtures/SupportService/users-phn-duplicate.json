@@ -1,0 +1,28 @@
+[
+    {
+        "status": "NotUser",
+        "warningMessage": "Warning: The person returned is the subject of a potential duplicate",
+        "hdid": "",
+        "personalHealthNumber": "9873967163",
+        "commonName": null,
+        "legalName": {
+            "givenName": "Admission Rule",
+            "surname": "TestpatientCRTIH"
+        },
+        "preferredName": {
+            "givenName": "Admission Rule",
+            "surname": "TestpatientCRTIH"
+        },
+        "birthdate": "1990-07-04",
+        "physicalAddress": {
+            "streetLines": ["1357 Oak Street"],
+            "city": "Victoria",
+            "state": "BC",
+            "postalCode": "V9A2T6",
+            "country": "CA"
+        },
+        "postalAddress": null,
+        "profileCreatedDateTime": null,
+        "profileLastLoginDateTime": null
+    }
+]
