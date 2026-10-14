@@ -11,8 +11,7 @@ parameters:
       - WebClient
       - Admin
       - Both
-      - Admin Unauthorized
-      - Admin Authentication
+      - Admin Auth
       - Admin UI
       - Admin Read
       - Admin Write
@@ -36,10 +35,8 @@ variables:
     value: ${{ or(eq(parameters.appType, 'WebClient'), eq(parameters.appType, 'Both')) }}
   - name: Admin
     value: ${{ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) }}
-  - name: AdminUnauthorized
-    value: ${{ eq(parameters.appType, 'Admin Unauthorized') }}
-  - name: AdminAuthentication
-    value: ${{ eq(parameters.appType, 'Admin Authentication') }}
+  - name: AdminAuth
+    value: ${{ eq(parameters.appType, 'Admin Auth') }}
   - name: AdminUi
     value: ${{ eq(parameters.appType, 'Admin UI') }}
   - name: AdminRead
@@ -110,8 +107,8 @@ jobs:
           PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
           REDIS_PASSWORD: $(redis.pw)
           REDIS_ENV: $(redis.env)
-  - job: "Admin_Unauthorized_Tests"
-    displayName: "Admin Unauthorized Functional Tests"
+  - job: "Admin_Auth_Tests"
+    displayName: "Admin Auth Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     variables:
@@ -120,7 +117,7 @@ jobs:
       image: $(cypressImage)
       endpoint: DockerHub-Cypress
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), or(eq(variables['Admin'], true), eq(variables['AdminUnauthorized'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminAuth'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
@@ -130,57 +127,17 @@ jobs:
         fetchDepth: 1
         clean: true
       - task: Cache@2
-        displayName: Cache npm (Admin Unauthorized Functional)
+        displayName: Cache npm (Admin Auth Functional)
         inputs:
           key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
           restoreKeys: |
             npm | "$(Agent.OS)"
           path: $(Pipeline.Workspace)/.npm
       - task: Bash@3
-        displayName: "Run Admin Unauthorized Functional Tests"
+        displayName: "Run Admin Auth Functional Tests"
         inputs:
           targetType: filePath
-          filePath: "./Tools/Pipelines/scripts/azp_runAdminUnauthorizedFunctionalTests.sh"
-          arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
-        env: # Required environment settings and secrets for admin tests
-          TERM: xterm
-          CYPRESS_ADMIN_KEY: $(cypress.admin.key)
-          KEYCLOAK_PW: $(keycloak.pw)
-          IDIR_PASSWORD: $(idir.password)
-          KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
-          npm_config_cache: $(Pipeline.Workspace)/.npm
-  - job: "Admin_Authentication_Tests"
-    displayName: "Admin Authentication Functional Tests"
-    pool:
-      vmImage: "ubuntu-latest"
-    variables:
-      cypressImage: $[ dependencies.Resolve_Cypress_Image.outputs['resolveImage.image'] ]
-    container:
-      image: $(cypressImage)
-      endpoint: DockerHub-Cypress
-      options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminAuthentication'], true)))
-    dependsOn:
-      - "Resolve_Cypress_Image"
-      - "Admin_Seed"
-      - "Admin_Unauthorized_Tests"
-    timeoutInMinutes: 10
-    steps:
-      - checkout: self
-        fetchDepth: 1
-        clean: true
-      - task: Cache@2
-        displayName: Cache npm (Admin Authentication Functional)
-        inputs:
-          key: 'npm | "$(Agent.OS)" | Apps/Admin/Tests/Functional/package-lock.json'
-          restoreKeys: |
-            npm | "$(Agent.OS)"
-          path: $(Pipeline.Workspace)/.npm
-      - task: Bash@3
-        displayName: "Run Admin Authentication Functional Tests"
-        inputs:
-          targetType: filePath
-          filePath: "./Tools/Pipelines/scripts/azp_runAdminAuthenticationFunctionalTests.sh"
+          filePath: "./Tools/Pipelines/scripts/azp_runAdminAuthFunctionalTests.sh"
           arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for admin tests
           TERM: xterm
@@ -203,7 +160,7 @@ jobs:
     dependsOn:
       - "Resolve_Cypress_Image"
       - "Admin_Seed"
-      - "Admin_Authentication_Tests"
+      - "Admin_Auth_Tests"
     strategy:
       parallel: 1
     timeoutInMinutes: 15
