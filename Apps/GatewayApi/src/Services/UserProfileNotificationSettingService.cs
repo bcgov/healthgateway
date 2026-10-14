@@ -99,13 +99,12 @@ namespace HealthGateway.GatewayApi.Services
 
         /// <inheritdoc/>
         public async Task UpdateAsync(
-            string hdid,
+            UserProfile userProfile,
             IReadOnlyCollection<UserProfileNotificationSettingModel> models,
             bool commit = true,
             CancellationToken ct = default)
         {
-            UserProfile userProfile = await profileDelegate.GetUserProfileAsync(hdid, ct: ct)
-                                      ?? throw new NotFoundException($"User profile not found for hdid {hdid}");
+            string hdid = userProfile.HdId;
 
             IReadOnlyList<UserProfileNotificationSetting> existing =
                 await notificationSettingDelegate.GetAsync(hdid, ct);

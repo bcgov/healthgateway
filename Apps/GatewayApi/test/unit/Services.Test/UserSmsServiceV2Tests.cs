@@ -211,7 +211,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             notificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
-                    Hdid,
+                    It.IsAny<UserProfile>(),
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
                         models.Single().Type == ProfileNotificationType.BcCancerScreening &&
                         models.Single().EmailEnabled == null &&
@@ -253,7 +253,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             notificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
-                    Hdid,
+                    It.IsAny<UserProfile>(),
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
                         models.Single().Type == ProfileNotificationType.BcCancerScreening &&
                         models.Single().EmailEnabled == null &&

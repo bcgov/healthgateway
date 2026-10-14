@@ -636,7 +636,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             ];
 
             // Act
-            await service.UpdateAsync(Hdid, models, true, CancellationToken.None);
+            await service.UpdateAsync(userProfile, models, true, CancellationToken.None);
 
             // Assert
             notificationSettingDelegateMock.Verify(
@@ -697,7 +697,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             ];
 
             // Act
-            await service.UpdateAsync(Hdid, models, false, CancellationToken.None);
+            await service.UpdateAsync(userProfile, models, false, CancellationToken.None);
 
             // Assert
             outboxStoreMock.Verify(
@@ -777,7 +777,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             ];
 
             // Act
-            await service.UpdateAsync(Hdid, models, true, CancellationToken.None);
+            await service.UpdateAsync(userProfile, models, true, CancellationToken.None);
 
             // Assert
             notificationSettingDelegateMock.Verify(

@@ -147,7 +147,7 @@ namespace HealthGateway.GatewayApi.Services
             ];
 
             // Store an event indicating user profile notification settings have been defaulted.
-            await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
+            await this.profileNotificationSettingService.UpdateAsync(userProfile, notificationSettingModels, false, ct);
 
             // Persist changes within transaction
             await this.transactionProvider.SaveChangesAsync(ct);
@@ -217,7 +217,7 @@ namespace HealthGateway.GatewayApi.Services
             ];
 
             // Store an event indicating user profile notification settings have been defaulted.
-            await this.profileNotificationSettingService.UpdateAsync(hdid, notificationSettingModels, false, ct);
+            await this.profileNotificationSettingService.UpdateAsync(userProfile, notificationSettingModels, false, ct);
 
             if (messagingVerification != null)
             {

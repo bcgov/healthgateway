@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
@@ -51,7 +52,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Updates notification settings for one or more notification types.
         /// </summary>
-        /// <param name="hdid">The user HDID.</param>
+        /// <param name="userProfile">The user profile.</param>
         /// <param name="models">
         /// A collection of notification setting models containing the notification types and optional delivery channel values.
         /// Provided channel values are updated. When a channel value is not provided, an existing stored value may still be
@@ -61,7 +62,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ct">The cancellation token.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task UpdateAsync(
-            string hdid,
+            UserProfile userProfile,
             IReadOnlyCollection<UserProfileNotificationSettingModel> models,
             bool commit = true,
             CancellationToken ct = default);
