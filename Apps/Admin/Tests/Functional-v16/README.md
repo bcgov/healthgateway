@@ -21,6 +21,8 @@ npm install
 
 Create a cypress.env.json and update with passwords or any other environment variables you would like to override.
 
+In Cypress v16, non-sensitive usernames are configured using `expose` in `cypress.config.js`; secure overrides such as passwords and secrets continue to use `cypress.env.json`.
+
 ```bash
 {
     "idir_username": "THE USERNAME",
