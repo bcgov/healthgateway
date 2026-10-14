@@ -47,8 +47,8 @@ TZ=America/Vancouver npx cypress run \
 echo "Running Keycloak session regressions (8 tests)"
 TZ=America/Vancouver npx cypress run \
   --env "keycloak.password=$KEYCLOAK_PW" \
-  --config 'specPattern=cypress/regression/*.cy.js' \
-  --spec 'cypress/regression/keycloakSession.cy.js,cypress/regression/keycloakSessionAcrossSpecs01-create.cy.js,cypress/regression/keycloakSessionAcrossSpecs02-restore.cy.js,cypress/regression/keycloakSessionValidation.cy.js' \
+  --config 'specPattern=cypress/regression/*.js' \
+  --spec 'cypress/regression/keycloakSession.js,cypress/regression/keycloakSessionAcrossSpecs01-create.js,cypress/regression/keycloakSessionAcrossSpecs02-restore.js,cypress/regression/keycloakSessionValidation.js' \
   --record false \
   --headless \
   --browser chrome

@@ -40,15 +40,15 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
-echo "Running Cypress Admin Unauthorized Functional Tests"
+echo "Running Cypress Admin Auth Functional Tests"
 TZ=America/Vancouver npx cypress run \
     --env "keycloak_password=$KEYCLOAK_PW,idir_password=$IDIR_PASSWORD,keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET" \
     --record \
     --key $CYPRESS_ADMIN_KEY \
-    --ci-build-id "$buildId-Unauthorized" \
-    --group "$buildId-Unauthorized" \
+    --ci-build-id "$buildId-Auth" \
+    --group "$buildId-Auth" \
     --tag "$tags" \
-    --spec "cypress/integration/e2e/**/unauthorized.cy.js" \
+    --spec "cypress/integration/e2e/**/unauthorized.cy.js,cypress/integration/e2e/**/authentication.cy.js" \
     --headless \
     --browser chrome
 popd
