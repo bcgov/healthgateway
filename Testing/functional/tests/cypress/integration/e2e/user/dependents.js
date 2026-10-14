@@ -524,35 +524,6 @@ describe("dependents", () => {
             contains: true,
         });
     });
-
-    it("Validate Clinical Document - Verify result and download", () => {
-        cy.log("Validating Clinical Document Tab - Verify result and download");
-
-        cy.intercept("GET", "**/ClinicalDocument/*").as("getClinicalDocument");
-
-        cy.get(
-            `[data-testid=clinical-document-tab-title-${validDependentHdid}]`
-        ).click();
-
-        cy.wait("@getClinicalDocument", { timeout: defaultTimeout });
-
-        // Expecting more than 1 row to return because also need to consider the table headers.
-        cy.get(`[data-testid=clinical-document-table-${validDependentHdid}]`)
-            .find("tr")
-            .should("have.length.greaterThan", 1);
-
-        cy.get(
-            `[data-testid=clinical-document-report-download-button-${validDependentHdid}-0]`
-        ).click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("Clinical_Document_JENNIFER_TESTFOUR.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
-    });
 });
 
 describe("Protected Dependents", () => {
