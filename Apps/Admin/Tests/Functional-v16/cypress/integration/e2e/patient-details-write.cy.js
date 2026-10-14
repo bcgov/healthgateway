@@ -209,7 +209,7 @@ describe("Patient details page as admin user", () => {
         cy.log("Verify API Registration");
         cy.get("[data-testid=api-registration]").should("be.visible");
 
-        cy.log("Verify Refresh Disagnoistic Image Cache ");
+        cy.log("Verify Refresh Diagnostic Image Cache ");
         cy.get("[data-testid=last-imaging-refresh-date]").should("be.visible");
 
         cy.intercept("POST", "**/Support/Patient/RefreshHealthData*").as(

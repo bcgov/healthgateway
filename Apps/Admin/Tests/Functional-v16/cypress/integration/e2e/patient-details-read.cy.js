@@ -58,7 +58,7 @@ describe("Patient details page as reviewer", () => {
             cy.wrap($el).parent().parent().should("have.class", "mud-readonly");
         });
 
-        // Clicke any switch and check if the dirty state has exposed the save and cancel buttons
+        // Click any switch and check if the dirty state has exposed the save and cancel buttons
         cy.get(`[data-testid=block-access-switch-${switchName}]`)
             .should("exist")
             .click();

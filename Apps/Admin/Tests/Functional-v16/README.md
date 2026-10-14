@@ -2,7 +2,7 @@
 
 Implements functional tests for Health Gateway Admin using Cypress.io tooling.
 
-## Prequisites
+## Prerequisites
 
 A Developer should have gone through the Health Gateway installation and configuration.
 
@@ -29,6 +29,7 @@ In Cypress v16, non-sensitive usernames are configured using `expose` in `cypres
     "idir_password": "THE PASSWORD",
     "keycloak_username": "THE USERNAME",
     "keycloak_password": "THE PASSWORD",
+    "keycloak_admin_secret": "THE SECRET"
 }
 ```
 

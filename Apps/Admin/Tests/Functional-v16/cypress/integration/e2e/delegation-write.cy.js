@@ -49,10 +49,9 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Confirmation dialog confirmation button
-        cy.get("[data-testid=audit-confirm-button]").should(
-            "be.visible",
-            "not.be.enabled"
-        );
+        cy.get("[data-testid=audit-confirm-button]")
+            .should("be.visible")
+            .and("not.be.enabled");
 
         // Enter protect reason
         cy.get("[data-testid=audit-reason-input]").type("test");

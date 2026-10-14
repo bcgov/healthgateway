@@ -13,7 +13,6 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@cypress/skip-test": "^2.6.1",
         "cy-verify-downloads": "^0.3.0",
         "cypress": "^16.0.0",
         "cypress-real-events": "^1.15.0",
