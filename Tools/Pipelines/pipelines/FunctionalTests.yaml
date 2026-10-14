@@ -117,10 +117,9 @@ jobs:
       image: $(cypressImage)
       endpoint: DockerHub-Cypress
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['Admin'], true), succeeded('Admin_Seed')), eq(variables['AdminAuth'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(eq(variables['Admin'], true), eq(variables['AdminAuth'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
-      - "Admin_Seed"
     timeoutInMinutes: 10
     steps:
       - checkout: self
@@ -279,7 +278,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool:
       name: "HGGoldDev"
-    condition: or(eq(variables['WebClient'], true), eq(variables['HgUi'], true), eq(variables['HgE2e'], true))
+    condition: or(eq(variables['WebClient'], true), eq(variables['HgAuth'], true), eq(variables['HgUi'], true), eq(variables['HgE2e'], true))
     dependsOn: "Admin_Write_Tests"
     timeoutInMinutes: 5
     steps:
@@ -306,7 +305,7 @@ jobs:
       image: $(cypressImage)
       endpoint: DockerHub-Cypress
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), or(and(eq(variables['WebClient'], true), succeeded('HG_Seed')), eq(variables['HgAuth'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgAuth'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
       - "HG_Seed"
