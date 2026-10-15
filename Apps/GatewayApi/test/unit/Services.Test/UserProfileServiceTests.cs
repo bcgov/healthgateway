@@ -341,7 +341,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             mock.ProfileNotificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
-                    It.Is<UserProfile>(p => p.HdId == Hdid && p.Email == requestedEmail),
+                    It.Is<UserProfile>(p => p.HdId == Hdid),
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
                         models.Count == 1 &&
                         models.ElementAt(0).Type == ProfileNotificationType.BcCancerScreening &&

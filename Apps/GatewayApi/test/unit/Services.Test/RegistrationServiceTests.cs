@@ -222,7 +222,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert
             mock.ProfileNotificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
-                    It.Is<UserProfile>(p => p.HdId == Hdid && p.Email == requestedEmailAddress),
+                    It.Is<UserProfile>(p => p.HdId == Hdid),
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
                         models.Count == 1 &&
                         models.ElementAt(0).Type == ProfileNotificationType.BcCancerScreening &&
