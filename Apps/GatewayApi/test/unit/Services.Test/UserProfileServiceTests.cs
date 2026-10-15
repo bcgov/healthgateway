@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -303,6 +304,52 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     It.Is<NotificationSettingsRequest>(x => x.SmsVerificationCode == SmsVerificationCode),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Theory]
+        [InlineData(Email, Email, true)]
+        [InlineData(Email, null, false)]
+        [InlineData(null, Email, false)]
+        [InlineData(Email, "other-address@example.com", false)]
+        public async Task CreateUserProfileShouldUpdateNotificationSettingsBasedOnEmailVerificationStatus(
+            string? requestedEmail,
+            string? jwtEmail,
+            bool updateExpected)
+        {
+            // Arrange
+            DateTime currentUtcDate = DateTime.UtcNow.Date;
+            PatientModel patientModel = GeneratePatientModel(currentUtcDate.AddYears(-18).Date);
+            RequestResult<PatientModel> patientResult = GeneratePatientResult(patientModel: patientModel);
+
+            CreateUserRequest request = new()
+            {
+                Profile = new(patientModel.HdId, TermsOfServiceGuid, SmsNumber, requestedEmail),
+            };
+
+            CreateUserProfileMock mock = SetupCreateUserProfileMock(
+                false,
+                false,
+                13,
+                SmsNumber,
+                patientResult);
+
+            // Act
+            RequestResult<UserProfileModel> actual = await mock.Service.CreateUserProfileAsync(request, currentUtcDate, jwtEmail);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
+
+            mock.ProfileNotificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfile>(p => p.HdId == Hdid && p.Email == requestedEmail),
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Count == 1 &&
+                        models.ElementAt(0).Type == ProfileNotificationType.BcCancerScreening &&
+                        models.ElementAt(0).EmailEnabled == true &&
+                        models.ElementAt(0).SmsEnabled == null),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                updateExpected ? Times.Once : Times.Never);
         }
 
         [Fact]
@@ -1120,6 +1167,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     });
 
             Mock<IBackgroundJobClient> backgroundJobClientMock = new();
+            Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
 
             IConfigurationRoot configuration = GetIConfiguration(
                 minPatientAge,
@@ -1138,14 +1186,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationServiceMock: messagingVerificationServiceMock,
                 outboxStoreServiceMock: outboxStoreServiceMock,
                 backgroundJobClientMock: backgroundJobClientMock,
-                transactionProviderMock: transactionProviderMock);
+                transactionProviderMock: transactionProviderMock,
+                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock);
 
             return new CreateUserProfileMock(
                 service,
                 notificationSettingsServiceMock,
                 outboxStoreServiceMock,
                 emailQueueServiceMock,
-                messagingVerificationServiceMock);
+                messagingVerificationServiceMock,
+                profileNotificationSettingServiceMock);
         }
 
         private static UserProfileMock SetupGetUserProfileMock(
@@ -1494,7 +1544,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationService>? messagingVerificationServiceMock = null,
             Mock<IOutboxStoreService>? outboxStoreServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
-            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
+            Mock<IUserProfileNotificationSettingService>? profileNotificationSettingServiceMock = null)
         {
             patientServiceMock ??= new();
             emailQueueServiceMock ??= new();
@@ -1511,13 +1562,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             outboxStoreServiceMock ??= new();
             backgroundJobClientMock ??= new();
             transactionProviderMock ??= GetTransactionProviderMock();
+            profileNotificationSettingServiceMock ??= new();
 
             return new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 patientServiceMock.Object,
                 emailQueueServiceMock.Object,
                 notificationSettingsServiceMock.Object,
-                new Mock<IUserProfileNotificationSettingService>().Object,
+                profileNotificationSettingServiceMock.Object,
                 userProfileDelegateMock.Object,
                 userPreferenceServiceMock.Object,
                 legalAgreementServiceMock.Object,
@@ -1539,7 +1591,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<INotificationSettingsService> NotificationSettingsServiceMock,
             Mock<IOutboxStoreService> JobServiceMock,
             Mock<IEmailQueueService> EmailQueueServiceMock,
-            Mock<IMessagingVerificationService> MessagingVerificationServiceMock);
+            Mock<IMessagingVerificationService> MessagingVerificationServiceMock,
+            Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock);
 
         private sealed record UserProfileMock(
             IUserProfileService Service,
