@@ -30,13 +30,14 @@ using Testcontainers.Redis;
 
 public class WebAppFixture : IAsyncLifetime
 {
-    private readonly ServiceCollection testRelatedServices = new();
     private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder("docker.io/postgres:15").Build();
     private readonly RedisContainer redisContainer = new RedisBuilder("docker.io/redis:7.0").Build();
 
-    public IServiceCollection Services => this.testRelatedServices;
-
-    public virtual async Task<IAlbaHost> CreateHost<TProgram>(ITestOutputHelper output, KeyValuePair<string, string?>[]? configurationSettings = null, IEnumerable<IAlbaExtension>? extensions = null)
+    public virtual async Task<IAlbaHost> CreateHost<TProgram>(
+        ITestOutputHelper output,
+        IEnumerable<KeyValuePair<string, string?>>? configurationSettings = null,
+        IEnumerable<IAlbaExtension>? extensions = null,
+        Action<IServiceCollection>? configureServices = null)
         where TProgram : class
     {
         IAlbaHost host = await AlbaHost.For<TProgram>(
@@ -44,11 +45,8 @@ public class WebAppFixture : IAsyncLifetime
             {
                 builder.ConfigureServices((_, services) =>
                 {
-                    // add test specific dependencies
-                    foreach (ServiceDescriptor service in this.testRelatedServices)
-                    {
-                        services.Add(service);
-                    }
+                    // Test-specific registrations belong to this host, never to the shared fixture.
+                    configureServices?.Invoke(services);
 
                     // set logging to xunit output
                     services.AddLogging(loggingBuilder => loggingBuilder.AddXUnit(output));
@@ -64,11 +62,13 @@ public class WebAppFixture : IAsyncLifetime
                 builder.ConfigureAppConfiguration((_, configBuilder) =>
                 {
                     string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
-                    configBuilder.AddInMemoryCollection(configOverrides);
                     if (!string.IsNullOrEmpty(secretsPath))
                     {
                         configBuilder.AddJsonFile(secretsPath);
                     }
+
+                    // Secrets must not redirect tests away from their containers or isolated queue.
+                    configBuilder.AddInMemoryCollection(configOverrides);
                 });
             },
             extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());

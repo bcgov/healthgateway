@@ -39,6 +39,12 @@ public abstract class ScenarioContextBase<TProgram> : IAsyncLifetime
 
     protected ITestOutputHelper Output { get; }
 
+    protected virtual IEnumerable<KeyValuePair<string, string?>> ConfigurationSettings => [];
+
+    protected virtual void ConfigureServices(IServiceCollection services)
+    {
+    }
+
     protected ScenarioContextBase(ITestOutputHelper output, string configSectionName, WebAppFixture fixture)
     {
         this.Output = output;
@@ -56,14 +62,21 @@ public abstract class ScenarioContextBase<TProgram> : IAsyncLifetime
     public virtual async ValueTask InitializeAsync()
     {
         IAlbaExtension authentication = this.CreateClientCredentials(this.testConfiguration.DefaultUserName);
-        this.Host = await this.fixture.CreateHost<TProgram>(this.Output, extensions: new[] { authentication });
+        this.Host = await this.fixture.CreateHost<TProgram>(
+            this.Output,
+            this.ConfigurationSettings,
+            new[] { authentication },
+            this.ConfigureServices);
         this.testServicesScope = Host.Services.CreateScope();
     }
 
     public virtual async ValueTask DisposeAsync()
     {
-        this.testServicesScope.Dispose();
-        await this.Host.DisposeAsync();
+        this.testServicesScope?.Dispose();
+        if (this.Host != null)
+        {
+            await this.Host.DisposeAsync();
+        }
         GC.SuppressFinalize(this);
     }
 
