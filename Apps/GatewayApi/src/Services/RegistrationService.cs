@@ -23,6 +23,7 @@ namespace HealthGateway.GatewayApi.Services
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
@@ -48,6 +49,7 @@ namespace HealthGateway.GatewayApi.Services
     /// <param name="userProfileDelegate">The injected user profile database delegate.</param>
     /// <param name="userProfileModelService">The injected user profile model service.</param>
     /// <param name="notificationSettingsService">Notification settings service.</param>
+    /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
     /// <param name="backgroundJobClient">Hangfire background job client.</param>
     /// <param name="transactionProvider">
     /// Provides database transaction and persistence operations for the current request
@@ -65,6 +67,7 @@ namespace HealthGateway.GatewayApi.Services
         IUserProfileModelService userProfileModelService,
         IEmailQueueService emailQueueService,
         INotificationSettingsService notificationSettingsService,
+        IUserProfileNotificationSettingService profileNotificationSettingService,
         IBackgroundJobClient backgroundJobClient,
         IGatewayDbContextTransactionProvider transactionProvider) : IRegistrationService
     {
@@ -146,6 +149,22 @@ namespace HealthGateway.GatewayApi.Services
             {
                 // Store an event indicating the email was verified.
                 await outboxStoreService.QueueEmailVerificationEventAsync(profile.HdId, requestedEmail, false, ct);
+            }
+
+            if (isEmailVerified)
+            {
+                // Set default notification settings
+                UserProfileNotificationSettingModel[] notificationSettingModels =
+                [
+                    new()
+                    {
+                        Type = ProfileNotificationType.BcCancerScreening,
+                        EmailEnabled = true,
+                        SmsEnabled = null,
+                    },
+                ];
+
+                await profileNotificationSettingService.UpdateAsync(profile, notificationSettingModels, false, ct);
             }
 
             // Persist changes within transaction
