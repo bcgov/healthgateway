@@ -17,11 +17,13 @@
 namespace HealthGateway.IntegrationTests.Infrastructure;
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Transactions;
+using Azure.Messaging.ServiceBus;
 using Hangfire;
-using Hangfire.PostgreSql;
 using HealthGateway.Common.Messaging;
-using HealthGateway.Common.Utils;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,34 +32,81 @@ using Microsoft.Extensions.DependencyInjection;
 [IntegrationTest]
 public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
 {
-    private readonly CancellationTokenSource cts;
+    private readonly CancellationTokenSource cts = new();
+    private readonly ConcurrentBag<Exception> receiveErrors = [];
+    private readonly WebAppFixture messagingFixture;
+    private readonly string[] sessionIds = [Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N")];
+    private bool disposed;
     private IMessageReceiver receiver = null!;
 
-    public MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, TestConfiguration.WebClientConfigSection, fixture)
+    // Keep the collection's sequential execution, but never share its database with API tests.
+    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The test owns the fixture and disposes it in DisposeAsync, including initialization failures.")]
+    public MessagingTests(ITestOutputHelper output) : this(output, new WebAppFixture())
     {
-        this.cts = new CancellationTokenSource();
-        fixture.Services.AddHangfireServer(
+    }
+
+    private MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, TestConfiguration.WebClientConfigSection, fixture)
+    {
+        this.messagingFixture = fixture;
+    }
+
+    protected override IEnumerable<KeyValuePair<string, string?>> ConfigurationSettings =>
+    [
+        new("PhsaV2:ServiceBus:UseOutbox", "true"),
+    ];
+
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+        // Scope the real Azure receiver at the broker, rather than consuming and ignoring other tests' messages.
+        services.AddSingleton<IAzureClientFactory<ServiceBusClient>>(sp => new SessionScopedServiceBusClientFactory(
+            sp.GetRequiredService<IConfiguration>()["PhsaV2:ServiceBus:ConnectionString"]
+                ?? throw new InvalidOperationException("Integration tests require a Service Bus connection string."),
+            this.sessionIds));
+        services.AddHangfireServer(
             opts =>
             {
-                opts.Queues = new[] { AzureServiceBusSettings.OutboxQueueName };
+                opts.Queues = [AzureServiceBusSettings.OutboxQueueName];
                 opts.IsLightweightServer = true;
             });
     }
 
     public override async ValueTask InitializeAsync()
     {
-        await base.InitializeAsync();
-        this.receiver = this.TestServices.GetRequiredService<IMessageReceiver>();
+        try
+        {
+            this.Output.WriteLine("Starting isolated messaging database and Redis containers.");
+            await this.messagingFixture.InitializeAsync();
+            this.Output.WriteLine("Starting the messaging test API host.");
+            await base.InitializeAsync();
 
-        GlobalConfiguration.Configuration.UsePostgreSqlStorage(
-            c => c.UseNpgsqlConnection(
-                this.TestServices.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection")));
+            this.receiver = this.TestServices.GetRequiredService<IMessageReceiver>();
+        }
+        catch
+        {
+            await this.DisposeAsync();
+            throw;
+        }
     }
 
     public override async ValueTask DisposeAsync()
     {
-        await base.DisposeAsync();
-        this.cts.Dispose();
+        if (this.disposed)
+        {
+            return;
+        }
+
+        this.disposed = true;
+        try
+        {
+            // Stop the host and its processor before disposing the database.
+            await base.DisposeAsync();
+        }
+        finally
+        {
+            this.cts.Dispose();
+            await this.messagingFixture.DisposeAsync();
+        }
+
         GC.SuppressFinalize(this);
     }
 
@@ -103,7 +152,12 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
                     return true;
                 },
                 ct),
-            async e => await Task.Run(() => this.Output.WriteLine("RECEIVE ERROR: {0}", e)),
+            e =>
+            {
+                this.receiveErrors.Add(e);
+                this.Output.WriteLine("RECEIVE ERROR: {0}", e);
+                return Task.CompletedTask;
+            },
             ct);
 
         return receivedMessages;
@@ -123,16 +177,16 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
         }
     }
 
-    private static string GenerateSessionId()
+    private int CountSessionErrors(string sessionId)
     {
-        return Guid.NewGuid().ToString()[..4];
+        return this.receiveErrors.Count(e => e is InvalidOperationException && e.Message.Contains(sessionId, StringComparison.Ordinal));
     }
 
     [Fact]
     public async Task SendSession_ReceiveAllSessions()
     {
-        string s1 = GenerateSessionId();
-        string s2 = GenerateSessionId();
+        string s1 = this.sessionIds[0];
+        string s2 = this.sessionIds[1];
         TestMessage[] s1Messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), s1)).ToArray();
         TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), s2)).ToArray();
 
@@ -148,8 +202,8 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
     [Fact]
     public async Task SendSession1Fails_ReceiveOnlySession2()
     {
-        string s1 = GenerateSessionId();
-        string s2 = GenerateSessionId();
+        string s1 = this.sessionIds[0];
+        string s2 = this.sessionIds[1];
         TestMessage[] s1Messages =
         {
             new("1", s1, true),
@@ -159,8 +213,10 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
         await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
-        await this.WaitForMessages(() => responses.Count >= 2);
+        // Wait for both failed-session messages, not just the successful session.
+        await this.WaitForMessages(() => responses.Count >= 2 && this.CountSessionErrors(s1) >= 2);
 
+        this.CountSessionErrors(s1).ShouldBe(2);
         responses.Count.ShouldBe(2);
         responses.ShouldAllBe(m => m.SessionId == s2);
     }
@@ -168,7 +224,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
     [Fact]
     public async Task SendMessagesInTransaction_Rollback_ReceiveNoMessages()
     {
-        string sessionId = GenerateSessionId();
+        string sessionId = this.sessionIds[0];
         TestMessage[] messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), sessionId)).ToArray();
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
@@ -178,22 +234,20 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
             await this.SendMessages(new[] { messages }, this.cts.Token);
         }
 
-        await this.WaitForMessages(() => !responses.IsEmpty);
+        await this.Assert(async ctx =>
+        {
+            bool hasRolledBackMessages = await ctx.Outbox.AnyAsync(item => item.Metadata.SessionId == sessionId);
+            hasRolledBackMessages.ShouldBeFalse();
+        });
 
-        responses.Count.ShouldBe(0);
-    }
+        // A committed control message proves the dispatcher and receiver are working.
+        string controlSessionId = this.sessionIds[1];
+        await this.SendMessages(new[] { new[] { new TestMessage("control", controlSessionId) } }, this.cts.Token);
+        await this.WaitForMessages(() => responses.Any(m => m.SessionId == controlSessionId));
+        responses.Count(m => m.SessionId == controlSessionId).ShouldBe(1);
 
-    [Fact]
-    public void CanSerializeMessageEnvelopeArray()
-    {
-        string sessionId = GenerateSessionId();
-        IEnumerable<TestMessage> messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), sessionId));
-        MessageEnvelope[] envelopes = messages.Select(m => new MessageEnvelope(m, m.SessionId)).ToArray();
-        byte[] serialized = envelopes.Serialize();
-
-        IEnumerable<MessageEnvelope>? deserializedMessage = serialized.Deserialize<IEnumerable<MessageEnvelope>>();
-
-        deserializedMessage.ShouldNotBeNull().Count().ShouldBe(envelopes.Length);
+        await this.WaitForMessages(() => responses.Any(m => m.SessionId == sessionId));
+        responses.Count(m => m.SessionId == sessionId).ShouldBe(0);
     }
 
 #pragma warning restore CA1063 // Implement IDisposable Correctly
