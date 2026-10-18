@@ -45,9 +45,9 @@
     <PackageReference Include="SerilogTraceListener" Version="3.2.0" />
     <PackageReference Include="StackExchange.Redis" Version="3.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.0" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.20.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.20.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
     <!-- Specify version of transitive dependency System.Security.Cryptography.Xml to avoid a vulnerability in 10.0.0 -->
     <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.13" />
