@@ -39,7 +39,12 @@ export const useLoadingStore = defineStore("loading", () => {
         promise: Promise<T>
     ): void {
         setIsLoading(true, loader, reason);
-        promise.finally(() => setIsLoading(false, loader, reason));
+
+        const clearLoading = (): void => {
+            setIsLoading(false, loader, reason);
+        };
+
+        void promise.then(clearLoading, clearLoading);
     }
 
     return {
