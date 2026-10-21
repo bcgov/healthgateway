@@ -139,7 +139,14 @@ export const useCovid19TestResultStore = defineStore(
                             logger.info(
                                 `Re-querying for COVID-19 test results`
                             );
-                            retrieveCovid19TestResults(hdid);
+
+                            void retrieveCovid19TestResults(hdid).catch(
+                                (error: ResultError) => {
+                                    logger.warn(
+                                        `COVID-19 test results retry failed: ${JSON.stringify(error)}`
+                                    );
+                                }
+                            );
                         }, payload.retryin);
                     } else {
                         if (result.resultError) {
