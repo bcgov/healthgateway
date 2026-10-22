@@ -91,6 +91,15 @@ describe("User Profile", () => {
 
     it("prevents saving an unchanged email address", () => {
         cy.env(["emailAddress"]).then(({ emailAddress }) => {
+            cy.fixture("UserProfileService/userProfile.json").then((data) => {
+                data.email = emailAddress;
+                cy.intercept(
+                    "GET",
+                    `**/UserProfile/${HDID}?api-version=2.0`,
+                    data
+                );
+            });
+            cy.reload();
             cy.get("[data-testid=editEmailBtn]").click();
             cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
             cy.get("[data-testid=email-input]")
@@ -114,13 +123,18 @@ describe("User Profile", () => {
             statusCode: 200,
             body: true,
         });
-        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
-            fixture: "UserProfileService/userProfile.json",
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.email = "existing@example.com";
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
         });
+        cy.reload();
 
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=email-input] input").clear();
         cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
+        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
         cy.get("[data-testid=editEmailSaveBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("not.exist");
         cy.get("[data-testid=emailStatusOptedOut]").should("be.visible");
