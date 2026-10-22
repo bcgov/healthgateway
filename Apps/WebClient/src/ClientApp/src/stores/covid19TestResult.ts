@@ -17,6 +17,7 @@ import { LoadStatus } from "@/models/storeOperations";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import PromiseUtility from "@/utility/promiseUtility";
 
 export const defaultCovid19TestResultState: Covid19TestResultState = {
     data: [],
@@ -140,12 +141,10 @@ export const useCovid19TestResultStore = defineStore(
                                 `Re-querying for COVID-19 test results`
                             );
 
-                            void retrieveCovid19TestResults(hdid).catch(
-                                (error: ResultError) => {
-                                    logger.warn(
-                                        `COVID-19 test results retry failed: ${JSON.stringify(error)}`
-                                    );
-                                }
+                            PromiseUtility.runInBackground(
+                                retrieveCovid19TestResults(hdid),
+                                logger,
+                                "COVID-19 test results retry"
                             );
                         }, payload.retryin);
                     } else {

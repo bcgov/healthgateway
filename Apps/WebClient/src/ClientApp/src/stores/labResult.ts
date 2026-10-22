@@ -19,6 +19,7 @@ import {
 } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import PromiseUtility from "@/utility/promiseUtility";
 
 export const defaultLabResultState: LabResultState = {
     data: [],
@@ -160,12 +161,10 @@ export const useLabResultStore = defineStore("labResult", () => {
                     setTimeout(() => {
                         logger.info(`Re-querying for lab results`);
 
-                        void retrieveLabResults(hdid).catch(
-                            (error: ResultError) => {
-                                logger.warn(
-                                    `Laboratory results retry failed: ${JSON.stringify(error)}`
-                                );
-                            }
+                        PromiseUtility.runInBackground(
+                            retrieveLabResults(hdid),
+                            logger,
+                            "Laboratory results retry"
                         );
                     }, payload.retryin);
                 } else {
