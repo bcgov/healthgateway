@@ -251,9 +251,15 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-medicationStore
-    .retrieveMedications(props.hdid)
-    .catch((err) => logger.error(`Error loading medication data: ${err}`));
+async function retrieveMedications(): Promise<void> {
+    try {
+        await medicationStore.retrieveMedications(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading medication data: ${err}`);
+    }
+}
+
+void retrieveMedications();
 </script>
 
 <template>
