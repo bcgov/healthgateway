@@ -66,7 +66,7 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-function downloadFile(): void {
+async function downloadFile(): Promise<void> {
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.DownloadClinicalDocument,
@@ -76,17 +76,20 @@ function downloadFile(): void {
         format: Format.Pdf,
     });
 
-    clinicalDocumentStore
-        .getFile(props.entry.fileId, props.hdid)
-        .then((result: EncodedMedia) => {
-            const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
-            fetch(`data:${result.mediaType};${result.encoding},${result.data}`)
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(blob, `Clinical_Document_${dateString}.pdf`)
-                );
-        })
-        .catch((err) => logger.error(err));
+    try {
+        const result: EncodedMedia = await clinicalDocumentStore.getFile(
+            props.entry.fileId,
+            props.hdid
+        );
+        const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
+        const response = await fetch(
+            `data:${result.mediaType};${result.encoding},${result.data}`
+        );
+        const blob = await response.blob();
+        saveAs(blob, `Clinical_Document_${dateString}.pdf`);
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+    }
 }
 </script>
 
