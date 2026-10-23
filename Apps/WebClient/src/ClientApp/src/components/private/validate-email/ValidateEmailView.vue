@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { Loader } from "@/constants/loader";
@@ -27,7 +27,10 @@ const isSuccess = computed(() => isAlreadyVerified.value || isVerified.value);
 const validationFailed = computed(() => isVerified.value === false);
 
 // Created hook
-async function validateEmail(): Promise<void> {
+onBeforeMount(async () => {
+    const loadingReason = "verifyingEmailAddress";
+    loadingStore.setIsLoading(true, Loader.ValidateEmail, loadingReason);
+
     try {
         isVerified.value = await userStore.validateEmail(props.inviteKey);
     } catch (resultError) {
@@ -39,14 +42,10 @@ async function validateEmail(): Promise<void> {
         } else {
             logger.error("Error while validating email.");
         }
+    } finally {
+        loadingStore.setIsLoading(false, Loader.ValidateEmail, loadingReason);
     }
-}
-
-loadingStore.applyLoader(
-    Loader.ValidateEmail,
-    "verifyingEmailAddress",
-    validateEmail()
-);
+});
 </script>
 
 <template>

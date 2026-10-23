@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -64,7 +64,7 @@ async function handleLoginCallback(): Promise<void> {
     }
 }
 
-void handleLoginCallback();
+onBeforeMount(handleLoginCallback);
 </script>
 
 <template>

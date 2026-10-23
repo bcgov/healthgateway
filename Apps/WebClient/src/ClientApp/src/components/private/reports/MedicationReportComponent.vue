@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import ProtectiveWordComponent from "@/components/site/ProtectiveWordComponent.vue";
@@ -259,7 +259,7 @@ async function retrieveMedications(): Promise<void> {
     }
 }
 
-void retrieveMedications();
+onBeforeMount(retrieveMedications);
 </script>
 
 <template>

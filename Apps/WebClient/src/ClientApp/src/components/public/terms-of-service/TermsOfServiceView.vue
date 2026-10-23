@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
@@ -50,7 +50,7 @@ async function retrieveTermsOfService(): Promise<void> {
     }
 }
 
-void retrieveTermsOfService();
+onBeforeMount(retrieveTermsOfService);
 </script>
 
 <template>

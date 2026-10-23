@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -134,7 +134,7 @@ async function retrieveLabResults(): Promise<void> {
     }
 }
 
-void retrieveLabResults();
+onBeforeMount(retrieveLabResults);
 </script>
 
 <template>

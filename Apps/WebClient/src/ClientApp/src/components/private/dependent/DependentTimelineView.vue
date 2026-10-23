@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -66,7 +66,7 @@ async function loadDependentTimeline(): Promise<void> {
     }
 }
 
-void loadDependentTimeline();
+onBeforeMount(loadDependentTimeline);
 </script>
 
 <template>

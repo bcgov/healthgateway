@@ -85,4 +85,4 @@ async function initializeApp(): Promise<void> {
     }
 }
 
-void initializeApp();
+await initializeApp();

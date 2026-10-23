@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -86,7 +86,7 @@ async function retrieveTermsOfService(): Promise<void> {
 }
 
 // Created hook
-void retrieveTermsOfService();
+onBeforeMount(retrieveTermsOfService);
 </script>
 
 <template>
