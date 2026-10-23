@@ -68,21 +68,21 @@ const outlinedColorClasses = computed(() => {
  * Opt-in: vertically center icon + wrapped text (no-title case can look misaligned).
  * Enabled via the centerContent prop.
  */
-.hg-alert--center-content {
-    display: flex !important;
-    align-items: center !important;
+.v-alert.hg-alert--center-content {
+    display: flex;
+    align-items: center;
 }
 
-.hg-alert--center-content :deep(.v-alert__prepend),
-.hg-alert--center-content :deep(.v-alert__content) {
-    align-self: center !important;
+.v-alert.hg-alert--center-content :deep(.v-alert__prepend),
+.v-alert.hg-alert--center-content :deep(.v-alert__content) {
+    align-self: center;
 }
 
-.hg-alert--center-content :deep(.v-alert__content) {
-    padding-block: 0 !important;
+.v-alert.hg-alert--center-content :deep(.v-alert__content) {
+    padding-block: 0;
 }
 
-.hg-alert--center-content :deep(.v-alert__prepend svg) {
-    display: block !important;
+.v-alert.hg-alert--center-content :deep(.v-alert__prepend svg) {
+    display: block;
 }
 </style>
