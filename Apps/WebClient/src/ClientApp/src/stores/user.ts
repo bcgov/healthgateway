@@ -410,9 +410,11 @@ export const useUserStore = defineStore("user", () => {
 
         status.value = LoadStatus.REQUESTED;
 
-        retrieveEssentialDataPromise = patientService
-            .getPatient(user.value.hdid)
-            .then((result: Patient) => {
+        retrieveEssentialDataPromise = (async () => {
+            try {
+                const result: Patient = await patientService.getPatient(
+                    user.value.hdid
+                );
                 if (!result) {
                     patientRetrievalFailed.value = true;
                     logger.debug("Patient retrieval failed");
@@ -421,33 +423,39 @@ export const useUserStore = defineStore("user", () => {
 
                 setPatient(result);
 
-                return getUserProfile()
-                    .then((userProfile) => {
+                try {
+                    const userProfile = await getUserProfile();
+                    logger.debug(
+                        `User Profile: ${JSON.stringify(userProfile)}`
+                    );
+                    setProfileUserData(userProfile);
+                } catch (resultError) {
+                    patientRetrievalFailed.value = true;
+                    if (
+                        resultError instanceof ResultError &&
+                        resultError.statusCode === 429
+                    ) {
                         logger.debug(
-                            `User Profile: ${JSON.stringify(userProfile)}`
+                            "User profile retrieval failed because of too many requests"
                         );
-                        setProfileUserData(userProfile);
-                    })
-                    .catch((resultError: ResultError) => {
-                        patientRetrievalFailed.value = true;
-                        if (resultError.statusCode === 429) {
-                            logger.debug(
-                                "User profile retrieval failed because of too many requests"
-                            );
-                            appStore.setAppError(AppErrorType.TooManyRequests);
-                        } else {
-                            logger.debug("User profile retrieval failed");
-                            errorStore.addError(
-                                ErrorType.Retrieve,
-                                ErrorSourceType.User,
-                                resultError.traceId
-                            );
-                        }
-                    });
-            })
-            .catch((resultError: ResultError) => {
+                        appStore.setAppError(AppErrorType.TooManyRequests);
+                    } else {
+                        logger.debug("User profile retrieval failed");
+                        errorStore.addError(
+                            ErrorType.Retrieve,
+                            ErrorSourceType.User,
+                            resultError instanceof ResultError
+                                ? resultError.traceId
+                                : ""
+                        );
+                    }
+                }
+            } catch (resultError) {
                 patientRetrievalFailed.value = true;
-                if (resultError.statusCode === 429) {
+                if (
+                    resultError instanceof ResultError &&
+                    resultError.statusCode === 429
+                ) {
                     logger.debug(
                         "Patient retrieval failed because of too many requests"
                     );
@@ -455,10 +463,10 @@ export const useUserStore = defineStore("user", () => {
                 } else {
                     logger.debug("Patient retrieval failed");
                 }
-            })
-            .finally(() => {
+            } finally {
                 retrieveEssentialDataPromise = undefined;
-            });
+            }
+        })();
 
         return retrieveEssentialDataPromise;
     }
