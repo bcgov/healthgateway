@@ -63,17 +63,15 @@ function redirect(): void {
     router.push({ path: "/home" });
 }
 
-// Created hook
-userProfileService
-    .getTermsOfService()
-    .then((result) => {
+async function retrieveTermsOfService(): Promise<void> {
+    try {
+        const result = await userProfileService.getTermsOfService();
         logger.debug(`getTermsOfService result: ${JSON.stringify(result)}`);
         termsOfServiceId.value = result.id;
         termsOfService.value = result.content;
-    })
-    .catch((err: ResultError) => {
-        logger.error(err.message);
-        if (err.statusCode === 429) {
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
             errorStore.setTooManyRequestsWarning("page");
         } else {
             errorStore.addError(
@@ -82,10 +80,13 @@ userProfileService
                 undefined
             );
         }
-    })
-    .finally(() => {
+    } finally {
         isLoading.value = false;
-    });
+    }
+}
+
+// Created hook
+void retrieveTermsOfService();
 </script>
 
 <template>
