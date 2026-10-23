@@ -155,11 +155,17 @@ onMounted(() => {
 });
 
 // Created Hook
-specialAuthorityStore
-    .retrieveSpecialAuthorityRequests(props.hdid)
-    .catch((err) =>
-        logger.error(`Error loading Special Authority requests data: ${err}`)
-    );
+async function retrieveSpecialAuthorityRequests(): Promise<void> {
+    try {
+        await specialAuthorityStore.retrieveSpecialAuthorityRequests(
+            props.hdid
+        );
+    } catch (err) {
+        logger.error(`Error loading Special Authority requests data: ${err}`);
+    }
+}
+
+void retrieveSpecialAuthorityRequests();
 </script>
 
 <template>
