@@ -612,7 +612,7 @@ for (const [entryType] of reportComponentMap) {
 </template>
 
 <style lang="scss">
-.excluded-medication .v-chip__content {
-    overflow: hidden !important;
+.v-chip.excluded-medication .v-chip__content {
+    overflow: hidden;
 }
 </style>
