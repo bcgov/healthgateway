@@ -103,6 +103,7 @@ watch(
 
 <template>
     <v-expansion-panels
+        class="timeline-entry-panels"
         :model-value="detailsVisible ? 0 : undefined"
         :class="{ 'h-100': isMobileDetails, 'mb-2': !isMobileDetails }"
     >
@@ -248,11 +249,12 @@ watch(
     pointer-events: all;
 }
 
-:deep(.v-expansion-panel-title:hover) {
-    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+.timeline-entry-panels :deep(.v-expansion-panel-title:hover) {
+    background-color: rgb(var(--v-theme-surfaceHover));
 }
-:deep(.v-expansion-panel-title:hover > .v-expansion-panel-title__overlay) {
-    opacity: 0 !important;
+.timeline-entry-panels
+    :deep(.v-expansion-panel-title:hover > .v-expansion-panel-title__overlay) {
+    opacity: 0;
 }
 </style>
 
