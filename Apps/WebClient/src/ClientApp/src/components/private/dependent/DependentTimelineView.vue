@@ -59,11 +59,14 @@ function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
     return dependentStore.retrieveDependents(hdid, bypassCache);
 }
 
-retrieveDependents(userStore.hdid, false).then(() => {
+async function loadDependentTimeline(): Promise<void> {
+    await retrieveDependents(userStore.hdid, false);
     if (dependent.value === undefined) {
-        router.push({ path: "/unauthorized" });
+        await router.push({ path: "/unauthorized" });
     }
-});
+}
+
+void loadDependentTimeline();
 </script>
 
 <template>
