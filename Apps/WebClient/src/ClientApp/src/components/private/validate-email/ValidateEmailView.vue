@@ -27,21 +27,25 @@ const isSuccess = computed(() => isAlreadyVerified.value || isVerified.value);
 const validationFailed = computed(() => isVerified.value === false);
 
 // Created hook
+async function validateEmail(): Promise<void> {
+    try {
+        isVerified.value = await userStore.validateEmail(props.inviteKey);
+    } catch (resultError) {
+        if (
+            resultError instanceof ResultError &&
+            resultError.statusCode === 409
+        ) {
+            isAlreadyVerified.value = true;
+        } else {
+            logger.error("Error while validating email.");
+        }
+    }
+}
+
 loadingStore.applyLoader(
     Loader.ValidateEmail,
     "verifyingEmailAddress",
-    userStore
-        .validateEmail(props.inviteKey)
-        .then((result: boolean) => {
-            isVerified.value = result;
-        })
-        .catch((resultError: ResultError) => {
-            if (resultError.statusCode === 409) {
-                isAlreadyVerified.value = true;
-            } else {
-                logger.error("Error while validating email.");
-            }
-        })
+    validateEmail()
 );
 </script>
 
