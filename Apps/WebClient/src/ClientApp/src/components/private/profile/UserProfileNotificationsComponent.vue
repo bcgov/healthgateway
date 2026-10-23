@@ -507,8 +507,8 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.hg-switch .v-switch__track.bg-primary) {
-    opacity: 1 !important;
+.hg-switch.v-switch :deep(.v-switch__track.bg-primary) {
+    opacity: 1;
 }
 .notification-type-col {
     min-width: 245px;
