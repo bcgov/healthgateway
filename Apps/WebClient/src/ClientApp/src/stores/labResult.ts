@@ -19,6 +19,7 @@ import {
 } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import PromiseUtility from "@/utility/promiseUtility";
 
 export const defaultLabResultState: LabResultState = {
     data: [],
@@ -159,7 +160,12 @@ export const useLabResultStore = defineStore("labResult", () => {
                     setLabResultsRefreshInProgress(hdid, payload);
                     setTimeout(() => {
                         logger.info(`Re-querying for lab results`);
-                        retrieveLabResults(hdid);
+
+                        PromiseUtility.runInBackground(
+                            retrieveLabResults(hdid),
+                            logger,
+                            "Laboratory results retry"
+                        );
                     }, payload.retryin);
                 } else {
                     if (result.resultError) {

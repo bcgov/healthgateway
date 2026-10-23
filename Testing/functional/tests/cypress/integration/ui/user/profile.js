@@ -53,10 +53,11 @@ describe("User Profile", () => {
             });
     });
 
-    it("Email address", () => {
+    it("shows the loading indicator while saving an email address", () => {
         cy.intercept("PUT", `**/UserProfile/${HDID}/email?api-version=2.0`, {
             statusCode: 200,
             body: true,
+            delay: 500,
         });
 
         cy.env(["keycloak.password", "emailAddress"]).then(
@@ -78,44 +79,65 @@ describe("User Profile", () => {
                 );
 
                 cy.get("[data-testid=editEmailSaveBtn]").click();
+                cy.get("[data-testid=loadingSpinner]").should("be.visible");
+                cy.get("[data-testid=loadingSpinner]").should("not.exist");
                 cy.get("[data-testid=emailStatusNotVerified]").should(
                     "be.visible"
                 );
                 cy.get("[data-testid=resendEmailBtn]").should("be.visible");
-
-                cy.log("Invalid email address");
-                cy.get("[data-testid=editEmailBtn]").click();
-                cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
-                cy.get("[data-testid=email-input]")
-                    .find(".v-messages__message")
-                    .contains(
-                        "New email must be different from the previous one"
-                    )
-                    .should("be.visible");
-                cy.get("[data-testid=editEmailCancelBtn]").click();
-                cy.get("[data-testid=email-input] input").should(
-                    "have.attr",
-                    "readonly"
-                );
-                cy.get("[data-testid=email-input] input").should(
-                    "have.value",
-                    emailAddress
-                );
-
-                cy.log("Clear/OptOut email address");
-                cy.get("[data-testid=editEmailBtn]").click();
-                cy.get("[data-testid=email-input] input").clear();
-                cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
-                cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
-                    fixture: "UserProfileService/userProfile.json",
-                });
-                cy.get("[data-testid=editEmailSaveBtn]").click();
-                cy.get("[data-testid=loadingSpinner]").should("not.exist");
-                cy.get("[data-testid=emailStatusOptedOut]").should(
-                    "be.visible"
-                );
             }
         );
+    });
+
+    it("prevents saving an unchanged email address", () => {
+        cy.env(["emailAddress"]).then(({ emailAddress }) => {
+            cy.fixture("UserProfileService/userProfile.json").then((data) => {
+                data.email = emailAddress;
+                cy.intercept(
+                    "GET",
+                    `**/UserProfile/${HDID}?api-version=2.0`,
+                    data
+                );
+            });
+            cy.reload();
+            cy.get("[data-testid=editEmailBtn]").click();
+            cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
+            cy.get("[data-testid=email-input]")
+                .find(".v-messages__message")
+                .contains("New email must be different from the previous one")
+                .should("be.visible");
+            cy.get("[data-testid=editEmailCancelBtn]").click();
+            cy.get("[data-testid=email-input] input").should(
+                "have.attr",
+                "readonly"
+            );
+            cy.get("[data-testid=email-input] input").should(
+                "have.value",
+                emailAddress
+            );
+        });
+    });
+
+    it("allows opting out of email notifications", () => {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email?api-version=2.0`, {
+            statusCode: 200,
+            body: true,
+        });
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.email = "existing@example.com";
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
+        });
+        cy.reload();
+
+        cy.get("[data-testid=editEmailBtn]").click();
+        cy.get("[data-testid=email-input] input").clear();
+        cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
+        cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
+        cy.get("[data-testid=editEmailSaveBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
+        cy.get("[data-testid=emailStatusOptedOut]").should("be.visible");
     });
 
     it("Verify SMS number", () => {

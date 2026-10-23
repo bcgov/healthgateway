@@ -82,9 +82,14 @@ export const useAuthStore = defineStore("auth", () => {
             refreshTimeout = undefined;
         }
         userStore.clearUserData();
-        authService.signOut().then(() => {
-            logger.verbose("Successfully signed out");
-        });
+        authService
+            .signOut()
+            .then(() => {
+                logger.verbose("Successfully signed out");
+            })
+            .catch(() => {
+                logger.warn("Failed to sign out");
+            });
     }
 
     function clearStorage() {

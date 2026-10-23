@@ -245,3 +245,58 @@ describe("COVID-19 Orders", () => {
         cy.get("[data-testid=backBtn]").click({ force: true });
     });
 });
+
+describe("COVID-19 Orders Refresh", () => {
+    beforeEach(() => {
+        let requestCount = 0;
+
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", (request) => {
+            requestCount += 1;
+            request.reply({
+                fixture:
+                    requestCount === 1
+                        ? "LaboratoryService/covid19OrdersRefresh.json"
+                        : "LaboratoryService/covid19Orders.json",
+            });
+        }).as("getCovid19Orders");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
+
+        setupStandardFixtures();
+
+        cy.viewport("iphone-6");
+        cy.env(["keycloak.password"]).then(
+            ({ "keycloak.password": password }) => {
+                cy.login(
+                    Cypress.expose("keycloak.username"),
+                    password,
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
+                );
+            }
+        );
+    });
+
+    it("retries COVID-19 results when the initial response requests a refresh", () => {
+        cy.wait("@getCovid19Orders")
+            .its("response.body.resourcePayload")
+            .should((payload) => {
+                expect(payload.loaded).to.be.false;
+                expect(payload.retryin).to.be.greaterThan(0);
+            });
+
+        cy.wait("@getCovid19Orders")
+            .its("response.body.resourcePayload.loaded")
+            .should("be.true");
+
+        cy.checkTimelineHasLoaded();
+    });
+});

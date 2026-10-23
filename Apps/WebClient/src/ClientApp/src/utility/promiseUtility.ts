@@ -1,4 +1,22 @@
+import { ILogger } from "@/services/interfaces";
+
 export default abstract class PromiseUtility {
+    /**
+     * Runs a promise without returning it and logs any rejected result.
+     * @param promise The promise to run in the background.
+     * @param logger The logger used for rejected results.
+     * @param operation The operation being performed.
+     */
+    public static runInBackground<T>(
+        promise: Promise<T>,
+        logger: ILogger,
+        operation: string
+    ): void {
+        void promise.catch((error: unknown) => {
+            logger.warn(`${operation} failed: ${JSON.stringify(error)}`);
+        });
+    }
+
     /**
      * Wraps a promise so it won't return or reject until a minimum amount of time has elapsed.
      * @param promise The provided Promise.

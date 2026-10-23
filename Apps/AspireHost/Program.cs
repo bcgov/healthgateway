@@ -72,7 +72,7 @@ AddApp<Projects.JobScheduler>("JobScheduler");
 AddApp<Projects.WebClient>("WebClient");
 AddApp<Projects.Admin_Server>("Admin");
 
-builder.Build().Run();
+await builder.Build().RunAsync();
 
 IResourceBuilder<ProjectResource> AddApp<TProject>(string name)
     where TProject : IProjectMetadata, new()

@@ -17,6 +17,7 @@ import { LoadStatus } from "@/models/storeOperations";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import PromiseUtility from "@/utility/promiseUtility";
 
 export const defaultCovid19TestResultState: Covid19TestResultState = {
     data: [],
@@ -139,7 +140,12 @@ export const useCovid19TestResultStore = defineStore(
                             logger.info(
                                 `Re-querying for COVID-19 test results`
                             );
-                            retrieveCovid19TestResults(hdid);
+
+                            PromiseUtility.runInBackground(
+                                retrieveCovid19TestResults(hdid),
+                                logger,
+                                "COVID-19 test results retry"
+                            );
                         }, payload.retryin);
                     } else {
                         if (result.resultError) {
