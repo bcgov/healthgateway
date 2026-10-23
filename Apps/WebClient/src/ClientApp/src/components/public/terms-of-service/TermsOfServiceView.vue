@@ -33,23 +33,24 @@ const isLoading = ref(true);
 const hasErrors = ref(false);
 const termsOfService = ref("");
 
-userProfileService
-    .getTermsOfService()
-    .then((result) => {
+async function retrieveTermsOfService(): Promise<void> {
+    try {
+        const result = await userProfileService.getTermsOfService();
         logger.debug("Terms Of Service retrieved: " + JSON.stringify(result));
         termsOfService.value = result.content;
-    })
-    .catch((err: ResultError) => {
-        logger.error(err.message);
-        if (err.statusCode === 429) {
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
             errorStore.setTooManyRequestsWarning("page");
         } else {
             hasErrors.value = true;
         }
-    })
-    .finally(() => {
+    } finally {
         isLoading.value = false;
-    });
+    }
+}
+
+void retrieveTermsOfService();
 </script>
 
 <template>
