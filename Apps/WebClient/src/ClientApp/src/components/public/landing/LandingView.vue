@@ -418,13 +418,13 @@ function openExternalLink(tile: InfoTile, action: Action) {
   - Recolor TileComponent titles to BC Black (#313132)
     instead of the Vuetify theme primary.
 */
-:deep(.tile-title) {
-    color: #313132 !important;
+:deep(.tile-title.text-primary) {
+    color: #313132;
 }
 
 /* Paragraph override: Landing-only text requiring BC Black */
-.landing-bc-black {
-    color: #313132 !important;
+.landing-bc-black.text-body-large {
+    color: #313132;
 }
 
 .device-preview {
@@ -435,10 +435,12 @@ function openExternalLink(tile: InfoTile, action: Action) {
     }
 }
 
-:deep(.v-card:has(.no-card-press-zone :active) .v-card__overlay),
-:deep(.v-card:has(.no-card-press-zone :active) .v-card__underlay),
-:deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__overlay),
-:deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__underlay) {
-    opacity: 0 !important;
+.v-container :deep(.v-card:has(.no-card-press-zone :active) .v-card__overlay),
+.v-container :deep(.v-card:has(.no-card-press-zone :active) .v-card__underlay),
+.v-container
+    :deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__overlay),
+.v-container
+    :deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__underlay) {
+    opacity: 0;
 }
 </style>
