@@ -226,8 +226,8 @@ watch(isSidebarOpen, (value: boolean) => {
 .nav-list-item-icon {
     width: 1.5em;
 }
-.nav-feedback-button {
-    background-color: rgb(var(--v-theme-navHighlight)) !important;
+.v-navigation-drawer .v-list-item.nav-feedback-button {
+    background-color: rgb(var(--v-theme-navHighlight));
     border-top: 1px solid rgb(var(--v-theme-borderDivider));
 }
 
@@ -235,7 +235,8 @@ watch(isSidebarOpen, (value: boolean) => {
     --v-hover-opacity: 0;
 }
 
-:deep(.nav-hover:not(.v-list-item--active):hover) {
-    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+.v-navigation-drawer
+    :deep(.v-list-item.nav-hover:not(.v-list-item--active):hover) {
+    background-color: rgb(var(--v-theme-surfaceHover));
 }
 </style>
