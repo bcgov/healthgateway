@@ -117,9 +117,15 @@ onMounted(() => {
 });
 
 // Created hook
-noteStore
-    .retrieveNotes(props.hdid)
-    .catch((err) => logger.error(`Error loading user note data: ${err}`));
+async function retrieveNotes(): Promise<void> {
+    try {
+        await noteStore.retrieveNotes(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading user note data: ${err}`);
+    }
+}
+
+void retrieveNotes();
 </script>
 
 <template>
