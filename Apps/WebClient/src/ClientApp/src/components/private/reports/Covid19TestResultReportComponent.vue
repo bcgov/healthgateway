@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -124,15 +125,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-async function retrieveCovid19TestResults(): Promise<void> {
-    try {
-        await covid19TestResultStore.retrieveCovid19TestResults(props.hdid);
-    } catch (err) {
-        logger.error(`Error loading Covid19 data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveCovid19TestResults);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        covid19TestResultStore.retrieveCovid19TestResults(props.hdid),
+        logger,
+        "Error loading Covid19 data"
+    )
+);
 </script>
 
 <template>

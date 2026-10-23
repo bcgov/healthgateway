@@ -15,6 +15,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -155,17 +156,13 @@ onMounted(() => {
 });
 
 // Created Hook
-async function retrieveSpecialAuthorityRequests(): Promise<void> {
-    try {
-        await specialAuthorityStore.retrieveSpecialAuthorityRequests(
-            props.hdid
-        );
-    } catch (err) {
-        logger.error(`Error loading Special Authority requests data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveSpecialAuthorityRequests);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        specialAuthorityStore.retrieveSpecialAuthorityRequests(props.hdid),
+        logger,
+        "Error loading Special Authority requests data"
+    )
+);
 </script>
 
 <template>

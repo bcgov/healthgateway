@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useHealthVisitStore } from "@/stores/healthVisit";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -118,15 +119,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-async function retrieveHealthVisits(): Promise<void> {
-    try {
-        await healthVisitStore.retrieveHealthVisits(props.hdid);
-    } catch (err) {
-        logger.error(`Error loading encounter data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveHealthVisits);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        healthVisitStore.retrieveHealthVisits(props.hdid),
+        logger,
+        "Error loading encounter data"
+    )
+);
 </script>
 
 <template>

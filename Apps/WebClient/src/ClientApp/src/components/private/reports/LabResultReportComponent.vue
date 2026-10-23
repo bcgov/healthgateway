@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useLabResultStore } from "@/stores/labResult";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -126,15 +127,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-async function retrieveLabResults(): Promise<void> {
-    try {
-        await labResultStore.retrieveLabResults(props.hdid);
-    } catch (err) {
-        logger.error(`Error loading Laboratory data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveLabResults);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        labResultStore.retrieveLabResults(props.hdid),
+        logger,
+        "Error loading Laboratory data"
+    )
+);
 </script>
 
 <template>

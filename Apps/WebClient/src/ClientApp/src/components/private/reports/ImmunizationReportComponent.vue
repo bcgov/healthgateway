@@ -27,6 +27,7 @@ import {
 } from "@/services/interfaces";
 import { useImmunizationStore } from "@/stores/immunization";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -221,15 +222,13 @@ onMounted(() => {
 });
 
 logger.debug(`Retrieving immunizations for Hdid: ${props.hdid}`);
-async function retrieveImmunizations(): Promise<void> {
-    try {
-        await immunizationStore.retrieveImmunizations(props.hdid);
-    } catch (err) {
-        logger.error(`Error loading immunization data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveImmunizations);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        immunizationStore.retrieveImmunizations(props.hdid),
+        logger,
+        "Error loading immunization data"
+    )
+);
 </script>
 
 <template>

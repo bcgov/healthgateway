@@ -16,6 +16,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useMedicationStore } from "@/stores/medication";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -251,15 +252,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-async function retrieveMedications(): Promise<void> {
-    try {
-        await medicationStore.retrieveMedications(props.hdid);
-    } catch (err) {
-        logger.error(`Error loading medication data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveMedications);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        medicationStore.retrieveMedications(props.hdid),
+        logger,
+        "Error loading medication data"
+    )
+);
 </script>
 
 <template>

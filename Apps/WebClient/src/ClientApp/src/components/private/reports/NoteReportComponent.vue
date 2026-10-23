@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useNoteStore } from "@/stores/note";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -117,15 +118,13 @@ onMounted(() => {
 });
 
 // Created hook
-async function retrieveNotes(): Promise<void> {
-    try {
-        await noteStore.retrieveNotes(props.hdid);
-    } catch (err) {
-        logger.error(`Error loading user note data: ${err}`);
-    }
-}
-
-onBeforeMount(retrieveNotes);
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        noteStore.retrieveNotes(props.hdid),
+        logger,
+        "Error loading user note data"
+    )
+);
 </script>
 
 <template>
