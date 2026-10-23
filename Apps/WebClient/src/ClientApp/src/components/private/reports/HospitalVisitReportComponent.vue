@@ -124,9 +124,15 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-hospitalVisitStore
-    .retrieveHospitalVisits(props.hdid)
-    .catch((err) => logger.error(`Error loading hospital visit data: ${err}`));
+async function retrieveHospitalVisits(): Promise<void> {
+    try {
+        await hospitalVisitStore.retrieveHospitalVisits(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading hospital visit data: ${err}`);
+    }
+}
+
+void retrieveHospitalVisits();
 </script>
 
 <template>
