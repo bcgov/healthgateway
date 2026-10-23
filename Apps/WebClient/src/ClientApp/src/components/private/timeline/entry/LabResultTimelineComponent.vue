@@ -92,7 +92,7 @@ function formatDate(date?: DateWrapper): string | undefined {
     return date?.format("yyyy-MMM-dd, t");
 }
 
-function getReport(): void {
+async function getReport(): Promise<void> {
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.DownloadLabResult,
@@ -103,31 +103,34 @@ function getReport(): void {
     });
 
     isLoadingDocument.value = true;
-    laboratoryService
-        .getReportDocument(props.entry.id, props.hdid, false)
-        .then((result) => {
-            const dateString =
-                props.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
-            const report = result.resourcePayload;
-            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(blob, `Laboratory_Report_${dateString}.pdf`)
-                );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.LaboratoryReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => (isLoadingDocument.value = false));
+    try {
+        const result = await laboratoryService.getReportDocument(
+            props.entry.id,
+            props.hdid,
+            false
+        );
+        const dateString =
+            props.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
+        const report = result.resourcePayload;
+        const response = await fetch(
+            `data:${report.mediaType};${report.encoding},${report.data}`
+        );
+        const blob = await response.blob();
+        saveAs(blob, `Laboratory_Report_${dateString}.pdf`);
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
+            errorStore.setTooManyRequestsError("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Download,
+                ErrorSourceType.LaboratoryReport,
+                err instanceof ResultError ? err.traceId : undefined
+            );
+        }
+    } finally {
+        isLoadingDocument.value = false;
+    }
 }
 </script>
 
