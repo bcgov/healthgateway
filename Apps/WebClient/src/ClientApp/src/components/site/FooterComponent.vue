@@ -153,8 +153,8 @@ const isFooterShown = computed(
 </template>
 
 <style lang="scss" scoped>
-.v-footer :deep(.text-primary) {
-    color: #313132 !important; /* BC Black */
+.v-footer :deep(a.text-primary) {
+    color: #313132; /* BC Black */
 }
 
 .v-footer {
@@ -173,7 +173,7 @@ const isFooterShown = computed(
 }
 
 // On mobile, let it flow with content
-.non-fixed-footer {
-    position: static !important;
+.v-footer.non-fixed-footer {
+    position: static;
 }
 </style>
