@@ -237,7 +237,7 @@ function deleteDependent(): void {
         });
 }
 
-function downloadLaboratoryOrderReport(): void {
+async function downloadLaboratoryOrderReport(): Promise<void> {
     if (selectedLaboratoryOrderRow.value === undefined) {
         return;
     }
@@ -255,41 +255,38 @@ function downloadLaboratoryOrderReport(): void {
         selectedLaboratoryOrderRow.value.timelineDateTime
     ).format("yyyy_MM_dd-HH_mm");
 
-    laboratoryService
-        .getReportDocument(
+    try {
+        const result = await laboratoryService.getReportDocument(
             selectedLaboratoryOrderRow.value.reportId,
             dependentHdid.value,
             false
-        )
-        .then((result) => {
-            const report = result.resourcePayload;
-            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(
-                        blob,
-                        `Laboratory_Report_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}_${dateString}.pdf`
-                    )
-                );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.LaboratoryReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
-        });
+        );
+        const report = result.resourcePayload;
+        const response = await fetch(
+            `data:${report.mediaType};${report.encoding},${report.data}`
+        );
+        const blob = await response.blob();
+        saveAs(
+            blob,
+            `Laboratory_Report_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}_${dateString}.pdf`
+        );
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
+            errorStore.setTooManyRequestsError("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Download,
+                ErrorSourceType.LaboratoryReport,
+                err instanceof ResultError ? err.traceId : undefined
+            );
+        }
+    } finally {
+        isReportDownloading.value = false;
+    }
 }
 
-function downloadImmunizationReport(): void {
+async function downloadImmunizationReport(): Promise<void> {
     isReportDownloading.value = true;
 
     trackingService.trackEvent({
@@ -303,40 +300,34 @@ function downloadImmunizationReport(): void {
         format: EventDataUtility.getFormat(reportFormatType.value),
     });
 
-    generateReport(
-        TemplateType.DependentImmunization,
-        reportFormatType.value,
-        headerData.value
-    )
-        .then((result: RequestResult<Report>) => {
-            const mimeType = getMimeType(reportFormatType.value);
-            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-            fetch(downloadLink).then((res) =>
-                res
-                    .blob()
-                    .then((blob) =>
-                        saveAs(blob, result.resourcePayload.fileName)
-                    )
+    try {
+        const result: RequestResult<Report> = await generateReport(
+            TemplateType.DependentImmunization,
+            reportFormatType.value,
+            headerData.value
+        );
+        const mimeType = getMimeType(reportFormatType.value);
+        const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+        const response = await fetch(downloadLink);
+        const blob = await response.blob();
+        saveAs(blob, result.resourcePayload.fileName);
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
+            errorStore.setTooManyRequestsError("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Download,
+                ErrorSourceType.DependentImmunizationReport,
+                err instanceof ResultError ? err.traceId : undefined
             );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.DependentImmunizationReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
-        });
+        }
+    } finally {
+        isReportDownloading.value = false;
+    }
 }
 
-function downloadClinicalDocument(): void {
+async function downloadClinicalDocument(): Promise<void> {
     if (selectedClinicalDocumentRow.value === undefined) {
         return;
     }
@@ -352,35 +343,34 @@ function downloadClinicalDocument(): void {
         actor: Actor.Guardian,
     });
 
-    clinicalDocumentService
-        .getFile(selectedClinicalDocumentRow.value.fileId, dependentHdid.value)
-        .then((result: RequestResult<EncodedMedia>) => {
-            fetch(
-                `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
-            )
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(
-                        blob,
-                        `Clinical_Document_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}.pdf`
-                    )
-                );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.ClinicalDocument,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
-        });
+    try {
+        const result: RequestResult<EncodedMedia> =
+            await clinicalDocumentService.getFile(
+                selectedClinicalDocumentRow.value.fileId,
+                dependentHdid.value
+            );
+        const response = await fetch(
+            `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
+        );
+        const blob = await response.blob();
+        saveAs(
+            blob,
+            `Clinical_Document_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}.pdf`
+        );
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
+            errorStore.setTooManyRequestsError("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Download,
+                ErrorSourceType.ClinicalDocument,
+                err instanceof ResultError ? err.traceId : undefined
+            );
+        }
+    } finally {
+        isReportDownloading.value = false;
+    }
 }
 
 function downloadDocument(): void {
