@@ -126,9 +126,15 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-labResultStore
-    .retrieveLabResults(props.hdid)
-    .catch((err) => logger.error(`Error loading Laboratory data: ${err}`));
+async function retrieveLabResults(): Promise<void> {
+    try {
+        await labResultStore.retrieveLabResults(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading Laboratory data: ${err}`);
+    }
+}
+
+void retrieveLabResults();
 </script>
 
 <template>
