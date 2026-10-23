@@ -221,9 +221,15 @@ onMounted(() => {
 });
 
 logger.debug(`Retrieving immunizations for Hdid: ${props.hdid}`);
-immunizationStore
-    .retrieveImmunizations(props.hdid)
-    .catch((err) => logger.error(`Error loading immunization data: ${err}`));
+async function retrieveImmunizations(): Promise<void> {
+    try {
+        await immunizationStore.retrieveImmunizations(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading immunization data: ${err}`);
+    }
+}
+
+void retrieveImmunizations();
 </script>
 
 <template>
