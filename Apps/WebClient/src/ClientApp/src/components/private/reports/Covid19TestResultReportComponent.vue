@@ -124,9 +124,15 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-covid19TestResultStore
-    .retrieveCovid19TestResults(props.hdid)
-    .catch((err) => logger.error(`Error loading Covid19 data: ${err}`));
+async function retrieveCovid19TestResults(): Promise<void> {
+    try {
+        await covid19TestResultStore.retrieveCovid19TestResults(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading Covid19 data: ${err}`);
+    }
+}
+
+void retrieveCovid19TestResults();
 </script>
 
 <template>
