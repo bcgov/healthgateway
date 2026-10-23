@@ -125,7 +125,7 @@ const isNormalDensity = computed<boolean>(() => {
 .hover-card {
     --v-hover-opacity: 0;
 }
-.hover-card:hover {
-    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+.v-card.hover-card:hover {
+    background-color: rgb(var(--v-theme-surfaceHover));
 }
 </style>
