@@ -64,6 +64,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly int minPatientAge;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileNotificationSettingService profileNotificationSettingService;
         private readonly IPatientService patientService;
         private readonly IUserPreferenceService userPreferenceService;
         private readonly IUserProfileDelegate userProfileDelegate;
@@ -84,6 +85,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="patientService">The patient service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">The Notifications Settings service.</param>
+        /// <param name="profileNotificationSettingService">The injected user profile notification setting service.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="userPreferenceService">The user preference service.</param>
         /// <param name="legalAgreementService">The legal agreement service.</param>
@@ -107,6 +109,7 @@ namespace HealthGateway.GatewayApi.Services
             IPatientService patientService,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
+            IUserProfileNotificationSettingService profileNotificationSettingService,
             IUserProfileDelegate userProfileDelegate,
             IUserPreferenceService userPreferenceService,
             ILegalAgreementService legalAgreementService,
@@ -126,6 +129,7 @@ namespace HealthGateway.GatewayApi.Services
             this.patientService = patientService;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
+            this.profileNotificationSettingService = profileNotificationSettingService;
             this.userProfileDelegate = userProfileDelegate;
             this.userPreferenceService = userPreferenceService;
             this.legalAgreementService = legalAgreementService;
@@ -276,6 +280,22 @@ namespace HealthGateway.GatewayApi.Services
                         await this.emailQueueService.QueueNewEmailAsync(emailVerification.Email, false, ct);
                         break;
                 }
+            }
+
+            if (isEmailVerified)
+            {
+                // Set default notification settings
+                UserProfileNotificationSettingModel[] notificationSettingModels =
+                [
+                    new()
+                    {
+                        Type = ProfileNotificationType.BcCancerScreening,
+                        EmailEnabled = true,
+                        SmsEnabled = null,
+                    },
+                ];
+
+                await this.profileNotificationSettingService.UpdateAsync(newProfile, notificationSettingModels, false, ct);
             }
 
             string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
