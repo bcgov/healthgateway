@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { saveAs } from "file-saver";
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -9,11 +8,10 @@ import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ErrorSourceType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ResultError } from "@/models/errors";
 import ReportField from "@/models/reportField";
 import LabResultTimelineEntry from "@/models/timeline/labResultTimelineEntry";
 import {
@@ -31,6 +29,7 @@ import {
 } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
+import { downloadLaboratoryReport } from "@/utility/reportDownloadUtility";
 
 interface Props {
     hdid: string;
@@ -102,35 +101,20 @@ async function getReport(): Promise<void> {
         format: Format.Pdf,
     });
 
-    isLoadingDocument.value = true;
-    try {
-        const result = await laboratoryService.getReportDocument(
-            props.entry.id,
-            props.hdid,
-            false
-        );
-        const dateString =
-            props.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
-        const report = result.resourcePayload;
-        const response = await fetch(
-            `data:${report.mediaType};${report.encoding},${report.data}`
-        );
-        const blob = await response.blob();
-        saveAs(blob, `Laboratory_Report_${dateString}.pdf`);
-    } catch (err) {
-        logger.error(err instanceof Error ? err.message : String(err));
-        if (err instanceof ResultError && err.statusCode === 429) {
-            errorStore.setTooManyRequestsError("page");
-        } else {
-            errorStore.addError(
-                ErrorType.Download,
-                ErrorSourceType.LaboratoryReport,
-                err instanceof ResultError ? err.traceId : undefined
-            );
-        }
-    } finally {
-        isLoadingDocument.value = false;
-    }
+    const dateString = props.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
+    await downloadLaboratoryReport(
+        () =>
+            laboratoryService.getReportDocument(
+                props.entry.id,
+                props.hdid,
+                false
+            ),
+        `Laboratory_Report_${dateString}.pdf`,
+        ErrorSourceType.LaboratoryReport,
+        logger,
+        errorStore,
+        isLoadingDocument
+    );
 }
 </script>
 
