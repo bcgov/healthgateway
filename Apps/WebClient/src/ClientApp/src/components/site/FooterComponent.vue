@@ -52,7 +52,7 @@ const isFooterShown = computed(
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"
-                    class="text-primary"
+                    class="footer-link"
                     @click="
                         trackingService.trackEvent({
                             action: Action.ExternalLink,
@@ -73,7 +73,7 @@ const isFooterShown = computed(
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-release-notes-link"
-                    class="text-primary"
+                    class="footer-link"
                     @click="
                         trackingService.trackEvent({
                             action: Action.ExternalLink,
@@ -92,7 +92,7 @@ const isFooterShown = computed(
                 <router-link
                     :to="Path.TermsOfService"
                     data-testid="footer-terms-of-service-link"
-                    class="text-primary"
+                    class="footer-link"
                     @click="
                         trackingService.trackEvent({
                             action: Action.ExternalLink,
@@ -113,7 +113,7 @@ const isFooterShown = computed(
                     target="_blank"
                     rel="noopener"
                     data-testid="footer-faq-link"
-                    class="text-primary"
+                    class="footer-link"
                     @click="
                         trackingService.trackEvent({
                             action: Action.ExternalLink,
@@ -133,7 +133,7 @@ const isFooterShown = computed(
                 <a
                     href="mailto:healthgateway@gov.bc.ca"
                     data-testid="footer-email-link"
-                    class="text-primary"
+                    class="footer-link"
                     @click="
                         trackingService.trackEvent({
                             action: Action.Email,
@@ -153,7 +153,7 @@ const isFooterShown = computed(
 </template>
 
 <style lang="scss" scoped>
-.v-footer :deep(a.text-primary) {
+.v-footer :deep(.footer-link) {
     color: #313132; /* BC Black */
 }
 
