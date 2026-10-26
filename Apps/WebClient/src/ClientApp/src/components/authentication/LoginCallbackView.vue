@@ -39,8 +39,9 @@ function redirect() {
         .catch((error) => logger.warn(error.message));
 }
 
-signIn(defaultPath.value)
-    .then(() => {
+async function handleLoginCallback(): Promise<void> {
+    try {
+        await signIn(defaultPath.value);
         logger.debug(`signIn for user: ${JSON.stringify(userStore.user)}`);
 
         // If the identity provider is invalid, the router will redirect to the appropriate error page.
@@ -49,12 +50,10 @@ signIn(defaultPath.value)
             return;
         }
 
-        return userStore.retrieveEssentialDataForLogin().then(() => {
-            retrieveNotifications();
-            redirect();
-        });
-    })
-    .catch((error) => {
+        await userStore.retrieveEssentialDataForLogin();
+        retrieveNotifications();
+        redirect();
+    } catch (error) {
         logger.error(`LoginCallback Error: ${JSON.stringify(error)}`);
 
         clearStorage();
@@ -62,7 +61,10 @@ signIn(defaultPath.value)
             path: "/login",
             query: { isRetry: "true" },
         });
-    });
+    }
+}
+
+void handleLoginCallback();
 </script>
 
 <template>
