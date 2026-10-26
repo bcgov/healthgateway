@@ -18,6 +18,24 @@ export default abstract class PromiseUtility {
     }
 
     /**
+     * Awaits an operation and logs any rejected result.
+     * @param operation The operation to await.
+     * @param logger The logger used for rejected results.
+     * @param message The error message prefix.
+     */
+    public static async runAndLogError<T>(
+        operation: () => Promise<T>,
+        logger: ILogger,
+        message: string
+    ): Promise<void> {
+        try {
+            await operation();
+        } catch (error) {
+            logger.error(`${message}: ${error}`);
+        }
+    }
+
+    /**
      * Wraps a promise so it won't return or reject until a minimum amount of time has elapsed.
      * @param promise The provided Promise.
      * @param milliseconds The time to wait.
