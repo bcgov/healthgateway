@@ -42,7 +42,7 @@ const isFooterShown = computed(
         v-if="isFooterShown"
         data-testid="footer"
         color="white"
-        app
+        :app="!layoutStore.isMobile"
         :class="{ 'non-fixed-footer': layoutStore.isMobile }"
     >
         <v-row class="pa-2">
