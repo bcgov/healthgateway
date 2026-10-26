@@ -12,14 +12,12 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
-import Report from "@/models/report";
 import { ReportFilterBuilder } from "@/models/reportFilter";
 import {
     ReportFormatType,
     reportMimeTypeMap,
     TemplateType,
 } from "@/models/reportRequest";
-import RequestResult from "@/models/requestResult";
 import { Action, Actor, Destination, Origin, Text } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
@@ -78,43 +76,43 @@ function trackDownload() {
     });
 }
 
-function downloadReport() {
+async function downloadReport(): Promise<void> {
     isGeneratingReport.value = true;
 
-    trackDownload();
+    try {
+        trackDownload();
+        const reportComponent = recommendationsReportComponent.value;
+        if (!reportComponent) {
+            return;
+        }
 
-    recommendationsReportComponent.value
-        ?.generateReport(
+        const result = await reportComponent.generateReport(
             reportFormatType.value,
             reportStore.getHeaderData(props.hdid, reportFilter)
-        )
-        .then((result: RequestResult<Report>) => {
-            const mimeType =
-                reportMimeTypeMap.get(reportFormatType.value) ?? "";
-            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-            fetch(downloadLink).then((res) =>
-                res
-                    .blob()
-                    .then((blob) =>
-                        saveAs(blob, result.resourcePayload.fileName)
-                    )
+        );
+        const mimeType = reportMimeTypeMap.get(reportFormatType.value) ?? "";
+        const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+        const response = await fetch(downloadLink);
+        const blob = await response.blob();
+        saveAs(blob, result.resourcePayload.fileName);
+    } catch (error) {
+        const resultError = error instanceof ResultError ? error : undefined;
+        logger.error(
+            resultError?.message ??
+                (error instanceof Error ? error.message : String(error))
+        );
+        if (resultError?.statusCode === 429) {
+            errorStore.setTooManyRequestsError("recommendationsDialog");
+        } else {
+            errorStore.addError(
+                ErrorType.Download,
+                ErrorSourceType.ExportRecords,
+                resultError?.traceId
             );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("recommendationsDialog");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.ExportRecords,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isGeneratingReport.value = false;
-        });
+        }
+    } finally {
+        isGeneratingReport.value = false;
+    }
 }
 
 function visitVaccinationBooking() {
