@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useHospitalVisitStore } from "@/stores/hospitalVisit";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -124,9 +125,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-hospitalVisitStore
-    .retrieveHospitalVisits(props.hdid)
-    .catch((err) => logger.error(`Error loading hospital visit data: ${err}`));
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        () => hospitalVisitStore.retrieveHospitalVisits(props.hdid),
+        logger,
+        "Error loading hospital visit data"
+    )
+);
 </script>
 
 <template>
