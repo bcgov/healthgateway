@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -124,9 +124,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-covid19TestResultStore
-    .retrieveCovid19TestResults(props.hdid)
-    .catch((err) => logger.error(`Error loading Covid19 data: ${err}`));
+onBeforeMount(async () => {
+    try {
+        await covid19TestResultStore.retrieveCovid19TestResults(props.hdid);
+    } catch (err) {
+        logger.error(`Error loading Covid19 data: ${err}`);
+    }
+});
 </script>
 
 <template>
