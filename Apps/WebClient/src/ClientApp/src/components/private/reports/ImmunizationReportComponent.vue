@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, useSlots, watch } from "vue";
+import { computed, onBeforeMount, onMounted, useSlots, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -27,6 +27,7 @@ import {
 } from "@/services/interfaces";
 import { useImmunizationStore } from "@/stores/immunization";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -221,9 +222,13 @@ onMounted(() => {
 });
 
 logger.debug(`Retrieving immunizations for Hdid: ${props.hdid}`);
-immunizationStore
-    .retrieveImmunizations(props.hdid)
-    .catch((err) => logger.error(`Error loading immunization data: ${err}`));
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        () => immunizationStore.retrieveImmunizations(props.hdid),
+        logger,
+        "Error loading immunization data"
+    )
+);
 </script>
 
 <template>
