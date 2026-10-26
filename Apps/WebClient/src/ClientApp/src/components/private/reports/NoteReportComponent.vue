@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useNoteStore } from "@/stores/note";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -117,9 +118,13 @@ onMounted(() => {
 });
 
 // Created hook
-noteStore
-    .retrieveNotes(props.hdid)
-    .catch((err) => logger.error(`Error loading user note data: ${err}`));
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        () => noteStore.retrieveNotes(props.hdid),
+        logger,
+        "Error loading user note data"
+    )
+);
 </script>
 
 <template>
