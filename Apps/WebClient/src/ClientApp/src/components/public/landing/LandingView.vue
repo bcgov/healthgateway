@@ -418,7 +418,7 @@ function openExternalLink(tile: InfoTile, action: Action) {
   - Recolor TileComponent titles to BC Black (#313132)
     instead of the Vuetify theme primary.
 */
-:deep(.tile-title.text-primary) {
+:deep(.tile-title) {
     color: #313132;
 }
 
