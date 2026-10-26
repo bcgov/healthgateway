@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -14,6 +14,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useLabResultStore } from "@/stores/labResult";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -126,9 +127,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-labResultStore
-    .retrieveLabResults(props.hdid)
-    .catch((err) => logger.error(`Error loading Laboratory data: ${err}`));
+onBeforeMount(() =>
+    PromiseUtility.runAndLogError(
+        () => labResultStore.retrieveLabResults(props.hdid),
+        logger,
+        "Error loading Laboratory data"
+    )
+);
 </script>
 
 <template>
