@@ -28,5 +28,14 @@ namespace HealthGateway.Admin.Common.Models
 
         /// <summary>Gets the number of closed Health Gateway accounts.</summary>
         public int ClosedAccounts { get; init; }
+
+        /// <summary>Gets the number of accounts with BC Cancer notifications enabled for both email and SMS.</summary>
+        public int BcCancerScreeningEmailAndSms { get; init; }
+
+        /// <summary>Gets the number of accounts with BC Cancer notifications enabled for email only.</summary>
+        public int BcCancerScreeningEmailOnly { get; init; }
+
+        /// <summary>Gets the number of accounts with BC Cancer notifications enabled for SMS only.</summary>
+        public int BcCancerScreeningSmsOnly { get; init; }
     }
 }

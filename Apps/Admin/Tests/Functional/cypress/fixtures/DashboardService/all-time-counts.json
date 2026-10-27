@@ -1,5 +1,8 @@
 {
     "registeredUsers": 6,
     "dependents": 2,
-    "closedAccounts": 1
+    "closedAccounts": 1,
+    "bcCancerScreeningEmailAndSms": 3,
+    "bcCancerScreeningEmailOnly": 4,
+    "bcCancerScreeningSmsOnly": 5
 }

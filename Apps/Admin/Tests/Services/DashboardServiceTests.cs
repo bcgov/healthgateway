@@ -46,15 +46,28 @@ namespace HealthGateway.Admin.Tests.Services
             const int userProfileCount = 5;
             const int dependentCount = 2;
             const int closedUserProfileCount = 2;
+            const int bccsEmailOnlyCount = 3;
+            const int bccsSmsOnlyCount = 4;
+            const int bccsEmailAndSmsCount = 9;
+
+            NotificationChannelCounts bccsNotificationChannelCounts = new()
+            {
+                EmailOnly = bccsEmailOnlyCount,
+                SmsOnly = bccsSmsOnlyCount,
+                EmailAndSms = bccsEmailAndSmsCount,
+            };
 
             AllTimeCounts expected = new()
             {
                 RegisteredUsers = userProfileCount,
                 ClosedAccounts = closedUserProfileCount,
                 Dependents = dependentCount,
+                BcCancerScreeningEmailOnly = bccsEmailOnlyCount,
+                BcCancerScreeningSmsOnly = bccsSmsOnlyCount,
+                BcCancerScreeningEmailAndSms = bccsEmailAndSmsCount,
             };
 
-            IDashboardService service = SetupDashboardServiceForAllTimeCounts(userProfileCount, closedUserProfileCount, dependentCount);
+            IDashboardService service = SetupDashboardServiceForAllTimeCounts(userProfileCount, closedUserProfileCount, dependentCount, bccsNotificationChannelCounts);
 
             // Act
             AllTimeCounts actual = await service.GetAllTimeCountsAsync();
@@ -242,29 +255,39 @@ namespace HealthGateway.Admin.Tests.Services
         private static IDashboardService GetDashboardService(
             Mock<IResourceDelegateDelegate>? dependentDelegateMock = null,
             Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<IUserProfileNotificationSettingDelegate>? userProfileNotificationSettingDelegateMock = null,
             Mock<IRatingDelegate>? ratingDelegateMock = null)
         {
             dependentDelegateMock ??= new();
             userProfileDelegateMock ??= new();
+            userProfileNotificationSettingDelegateMock ??= new();
             ratingDelegateMock ??= new();
 
             return new DashboardService(
                 Configuration,
                 dependentDelegateMock.Object,
                 userProfileDelegateMock.Object,
+                userProfileNotificationSettingDelegateMock.Object,
                 ratingDelegateMock.Object);
         }
 
-        private static IDashboardService SetupDashboardServiceForAllTimeCounts(int userProfileCount, int closedUserProfileCount, int dependentCount)
+        private static IDashboardService SetupDashboardServiceForAllTimeCounts(
+            int userProfileCount,
+            int closedUserProfileCount,
+            int dependentCount,
+            NotificationChannelCounts bccsNotificationChannelCounts)
         {
             Mock<IUserProfileDelegate> userProfileDelegateMock = new();
             userProfileDelegateMock.Setup(s => s.GetUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(userProfileCount);
             userProfileDelegateMock.Setup(s => s.GetClosedUserProfileCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(closedUserProfileCount);
 
+            Mock<IUserProfileNotificationSettingDelegate> userProfileNotificationSettingDelegateMock = new();
+            userProfileNotificationSettingDelegateMock.Setup(s => s.GetChannelCountsAsync(ProfileNotificationType.BcCancerScreening, It.IsAny<CancellationToken>())).ReturnsAsync(bccsNotificationChannelCounts);
+
             Mock<IResourceDelegateDelegate> dependentDelegateMock = new();
             dependentDelegateMock.Setup(s => s.GetDependentCountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(dependentCount);
 
-            return GetDashboardService(dependentDelegateMock, userProfileDelegateMock);
+            return GetDashboardService(dependentDelegateMock, userProfileDelegateMock, userProfileNotificationSettingDelegateMock);
         }
 
         private static IDashboardService SetupDashboardServiceForDailyUsageCounts(
