@@ -6,8 +6,8 @@ azureagent:
   envs:
     tools:
       replicas: 2
-    dev:
-    test:
+    dev: {}
+    test: {}
     prod:
       imageTag: production
       vaultEngine: prod
