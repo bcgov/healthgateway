@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
@@ -12,6 +12,7 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
 import { ResultError } from "@/models/errors";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import PromiseUtility from "@/utility/promiseUtility";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -33,23 +34,33 @@ const isLoading = ref(true);
 const hasErrors = ref(false);
 const termsOfService = ref("");
 
-userProfileService
-    .getTermsOfService()
-    .then((result) => {
-        logger.debug("Terms Of Service retrieved: " + JSON.stringify(result));
-        termsOfService.value = result.content;
-    })
-    .catch((err: ResultError) => {
-        logger.error(err.message);
-        if (err.statusCode === 429) {
-            errorStore.setTooManyRequestsWarning("page");
-        } else {
-            hasErrors.value = true;
+onBeforeMount(async () => {
+    await PromiseUtility.runWithHandlers(
+        () => userProfileService.getTermsOfService(),
+        (result) => {
+            logger.debug(
+                "Terms Of Service retrieved: " + JSON.stringify(result)
+            );
+            termsOfService.value = result.content;
+        },
+        (error) => {
+            const resultError =
+                error instanceof ResultError ? error : undefined;
+            logger.error(
+                resultError?.message ??
+                    (error instanceof Error ? error.message : String(error))
+            );
+            if (resultError?.statusCode === 429) {
+                errorStore.setTooManyRequestsWarning("page");
+            } else {
+                hasErrors.value = true;
+            }
+        },
+        () => {
+            isLoading.value = false;
         }
-    })
-    .finally(() => {
-        isLoading.value = false;
-    });
+    );
+});
 </script>
 
 <template>
