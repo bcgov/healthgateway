@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { Loader } from "@/constants/loader";
@@ -9,6 +9,7 @@ import { ResultError } from "@/models/errors";
 import { ILogger } from "@/services/interfaces";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     inviteKey: string;
@@ -26,23 +27,31 @@ const isAlreadyVerified = ref<boolean>();
 const isSuccess = computed(() => isAlreadyVerified.value || isVerified.value);
 const validationFailed = computed(() => isVerified.value === false);
 
-// Created hook
-loadingStore.applyLoader(
-    Loader.ValidateEmail,
-    "verifyingEmailAddress",
-    userStore
-        .validateEmail(props.inviteKey)
-        .then((result: boolean) => {
+onBeforeMount(async () => {
+    const loadingReason = "verifyingEmailAddress";
+    loadingStore.setIsLoading(true, Loader.ValidateEmail, loadingReason);
+
+    await PromiseUtility.runWithHandlers(
+        () => userStore.validateEmail(props.inviteKey),
+        (result) => {
             isVerified.value = result;
-        })
-        .catch((resultError: ResultError) => {
-            if (resultError.statusCode === 409) {
+        },
+        (error) => {
+            if (error instanceof ResultError && error.statusCode === 409) {
                 isAlreadyVerified.value = true;
             } else {
                 logger.error("Error while validating email.");
             }
-        })
-);
+        },
+        () => {
+            loadingStore.setIsLoading(
+                false,
+                Loader.ValidateEmail,
+                loadingReason
+            );
+        }
+    );
+});
 </script>
 
 <template>
