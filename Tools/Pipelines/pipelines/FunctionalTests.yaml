@@ -92,7 +92,7 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Admin"
     pool:
       name: "HGGoldDev"
-    condition: or(eq(variables['Admin'], true), eq(variables['AdminUi'], true), eq(variables['AdminRead'], true), eq(variables['AdminWrite'], true))
+    condition: or(eq(variables['Admin'], true), eq(variables['AdminAuth'], true), eq(variables['AdminUi'], true), eq(variables['AdminRead'], true), eq(variables['AdminWrite'], true))
     timeoutInMinutes: 5
     steps:
       - task: Bash@3
@@ -117,9 +117,10 @@ jobs:
       image: $(cypressImage)
       endpoint: DockerHub-Cypress
       options: --shm-size=2g
-    condition: and(succeeded('Resolve_Cypress_Image'), or(eq(variables['Admin'], true), eq(variables['AdminAuth'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('Admin_Seed'), or(eq(variables['Admin'], true), eq(variables['AdminAuth'], true)))
     dependsOn:
       - "Resolve_Cypress_Image"
+      - "Admin_Seed"
     timeoutInMinutes: 10
     steps:
       - checkout: self

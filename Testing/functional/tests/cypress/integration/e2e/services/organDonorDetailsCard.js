@@ -57,7 +57,7 @@ describe("Organ Donor Details Card Enabled", () => {
         });
     });
 
-    // AB#16924 - Cypress - Disable e2e Organ Donar Registration until PHSA fixes whitelisting issue
+    // AB#16924 - Cypress - Disable e2e Organ Donor Registration until PHSA fixes whitelisting issue
     it.skip("Verify donor registration card is registered and download is successful", () => {
         cy.env(["keycloak.password"]).then(
             ({ "keycloak.password": password }) => {
@@ -73,7 +73,7 @@ describe("Organ Donor Details Card Enabled", () => {
         verifyOrganDonorRegistrationExists(true);
     });
 
-    // AB#16924 - Cypress - Disable e2e Organ Donar Registration until PHSA fixes whitelisting issue
+    // AB#16924 - Cypress - Disable e2e Organ Donor Registration until PHSA fixes whitelisting issue
     it.skip("Verify donor registration card is not registered and download button is not displayed", () => {
         cy.env(["keycloak.password"]).then(
             ({ "keycloak.password": password }) => {
