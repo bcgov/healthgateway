@@ -409,62 +409,64 @@ export const useUserStore = defineStore("user", () => {
         }
 
         status.value = LoadStatus.REQUESTED;
+        retrieveEssentialDataPromise =
+            retrieveEssentialDataAsync(getUserProfile);
 
-        retrieveEssentialDataPromise = (async (): Promise<void> => {
+        return retrieveEssentialDataPromise;
+    }
+
+    async function retrieveEssentialDataAsync(
+        getUserProfile: () => Promise<UserProfile>
+    ): Promise<void> {
+        try {
+            const result: Patient = await patientService.getPatient(
+                user.value.hdid
+            );
+            if (!result) {
+                patientRetrievalFailed.value = true;
+                logger.debug("Patient retrieval failed");
+                return;
+            }
+
+            setPatient(result);
+
             try {
-                const result: Patient = await patientService.getPatient(
-                    user.value.hdid
-                );
-                if (!result) {
-                    patientRetrievalFailed.value = true;
-                    logger.debug("Patient retrieval failed");
-                    return;
-                }
-
-                setPatient(result);
-
-                try {
-                    const userProfile = await getUserProfile();
-                    logger.debug(
-                        `User Profile: ${JSON.stringify(userProfile)}`
-                    );
-                    setProfileUserData(userProfile);
-                } catch (error) {
-                    patientRetrievalFailed.value = true;
-                    const resultError =
-                        error instanceof ResultError ? error : undefined;
-                    if (resultError?.statusCode === 429) {
-                        logger.debug(
-                            "User profile retrieval failed because of too many requests"
-                        );
-                        appStore.setAppError(AppErrorType.TooManyRequests);
-                    } else {
-                        logger.debug("User profile retrieval failed");
-                        errorStore.addError(
-                            ErrorType.Retrieve,
-                            ErrorSourceType.User,
-                            resultError?.traceId
-                        );
-                    }
-                }
+                const userProfile = await getUserProfile();
+                logger.debug(`User Profile: ${JSON.stringify(userProfile)}`);
+                setProfileUserData(userProfile);
             } catch (error) {
                 patientRetrievalFailed.value = true;
                 const resultError =
                     error instanceof ResultError ? error : undefined;
                 if (resultError?.statusCode === 429) {
                     logger.debug(
-                        "Patient retrieval failed because of too many requests"
+                        "User profile retrieval failed because of too many requests"
                     );
                     appStore.setAppError(AppErrorType.TooManyRequests);
                 } else {
-                    logger.debug("Patient retrieval failed");
+                    logger.debug("User profile retrieval failed");
+                    errorStore.addError(
+                        ErrorType.Retrieve,
+                        ErrorSourceType.User,
+                        resultError?.traceId
+                    );
                 }
-            } finally {
-                retrieveEssentialDataPromise = undefined;
             }
-        })();
-
-        return retrieveEssentialDataPromise;
+        } catch (error) {
+            patientRetrievalFailed.value = true;
+            const resultError =
+                error instanceof ResultError ? error : undefined;
+            if (resultError?.statusCode === 429) {
+                logger.debug(
+                    "Patient retrieval failed because of too many requests"
+                );
+                appStore.setAppError(AppErrorType.TooManyRequests);
+            } else {
+                logger.debug("Patient retrieval failed");
+            }
+        } finally {
+            retrieveEssentialDataPromise = undefined;
+        }
     }
 
     function updateNotificationSettings(
