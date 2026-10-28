@@ -89,7 +89,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert and Verify
             VerifyVerificationExpire(mock.MessagingVerificationDelegateMock, expectedVerificationExpireTimes);
             VerifyAddSmsVerification(mock.MessagingVerificationServiceMock, expectedVerificationInsertTimes);
-            VerifyUserProfileNotificationSettingsSmsDisabled(mock.ProfileNotificationSettingServiceMock);
+            VerifyUserProfileNotificationSettingsSmsDisabled(mock.ProfileNotificationSettingServiceMock, mock.UserProfile);
             VerifyDispatchOutboxItems(mock.BackgroundJobClientMock);
             VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
         }
@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.True(actual);
 
             VerifyNotifySmsVerification(mock.JobServiceMock, expectedNotificationChannelVerifiedEventTimes);
-            VerifyUserProfileNotificationSettingsUpdate(mock.ProfileNotificationSettingServiceMock, mock.BackgroundJobClientMock);
+            VerifyUserProfileNotificationSettingsUpdate(mock.ProfileNotificationSettingServiceMock, mock.UserProfile, mock.BackgroundJobClientMock);
             VerifyQueueNotificationSettings(mock.NotificationSettingsServiceMock);
         }
 
@@ -206,12 +206,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static void VerifyUserProfileNotificationSettingsUpdate(
             Mock<IUserProfileNotificationSettingService> notificationSettingServiceMock,
+            UserProfile? userProfile,
             Mock<IBackgroundJobClient> backgroundJobClient,
             Times? times = null)
         {
             notificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
-                    Hdid,
+                    It.Is<UserProfile>(p => p == userProfile && p.SmsNumber != null),
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
                         models.Single().Type == ProfileNotificationType.BcCancerScreening &&
                         models.Single().EmailEnabled == null &&
@@ -249,11 +250,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static void VerifyUserProfileNotificationSettingsSmsDisabled(
             Mock<IUserProfileNotificationSettingService> notificationSettingServiceMock,
+            UserProfile? userProfile,
             Times? times = null)
         {
             notificationSettingServiceMock.Verify(
                 v => v.UpdateAsync(
-                    Hdid,
+                    It.Is<UserProfile>(p => p == userProfile && p.SmsNumber == null),
                     It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
                         models.Single().Type == ProfileNotificationType.BcCancerScreening &&
                         models.Single().EmailEnabled == null &&
@@ -479,7 +481,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             bool lastSmsVerificationExists = true,
             DbStatusCode? updateProfileStatus = DbStatusCode.Updated)
         {
-            UserProfile? userProfile = userProfileExists ? GenerateUserProfile() : null;
+            UserProfile? userProfile = userProfileExists ? GenerateUserProfile(smsNumber: SmsNumber) : null;
             MessagingVerification? lastSmsVerification = lastSmsVerificationExists
                 ? GenerateMessagingVerification(
                     MessagingVerificationType.Sms,
@@ -523,7 +525,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 messagingVerificationDelegateMock,
                 messagingVerificationServiceMock,
                 profileNotificationSettingServiceMock,
-                backgroundJobClientMock);
+                backgroundJobClientMock,
+                userProfile);
         }
 
         private static VerifySmsNumberMock SetupVerifySmsNumberMock(
@@ -569,7 +572,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 backgroundJobClientMock,
                 changeFeedEnabled: changeFeedEnabled);
 
-            return new(service, outboxStoreServiceMock, notificationSettingsServiceMock, profileNotificationSettingServiceMock, backgroundJobClientMock);
+            return new(service, outboxStoreServiceMock, notificationSettingsServiceMock, profileNotificationSettingServiceMock, backgroundJobClientMock, userProfile);
         }
 
         private sealed record UpdateSmsNumberMock(
@@ -578,13 +581,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate> MessagingVerificationDelegateMock,
             Mock<IMessagingVerificationService> MessagingVerificationServiceMock,
             Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock,
-            Mock<IBackgroundJobClient> BackgroundJobClientMock);
+            Mock<IBackgroundJobClient> BackgroundJobClientMock,
+            UserProfile? UserProfile);
 
         private sealed record VerifySmsNumberMock(
             IUserSmsServiceV2 Service,
             Mock<IOutboxStoreService> JobServiceMock,
             Mock<INotificationSettingsService> NotificationSettingsServiceMock,
             Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock,
-            Mock<IBackgroundJobClient> BackgroundJobClientMock);
+            Mock<IBackgroundJobClient> BackgroundJobClientMock,
+            UserProfile? UserProfile);
     }
 }

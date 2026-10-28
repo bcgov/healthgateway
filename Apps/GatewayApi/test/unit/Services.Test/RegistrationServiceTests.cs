@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -195,6 +196,41 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             VerifyNotifyEmailVerification(
                 mock.OutboxStoreServiceMock,
                 expectedNotification ? Times.Once() : Times.Never());
+        }
+
+        [Theory]
+        [InlineData(EmailAddress, EmailAddress, true)]
+        [InlineData(EmailAddress, null, false)]
+        [InlineData(null, EmailAddress, false)]
+        [InlineData(EmailAddress, "other-address@example.com", false)]
+        public async Task CreateUserProfileShouldUpdateNotificationSettingsBasedOnEmailVerificationStatus(
+            string? requestedEmailAddress,
+            string? jwtEmailAddress,
+            bool updateExpected)
+        {
+            // Arrange
+            UserProfileMock mock = SetupCreateUserProfileMock(DateTime.UtcNow.Date, SmsNumber, requestedEmailAddress, 13, 18, false, false);
+
+            CreateUserRequest createUserRequest = new()
+            {
+                Profile = new(Hdid, Guid.NewGuid(), SmsNumber, requestedEmailAddress),
+            };
+
+            // Act
+            await mock.Service.CreateUserProfileAsync(createUserRequest, DateTime.UtcNow, jwtEmailAddress);
+
+            // Assert
+            mock.ProfileNotificationSettingServiceMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfile>(p => p.HdId == Hdid),
+                    It.Is<IReadOnlyCollection<UserProfileNotificationSettingModel>>(models =>
+                        models.Count == 1 &&
+                        models.ElementAt(0).Type == ProfileNotificationType.BcCancerScreening &&
+                        models.ElementAt(0).EmailEnabled == true &&
+                        models.ElementAt(0).SmsEnabled == null),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                updateExpected ? Times.Once() : Times.Never());
         }
 
         /// <summary>
@@ -428,7 +464,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IEmailQueueService>? emailQueueServiceMock = null,
             Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
             Mock<IBackgroundJobClient>? backgroundJobClientMock = null,
-            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null)
+            Mock<IGatewayDbContextTransactionProvider>? transactionProviderMock = null,
+            Mock<IUserProfileNotificationSettingService>? profileNotificationSettingServiceMock = null)
         {
             configurationRoot ??= GetIConfiguration();
             messagingVerificationServiceMock ??= new();
@@ -440,6 +477,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             notificationSettingsServiceMock ??= new();
             backgroundJobClientMock ??= new();
             transactionProviderMock ??= GetTransactionProviderMock();
+            profileNotificationSettingServiceMock ??= new();
 
             return new RegistrationService(
                 configurationRoot,
@@ -452,6 +490,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileModelServiceMock.Object,
                 emailQueueServiceMock.Object,
                 notificationSettingsServiceMock.Object,
+                profileNotificationSettingServiceMock.Object,
                 backgroundJobClientMock.Object,
                 transactionProviderMock.Object);
         }
@@ -562,6 +601,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationService> messagingVerificationServiceMock = SetupMessagingVerificationServiceMock(emailVerification, smsVerification);
 
             Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            Mock<IUserProfileNotificationSettingService> profileNotificationSettingServiceMock = new();
 
             IConfigurationRoot configuration = GetIConfiguration(
                 minPatientAge,
@@ -576,13 +616,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileDelegateMock,
                 userProfileModelServiceMock,
                 emailQueueServiceMock,
-                notificationSettingsServiceMock);
+                notificationSettingsServiceMock,
+                profileNotificationSettingServiceMock: profileNotificationSettingServiceMock);
 
             return new(
                 service,
                 outboxStoreServiceMock,
                 emailQueueServiceMock,
-                notificationSettingsServiceMock);
+                notificationSettingsServiceMock,
+                profileNotificationSettingServiceMock);
         }
 
         private static IRegistrationService SetupRegistrationServiceForCreateUserProfileThrowsException(
@@ -614,6 +656,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IRegistrationService Service,
             Mock<IOutboxStoreService> OutboxStoreServiceMock,
             Mock<IEmailQueueService> EmailQueueServiceMock,
-            Mock<INotificationSettingsService> NotificationSettingsServiceMock);
+            Mock<INotificationSettingsService> NotificationSettingsServiceMock,
+            Mock<IUserProfileNotificationSettingService> ProfileNotificationSettingServiceMock);
     }
 }
