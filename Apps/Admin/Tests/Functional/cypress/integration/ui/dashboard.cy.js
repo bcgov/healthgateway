@@ -100,6 +100,16 @@ describe("Dashboard", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
         cy.get("[data-testid=total-dependents]").contains(2);
+        cy.get("[data-testid=total-closed-accounts]").contains(1);
+        cy.get(
+            "[data-testid=total-bc-cancer-notifications-both-channels]"
+        ).contains(3);
+        cy.get(
+            "[data-testid=total-bc-cancer-notifications-email-only]"
+        ).contains(4);
+        cy.get("[data-testid=total-bc-cancer-notifications-sms-only]").contains(
+            5
+        );
         cy.get("[data-testid=average-rating]").contains("4.00");
         cy.get("[data-testid=recurring-user-count]").contains(2);
         cy.get("[data-testid=total-mobile-users]").contains(defaultMobileCount);

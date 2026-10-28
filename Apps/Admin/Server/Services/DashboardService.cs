@@ -35,6 +35,7 @@ namespace HealthGateway.Admin.Server.Services
         IConfiguration configuration,
         IResourceDelegateDelegate dependentDelegate,
         IUserProfileDelegate userProfileDelegate,
+        IUserProfileNotificationSettingDelegate userProfileNotificationSettingsDelegate,
         IRatingDelegate ratingDelegate) : IDashboardService
     {
         /// <inheritdoc/>
@@ -44,11 +45,17 @@ namespace HealthGateway.Admin.Server.Services
             int dependentCount = await dependentDelegate.GetDependentCountAsync(ct);
             int closedUserProfileCount = await userProfileDelegate.GetClosedUserProfileCountAsync(ct);
 
+            NotificationChannelCounts bccsNotificationChannelCounts
+                = await userProfileNotificationSettingsDelegate.GetChannelCountsAsync(ProfileNotificationType.BcCancerScreening, ct);
+
             return new()
             {
                 RegisteredUsers = userProfileCount,
                 Dependents = dependentCount,
                 ClosedAccounts = closedUserProfileCount,
+                BcCancerScreeningEmailOnly = bccsNotificationChannelCounts.EmailOnly,
+                BcCancerScreeningSmsOnly = bccsNotificationChannelCounts.SmsOnly,
+                BcCancerScreeningEmailAndSms = bccsNotificationChannelCounts.EmailAndSms,
             };
         }
 

@@ -179,6 +179,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IBetaFeatureAccessDelegate, DbBetaFeatureAccessDelegate>();
+            services.AddTransient<IUserProfileNotificationSettingDelegate, DbUserProfileNotificationSettingDelegate>();
         }
     }
 }

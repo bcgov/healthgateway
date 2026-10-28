@@ -19,13 +19,14 @@ namespace HealthGateway.Database.Delegates
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <inheritdoc/>
-    /// <param name="dbContext">he context to be used when accessing the database.</param>
+    /// <param name="dbContext">The context to be used when accessing the database.</param>
     public class DbUserProfileNotificationSettingDelegate(GatewayDbContext dbContext) : IUserProfileNotificationSettingDelegate
     {
         /// <inheritdoc/>
@@ -44,6 +45,23 @@ namespace HealthGateway.Database.Delegates
                 .AsNoTracking()
                 .Where(d => d.Hdid == hdid)
                 .ToListAsync(ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<NotificationChannelCounts> GetChannelCountsAsync(ProfileNotificationType notificationType, CancellationToken ct = default)
+        {
+            var counts = await dbContext.UserProfileNotificationSetting
+                .Where(x => x.NotificationType == notificationType && (x.EmailEnabled == true || x.SmsEnabled == true))
+                .GroupBy(x => new { Email = x.EmailEnabled == true, Sms = x.SmsEnabled == true })
+                .Select(g => new { g.Key.Email, g.Key.Sms, Count = g.Count() })
+                .ToListAsync(ct);
+
+            return new()
+            {
+                EmailOnly = counts.Where(x => x.Email && !x.Sms).Sum(x => x.Count),
+                SmsOnly = counts.Where(x => !x.Email && x.Sms).Sum(x => x.Count),
+                EmailAndSms = counts.Where(x => x.Email && x.Sms).Sum(x => x.Count),
+            };
         }
 
         /// <inheritdoc/>

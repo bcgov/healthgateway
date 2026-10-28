@@ -15,8 +15,8 @@
     }
 </HgBannerFeedback>
 
-<MudText Class="mt-12" Typo="@Typo.h6">All-Time Counts</MudText>
-<MudGrid Class="mt-6">
+<MudText Class="mt-6" Typo="@Typo.h6">All-Time Counts</MudText>
+<MudGrid Class="mt-0">
     <MudItem xs="12" lg="4">
         <MudPaper Class="my-2 pa-4" Outlined="true">
             @if (AllTimeCountsLoading)
@@ -71,10 +71,64 @@
             }
         </MudPaper>
     </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AllTimeCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-bc-cancer-notifications-both-channels" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    BCCS Email & SMS Enabled
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-bc-cancer-notifications-both-channels">
+                    @FormatNumber(AllTimeCounts.BcCancerScreeningEmailAndSms)
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AllTimeCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-bc-cancer-notifications-email-only" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    BCCS Email Enabled Only
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-bc-cancer-notifications-email-only">
+                    @FormatNumber(AllTimeCounts.BcCancerScreeningEmailOnly)
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AllTimeCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-bc-cancer-notifications-sms-only" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    BCCS SMS Enabled Only
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-bc-cancer-notifications-sms-only">
+                    @FormatNumber(AllTimeCounts.BcCancerScreeningSmsOnly)
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
 </MudGrid>
 
 <MudText Class="mt-12" Typo="@Typo.h6">Platform & Demographics</MudText>
-<MudGrid Class="mt-6">
+<MudGrid Class="mt-0">
     <MudItem xs="12" sm="6" md="5" lg="4">
         @if (AppLoginCountsLoading)
         {
@@ -92,7 +146,7 @@
         }
     </MudItem>
 </MudGrid>
-<MudGrid Class="mt-6">
+<MudGrid Class="mt-0">
     <MudItem xs="12" lg="4">
         <MudPaper Class="my-2 pa-4" Outlined="true">
             @if (AppLoginCountsLoading)
@@ -200,7 +254,7 @@
 </MudGrid>
 
 <MudText Class="mt-12" Typo="@Typo.h6">Usage</MudText>
-<MudGrid Class="mt-6">
+<MudGrid Class="mt-0">
     <MudItem xs="12" sm="6" md="5" lg="4">
         @if (RecurringUserCountLoading)
         {
@@ -228,7 +282,7 @@
         }
     </MudItem>
 </MudGrid>
-<MudGrid Class="mt-6">
+<MudGrid Class="mt-0">
     <MudItem xs="12" lg="4">
         <MudPaper Class="my-2 pa-4" Outlined="true">
             @if (RecurringUserCountLoading)
@@ -248,8 +302,7 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12">
-        <MudTable Class="mt-3"
-                  Loading="@DailyUsageCountsLoading"
+        <MudTable Loading="@DailyUsageCountsLoading"
                   Items="@TableData"
                   AllowUnsorted="false"
                   HorizontalScrollbar="true"
