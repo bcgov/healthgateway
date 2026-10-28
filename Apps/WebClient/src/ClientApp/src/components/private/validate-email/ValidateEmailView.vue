@@ -9,7 +9,6 @@ import { ResultError } from "@/models/errors";
 import { ILogger } from "@/services/interfaces";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
-import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     inviteKey: string;
@@ -31,26 +30,17 @@ onBeforeMount(async () => {
     const loadingReason = "verifyingEmailAddress";
     loadingStore.setIsLoading(true, Loader.ValidateEmail, loadingReason);
 
-    await PromiseUtility.runWithHandlers(
-        () => userStore.validateEmail(props.inviteKey),
-        (result) => {
-            isVerified.value = result;
-        },
-        (error) => {
-            if (error instanceof ResultError && error.statusCode === 409) {
-                isAlreadyVerified.value = true;
-            } else {
-                logger.error("Error while validating email.");
-            }
-        },
-        () => {
-            loadingStore.setIsLoading(
-                false,
-                Loader.ValidateEmail,
-                loadingReason
-            );
+    try {
+        isVerified.value = await userStore.validateEmail(props.inviteKey);
+    } catch (error) {
+        if (error instanceof ResultError && error.statusCode === 409) {
+            isAlreadyVerified.value = true;
+        } else {
+            logger.error("Error while validating email.");
         }
-    );
+    } finally {
+        loadingStore.setIsLoading(false, Loader.ValidateEmail, loadingReason);
+    }
 });
 </script>
 

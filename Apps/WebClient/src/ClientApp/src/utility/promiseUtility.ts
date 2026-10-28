@@ -2,28 +2,6 @@ import { ILogger } from "@/services/interfaces";
 
 export default abstract class PromiseUtility {
     /**
-     * Runs an async operation and delegates its success, failure, and completion handling.
-     * @param operation The operation to await.
-     * @param onSuccess Handles a successful result.
-     * @param onError Handles a rejected operation or success callback.
-     * @param onFinally Runs after either success or failure.
-     */
-    public static async runWithHandlers<T>(
-        operation: () => Promise<T>,
-        onSuccess: (result: T) => void,
-        onError: (error: unknown) => void,
-        onFinally: () => void
-    ): Promise<void> {
-        try {
-            onSuccess(await operation());
-        } catch (error) {
-            onError(error);
-        } finally {
-            onFinally();
-        }
-    }
-
-    /**
      * Runs a promise without returning it and logs any rejected result.
      * @param promise The promise to run in the background.
      * @param logger The logger used for rejected results.
@@ -40,21 +18,17 @@ export default abstract class PromiseUtility {
     }
 
     /**
-     * Awaits an operation and logs any rejected result.
-     * @param operation The operation to await.
-     * @param logger The logger used for rejected results.
+     * Logs an error with a message prefix.
+     * @param logger The logger used for the error.
      * @param message The error message prefix.
+     * @param error The error to log.
      */
-    public static async runAndLogError<T>(
-        operation: () => Promise<T>,
+    public static logError(
         logger: ILogger,
-        message: string
-    ): Promise<void> {
-        try {
-            await operation();
-        } catch (error) {
-            logger.error(`${message}: ${error}`);
-        }
+        message: string,
+        error: unknown
+    ): void {
+        logger.error(`${message}: ${error}`);
     }
 
     /**

@@ -252,13 +252,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-onBeforeMount(() =>
-    PromiseUtility.runAndLogError(
-        () => medicationStore.retrieveMedications(props.hdid),
-        logger,
-        "Error loading medication data"
-    )
-);
+onBeforeMount(async () => {
+    try {
+        await medicationStore.retrieveMedications(props.hdid);
+    } catch (error) {
+        PromiseUtility.logError(logger, "Error loading medication data", error);
+    }
+});
 </script>
 
 <template>

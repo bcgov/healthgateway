@@ -125,13 +125,17 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-onBeforeMount(() =>
-    PromiseUtility.runAndLogError(
-        () => hospitalVisitStore.retrieveHospitalVisits(props.hdid),
-        logger,
-        "Error loading hospital visit data"
-    )
-);
+onBeforeMount(async () => {
+    try {
+        await hospitalVisitStore.retrieveHospitalVisits(props.hdid);
+    } catch (error) {
+        PromiseUtility.logError(
+            logger,
+            "Error loading hospital visit data",
+            error
+        );
+    }
+});
 </script>
 
 <template>

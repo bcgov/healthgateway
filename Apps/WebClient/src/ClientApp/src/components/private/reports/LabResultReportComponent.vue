@@ -127,13 +127,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-onBeforeMount(() =>
-    PromiseUtility.runAndLogError(
-        () => labResultStore.retrieveLabResults(props.hdid),
-        logger,
-        "Error loading Laboratory data"
-    )
-);
+onBeforeMount(async () => {
+    try {
+        await labResultStore.retrieveLabResults(props.hdid);
+    } catch (error) {
+        PromiseUtility.logError(logger, "Error loading Laboratory data", error);
+    }
+});
 </script>
 
 <template>

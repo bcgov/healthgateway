@@ -155,14 +155,19 @@ onMounted(() => {
     onIsEmptyChanged();
 });
 
-onBeforeMount(() =>
-    PromiseUtility.runAndLogError(
-        () =>
-            specialAuthorityStore.retrieveSpecialAuthorityRequests(props.hdid),
-        logger,
-        "Error loading Special Authority requests data"
-    )
-);
+onBeforeMount(async () => {
+    try {
+        await specialAuthorityStore.retrieveSpecialAuthorityRequests(
+            props.hdid
+        );
+    } catch (error) {
+        PromiseUtility.logError(
+            logger,
+            "Error loading Special Authority requests data",
+            error
+        );
+    }
+});
 </script>
 
 <template>

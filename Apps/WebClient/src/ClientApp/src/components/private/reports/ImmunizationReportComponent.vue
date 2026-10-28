@@ -222,13 +222,17 @@ onMounted(() => {
 });
 
 logger.debug(`Retrieving immunizations for Hdid: ${props.hdid}`);
-onBeforeMount(() =>
-    PromiseUtility.runAndLogError(
-        () => immunizationStore.retrieveImmunizations(props.hdid),
-        logger,
-        "Error loading immunization data"
-    )
-);
+onBeforeMount(async () => {
+    try {
+        await immunizationStore.retrieveImmunizations(props.hdid);
+    } catch (error) {
+        PromiseUtility.logError(
+            logger,
+            "Error loading immunization data",
+            error
+        );
+    }
+});
 </script>
 
 <template>

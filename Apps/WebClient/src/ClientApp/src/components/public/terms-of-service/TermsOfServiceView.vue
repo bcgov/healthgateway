@@ -12,7 +12,6 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
 import { ResultError } from "@/models/errors";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import PromiseUtility from "@/utility/promiseUtility";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -35,31 +34,24 @@ const hasErrors = ref(false);
 const termsOfService = ref("");
 
 onBeforeMount(async () => {
-    await PromiseUtility.runWithHandlers(
-        () => userProfileService.getTermsOfService(),
-        (result) => {
-            logger.debug(
-                "Terms Of Service retrieved: " + JSON.stringify(result)
-            );
-            termsOfService.value = result.content;
-        },
-        (error) => {
-            const resultError =
-                error instanceof ResultError ? error : undefined;
-            logger.error(
-                resultError?.message ??
-                    (error instanceof Error ? error.message : String(error))
-            );
-            if (resultError?.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                hasErrors.value = true;
-            }
-        },
-        () => {
-            isLoading.value = false;
+    try {
+        const result = await userProfileService.getTermsOfService();
+        logger.debug("Terms Of Service retrieved: " + JSON.stringify(result));
+        termsOfService.value = result.content;
+    } catch (error) {
+        const resultError = error instanceof ResultError ? error : undefined;
+        logger.error(
+            resultError?.message ??
+                (error instanceof Error ? error.message : String(error))
+        );
+        if (resultError?.statusCode === 429) {
+            errorStore.setTooManyRequestsWarning("page");
+        } else {
+            hasErrors.value = true;
         }
-    );
+    } finally {
+        isLoading.value = false;
+    }
 });
 </script>
 

@@ -117,13 +117,13 @@ onMounted(() => {
     onIsEmptyChanged();
 });
 
-onBeforeMount(() =>
-    PromiseUtility.runAndLogError(
-        () => noteStore.retrieveNotes(props.hdid),
-        logger,
-        "Error loading user note data"
-    )
-);
+onBeforeMount(async () => {
+    try {
+        await noteStore.retrieveNotes(props.hdid);
+    } catch (error) {
+        PromiseUtility.logError(logger, "Error loading user note data", error);
+    }
+});
 </script>
 
 <template>
