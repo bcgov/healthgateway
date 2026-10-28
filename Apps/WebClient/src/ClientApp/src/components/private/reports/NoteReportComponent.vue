@@ -117,7 +117,6 @@ onMounted(() => {
     onIsEmptyChanged();
 });
 
-// Created hook
 onBeforeMount(() =>
     PromiseUtility.runAndLogError(
         () => noteStore.retrieveNotes(props.hdid),
