@@ -155,7 +155,6 @@ onMounted(() => {
     onIsEmptyChanged();
 });
 
-// Created Hook
 onBeforeMount(() =>
     PromiseUtility.runAndLogError(
         () =>
