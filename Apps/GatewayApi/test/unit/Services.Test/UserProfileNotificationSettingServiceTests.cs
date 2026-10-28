@@ -245,7 +245,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             outboxStoreMock.Verify(
                 m => m.StoreAsync(
                     It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
-                        envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
+                        envelopes.Select(e => e.Content)
+                            .OfType<NotificationChannelPreferencesChangedEvent>()
+                            .Select(e =>
+                                e.EmailNotificationTargets.SequenceEqual(new[] { NotificationTargets.BcCancer }) &&
+                                e.SmsNotificationTargets.SequenceEqual(new[] { NotificationTargets.BcCancer }))
+                            .Single()),
                     true,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -318,7 +323,168 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             outboxStoreMock.Verify(
                 m => m.StoreAsync(
                     It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
-                        envelopes.First().Content is NotificationChannelPreferencesChangedEvent),
+                        envelopes.Select(e => e.Content)
+                            .OfType<NotificationChannelPreferencesChangedEvent>()
+                            .Select(e =>
+                                e.EmailNotificationTargets.SequenceEqual(new[] { NotificationTargets.BcCancer }) &&
+                                e.SmsNotificationTargets.Count == 0)
+                            .Single()),
+                    true,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateAsync enables email when both the requested and stored sms preferences are null.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateAsyncEnablesEmailWhenRequestedAndStoredSmsAreNull()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            IReadOnlyList<UserProfileNotificationSetting> notificationSettings =
+            [
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Hdid = Hdid,
+                    NotificationType = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = false,
+                    SmsEnabled = null,
+                },
+            ];
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(notificationSettings);
+
+            Mock<IOutboxStore> outboxStoreMock = new();
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
+
+            UserProfileNotificationSettingModel model = new()
+            {
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = true,
+                SmsEnabled = null,
+            };
+
+            // Act
+            await service.UpdateAsync(Hdid, model, CancellationToken.None);
+
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(x =>
+                        x.Hdid == Hdid &&
+                        x.NotificationType == ProfileNotificationType.BcCancerScreening &&
+                        x.EmailEnabled == true &&
+                        x.SmsEnabled == null),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            outboxStoreMock.Verify(
+                m => m.StoreAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
+                        envelopes.Select(e => e.Content)
+                            .OfType<NotificationChannelPreferencesChangedEvent>()
+                            .Select(e =>
+                                e.EmailNotificationTargets.SequenceEqual(new[] { NotificationTargets.BcCancer }) &&
+                                e.SmsNotificationTargets.Count == 0)
+                            .Single()),
+                    true,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// UpdateAsync enables sms when both the requested and stored email preferences are null.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdateAsyncEnablesSmsWhenRequestedAndStoredEmailAreNull()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = Hdid,
+                Email = Email,
+                SmsNumber = SmsNumber,
+            };
+
+            IReadOnlyList<UserProfileNotificationSetting> notificationSettings =
+            [
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Hdid = Hdid,
+                    NotificationType = ProfileNotificationType.BcCancerScreening,
+                    EmailEnabled = null,
+                    SmsEnabled = false,
+                },
+            ];
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
+            profileDelegateMock
+                .Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
+
+            Mock<IUserProfileNotificationSettingDelegate> notificationSettingDelegateMock = new();
+            notificationSettingDelegateMock
+                .Setup(s => s.GetAsync(Hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(notificationSettings);
+
+            Mock<IOutboxStore> outboxStoreMock = new();
+
+            IUserProfileNotificationSettingService service =
+                GetNotificationSettingService(profileDelegateMock, notificationSettingDelegateMock, outboxStoreMock);
+
+            UserProfileNotificationSettingModel model = new()
+            {
+                Type = ProfileNotificationType.BcCancerScreening,
+                EmailEnabled = null,
+                SmsEnabled = true,
+            };
+
+            // Act
+            await service.UpdateAsync(Hdid, model, CancellationToken.None);
+
+            // Assert
+            notificationSettingDelegateMock.Verify(
+                v => v.UpdateAsync(
+                    It.Is<UserProfileNotificationSetting>(x =>
+                        x.Hdid == Hdid &&
+                        x.NotificationType == ProfileNotificationType.BcCancerScreening &&
+                        x.EmailEnabled == null &&
+                        x.SmsEnabled == true),
+                    false,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            outboxStoreMock.Verify(
+                m => m.StoreAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes =>
+                        envelopes.Select(e => e.Content)
+                            .OfType<NotificationChannelPreferencesChangedEvent>()
+                            .Select(e =>
+                                e.EmailNotificationTargets.Count == 0 &&
+                                e.SmsNotificationTargets.SequenceEqual(new[] { NotificationTargets.BcCancer }))
+                            .Single()),
                     true,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
