@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import ProtectiveWordComponent from "@/components/site/ProtectiveWordComponent.vue";
@@ -16,6 +16,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useMedicationStore } from "@/stores/medication";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -251,9 +252,13 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-medicationStore
-    .retrieveMedications(props.hdid)
-    .catch((err) => logger.error(`Error loading medication data: ${err}`));
+onBeforeMount(async () => {
+    try {
+        await medicationStore.retrieveMedications(props.hdid);
+    } catch (error) {
+        PromiseUtility.logError(logger, "Error loading medication data", error);
+    }
+});
 </script>
 
 <template>

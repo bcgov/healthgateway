@@ -18,7 +18,6 @@ import {
     StringISODateTime,
 } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import { ImmunizationAgent } from "@/models/immunizationModel";
 import { LaboratoryOrder } from "@/models/laboratory";
@@ -77,6 +76,11 @@ interface ImmunizationRow {
 interface RecommendationRow {
     immunization: string;
     due_date: string;
+}
+
+interface DownloadInfo {
+    downloadUrl: string;
+    fileName: string;
 }
 
 const tabIndices = {
@@ -237,12 +241,12 @@ function deleteDependent(): void {
         });
 }
 
-function downloadLaboratoryOrderReport(): void {
-    if (selectedLaboratoryOrderRow.value === undefined) {
+async function downloadLaboratoryOrderReport(): Promise<void> {
+    const selectedLaboratoryOrder = selectedLaboratoryOrderRow.value;
+    if (selectedLaboratoryOrder === undefined) {
         return;
     }
 
-    isReportDownloading.value = true;
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
@@ -252,46 +256,24 @@ function downloadLaboratoryOrderReport(): void {
     });
 
     const dateString = DateWrapper.fromIso(
-        selectedLaboratoryOrderRow.value.timelineDateTime
+        selectedLaboratoryOrder.timelineDateTime
     ).format("yyyy_MM_dd-HH_mm");
 
-    laboratoryService
-        .getReportDocument(
-            selectedLaboratoryOrderRow.value.reportId,
+    await downloadReportFile(async () => {
+        const result = await laboratoryService.getReportDocument(
+            selectedLaboratoryOrder.reportId,
             dependentHdid.value,
             false
-        )
-        .then((result) => {
-            const report = result.resourcePayload;
-            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(
-                        blob,
-                        `Laboratory_Report_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}_${dateString}.pdf`
-                    )
-                );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.LaboratoryReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
-        });
+        );
+        const report = result.resourcePayload;
+        return {
+            downloadUrl: `data:${report.mediaType};${report.encoding},${report.data}`,
+            fileName: `Laboratory_Report_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}_${dateString}.pdf`,
+        };
+    }, ErrorSourceType.LaboratoryReport);
 }
 
-function downloadImmunizationReport(): void {
-    isReportDownloading.value = true;
-
+async function downloadImmunizationReport(): Promise<void> {
     trackingService.trackEvent({
         action: Action.Download,
         text:
@@ -303,47 +285,28 @@ function downloadImmunizationReport(): void {
         format: EventDataUtility.getFormat(reportFormatType.value),
     });
 
-    generateReport(
-        TemplateType.DependentImmunization,
-        reportFormatType.value,
-        headerData.value
-    )
-        .then((result: RequestResult<Report>) => {
-            const mimeType = getMimeType(reportFormatType.value);
-            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-            fetch(downloadLink).then((res) =>
-                res
-                    .blob()
-                    .then((blob) =>
-                        saveAs(blob, result.resourcePayload.fileName)
-                    )
-            );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.DependentImmunizationReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
-        });
+    await downloadReportFile(async () => {
+        const result: RequestResult<Report> = await generateReport(
+            TemplateType.DependentImmunization,
+            reportFormatType.value,
+            headerData.value
+        );
+        const mimeType = getMimeType(reportFormatType.value);
+        return {
+            downloadUrl: `data:${mimeType};base64,${result.resourcePayload.data}`,
+            fileName: result.resourcePayload.fileName,
+        };
+    }, ErrorSourceType.DependentImmunizationReport);
 }
 
-function downloadClinicalDocument(): void {
-    if (selectedClinicalDocumentRow.value === undefined) {
+async function downloadClinicalDocument(): Promise<void> {
+    const selectedClinicalDocument = selectedClinicalDocumentRow.value;
+    if (selectedClinicalDocument === undefined) {
         return;
     }
 
     logger.debug("downloadClinicalDocument()");
 
-    isReportDownloading.value = true;
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
@@ -352,35 +315,43 @@ function downloadClinicalDocument(): void {
         actor: Actor.Guardian,
     });
 
-    clinicalDocumentService
-        .getFile(selectedClinicalDocumentRow.value.fileId, dependentHdid.value)
-        .then((result: RequestResult<EncodedMedia>) => {
-            fetch(
-                `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
-            )
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(
-                        blob,
-                        `Clinical_Document_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}.pdf`
-                    )
-                );
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.ClinicalDocument,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isReportDownloading.value = false;
-        });
+    await downloadReportFile(async () => {
+        const result = await clinicalDocumentService.getFile(
+            selectedClinicalDocument.fileId,
+            dependentHdid.value
+        );
+        return {
+            downloadUrl: `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`,
+            fileName: `Clinical_Document_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}.pdf`,
+        };
+    }, ErrorSourceType.ClinicalDocument);
+}
+
+async function downloadReportFile(
+    getDownloadInfo: () => Promise<DownloadInfo>,
+    errorSource: ErrorSourceType
+): Promise<void> {
+    isReportDownloading.value = true;
+
+    try {
+        const downloadInfo = await getDownloadInfo();
+        const response = await fetch(downloadInfo.downloadUrl);
+        const blob = await response.blob();
+        saveAs(blob, downloadInfo.fileName);
+    } catch (error) {
+        logger.error(error instanceof Error ? error.message : String(error));
+        if (error instanceof ResultError && error.statusCode === 429) {
+            errorStore.setTooManyRequestsError("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Download,
+                errorSource,
+                error instanceof ResultError ? error.traceId : undefined
+            );
+        }
+    } finally {
+        isReportDownloading.value = false;
+    }
 }
 
 function downloadDocument(): void {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed, onBeforeMount, onMounted, watch } from "vue";
 
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
@@ -15,6 +15,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
 import DateSortUtility from "@/utility/dateSortUtility";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface Props {
     hdid: string;
@@ -154,12 +155,19 @@ onMounted(() => {
     onIsEmptyChanged();
 });
 
-// Created Hook
-specialAuthorityStore
-    .retrieveSpecialAuthorityRequests(props.hdid)
-    .catch((err) =>
-        logger.error(`Error loading Special Authority requests data: ${err}`)
-    );
+onBeforeMount(async () => {
+    try {
+        await specialAuthorityStore.retrieveSpecialAuthorityRequests(
+            props.hdid
+        );
+    } catch (error) {
+        PromiseUtility.logError(
+            logger,
+            "Error loading Special Authority requests data",
+            error
+        );
+    }
+});
 </script>
 
 <template>

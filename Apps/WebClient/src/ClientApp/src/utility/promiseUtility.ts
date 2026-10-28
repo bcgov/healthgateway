@@ -18,6 +18,20 @@ export default abstract class PromiseUtility {
     }
 
     /**
+     * Logs an error with a message prefix.
+     * @param logger The logger used for the error.
+     * @param message The error message prefix.
+     * @param error The error to log.
+     */
+    public static logError(
+        logger: ILogger,
+        message: string,
+        error: unknown
+    ): void {
+        logger.error(`${message}: ${error}`);
+    }
+
+    /**
      * Wraps a promise so it won't return or reject until a minimum amount of time has elapsed.
      * @param promise The provided Promise.
      * @param milliseconds The time to wait.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { Loader } from "@/constants/loader";
@@ -26,23 +26,22 @@ const isAlreadyVerified = ref<boolean>();
 const isSuccess = computed(() => isAlreadyVerified.value || isVerified.value);
 const validationFailed = computed(() => isVerified.value === false);
 
-// Created hook
-loadingStore.applyLoader(
-    Loader.ValidateEmail,
-    "verifyingEmailAddress",
-    userStore
-        .validateEmail(props.inviteKey)
-        .then((result: boolean) => {
-            isVerified.value = result;
-        })
-        .catch((resultError: ResultError) => {
-            if (resultError.statusCode === 409) {
-                isAlreadyVerified.value = true;
-            } else {
-                logger.error("Error while validating email.");
-            }
-        })
-);
+onBeforeMount(async () => {
+    const loadingReason = "verifyingEmailAddress";
+    loadingStore.setIsLoading(true, Loader.ValidateEmail, loadingReason);
+
+    try {
+        isVerified.value = await userStore.validateEmail(props.inviteKey);
+    } catch (error) {
+        if (error instanceof ResultError && error.statusCode === 409) {
+            isAlreadyVerified.value = true;
+        } else {
+            logger.error("Error while validating email.");
+        }
+    } finally {
+        loadingStore.setIsLoading(false, Loader.ValidateEmail, loadingReason);
+    }
+});
 </script>
 
 <template>

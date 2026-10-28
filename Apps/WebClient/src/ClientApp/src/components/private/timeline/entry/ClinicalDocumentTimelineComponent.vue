@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import saveAs from "file-saver";
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -23,6 +22,7 @@ import {
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useTimelineStore } from "@/stores/timeline";
+import { downloadEncodedMedia } from "@/utility/encodedMediaDownloadUtility";
 
 interface Props {
     hdid: string;
@@ -66,7 +66,7 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-function downloadFile(): void {
+async function downloadFile(): Promise<void> {
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.DownloadClinicalDocument,
@@ -76,17 +76,19 @@ function downloadFile(): void {
         format: Format.Pdf,
     });
 
-    clinicalDocumentStore
-        .getFile(props.entry.fileId, props.hdid)
-        .then((result: EncodedMedia) => {
-            const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
-            fetch(`data:${result.mediaType};${result.encoding},${result.data}`)
-                .then((response) => response.blob())
-                .then((blob) =>
-                    saveAs(blob, `Clinical_Document_${dateString}.pdf`)
-                );
-        })
-        .catch((err) => logger.error(err));
+    try {
+        const result: EncodedMedia = await clinicalDocumentStore.getFile(
+            props.entry.fileId,
+            props.hdid
+        );
+        const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
+        await downloadEncodedMedia(
+            result,
+            `Clinical_Document_${dateString}.pdf`
+        );
+    } catch (error) {
+        logger.error(error instanceof Error ? error.message : String(error));
+    }
 }
 </script>
 

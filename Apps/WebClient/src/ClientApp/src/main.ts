@@ -20,6 +20,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
+import PromiseUtility from "@/utility/promiseUtility";
 
 const app = createApp(App);
 
@@ -29,10 +30,11 @@ registerGlobalComponents(app);
 const configStore = useConfigStore();
 
 // Retrieve configuration, initialize services, and mount app
-configStore
-    .retrieve()
-    .then(initializeServices)
-    .then(async () => {
+async function initializeApp(): Promise<void> {
+    try {
+        await configStore.retrieve();
+        await initializeServices();
+
         if (globalThis.location.pathname !== "/loginCallback") {
             const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
             // Services are not available until after the services are initialized
@@ -50,15 +52,16 @@ configStore
                 userStore.isValidIdentityProvider;
             if (userStore.hdid && isValidIdentityProvider) {
                 await userStore.retrieveEssentialData();
-                notificationStore
-                    .retrieve()
-                    .catch((error) => logger.warn(error.message));
+                PromiseUtility.runInBackground(
+                    notificationStore.retrieve(),
+                    logger,
+                    "Notification retrieval"
+                );
             }
         }
         registerRouterPlugin(app);
         app.mount("#app-root");
-    })
-    .catch((error) => {
+    } catch (error) {
         // logger may not be initialized yet
         console.error(`An error occurred while initializing the app`, error);
         let errorType = AppErrorType.General;
@@ -72,4 +75,7 @@ configStore
         const errorApp = createApp(AppErrorView);
         registerInitialPlugins(errorApp);
         errorApp.mount("#app-root");
-    });
+    }
+}
+
+await initializeApp();

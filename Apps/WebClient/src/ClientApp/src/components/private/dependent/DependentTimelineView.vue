@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -55,13 +55,10 @@ const title = computed<string>(
     () => `Health Records for ${formattedName.value}`
 );
 
-function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
-    return dependentStore.retrieveDependents(hdid, bypassCache);
-}
-
-retrieveDependents(userStore.hdid, false).then(() => {
+onBeforeMount(async () => {
+    await dependentStore.retrieveDependents(userStore.hdid, false);
     if (dependent.value === undefined) {
-        router.push({ path: "/unauthorized" });
+        await router.push({ path: "/unauthorized" });
     }
 });
 </script>

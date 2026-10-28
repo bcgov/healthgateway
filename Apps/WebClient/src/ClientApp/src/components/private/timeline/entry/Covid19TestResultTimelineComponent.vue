@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { saveAs } from "file-saver";
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -8,11 +7,10 @@ import MessageModalComponent from "@/components/common/MessageModalComponent.vue
 import Covid19TestResultDescriptionComponent from "@/components/private/timeline/entry/Covid19TestResultDescriptionComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ErrorSourceType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ResultError } from "@/models/errors";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
 import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
 import {
@@ -22,6 +20,10 @@ import {
 } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
+import {
+    downloadEncodedMedia,
+    handleReportDownloadError,
+} from "@/utility/encodedMediaDownloadUtility";
 
 interface Props {
     hdid: string;
@@ -75,7 +77,7 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-function getReport(): void {
+async function getReport(): Promise<void> {
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
@@ -85,31 +87,27 @@ function getReport(): void {
     });
 
     isLoadingDocument.value = true;
-    laboratoryService
-        .getReportDocument(props.entry.id, props.hdid, true)
-        .then((result) => {
-            const dateString =
-                props.entry.displayDate.format("yyyy_MM_dd-HH_mm");
-            const report = result.resourcePayload;
-            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
-                .then((response) => response.blob())
-                .then((blob) => saveAs(blob, `COVID_Result_${dateString}.pdf`));
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.message);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Download,
-                    ErrorSourceType.Covid19LaboratoryReport,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isLoadingDocument.value = false;
-        });
+    try {
+        const result = await laboratoryService.getReportDocument(
+            props.entry.id,
+            props.hdid,
+            true
+        );
+        const dateString = props.entry.displayDate.format("yyyy_MM_dd-HH_mm");
+        await downloadEncodedMedia(
+            result.resourcePayload,
+            `COVID_Result_${dateString}.pdf`
+        );
+    } catch (error) {
+        handleReportDownloadError(
+            error,
+            ErrorSourceType.Covid19LaboratoryReport,
+            logger,
+            errorStore
+        );
+    } finally {
+        isLoadingDocument.value = false;
+    }
 }
 </script>
 

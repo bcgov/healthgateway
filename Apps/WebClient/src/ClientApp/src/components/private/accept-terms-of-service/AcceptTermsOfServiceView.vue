@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -63,17 +63,15 @@ function redirect(): void {
     router.push({ path: "/home" });
 }
 
-// Created hook
-userProfileService
-    .getTermsOfService()
-    .then((result) => {
+onBeforeMount(async () => {
+    try {
+        const result = await userProfileService.getTermsOfService();
         logger.debug(`getTermsOfService result: ${JSON.stringify(result)}`);
         termsOfServiceId.value = result.id;
         termsOfService.value = result.content;
-    })
-    .catch((err: ResultError) => {
-        logger.error(err.message);
-        if (err.statusCode === 429) {
+    } catch (err) {
+        logger.error(err instanceof Error ? err.message : String(err));
+        if (err instanceof ResultError && err.statusCode === 429) {
             errorStore.setTooManyRequestsWarning("page");
         } else {
             errorStore.addError(
@@ -82,10 +80,10 @@ userProfileService
                 undefined
             );
         }
-    })
-    .finally(() => {
+    } finally {
         isLoading.value = false;
-    });
+    }
+});
 </script>
 
 <template>

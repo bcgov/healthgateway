@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
@@ -33,23 +33,26 @@ const isLoading = ref(true);
 const hasErrors = ref(false);
 const termsOfService = ref("");
 
-userProfileService
-    .getTermsOfService()
-    .then((result) => {
+onBeforeMount(async () => {
+    try {
+        const result = await userProfileService.getTermsOfService();
         logger.debug("Terms Of Service retrieved: " + JSON.stringify(result));
         termsOfService.value = result.content;
-    })
-    .catch((err: ResultError) => {
-        logger.error(err.message);
-        if (err.statusCode === 429) {
+    } catch (error) {
+        const resultError = error instanceof ResultError ? error : undefined;
+        logger.error(
+            resultError?.message ??
+                (error instanceof Error ? error.message : String(error))
+        );
+        if (resultError?.statusCode === 429) {
             errorStore.setTooManyRequestsWarning("page");
         } else {
             hasErrors.value = true;
         }
-    })
-    .finally(() => {
+    } finally {
         isLoading.value = false;
-    });
+    }
+});
 </script>
 
 <template>
