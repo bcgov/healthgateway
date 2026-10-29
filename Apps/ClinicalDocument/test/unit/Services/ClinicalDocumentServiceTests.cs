@@ -51,13 +51,13 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         ///  Get clinical document records - happy path.
         /// </summary>
         /// <param name="canAccessDataSource">The value indicates whether the clinical document data source can be accessed or not.</param>
-        /// <param name="personalAccountResultType">The result type for personal account response.</param>
+        /// <param name="patientIdentifierResultType">The result type for patient identifier response.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true, ResultType.Success)]
         [InlineData(true, ResultType.Error)]
         [InlineData(false, null)]
-        public async Task ShouldGetClinicalDocumentRecords(bool canAccessDataSource, ResultType? personalAccountResultType)
+        public async Task ShouldGetClinicalDocumentRecords(bool canAccessDataSource, ResultType? patientIdentifierResultType)
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -66,7 +66,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(
                 expectedPhsaHealthDataResponse,
                 canAccessDataSource: canAccessDataSource,
-                personalAccountResultType: personalAccountResultType);
+                patientIdentifierResultType: patientIdentifierResultType);
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult = await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>());
@@ -74,7 +74,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             // Assert
             if (canAccessDataSource)
             {
-                Assert.Equal(personalAccountResultType, actualResult.ResultStatus);
+                Assert.Equal(patientIdentifierResultType, actualResult.ResultStatus);
 
                 if (actualResult.ResultStatus == ResultType.Success)
                 {
@@ -115,18 +115,13 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         ///  Get clinical document file - happy path.
         /// </summary>
         /// <param name="canAccessDatasource">The value indicates whether the clinical document data source can be accessed or not.</param>
-        /// <param name="personalAccountExists">
-        /// The bool value indicating whether a pid exists or not to get the clinical document
-        /// records.
-        /// </param>
-        /// <param name="personalAccountResultType">The result type for personal account response.</param>
+        /// <param name="patientIdentifierResultType">The result type for patient identifier response.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, true, ResultType.Success)]
-        [InlineData(true, true, ResultType.Error)]
-        [InlineData(true, false, ResultType.Success)]
-        [InlineData(false, true, null)]
-        public async Task ShouldGetClinicalDocumentFile(bool canAccessDatasource, bool personalAccountExists, ResultType? personalAccountResultType)
+        [InlineData(true, ResultType.Success)]
+        [InlineData(true, ResultType.Error)]
+        [InlineData(false, null)]
+        public async Task ShouldGetClinicalDocumentFile(bool canAccessDatasource, ResultType? patientIdentifierResultType)
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -135,32 +130,23 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(
                 expectedPhsaHealthDataResponse,
                 canAccessDataSource: canAccessDatasource,
-                personalAccountExists: personalAccountExists,
-                personalAccountResultType: personalAccountResultType);
+                patientIdentifierResultType: patientIdentifierResultType);
 
             if (canAccessDatasource)
             {
-                if (personalAccountExists)
+                // Act
+                RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(string.Empty, string.Empty);
+
+                // Assert
+                Assert.Equal(patientIdentifierResultType, actualResult.ResultStatus);
+
+                if (actualResult.ResultStatus == ResultType.Success)
                 {
-                    // Act
-                    RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(string.Empty, string.Empty);
-
-                    // Assert
-                    Assert.Equal(personalAccountResultType, actualResult.ResultStatus);
-
-                    if (actualResult.ResultStatus == ResultType.Success)
-                    {
-                        Assert.NotNull(actualResult.ResourcePayload);
-                    }
-                    else
-                    {
-                        Assert.Null(actualResult.ResourcePayload);
-                    }
+                    Assert.NotNull(actualResult.ResourcePayload);
                 }
                 else
                 {
-                    // Act and Assert
-                    await Assert.ThrowsAsync<InvalidOperationException>(() => clinicalDocumentService.GetFileAsync(string.Empty, string.Empty));
+                    Assert.Null(actualResult.ResourcePayload);
                 }
             }
             else
@@ -215,8 +201,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             PhsaHealthDataResponse? content = null,
             bool throwException = false,
             bool canAccessDataSource = true,
-            bool personalAccountExists = true,
-            ResultType? personalAccountResultType = ResultType.Success)
+            ResultType? patientIdentifierResultType = ResultType.Success)
         {
             Mock<IClinicalDocumentsApi> clinicalDocumentApiMock = new();
             if (!throwException && content != null)
@@ -232,32 +217,20 @@ namespace HealthGateway.ClinicalDocumentTests.Services
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
-            PatientIdentity patientIdentity = new()
+            RequestResult<Guid> requestResult = new()
             {
-                Pid = Guid.NewGuid(),
+                ResourcePayload = Guid.NewGuid(),
+                ResultStatus = patientIdentifierResultType ?? ResultType.Success,
             };
-
-            PersonalAccount? personalAccount = personalAccountExists
-                ? new()
-                {
-                    PatientIdentity = patientIdentity,
-                }
-                : null;
-
-            RequestResult<PersonalAccount> requestResult = new()
-            {
-                ResourcePayload = personalAccount,
-                ResultStatus = personalAccountResultType ?? ResultType.Success,
-            };
-            Mock<IPersonalAccountsService> personalAccountServiceMock = new();
-            personalAccountServiceMock.Setup(p => p.GetPersonalAccountResultAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            Mock<IPatientIdentifierService> patientIdentifierServiceMock = new();
+            patientIdentifierServiceMock.Setup(p => p.GetPatientIdentifierResultAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IPatientRepository> patientRepositoryMock = new();
             patientRepositoryMock.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
             return new ClinicalDocumentService(
                 new Mock<ILogger<ClinicalDocumentService>>().Object,
-                personalAccountServiceMock.Object,
+                patientIdentifierServiceMock.Object,
                 clinicalDocumentApiMock.Object,
                 patientRepositoryMock.Object,
                 MappingService);

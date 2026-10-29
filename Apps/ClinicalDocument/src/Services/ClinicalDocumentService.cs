@@ -40,26 +40,26 @@ namespace HealthGateway.ClinicalDocument.Services
         private readonly IClinicalDocumentMappingService mappingService;
         private readonly IClinicalDocumentsApi clinicalDocumentsApi;
         private readonly ILogger<ClinicalDocumentService> logger;
-        private readonly IPersonalAccountsService personalAccountsService;
+        private readonly IPatientIdentifierService patientIdentifierService;
         private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentService"/> class.
         /// </summary>
         /// <param name="logger">Injected logger.</param>
-        /// <param name="personalAccountsService">The injected personal accounts service.</param>
+        /// <param name="patientIdentifierService">The injected patient identifier service.</param>
         /// <param name="clinicalDocumentsApi">The injected clinical documents api.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="mappingService">The injected mapping service.</param>
         public ClinicalDocumentService(
             ILogger<ClinicalDocumentService> logger,
-            IPersonalAccountsService personalAccountsService,
+            IPatientIdentifierService patientIdentifierService,
             IClinicalDocumentsApi clinicalDocumentsApi,
             IPatientRepository patientRepository,
             IClinicalDocumentMappingService mappingService)
         {
             this.logger = logger;
-            this.personalAccountsService = personalAccountsService;
+            this.patientIdentifierService = patientIdentifierService;
             this.clinicalDocumentsApi = clinicalDocumentsApi;
             this.patientRepository = patientRepository;
             this.mappingService = mappingService;
@@ -86,10 +86,10 @@ namespace HealthGateway.ClinicalDocument.Services
 
             try
             {
-                RequestResult<PersonalAccount> patientAccountResponse = await this.personalAccountsService.GetPersonalAccountResultAsync(hdid, ct);
-                if (patientAccountResponse.ResultStatus == ResultType.Success)
+                RequestResult<Guid> patientIdentifierResponse = await this.patientIdentifierService.GetPatientIdentifierResultAsync(hdid, ct);
+                if (patientIdentifierResponse.ResultStatus == ResultType.Success)
                 {
-                    string? pid = patientAccountResponse.ResourcePayload?.PatientIdentity.Pid.ToString();
+                    string pid = patientIdentifierResponse.ResourcePayload.ToString();
 
                     this.logger.LogDebug("Retrieving clinical documents");
                     PhsaHealthDataResponse apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid, ct);
@@ -101,7 +101,7 @@ namespace HealthGateway.ClinicalDocument.Services
                 }
                 else
                 {
-                    requestResult.ResultError = patientAccountResponse.ResultError;
+                    requestResult.ResultError = patientIdentifierResponse.ResultError;
                 }
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -137,10 +137,10 @@ namespace HealthGateway.ClinicalDocument.Services
 
             try
             {
-                RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPersonalAccountResultAsync(hdid, ct);
+                RequestResult<Guid> response = await this.patientIdentifierService.GetPatientIdentifierResultAsync(hdid, ct);
                 if (response.ResultStatus == ResultType.Success)
                 {
-                    Guid pid = response.ResourcePayload?.PatientIdentity.Pid ?? throw new InvalidOperationException($"Pid not found for hdid {hdid}");
+                    Guid pid = response.ResourcePayload;
 
                     this.logger.LogDebug("Retrieving clinical document file");
                     EncodedMedia apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId, ct);

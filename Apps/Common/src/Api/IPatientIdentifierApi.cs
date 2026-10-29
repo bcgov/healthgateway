@@ -13,32 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Common.Api
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models.PHSA;
+    using Refit;
 
     /// <summary>
-    /// Caching Personal Account Service.
+    /// Interface to retrieve patient identifiers.
     /// </summary>
-    public interface IPersonalAccountsService
+    public interface IPatientIdentifierApi
     {
         /// <summary>
-        /// Gets personal account information from PHSA using the supplied HDID.
+        /// Retrieves the patient identifier (PID) by HDID.
+        /// Since we are only interested in the PID, other properties from the response are excluded.
+        /// The IPatientIdentityApi in AccountDataAccess retrieves the full response.
         /// </summary>
-        /// <param name="hdid">The HDID to look up.</param>
+        /// <param name="hdid">The HDID to lookup.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The personal account model.</returns>
-        Task<PersonalAccount> GetPersonalAccountAsync(string hdid, CancellationToken ct = default);
-
-        /// <summary>
-        /// Gets personal account information from PHSA using the supplied HDID.
-        /// </summary>
-        /// <param name="hdid">The HDID to look up.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The personal account model wrapped in a RequestResult.</returns>
-        Task<RequestResult<PersonalAccount>> GetPersonalAccountResultAsync(string hdid, CancellationToken ct = default);
+        /// <returns>A response containing the patient identifier matching the HDID.</returns>
+        [Get("/patient-identity/hdid/{hdid}")]
+        Task<PatientIdentifierResponse> GetPatientIdentifierByHdidAsync(string hdid, CancellationToken ct = default);
     }
 }

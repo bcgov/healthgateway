@@ -92,7 +92,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IPatientDetailsService, PatientDetailsService>();
-            services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
+            services.AddTransient<IPatientIdentifierService, PatientIdentifierService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IUserEmailServiceV2, UserEmailServiceV2>();
@@ -143,7 +143,7 @@ namespace HealthGateway.GatewayApi
             PhsaConfigV2 phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
 
-            services.AddRefitClient<IPersonalAccountsApi>()
+            services.AddRefitClient<IPatientIdentifierApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 

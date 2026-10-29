@@ -31,7 +31,6 @@ namespace HealthGateway.Encounter
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Refit;
-    using PersonalAccount = HealthGateway.Common.AspNetConfiguration.Modules.PersonalAccount;
 
     /// <summary>
     /// Configures the application during startup.
@@ -79,7 +78,7 @@ namespace HealthGateway.Encounter
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
 
             ILogger logger = ProgramConfiguration.GetInitialLogger(this.startupConfig.Configuration);
-            PersonalAccount.ConfigurePersonalAccountAccess(services, logger, this.startupConfig.Configuration);
+            PatientIdentifier.ConfigurePatientIdentifierAccess(services, logger, this.startupConfig.Configuration);
 
             // Access token swap
             PhsaV2.ConfigurePhsaV2Access(services, logger, this.startupConfig.Configuration);

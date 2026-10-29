@@ -50,17 +50,9 @@ namespace HealthGateway.EncounterTests.Services
             Guid pid = Guid.NewGuid();
             CancellationToken ct = CancellationToken.None;
 
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
-
-            PersonalAccount account = new()
-            {
-                PatientIdentity = new PatientIdentity
-                {
-                    Pid = pid,
-                },
-            };
 
             DateTime rawAdmitDateTime = DateTime.Parse("2020-01-15T10:00:00", CultureInfo.InvariantCulture);
             DateTime rawEndDateTime = DateTime.Parse("2020-01-16T08:00:00", CultureInfo.InvariantCulture);
@@ -83,9 +75,9 @@ namespace HealthGateway.EncounterTests.Services
                 .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit, ct))
                 .ReturnsAsync(true);
 
-            personalAccountsService
-                .Setup(s => s.GetPersonalAccountAsync(hdid, ct))
-                .ReturnsAsync(account);
+            patientIdentifierService
+                .Setup(s => s.GetPatientIdentifierAsync(hdid, ct))
+                .ReturnsAsync(pid);
 
             patientDataRepository
                 .Setup(s => s.QueryAsync(
@@ -96,7 +88,7 @@ namespace HealthGateway.EncounterTests.Services
                 .ReturnsAsync(new PatientDataQueryResult([hospitalVisit]));
 
             EncounterServiceV2 service = GetService(
-                personalAccountsService,
+                patientIdentifierService,
                 patientDataRepository,
                 patientRepository);
 
@@ -119,7 +111,7 @@ namespace HealthGateway.EncounterTests.Services
             const string hdid = "test-hdid";
             CancellationToken ct = CancellationToken.None;
 
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
 
@@ -128,7 +120,7 @@ namespace HealthGateway.EncounterTests.Services
                 .ReturnsAsync(false);
 
             EncounterServiceV2 service = GetService(
-                personalAccountsService,
+                patientIdentifierService,
                 patientDataRepository,
                 patientRepository);
 
@@ -138,8 +130,8 @@ namespace HealthGateway.EncounterTests.Services
             // Assert
             Assert.Empty(result);
 
-            personalAccountsService.Verify(
-                s => s.GetPersonalAccountAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            patientIdentifierService.Verify(
+                s => s.GetPatientIdentifierAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                 Times.Never);
 
             patientDataRepository.Verify(
@@ -161,12 +153,12 @@ namespace HealthGateway.EncounterTests.Services
         }
 
         private static EncounterServiceV2 GetService(
-            Mock<IPersonalAccountsService> personalAccountsService,
+            Mock<IPatientIdentifierService> patientIdentifierService,
             Mock<IPatientDataRepository> patientDataRepository,
             Mock<IPatientRepository> patientRepository)
         {
             return new EncounterServiceV2(
-                personalAccountsService.Object,
+                patientIdentifierService.Object,
                 patientDataRepository.Object,
                 patientRepository.Object,
                 MappingService);

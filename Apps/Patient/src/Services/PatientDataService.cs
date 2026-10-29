@@ -31,18 +31,18 @@ namespace HealthGateway.Patient.Services
     {
         private readonly IPatientDataRepository patientDataRepository;
         private readonly IPatientRepository patientRepository;
-        private readonly IPersonalAccountsService personalAccountsService;
+        private readonly IPatientIdentifierService patientIdentifierService;
         private readonly IPatientMappingService mappingService;
 
         public PatientDataService(
             IPatientDataRepository patientDataRepository,
             IPatientRepository patientRepository,
-            IPersonalAccountsService personalAccountsService,
+            IPatientIdentifierService patientIdentifierService,
             IPatientMappingService mappingService)
         {
             this.patientDataRepository = patientDataRepository;
             this.patientRepository = patientRepository;
-            this.personalAccountsService = personalAccountsService;
+            this.patientIdentifierService = patientIdentifierService;
             this.mappingService = mappingService;
         }
 
@@ -54,7 +54,7 @@ namespace HealthGateway.Patient.Services
                 return new PatientDataResponse([]);
             }
 
-            Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
+            Guid pid = await this.patientIdentifierService.GetPatientIdentifierAsync(query.Hdid, ct);
             HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(this.mappingService.MapToHealthCategory));
             PatientDataQueryResult result = await this.patientDataRepository.QueryAsync(healthQuery, ct);
             return new PatientDataResponse(result.Items.Select(this.mappingService.MapToPatientData));
@@ -62,7 +62,7 @@ namespace HealthGateway.Patient.Services
 
         public async Task<PatientFileResponse?> QueryAsync(PatientFileQuery query, CancellationToken ct = default)
         {
-            Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
+            Guid pid = await this.patientIdentifierService.GetPatientIdentifierAsync(query.Hdid, ct);
             PatientFile? file = (await this.patientDataRepository.QueryAsync(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.OfType<PatientFile>()
                 .FirstOrDefault();
 
@@ -84,11 +84,6 @@ namespace HealthGateway.Patient.Services
             }
 
             return unblockedPatientDataTypes;
-        }
-
-        private async Task<Guid> ResolvePidFromHdidAsync(string patientHdid, CancellationToken ct)
-        {
-            return (await this.personalAccountsService.GetPersonalAccountAsync(patientHdid, ct)).PatientIdentity.Pid;
         }
     }
 #pragma warning restore SA1600

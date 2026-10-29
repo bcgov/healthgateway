@@ -62,7 +62,7 @@ namespace HealthGateway.Patient
 
             Patient.ConfigurePatientAccess(services, logger, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
-            PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
+            PatientIdentifier.ConfigurePatientIdentifierAccess(services, logger, configuration);
 
             services.AddTransient<IPatientMappingService, PatientMappingService>();
             services.AddTransient<IPatientService, PatientService>();

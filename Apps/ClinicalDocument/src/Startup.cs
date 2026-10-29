@@ -72,7 +72,7 @@ namespace HealthGateway.ClinicalDocument
             // Add services
             services.AddTransient<IClinicalDocumentMappingService, ClinicalDocumentMappingService>();
             services.AddTransient<IClinicalDocumentService, ClinicalDocumentService>();
-            services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
+            services.AddTransient<IPatientIdentifierService, PatientIdentifierService>();
             services.AddAutoMapper(typeof(Startup));
 
             // Add Refit clients
@@ -82,7 +82,7 @@ namespace HealthGateway.ClinicalDocument
             services.AddRefitClient<IClinicalDocumentsApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
-            services.AddRefitClient<IPersonalAccountsApi>()
+            services.AddRefitClient<IPatientIdentifierApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 

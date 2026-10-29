@@ -15,13 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Models;
     using HealthGateway.PatientDataAccess;
@@ -29,7 +29,7 @@ namespace HealthGateway.Encounter.Services
 
     /// <inheritdoc/>
     public class EncounterServiceV2(
-        IPersonalAccountsService personalAccountsService,
+        IPatientIdentifierService patientIdentifierService,
         IPatientDataRepository patientDataRepository,
         IPatientRepository patientRepository,
         IEncounterMappingService mappingService) : IEncounterServiceV2
@@ -42,8 +42,8 @@ namespace HealthGateway.Encounter.Services
                 return [];
             }
 
-            PersonalAccount account = await personalAccountsService.GetPersonalAccountAsync(hdid, ct);
-            HealthQuery healthQuery = new(account.PatientIdentity.Pid, [HealthCategory.HospitalVisits]);
+            Guid pid = await patientIdentifierService.GetPatientIdentifierAsync(hdid, ct);
+            HealthQuery healthQuery = new(pid, [HealthCategory.HospitalVisits]);
             PatientDataQueryResult result = await patientDataRepository.QueryAsync(healthQuery, ct);
             return result.Items
                 .OfType<PatientDataHospitalVisit>()

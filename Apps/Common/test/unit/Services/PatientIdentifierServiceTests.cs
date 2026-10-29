@@ -32,14 +32,14 @@ namespace HealthGateway.CommonTests.Services
     using Xunit;
 
     /// <summary>
-    /// PersonalAccountService's Unit Tests.
+    /// PatientIdentifierService Unit Tests.
     /// </summary>
-    public class PersonalAccountServiceTests
+    public class PatientIdentifierServiceTests
     {
-        private const string PersonalAccountsErrorMessage = "Error with request for Personal Accounts";
+        private const string PatientIdentifierErrorMessage = "Error with request for patient identifier";
 
         /// <summary>
-        /// Get Patient Account Result.
+        /// GetPatientIdentifierResultAsync should return result.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
         /// <param name="cacheToLive">The number of minutes cache lives.</param>
@@ -48,48 +48,45 @@ namespace HealthGateway.CommonTests.Services
         [InlineData(true, null)]
         [InlineData(false, "90")]
         [InlineData(false, "0")]
-        public async Task ShouldGetPatientAccountResult(bool useCache, string? cacheToLive)
+        public async Task GetPatientIdentifierResultAsyncShouldReturnResult(bool useCache, string? cacheToLive)
         {
             // Arrange
-            Guid id = Guid.NewGuid();
-            PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
+            Guid pid = Guid.NewGuid();
 
             Mock<ICacheProvider> cacheProviderMock = new();
-            IPersonalAccountsService personalAccountsService = GetPersonalAccountsService(expectedPersonalAccount, useCache, false, cacheProviderMock, cacheToLive);
+            IPatientIdentifierService patientIdentifierService = GetPatientIdentifierService(pid, useCache, false, cacheProviderMock, cacheToLive);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPersonalAccountResultAsync(It.IsAny<string>());
+            RequestResult<Guid> actualResult = await patientIdentifierService.GetPatientIdentifierResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(id, actualResult.ResourcePayload?.Id);
+            Assert.Equal(pid, actualResult.ResourcePayload);
 
             cacheProviderMock
                 .Verify(
-                    s => s.AddItemAsync(It.IsAny<string>(), It.IsAny<PersonalAccount>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()),
+                    s => s.AddItemAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()),
                     cacheToLive is "90" ? Times.Once : Times.Never);
         }
 
         /// <summary>
-        /// Get Personal Account throws HttpRequestException.
+        /// GetPatientIdentifierResultAsync throws HttpRequestException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPatientAccountThrowsException()
+        public async Task GetPatientIdentifierResultAsyncShouldThrowException()
         {
             // Arrange
-            Guid id = Guid.NewGuid();
-            PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
+            Guid pid = Guid.NewGuid();
 
-            IPersonalAccountsService personalAccountsService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
+            IPatientIdentifierService patientIdentifierService = GetPatientIdentifierService(pid, false, true);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPersonalAccountResultAsync(It.IsAny<string>());
+            RequestResult<Guid> actualResult = await patientIdentifierService.GetPatientIdentifierResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(PersonalAccountsErrorMessage, actualResult.ResultError?.ResultMessage);
+            Assert.Equal(PatientIdentifierErrorMessage, actualResult.ResultError?.ResultMessage);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot(string cacheToLive = "90")
@@ -104,43 +101,33 @@ namespace HealthGateway.CommonTests.Services
                 .Build();
         }
 
-        private static PersonalAccount GetPatientAccount(Guid id)
-        {
-            return new PersonalAccount
-            {
-                Id = id,
-                CreationTimeStampUtc = DateTime.Today,
-                ModifyTimeStampUtc = DateTime.Today,
-                PatientIdentity = new(),
-            };
-        }
-
-        private static IPersonalAccountsService GetPersonalAccountsService(
-            PersonalAccount content,
+        private static IPatientIdentifierService GetPatientIdentifierService(
+            Guid pid,
             bool useCache,
             bool throwException,
             Mock<ICacheProvider>? cacheProviderMock = null,
             string? cacheToLive = null)
         {
             cacheProviderMock ??= new();
-            cacheProviderMock.Setup(p => p.GetItemAsync<PersonalAccount>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(useCache ? content : null);
+            cacheProviderMock.Setup(p => p.GetItemAsync<Guid?>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(useCache ? pid : null);
 
-            Mock<IPersonalAccountsApi> personalAccountsApiMock = new();
+            Mock<IPatientIdentifierApi> patientIdentifierApiMock = new();
             if (!throwException)
             {
-                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(content);
+                patientIdentifierApiMock.Setup(p => p.GetPatientIdentifierByHdidAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(new PatientIdentifierResponse { Pid = pid });
             }
             else
             {
-                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                patientIdentifierApiMock.Setup(p => p.GetPatientIdentifierByHdidAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
-            return new PersonalAccountsService(
-                new Mock<ILogger<PersonalAccountsService>>().Object,
+            return new PatientIdentifierService(
+                new Mock<ILogger<PatientIdentifierService>>().Object,
                 GetIConfigurationRoot(cacheToLive),
                 cacheProviderMock.Object,
-                personalAccountsApiMock.Object);
+                patientIdentifierApiMock.Object);
         }
     }
 }
