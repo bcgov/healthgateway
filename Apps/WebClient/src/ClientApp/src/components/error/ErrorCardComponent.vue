@@ -142,6 +142,6 @@ async function copyToClipboard() {
 }
 
 .hg-error-details::v-deep(.v-expansion-panel-title) {
-    min-height: auto !important;
+    min-height: auto;
 }
 </style>
