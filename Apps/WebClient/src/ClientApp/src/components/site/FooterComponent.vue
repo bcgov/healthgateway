@@ -43,7 +43,7 @@ const isFooterShown = computed(
         data-testid="footer"
         color="white"
         app
-        :class="{ 'non-fixed-footer': layoutStore.isMobile }"
+        :style="layoutStore.isMobile ? { position: 'static' } : undefined"
     >
         <v-row class="pa-2">
             <v-col class="flex-grow-0" cols="12" md="auto">
@@ -154,7 +154,7 @@ const isFooterShown = computed(
 
 <style lang="scss" scoped>
 .v-footer :deep(.text-primary) {
-    color: #313132 !important; /* BC Black */
+    color: #313132; /* BC Black */
 }
 
 .v-footer {
@@ -170,10 +170,5 @@ const isFooterShown = computed(
     // Sticky positioning keeps the footer visible at the bottom when not using the Vuetify layout system
     position: sticky;
     bottom: 0;
-}
-
-// On mobile, let it flow with content
-.non-fixed-footer {
-    position: static !important;
 }
 </style>
