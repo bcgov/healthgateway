@@ -249,10 +249,10 @@ watch(
 }
 
 :deep(.v-expansion-panel-title:hover) {
-    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+    background-color: rgb(var(--v-theme-surfaceHover));
 }
 :deep(.v-expansion-panel-title:hover > .v-expansion-panel-title__overlay) {
-    opacity: 0 !important;
+    opacity: 0;
 }
 </style>
 

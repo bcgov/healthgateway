@@ -419,12 +419,12 @@ function openExternalLink(tile: InfoTile, action: Action) {
     instead of the Vuetify theme primary.
 */
 :deep(.tile-title) {
-    color: #313132 !important;
+    color: #313132;
 }
 
 /* Paragraph override: Landing-only text requiring BC Black */
 .landing-bc-black {
-    color: #313132 !important;
+    color: #313132;
 }
 
 .device-preview {
@@ -439,6 +439,6 @@ function openExternalLink(tile: InfoTile, action: Action) {
 :deep(.v-card:has(.no-card-press-zone :active) .v-card__underlay),
 :deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__overlay),
 :deep(.v-card:has(.no-card-press-zone :focus-within) .v-card__underlay) {
-    opacity: 0 !important;
+    opacity: 0;
 }
 </style>

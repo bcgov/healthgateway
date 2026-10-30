@@ -69,20 +69,25 @@ const outlinedColorClasses = computed(() => {
  * Enabled via the centerContent prop.
  */
 .hg-alert--center-content {
-    display: flex !important;
-    align-items: center !important;
+    display: flex;
+    align-items: center;
 }
 
 .hg-alert--center-content :deep(.v-alert__prepend),
 .hg-alert--center-content :deep(.v-alert__content) {
-    align-self: center !important;
+    align-self: center;
 }
 
 .hg-alert--center-content :deep(.v-alert__content) {
-    padding-block: 0 !important;
+    padding-block: 0;
+}
+
+// Keep the close button at the trailing edge of centred alerts.
+.hg-alert--center-content :deep(.v-alert__close) {
+    margin-inline-start: auto;
 }
 
 .hg-alert--center-content :deep(.v-alert__prepend svg) {
-    display: block !important;
+    display: block;
 }
 </style>
