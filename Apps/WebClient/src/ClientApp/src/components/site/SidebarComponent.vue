@@ -227,7 +227,7 @@ watch(isSidebarOpen, (value: boolean) => {
     width: 1.5em;
 }
 .nav-feedback-button {
-    background-color: rgb(var(--v-theme-navHighlight)) !important;
+    background-color: rgb(var(--v-theme-navHighlight));
     border-top: 1px solid rgb(var(--v-theme-borderDivider));
 }
 
@@ -236,6 +236,6 @@ watch(isSidebarOpen, (value: boolean) => {
 }
 
 :deep(.nav-hover:not(.v-list-item--active):hover) {
-    background-color: rgb(var(--v-theme-surfaceHover)) !important;
+    background-color: rgb(var(--v-theme-surfaceHover));
 }
 </style>
