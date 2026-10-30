@@ -82,6 +82,11 @@ const outlinedColorClasses = computed(() => {
     padding-block: 0;
 }
 
+// Keep the close button at the trailing edge of centred alerts.
+.hg-alert--center-content :deep(.v-alert__close) {
+    margin-inline-start: auto;
+}
+
 .hg-alert--center-content :deep(.v-alert__prepend svg) {
     display: block;
 }
