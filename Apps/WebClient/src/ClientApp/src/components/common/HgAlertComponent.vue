@@ -69,20 +69,20 @@ const outlinedColorClasses = computed(() => {
  * Enabled via the centerContent prop.
  */
 .hg-alert--center-content {
-    display: flex !important;
-    align-items: center !important;
+    display: flex;
+    align-items: center;
 }
 
 .hg-alert--center-content :deep(.v-alert__prepend),
 .hg-alert--center-content :deep(.v-alert__content) {
-    align-self: center !important;
+    align-self: center;
 }
 
 .hg-alert--center-content :deep(.v-alert__content) {
-    padding-block: 0 !important;
+    padding-block: 0;
 }
 
 .hg-alert--center-content :deep(.v-alert__prepend svg) {
-    display: block !important;
+    display: block;
 }
 </style>
