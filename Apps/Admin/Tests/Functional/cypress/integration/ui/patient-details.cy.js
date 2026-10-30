@@ -50,8 +50,11 @@ describe("Patient details as admin", () => {
 
         // Patient Details
         cy.intercept(
-            "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phn}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            {
+                method: "GET",
+                pathname: "**/PatientSupportDetails",
+                query: { queryType: "Phn", queryString: phn },
+            },
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -59,8 +62,11 @@ describe("Patient details as admin", () => {
 
         // Patient Details with deceased PHN
         cy.intercept(
-            "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            {
+                method: "GET",
+                pathname: "**/PatientSupportDetails",
+                query: { queryType: "Phn", queryString: phnPatientDeceased },
+            },
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -68,8 +74,11 @@ describe("Patient details as admin", () => {
 
         // Patient Details with not a user PHN
         cy.intercept(
-            "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            {
+                method: "GET",
+                pathname: "**/PatientSupportDetails",
+                query: { queryType: "Phn", queryString: phnPatientNotUser },
+            },
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -247,8 +256,11 @@ describe("Patient details as support", () => {
 
         // Patient Details with deceased PHN
         cy.intercept(
-            "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientDeceased}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            {
+                method: "GET",
+                pathname: "**/PatientSupportDetails",
+                query: { queryType: "Phn", queryString: phnPatientDeceased },
+            },
             {
                 fixture: "SupportService/patient-details.json",
             }
@@ -256,8 +268,11 @@ describe("Patient details as support", () => {
 
         // Patient Details with not a user PHN
         cy.intercept(
-            "GET",
-            `**/PatientSupportDetails?queryType=Phn&queryString=${phnPatientNotUser}&includeApiRegistration=True&includeImagingRefresh=True&includeLabsRefresh=True`,
+            {
+                method: "GET",
+                pathname: "**/PatientSupportDetails",
+                query: { queryType: "Phn", queryString: phnPatientNotUser },
+            },
             {
                 fixture: "SupportService/patient-details.json",
             }
