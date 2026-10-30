@@ -30,6 +30,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="configuration">The configuration to use.</param>
     /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+    /// <param name="userProfileNotificationSettingsDelegate">The user profile notification settings delegate to interact with the DB.</param>
     /// <param name="ratingDelegate">The rating delegate.</param>
     public class DashboardService(
         IConfiguration configuration,
