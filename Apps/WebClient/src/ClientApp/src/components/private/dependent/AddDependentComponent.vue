@@ -459,6 +459,6 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
 
 <style scope>
 .checkbox-top.v-input .v-input__control .v-selection-control {
-    align-items: start !important;
+    align-items: start;
 }
 </style>
