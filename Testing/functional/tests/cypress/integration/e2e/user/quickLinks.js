@@ -13,7 +13,7 @@ const laboratoryTitle = "COVID‑19 Tests";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkChipSelector =
-    "[data-testid=quick-link-modal-text] span.v-chip";
+    "[data-testid=quick-link-modal-text] .v-chip";
 const addQuickLinkCancelButtonSelector =
     "[data-testid=cancel-add-quick-link-btn]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";

@@ -316,7 +316,7 @@ describe("Laboratory Orders Refresh", () => {
         );
         cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=loading-toast]").should("not.exist");
-        cy.scrollTo("top");
+        cy.scrollTo("top", { ensureScrollable: false });
         cy.get("[data-testid=timeline-record-count]")
             .should("be.visible")
             .contains(recordDisplayMessage(1, 9, 9));
