@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   k6:
-    image: grafana/k6:latest@sha256:e66db15b860113878fa74670e31f5e274830b7b6e42c8bff28b2f2d86a257603
+    image: grafana/k6:latest@sha256:3e4186aea62e11a45560bfc51e19eeafe82fc07ce069c78aff44b7ff893d9a5e
     command: run /webapp/timeline/k6_timeline.js
     volumes:
       - ../../webapp/timeline:/webapp/timeline
