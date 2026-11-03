@@ -8,6 +8,7 @@ resource "keycloak_authentication_execution" "execution1" {
   parent_flow_alias = keycloak_authentication_flow.first_login.alias
   authenticator     = "idp-create-user-if-unique"
   requirement       = "ALTERNATIVE"
+  priority          = 0
 
 }
 
@@ -16,6 +17,7 @@ resource "keycloak_authentication_execution" "execution2" {
   parent_flow_alias = keycloak_authentication_flow.first_login.alias
   authenticator     = "idp-auto-link"
   requirement       = "ALTERNATIVE"
+  priority          = 1
 
   depends_on = [
     keycloak_authentication_execution.execution1

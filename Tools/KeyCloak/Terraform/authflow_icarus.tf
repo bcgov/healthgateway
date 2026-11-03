@@ -9,6 +9,7 @@ resource "keycloak_authentication_execution" "icarus_cookie_execution" {
   parent_flow_alias = keycloak_authentication_flow.icarus_login.alias
   authenticator     = "auth-cookie"
   requirement       = "ALTERNATIVE"
+  priority          = 0
 }
 
 resource "keycloak_authentication_execution" "icarus_idp_redirector_execution" {
@@ -16,6 +17,7 @@ resource "keycloak_authentication_execution" "icarus_idp_redirector_execution" {
   parent_flow_alias = keycloak_authentication_flow.icarus_login.alias
   authenticator     = "identity-provider-redirector"
   requirement       = "ALTERNATIVE"
+  priority          = 1
 
   depends_on = [
     keycloak_authentication_execution.icarus_cookie_execution
@@ -35,6 +37,7 @@ resource "keycloak_authentication_execution" "icarus_execution1" {
   parent_flow_alias = keycloak_authentication_flow.icarus_login.alias
   authenticator     = "idp-create-user-if-unique"
   requirement       = "ALTERNATIVE"
+  priority          = 2
 
   depends_on = [
     keycloak_authentication_execution.icarus_idp_redirector_execution
@@ -46,6 +49,7 @@ resource "keycloak_authentication_execution" "icarus_execution2" {
   parent_flow_alias = keycloak_authentication_flow.icarus_login.alias
   authenticator     = "idp-auto-link"
   requirement       = "ALTERNATIVE"
+  priority          = 3
 
   depends_on = [
     keycloak_authentication_execution.icarus_execution1

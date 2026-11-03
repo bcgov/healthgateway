@@ -9,6 +9,7 @@ resource "keycloak_authentication_execution" "pcare_idp_redirector_execution" {
   parent_flow_alias = keycloak_authentication_flow.pcare_login.alias
   authenticator     = "identity-provider-redirector"
   requirement       = "REQUIRED"
+  priority          = 0
 }
 
 resource "keycloak_authentication_execution_config" "pcare_idp_redirector_execution_config" {
@@ -24,6 +25,7 @@ resource "keycloak_authentication_execution" "pcare_execution1" {
   parent_flow_alias = keycloak_authentication_flow.pcare_login.alias
   authenticator     = "idp-create-user-if-unique"
   requirement       = "ALTERNATIVE"
+  priority          = 1
 
   depends_on = [
     keycloak_authentication_execution.pcare_idp_redirector_execution
@@ -35,6 +37,7 @@ resource "keycloak_authentication_execution" "pcare_execution2" {
   parent_flow_alias = keycloak_authentication_flow.pcare_login.alias
   authenticator     = "idp-auto-link"
   requirement       = "ALTERNATIVE"
+  priority          = 2
 
   depends_on = [
     keycloak_authentication_execution.pcare_execution1
