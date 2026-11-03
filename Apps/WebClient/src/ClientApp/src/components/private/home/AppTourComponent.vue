@@ -150,6 +150,7 @@ function previous(): void {
             persistent
             no-click-animation
             max-width="675px"
+            @keydown.esc="hideDialog"
         >
             <template #activator="{ props }">
                 <HgIconButtonComponent

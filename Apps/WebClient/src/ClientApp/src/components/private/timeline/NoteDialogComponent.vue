@@ -172,6 +172,7 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
             scrollable
             :fullscreen="layoutStore.isMobile"
             :width="layoutStore.isMobile ? 960 : 700"
+            @keydown.esc="closeDialog"
         >
             <v-card :loading="isLoading">
                 <template #loader="{ isActive }">

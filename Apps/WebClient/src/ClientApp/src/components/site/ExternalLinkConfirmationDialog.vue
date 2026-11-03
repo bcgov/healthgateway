@@ -92,6 +92,7 @@ function trackExternalLinkDialogAction(text: string, url?: ExternalUrl): void {
         persistent
         no-click-animation
         @update:model-value="emit('update:modelValue', $event)"
+        @keydown.esc="cancel"
     >
         <div class="d-flex justify-center">
             <!-- Prevent the dialog from exceeding the viewport width -->

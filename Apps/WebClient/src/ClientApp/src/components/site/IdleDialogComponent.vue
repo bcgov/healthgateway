@@ -70,6 +70,7 @@ function hideDialog(): void {
         data-testid="idleModal"
         persistent
         no-click-animation
+        @keydown.esc="notifyNotIdle"
     >
         <div class="d-flex justify-center">
             <v-card max-width="700px">

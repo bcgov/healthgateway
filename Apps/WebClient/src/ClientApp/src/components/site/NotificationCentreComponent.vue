@@ -10,6 +10,7 @@ import Notification, { NotificationActionType } from "@/models/notification";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { useNotificationStore } from "@/stores/notification";
 import { useTimelineStore } from "@/stores/timeline";
+import { useEscapeKey } from "@/utility/useEscapeKey";
 
 enum AlertCategory {
     BctOdr = "BctOdr",
@@ -29,6 +30,11 @@ const notificationStore = useNotificationStore();
 const timelineStore = useTimelineStore();
 
 const messageLoaders = ref(new Set<string>());
+
+useEscapeKey(
+    () => notificationStore.isNotificationCenterOpen,
+    () => (notificationStore.isNotificationCenterOpen = false)
+);
 
 const notifications = computed(() => notificationStore.notifications);
 const newNotifications = computed(() => notificationStore.newNotifications);

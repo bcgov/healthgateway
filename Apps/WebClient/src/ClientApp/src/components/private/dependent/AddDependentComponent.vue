@@ -233,6 +233,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
         width="700px"
         persistent
         no-click-animation
+        @keydown.esc="hideDialog"
     >
         <template #activator="slotProps">
             <HgButtonComponent
