@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -32,7 +33,7 @@ namespace HealthGateway.Immunization.Services
 
     /// <inheritdoc/>
     public class ImmunizationServiceV2(
-        IPersonalAccountsService personalAccountsService,
+        IPatientIdentifierService patientIdentifierService,
         IPatientDataRepository patientDataRepository,
         IPatientRepository patientRepository,
         IImmunizationMappingService mappingService,
@@ -46,9 +47,9 @@ namespace HealthGateway.Immunization.Services
                 return new ImmunizationResultV2();
             }
 
-            PersonalAccount account = await personalAccountsService.GetPersonalAccountAsync(hdid, ct);
+            Guid pid = await patientIdentifierService.GetPatientIdentifierAsync(hdid, ct);
             HealthQuery healthQuery = new(
-                account.PatientIdentity.Pid,
+                pid,
                 [HealthCategory.Immunization, HealthCategory.ImmunizationRecommendation]);
             PatientDataQueryResult result = await patientDataRepository.QueryAsync(healthQuery, ct);
 

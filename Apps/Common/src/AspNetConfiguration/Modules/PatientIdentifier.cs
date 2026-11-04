@@ -26,26 +26,26 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Refit;
 
     /// <summary>
-    /// Provides ASP.Net Services for personal account access.
+    /// Provides ASP.Net Services for patient identifier access.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class PersonalAccount
+    public static class PatientIdentifier
     {
         /// <summary>
-        /// Configures the ability to use Patient services.
+        /// Configures the ability to perform patient identifier lookups.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use for values.</param>
-        public static void ConfigurePersonalAccountAccess(IServiceCollection services, ILogger logger, IConfiguration configuration)
+        public static void ConfigurePatientIdentifierAccess(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
             PhsaConfig? phsaConfig = configuration.GetSection("PhsaV2").Get<PhsaConfig>();
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
-            services.AddRefitClient<IPersonalAccountsApi>()
+            services.AddRefitClient<IPatientIdentifierApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig!.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            services.TryAddTransient<Services.IPersonalAccountsService, Services.PersonalAccountsService>();
+            services.TryAddTransient<Services.IPatientIdentifierService, Services.PatientIdentifierService>();
         }
     }
 }

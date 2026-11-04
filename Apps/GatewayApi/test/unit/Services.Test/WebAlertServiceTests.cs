@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.Models;
@@ -44,7 +43,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private static readonly IGatewayApiMappingService MappingService = new GatewayApiMappingService(MapperUtil.InitializeAutoMapper(), new Mock<ICryptoDelegate>().Object);
 
-        private static readonly Guid AccountId = Guid.NewGuid();
         private static readonly Guid Pid = Guid.NewGuid();
         private static readonly Guid WebAlertId = Guid.NewGuid();
         private static readonly Uri Uri = new("https://www2.gov.bc.ca/gov/content/home");
@@ -183,14 +181,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             ];
         }
 
-        private static IPersonalAccountsService GetPersonalAccountsService()
+        private static IPatientIdentifierService GetPatientIdentifierService()
         {
-            Mock<IPersonalAccountsService> mockPersonalAccountsService = new();
+            Mock<IPatientIdentifierService> mockPatientIdentifierService = new();
 
-            PersonalAccount mockPersonalAccount = new() { Id = AccountId, PatientIdentity = new PatientIdentity { Pid = Pid } };
-            mockPersonalAccountsService.Setup(s => s.GetPersonalAccountAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(mockPersonalAccount);
+            mockPatientIdentifierService.Setup(s => s.GetPatientIdentifierAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(Pid);
 
-            return mockPersonalAccountsService.Object;
+            return mockPatientIdentifierService.Object;
         }
 
         private static IWebAlertService GetWebAlertService()
@@ -203,7 +200,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             return new WebAlertService(
                 new Mock<ILogger<WebAlertService>>().Object,
-                GetPersonalAccountsService(),
+                GetPatientIdentifierService(),
                 mockWebAlertApi.Object,
                 MappingService);
         }

@@ -65,17 +65,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Guid pid = Guid.NewGuid();
             CancellationToken ct = CancellationToken.None;
 
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
-
-            PersonalAccount account = new()
-            {
-                PatientIdentity = new PatientIdentity
-                {
-                    Pid = pid,
-                },
-            };
 
             DateTime rawOccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture);
             TimeZoneInfo localTimeZone = DateFormatter.GetLocalTimeZone(Configuration);
@@ -113,9 +105,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
                 .ReturnsAsync(true);
 
-            personalAccountsService
-                .Setup(s => s.GetPersonalAccountAsync(hdid, ct))
-                .ReturnsAsync(account);
+            patientIdentifierService
+                .Setup(s => s.GetPatientIdentifierAsync(hdid, ct))
+                .ReturnsAsync(pid);
 
             patientDataRepository
                 .Setup(s => s.QueryAsync(
@@ -126,7 +118,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     ct))
                 .ReturnsAsync(new PatientDataQueryResult([immunization]));
 
-            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+            ImmunizationServiceV2 service = GetService(patientIdentifierService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
@@ -159,7 +151,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             const string hdid = "test-hdid";
             Guid pid = Guid.NewGuid();
             CancellationToken ct = CancellationToken.None;
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
             PatientDataImmunization immunization = new()
@@ -167,8 +159,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 OccurrenceDateTime = DateTime.Parse("2023-01-10T12:00:00", CultureInfo.InvariantCulture),
             };
 
-            SetupPatientDataQuery(patientRepository, personalAccountsService, patientDataRepository, hdid, pid, [immunization], ct);
-            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+            SetupPatientDataQuery(patientRepository, patientIdentifierService, patientDataRepository, hdid, pid, [immunization], ct);
+            ImmunizationServiceV2 service = GetService(patientIdentifierService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
@@ -187,7 +179,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             const string hdid = "test-hdid";
             CancellationToken ct = CancellationToken.None;
 
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
 
@@ -195,7 +187,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
                 .ReturnsAsync(false);
 
-            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+            ImmunizationServiceV2 service = GetService(patientIdentifierService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
@@ -204,8 +196,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Assert.Empty(result.Immunizations);
             Assert.Empty(result.Recommendations);
 
-            personalAccountsService.Verify(
-                s => s.GetPersonalAccountAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            patientIdentifierService.Verify(
+                s => s.GetPatientIdentifierAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                 Times.Never);
 
             patientDataRepository.Verify(
@@ -220,13 +212,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             const string hdid = "test-hdid";
             Guid pid = Guid.NewGuid();
             CancellationToken ct = CancellationToken.None;
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
             PatientDataImmunizationRecommendation recommendation = CreateRecommendation();
 
-            SetupPatientDataQuery(patientRepository, personalAccountsService, patientDataRepository, hdid, pid, [recommendation], ct);
-            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+            SetupPatientDataQuery(patientRepository, patientIdentifierService, patientDataRepository, hdid, pid, [recommendation], ct);
+            ImmunizationServiceV2 service = GetService(patientIdentifierService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
@@ -248,7 +240,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             const string hdid = "test-hdid";
             Guid pid = Guid.NewGuid();
             CancellationToken ct = CancellationToken.None;
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
             PatientDataImmunizationRecommendation recommendation = CreateRecommendation() with
@@ -274,8 +266,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ],
             };
 
-            SetupPatientDataQuery(patientRepository, personalAccountsService, patientDataRepository, hdid, pid, [recommendation], ct);
-            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+            SetupPatientDataQuery(patientRepository, patientIdentifierService, patientDataRepository, hdid, pid, [recommendation], ct);
+            ImmunizationServiceV2 service = GetService(patientIdentifierService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
@@ -293,31 +285,23 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Guid pid = Guid.NewGuid();
             CancellationToken ct = CancellationToken.None;
 
-            Mock<IPersonalAccountsService> personalAccountsService = new();
+            Mock<IPatientIdentifierService> patientIdentifierService = new();
             Mock<IPatientDataRepository> patientDataRepository = new();
             Mock<IPatientRepository> patientRepository = new();
-
-            PersonalAccount account = new()
-            {
-                PatientIdentity = new PatientIdentity
-                {
-                    Pid = pid,
-                },
-            };
 
             patientRepository
                 .Setup(s => s.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
                 .ReturnsAsync(true);
 
-            personalAccountsService
-                .Setup(s => s.GetPersonalAccountAsync(hdid, ct))
-                .ReturnsAsync(account);
+            patientIdentifierService
+                .Setup(s => s.GetPatientIdentifierAsync(hdid, ct))
+                .ReturnsAsync(pid);
 
             patientDataRepository
                 .Setup(s => s.QueryAsync(It.IsAny<HealthQuery>(), ct))
                 .ReturnsAsync(new PatientDataQueryResult([]));
 
-            ImmunizationServiceV2 service = GetService(personalAccountsService, patientDataRepository, patientRepository);
+            ImmunizationServiceV2 service = GetService(patientIdentifierService, patientDataRepository, patientRepository);
 
             // Act
             ImmunizationResultV2 result = await service.GetImmunizationsAsync(hdid, ct);
@@ -341,12 +325,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         private static ImmunizationServiceV2 GetService(
-            Mock<IPersonalAccountsService> personalAccountsService,
+            Mock<IPatientIdentifierService> patientIdentifierService,
             Mock<IPatientDataRepository> patientDataRepository,
             Mock<IPatientRepository> patientRepository)
         {
             return new ImmunizationServiceV2(
-                personalAccountsService.Object,
+                patientIdentifierService.Object,
                 patientDataRepository.Object,
                 patientRepository.Object,
                 MappingService,
@@ -355,7 +339,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
         private static void SetupPatientDataQuery(
             Mock<IPatientRepository> patientRepository,
-            Mock<IPersonalAccountsService> personalAccountsService,
+            Mock<IPatientIdentifierService> patientIdentifierService,
             Mock<IPatientDataRepository> patientDataRepository,
             string hdid,
             Guid pid,
@@ -365,9 +349,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             patientRepository
                 .Setup(service => service.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
                 .ReturnsAsync(true);
-            personalAccountsService
-                .Setup(service => service.GetPersonalAccountAsync(hdid, ct))
-                .ReturnsAsync(new PersonalAccount { PatientIdentity = new PatientIdentity { Pid = pid } });
+            patientIdentifierService
+                .Setup(service => service.GetPatientIdentifierAsync(hdid, ct))
+                .ReturnsAsync(pid);
             patientDataRepository
                 .Setup(service => service.QueryAsync(
                     It.Is<HealthQuery>(query =>

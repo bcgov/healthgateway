@@ -32,7 +32,7 @@ namespace HealthGateway.GatewayApi.Services
     public class WebAlertService : IWebAlertService
     {
         private readonly ILogger<WebAlertService> logger;
-        private readonly IPersonalAccountsService personalAccountsService;
+        private readonly IPatientIdentifierService patientIdentifierService;
         private readonly IWebAlertApi webAlertApi;
         private readonly IGatewayApiMappingService mappingService;
 
@@ -40,17 +40,17 @@ namespace HealthGateway.GatewayApi.Services
         /// Initializes a new instance of the <see cref="WebAlertService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
-        /// <param name="personalAccountsService">The injected personal accounts service.</param>
+        /// <param name="patientIdentifierService">The injected patient identifier service.</param>
         /// <param name="webAlertApi">The injected web alert Refit API.</param>
         /// <param name="mappingService">The injected mapping service.</param>
         public WebAlertService(
             ILogger<WebAlertService> logger,
-            IPersonalAccountsService personalAccountsService,
+            IPatientIdentifierService patientIdentifierService,
             IWebAlertApi webAlertApi,
             IGatewayApiMappingService mappingService)
         {
             this.logger = logger;
-            this.personalAccountsService = personalAccountsService;
+            this.patientIdentifierService = patientIdentifierService;
             this.webAlertApi = webAlertApi;
             this.mappingService = mappingService;
         }
@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<IList<WebAlert>> GetWebAlertsAsync(string hdid, CancellationToken ct = default)
         {
-            Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.patientIdentifierService.GetPatientIdentifierAsync(hdid, ct);
 
             this.logger.LogDebug("Retrieving web alerts from PHSA");
             IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid, ct);
@@ -74,7 +74,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task DismissWebAlertsAsync(string hdid, CancellationToken ct = default)
         {
-            Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.patientIdentifierService.GetPatientIdentifierAsync(hdid, ct);
 
             this.logger.LogDebug("Sending request to PHSA to dismiss web alerts");
             await this.webAlertApi.DeleteWebAlertsAsync(pid, ct);
@@ -83,15 +83,10 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task DismissWebAlertAsync(string hdid, Guid webAlertId, CancellationToken ct = default)
         {
-            Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.patientIdentifierService.GetPatientIdentifierAsync(hdid, ct);
 
             this.logger.LogDebug("Sending request to PHSA to dismiss web alert {WebAlertId}", webAlertId);
             await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId, ct);
-        }
-
-        private async Task<Guid?> GetPersonalAccountPidByHdidAsync(string hdid, CancellationToken ct)
-        {
-            return (await this.personalAccountsService.GetPersonalAccountAsync(hdid, ct)).PatientIdentity.Pid;
         }
     }
 }
