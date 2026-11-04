@@ -17,6 +17,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
+import { useEscapeKey } from "@/utility/useEscapeKey";
 
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
@@ -124,6 +125,11 @@ function toggleOpenClose(state: boolean) {
 watch(isSidebarOpen, (value: boolean) => {
     toggleOpenClose(value);
 });
+
+useEscapeKey(
+    () => isSidebarAvailable.value && isMobile.value && visibleOnMobile.value,
+    () => (visibleOnMobile.value = false)
+);
 </script>
 
 <template>

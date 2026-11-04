@@ -137,6 +137,7 @@ function showDialog() {
             max-width="1000px"
             :fullscreen="layoutStore.isMobile"
             persistent
+            @keydown.esc="isVisible = false"
         >
             <v-card
                 data-testid="recommendations-dialog"

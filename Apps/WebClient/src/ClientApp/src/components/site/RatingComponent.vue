@@ -91,6 +91,7 @@ function handleRating(value: number | string, skip = false): void {
         data-testid="ratingModal"
         persistent
         no-click-animation
+        @keydown.esc="handleRating(0, true)"
     >
         <div class="d-flex justify-center">
             <v-card max-width="600px">

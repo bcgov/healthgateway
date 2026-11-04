@@ -226,6 +226,7 @@ function hideModal(): void {
         persistent
         no-click-animation
         max-width="500px"
+        @keydown.esc="handleCancel"
     >
         <template #activator="slotProps">
             <HgButtonComponent

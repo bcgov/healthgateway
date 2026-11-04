@@ -120,6 +120,7 @@ function resetFeedback(): void {
         v-model="visible"
         persistent
         no-click-animation
+        @keydown.esc="hideDialog"
     >
         <form class="d-flex justify-center" @submit.prevent="onSubmit">
             <v-card max-width="700px">

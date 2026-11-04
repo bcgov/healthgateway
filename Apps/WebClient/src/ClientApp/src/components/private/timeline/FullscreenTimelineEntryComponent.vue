@@ -76,6 +76,7 @@ globalThis.onpopstate = (event: PopStateEvent) => {
         persistent
         fullscreen
         scrollable
+        @keydown.esc="closeDialog"
     >
         <v-card>
             <v-card-title class="px-0">

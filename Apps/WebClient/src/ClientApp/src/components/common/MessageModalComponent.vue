@@ -51,6 +51,7 @@ function handleCancel(): void {
         v-model="isVisible"
         persistent
         no-click-animation
+        @keydown.esc="handleCancel"
     >
         <div class="d-flex justify-center">
             <v-card

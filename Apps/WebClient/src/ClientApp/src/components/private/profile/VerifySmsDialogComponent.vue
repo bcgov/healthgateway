@@ -175,6 +175,7 @@ setResendTimeout();
         data-testid="verifySMSModal"
         persistent
         no-click-animation
+        @keydown.esc="hideDialog"
     >
         <div class="d-flex justify-center">
             <v-card :loading="isLoading" max-width="300px">

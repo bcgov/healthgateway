@@ -70,6 +70,7 @@ function handleClose(): void {
         data-testid="protectiveWordModal"
         persistent
         no-click-animation
+        @keydown.esc="handleClose"
     >
         <div class="d-flex justify-center">
             <v-card max-width="700px">

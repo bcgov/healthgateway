@@ -177,6 +177,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
             scrollable
             :fullscreen="layoutStore.isMobile"
             :width="layoutStore.isMobile ? 'auto' : 550"
+            @keydown.esc="hideDialog"
         >
             <v-card>
                 <v-card-title class="px-0">
