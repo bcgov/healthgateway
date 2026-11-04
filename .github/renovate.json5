@@ -55,17 +55,28 @@
             dependencyDashboardApproval: true,
         },
         {
+            // .NET SDK
+            matchDatasources: ["dotnet-version"],
+            matchUpdateTypes: ["patch"],
+            automerge: true,
+        },
+        {
             // Non-breaking nuget and npm updates: automerge once the branch is green.
             // Renovate only automerges when status checks exist and pass, so the ADO
             // pipeline must run on renovate/* branches for this to take effect.
             // 0.x packages are excluded because their minors are routinely breaking.
             matchDatasources: ["nuget", "npm"],
-            matchUpdateTypes: ["minor", "patch", "lockFileMaintenance"],
+            matchUpdateTypes: ["minor", "patch"],
             matchCurrentVersion: "!/^[~^]?0\\./",
             automerge: true,
             // Let a release sit before automerging it; main defence against a
             // compromised/yanked package being pulled in without a human looking.
             minimumReleaseAge: "3 days",
+        },
+        {
+            // Lock file maintenance has no datasource or currentVersion
+            matchUpdateTypes: ["lockFileMaintenance"],
+            automerge: true,
         },
     ],
 }
