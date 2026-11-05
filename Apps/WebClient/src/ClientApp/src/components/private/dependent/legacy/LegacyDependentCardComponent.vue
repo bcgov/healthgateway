@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { saveAs } from "file-saver";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import HgAlertComponent from "@/components/common/HgAlertComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -462,6 +462,20 @@ function showLaboratoryOrderDownloadConfirmationModal(
 function showDeleteConfirmationModal(): void {
     deleteModal.value?.showModal();
 }
+
+watch(selectedTabIndex, (tabIndex) => {
+    switch (tabIndex) {
+        case tabIndices.immunization:
+            fetchPatientImmunizations();
+            break;
+        case tabIndices.labResults:
+            fetchLaboratoryOrders();
+            break;
+        case tabIndices.clinicalDocs:
+            fetchClinicalDocuments();
+            break;
+    }
+});
 </script>
 
 <template>
@@ -513,14 +527,19 @@ function showDeleteConfirmationModal(): void {
                     color="primary"
                     selected-class="bg-white"
                 >
-                    <v-tab :value="0" class="text-uppercase">Profile</v-tab>
+                    <v-tab
+                        :data-testid="`profile-tab-title-${dependent.ownerId}`"
+                        :value="tabIndices.profile"
+                        class="text-uppercase"
+                    >
+                        Profile
+                    </v-tab>
                     <v-tab
                         v-if="isImmunizationTabShown"
                         :disabled="isExpired"
                         :data-testid="`immunization-tab-title-${dependent.ownerId}`"
-                        :value="1"
+                        :value="tabIndices.immunization"
                         class="text-uppercase"
-                        @click="fetchPatientImmunizations"
                     >
                         Immunization
                     </v-tab>
@@ -528,9 +547,8 @@ function showDeleteConfirmationModal(): void {
                         v-if="isLaboratoryOrderTabShown"
                         :disabled="isExpired"
                         :data-testid="`lab-results-tab-title-${dependent.ownerId}`"
-                        :value="2"
+                        :value="tabIndices.labResults"
                         class="text-uppercase"
-                        @click="fetchLaboratoryOrders"
                     >
                         Lab Results
                     </v-tab>
@@ -538,9 +556,8 @@ function showDeleteConfirmationModal(): void {
                         v-if="isClinicalDocumentTabShown"
                         :disabled="isExpired"
                         :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
-                        :value="3"
+                        :value="tabIndices.clinicalDocs"
                         class="text-uppercase"
-                        @click="fetchClinicalDocuments"
                     >
                         Clinical Docs
                     </v-tab>
@@ -548,7 +565,11 @@ function showDeleteConfirmationModal(): void {
             </v-card-title>
             <v-card-text class="pt-4">
                 <v-window v-model="selectedTabIndex">
-                    <v-window-item data-testid="dependentTab" class="pa-1">
+                    <v-window-item
+                        data-testid="dependentTab"
+                        class="pa-1"
+                        :value="tabIndices.profile"
+                    >
                         <div v-if="isExpired">
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
@@ -619,8 +640,10 @@ function showDeleteConfirmationModal(): void {
                         </div>
                     </v-window-item>
                     <v-window-item
+                        v-if="isImmunizationTabShown"
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
                         class="pa-1"
+                        :value="tabIndices.immunization"
                     >
                         <HgAlertComponent
                             v-if="immunizationItems.length != 0"
@@ -985,8 +1008,10 @@ function showDeleteConfirmationModal(): void {
                         </div>
                     </v-window-item>
                     <v-window-item
+                        v-if="isLaboratoryOrderTabShown"
                         :data-testid="`lab-results-tab-${dependent.ownerId}`"
                         class="pa-1"
+                        :value="tabIndices.labResults"
                     >
                         <v-skeleton-loader
                             v-if="labResultsAreLoading"
@@ -1083,8 +1108,10 @@ function showDeleteConfirmationModal(): void {
                         </v-table>
                     </v-window-item>
                     <v-window-item
+                        v-if="isClinicalDocumentTabShown"
                         :data-testid="`clinical-document-tab-${dependent.ownerId}`"
                         class="pa-1"
+                        :value="tabIndices.clinicalDocs"
                     >
                         <v-skeleton-loader
                             v-if="clinicalDocumentsAreLoading"
