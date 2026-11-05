@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useSlots } from "vue";
+import { computed, useAttrs, useSlots } from "vue";
 
 interface Props {
     title?: string;
@@ -18,7 +18,12 @@ const props = withDefaults(defineProps<Props>(), {
     fillBody: false,
 });
 
+const attrs = useAttrs();
 const slots = useSlots();
+
+const hasClickHandler = computed<boolean>(() => {
+    return attrs.onClick !== undefined;
+});
 
 const hasIconSlot = computed<boolean>(() => {
     return slots.icon !== undefined;
@@ -43,8 +48,10 @@ const isNormalDensity = computed<boolean>(() => {
 
 <template>
     <v-card
-        class="hover-card"
-        :class="props.fillBody ? 'd-flex flex-column' : ''"
+        :class="{
+            'hover-card': hasClickHandler,
+            'd-flex flex-column': props.fillBody,
+        }"
         :variant="variant"
         :elevation="elevation"
     >
