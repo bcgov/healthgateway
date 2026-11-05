@@ -214,9 +214,6 @@ function trackRecordSourceClick(tile: InfoTile, text: string, url: string) {
                 class="d-flex"
             >
                 <HgCardComponent
-                    variant="outlined"
-                    elevation="1"
-                    border="thin grey-lighten-2"
                     class="flex-grow-1"
                     compact-header
                     fill-body

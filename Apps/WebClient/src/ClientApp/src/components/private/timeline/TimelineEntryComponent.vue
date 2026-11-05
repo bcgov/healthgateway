@@ -106,10 +106,7 @@ watch(
         :model-value="detailsVisible ? 0 : undefined"
         :class="{ 'h-100': isMobileDetails, 'mb-2': !isMobileDetails }"
     >
-        <v-expansion-panel
-            :elevation="isMobileDetails ? 0 : undefined"
-            :rounded="0"
-        >
+        <v-expansion-panel :elevation="isMobileDetails ? 0 : 1" :rounded="0">
             <v-expansion-panel-title
                 :class="{
                     'no-pointer-events': !isInteractive,
