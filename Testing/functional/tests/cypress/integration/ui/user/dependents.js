@@ -354,11 +354,11 @@ describe("Dependents - Tabs Disabled", () => {
     it("Immunization and Clinical Documents Tabs - Configuration Disabled", () => {
         cy.log("Validating Immunization Tab - configuration disabled");
         cy.get(`[data-testid=immunization-tab-${dependentHdid}]`).should(
-            "not.be.visible"
+            "not.exist"
         );
         cy.log("Validating Clinical Documents Tab - configuration disabled");
         cy.get(`[data-testid=clinical-document-tab-${dependentHdid}]`).should(
-            "not.be.visible"
+            "not.exist"
         );
     });
 });
