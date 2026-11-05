@@ -640,7 +640,7 @@ watch(selectedTabIndex, (tabIndex) => {
                         </div>
                     </v-window-item>
                     <v-window-item
-                        v-if="isImmunizationTabShown"
+                        v-if="isImmunizationTabShown && !isExpired"
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
                         class="pa-1"
                         :value="tabIndices.immunization"
@@ -1008,7 +1008,7 @@ watch(selectedTabIndex, (tabIndex) => {
                         </div>
                     </v-window-item>
                     <v-window-item
-                        v-if="isLaboratoryOrderTabShown"
+                        v-if="isLaboratoryOrderTabShown && !isExpired"
                         :data-testid="`lab-results-tab-${dependent.ownerId}`"
                         class="pa-1"
                         :value="tabIndices.labResults"
@@ -1108,7 +1108,7 @@ watch(selectedTabIndex, (tabIndex) => {
                         </v-table>
                     </v-window-item>
                     <v-window-item
-                        v-if="isClinicalDocumentTabShown"
+                        v-if="isClinicalDocumentTabShown && !isExpired"
                         :data-testid="`clinical-document-tab-${dependent.ownerId}`"
                         class="pa-1"
                         :value="tabIndices.clinicalDocs"
