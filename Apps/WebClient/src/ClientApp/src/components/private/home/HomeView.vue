@@ -458,8 +458,6 @@ if (preferenceShowSmsRemoved.value) {
         <v-col :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Health Records"
-                variant="outlined"
-                border="thin grey-lighten-2"
                 data-testid="health-records-card"
                 class="flex-grow-1"
                 @click="handleClickHealthRecords()"
@@ -485,8 +483,6 @@ if (preferenceShowSmsRemoved.value) {
         >
             <HgCardComponent
                 title="Immunization Record"
-                variant="outlined"
-                border="thin grey-lighten-2"
                 data-testid="immunization-record-card-button"
                 class="flex-grow-1"
                 @click="handleClickImmunizationRecord()"
@@ -520,8 +516,6 @@ if (preferenceShowSmsRemoved.value) {
         >
             <HgCardComponent
                 title="Immunizations"
-                variant="outlined"
-                border="thin grey-lighten-2"
                 data-testid="recommendations-card-button"
                 class="flex-grow-1"
                 @click="showRecommendationsDialog()"
@@ -554,8 +548,6 @@ if (preferenceShowSmsRemoved.value) {
             class="d-flex"
         >
             <HgCardComponent
-                variant="outlined"
-                border="thin grey-lighten-2"
                 data-testid="health-connect-registry-card"
                 class="flex-grow-1"
                 @click="handleClickHealthConnectCard()"
@@ -584,8 +576,6 @@ if (preferenceShowSmsRemoved.value) {
         <v-col v-if="showOrganDonorCardButton" :cols="columns" class="d-flex">
             <HgCardComponent
                 title="Organ Donor Registration"
-                variant="outlined"
-                border="thin grey-lighten-2"
                 data-testid="organ-donor-registration-card"
                 class="flex-grow-1"
                 @click="handleClickOrganDonorCard()"
@@ -619,8 +609,6 @@ if (preferenceShowSmsRemoved.value) {
         >
             <HgCardComponent
                 :title="card.title"
-                variant="outlined"
-                border="thin grey-lighten-2"
                 data-testid="quick-link-card"
                 class="flex-grow-1"
                 @click="handleClickQuickLink(card.index)"
@@ -655,8 +643,6 @@ if (preferenceShowSmsRemoved.value) {
         <v-col v-if="showOtherRecordSourcesCardButton" cols="12" class="d-flex">
             <HgCardComponent
                 density="compact"
-                variant="elevated"
-                border="thin grey-lighten-2"
                 class="flex-grow-1 w-100"
                 data-testid="other-record-sources-card"
                 @click="handleClickOtherRecordSources()"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useSlots } from "vue";
+import { computed, useAttrs, useSlots } from "vue";
 
 interface Props {
     title?: string;
@@ -7,7 +7,6 @@ interface Props {
     variant?: "elevated" | "flat" | "outlined" | "tonal" | "text";
     compactHeader?: boolean;
     elevation?: number | string;
-    border?: boolean | string;
     fillBody?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -15,12 +14,16 @@ const props = withDefaults(defineProps<Props>(), {
     density: "normal",
     variant: "elevated",
     compactHeader: false,
-    elevation: 0,
-    border: undefined,
+    elevation: 1,
     fillBody: false,
 });
 
+const attrs = useAttrs();
 const slots = useSlots();
+
+const hasClickHandler = computed<boolean>(() => {
+    return attrs.onClick !== undefined;
+});
 
 const hasIconSlot = computed<boolean>(() => {
     return slots.icon !== undefined;
@@ -45,11 +48,12 @@ const isNormalDensity = computed<boolean>(() => {
 
 <template>
     <v-card
-        class="hover-card"
-        :class="props.fillBody ? 'd-flex flex-column' : ''"
+        :class="{
+            'hover-card': hasClickHandler,
+            'd-flex flex-column': props.fillBody,
+        }"
         :variant="variant"
         :elevation="elevation"
-        :border="border"
     >
         <template #title>
             <v-row class="text-wrap align-center" density="comfortable">
