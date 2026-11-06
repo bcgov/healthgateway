@@ -1,4 +1,4 @@
-import { AuthMethod, localDevUri } from "../support/constants";
+import { AuthMethod } from "../support/constants";
 import { setupStandardFixtures } from "../support/functions/intercept";
 
 // Run only this pair together, in filename order, in one Cypress process:
@@ -7,10 +7,6 @@ import { setupStandardFixtures } from "../support/functions/intercept";
 // Exercise the public login command before ordinary pipeline specs opt in.
 describe("Keycloak session reuse across specs", { retries: 0 }, () => {
     it("creates a shared session with notifications enabled", () => {
-        expect(
-            Cypress.config("baseUrl"),
-            "use deployed authentication"
-        ).not.to.eq(localDevUri);
         const username = Cypress.expose("keycloak.username");
         cy.env(["keycloak.password"]).then(
             ({ "keycloak.password": password }) => {

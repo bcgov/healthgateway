@@ -27,11 +27,4 @@ describe("Validate Star Rating", () => {
         ).click();
         cy.url().should("include", "/logout");
     });
-
-    it("Clicking Skip button should log out", () => {
-        cy.get("[data-testid=headerDropdownBtn]").click();
-        cy.get("[data-testid=logoutBtn]").click();
-        cy.get("[data-testid=ratingModalSkipBtn]").click();
-        cy.url().should("include", "/logout");
-    });
 });

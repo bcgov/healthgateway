@@ -22,7 +22,9 @@ describe("Home Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    homeUrl
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -56,7 +58,9 @@ describe("Home Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    homeUrl
+                    homeUrl,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

@@ -10,7 +10,9 @@ describe("User Profile", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/profile"
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -92,7 +94,9 @@ describe("User Profile Notification Settings", () => {
                     Cypress.expose("keycloak.hthgtwy20.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/profile"
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -181,7 +185,9 @@ describe("User Profile Notification Settings", () => {
                     Cypress.expose("keycloak.hthgtwy20.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/profile"
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
 
                 cy.intercept(
@@ -241,7 +247,9 @@ describe("User Profile Notification Settings", () => {
                     Cypress.expose("keycloak.notfound.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/profile"
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -286,7 +294,9 @@ describe("User Profile Notification Settings", () => {
                     Cypress.expose("keycloak.protected.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/profile"
+                    "/profile",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

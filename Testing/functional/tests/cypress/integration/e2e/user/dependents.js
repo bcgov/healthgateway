@@ -39,7 +39,6 @@ const validDependent = {
 };
 
 function removeValidDependentIfPresent(username) {
-    cy.logout();
     cy.configureSettings({
         dependents: {
             enabled: true,
@@ -55,7 +54,14 @@ function removeValidDependentIfPresent(username) {
         "getDependentsForCleanup"
     );
     cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(username, password, AuthMethod.KeyCloak, "/dependents");
+        cy.login(
+            username,
+            password,
+            AuthMethod.KeyCloak,
+            "/dependents",
+            "default",
+            { cacheAcrossSpecs: true }
+        );
     });
 
     const cardSelector = `[data-testid=dependent-card-${validDependent.phn}]`;
@@ -250,7 +256,9 @@ describe("dependents", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -333,34 +341,38 @@ describe("dependents", () => {
     it("Validate Maximum Age Check", () => {
         // Validate that adding a dependent fails when they are over the age of 12
         cy.get("[data-testid=add-dependent-button]").click();
-        cy.get("[data-testid=new-dependent-modal-form]").should(
-            "exist",
-            "be.visible"
-        );
-        cy.get("[data-testid=dependent-first-name-input]").type(
+        cy.get("[data-testid=new-dependent-modal-form]").should("be.visible");
+        cy.get("[data-testid=dependent-first-name-input] input").type(
             validDependent.firstName
         );
-        cy.get("[data-testid=dependent-last-name-input]").type(
+        cy.get("[data-testid=dependent-last-name-input] input").type(
             validDependent.lastName
         );
-        cy.get("[data-testid=dependent-date-of-birth-input]")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .type(validDependent.invalidDoB)
-            .should("have.class", "v-input--error");
-        cy.get("[data-testid=dependent-phn-input]").type(validDependent.phn);
+            .blur();
+        cy.get("[data-testid=dependent-phn-input] input").type(
+            validDependent.phn
+        );
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
             force: true,
         });
 
-        cy.intercept("POST", "**/UserProfile/*/Dependent").as("postDependent");
-        cy.get("[data-testid=register-dependent-btn]")
-            .should("be.disabled")
-            .click({ force: true });
-        cy.wait("@postDependent", { timeout: defaultTimeout });
-
-        // Validate the modal has not closed
+        // A user cannot submit an over-age dependent: the age rule is shown
+        // and registration stays unavailable while the dialog remains open.
+        cy.get("[data-testid=dependent-date-of-birth-input]").should(
+            "have.class",
+            "v-input--error"
+        );
+        cy.get("[data-testid=new-dependent-modal-form]").should(
+            "contain.text",
+            "Dependent must be under the age of"
+        );
+        cy.get("[data-testid=register-dependent-btn]").should("be.disabled");
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
 
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
+        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
     });
 
     it("Validate Data Mismatch", () => {
@@ -557,7 +569,9 @@ describe("Protected Dependents", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -642,7 +656,9 @@ describe("CRUD Operations", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -673,7 +689,6 @@ describe("CRUD Operations", () => {
         verifyImmunizationTab(validDependent.hdid, "History", ["pdf"]);
 
         cy.log("Adding same dependent as another user");
-        cy.logout();
 
         cy.configureSettings({
             dependents: {
@@ -692,7 +707,9 @@ describe("CRUD Operations", () => {
                     Cypress.expose("keycloak.protected.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -703,7 +720,6 @@ describe("CRUD Operations", () => {
         deleteDependent("@newDependentCard", true);
 
         cy.log("Removing dependent from original user");
-        cy.logout();
 
         cy.configureSettings({
             dependents: {
@@ -722,7 +738,9 @@ describe("CRUD Operations", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

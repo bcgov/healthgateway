@@ -10,7 +10,10 @@ describe("Protective Word Modal", () => {
                 cy.login(
                     Cypress.expose("keycloak.protected.username"),
                     password,
-                    AuthMethod.KeyCloak
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

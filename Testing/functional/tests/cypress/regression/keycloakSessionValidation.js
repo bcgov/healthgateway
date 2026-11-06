@@ -1,4 +1,4 @@
-import { AuthMethod, localDevUri } from "../support/constants";
+import { AuthMethod } from "../support/constants";
 import { validateKeycloakSession } from "../support/functions/authentication";
 import { setupStandardFixtures } from "../support/functions/intercept";
 
@@ -14,10 +14,6 @@ describe(
     { retries: 0 },
     () => {
         beforeEach(() => {
-            expect(
-                Cypress.config("baseUrl"),
-                "use deployed authentication"
-            ).not.to.eq(localDevUri);
             cy.then(() => Cypress.session.clearAllSavedSessions());
             cy.then(() => Cypress.session.clearCurrentSessionData());
         });

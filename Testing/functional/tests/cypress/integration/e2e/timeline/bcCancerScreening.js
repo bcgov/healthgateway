@@ -15,7 +15,9 @@ describe("BC Cancer download integration", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/timeline"
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

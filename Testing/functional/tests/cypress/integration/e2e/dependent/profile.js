@@ -25,7 +25,9 @@ describe("dependents - profile", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

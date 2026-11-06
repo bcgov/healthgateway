@@ -15,7 +15,9 @@ describe("Notification Centre", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/home"
+                    "/home",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

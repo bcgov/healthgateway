@@ -13,7 +13,9 @@ describe("Encounter timeline integration", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/timeline"
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

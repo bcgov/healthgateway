@@ -50,7 +50,9 @@ describe("dependents - dashboard", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -270,7 +272,6 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
         cy.log("Adding same dependent as another user");
-        cy.logout();
 
         cy.env(["keycloak.password"]).then(
             ({ "keycloak.password": password }) => {
@@ -278,7 +279,9 @@ describe("dependents - dashboard", () => {
                     Cypress.expose("keycloak.protected.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -319,7 +322,6 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=confirmDeleteBtn]").click();
 
         cy.log("Removing dependent from original user");
-        cy.logout();
 
         cy.configureSettings({
             dependents: {
@@ -351,7 +353,9 @@ describe("dependents - dashboard", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

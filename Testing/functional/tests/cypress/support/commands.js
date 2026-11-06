@@ -12,7 +12,6 @@ import {
     assertAuthenticatedPage,
     ensureKeycloakSession,
 } from "./functions/authentication";
-import { setupStandardAliases } from "./functions/intercept";
 import {
     startLoginDiagnostics,
     stopLoginDiagnostics,
@@ -46,89 +45,6 @@ function generateRandomString(length) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
-}
-
-// function loginWithKeycloakUICached(username, password, config, path = "/home") {
-//     cy.session(
-//         [`keycloak-${username}`, path], // unique key (array form allows multiple args)
-//         () => {
-//             // Call your full UI-based login function
-//             loginWithKeycloakUI(username, password, config, path);
-//         },
-//         {
-//             validate: () => {
-//                 // Minimal check that you're still authenticated
-//                 cy.visit(path, { failOnStatusCode: false });
-//                 cy.get("body").should("not.contain", "Login"); // Or something more specific to your app
-//             },
-//         }
-//     );
-// }
-
-function loginWithKeycloakUI(username, password, config, path = "/home") {
-    const defaultPath = "/home";
-
-    cy.log(
-        `Authenticating as KeyCloak user ${username} using the UI with default path: ${defaultPath}`
-    );
-
-    cy.visit("/login");
-    cy.get("#KeyCloakBtn")
-        .should("be.visible")
-        .should("have.text", "KeyCloak")
-        .click();
-
-    // Ensure all post-login logic happens only after origin flow completes
-    cy.origin(
-        "https://dev.loginproxy.gov.bc.ca",
-        { args: { username, password } },
-        ({ username, password }) => {
-            cy.get("#kc-page-title", { timeout: 10000 }).should("be.visible");
-            cy.get("form[action*='login-actions']", { timeout: 10000 }).within(
-                () => {
-                    cy.get("#username")
-                        .should("be.visible")
-                        .clear()
-                        .type(username);
-                    cy.get("#password")
-                        .should("be.visible")
-                        .clear()
-                        .type(password, { log: false });
-                    cy.get("#kc-login").click();
-                }
-            );
-        }
-    ).then(() => {
-        // Now you're guaranteed to be back on your app domain
-        cy.url()
-            .should("include", defaultPath)
-            .then(() => {
-                const configPromise = config
-                    ? cy.wrap(config)
-                    : cy.readConfig();
-
-                configPromise.then((resolvedConfig) => {
-                    cy.window().then((window) => {
-                        window.sessionStorage.setItem(
-                            "configSettingsKey",
-                            JSON.stringify(resolvedConfig)
-                        );
-                    });
-
-                    setupStandardAliases();
-
-                    // Optional re-navigation only if path is different from default
-                    if (path !== defaultPath) {
-                        cy.visit(path, { timeout: 60000 });
-                    } else {
-                        cy.reload(); // if already on home, just reload to trigger page load with config + intercepts
-                    }
-
-                    // Wait on all registered intercepts
-                    waitForInitialDataLoad(username, resolvedConfig, path);
-                });
-            });
-    });
 }
 
 function logoutWithUI() {
@@ -180,15 +96,6 @@ Cypress.Commands.add(
     ) => {
         if (authMethod == AuthMethod.KeyCloak) {
             return resolveTestSettings().then((settings) => {
-                if (Cypress.config("baseUrl") === localDevUri) {
-                    return loginWithKeycloakUI(
-                        username,
-                        password,
-                        settings,
-                        path
-                    );
-                }
-
                 const diagnostics = startLoginDiagnostics();
                 cy.then(() => diagnostics.stage("session-setup-or-restore"));
                 ensureKeycloakSession(username, password, settings, sessionId, {

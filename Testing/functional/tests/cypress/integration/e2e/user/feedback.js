@@ -9,7 +9,9 @@ describe("User Feedback with verified email", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/home"
+                    "/home",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

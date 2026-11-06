@@ -44,7 +44,9 @@ describe("Other Record Sources Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    PATH
+                    PATH,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -71,7 +73,9 @@ describe("Other Record Sources Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    PATH
+                    PATH,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -147,7 +151,9 @@ describe("Other Record Sources Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    PATH
+                    PATH,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -205,7 +211,9 @@ describe("Other Record Sources Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    PATH
+                    PATH,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -249,7 +257,9 @@ describe("Other Record Sources Page", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    PATH
+                    PATH,
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

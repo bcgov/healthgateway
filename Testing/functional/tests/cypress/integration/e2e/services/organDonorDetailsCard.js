@@ -65,7 +65,9 @@ describe("Organ Donor Details Card Enabled", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/services"
+                    "/services",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -81,7 +83,9 @@ describe("Organ Donor Details Card Enabled", () => {
                     Cypress.expose("keycloak.laboratory.queued.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/services"
+                    "/services",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -110,7 +114,9 @@ describe("Organ Donor Details Card Disabled", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/services"
+                    "/services",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

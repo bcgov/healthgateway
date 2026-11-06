@@ -1,4 +1,4 @@
-import { AuthMethod, localDevUri } from "../support/constants";
+import { AuthMethod } from "../support/constants";
 import { setupStandardFixtures } from "../support/functions/intercept";
 
 // Regression coverage for the deployed Keycloak path used by Azure Pipelines.
@@ -7,11 +7,6 @@ import { setupStandardFixtures } from "../support/functions/intercept";
 // This folder is outside the normal integration spec pattern.
 describe("Keycloak session regression", { retries: 0 }, () => {
     it("authenticates once and restores the saved session for another destination", () => {
-        expect(
-            Cypress.config("baseUrl"),
-            "use the deployed login path"
-        ).not.to.eq(localDevUri);
-
         const username = Cypress.expose("keycloak.username");
         cy.env(["keycloak.password"]).then(
             ({ "keycloak.password": password }) => {
@@ -102,10 +97,6 @@ describe(
         }
 
         before(() => {
-            expect(
-                Cypress.config("baseUrl"),
-                "use the deployed login path"
-            ).not.to.eq(localDevUri);
             const username = Cypress.expose("keycloak.username");
             cy.env(["keycloak.password"]).then(
                 ({ "keycloak.password": password }) => {

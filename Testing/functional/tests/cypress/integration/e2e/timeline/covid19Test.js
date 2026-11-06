@@ -23,7 +23,10 @@ describe("COVID-19 Test Results", () => {
                 cy.login(
                     Cypress.expose("keycloak.username"),
                     password,
-                    AuthMethod.KeyCloak
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

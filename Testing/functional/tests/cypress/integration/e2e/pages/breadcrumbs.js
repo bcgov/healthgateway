@@ -40,7 +40,10 @@ describe("Breadcrumbs", () => {
                 cy.login(
                     Cypress.expose("keycloak.username"),
                     password,
-                    AuthMethod.KeyCloak
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

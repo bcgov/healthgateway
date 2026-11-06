@@ -96,7 +96,10 @@ describe("Comments Disable", () => {
                 cy.login(
                     Cypress.expose("keycloak.username"),
                     password,
-                    AuthMethod.KeyCloak
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
@@ -129,7 +132,10 @@ describe("Comments Enable", () => {
                 cy.login(
                     Cypress.expose("keycloak.username"),
                     password,
-                    AuthMethod.KeyCloak
+                    AuthMethod.KeyCloak,
+                    "/timeline",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

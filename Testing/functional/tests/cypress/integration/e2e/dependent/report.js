@@ -30,7 +30,9 @@ describe("Dependent report download integration", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/dependents"
+                    "/dependents",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );

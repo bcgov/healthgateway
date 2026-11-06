@@ -21,7 +21,9 @@ describe("Report download integration", () => {
                     Cypress.expose("keycloak.username"),
                     password,
                     AuthMethod.KeyCloak,
-                    "/reports"
+                    "/reports",
+                    "default",
+                    { cacheAcrossSpecs: true }
                 );
             }
         );
