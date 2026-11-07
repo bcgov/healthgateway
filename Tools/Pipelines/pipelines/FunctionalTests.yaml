@@ -162,7 +162,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Auth_Tests"
     strategy:
-      parallel: 3
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -205,7 +205,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Ui_Tests"
     strategy:
-      parallel: 5
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -248,7 +248,7 @@ jobs:
       - "Admin_Seed"
       - "Admin_Read_Tests"
     strategy:
-      parallel: 5
+      parallel: 4
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -279,7 +279,8 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool:
       name: "HGGoldDev"
-    condition: or(eq(variables['WebClient'], true), eq(variables['HgAuth'], true), eq(variables['HgUi'], true), eq(variables['HgE2e'], true))
+    # HG UI tests run against a fake environment and need no seeded data.
+    condition: or(eq(variables['WebClient'], true), eq(variables['HgAuth'], true), eq(variables['HgE2e'], true))
     dependsOn: "Admin_Write_Tests"
     timeoutInMinutes: 5
     steps:
@@ -351,13 +352,13 @@ jobs:
       image: $(cypressImage)
       endpoint: DockerHub-Cypress
       options: --shm-size=2g
+    # No HG_Seed dependency: UI tests stub every API call, so they run even when seeding is skipped.
     dependsOn:
       - "Resolve_Cypress_Image"
-      - "HG_Seed"
       - "HG_Auth_Functional_Tests"
-    condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgUi'], true)))
+    condition: and(succeeded('Resolve_Cypress_Image'), or(eq(variables['WebClient'], true), eq(variables['HgUi'], true)))
     strategy:
-      parallel: 5
+      parallel: 8
     timeoutInMinutes: 15
     steps:
       - checkout: self
@@ -397,7 +398,7 @@ jobs:
       - "HG_UI_Functional_Tests"
     condition: and(succeeded('Resolve_Cypress_Image'), succeeded('HG_Seed'), or(eq(variables['WebClient'], true), eq(variables['HgE2e'], true)))
     strategy:
-      parallel: 5
+      parallel: 8
     timeoutInMinutes: 15
     steps:
       - checkout: self
