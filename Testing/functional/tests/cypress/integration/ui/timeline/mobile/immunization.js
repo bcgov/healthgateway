@@ -1,12 +1,19 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Immunization", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -18,18 +25,7 @@ describe("Immunization", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 

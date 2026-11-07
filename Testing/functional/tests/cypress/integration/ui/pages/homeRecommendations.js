@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const homeUrl = "/home";
 
@@ -10,21 +17,12 @@ function setupImmunizationFixture() {
 }
 
 function loginToHome() {
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            homeUrl,
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin(homeUrl);
 }
 
 describe("Home page - Recommendations", () => {
     function setupRecommendations(standardFixtureOptions = {}) {
-        cy.configureSettings({
+        configureFakeSettings({
             homepage: {
                 showRecommendationsLink: true,
             },

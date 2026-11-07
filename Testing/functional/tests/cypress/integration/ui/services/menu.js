@@ -1,8 +1,15 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
 
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
+
 function toggleServices(enabled = true) {
-    cy.configureSettings({
+    configureFakeSettings({
         services: {
             enabled: enabled,
         },
@@ -13,16 +20,7 @@ function login(isMobile) {
     if (isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            "/home",
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin("/home");
 }
 
 describe("Menu System when services are enabled", () => {

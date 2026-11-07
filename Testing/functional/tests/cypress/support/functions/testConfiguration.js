@@ -71,33 +71,39 @@ function overrideProperties(baseObject, overrideObject) {
     }
 }
 
+/**
+ * Applies a test's feature toggles to a configuration, in place: every boolean feature is
+ * turned off (dependent datasets on) and then the overrides are applied on top.
+ */
+export function applyFeatureOverrides(config, overriddenFeatures) {
+    const features = config.webClient.featureToggleConfiguration;
+
+    // default all boolean settings to false (except dependent datasets)
+    setBooleanProperties(features, false);
+    setBooleanProperties(features.dependents.datasets, true);
+
+    // ensure non-overridden datasets and services are populated with default values
+    populateFallbackValues(overriddenFeatures.datasets, features.datasets);
+    populateFallbackValues(
+        overriddenFeatures.dependents?.datasets,
+        features.dependents.datasets
+    );
+    populateFallbackValues(
+        overriddenFeatures.services?.services,
+        features.services.services
+    );
+
+    // apply overrides
+    overrideProperties(features, overriddenFeatures);
+    return config;
+}
+
 export function configureTestSettings(overriddenFeatures) {
     return cy
         .readConfig()
         .as("config")
         .then((config) => {
-            const features = config.webClient.featureToggleConfiguration;
-
-            // default all boolean settings to false (except dependent datasets)
-            setBooleanProperties(features, false);
-            setBooleanProperties(features.dependents.datasets, true);
-
-            // ensure non-overridden datasets and services are populated with default values
-            populateFallbackValues(
-                overriddenFeatures.datasets,
-                features.datasets
-            );
-            populateFallbackValues(
-                overriddenFeatures.dependents?.datasets,
-                features.dependents.datasets
-            );
-            populateFallbackValues(
-                overriddenFeatures.services?.services,
-                features.services.services
-            );
-
-            // apply overrides
-            overrideProperties(features, overriddenFeatures);
+            applyFeatureOverrides(config, overriddenFeatures);
 
             // intercept configuration calls to return the modified configuration
             cy.intercept("GET", "**/configuration", {

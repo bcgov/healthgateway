@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const medicationEndpoint = "**/MedicationStatement/*";
 const protectedResponse = {
@@ -30,21 +37,12 @@ function setupProtectiveWordResponse() {
 }
 
 function login() {
-    cy.configureSettings({
+    configureFakeSettings({
         datasets: [{ name: "medication", enabled: true }],
     });
     setupStandardFixtures();
     setupProtectiveWordResponse();
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin("/timeline");
     cy.wait("@getProtectedMedications");
 }
 

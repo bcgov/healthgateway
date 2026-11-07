@@ -1,12 +1,22 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
+import { FakeUser } from "../../../support/functions/fakeKeycloak";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Need to accept terms of service", () => {
     beforeEach(() => {
-        cy.configureSettings({});
+        configureFakeSettings({});
         setupStandardFixtures({
+            patientHdid: HDID,
+            notificationHdid: HDID,
             userProfileHdid: HDID,
             userProfileFixture: "UserProfileService/userProfileAcceptTos.json",
         });
@@ -15,16 +25,7 @@ describe("Need to accept terms of service", () => {
             fixture: "UserProfileService/termsOfService.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.accept.tos.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home"
-                );
-            }
-        );
+        fakeLogin("/home", { user: FakeUser.AcceptTermsOfService });
     });
 
     it("Validate accept terms of service", () => {
@@ -45,16 +46,7 @@ describe("Need to accept terms of service", () => {
 describe("Does not need to accept terms of service", () => {
     beforeEach(() => {
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home"
-                );
-            }
-        );
+        fakeLogin("/home");
     });
 
     it("Validate accept terms of service", () => {

@@ -1,5 +1,13 @@
-import { AuthMethod, Dataset } from "../../../../support/constants";
+import { Dataset } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const dependentHdid = "645645767756756767";
 const dependentTimelinePath = `/dependents/${dependentHdid}/timeline`;
@@ -37,16 +45,7 @@ function setupEnabledDatasetFixtures() {
 }
 
 function loginToDependentTimeline() {
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            dependentTimelinePath,
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin(dependentTimelinePath);
     cy.wait("@getDependentFixture");
 }
 
@@ -59,7 +58,7 @@ describe("Dependent Timeline Datasets", () => {
     it("Displays globally enabled datasets when no dependent override disables them", () => {
         // Dependent timelines inherit globally enabled datasets unless a
         // dependents.datasets entry explicitly disables one.
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: supportedDependentDatasets.map((name) => ({
                 name,
                 enabled: true,
@@ -98,7 +97,7 @@ describe("Dependent Timeline Datasets", () => {
 
     supportedDependentDatasets.forEach((dataset) => {
         it(`Hides ${dataset} on the dependent timeline when it is globally disabled`, () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 datasets: [{ name: dataset, enabled: false }],
                 dependents: {
                     enabled: true,
@@ -116,7 +115,7 @@ describe("Dependent Timeline Datasets", () => {
         });
 
         it(`Hides ${dataset} on the dependent timeline when the dependent override disables it`, () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 datasets: [{ name: dataset, enabled: true }],
                 dependents: {
                     enabled: true,

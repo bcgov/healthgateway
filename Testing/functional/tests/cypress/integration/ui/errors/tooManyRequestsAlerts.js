@@ -1,4 +1,3 @@
-import { AuthMethod } from "../../../support/constants";
 import {
     testAddCommentError,
     testAddQuickLinkError,
@@ -11,7 +10,15 @@ import {
     testValidateEmailError,
     testVerifySmsError,
 } from "../../../support/functions/errorAlertActions";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const tooManyRequestsStatusCode = 429;
 
@@ -34,19 +41,10 @@ const timelineTooManyRequestsScenarios = [
 function loginWithDatasetError(endpoint, dataset) {
     setupStandardFixtures();
     cy.intercept("GET", endpoint, { statusCode: tooManyRequestsStatusCode });
-    cy.configureSettings({
+    configureFakeSettings({
         datasets: [{ name: dataset, enabled: true }],
     });
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin("/timeline");
 }
 
 describe("429 Alerts", () => {
@@ -92,7 +90,7 @@ describe("429 Alerts", () => {
 
 describe("Landing Page - Too Many Requests", () => {
     it("Too Many Requests Banner Appears on 429 Response", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
         cy.intercept("GET", "**/Communication/*", { statusCode: 429 });
         cy.visit("/");
 
@@ -103,7 +101,7 @@ describe("Landing Page - Too Many Requests", () => {
     });
 
     it("Too Many Requests Banner Doesn't Appear on 200 Response", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
         cy.intercept("GET", "**/Communication/*", { statusCode: 200 });
         cy.visit("/");
 
@@ -134,7 +132,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "labResult",
@@ -143,18 +141,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -194,7 +181,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "covid19TestResult",
@@ -203,18 +190,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -262,7 +238,7 @@ describe("Comments", () => {
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
         });
-        cy.configureSettings({
+        configureFakeSettings({
             timeline: {
                 comment: true,
             },
@@ -273,18 +249,7 @@ describe("Comments", () => {
                 },
             ],
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.wait(["@getCovid19Orders", "@getComments"]);
         var testComment = "Test Add Comment";
 
@@ -314,7 +279,7 @@ describe("Notes", () => {
         cy.intercept("POST", "**/Note/*", {
             statusCode: 429,
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "note",
@@ -322,18 +287,7 @@ describe("Notes", () => {
                 },
             ],
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
 
         cy.get("[data-testid=addNoteBtn]").click();
         cy.get("[data-testid=noteTitleInput]").type("Note Title!");
@@ -357,7 +311,7 @@ describe("Notes", () => {
         cy.intercept("PUT", "**/Note/*", {
             statusCode: 429,
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "note",
@@ -365,18 +319,7 @@ describe("Notes", () => {
                 },
             ],
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
 
         cy.log("Editing Note.");
         cy.get("[data-testid=noteMenuBtn]").first().click();
@@ -397,7 +340,7 @@ describe("Notes", () => {
         cy.intercept("DELETE", "**/Note/*", {
             statusCode: 429,
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "note",
@@ -405,18 +348,7 @@ describe("Notes", () => {
                 },
             ],
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
 
         cy.get("[data-testid=noteMenuBtn]").last().click();
         cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
@@ -431,7 +363,7 @@ describe("Export Records - Immunizaation - report download error handling", () =
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         }).as("getImmunizations");
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -439,18 +371,7 @@ describe("Export Records - Immunizaation - report download error handling", () =
                 },
             ],
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Unsuccessful Response: Too Many Requests", () => {

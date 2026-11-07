@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const startDateId = "[data-testid=start-date-input] input";
 const endDateId = "[data-testid=end-date-input] input";
@@ -42,7 +49,7 @@ function replaceSpaceWithDash(source) {
 
 describe("Report Filtering", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "medication",
@@ -56,18 +63,7 @@ describe("Report Filtering", () => {
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Dates, Cancel and Apply", () => {

@@ -1,3 +1,10 @@
+import {
+    configureFakeSettings,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 const path = "/vppLogin";
 const accessMyHealthUrl =
     "https://dev.vpp.patientportal.ca-1.healtheintent.com/";
@@ -6,7 +13,7 @@ const healthGatewayUrl = "https://www.healthgateway.gov.bc.ca";
 
 describe("VPP Login View", () => {
     beforeEach(() => {
-        cy.configureSettings({});
+        configureFakeSettings({});
         cy.visit(path);
     });
 

@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const authorizedDependentHdid = "645645767756756767";
 const unauthorizedDependentHdid = "343222434345442257";
@@ -10,16 +17,7 @@ const dependentsPath = "/dependents";
 function loginToDependentTimeline(dependentHdid) {
     const waitForDependentFixture = prepareDependentFixtureWait();
 
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            `/dependents/${dependentHdid}/timeline`,
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin(`/dependents/${dependentHdid}/timeline`);
 
     waitForDependentFixture();
 }
@@ -46,7 +44,7 @@ function prepareDependentFixtureWait() {
 
 describe("Dependent Timeline", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             timeline: {
                 comment: true,
             },

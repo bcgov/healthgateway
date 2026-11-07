@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("MSP Visits", () => {
     beforeEach(() => {
@@ -8,7 +15,7 @@ describe("MSP Visits", () => {
                 fixture: "EncounterService/encountersrolloff.json",
             });
         }).as("getEncounters");
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "healthVisit",
@@ -19,18 +26,7 @@ describe("MSP Visits", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.wait("@getEncounters");
         cy.checkTimelineHasLoaded();
     });
@@ -64,22 +60,11 @@ describe("Hospital Visits", () => {
         cy.intercept("GET", "**/Encounter/HospitalVisit/*", {
             fixture: "EncounterService/hospitalVisits.json",
         }).as("getHospitalVisitsFixture");
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [{ name: "hospitalVisit", enabled: true }],
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.wait("@getHospitalVisitsFixture");
         cy.checkTimelineHasLoaded();
     });

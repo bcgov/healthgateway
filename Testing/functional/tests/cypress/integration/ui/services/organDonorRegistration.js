@@ -1,10 +1,17 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Services - Organ Donor Registration Card", () => {
     beforeEach(() => {
         setupStandardFixtures();
-        cy.configureSettings({
+        configureFakeSettings({
             services: {
                 enabled: true,
                 services: [
@@ -26,18 +33,7 @@ describe("Services - Organ Donor Registration Card", () => {
             }
         );
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/services",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/services");
 
         cy.get("[data-testid=organ-donor-registration-status]")
             .should("be.visible")
@@ -65,18 +61,7 @@ describe("Services - Organ Donor Registration Card", () => {
             }
         );
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/services",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/services");
 
         cy.get("[data-testid=organ-donor-registration-status]")
             .should("be.visible")
@@ -117,18 +102,7 @@ describe("Services - Organ Donor Registration Card", () => {
             }
         );
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/services",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/services");
 
         cy.get("[data-testid=organ-donor-registration-status]")
             .should("be.visible")
@@ -150,7 +124,7 @@ describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () =>
             userProfileFixture:
                 "UserProfileService/userProfileOrganDonorRegistrationDatasetBlocked.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             services: {
                 enabled: true,
                 services: [
@@ -162,18 +136,7 @@ describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () =>
             },
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/services",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/services");
 
         cy.get("[data-testid=organ-donor-registration-card]").should(
             "not.exist"

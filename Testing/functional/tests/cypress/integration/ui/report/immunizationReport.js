@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Immunization History Report", () => {
     let sensitiveDocText =
@@ -7,7 +14,7 @@ describe("Immunization History Report", () => {
 
     beforeEach(() => {
         cy.setupDownloads();
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -18,21 +25,29 @@ describe("Immunization History Report", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
+        // Any PDF will do for the download; the API wraps it as a Report.
+        cy.fixture("LaboratoryService/laboratoryReportPdf.json").then(
+            ({ resourcePayload }) => {
+                cy.intercept("POST", "**/Report", {
+                    statusCode: 200,
+                    body: {
+                        resourcePayload: {
+                            fileName: "HealthGatewayImmunizationReport.pdf",
+                            data: resourcePayload.data,
+                        },
+                        totalResultCount: 1,
+                        pageIndex: null,
+                        pageSize: null,
+                        resultStatus: 1,
+                        resultError: null,
+                    },
+                });
+            }
+        );
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Immunization History Report", () => {
@@ -97,7 +112,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationInvalidDoses.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -108,18 +123,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
 
         cy.vSelect("[data-testid=report-type]", "Immunizations");
 

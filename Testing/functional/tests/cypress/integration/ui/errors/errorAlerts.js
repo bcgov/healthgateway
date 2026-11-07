@@ -10,6 +10,10 @@ import {
     testValidateEmailError,
     testVerifySmsError,
 } from "../../../support/functions/errorAlertActions";
+import { useFakeEnvironment } from "../../../support/functions/fakeEnvironment";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Error Alerts", () => {
     it("Error Retrieving Configuration", () => {

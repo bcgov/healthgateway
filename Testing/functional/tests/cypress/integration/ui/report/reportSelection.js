@@ -1,27 +1,23 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Report selection", () => {
     it("Enables export after a report type is selected", () => {
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",
         }).as("getMedicationFixture");
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [{ name: "medication", enabled: true }],
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
 
         cy.get("[data-testid=export-record-btn]").should("be.disabled");
         cy.get("[data-testid=info-text]").should("be.visible");
