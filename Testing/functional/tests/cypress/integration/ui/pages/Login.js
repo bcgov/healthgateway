@@ -1,3 +1,7 @@
+import { useFakeEnvironment } from "../../../support/functions/fakeEnvironment";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 describe("Login Page", () => {
     beforeEach(() => {
         // These tests only validate the local login page. Clearing browser state

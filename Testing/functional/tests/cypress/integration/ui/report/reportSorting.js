@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 // These fixture-backed specs own dataset-specific report presentation and
 // sorting coverage. E2E report specs intentionally retain only representative
@@ -9,7 +16,7 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Reports - Medication", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -28,18 +35,7 @@ describe("Reports - Medication", () => {
             fixture: "Report/medicationStatementUnSorted.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Medication Statement Report with Unsorted Data", () => {
@@ -75,7 +71,7 @@ describe("Reports - Medication", () => {
 
 describe("Reports - Covid19", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "covid19TestResult",
@@ -86,18 +82,7 @@ describe("Reports - Covid19", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     // AB#16941 - Skip test as Covid19 removed from report list.
@@ -138,7 +123,7 @@ describe("Reports - Covid19", () => {
 
 describe("Reports - Immunization", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -153,18 +138,7 @@ describe("Reports - Immunization", () => {
             fixture: "Report/immunizationUnSorted.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Immunization Report with Unsorted Data", () => {
@@ -232,7 +206,7 @@ describe("Reports - Immunization", () => {
 
 describe("Reports - MSP Visit", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "healthVisit",
@@ -247,18 +221,7 @@ describe("Reports - MSP Visit", () => {
             fixture: "Report/mspVisitUnSorted.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate MSP Visit Report with Unsorted Data", () => {
@@ -295,7 +258,7 @@ describe("Reports - MSP Visit", () => {
 
 describe("Reports - Hospital Visits", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "hospitalVisit",
@@ -314,18 +277,7 @@ describe("Reports - Hospital Visits", () => {
             }
         );
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Hospital Visit Report with Unsorted Data", () => {
@@ -362,7 +314,7 @@ describe("Reports - Hospital Visits", () => {
 
 describe("Reports - Notes (User-Entered)", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "note",
@@ -377,18 +329,7 @@ describe("Reports - Notes (User-Entered)", () => {
             fixture: "Report/noteUnSorted.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Note (User-Entered) Report with Unsorted Data", () => {
@@ -425,7 +366,7 @@ describe("Reports - Notes (User-Entered)", () => {
 
 describe("Reports - Laboratory Tests", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "labResult",
@@ -440,18 +381,7 @@ describe("Reports - Laboratory Tests", () => {
             fixture: "Report/laboratoryUnSorted.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Validate Laboratory Report with Unsorted Data", () => {

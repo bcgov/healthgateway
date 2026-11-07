@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
@@ -7,28 +14,17 @@ const otherRecordSourcesUrl = "/otherRecordSources";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Home - Immunization Record Card button enabled", () => {
-        cy.configureSettings({
+        configureFakeSettings({
             homepage: {
                 showImmunizationRecordLink: true,
             },
@@ -42,18 +38,7 @@ describe("Authenticated User - Home Page", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=immunization-record-card-button]").should(
             "be.visible"
@@ -61,7 +46,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Other Record Sources Card button enabled", () => {
-        cy.configureSettings({
+        configureFakeSettings({
             homepage: {
                 otherRecordSources: {
                     enabled: true,
@@ -71,18 +56,7 @@ describe("Authenticated User - Home Page", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=other-record-sources-card]")
             .should("be.visible", "be.enabled")
@@ -92,22 +66,11 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Link to timeline page", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=health-records-card]")
             .should("be.visible")
@@ -117,7 +80,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Immunization Record Card button disabled", () => {
-        cy.configureSettings({
+        configureFakeSettings({
             homepage: {
                 showImmunizationRecordLink: false,
             },
@@ -125,18 +88,7 @@ describe("Authenticated User - Home Page", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=immunization-record-card-button]").should(
             "not.exist"
@@ -144,7 +96,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Other Record Sources Card button disabled", () => {
-        cy.configureSettings({
+        configureFakeSettings({
             homepage: {
                 otherRecordSources: {
                     enabled: false,
@@ -154,24 +106,13 @@ describe("Authenticated User - Home Page", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=other-record-sources-card]").should("not.exist");
     });
 
     it("Home - Notes Card link to Timeline", () => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "note",
@@ -187,18 +128,7 @@ describe("Authenticated User - Home Page", () => {
             fixture: "NoteService/notes-no-records.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.contains("[data-testid=card-button-title]", "My Notes")
             .parents("[data-testid=quick-link-card]")
@@ -212,7 +142,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - BC Cancer notifications banner shown if last login predates notifications implementation", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
             const profile = Cypress._.cloneDeep(data);
@@ -223,18 +153,7 @@ describe("Authenticated User - Home Page", () => {
             setupStandardFixtures({ userProfileBody: profile });
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.get("[data-testid=bc-cancer-notifications-banner]").should(
             "be.visible"
@@ -242,7 +161,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - BC Cancer notifications banner hidden if last login is more recent", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
             const profile = Cypress._.cloneDeep(data);
@@ -253,18 +172,7 @@ describe("Authenticated User - Home Page", () => {
             setupStandardFixtures({ userProfileBody: profile });
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.contains("#subject", "Home").should("exist");
         cy.get("[data-testid=bc-cancer-notifications-banner]").should(
@@ -273,7 +181,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - BC Cancer notifications banner hidden for new users", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((data) => {
             const profile = Cypress._.cloneDeep(data);
@@ -281,18 +189,7 @@ describe("Authenticated User - Home Page", () => {
             setupStandardFixtures({ userProfileBody: profile });
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homeUrl,
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin(homeUrl);
 
         cy.contains("#subject", "Home").should("exist");
         cy.get("[data-testid=bc-cancer-notifications-banner]").should(

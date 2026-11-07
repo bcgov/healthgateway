@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 function checkPopoverIsVisible() {
     cy.get("[data-testid=laboratory-test-status-info-button]")
@@ -22,7 +29,7 @@ describe("Laboratory Orders", () => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "labResult",
@@ -34,18 +41,7 @@ describe("Laboratory Orders", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -273,7 +269,7 @@ describe("Laboratory Orders Refresh", () => {
             isLoading = !isLoading;
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "labResult",
@@ -285,18 +281,7 @@ describe("Laboratory Orders Refresh", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
 
         cy.checkOnTimeline();
     });

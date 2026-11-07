@@ -18,14 +18,9 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
-if [ -z "$IDIR_PASSWORD" ]; then
-    echo "ERROR: The IDIR_PASSWORD variable is not set or is empty."
-    exit 1
-fi
-
+# UI specs run against a fake Keycloak and stubbed APIs, so no credentials are passed.
 echo "Running Cypress UI Functional Tests"
 TZ=America/Vancouver npx cypress run \
-  --env "loginDiagnostics=$LOGIN_DIAGNOSTICS,bcsc.password=$BCSC_PW,keycloak.password=$KEYCLOAK_PW,idir.password=$IDIR_PASSWORD,phoneNumber=$PHONENUMBER,keycloak.erebus.client=$KEYCLOAK_EREBUS_CLIENT,keycloak.erebus.secret=$KEYCLOAK_EREBUS_SECRET,keycloak.phsa.client=$KEYCLOAK_PHSA_CLIENT,keycloak.phsa.secret=$KEYCLOAK_PHSA_SECRET" \
   --record \
   --key "$CYPRESS_KEY" \
   --parallel \

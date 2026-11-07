@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("User Email Verification", () => {
     beforeEach(() => {
@@ -22,21 +29,12 @@ describe("User Email Verification", () => {
                 body: false,
             }
         );
-        cy.configureSettings({});
+        configureFakeSettings({});
     });
 
     it("Check verified email invite", () => {
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/validateEmail/valid"
-                );
-            }
-        );
+        fakeLogin("/validateEmail/valid");
 
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=verifiedInvite]")
@@ -58,16 +56,7 @@ describe("User Email Verification", () => {
     it("Check already verified email invite", () => {
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/validateEmail/invalid"
-                );
-            }
-        );
+        fakeLogin("/validateEmail/invalid");
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=alreadyVerifiedInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]")
@@ -80,16 +69,7 @@ describe("User Email Verification", () => {
     it("Check expired email invite", () => {
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/validateEmail/expired"
-                );
-            }
-        );
+        fakeLogin("/validateEmail/expired");
         cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=expiredInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]").click();

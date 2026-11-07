@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const dependentHdid = "645645767756756767";
 const dependentPhn = "9874307168";
@@ -19,23 +26,14 @@ function setupDependentsPage(
         fixture: "UserProfileService/dependent.json",
     });
     setupDatasetFixtures?.();
-    cy.configureSettings({
+    configureFakeSettings({
         dependents: {
             enabled: true,
             timelineEnabled,
         },
         datasets,
     });
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            "/dependents",
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin("/dependents");
 
     cy.get(getDependentCardSelector(timelineEnabled)).should("be.visible");
 }
@@ -48,7 +46,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "labResult",
@@ -57,18 +55,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -110,7 +97,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "covid19TestResult",
@@ -119,18 +106,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             ],
         });
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -227,7 +203,7 @@ describe("Export Records - Immunizaation - report download error handling", () =
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         }).as("getImmunizations");
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "immunization",
@@ -235,18 +211,7 @@ describe("Export Records - Immunizaation - report download error handling", () =
                 },
             ],
         });
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/reports",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/reports");
     });
 
     it("Unsuccessful Response: Internal Server Error", () => {

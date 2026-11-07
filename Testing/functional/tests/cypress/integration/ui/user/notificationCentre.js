@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const notificationIdOne = "f57bcb39-64ca-0a17-5477-92ea7f084fbf";
 const notificationIdTwo = "72c2d6c0-b370-24e6-0b5c-04e42b6511c8";
@@ -14,7 +21,7 @@ const immunizationTitle = "Immunizations";
 
 describe("Notification Centre", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             notificationCentre: {
                 enabled: true,
             },
@@ -33,16 +40,7 @@ describe("Notification Centre", () => {
             notificationFixture: "NotificationService/notifications.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home"
-                );
-            }
-        );
+        fakeLogin("/home");
 
         // Validate home page has displayed before clicking on notifications
         cy.get("[data-testid=health-records-card]").should("be.visible");
@@ -128,7 +126,7 @@ describe("Notification Centre", () => {
 
 describe("Notification Badge", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             notificationCentre: {
                 enabled: true,
             },
@@ -142,16 +140,7 @@ describe("Notification Badge", () => {
             fixture: "NotificationService/notifications.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home"
-                );
-            }
-        );
+        fakeLogin("/home");
 
         // Validate home page has displayed before clicking on notifications
         cy.get("[data-testid=health-records-card]").should("be.visible");
@@ -188,7 +177,7 @@ describe("Notification Badge", () => {
 
 describe("Categorized web alerts", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             notificationCentre: {
                 enabled: true,
             },
@@ -213,16 +202,7 @@ describe("Categorized web alerts", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home"
-                );
-            }
-        );
+        fakeLogin("/home");
 
         // Validate home page has displayed before clicking on notifications
         cy.get("[data-testid=health-records-card]").should("be.visible");

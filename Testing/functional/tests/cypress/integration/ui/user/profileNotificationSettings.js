@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("User Profile Notification Settings", () => {
     const notificationId = "bc-cancer-screening";
@@ -73,19 +80,8 @@ describe("User Profile Notification Settings", () => {
         };
     }
 
-    function login(options = {}) {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/profile",
-                    "default",
-                    options
-                );
-            }
-        );
+    function login() {
+        fakeLogin("/profile");
     }
 
     function assertSwitch(selector, { enabled, checked }) {
@@ -116,7 +112,7 @@ describe("User Profile Notification Settings", () => {
         // in the update request payload.
         // -------------------------------------------------------
         it("Sends emailEnabled as null when Email preference feature toggle is disabled", () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: {
                     notifications: {
                         enabled: true,
@@ -142,9 +138,9 @@ describe("User Profile Notification Settings", () => {
 
             login();
 
-            cy.intercept("PUT", "**/UserProfile/*/notificationsettings*").as(
-                "updateNotificationSettings"
-            );
+            cy.intercept("PUT", "**/UserProfile/*/notificationsettings*", {
+                statusCode: 200,
+            }).as("updateNotificationSettings");
 
             cy.log("Toggle sms switch");
             toggleSwitch("sms");
@@ -162,7 +158,7 @@ describe("User Profile Notification Settings", () => {
         });
 
         it("Sends smsEnabled as null when Sms preference feature toggle is disabled", () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: {
                     notifications: {
                         enabled: true,
@@ -188,9 +184,9 @@ describe("User Profile Notification Settings", () => {
 
             login();
 
-            cy.intercept("PUT", "**/UserProfile/*/notificationsettings*").as(
-                "updateNotificationSettings"
-            );
+            cy.intercept("PUT", "**/UserProfile/*/notificationsettings*", {
+                statusCode: 200,
+            }).as("updateNotificationSettings");
 
             cy.log("Toggle email switch");
             toggleSwitch("email");
@@ -213,18 +209,18 @@ describe("User Profile Notification Settings", () => {
         // Feature Toggle Tests
         // -------------------------------------------------------
         it("Featuretoggle - profile notification section is not visible", () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: { notifications: { enabled: false } },
             });
 
             setupStandardFixtures();
-            login({ cacheAcrossSpecs: true });
+            login();
 
             cy.get(notificationSel.header).should("not.exist");
         });
 
         it("Featuretoggle - profile notification BC Cancer Screening type is not visible", () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: {
                     notifications: {
                         enabled: true,
@@ -234,14 +230,14 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login({ cacheAcrossSpecs: true });
+            login();
 
             cy.get(notificationSel.header).should("be.visible");
             cy.get(notificationSel.empty).should("be.visible");
         });
 
         it("Featuretoggle - profile notification BC Cancer Screening Sms preference is visible but Email preference is not", () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: {
                     notifications: {
                         enabled: true,
@@ -257,7 +253,7 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login({ cacheAcrossSpecs: true });
+            login();
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("not.exist");
@@ -265,7 +261,7 @@ describe("User Profile Notification Settings", () => {
         });
 
         it("Featuretoggle - profile notification BC Cancer Screening Email preference is visible but Sms preference is not", () => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: {
                     notifications: {
                         enabled: true,
@@ -281,7 +277,7 @@ describe("User Profile Notification Settings", () => {
             });
 
             setupStandardFixtures();
-            login({ cacheAcrossSpecs: true });
+            login();
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("be.visible");
@@ -291,7 +287,7 @@ describe("User Profile Notification Settings", () => {
 
     describe("Notification preferences - feature toggles, verification, and UI behavior", () => {
         beforeEach(() => {
-            cy.configureSettings({
+            configureFakeSettings({
                 profile: {
                     notifications: {
                         enabled: true,
@@ -400,7 +396,7 @@ describe("User Profile Notification Settings", () => {
                     userProfileBody: buildUserProfileFixture(scenario.profile),
                 });
 
-                login({ cacheAcrossSpecs: true });
+                login();
 
                 cy.get(notificationSel.label).should("be.visible");
 
@@ -622,13 +618,13 @@ describe("User Profile Notification Settings", () => {
 
         verificationMessageScenarios.forEach((scenario) => {
             it(scenario.name, () => {
-                cy.configureSettings(scenario.settings);
+                configureFakeSettings(scenario.settings);
 
                 setupStandardFixtures({
                     userProfileBody: buildUserProfileFixture(scenario.profile),
                 });
 
-                login({ cacheAcrossSpecs: true });
+                login();
 
                 cy.get(notificationSel.header).should("be.visible");
 
@@ -655,7 +651,7 @@ describe("User Profile Notification Settings", () => {
                 }),
             });
 
-            login({ cacheAcrossSpecs: true });
+            login();
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("be.visible");
@@ -694,7 +690,7 @@ describe("User Profile Notification Settings", () => {
                 }),
             });
 
-            login({ cacheAcrossSpecs: true });
+            login();
 
             cy.get(notificationSel.label).should("be.visible");
             cy.get(notificationSel.email).should("be.visible");

@@ -1,12 +1,19 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const profilePath = "/profile";
 const homePath = "/home";
 
 describe("Bookmark", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             timeline: {
                 comment: true,
             },
@@ -22,30 +29,12 @@ describe("Bookmark", () => {
     });
 
     it("Redirect to UserProfile", () => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    profilePath
-                );
-            }
-        );
+        fakeLogin(profilePath);
         cy.url().should("include", profilePath);
     });
 
     it("Redirect to home", () => {
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homePath
-                );
-            }
-        );
+        fakeLogin(homePath);
         cy.url().should("include", homePath);
     });
 });

@@ -1,12 +1,19 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import {
     setupCommunicationFixture,
     setupStandardFixtures,
 } from "../../../support/functions/intercept";
 
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
+
 describe("Communication banners", () => {
     beforeEach(() => {
-        cy.configureSettings({});
+        configureFakeSettings({});
     });
 
     it("Displays the landing banner on public pages", () => {
@@ -26,18 +33,7 @@ describe("Communication banners", () => {
 
     it("Displays the in-app banner on authenticated pages", () => {
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/home");
 
         ["/home", "/dependents", "/reports", "/profile"].forEach((path) => {
             cy.visit(path);
