@@ -2,9 +2,8 @@ import { useFakeEnvironment } from "../../../support/functions/fakeEnvironment";
 
 // Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
 useFakeEnvironment();
-describe("Error Pages", () => {
-    beforeEach(() => {});
 
+describe("Error Pages", () => {
     it("HTTP 401", () => {
         cy.visit("/unauthorized");
         cy.contains("h1", "401");

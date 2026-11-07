@@ -61,56 +61,42 @@ describe("User Profile", () => {
             delay: 500,
         });
 
-        cy.then(() => {
-            cy.log("Edit email address");
-            cy.get("[data-testid=editEmailBtn]").click();
-            cy.get("[data-testid=email-input] input")
-                .clear()
-                .type(emailAddress);
-            cy.fixture("UserProfileService/userProfile.json").then((data) => {
-                data.email = emailAddress;
-                cy.intercept(
-                    "GET",
-                    `**/UserProfile/${HDID}?api-version=2.0`,
-                    data
-                );
-            });
-
-            cy.get("[data-testid=editEmailSaveBtn]").click();
-            cy.get("[data-testid=loadingSpinner]").should("be.visible");
-            cy.get("[data-testid=loadingSpinner]").should("not.exist");
-            cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
-            cy.get("[data-testid=resendEmailBtn]").should("be.visible");
+        cy.log("Edit email address");
+        cy.get("[data-testid=editEmailBtn]").click();
+        cy.get("[data-testid=email-input] input").clear().type(emailAddress);
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.email = emailAddress;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
         });
+
+        cy.get("[data-testid=editEmailSaveBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
+        cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
+        cy.get("[data-testid=resendEmailBtn]").should("be.visible");
     });
 
     it("prevents saving an unchanged email address", () => {
-        cy.then(() => {
-            cy.fixture("UserProfileService/userProfile.json").then((data) => {
-                data.email = emailAddress;
-                cy.intercept(
-                    "GET",
-                    `**/UserProfile/${HDID}?api-version=2.0`,
-                    data
-                );
-            });
-            cy.reload();
-            cy.get("[data-testid=editEmailBtn]").click();
-            cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
-            cy.get("[data-testid=email-input]")
-                .find(".v-messages__message")
-                .contains("New email must be different from the previous one")
-                .should("be.visible");
-            cy.get("[data-testid=editEmailCancelBtn]").click();
-            cy.get("[data-testid=email-input] input").should(
-                "have.attr",
-                "readonly"
-            );
-            cy.get("[data-testid=email-input] input").should(
-                "have.value",
-                emailAddress
-            );
+        cy.fixture("UserProfileService/userProfile.json").then((data) => {
+            data.email = emailAddress;
+            cy.intercept("GET", `**/UserProfile/${HDID}?api-version=2.0`, data);
         });
+        cy.reload();
+        cy.get("[data-testid=editEmailBtn]").click();
+        cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
+        cy.get("[data-testid=email-input]")
+            .find(".v-messages__message")
+            .contains("New email must be different from the previous one")
+            .should("be.visible");
+        cy.get("[data-testid=editEmailCancelBtn]").click();
+        cy.get("[data-testid=email-input] input").should(
+            "have.attr",
+            "readonly"
+        );
+        cy.get("[data-testid=email-input] input").should(
+            "have.value",
+            emailAddress
+        );
     });
 
     it("allows opting out of email notifications", () => {

@@ -376,18 +376,9 @@ jobs:
           targetType: filePath
           filePath: "./Tools/Pipelines/scripts/azp_runUiFunctionalTests.sh"
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
-        env: # Required environment settings and secrets for HG tests
-          LOGIN_DIAGNOSTICS: ${{ parameters.loginDiagnostics }}
+        env: # UI tests use a fake Keycloak and stubbed APIs; only the Cypress Cloud key is needed
           TERM: xterm
           CYPRESS_KEY: $(cypress.key)
-          BCSC_PW: $(bcsc.pw)
-          KEYCLOAK_PW: $(keycloak.pw)
-          IDIR_PASSWORD: $(idir.password)
-          PHONENUMBER: $(phoneNumber)
-          KEYCLOAK_EREBUS_CLIENT: $(keycloak.erebus.client)
-          KEYCLOAK_EREBUS_SECRET: $(keycloak.erebus.secret)
-          KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
-          KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
           npm_config_cache: $(Pipeline.Workspace)/.npm
 
   - job: "HG_E2E_Functional_Tests"
