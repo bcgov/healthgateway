@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { AppText, HgMenu, Icon } from "@/components/ui";
 import { elevation1 } from "@/components/ui/elevation";
+import { usePressHighlight } from "@/hooks/usePressHighlight";
 import { useThemeColors } from "@/hooks/useTheme";
 import { cn } from "@/utils/cn";
 
@@ -23,7 +23,8 @@ interface Props {
 /**
  * Port of HgCardComponent.vue as used on Home, Other record sources and the dependent dashboard: elevated card
  * (elevation 1, no border, since healthgateway d7ab5c429), icon + title row, optional "⋮" menu with Remove, body
- * text, hover = surfaceHover (the web client keeps the hover for clickable cards only, and this card always is).
+ * text, hover = surfaceHover (the web client keeps the hover for clickable cards only, and this card always is). A press
+ * shades it too, as the web client's `:hover` does on a tap in a mobile browser.
  */
 export function HomeCard({
     title,
@@ -37,7 +38,7 @@ export function HomeCard({
     className = "",
 }: Props) {
     const colors = useThemeColors();
-    const [hovered, setHovered] = useState(false);
+    const { highlighted, handlers } = usePressHighlight();
     const name = title ?? accessibilityLabel;
     const web = Platform.OS === "web";
     return (
@@ -48,12 +49,11 @@ export function HomeCard({
             accessible={false}
             tabIndex={-1}
             onPress={onPress}
-            onHoverIn={() => setHovered(true)}
-            onHoverOut={() => setHovered(false)}
+            {...handlers}
             style={elevation1}
             className={cn(
                 "grow rounded",
-                hovered ? "bg-surface-hover" : "bg-surface",
+                highlighted ? "bg-surface-hover" : "bg-surface",
                 "web:cursor-pointer",
                 className
             )}
@@ -64,6 +64,9 @@ export function HomeCard({
                     accessibilityRole="button"
                     accessibilityLabel={name}
                     onPress={onPress}
+                    // a press here is the card's own, so it shades the card
+                    onPressIn={handlers.onPressIn}
+                    onPressOut={handlers.onPressOut}
                     className="flex-1 flex-row items-center"
                 >
                     {icon ? (

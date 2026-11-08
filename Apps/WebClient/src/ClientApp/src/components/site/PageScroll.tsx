@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText, LiveRegion } from "@/components/ui";
 import { useMotion } from "@/hooks/useMotion";
+import { notifyScrollDragEnd } from "@/hooks/usePressHighlight";
 import { useRouteFeaturesEnabled } from "@/hooks/useRouteFeaturesEnabled";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useConnectivityStore } from "@/stores/connectivity.store";
@@ -144,6 +145,8 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
                 keyboardShouldPersistTaps="handled"
                 onScroll={onScroll}
                 scrollEventThrottle={16}
+                // a card touched as the drag began stays shaded until the finger lifts (usePressHighlight)
+                onScrollEndDrag={notifyScrollDragEnd}
             >
                 <ScrollToViewContext.Provider value={scrollToView}>
                     <ScrollToTopContext.Provider value={scrollToTop}>

@@ -20,6 +20,7 @@ import {
     Origin,
     Type,
 } from "@/constants/tracking";
+import { notifyScrollDragEnd } from "@/hooks/usePressHighlight";
 import type { InfoTile } from "@/models/infoTile";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
@@ -190,6 +191,8 @@ export function TileCarousel({
                     showsHorizontalScrollIndicator={false}
                     onScroll={onScroll}
                     scrollEventThrottle={16}
+                    // a tile touched as the swipe began stays shaded until the finger lifts (usePressHighlight)
+                    onScrollEndDrag={notifyScrollDragEnd}
                 >
                     {tiles.map((tile) => (
                         <View
