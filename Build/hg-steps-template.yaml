@@ -44,6 +44,24 @@ steps:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
 
+  # Before anything builds the client (the "Build client" step, or dotnet publish's PublishRunWebpack target), so the
+  # bundle carries the version. The run is named major.minor.build, plus -custom when not built from dev; the app shows
+  # the same version as "major.minor (build) - Custom". The run name is also the image tag, which the release scripts
+  # (Tools/Pipelines/scripts/azp_importImages.sh, azp_tagImages.sh) read as RELEASE_ARTIFACTS_<artifact>_BUILDNUMBER,
+  # so it must stay tag-safe: no spaces or brackets. Downstream pipelines (iOS, Android) read the version from
+  # resources.pipeline.<alias>.runName.
+  - script: |
+      set -e
+      label=""
+      if [ "$(Build.SourceBranch)" != "refs/heads/dev" ]; then label="Custom"; fi
+      node scripts/bump-version.js set "$(AppVersionMajor)" "$(AppVersionMinor)" "$(AppVersionBuild)" "$label"
+      name="$(AppVersionMajor).$(AppVersionMinor).$(AppVersionBuild)"
+      if [ -n "$label" ]; then name="$name-custom"; fi
+      echo "##vso[build.updatebuildnumber]$name"
+    displayName: "Set app version"
+    condition: and(succeeded(), eq(variables['SetAppVersion'], true))
+    workingDirectory: "$(App.Home)/src/ClientApp"
+
   - script: |
       npm run build
     displayName: "Build client"

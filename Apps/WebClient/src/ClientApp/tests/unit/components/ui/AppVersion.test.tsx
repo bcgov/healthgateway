@@ -16,10 +16,28 @@ describe("AppVersion", () => {
         config.version = "1.2.345";
     });
 
-    it("shows major.minor.build", async () => {
+    it("shows major.minor (build)", async () => {
         await render(<AppVersion />);
         expect(textOf(screen.getByTestId("appVersion"))).toBe(
-            "Version 1.2.345"
+            "Version 1.2 (345)"
+        );
+    });
+
+    it("shows a build not from dev as Custom", async () => {
+        const constants = Constants as { expoConfig: { extra?: unknown } };
+        constants.expoConfig.extra = { versionLabel: "Custom" };
+        await render(<AppVersion />);
+        constants.expoConfig.extra = undefined;
+        expect(textOf(screen.getByTestId("appVersion"))).toBe(
+            "Version 1.2 (345) - Custom"
+        );
+    });
+
+    it("shows a local build's 0.0.0 as 0.0 (0)", async () => {
+        config.version = "0.0.0";
+        await render(<AppVersion />);
+        expect(textOf(screen.getByTestId("appVersion"))).toBe(
+            "Version 0.0 (0)"
         );
     });
 

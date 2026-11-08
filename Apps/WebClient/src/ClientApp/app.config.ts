@@ -28,6 +28,11 @@ const expoConfig = (config: ConfigContext["config"]): ExpoConfig => ({
     name: `Health Gateway${nameSuffix[appEnv]}`,
     slug: "hgui",
     version: `${appVersion.major}.${appVersion.minor}.${build}`,
+    // Shown after the build number ("Custom": a pipeline build not from dev). Not part of `version`: the stores take digits only.
+    extra: {
+        ...config.extra,
+        versionLabel: (appVersion as { label?: string }).label,
+    },
     orientation: "default",
     icon: "./assets/images/icon.png",
     // Custom URL scheme used for the native OIDC redirect (registered on the Keycloak "hg" client).

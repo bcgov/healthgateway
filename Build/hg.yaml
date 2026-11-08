@@ -58,6 +58,23 @@ parameters:
     type: boolean
     default: false
 
+  # Stamps ClientApp/version.json and names the run major.minor.build (WebClient: see Apps/WebClient/azure/build.yaml)
+  - name: SetAppVersion
+    type: boolean
+    default: false
+
+  - name: VersionMajor
+    type: number
+    default: 0
+
+  - name: VersionMinor
+    type: number
+    default: 0
+
+  - name: BuildSeed
+    type: number
+    default: 0
+
 #Build variables
 variables:
   - group: Secrets
@@ -79,6 +96,18 @@ variables:
     value: ${{ parameters.EnableOpenShift }}
   - name: EnableAzure
     value: ${{ parameters.EnableAzure }}
+  - name: SetAppVersion
+    value: ${{ parameters.SetAppVersion }}
+  - ${{ if eq(parameters.SetAppVersion, true) }}:
+      - name: AppVersionMajor
+        value: ${{ parameters.VersionMajor }}
+      - name: AppVersionMinor
+        value: ${{ parameters.VersionMinor }}
+      # Counts up on every run of the pipeline and never resets, whatever major and minor are (the stores need each
+      # build number higher than the last). The seed is part of the counter's name, so raising BuildSeed starts a new
+      # counter at that number; a counter ignores any later change to the seed it started with.
+      - name: AppVersionBuild
+        value: $[counter('appversion-build-${{ parameters.BuildSeed }}', ${{ parameters.BuildSeed }})]
   - name: App.Home
     value: $(Build.SourcesDirectory)/Apps/$(App.Name)
   - name: Image.Name

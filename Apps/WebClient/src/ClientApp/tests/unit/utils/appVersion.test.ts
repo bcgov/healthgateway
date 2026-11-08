@@ -1,6 +1,23 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { isUpdateRequired } from "@/utils/appVersion";
+import { formatAppVersion, isUpdateRequired } from "@/utils/appVersion";
+
+describe("formatAppVersion", () => {
+    it.each([
+        ["2.1.1234", "2.1 (1234)"],
+        ["0.0.0", "0.0 (0)"],
+        [" 1.0.7 ", "1.0 (7)"],
+        ["1.2", "1.2"],
+        ["dev", "dev"],
+    ])("%s shows as %s", (version, expected) => {
+        expect(formatAppVersion(version)).toBe(expected);
+    });
+
+    it("puts a label after the build number", () => {
+        expect(formatAppVersion("0.0.12", "Custom")).toBe("0.0 (12) - Custom");
+        expect(formatAppVersion("0.0.12", "")).toBe("0.0 (12)");
+    });
+});
 
 describe("isUpdateRequired", () => {
     it.each([

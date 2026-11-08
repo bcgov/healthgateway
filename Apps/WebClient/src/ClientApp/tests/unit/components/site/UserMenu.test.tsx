@@ -90,7 +90,7 @@ describe("UserMenu", () => {
 
     it("ends with the version, on every platform", async () => {
         await render(<UserMenu visible showProfile {...handlers} />);
-        expect(screen.getByText("Version 1.2.345")).toBeTruthy();
+        expect(screen.getByText("Version 1.2 (345)")).toBeTruthy();
     });
 
     it("still logs out", async () => {
