@@ -6,6 +6,7 @@ import {
     it,
     jest,
 } from "@jest/globals";
+import { type ComponentType, lazy, Suspense } from "react";
 import { Platform } from "react-native";
 
 import { AppShell } from "@/components/site/AppShell";
@@ -15,6 +16,7 @@ import { Path } from "@/constants/path";
 import { resetPageTitles } from "@/hooks/usePageTitle";
 import { services } from "@/services/container";
 import { useConfigStore } from "@/stores/config.store";
+import { useLoadingStore } from "@/stores/loading.store";
 import { expectNoAxeViolations } from "@/test/axe";
 import { setBreakpoint } from "@/test/breakpointMock";
 import { resetRouter, routerState } from "@/test/expoRouterMock";
@@ -24,7 +26,7 @@ import {
     signInRegistered,
     updateStores,
 } from "@/test/fixtures";
-import { render, screen, waitFor } from "@/test/ui";
+import { inAct, render, screen, waitFor } from "@/test/ui";
 
 jest.mock(
     "@/hooks/useBreakpoint",
@@ -79,5 +81,46 @@ describe("AppShell (web)", () => {
         await waitFor(() => expect(document.activeElement).toBe(main));
         // `aria-selected` on the drawer's links is Vuetify parity the owner is still to decide on (WP3)
         await expectNoAxeViolations(document.body, ["aria-allowed-attr"]);
+    });
+    it("on a phone, adds the footer only once the page has drawn, so the page does not push it down the screen", async () => {
+        if (Platform.OS !== "web") return;
+        setBreakpoint(400);
+        // a route whose code is still loading, as Expo Router's async routes are on first load
+        let load: (page: { default: ComponentType }) => void = () => undefined;
+        const Page = lazy(
+            () =>
+                new Promise<{ default: ComponentType }>((resolve) => {
+                    load = resolve;
+                })
+        );
+        await render(
+            <AppShell>
+                <Suspense fallback={null}>
+                    <Page />
+                </Suspense>
+            </AppShell>
+        );
+        expect(screen.queryByTestId("footer")).toBeNull();
+        await inAct(() => load({ default: () => <AppText>Body</AppText> }));
+        await waitFor(() => expect(screen.getByTestId("footer")).toBeTruthy());
+    });
+    it("on a phone, adds the footer only once the page has loaded, and keeps it while a dialog loads", async () => {
+        if (Platform.OS !== "web") return;
+        setBreakpoint(400);
+        const { show, hide } = useLoadingStore.getState();
+        show("page");
+        await render(
+            <AppShell>
+                <AppText>
+                    Breadcrumb and title, the content still loading
+                </AppText>
+            </AppShell>
+        );
+        expect(screen.queryByTestId("footer")).toBeNull();
+        await inAct(() => hide("page"));
+        expect(screen.getByTestId("footer")).toBeTruthy();
+        await inAct(() => show("dialog"));
+        expect(screen.getByTestId("footer")).toBeTruthy();
+        await inAct(() => hide("dialog"));
     });
 });
