@@ -1,23 +1,23 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const homeUrl = "/home";
 const profileUrl = "/profile";
 
 function loginToHome() {
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            homeUrl
-        );
-    });
+    fakeLogin(homeUrl);
 }
 
 describe("Home page - notification settings alert", () => {
     it("Home - Shows the SMS removed alert once and saves it as dismissed", () => {
-        cy.configureSettings({});
+        configureFakeSettings({});
 
         cy.fixture("UserProfileService/userProfile.json").then((profile) => {
             profile = Cypress._.cloneDeep(profile);

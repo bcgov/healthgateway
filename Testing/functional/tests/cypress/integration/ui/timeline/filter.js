@@ -1,4 +1,8 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import {
     applyTimelineFilters,
     cancelTimelineFilters,
@@ -9,6 +13,9 @@ import {
     verifyTimelineFilterSelection,
 } from "../../../support/functions/filter";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Filters", () => {
     function testFilteredResultAlerts(filter, alert) {
@@ -45,7 +52,7 @@ describe("Filters", () => {
         cy.intercept("GET", "**/PatientData/*?patientDataTypes=*", {
             fixture: "PatientData/allTimelineData.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "clinicalDocument",
@@ -72,18 +79,7 @@ describe("Filters", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -261,7 +257,7 @@ describe("Filters", () => {
 
 describe("Describe Filters when all datasets blocked", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "clinicalDocument",
@@ -311,18 +307,7 @@ describe("Describe Filters when all datasets blocked", () => {
                 "UserProfileService/userProfileMultipleDatasetsBlocked.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -338,7 +323,7 @@ describe("Describe Filters when all datasets blocked", () => {
 
 describe("Describe Filters when clinical doc dataset is blocked but immunization dataset is not", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "clinicalDocument",
@@ -360,18 +345,7 @@ describe("Describe Filters when clinical doc dataset is blocked but immunization
             fixture: "ImmunizationService/immunization.json",
         });
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 

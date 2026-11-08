@@ -1,32 +1,28 @@
-import { AuthMethod } from "../../../support/constants";
 import {
     fillTemplate,
     ReminderBody,
     ResultBody,
 } from "../../../support/functions/bcCancerScreening";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Clinical Document cards", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/ClinicalDocument/*", {
             fixture: "ClinicalDocumentService/clinicalDocument.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [{ name: "clinicalDocument", enabled: true }],
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -47,22 +43,11 @@ describe("Diagnostic Imaging cards", () => {
         cy.intercept("GET", "**/PatientData/*?patientDataTypes=*", {
             fixture: "PatientData/allTimelineData.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [{ name: "diagnosticImaging", enabled: true }],
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -100,22 +85,11 @@ describe("Medication cards", () => {
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [{ name: "medication", enabled: true }],
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -137,7 +111,7 @@ describe("Medication cards", () => {
 
 describe("Medication Request", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "specialAuthorityRequest",
@@ -149,18 +123,7 @@ describe("Medication Request", () => {
             fixture: "MedicationService/medicationRequest.json",
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -245,7 +208,7 @@ describe("BC Cancer Screening cards", () => {
         cy.intercept("GET", "**/PatientData/*?patientDataTypes=*", {
             fixture: fixtureToUse,
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "bcCancerScreening",
@@ -254,18 +217,7 @@ describe("BC Cancer Screening cards", () => {
             ],
         });
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     }
 

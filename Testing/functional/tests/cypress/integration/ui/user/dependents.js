@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const dependentPhn = "9874307168";
 
@@ -18,7 +25,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             dependents: {
                 enabled: true,
             },
@@ -32,18 +39,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/dependents",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/dependents");
         checkDependentsPageHasLoaded();
     });
 
@@ -161,7 +157,7 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             dependents: {
                 enabled: true,
             },
@@ -175,18 +171,7 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/dependents",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/dependents");
         checkDependentsPageHasLoaded();
     });
 
@@ -242,7 +227,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             dependents: {
                 enabled: true,
             },
@@ -256,18 +241,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/dependents",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/dependents");
         checkDependentsPageHasLoaded();
     });
 
@@ -328,7 +302,7 @@ describe("Dependents - Tabs Disabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.configureSettings({
+        configureFakeSettings({
             dependents: {
                 enabled: true,
             },
@@ -336,18 +310,7 @@ describe("Dependents - Tabs Disabled", () => {
 
         setupStandardFixtures();
 
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/dependents",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/dependents");
         checkDependentsPageHasLoaded();
     });
 

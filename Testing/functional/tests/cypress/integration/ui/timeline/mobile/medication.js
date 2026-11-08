@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 function selectCardByDate(date) {
     cy.contains("[data-testid=entryCardDate]", date)
@@ -13,7 +20,7 @@ function selectCardByDate(date) {
 
 describe("Medication", () => {
     beforeEach(() => {
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "medication",
@@ -28,18 +35,7 @@ describe("Medication", () => {
             fixture: "MedicationService/medicationStatement.json",
         });
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
     });
 
     it("Validate Card Details for Mobile", () => {

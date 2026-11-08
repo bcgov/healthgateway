@@ -1,5 +1,12 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("Laboratory Orders - Report", () => {
     beforeEach(() => {
@@ -13,7 +20,7 @@ describe("Laboratory Orders - Report", () => {
                 fixture: "LaboratoryService/laboratoryReportPdf.json",
             }
         );
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "labResult",
@@ -25,18 +32,7 @@ describe("Laboratory Orders - Report", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.wait("@getLaboratoryOrdersFixture");
         cy.checkTimelineHasLoaded();
     });

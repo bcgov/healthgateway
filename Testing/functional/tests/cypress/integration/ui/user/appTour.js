@@ -1,20 +1,18 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("App Tour Authenticated", () => {
     beforeEach(() => {
-        cy.configureSettings({});
+        configureFakeSettings({});
         setupStandardFixtures();
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/home"
-                );
-            }
-        );
+        fakeLogin("/home");
     });
 
     // AB#16942 Disable App Tour access

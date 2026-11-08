@@ -1,23 +1,21 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 function configureAndLogin(dataset, endpoint, fixture, alias) {
     cy.intercept("GET", endpoint, { fixture }).as(alias);
-    cy.configureSettings({
+    configureFakeSettings({
         datasets: [{ name: dataset, enabled: true }],
     });
     setupStandardFixtures();
     cy.viewport("iphone-6");
-    cy.env(["keycloak.password"]).then(({ "keycloak.password": password }) => {
-        cy.login(
-            Cypress.expose("keycloak.username"),
-            password,
-            AuthMethod.KeyCloak,
-            "/timeline",
-            "default",
-            { cacheAcrossSpecs: true }
-        );
-    });
+    fakeLogin("/timeline");
     cy.wait(`@${alias}`);
     cy.checkTimelineHasLoaded();
 }

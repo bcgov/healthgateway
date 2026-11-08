@@ -1,12 +1,19 @@
-import { AuthMethod } from "../../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../../support/functions/fakeEnvironment";
 import { setupStandardFixtures } from "../../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 describe("COVID-19 Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "covid19TestResult",
@@ -18,18 +25,7 @@ describe("COVID-19 Orders", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
         cy.checkTimelineHasLoaded();
     });
 
@@ -259,7 +255,7 @@ describe("COVID-19 Orders Refresh", () => {
                         : "LaboratoryService/covid19Orders.json",
             });
         }).as("getCovid19Orders");
-        cy.configureSettings({
+        configureFakeSettings({
             datasets: [
                 {
                     name: "covid19TestResult",
@@ -271,18 +267,7 @@ describe("COVID-19 Orders Refresh", () => {
         setupStandardFixtures();
 
         cy.viewport("iphone-6");
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    "/timeline",
-                    "default",
-                    { cacheAcrossSpecs: true }
-                );
-            }
-        );
+        fakeLogin("/timeline");
     });
 
     it("retries COVID-19 results when the initial response requests a refresh", () => {

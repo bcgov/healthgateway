@@ -1,3 +1,7 @@
+import { useFakeEnvironment } from "../../../support/functions/fakeEnvironment";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 describe("Landing Page", () => {
     it("Displays landing page content", () => {
         cy.visit("/");
@@ -70,17 +74,16 @@ describe("Landing Page", () => {
 
     it("Offline", () => {
         cy.get("[data-testid=offlineMessage]").should("not.exist");
-        cy.readConfig()
-            .as("config")
-            .then((config) => {
-                config.webClient["offlineMode"] = {
-                    startDateTime: "2021-01-17T12:00:00",
-                    endDateTime: "2121-01-21T12:00:00",
-                    message: "customized offline message",
-                    whitelist: [],
-                };
-                cy.intercept("GET", "**/configuration", config);
-            });
+        cy.get("@config").then((fixtureConfig) => {
+            const config = structuredClone(fixtureConfig);
+            config.webClient["offlineMode"] = {
+                startDateTime: "2021-01-17T12:00:00",
+                endDateTime: "2121-01-21T12:00:00",
+                message: "customized offline message",
+                whitelist: [],
+            };
+            cy.intercept("GET", "**/configuration", config);
+        });
         cy.visit("/");
         cy.get("[data-testid=offlineMessage]").contains(
             "customized offline message"

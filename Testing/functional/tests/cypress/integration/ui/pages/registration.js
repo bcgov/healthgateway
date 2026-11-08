@@ -1,5 +1,13 @@
-import { AuthMethod } from "../../../support/constants";
+import {
+    configureFakeSettings,
+    fakeLogin,
+    useFakeEnvironment,
+} from "../../../support/functions/fakeEnvironment";
+import { FakeUser } from "../../../support/functions/fakeKeycloak";
 import { setupStandardFixtures } from "../../../support/functions/intercept";
+
+// Runs against the SPA alone: fixture configuration, fake Keycloak, every API call stubbed.
+useFakeEnvironment();
 
 const logoutCompletePath = "/logoutComplete";
 const registrationPath = "/registration";
@@ -29,18 +37,8 @@ describe("Registration Page", () => {
                 "UserProfileService/userProfileUnregisteredRegistered.json",
         });
 
-        cy.configureSettings({});
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.unregistered.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homePath,
-                    "registration-validation-success"
-                );
-            }
-        );
+        configureFakeSettings({});
+        fakeLogin(homePath, { user: FakeUser.Unregistered });
 
         cy.contains("#subject", "Registration").should("be.visible");
         cy.location("pathname").should("eq", registrationPath);
@@ -96,18 +94,8 @@ describe("Registration Page", () => {
             statusCode: 500,
         });
 
-        cy.configureSettings({});
-        cy.env(["keycloak.password"]).then(
-            ({ "keycloak.password": password }) => {
-                cy.login(
-                    Cypress.expose("keycloak.unregistered.username"),
-                    password,
-                    AuthMethod.KeyCloak,
-                    homePath,
-                    "registration-validation-failure"
-                );
-            }
-        );
+        configureFakeSettings({});
+        fakeLogin(homePath, { user: FakeUser.Unregistered });
 
         cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
         cy.location("pathname").should("eq", registrationPath);
