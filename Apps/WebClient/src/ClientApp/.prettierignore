@@ -1,0 +1,11 @@
+node_modules/
+ios/
+android/
+dist/
+.expo/
+coverage/
+.logs/
+tests/maestro/out/
+package.json
+package-lock.json
+expo-env.d.ts

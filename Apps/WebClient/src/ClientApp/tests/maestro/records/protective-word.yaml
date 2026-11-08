@@ -1,0 +1,95 @@
+# Protected medications: logs in as a second account whose PharmaNet records have a protective word
+# (MAESTRO_HG_PROTECTED_USERNAME and MAESTRO_HG_PROTECTED_PASSWORD in credentials.env), opens Health Records, enters
+# MAESTRO_HG_PROTECTIVE_WORD in the "Restricted PharmaNet Records" dialog, and checks it is accepted: the medications
+# show. On Android a wrong word first must be refused. Logs out at the end. Run it through scripts/maestro-test.sh.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - protectiveWord
+---
+- assertTrue:
+      condition: ${typeof MAESTRO_HG_PROTECTED_USERNAME === 'string' && MAESTRO_HG_PROTECTED_USERNAME.length > 0 && typeof MAESTRO_HG_PROTECTED_PASSWORD === 'string' && MAESTRO_HG_PROTECTED_PASSWORD.length > 0 && typeof MAESTRO_HG_PROTECTIVE_WORD === 'string' && MAESTRO_HG_PROTECTIVE_WORD.length > 0}
+      label: "MAESTRO_HG_PROTECTED_USERNAME, MAESTRO_HG_PROTECTED_PASSWORD and MAESTRO_HG_PROTECTIVE_WORD are set in credentials.env"
+- runFlow: ../subflows/start-signed-out.yaml
+- runFlow:
+      file: ../subflows/log-in.yaml
+      env:
+          LOGIN_USERNAME: ${MAESTRO_HG_PROTECTED_USERNAME}
+          LOGIN_PASSWORD: ${MAESTRO_HG_PROTECTED_PASSWORD}
+# Health Records by the app's own link: straight after a login the iPhone Duo's side rail is still being rebuilt, and
+# Maestro can't find its items yet
+- runFlow:
+      file: ../subflows/open-link.yaml
+      env:
+          LINK: healthgateway://timeline
+# Success is the protected medications showing, not the dialog closing: the dialog also hides while a word is being
+# checked, and comes back with "Invalid protective word. Try again." when it is wrong.
+#
+# Android: Maestro sees into the dialog, so everything goes by id, and each word is typed once its field has focus. A
+# wrong word first: the dialog must come back with the error (iOS can't check this: it can't see into the dialog).
+- runFlow:
+      when:
+          platform: Android
+      commands:
+          # medications load with the rest of the timeline; the dialog opens once they come back protected
+          - extendedWaitUntil:
+                visible:
+                    id: "protectiveWordModal"
+                timeout: 120000
+          - tapOn:
+                id: "protectiveWordInput"
+          - assertVisible:
+                id: "protectiveWordInput"
+                focused: true
+          - inputText: "maestro-not-the-word"
+          - tapOn:
+                id: "protectiveWordContinueBtn"
+          - extendedWaitUntil:
+                visible: "Invalid protective word. Try again."
+                timeout: 60000
+          - tapOn:
+                id: "protectiveWordInput"
+          - eraseText: 40
+          - inputText: ${MAESTRO_HG_PROTECTIVE_WORD}
+          - tapOn:
+                id: "protectiveWordContinueBtn"
+# iOS: Maestro can't see into a React Native dialog, or past it to the page (AGENTS.md). The page vanishing from its
+# view is the dialog opening. The word's field takes the cursor as the dialog opens (native), so nothing is tapped by
+# guesswork and the word goes to that field; the return key submits.
+- runFlow:
+      when:
+          platform: iOS
+      commands:
+          - extendedWaitUntil:
+                visible:
+                    id: "breadcrumb-timeline"
+                timeout: 20000
+                optional: true
+          - extendedWaitUntil:
+                notVisible:
+                    id: "breadcrumb-timeline"
+                timeout: 120000
+          - inputText: ${MAESTRO_HG_PROTECTIVE_WORD}
+          - pressKey: Enter
+# Accepted: a medication shows on the timeline (they are all protected for this account, so none show before). A wrong
+# word brings the dialog back, which hides the page on iOS, so this fails rather than passes.
+- scrollUntilVisible:
+      element:
+          id: "medicationTitle"
+      direction: DOWN
+      speed: 80
+      timeout: 60000
+# and the dialog stays closed (on iOS it would hide the medication again)
+- assertNotVisible:
+      id: "protectiveWordModal"
+- assertVisible:
+      id: "medicationTitle"
+# back to the top, where the header (and its menu, for logging out) shows again
+- scrollUntilVisible:
+      element:
+          id: "breadcrumb-timeline"
+      direction: UP
+      speed: 80
+      timeout: 20000
+- runFlow: ../subflows/log-out.yaml
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

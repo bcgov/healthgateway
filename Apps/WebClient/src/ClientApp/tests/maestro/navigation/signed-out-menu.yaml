@@ -1,0 +1,31 @@
+# The gear menu when logged out: Dark Mode and Support open, and no Log in button in the header.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedOut
+---
+- runFlow: ../subflows/start-signed-out.yaml
+- assertNotVisible:
+      id: "loginBtn"
+- tapOn:
+      id: "settingsMenuBtn"
+- extendedWaitUntil:
+      visible:
+          id: "menu-btn-dark-mode-link"
+      timeout: 5000
+- tapOn:
+      id: "menu-btn-dark-mode-link"
+- extendedWaitUntil:
+      visible:
+          id: "dark-mode-system"
+      timeout: 5000
+- assertVisible:
+      id: "menu-btn-support-link"
+# close the menu (the strip of page left of it: the backdrop's middle is under the menu itself)
+- tapOn:
+      point: "5%,50%"
+- extendedWaitUntil:
+      notVisible:
+          id: "headerMenu"
+      timeout: 5000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

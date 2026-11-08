@@ -1,0 +1,24 @@
+# Profile from the account menu, and the logo back to Home.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "headerDropdownBtn"
+- extendedWaitUntil:
+      visible:
+          id: "profileBtn"
+      timeout: 5000
+- tapOn:
+      id: "profileBtn"
+- extendedWaitUntil:
+      visible: "Personal Information"
+      timeout: 15000
+- tapOn: "Go to Health Gateway home page"
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-button"
+      timeout: 8000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

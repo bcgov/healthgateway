@@ -1,0 +1,48 @@
+# Health Records: the page opens. With records on the account, the filter opens and cancels (no records, no filter).
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-health-records-link"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-button"
+      timeout: 15000
+- extendedWaitUntil:
+      visible:
+          id: "filterDropdown"
+      timeout: 20000
+      optional: true
+- runFlow:
+      when:
+          visible:
+              id: "filterDropdown"
+      commands:
+          - tapOn:
+                id: "filterDropdown"
+          - runFlow:
+                when:
+                    platform: Android
+                commands:
+                    - extendedWaitUntil:
+                          visible:
+                              id: "btnFilterCancel"
+                          timeout: 5000
+                    - tapOn:
+                          id: "btnFilterCancel"
+          # Maestro can't see inside a React Native dialog on iOS (AGENTS.md): Cancel by its place, bottom right of the
+          # full-screen Filter dialog
+          - runFlow:
+                when:
+                    platform: iOS
+                commands:
+                    - tapOn:
+                          point: "64%,92%"
+          - extendedWaitUntil:
+                visible:
+                    id: "filterDropdown"
+                timeout: 5000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

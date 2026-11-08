@@ -1,0 +1,28 @@
+# Home: its tiles, the Add Quick Link dialog (cancelled), and a tile into Health Records.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- assertVisible:
+      id: "health-records-card"
+- tapOn:
+      id: "add-quick-link-button"
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-modal"
+      timeout: 5000
+- tapOn:
+      id: "cancel-add-quick-link-btn"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-modal"
+      timeout: 5000
+- tapOn:
+      id: "health-records-card"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-button"
+      timeout: 8000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

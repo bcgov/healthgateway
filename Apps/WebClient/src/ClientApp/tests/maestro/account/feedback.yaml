@@ -1,0 +1,22 @@
+# Feedback: the dialog opens from the account menu and closes. Sends nothing.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "headerDropdownBtn"
+- extendedWaitUntil:
+      visible:
+          id: "menu-btn-feedback-link"
+      timeout: 5000
+- tapOn:
+      id: "menu-btn-feedback-link"
+- extendedWaitUntil:
+      visible:
+          id: "feedback-no-need-btn"
+      timeout: 8000
+- tapOn:
+      id: "feedback-no-need-btn"
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

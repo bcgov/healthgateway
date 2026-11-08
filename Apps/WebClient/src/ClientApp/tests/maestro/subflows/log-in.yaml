@@ -1,0 +1,64 @@
+# From the landing page, logs in with the KeyCloak identity provider and lands on Home, as LOGIN_USERNAME with
+# LOGIN_PASSWORD, which the caller passes from ClientApp/credentials.env (start-signed-in: MAESTRO_HG_USERNAME and
+# MAESTRO_HG_PASSWORD), so run it through scripts/maestro-test.sh. Assumes the account is registered with the current
+# terms accepted, and Device Security off.
+appId: ca.bc.gov.healthgateway.dev
+---
+- assertTrue:
+      condition: ${typeof LOGIN_USERNAME === 'string' && LOGIN_USERNAME.length > 0 && typeof LOGIN_PASSWORD === 'string' && LOGIN_PASSWORD.length > 0}
+      label: "a username and password were passed (see credentials.env)"
+- tapOn:
+      id: "btnLogin"
+- extendedWaitUntil:
+      visible:
+          id: "KeyCloakBtn"
+      timeout: 20000
+- tapOn:
+      id: "KeyCloakBtn"
+# the Keycloak page opens in the system sign-in sheet
+- extendedWaitUntil:
+      visible: "Sign In"
+      timeout: 30000
+# The label and the field share each name: "below" picks the field. Each value is typed only once its own field
+# has focus, so a missed tap fails the flow instead of typing the password into the wrong field.
+- tapOn:
+      text: "Username"
+      below:
+          text: "Username"
+- assertVisible:
+      text: "Username"
+      focused: true
+- inputText: ${LOGIN_USERNAME}
+# To the Password field. iOS: the keyboard, when it stays up, puts its bar over the field, so the page is dragged up a
+# little first (harmless when the keyboard is down). Android: hide the keyboard. Then tap the field, and type only once it
+# has focus.
+- runFlow:
+      when:
+          platform: iOS
+      commands:
+          - swipe:
+                start: "50%,40%"
+                end: "50%,22%"
+                duration: 500
+- runFlow:
+      when:
+          platform: Android
+      commands:
+          - hideKeyboard
+- tapOn:
+      text: "Password"
+      below:
+          text: "Password"
+- assertVisible:
+      text: "Password"
+      focused: true
+- assertNotVisible:
+      text: "Username"
+      focused: true
+- inputText: ${LOGIN_PASSWORD}
+# submit from the keyboard: the keyboard can cover the Sign In button
+- pressKey: Enter
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-button"
+      timeout: 90000

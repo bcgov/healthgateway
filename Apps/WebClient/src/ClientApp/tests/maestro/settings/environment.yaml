@@ -1,0 +1,42 @@
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedOut
+    - resetsApp
+# Security → Environment switches it after a confirmation; switching is a Reset App, so the intro shows again and
+# the banner names the new one. Ends back on Development.
+# runs even when a step fails, so a run never leaves the app on Test, where the test logins don't work
+onFlowComplete:
+    - launchApp:
+          stopApp: true
+    - runFlow: ../subflows/ensure-development.yaml
+---
+- runFlow: ../subflows/start-signed-out.yaml
+- assertVisible:
+      id: "environmentBanner"
+      text: "Development"
+- runFlow:
+      file: ../subflows/switch-environment.yaml
+      env:
+          ENVIRONMENT: test
+- runFlow:
+      file: ../subflows/skip-intro.yaml
+- extendedWaitUntil:
+      visible:
+          id: "environmentBanner"
+          text: "Test"
+      timeout: 30000
+- takeScreenshot: tests/maestro/out/environment-test
+- runFlow:
+      file: ../subflows/switch-environment.yaml
+      env:
+          ENVIRONMENT: dev
+- runFlow:
+      file: ../subflows/skip-intro.yaml
+- extendedWaitUntil:
+      visible:
+          id: "environmentBanner"
+          text: "Development"
+      timeout: 30000
+- takeScreenshot: tests/maestro/out/environment-development
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

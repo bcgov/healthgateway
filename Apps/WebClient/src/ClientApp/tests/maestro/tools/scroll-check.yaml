@@ -1,0 +1,12 @@
+# Tool: scrolls the current page down twice and takes a screenshot.
+appId: ca.bc.gov.healthgateway.dev
+---
+- swipe:
+      start: 50%,75%
+      end: 50%,30%
+      duration: 600
+- swipe:
+      start: 50%,75%
+      end: 50%,30%
+      duration: 600
+- takeScreenshot: tests/maestro/out/scroll-check

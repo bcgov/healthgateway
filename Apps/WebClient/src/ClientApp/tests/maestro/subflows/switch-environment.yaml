@@ -1,0 +1,30 @@
+appId: ca.bc.gov.healthgateway.dev
+# Signed out: gear menu → Security → Environment, choose ${ENVIRONMENT} (local, dev, test or prod) and confirm. The
+# switch is a Reset App, so the caller handles the intro that follows.
+---
+- tapOn:
+      id: "settingsMenuBtn"
+- extendedWaitUntil:
+      visible:
+          id: "menu-btn-security-link"
+      timeout: 5000
+- tapOn:
+      id: "menu-btn-security-link"
+- scrollUntilVisible:
+      element:
+          id: "environment-${ENVIRONMENT}"
+      direction: DOWN
+      # faster than the default (40); it still stops as soon as the element shows
+      speed: 80
+      timeout: 10000
+# the confirmation's button (Android may show it in capitals). A tap while the gear menu is still closing can be lost,
+# so the choice is tapped again if no confirmation shows.
+- retry:
+      maxRetries: 2
+      commands:
+          - tapOn:
+                id: "environment-${ENVIRONMENT}"
+          - extendedWaitUntil:
+                visible: "(?i)switch"
+                timeout: 5000
+- tapOn: "(?i)switch"

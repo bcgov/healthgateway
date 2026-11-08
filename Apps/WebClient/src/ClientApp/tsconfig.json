@@ -1,0 +1,20 @@
+{
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        // TypeScript 6 no longer includes every @types package by default; fs/path in tests need node.
+        "types": ["node"],
+        "paths": {
+            "@/*": ["./src/*"],
+            "@/test/*": ["./tests/unit/support/*"],
+            "@/assets/*": ["./assets/*"]
+        }
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.tsx",
+        ".expo/types/**/*.ts",
+        "expo-env.d.ts",
+        "nativewind-env.d.ts"
+    ]
+}

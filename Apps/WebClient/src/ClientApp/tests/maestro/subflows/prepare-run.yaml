@@ -1,0 +1,47 @@
+# Run once by scripts/maestro-all.sh after it opens the dev build on Metro, as one Maestro start instead of several:
+# accepts an iOS "Open in" sheet if one shows, waits for the bundle (minutes the first time), and puts the app on
+# Development (ensure-development.yaml).
+appId: ca.bc.gov.healthgateway.dev
+---
+- evalScript: ${output.appShown = false}
+- extendedWaitUntil:
+      # the sheet's button reads exactly "Open"; the app's screens are matched by text they contain
+      visible: "Open|Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+      timeout: 300000
+- runFlow:
+      when:
+          visible: "Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+      commands:
+          - evalScript: ${output.appShown = true}
+# not the app yet: the "Open in" sheet
+- runFlow:
+      when:
+          true: ${!output.appShown}
+      commands:
+          - tapOn:
+                text: "Open"
+                optional: true
+          - extendedWaitUntil:
+                visible: "Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+                timeout: 300000
+- runFlow: ensure-development.yaml
+# Device Security must be off: with it on, the app can open locked or on a saved copy under an expired login, where
+# adding a quick link, a dependent or a download is disabled and the flows fail for reasons that aren't bugs. The
+# Security page says "Turn on Device Security…" only while it is off.
+- runFlow:
+      file: open-link.yaml
+      env:
+          LINK: healthgateway://security
+- extendedWaitUntil:
+      visible:
+          id: "deviceSecuritySwitch"
+      timeout: 15000
+# a failure here reads 'Assertion is false: "Turn on Device Security…" is visible': Device Security is on. Unlock the
+# app if asked (Device Hub: Features, Face ID, Matching Face), turn Device Security off on the Security page, log out,
+# and run again.
+- assertVisible: "Turn on Device Security to save records on this device."
+# back to the start page (Home when logged in: the route guard takes it there)
+- runFlow:
+      file: open-link.yaml
+      env:
+          LINK: healthgateway://

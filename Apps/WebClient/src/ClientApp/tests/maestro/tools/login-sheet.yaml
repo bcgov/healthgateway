@@ -1,0 +1,27 @@
+# Launches the app, taps the hero "Log in with BC Services Card", then the BC Services Card provider,
+# and captures the auth sheet. Leaves the sheet open, so it is a tool, not a test. Run: maestro test tests/maestro/tools/login-sheet.yaml
+appId: ca.bc.gov.healthgateway.dev
+---
+- launchApp
+- extendedWaitUntil:
+      visible:
+          id: "btnLogin"
+      timeout: 60000
+- takeScreenshot: tests/maestro/out/01-landing
+- tapOn:
+      id: "btnLogin"
+- extendedWaitUntil:
+      visible:
+          id: "BCSCBtn"
+      timeout: 20000
+- takeScreenshot: tests/maestro/out/02-login-picker
+- tapOn:
+      id: "BCSCBtn"
+- extendedWaitUntil:
+      visible: "Cancel"
+      timeout: 20000
+- takeScreenshot: tests/maestro/out/03-auth-sheet
+- extendedWaitUntil:
+      visible: ".*(Services Card|Log in|Login|Sign in|error|Error|invalid|Invalid).*"
+      timeout: 25000
+- takeScreenshot: tests/maestro/out/04-auth-sheet-loaded

@@ -1,0 +1,9 @@
+{
+    "platforms": ["apple", "android"],
+    "apple": {
+        "modules": ["HgSecureVaultModule"]
+    },
+    "android": {
+        "modules": ["ca.bc.gov.healthgateway.vault.HgSecureVaultModule"]
+    }
+}

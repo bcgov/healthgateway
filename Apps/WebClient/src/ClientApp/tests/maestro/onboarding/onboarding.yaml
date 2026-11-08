@@ -1,0 +1,26 @@
+# The intro and security step, reached by switching environment (which is a Reset App), then back to Development.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedOut
+    - resetsApp
+# runs even when a step fails, so a run never leaves the app on Test, where the test logins don't work
+onFlowComplete:
+    - launchApp:
+          stopApp: true
+    - runFlow: ../subflows/ensure-development.yaml
+---
+- runFlow: ../subflows/start-signed-out.yaml
+- runFlow:
+      file: ../subflows/switch-environment.yaml
+      env:
+          ENVIRONMENT: test
+- runFlow:
+      file: ../subflows/onboarding-steps.yaml
+- runFlow:
+      file: ../subflows/switch-environment.yaml
+      env:
+          ENVIRONMENT: dev
+- runFlow:
+      file: ../subflows/skip-intro.yaml
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

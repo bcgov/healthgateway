@@ -1,0 +1,18 @@
+# Register on the landing page starts a login, instead of coming back to the same page. Goes no further than the login.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedOut
+---
+- runFlow: ../subflows/start-signed-out.yaml
+- tapOn:
+      id: "btnStart"
+- extendedWaitUntil:
+      notVisible:
+          id: "btnStart"
+      timeout: 15000
+# back from the login it started: cancel the sign-in sheet if it opened
+- tapOn:
+      text: "Cancel"
+      optional: true
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

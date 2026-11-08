@@ -1,0 +1,23 @@
+# The header hides scrolling down Home and comes back scrolling up. The swipes give their points: on iOS 18 (the iPhone
+# Xs) Maestro's "direction: UP" swipe doesn't move the page.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- swipe:
+      start: 50%,75%
+      end: 50%,30%
+      duration: 800
+- extendedWaitUntil:
+      notVisible: "Go to Health Gateway home page"
+      timeout: 4000
+- swipe:
+      start: 50%,30%
+      end: 50%,75%
+      duration: 800
+- extendedWaitUntil:
+      visible: "Go to Health Gateway home page"
+      timeout: 4000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

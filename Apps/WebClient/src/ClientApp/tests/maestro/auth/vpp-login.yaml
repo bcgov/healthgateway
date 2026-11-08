@@ -1,0 +1,18 @@
+# Virtual Patient Portal hand-off page: it opens with both its choices. Cancel leaves for AccessMyHealth, so neither is pressed.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedOut
+---
+- runFlow: ../subflows/start-signed-out.yaml
+- runFlow:
+      file: ../subflows/open-link.yaml
+      env:
+          LINK: healthgateway://vppLogin
+- extendedWaitUntil:
+      visible:
+          id: "cancel-button"
+      timeout: 15000
+- assertVisible:
+      id: "continue-to-hgw-button"
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

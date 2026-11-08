@@ -1,0 +1,13 @@
+# Services: the page opens.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-services-link"
+- extendedWaitUntil:
+      visible: ".*Organ Donor Registry information.*"
+      timeout: 15000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

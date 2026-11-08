@@ -1,0 +1,35 @@
+# Pull to refresh on Dependents and Services shows the Refreshing pill. Android only: on iOS Maestro did not catch the 1.2 second pill.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+    - android
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-dependents-link"
+- extendedWaitUntil:
+      visible:
+          id: "add-dependent-button"
+      timeout: 15000
+- swipe:
+      start: 50%,45%
+      end: 50%,85%
+      duration: 600
+- extendedWaitUntil:
+      visible: "Refreshing…"
+      timeout: 4000
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-services-link"
+- extendedWaitUntil:
+      visible: ".*Organ Donor Registry information.*"
+      timeout: 15000
+- swipe:
+      start: 50%,45%
+      end: 50%,85%
+      duration: 600
+- extendedWaitUntil:
+      visible: "Refreshing…"
+      timeout: 4000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

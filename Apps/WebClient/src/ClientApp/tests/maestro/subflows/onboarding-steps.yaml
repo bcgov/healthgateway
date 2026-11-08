@@ -1,0 +1,32 @@
+appId: ca.bc.gov.healthgateway.dev
+# First launch on a fresh install: the tutorial, then the security step, answered "Not now".
+# Reset first with `adb shell pm clear` or by reinstalling; the state is in AsyncStorage.
+---
+- extendedWaitUntil:
+      visible:
+          id: "onboardingTutorial"
+      timeout: 30000
+- tapOn:
+      id: "onboardingNextBtn"
+- tapOn:
+      id: "onboardingNextBtn"
+- tapOn:
+      id: "onboardingNextBtn"
+- assertNotVisible:
+      id: "onboardingSkipBtn"
+- takeScreenshot: tests/maestro/out/onboarding-last
+- tapOn: "Get started"
+- extendedWaitUntil:
+      visible: "Protect your personal information"
+      timeout: 5000
+- takeScreenshot: tests/maestro/out/onboarding-security
+- tapOn:
+      id: "localAuthLearnMoreBtn"
+- assertVisible: "Keeping your data secure"
+- tapOn:
+      id: "securityTipsBackBtn"
+- tapOn:
+      id: "localAuthNotNowBtn"
+- extendedWaitUntil:
+      notVisible: "Protect your personal information"
+      timeout: 5000

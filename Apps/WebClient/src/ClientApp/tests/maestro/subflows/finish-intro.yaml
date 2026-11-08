@@ -1,0 +1,33 @@
+# From any page of the first-launch intro: skips the tutorial (or ends it on its last page), says "Not now" to device
+# security, and waits for the landing page.
+appId: ca.bc.gov.healthgateway.dev
+---
+- evalScript: ${output.introSkipped = false}
+- runFlow:
+      when:
+          visible:
+              id: "onboardingSkipBtn"
+      commands:
+          - evalScript: ${output.introSkipped = true}
+          - tapOn:
+                id: "onboardingSkipBtn"
+# the tutorial's last page has no Skip intro, only Get started (asked only then: each "no" costs Maestro seconds)
+- runFlow:
+      when:
+          true: ${!output.introSkipped}
+      commands:
+          - runFlow:
+                when:
+                    visible: "Get started"
+                commands:
+                    - tapOn: "Get started"
+- extendedWaitUntil:
+      visible:
+          id: "localAuthNotNowBtn"
+      timeout: 10000
+- tapOn:
+      id: "localAuthNotNowBtn"
+- extendedWaitUntil:
+      visible:
+          id: "btnLogin"
+      timeout: 30000

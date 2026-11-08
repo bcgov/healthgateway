@@ -1,0 +1,20 @@
+# Signed in: the bottom tab bar replaces the drawer on native.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- tapOn:
+      id: "menu-btn-health-records-link"
+- extendedWaitUntil:
+      visible:
+          id: "breadcrumb-timeline"
+      timeout: 8000
+- tapOn:
+      id: "menu-btn-home-link"
+- extendedWaitUntil:
+      visible:
+          id: "health-records-card"
+      timeout: 8000
+- takeScreenshot: tests/maestro/out/tabs-home
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

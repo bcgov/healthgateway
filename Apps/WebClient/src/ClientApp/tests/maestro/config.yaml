@@ -1,0 +1,12 @@
+# Maestro workspace: `maestro test tests/maestro` (from ClientApp/) runs every group below. `subflows/` are steps the flows call
+# and `tools/` are helpers run by hand, so neither is listed. Filter with --include-tags=signedIn or signedOut, and
+# --exclude-tags=android on iOS.
+flows:
+    - "auth/*"
+    - "home/*"
+    - "records/*"
+    - "account/*"
+    - "navigation/*"
+    - "settings/*"
+    - "connectivity/*"
+    - "onboarding/*"
