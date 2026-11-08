@@ -6,12 +6,13 @@ import {
     it,
     jest,
 } from "@jest/globals";
-import { Linking } from "react-native";
+import { Linking, Platform } from "react-native";
 
 import { getAccessLinks } from "@/constants/accessLinks";
 import { Action } from "@/constants/tracking";
 import { services } from "@/services/container";
-import { press, render, screen } from "@/test/ui";
+import { expectNoAxeViolations } from "@/test/axe";
+import { attrOf, press, render, screen } from "@/test/ui";
 import { TileCarousel } from "@/views/landing/TileCarousel";
 
 describe("TileCarousel", () => {
@@ -96,5 +97,28 @@ describe("TileCarousel", () => {
                 screen.getByTestId(`mobile-read-more-button-${t.type}`)
             ).toBeTruthy();
         }
+    });
+    it("marks the slide on screen with aria-current on web, which a button allows (aria-selected it does not)", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <TileCarousel
+                tiles={tiles}
+                cardTestID="access-card"
+                mobileCardTestID="mobile-access-card"
+                columns={4}
+                carousel
+            />
+        );
+        const dots = screen.getAllByTestId(
+            /mobile-access-card-carousel-delimiter-/
+        );
+        expect(dots.map((d) => attrOf(d, "aria-current"))).toEqual([
+            "true",
+            ...tiles.slice(1).map(() => undefined),
+        ]);
+        expect(dots.some((d) => attrOf(d, "aria-selected") !== undefined)).toBe(
+            false
+        );
+        await expectNoAxeViolations(document.body);
     });
 });

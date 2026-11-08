@@ -223,7 +223,13 @@ export function TileCarousel({
                             key={t.type}
                             accessibilityRole="button"
                             accessibilityLabel={`Carousel slide ${i + 1} of ${tiles.length}`}
-                            aria-selected={i === page}
+                            // the slide on screen: web `aria-current` (aria-selected is not allowed on a button,
+                            // Lighthouse's "ARIA attributes do not match their roles"); native reads "selected"
+                            {...(Platform.OS === "web"
+                                ? ((i === page
+                                      ? { "aria-current": "true" }
+                                      : {}) as object)
+                                : { "aria-selected": i === page })}
                             testID={`${mobileCardTestID}-carousel-delimiter-${i}`}
                             className="w-8 h-8 mx-2 rounded-full items-center justify-center"
                             onPress={() =>
