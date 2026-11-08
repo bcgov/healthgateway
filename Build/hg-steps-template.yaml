@@ -44,6 +44,13 @@ steps:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
 
+  # The client's Jest tests (native and web projects), before anything builds it. --ci: never writes new snapshots.
+  - script: |
+      npm test -- --ci
+    displayName: "Running client unit tests"
+    condition: and(succeeded(), eq(variables['NPMInstall'], true))
+    workingDirectory: "$(App.Home)/src/ClientApp"
+
   # Before anything builds the client (the "Build client" step, or dotnet publish's PublishRunWebpack target), so the
   # bundle carries the version. The run is named major.minor.build, plus -custom when not built from dev; the app shows
   # the same version as "major.minor (build) - Custom". The run name is also the image tag, which the release scripts

@@ -90,10 +90,11 @@
         "export:web": "expo export --platform web --clear",
         "build": "npm run typecheck && npm run lintcheck:app && node scripts/build-web.js",
         "lint": "eslint . --fix && prettier --write .",
-        "typecheck": "tsc --noEmit",
+        "types": "expo customize tsconfig.json",
+        "typecheck": "npm run types && tsc --noEmit",
         "version:bump": "node scripts/bump-version.js",
         "lintcheck": "npm run lintcheck:app",
-        "lintcheck:app": "eslint . --max-warnings 0 && prettier --check .",
+        "lintcheck:app": "npm run types && eslint . --max-warnings 0 && prettier --check .",
         "test": "jest",
         "test:coverage": "jest --coverage"
     },

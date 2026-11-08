@@ -1,5 +1,5 @@
 // https://docs.expo.dev/guides/using-eslint/
-// Rules aligned with healthgateway/Apps/WebClient/src/ClientApp/eslint.config.mjs
+// Rules aligned with the Vue client's ../ClientApp.old/eslint.config.mjs
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const eslintConfigPrettier = require("eslint-config-prettier/flat");
