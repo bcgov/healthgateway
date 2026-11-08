@@ -219,6 +219,7 @@ describe("Sidebar", () => {
 
     it("closes the temporary drawer on Escape, as useEscapeKey does in SidebarComponent.vue", async () => {
         if (Platform.OS !== "web") return; // the sidebar is web only
+        jest.useFakeTimers();
         signInRegistered();
         setBreakpoint(390);
         useLayoutStore.setState({ sidebarOpen: true });
@@ -230,7 +231,54 @@ describe("Sidebar", () => {
             )
         );
         expect(useLayoutStore.getState().sidebarOpen).toBe(false);
+        await advanceTimers(200);
         expect(screen.queryByLabelText("Close navigation")).toBeNull();
+        jest.useRealTimers();
+    });
+
+    it("slides shut over 0.2 s, as v-navigation-drawer does, out of reach meanwhile; at once when motion is reduced", async () => {
+        if (Platform.OS !== "web") return; // the sidebar is web only
+        jest.useFakeTimers();
+        signInRegistered();
+        setBreakpoint(390);
+        useLayoutStore.setState({ sidebarOpen: true });
+        await render(<Sidebar />);
+        const overlay = () =>
+            screen.queryByTestId("sidenavbar-overlay") as HTMLElement | null;
+        expect(overlay()?.hasAttribute("inert")).toBe(false);
+        updateStores(() => useLayoutStore.setState({ sidebarOpen: false }));
+        // still on the page while it slides, but the page under it takes presses and focus
+        expect(overlay()).not.toBeNull();
+        expect(overlay()?.hasAttribute("inert")).toBe(true);
+        expect(overlay()?.getAttribute("aria-hidden")).toBe("true");
+        expect(overlay()?.style.pointerEvents).toBe("none");
+        await advanceTimers(199);
+        expect(overlay()).not.toBeNull();
+        await advanceTimers(1);
+        expect(overlay()).toBeNull();
+        // reopened, it is in reach again
+        updateStores(() => useLayoutStore.setState({ sidebarOpen: true }));
+        expect(overlay()?.hasAttribute("inert")).toBe(false);
+        expect(overlay()?.style.pointerEvents).toBe("auto");
+
+        jest.mocked(useReducedMotion).mockReturnValue(true);
+        await render(<Sidebar />);
+        updateStores(() => useLayoutStore.setState({ sidebarOpen: false }));
+        await advanceTimers(0);
+        expect(overlay()).toBeNull();
+        jest.mocked(useReducedMotion).mockReturnValue(false);
+        jest.useRealTimers();
+    });
+
+    it("leaves the drawer at once when the window widens, where the permanent drawer takes over", async () => {
+        if (Platform.OS !== "web") return; // the sidebar is web only
+        signInRegistered();
+        setBreakpoint(390);
+        useLayoutStore.setState({ sidebarOpen: true });
+        await render(<Sidebar />);
+        expect(screen.getByTestId("sidenavbar-overlay")).toBeTruthy();
+        updateStores(() => setBreakpoint(1366));
+        expect(screen.queryByTestId("sidenavbar-overlay")).toBeNull();
     });
 
     it("leaves Escape to the Feedback dialog open over the drawer", async () => {

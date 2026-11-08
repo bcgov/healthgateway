@@ -13,12 +13,18 @@ export function webClassRef(classes: Record<string, boolean>) {
     };
 }
 
-/** Web only: a callback ref that sets one HTML attribute on the DOM node (e.g. `data-url`, for Cypress). */
-export function webAttributeRef(name: string, value: string) {
+/**
+ * Web only: a callback ref that sets one HTML attribute on the DOM node (e.g. `data-url`, for Cypress), or removes it
+ * when `value` is false.
+ */
+export function webAttributeRef(name: string, value: string | false) {
     return (node: unknown) => {
         if (Platform.OS !== "web" || !node) return;
-        (
-            node as { setAttribute?: (n: string, v: string) => void }
-        ).setAttribute?.(name, value);
+        const element = node as {
+            setAttribute?: (n: string, v: string) => void;
+            removeAttribute?: (n: string) => void;
+        };
+        if (value === false) element.removeAttribute?.(name);
+        else element.setAttribute?.(name, value);
     };
 }

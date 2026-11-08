@@ -5,23 +5,29 @@
 /* global jest */
 const { ScrollView, View } = require("react-native");
 
-const useSharedValue = (initial) => {
-    const shared = {
-        value: initial,
-        get: () => shared.value,
-        set: (next) => {
-            shared.value =
-                typeof next === "function" ? next(shared.value) : next;
-        },
-    };
-    return shared;
-};
+const { useState } = require("react");
+
+// one value for the life of the component, as in Reanimated
+const useSharedValue = (initial) =>
+    useState(() => {
+        const shared = {
+            value: initial,
+            get: () => shared.value,
+            set: (next) => {
+                shared.value =
+                    typeof next === "function" ? next(shared.value) : next;
+            },
+        };
+        return shared;
+    })[0];
 
 module.exports = {
     __esModule: true,
     default: { View, ScrollView },
     useSharedValue,
     useAnimatedStyle: (style) => style(),
+    // a curve has no effect where values apply at once
+    Easing: { bezier: () => ({ factory: () => (t) => t }) },
     withSpring: (to) => to,
     withTiming: (to, config, done) => {
         if (done) setTimeout(() => done(true), config?.duration ?? 0);

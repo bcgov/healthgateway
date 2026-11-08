@@ -7,6 +7,7 @@ import {
     usePanGesture,
 } from "react-native-gesture-handler";
 import Reanimated, {
+    Easing,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
@@ -109,6 +110,8 @@ function DrawerItem({
 /** Vuetify v-navigation-drawer metrics used by SidebarComponent.vue */
 const DRAWER_WIDTH = 256;
 const RAIL_WIDTH = 56;
+/** v-navigation-drawer's transition timing: Material's standard curve */
+const standardEasing = Easing.bezier(0.4, 0, 0.2, 1);
 
 /**
  * v-navigation-drawer's touch support, temporary drawer: a drag pulls the drawer only when it starts near its edge,
@@ -157,16 +160,45 @@ export function Sidebar() {
     useUserStore((s) => s.patientRetrievalFailed);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-    // swipe to close: how far the drawer has been dragged (0 open, -DRAWER_WIDTH shut), only near its edge
-    const dragX = useSharedValue(0);
-    const dragging = useSharedValue(false);
-    useEffect(() => {
-        if (isOpen) dragX.set(0);
-    }, [isOpen, dragX]);
-    const closeSidebar = () => setSidebar(false);
     const motion = useMotion();
     const reduced = motion.reduced;
     const slideMs = motion.ms(200);
+
+    // The temporary drawer's place: 0 open, -DRAWER_WIDTH shut. v-navigation-drawer slides it in and out over 0.2 s on
+    // Material's standard curve, the scrim fading with it; a swipe near its edge drags it.
+    const overlayOpen = isMobile && isOpen;
+    const dragX = useSharedValue(overlayOpen ? 0 : -DRAWER_WIDTH);
+    const dragging = useSharedValue(false);
+    // shut by any means (hamburger, scrim, Escape, navigating, a swipe), it stays on the page until it has slid away;
+    // not when the window widens, where the permanent drawer takes over at once
+    const [wasOverlayOpen, setWasOverlayOpen] = useState(overlayOpen);
+    const [closing, setClosing] = useState(false);
+    if (wasOverlayOpen !== overlayOpen) {
+        setWasOverlayOpen(overlayOpen);
+        setClosing(!overlayOpen && isMobile);
+    }
+    useEffect(() => {
+        if (overlayOpen)
+            dragX.set(
+                withTiming(0, { duration: slideMs, easing: standardEasing })
+            );
+        else if (closing)
+            dragX.set(
+                withTiming(
+                    -DRAWER_WIDTH,
+                    {
+                        // a swipe has already slid it away
+                        duration: dragX.get() <= -DRAWER_WIDTH ? 0 : slideMs,
+                        easing: standardEasing,
+                    },
+                    (finished) => {
+                        if (finished) scheduleOnRN(setClosing, false);
+                    }
+                )
+            );
+        else dragX.set(-DRAWER_WIDTH);
+    }, [overlayOpen, closing, slideMs, dragX]);
+    const closeSidebar = () => setSidebar(false);
     // v-navigation-drawer's rail transition: the width eases over 0.2 s (Material's standard curve); none when the
     // user asks for reduced motion. react-native-web passes the transition properties through to CSS.
     const railTransition = {
@@ -323,7 +355,7 @@ export function Sidebar() {
 
     if (isMobile) {
         // v-navigation-drawer temporary: closed, it waits off the left of the screen
-        if (!isOpen)
+        if (!isOpen && !closing)
             return (
                 <View
                     ref={webAttributeRef("inert", "")}
@@ -334,7 +366,8 @@ export function Sidebar() {
                     {drawer}
                 </View>
             );
-        // Temporary drawer: overlays the content row (which starts under the header), scrim beside it.
+        // Temporary drawer: overlays the content row (which starts under the header), scrim beside it. Sliding shut,
+        // it is out of reach already: the page under it takes presses, and the keyboard and screen reader skip it.
         return (
             <GestureDetector
                 gesture={swipeClose}
@@ -343,8 +376,13 @@ export function Sidebar() {
             >
                 <View
                     testID="sidenavbar-overlay"
+                    ref={webAttributeRef("inert", closing ? "" : false)}
+                    aria-hidden={closing}
                     className="absolute inset-0 z-10 flex-row"
-                    style={{ elevation: 10 }}
+                    style={{
+                        elevation: 10,
+                        pointerEvents: closing ? "none" : "auto",
+                    }}
                 >
                     <Reanimated.View
                         style={[{ height: "100%" }, drawerDragStyle]}
