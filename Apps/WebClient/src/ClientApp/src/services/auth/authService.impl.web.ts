@@ -5,28 +5,20 @@ import type { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { describeError, logger } from "@/services/logger";
 
 import { type IAuthService, REFRESH_CUSHION } from "./authService";
-import { TOKEN_STORAGE_KEY } from "./storedSession.web";
+import {
+    clearSsoRedirect,
+    isSsoRedirectRecent,
+    markSsoRedirect,
+    readHadSession,
+    removeLegacyTokens,
+    setHadSession,
+} from "./storedSession.web";
 
 const INIT_TIMEOUT_MS = 5000;
 
-function readStoredTokens(): {
-    token?: string;
-    refreshToken?: string;
-    idToken?: string;
-} {
-    try {
-        const raw = sessionStorage.getItem(TOKEN_STORAGE_KEY);
-        return raw
-            ? (JSON.parse(raw) as {
-                  token?: string;
-                  refreshToken?: string;
-                  idToken?: string;
-              })
-            : {};
-    } catch {
-        return {};
-    }
-}
+/** keycloak-js's third-party cookie check gives up after this, inside INIT_TIMEOUT_MS: a check that answers late
+ * cannot start a full-page redirect after the app has carried on signed out. */
+const THIRD_PARTY_COOKIE_CHECK_TIMEOUT_MS = 4000;
 
 /**
  * Web implementation: keycloak-js, matching Apps/WebClient/src/ClientApp/src/services/restAuthService.ts.
@@ -60,19 +52,17 @@ export class WebAuthService implements IAuthService {
         kc.onReady = () => logger.verbose("Keycloak: onReady");
         kc.onAuthSuccess = () => {
             logger.verbose("Keycloak: onAuthSuccess");
-            this.persistTokens();
+            setHadSession(true);
         };
         kc.onAuthError = (e) =>
             logger.error(`Keycloak: onAuthError - ${e?.error}`);
-        kc.onAuthRefreshSuccess = () => {
+        kc.onAuthRefreshSuccess = () =>
             logger.verbose("Keycloak: onAuthRefreshSuccess");
-            this.persistTokens();
-        };
         kc.onAuthRefreshError = () =>
             logger.verbose("Keycloak: onAuthRefreshError");
         kc.onAuthLogout = () => {
             logger.verbose("Keycloak: onAuthLogout");
-            this.persistTokens();
+            setHadSession(false);
         };
         kc.onTokenExpired = () => logger.verbose("Keycloak: onTokenExpired");
     }
@@ -80,28 +70,44 @@ export class WebAuthService implements IAuthService {
     async init(): Promise<void> {
         if (this.initialized) return;
         this.initialized = true;
-        const stored = readStoredTokens();
+        removeLegacyTokens();
+        // The tokens live only in memory, so every page load asks Keycloak for them again (check-sso).
+        // - Third-party cookies allowed: a hidden iframe (silent-check-sso.html) asks, and the page stays.
+        // - Blocked (Safari, Firefox strict, Brave): the iframe cannot see Keycloak's session, so keycloak-js falls
+        //   back to a full-page prompt=none redirect that comes back to this URL. That is only worth it when this
+        //   browser was signed in at its last load (hadSession): anyone else stays on the page, signed out.
+        // - A redirect made from this tab moments ago that came back without its callback must not repeat, or the
+        //   tab would loop: this load stays, signed out.
+        // keycloak-js also parses the ?code=&state= on /loginCallback, and the fallback's #state=, here.
+        // If the silent iframe never answers (e.g. this origin is not a valid redirect URI yet, so Keycloak renders
+        // an error page inside it), give up after INIT_TIMEOUT_MS and stay signed out.
+        const now = Date.now();
+        const fallback = readHadSession() && !isSsoRedirectRecent(now);
+        if (fallback) markSsoRedirect(now);
+        const keycloakInit = this.keycloak.init({
+            onLoad: "check-sso",
+            silentCheckSsoRedirectUri: `${globalThis.location.origin}/silent-check-sso.html`,
+            silentCheckSsoFallback: fallback,
+            messageReceiveTimeout: THIRD_PARTY_COOKIE_CHECK_TIMEOUT_MS,
+            checkLoginIframe: false,
+            pkceMethod: "S256",
+            scope: this.scope,
+        });
+        // Settling means the page did not leave for Keycloak. Only an answer from Keycloak changes hadSession: a
+        // failure (Keycloak unreachable) says nothing about the session.
+        void keycloakInit.then(
+            (authenticated) => {
+                clearSsoRedirect();
+                setHadSession(authenticated);
+            },
+            () => clearSsoRedirect()
+        );
         try {
-            // Never leave the page on load: check-sso runs in a hidden iframe (silent-check-sso.html) and
-            // `silentCheckSsoFallback: false` disables keycloak-js's full-page redirect fallback, so the
-            // public landing page always renders. Tokens from the previous page load are handed back to
-            // keycloak-js so a reload keeps the session even when third-party cookies are blocked.
-            // keycloak-js also parses the ?code=&state= on /loginCallback here.
-            // If the silent iframe never answers (e.g. this origin is not a valid redirect URI yet, so
-            // Keycloak renders an error page inside it), give up after INIT_TIMEOUT_MS and stay logged out.
             await Promise.race([
-                this.keycloak.init({
-                    onLoad: "check-sso",
-                    silentCheckSsoRedirectUri: `${globalThis.location.origin}/silent-check-sso.html`,
-                    silentCheckSsoFallback: false,
-                    checkLoginIframe: false,
-                    pkceMethod: "S256",
-                    scope: this.scope,
-                    ...stored,
-                }),
+                keycloakInit,
                 new Promise<never>((_, reject) =>
                     setTimeout(
-                        () => reject(new Error("silent check-sso timed out")),
+                        () => reject(new Error("check-sso timed out")),
                         INIT_TIMEOUT_MS
                     )
                 ),
@@ -110,26 +116,6 @@ export class WebAuthService implements IAuthService {
             logger.warn(
                 `Keycloak init failed; continuing unauthenticated: ${describeError(error)}`
             );
-        }
-        this.persistTokens();
-    }
-
-    private persistTokens() {
-        try {
-            if (this.keycloak.authenticated && this.keycloak.token) {
-                sessionStorage.setItem(
-                    TOKEN_STORAGE_KEY,
-                    JSON.stringify({
-                        token: this.keycloak.token,
-                        refreshToken: this.keycloak.refreshToken,
-                        idToken: this.keycloak.idToken,
-                    })
-                );
-            } else {
-                sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-            }
-        } catch {
-            // storage unavailable
         }
     }
 
@@ -156,11 +142,7 @@ export class WebAuthService implements IAuthService {
     }
 
     signOut(): Promise<void> {
-        try {
-            sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-        } catch {
-            // storage unavailable
-        }
+        setHadSession(false);
         return this.keycloak.logout({ redirectUri: this.logoutCallback });
     }
 
@@ -193,7 +175,7 @@ export class WebAuthService implements IAuthService {
 
     clearState(): void {
         void this.keycloak.clearToken();
-        this.persistTokens();
+        setHadSession(false);
     }
 }
 

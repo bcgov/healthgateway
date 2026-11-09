@@ -14,6 +14,7 @@ leave it and no cy.origin is needed.
 Usage: installFakeKeycloak({ realmUrl, clientId });
 Usage: signInToFakeKeycloak(FakeUser.Bcsc);   // as if the user already has a Keycloak session
 Usage: fakeKeycloakState().authRequests        // inspect what the SPA sent
+Usage: blockThirdPartyCookiesInFakeKeycloak(); // as Safari, Firefox strict or Brave would
 ----------------------------------------------------------------------------------------------------
 */
 
@@ -88,6 +89,11 @@ function resetState(realmUrl, clientId) {
         logoutRequests: [],
         loginStatusIframeLoads: 0,
         unexpectedRequests: [],
+        // The browser blocks third-party cookies: the cookie check says so, and requests from an
+        // iframe do not carry Keycloak's session, so prompt=none in an iframe finds none.
+        thirdPartyCookiesBlocked: false,
+        // prompt=none answers lose their state and code, as if the app's URL lost its fragment.
+        dropSilentCallbacks: false,
     };
 }
 
@@ -113,6 +119,20 @@ export function signInToFakeKeycloak(user = FakeUser.Bcsc) {
         s.user = user;
         s.signedIn = true;
         s.sessionId = randomId();
+    });
+}
+
+/** Makes the browser block third-party cookies, as Safari, Firefox strict or Brave would. */
+export function blockThirdPartyCookiesInFakeKeycloak() {
+    return cy.then(() => {
+        fakeKeycloakState().thirdPartyCookiesBlocked = true;
+    });
+}
+
+/** Makes prompt=none answers come back to the app without their callback parameters. */
+export function dropFakeKeycloakSilentCallbacks() {
+    return cy.then(() => {
+        fakeKeycloakState().dropSilentCallbacks = true;
     });
 }
 
@@ -226,6 +246,12 @@ function handleAuth(req) {
         codeChallenge: query.get("code_challenge"),
         codeChallengeMethod: query.get("code_challenge_method"),
     };
+    // keycloak-js's hidden check-sso iframe answers into silent-check-sso.html; anything else is a
+    // page. (Sec-Fetch-Dest cannot tell them apart: Cypress runs the whole app in an iframe.)
+    request.silentIframe =
+        request.prompt === "none" &&
+        URL.canParse(request.redirectUri) &&
+        new URL(request.redirectUri).pathname === "/silent-check-sso.html";
     s.authRequests.push(request);
 
     const problem =
@@ -241,7 +267,14 @@ function handleAuth(req) {
         return;
     }
 
-    if (request.prompt === "none" && !s.signedIn) {
+    if (request.prompt === "none" && s.dropSilentCallbacks) {
+        req.redirect(request.redirectUri, 302);
+        return;
+    }
+
+    const sessionVisible =
+        s.signedIn && !(s.thirdPartyCookiesBlocked && request.silentIframe);
+    if (request.prompt === "none" && !sessionVisible) {
         redirectWithParams(req, request.redirectUri, request.responseMode, {
             error: "login_required",
             state: request.state,
@@ -345,10 +378,14 @@ function handleLogout(req) {
     }
 }
 
-// keycloak-js loads this in a hidden iframe when silent check-sso is configured (ClientApp2 web).
-const thirdPartyCookiesPage = `<!doctype html><html><body><script>
-parent.postMessage("supported", "*");
+// keycloak-js loads this in a hidden iframe when silent check-sso or the session status iframe is
+// configured. Keycloak's real check (step1.html, then step2.html) sets and reads a cookie.
+function thirdPartyCookiesPage(blocked) {
+    const answer = blocked ? "unsupported" : "supported";
+    return `<!doctype html><html><body><script>
+parent.postMessage("${answer}", "*");
 </script></body></html>`;
+}
 
 // keycloak-js's session status iframe (checkLoginIframe). The SPA posts "<clientId> <sessionId>";
 // like Keycloak's, this answers "unchanged" when that matches the realm's session (both empty
@@ -415,9 +452,11 @@ export function installFakeKeycloak({ realmUrl, clientId }) {
         endpoint("GET", "login-status-iframe.html"),
         handleLoginStatusIframe
     );
-    cy.intercept(endpoint("GET", "3p-cookies/step1.html"), {
-        statusCode: 200,
-        headers: { "content-type": "text/html" },
-        body: thirdPartyCookiesPage,
-    });
+    cy.intercept(endpoint("GET", "3p-cookies/step1.html"), (req) =>
+        req.reply({
+            statusCode: 200,
+            headers: { "content-type": "text/html" },
+            body: thirdPartyCookiesPage(state.thirdPartyCookiesBlocked),
+        })
+    );
 }

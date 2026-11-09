@@ -75,18 +75,21 @@ bundle id / package (`ca.bc.gov.healthgateway[.dev|.test]`) and is read by `app.
 The dev server runs on port **5002** because `http://localhost:5002` is already registered on the `hg` client for web
 development. Only the native custom-scheme entries still need to be added:
 
-| Setting                         | Add                                                                                                                                                                                                                                   |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Valid Redirect URIs             | `http://localhost:5002/loginCallback`, `http://localhost:5002/logoutComplete`, `http://localhost:5002/silent-check-sso.html` (or simply `http://localhost:5002/*`), `healthgateway://loginCallback`, `healthgateway://logoutComplete` |
-| Valid Post Logout Redirect URIs | `http://localhost:5002/logoutComplete`, `healthgateway://logoutComplete`                                                                                                                                                              |
-| Web Origins                     | `http://localhost:5002`                                                                                                                                                                                                               |
+| Setting                         | Add                                                                                                                                                        |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Valid Redirect URIs             | `http://localhost:5002/*` (the check-sso fallback returns to whichever page was loaded), `healthgateway://loginCallback`, `healthgateway://logoutComplete` |
+| Valid Post Logout Redirect URIs | `http://localhost:5002/logoutComplete`, `healthgateway://logoutComplete`                                                                                   |
+| Web Origins                     | `http://localhost:5002`                                                                                                                                    |
 
 ## Authentication design
 
-- Web: `keycloak-js` (same as the existing web client), PKCE S256. On load it only runs a _silent_ `check-sso` in a hidden
-  iframe (`public/silent-check-sso.html`) with the full-page redirect fallback disabled, so the public landing page always
-  renders and the browser never leaves the site unless the user clicks Log in. Tokens are kept in `sessionStorage` so a
-  reload keeps the session even when third-party cookies are blocked. Callbacks are `/loginCallback` and `/logoutComplete`.
+- Web: `keycloak-js` (same as the existing web client), PKCE S256. Tokens live only in memory, as in the old Vue app, so
+  every page load runs `check-sso` again. It first tries a hidden iframe (`public/silent-check-sso.html`). When the browser
+  blocks third-party cookies (Safari, Firefox strict, Brave) the iframe cannot see Keycloak's session, and keycloak-js falls
+  back to a full-page `prompt=none` redirect that returns to the same page. That fallback runs only when this browser was
+  signed in at its last load (a non-secret `hg.auth.hadSession` flag in `localStorage`, cleared at sign-out), so anonymous
+  visitors never leave the site on load; a tab that just redirected does not redirect again, so it cannot loop.
+  Callbacks are `/loginCallback` and `/logoutComplete`.
 - Native: `expo-auth-session` PKCE S256 with an **ephemeral** auth session (`preferEphemeralSession: true`), so iOS shows no
   "wants to use … to sign in" sheet and no cookies are shared with Safari. Tokens live in `expo-secure-store`.
   Logout posts the refresh token to Keycloak's end-session endpoint; no browser is opened.

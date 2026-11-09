@@ -1,5 +1,7 @@
 import { setupFakeEnvironment } from "../../../support/functions/fakeEnvironment";
 import {
+    blockThirdPartyCookiesInFakeKeycloak,
+    dropFakeKeycloakSilentCallbacks,
     fakeKeycloakState,
     FakeUser,
     setFakeKeycloakUser,
@@ -60,8 +62,8 @@ describe("Authentication against fake Keycloak", () => {
         cy.get("[data-testid=headerDropdownBtn]").should("exist");
         cy.then(() => {
             const { authRequests } = fakeKeycloakState();
-            // Vue checks Keycloak again on every load; ClientApp2 keeps its tokens in
-            // sessionStorage and refreshes them. Either way the user never sees a login.
+            // Neither app keeps its tokens across a load: each asks Keycloak again (Vue with
+            // a redirect, ClientApp2 from a hidden iframe), and the user never sees a login.
             expect(authRequests, "auth requests").to.not.be.empty;
             authRequests.forEach((request) =>
                 expect(request.prompt, "silent check").to.eq("none")
@@ -123,5 +125,107 @@ describe("Authentication against fake Keycloak", () => {
             );
             expect(login.idpHint, "kc_idp_hint").to.eq("idir");
         });
+    });
+});
+
+// Safari, Firefox strict and Brave: a hidden iframe cannot see Keycloak's session, so restoring it
+// takes a full-page prompt=none redirect.
+describe("Authentication against fake Keycloak with third-party cookies blocked", () => {
+    const pageRedirects = () =>
+        fakeKeycloakState().authRequests.filter(
+            (r) => r.prompt === "none" && !r.silentIframe
+        );
+
+    function signInFromLoginPage() {
+        cy.visit("/login?redirect=/home");
+        cy.get("#BCSCBtn").should("be.visible").click();
+        cy.location("pathname").should("eq", "/home");
+        cy.get("[data-testid=headerDropdownBtn]").should("exist");
+    }
+
+    beforeEach(() => {
+        setupFakeEnvironment();
+        setupStandardFixtures();
+        cy.intercept("POST", "**/UserFeedback/Rating*", {
+            statusCode: 200,
+            body: { resourcePayload: true, resultStatus: 1 },
+        });
+        blockThirdPartyCookiesInFakeKeycloak();
+    });
+
+    it("Restores the session after a reload with a full-page check-sso", () => {
+        signInFromLoginPage();
+
+        cy.reload();
+
+        cy.location("pathname").should("eq", "/home");
+        cy.location("hash").should("eq", "");
+        cy.get("[data-testid=headerDropdownBtn]").should("exist");
+        cy.then(() => {
+            expect(pageRedirects(), "full-page check-sso").to.have.length(1);
+            expect(
+                new URL(pageRedirects()[0].redirectUri).pathname,
+                "returns to the page that was reloaded"
+            ).to.eq("/home");
+        });
+    });
+
+    it("Keeps the session tokens out of browser storage", () => {
+        signInFromLoginPage();
+
+        cy.window().then((win) => {
+            const stored = JSON.stringify({
+                local: { ...win.localStorage },
+                session: { ...win.sessionStorage },
+            });
+            expect(stored, "browser storage").to.not.match(
+                /"(access_token|refresh_token|id_token|token|refreshToken|idToken)"/
+            );
+            expect(stored, "browser storage").to.not.match(/eyJ[\w-]+\.eyJ/);
+        });
+    });
+
+    // ClientApp2 only redirects when this browser was signed in at its last load.
+    it("Does not redirect a visitor who never signed in", () => {
+        signInToFakeKeycloak(FakeUser.Bcsc); // a session the app has no reason to look for
+
+        cy.visit("/");
+
+        cy.get("#btnStart").should("be.visible");
+        cy.get("[data-testid=headerDropdownBtn]").should("not.exist");
+        cy.then(
+            () => expect(pageRedirects(), "full-page check-sso").to.be.empty
+        );
+    });
+
+    it("Does not restore the session after signing out", () => {
+        signInFromLoginPage();
+        cy.get("[data-testid=headerDropdownBtn]").click();
+        cy.get("[data-testid=logoutBtn]").click();
+        cy.get("[data-testid=ratingModalSkipBtn]").click();
+        cy.location("pathname").should("eq", "/logoutComplete");
+
+        cy.visit("/home");
+
+        cy.location("pathname").should("eq", "/login");
+        cy.get("[data-testid=headerDropdownBtn]").should("not.exist");
+        cy.then(
+            () => expect(pageRedirects(), "full-page check-sso").to.be.empty
+        );
+    });
+
+    it("Stops after one redirect when the answer comes back without its callback", () => {
+        signInFromLoginPage();
+        dropFakeKeycloakSilentCallbacks();
+
+        cy.reload();
+
+        cy.location("pathname").should("eq", "/login");
+        cy.get("[data-testid=headerDropdownBtn]").should("not.exist");
+        // give a loop time to show itself
+        cy.wait(2000);
+        cy.then(() =>
+            expect(pageRedirects(), "full-page check-sso").to.have.length(1)
+        );
     });
 });
