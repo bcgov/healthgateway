@@ -170,6 +170,31 @@ describe("Sidebar", () => {
         expect(useLayoutStore.getState().sidebarOpen).toBe(false);
     });
 
+    it("dims the whole page under the open drawer, as v-navigation-drawer's scrim does, with the drawer over it", async () => {
+        if (Platform.OS !== "web") return; // the sidebar is web only
+        signInRegistered();
+        setBreakpoint(390);
+        useLayoutStore.setState({ sidebarOpen: true });
+        await render(<Sidebar />);
+        const scrim = (
+            screen.getByLabelText("Close navigation") as unknown as HTMLElement
+        ).parentElement!;
+        const drawer = (
+            screen.getByTestId("sidenavbar") as unknown as HTMLElement
+        ).parentElement!;
+        // not a strip beside the drawer: the drawer slides over it rather than into a gap
+        expect(scrim.style.position).toBe("absolute");
+        expect(scrim.style.left).toBe("0px");
+        expect(scrim.style.right).toBe("0px");
+        expect(scrim.style.opacity).toBe("0.2");
+        expect(scrim.contains(drawer)).toBe(false);
+        expect(drawer.style.position).toBe("absolute");
+        expect(
+            scrim.compareDocumentPosition(drawer) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+    });
+
     it("drags shut from near its edge, as v-navigation-drawer's touch support does", async () => {
         if (Platform.OS !== "web") return; // the sidebar is web only
         jest.useFakeTimers();

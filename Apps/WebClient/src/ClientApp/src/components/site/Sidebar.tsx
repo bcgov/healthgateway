@@ -110,6 +110,32 @@ function DrawerItem({
 /** Vuetify v-navigation-drawer metrics used by SidebarComponent.vue */
 const DRAWER_WIDTH = 256;
 const RAIL_WIDTH = 56;
+/** v-navigation-drawer__scrim's opacity (`--v-navigation-drawer-scrim-opacity`) */
+const ScrimOpacity = 0.2;
+
+/** the scrim's box: the whole content row, under the drawer too */
+const fillArea = {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+} as const;
+
+/** the temporary drawer's box: the content row's left edge, its full height, over the scrim */
+const drawerPlace = {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+} as const;
+
+/** v-navigation-drawer--temporary.v-navigation-drawer--active: the level-3 shadow it casts over the page */
+const temporaryDrawerShadow = {
+    boxShadow:
+        "0px 2px 3px 0px rgba(0,0,0,0.3), 0px 6px 10px 4px rgba(0,0,0,0.15)",
+} as unknown as ViewStyle;
+
 /** v-navigation-drawer's transition timing: Material's standard curve */
 const standardEasing = Easing.bezier(0.4, 0, 0.2, 1);
 
@@ -256,9 +282,9 @@ export function Sidebar() {
     const drawerDragStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: dragX.get() }],
     }));
-    // Vuetify fades the scrim with the drag
+    // v-navigation-drawer__scrim: black at 20 % (`--v-navigation-drawer-scrim-opacity`), faded with the slide and drag
     const scrimDragStyle = useAnimatedStyle(() => ({
-        opacity: 1 + dragX.get() / DRAWER_WIDTH,
+        opacity: ScrimOpacity * (1 + dragX.get() / DRAWER_WIDTH),
     }));
 
     // Escape closes the temporary drawer, unless a dialog (such as Feedback) is open over it
@@ -378,24 +404,30 @@ export function Sidebar() {
                     testID="sidenavbar-overlay"
                     ref={webAttributeRef("inert", closing ? "" : false)}
                     aria-hidden={closing}
-                    className="absolute inset-0 z-10 flex-row"
+                    className="absolute inset-0 z-10"
                     style={{
                         elevation: 10,
                         pointerEvents: closing ? "none" : "auto",
                     }}
                 >
-                    <Reanimated.View
-                        style={[{ height: "100%" }, drawerDragStyle]}
-                    >
-                        {drawer}
-                    </Reanimated.View>
-                    <Reanimated.View style={[{ flex: 1 }, scrimDragStyle]}>
+                    {/* the scrim covers the whole area, under the drawer too, as Vuetify's does: the drawer slides
+                        over a page that dims evenly, not into a gap beside a dimmed strip */}
+                    <Reanimated.View style={[fillArea, scrimDragStyle]}>
                         <Pressable
-                            className="flex-1 bg-black/40"
+                            className="flex-1 bg-black"
                             accessibilityRole="button"
                             accessibilityLabel="Close navigation"
                             onPress={() => setSidebar(false)}
                         />
+                    </Reanimated.View>
+                    <Reanimated.View
+                        style={[
+                            drawerPlace,
+                            temporaryDrawerShadow,
+                            drawerDragStyle,
+                        ]}
+                    >
+                        {drawer}
                     </Reanimated.View>
                 </View>
             </GestureDetector>

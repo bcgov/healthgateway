@@ -94,7 +94,7 @@ export function HomeCard({
                 {actionIcon}
                 {onRemove ? (
                     <HgMenu
-                        width={140}
+                        // v-menu location="bottom end": right edges aligned, as wide as "Remove" needs
                         align="end"
                         items={[
                             {

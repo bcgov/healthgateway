@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { Platform, Pressable, Text } from "react-native";
+import { Dimensions, Platform, Pressable, Text } from "react-native";
 
 import { HgMenu } from "@/components/ui/HgMenu";
 import { expectNoAxeViolations } from "@/test/axe";
@@ -101,5 +101,51 @@ describe("HgMenu (v-menu port)", () => {
         await pressKey(menu, "End");
         expect(document.activeElement).toBe(screen.getByTestId("csv"));
         await expectNoAxeViolations(menu as unknown as HTMLElement);
+    });
+
+    it("web: an end-aligned menu lines up its right edge with the activator's and is as wide as its items", async () => {
+        if (Platform.OS !== "web") return;
+        // the activator: 40 wide, its right edge 100 from the window's
+        const windowWidth = Dimensions.get("window").width;
+        const right = windowWidth - 100;
+        const rect = jest
+            .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+            .mockReturnValue({
+                x: right - 40,
+                y: 200,
+                left: right - 40,
+                top: 200,
+                right,
+                bottom: 240,
+                width: 40,
+                height: 40,
+                toJSON: () => ({}),
+            });
+        try {
+            await render(
+                <HgMenu
+                    testID="menu"
+                    align="end"
+                    items={[{ title: "Remove", onPress: () => undefined }]}
+                >
+                    {(open) => (
+                        <Pressable testID="activator" onPress={open}>
+                            <Text>⋮</Text>
+                        </Pressable>
+                    )}
+                </HgMenu>
+            );
+            await press(screen.getByTestId("activator"));
+            const menu = () =>
+                (screen.getByTestId("menu") as unknown as HTMLElement).style;
+            await waitFor(() => expect(menu().opacity).toBe("1"));
+            expect(menu().right).toBe("100px");
+            expect(menu().left).toBe("");
+            // no fixed width: at least the activator's, then its items' (v-menu)
+            expect(menu().minWidth).toBe("40px");
+            expect(menu().width).toBe("");
+        } finally {
+            rect.mockRestore();
+        }
     });
 });

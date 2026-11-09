@@ -17,9 +17,12 @@ interface Props {
     items: HgMenuItem[];
     /** the activator; call `open` from its onPress, and tell its `aria-expanded` from `isOpen` */
     children: (open: () => void, isOpen: boolean) => React.ReactNode;
-    /** fixed menu width; default: at least the activator's width (v-menu) */
+    /** the menu's least width; default: the activator's (v-menu). It still grows to fit its items. */
     width?: number;
-    /** "end": right edges aligned (location="bottom end"); "start" (default): left edges aligned */
+    /**
+     * "end": right edges aligned (location="bottom end"), the menu as wide as its items; "start" (default): left
+     * edges aligned
+     */
     align?: "start" | "end";
     /** test id on the menu list */
     testID?: string;
@@ -40,7 +43,10 @@ export function HgMenu({
     // undefined until the activator has been measured: the menu stays invisible until it can be placed
     const [anchor, setAnchor] = useState<{
         top: number;
-        left: number;
+        /** start: the menu's left edge */
+        left?: number;
+        /** end: its right edge, from the window's; its own width comes from its items, as v-menu's does */
+        right?: number;
         width: number;
     }>();
     // the activator, held in state through a callback ref (render never reads a ref)
@@ -54,15 +60,22 @@ export function HgMenu({
         setOpen(true);
         activator?.measureInWindow((x, y, w, h) => {
             const menuWidth = width ?? w;
-            const preferred = align === "end" ? x + w - menuWidth : x;
-            setAnchor({
-                top: y + h,
-                left: Math.max(
-                    8,
-                    Math.min(preferred, windowWidth - menuWidth - 8)
-                ),
-                width: menuWidth,
-            });
+            setAnchor(
+                align === "end"
+                    ? {
+                          top: y + h,
+                          right: Math.max(8, windowWidth - (x + w)),
+                          width: menuWidth,
+                      }
+                    : {
+                          top: y + h,
+                          left: Math.max(
+                              8,
+                              Math.min(x, windowWidth - menuWidth - 8)
+                          ),
+                          width: menuWidth,
+                      }
+            );
         });
     };
 
@@ -91,10 +104,13 @@ export function HgMenu({
                         {...(Platform.OS === "web"
                             ? ({ onKeyDown: menuKeyDown } as object)
                             : {})}
-                        className="absolute bg-surface rounded shadow-lg border border-border-light py-1"
+                        // v-list: 8px above and below its items
+                        className="absolute bg-surface rounded shadow-lg border border-border-light py-2"
                         style={{
                             top: anchor?.top ?? 0,
-                            left: anchor?.left ?? 0,
+                            ...(anchor?.right !== undefined
+                                ? { right: anchor.right }
+                                : { left: anchor?.left ?? 0 }),
                             minWidth: anchor?.width,
                             opacity: anchor ? 1 : 0,
                         }}

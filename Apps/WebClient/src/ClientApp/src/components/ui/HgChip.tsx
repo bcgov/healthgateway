@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
-import { useThemeColors } from "@/hooks/useTheme";
+import { useColorScheme, useThemeColors } from "@/hooks/useTheme";
 import { cn } from "@/utils/cn";
 import { spaceToggleProps } from "@/utils/spaceToggle";
 
 import { AppText } from "./AppText";
 import { Icon } from "./Icon";
+import { HoverOpacity, overlayOpacity } from "./overlay";
 import { webClassRef } from "./webClass";
 
 interface Props {
@@ -23,15 +24,6 @@ interface Props {
     accessibilityLabel?: string;
 }
 
-/** WCAG relative luminance of a hex colour, for Vuetify's overlay multiplier. */
-function luma(hex: string): number {
-    const channel = (at: number) => {
-        const c = parseInt(hex.slice(at, at + 2), 16) / 255;
-        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-    };
-    return 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
-}
-
 /** Vuetify v-chip as the timeline uses it: selectable filter chips and closable filter labels. */
 export function HgChip({
     children,
@@ -46,12 +38,16 @@ export function HgChip({
     const colors = useThemeColors();
     const selectable = selected !== undefined;
     const height = size === "small" ? 24 : 32;
-    // v-chip__overlay on hover: 4 % of the text colour, doubled on a dark chip (Vuetify's overlay multiplier)
+    // v-chip__overlay on hover: 4 % of the text colour, doubled on a fill that contrasts with the theme (Vuetify's overlay multiplier)
     const [hovered, setHovered] = useState(false);
     const chipBackground = selected ? colors.primary : colors.surface;
     const hoverOverlay = {
         backgroundColor: selected ? colors["on-primary"] : colors.primary,
-        opacity: 0.04 * (luma(chipBackground) > 0.18 ? 1 : 2),
+        opacity: overlayOpacity(
+            HoverOpacity,
+            chipBackground,
+            useColorScheme() === "dark"
+        ),
     };
     return (
         <Pressable

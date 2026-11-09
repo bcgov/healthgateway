@@ -1,6 +1,7 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import {
     ActivityIndicator,
+    Platform,
     Pressable,
     type PressableProps,
     View,
@@ -17,6 +18,7 @@ import { cn } from "@/utils/cn";
 import { AppText } from "./AppText";
 import { elevation1 } from "./elevation";
 import { Icon } from "./Icon";
+import { FocusOpacity, HoverOpacity, overlayOpacity } from "./overlay";
 
 /**
  * Port of the defaults `v-card-actions` (and a v-card's `#actions` slot) gives the buttons inside it: `slim`, 8px
@@ -128,6 +130,30 @@ const iconColor: Record<HgButtonVariant, keyof ThemeColors> = {
     "error-secondary": "error",
 };
 
+/**
+ * Web: the browser's own `:focus-visible` (keyboard focus, not a mouse click), the state Vuetify's focus overlay
+ * keys on. Native: a focus comes only from a hardware keyboard or a TV remote, so it always counts.
+ */
+function isFocusVisible(target: unknown): boolean {
+    if (Platform.OS !== "web") return true;
+    const element = target as { matches?: (selector: string) => boolean };
+    try {
+        return element.matches?.(":focus-visible") ?? false;
+    } catch {
+        // a browser without :focus-visible: Vuetify then shows the overlay on any focus
+        return true;
+    }
+}
+
+/** The `bg-*` fill of the elevated variants, which sets Vuetify's overlay multiplier; the others have none. */
+const fill: Record<HgButtonVariant, keyof ThemeColors | undefined> = {
+    primary: "primary",
+    secondary: undefined,
+    link: undefined,
+    error: "error",
+    "error-secondary": undefined,
+};
+
 /** Port of HgButtonComponent.vue (Vuetify v-btn variants). */
 export function HgButton({
     text,
@@ -143,6 +169,10 @@ export function HgButton({
     className = "",
     labelClassName,
     style,
+    onHoverIn,
+    onHoverOut,
+    onFocus,
+    onBlur,
     ...rest
 }: HgButtonProps) {
     const slimDefault = useContext(SlimButtons);
@@ -172,12 +202,45 @@ export function HgButton({
     const trackingClass = mixedCase ? "tracking-[0.1px]" : "tracking-[1.25px]";
     // A hugging button by default; a caller's own alignment (e.g. self-center in a row) replaces it in cn().
     const alignClass = block ? "self-stretch" : "self-start";
+    // v-btn__overlay: the label colour (currentColor) at 4 % on hover and 12 % on keyboard focus (focus-visible wins
+    // over hover), doubled on a fill that contrasts with the theme. A disabled v-btn takes no pointer events or focus,
+    // so it never shows.
+    const [hovered, setHovered] = useState(false);
+    const [focusVisible, setFocusVisible] = useState(false);
+    const fillColor = fill[variant];
+    const overlay =
+        isDisabled || (!hovered && !focusVisible)
+            ? undefined
+            : {
+                  backgroundColor: colors[iconColor[variant]],
+                  opacity: overlayOpacity(
+                      focusVisible ? FocusOpacity : HoverOpacity,
+                      fillColor ? colors[fillColor] : undefined,
+                      dark
+                  ),
+              };
     return (
         <Pressable
             accessibilityRole="button"
             aria-disabled={!!isDisabled}
             disabled={isDisabled}
             {...rest}
+            onHoverIn={(event) => {
+                setHovered(true);
+                onHoverIn?.(event);
+            }}
+            onHoverOut={(event) => {
+                setHovered(false);
+                onHoverOut?.(event);
+            }}
+            onFocus={(event) => {
+                setFocusVisible(isFocusVisible(event.currentTarget));
+                onFocus?.(event);
+            }}
+            onBlur={(event) => {
+                setFocusVisible(false);
+                onBlur?.(event);
+            }}
             // a plain style, not a function: NativeWind on web drops a Pressable's style function
             style={
                 shadow
@@ -199,6 +262,14 @@ export function HgButton({
                 className
             )}
         >
+            {overlay ? (
+                <View
+                    testID="button-overlay"
+                    pointerEvents="none"
+                    className="absolute inset-0 rounded"
+                    style={overlay}
+                />
+            ) : null}
             {loading ? (
                 <ActivityIndicator color={iconTint} className="mr-2" />
             ) : icon ? (
