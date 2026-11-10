@@ -1,5 +1,3 @@
-import { Platform } from "react-native";
-
 import type { TrackingConfig } from "@/services/tracking/trackingService";
 
 export type EnvironmentId = "local" | "dev" | "test" | "prod";
@@ -26,19 +24,18 @@ const tracking = (host: string): TrackingConfig => ({
     origin: `https://${host}`,
 });
 
-/** The Mac running the services, as an emulator or simulator reaches it. A physical phone needs the Mac's address. */
-const LOCAL_HOST = Platform.OS === "android" ? "10.0.2.2" : "localhost";
-
 /** Native. Everything else about an environment comes from its `/configuration`. */
 export const environments: Environment[] = [
     {
         id: "local",
         name: "Local",
         banner: "Local Development",
-        // The .NET WebClient (3025) answers /configuration; Metro (5002) only serves the bundle.
+        // The .NET WebClient (3025) answers /configuration; Metro (5002) only serves the bundle. It and the service
+        // endpoints the configuration lists are localhost on every platform: an Android emulator or a phone on USB
+        // reaches them through `adb reverse` (scripts/mobile-dev.js; README, "Android port forwarding").
         configUrl:
             process.env.EXPO_PUBLIC_LOCAL_CONFIG_URL ||
-            `http://${LOCAL_HOST}:3025/configuration`,
+            "http://localhost:3025/configuration",
         // reports as Development
         tracking: tracking("dev.healthgateway.gov.bc.ca"),
     },

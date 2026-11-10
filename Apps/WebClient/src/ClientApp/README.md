@@ -17,7 +17,7 @@ npm run ios        # prebuilds ./ios (git-ignored), installs pods, builds and la
 npm run android    # same for ./android and an emulator
 ```
 
-Native builds choose their environment at run time: development builds start on Local (the services on this computer, e.g. the Aspire host: `http://localhost:3025`, or `10.0.2.2` from an Android emulator; set `EXPO_PUBLIC_LOCAL_CONFIG_URL` for a phone), others on Production. The Security page's Environment section switches it, after a confirmation.
+Native builds choose their environment at run time: development builds start on Local (the services on this computer, e.g. the Aspire host: `http://localhost:3025`; set `EXPO_PUBLIC_LOCAL_CONFIG_URL` for a phone on Wi-Fi), others on Production. The Security page's Environment section switches it, after a confirmation. On Android, Local needs the emulator's localhost forwarded to this computer: see [Android port forwarding](#android-port-forwarding).
 
 `npm run [ios/android] -- --device` lets you pick a specific simulator or physical device. iOS needs a free Apple developer signing identity in Xcode. Expo Go is **not** supported: the native OIDC redirect uses the custom `healthgateway://` scheme, which needs a real build.
 
@@ -40,6 +40,32 @@ The device comes from two settings of the Aspire host, read when it starts (envi
 An emulator or simulator these start is shut down when Aspire stops; one that was already running is left alone. iOS shows in Xcode 27's Device Hub (an older Xcode's Simulator app). A fresh install starts on Local, your Aspire services; to use another environment, choose it in Security → Environment (or **Change Environment** on the error page). Both resources run `scripts/mobile-dev.js` (`open` / `build`), which also works by hand with Metro running and the same two settings.
 
 The Maestro end-to-end runs (`npm run e2e:*`, below) start their own Metro on 5002 and stop one already there, Aspire's included: stop **ClientApp** first, and restart it after.
+
+### Android port forwarding
+
+The Local environment's URLs all use `localhost`: the configuration (`http://localhost:3025/configuration`) and the service endpoints it lists (`serviceEndpoints`, e.g. GatewayApi on `http://localhost:3000/`). On an Android emulator, or a phone on USB, `localhost` is the device itself, so each of those ports is forwarded to this computer with `adb reverse`. Without the forwards, Local fails to load its configuration or, once logged in, every call fails (e.g. "Error retrieving user information"). The iOS simulator shares this computer's `localhost` and needs nothing.
+
+**MobileApp** and **MobileBuild** (and `node scripts/mobile-dev.js open|build`) set these up each time they open the app: Metro (5002), the configuration (3025), and the port of each `serviceEndpoints` URL on `localhost`, once each, read from the running WebClient's configuration. Endpoints on other hosts (e.g. `https://hg.dev.api.gov.bc.ca/...`) need no forward.
+
+When you start the emulator and the app yourself (`npm run android`, Android Studio), with the services and WebClient running, set them up by hand from this folder:
+
+```sh
+adb reverse tcp:5002 tcp:5002   # Metro
+adb reverse tcp:3025 tcp:3025   # WebClient: /configuration
+# each localhost service endpoint in the configuration, once per port
+for port in $(curl -s http://localhost:3025/configuration | node -e '
+    const endpoints = Object.values(JSON.parse(require("fs").readFileSync(0, "utf8")).serviceEndpoints ?? {});
+    const ports = endpoints.map((e) => new URL(e)).filter((u) => ["localhost", "127.0.0.1"].includes(u.hostname)).map((u) => u.port);
+    console.log([...new Set(ports)].join(" "));
+'); do
+    adb reverse tcp:$port tcp:$port
+done
+adb reverse --list              # check
+```
+
+- **More than one device attached:** add `-s <serial>` (from `adb devices`) to each `adb` command.
+- **Forwards don't survive** an emulator restart or the phone being unplugged: run them again, or restart **MobileApp**.
+- **A configuration change** that moves an endpoint to a new port needs a forward for that port too.
 
 ## Release builds on a phone
 

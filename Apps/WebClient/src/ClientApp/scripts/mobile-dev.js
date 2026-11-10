@@ -10,7 +10,9 @@
 // one, else the first AVD, or the newest iOS's first iPhone. One that isn't running is started: run by the Aspire host
 // (HG_ASPIRE_PID), it is shut down when Aspire stops; run by hand, it is left running.
 // Android: the SDK comes from ANDROID_HOME (or ANDROID_SDK_ROOT), else its default place; building needs JAVA_HOME.
-// iOS: Xcode and its simulators.
+// `adb reverse` makes the computer's localhost the emulator's for Metro, the WebClient's /configuration, and each
+// localhost service endpoint that configuration lists, so the app's Local environment works unchanged; it needs the
+// WebClient running. iOS: Xcode and its simulators (which share the computer's localhost).
 const { execFileSync, spawn, spawnSync } = require("child_process");
 const fs = require("fs");
 const os = require("os");
@@ -18,6 +20,8 @@ const path = require("path");
 
 const appDir = path.join(__dirname, "..");
 const METRO_PORT = 5002;
+// the Local environment's configuration (src/config/environments.ts), served by the .NET WebClient
+const CONFIG_URL = "http://localhost:3025/configuration";
 const APP_ID = "ca.bc.gov.healthgateway.dev"; // the dev build's Android package and iOS bundle ID
 // The dev app's own link: open the app on this Metro (Android: adb reverse makes the computer's localhost the emulator's)
 const DEV_APP_URL = `exp+hgui://expo-development-client/?url=${encodeURIComponent(`http://localhost:${METRO_PORT}`)}`;
@@ -51,6 +55,44 @@ async function waitForMetro() {
     throw new Error(
         `Metro is not running on port ${METRO_PORT}: start the ClientApp resource, or npm run dev`
     );
+}
+
+const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+/** The port of a URL on this computer, else undefined (a remote endpoint needs no forward). */
+function localPort(value) {
+    let url;
+    try {
+        url = new URL(value);
+    } catch {
+        return undefined;
+    }
+    if (!LOCAL_HOSTNAMES.has(url.hostname)) return undefined;
+    return Number(url.port || (url.protocol === "https:" ? 443 : 80));
+}
+
+/**
+ * The ports the app reaches on this computer: Metro, the configuration's, and those of the configuration's
+ * `serviceEndpoints`, once each (several services can share an endpoint, e.g. Patient and PatientData).
+ */
+async function localServicePorts() {
+    let config;
+    try {
+        const response = await fetch(CONFIG_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        config = await response.json();
+    } catch (error) {
+        throw new Error(
+            `The configuration at ${CONFIG_URL} is unavailable (${error.message}): start the WebClient resource`
+        );
+    }
+    const endpoints = Object.values(config?.serviceEndpoints ?? {});
+    const ports = new Set([METRO_PORT, localPort(CONFIG_URL)]);
+    for (const endpoint of endpoints) {
+        const port = localPort(endpoint);
+        if (port !== undefined) ports.add(port);
+    }
+    return [...ports];
 }
 
 /** Builds with Expo for one device. --no-bundler: Metro is already running (no second copy on 5002). */
@@ -172,13 +214,12 @@ const android = {
         adb("-s", id, "emu", "kill");
     },
 
-    open(device) {
-        adb(
-            "-s",
-            device.id,
-            "reverse",
-            `tcp:${METRO_PORT}`,
-            `tcp:${METRO_PORT}`
+    async open(device) {
+        const ports = await localServicePorts();
+        for (const port of ports)
+            adb("-s", device.id, "reverse", `tcp:${port}`, `tcp:${port}`);
+        console.log(
+            `Forwarded the emulator's localhost ports ${ports.join(", ")} to this computer`
         );
         const installed = adb(
             "-s",
@@ -389,7 +430,7 @@ async function main(command, ...rest) {
     );
     shutDownWithAspire(platformName?.trim() || "android", device);
     if (command === "build") platform.build(device);
-    platform.open(device);
+    await platform.open(device);
     console.log(
         `Opened the dev app on ${device.name}, on Metro at port ${METRO_PORT}`
     );

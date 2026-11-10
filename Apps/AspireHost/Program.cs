@@ -93,7 +93,9 @@ string mobileDevice = builder.Configuration["HG_MOBILE_DEVICE"] ?? string.Empty;
 // An emulator or simulator the script starts is shut down when this host exits (Aspire stops).
 string aspirePid = Environment.ProcessId.ToString(CultureInfo.InvariantCulture);
 
-// MobileApp opens the installed dev app on Metro; it waits for WebClient, whose /configuration the app reads first.
+// MobileApp opens the installed dev app on Metro; it waits for WebClient, whose /configuration the app reads first. On
+// Android it also forwards (adb reverse) the emulator's localhost ports for Metro, /configuration and each localhost
+// service endpoint that configuration lists, so the Local environment's localhost URLs reach this computer.
 builder.AddExecutable("MobileApp", "node", "../WebClient/src/ClientApp", "scripts/mobile-dev.js", "open")
     .WithEnvironment("HG_MOBILE_PLATFORM", mobilePlatform)
     .WithEnvironment("HG_MOBILE_DEVICE", mobileDevice)
@@ -103,13 +105,15 @@ builder.AddExecutable("MobileApp", "node", "../WebClient/src/ClientApp", "script
     .WaitFor(webClient);
 
 // MobileBuild builds and installs the dev app (needed once per emulator or simulator, then after native changes: a
-// native package, a plugin, native fields in app.config.ts), then opens it. Android needs JAVA_HOME for Gradle.
+// native package, a plugin, native fields in app.config.ts), then opens it as MobileApp does, so it waits for WebClient
+// too. Android needs JAVA_HOME for Gradle.
 builder.AddExecutable("MobileBuild", "node", "../WebClient/src/ClientApp", "scripts/mobile-dev.js", "build")
     .WithEnvironment("HG_MOBILE_PLATFORM", mobilePlatform)
     .WithEnvironment("HG_MOBILE_DEVICE", mobileDevice)
     .WithEnvironment("HG_ASPIRE_PID", aspirePid)
     .WithExplicitStart()
-    .WaitFor(clientApp);
+    .WaitFor(clientApp)
+    .WaitFor(webClient);
 
 await builder.Build().RunAsync();
 
