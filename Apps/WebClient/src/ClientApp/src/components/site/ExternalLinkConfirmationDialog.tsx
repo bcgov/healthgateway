@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-import { AppText, Dialog, HgButton } from "@/components/ui";
+import { AppText, Dialog, HgButton } from "@/components/common";
 import { Action, Origin, type Text } from "@/constants/tracking";
 import { services } from "@/services/container";
 import { openExternal } from "@/utils/openExternal";

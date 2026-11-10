@@ -2,8 +2,8 @@ import { Link, useRouter } from "expo-router";
 import { Platform, Pressable, View } from "react-native";
 
 import BcLogo from "@/assets/images/gov/bcid-logo-rev-en.svg";
-import { AppText, ExternalLink, HgAlert, HgButton } from "@/components/ui";
-import { webAttributeRef } from "@/components/ui/webClass";
+import { AppText, ExternalLink, HgAlert, HgButton } from "@/components/common";
+import { webAttributeRef } from "@/components/common/webClass";
 import { Path } from "@/constants/path";
 import {
     Action,

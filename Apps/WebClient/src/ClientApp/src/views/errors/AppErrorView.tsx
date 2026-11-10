@@ -3,8 +3,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
+import { AppText, HgAlert, HgButton } from "@/components/common";
 import { useEnvironmentSelector } from "@/components/site/useEnvironmentSelector";
-import { AppText, HgAlert, HgButton } from "@/components/ui";
 import { AppErrorType } from "@/constants/errorType";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useColorScheme } from "@/hooks/useTheme";

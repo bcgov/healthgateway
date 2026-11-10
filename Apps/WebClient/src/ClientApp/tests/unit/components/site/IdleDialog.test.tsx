@@ -8,9 +8,9 @@ import {
 } from "@jest/globals";
 import { AccessibilityInfo, Platform } from "react-native";
 
+import { resetAnnouncements } from "@/components/common/announce";
+import { Announcer } from "@/components/common/Announcer";
 import { IdleDialog } from "@/components/site/IdleDialog";
-import { resetAnnouncements } from "@/components/ui/announce";
-import { Announcer } from "@/components/ui/Announcer";
 import { advanceTimers, inAct, render, screen, textOf } from "@/test/ui";
 
 describe("IdleDialog", () => {

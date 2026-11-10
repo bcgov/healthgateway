@@ -2,8 +2,8 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
+import { HgButton, HgCheckbox, PageTitle } from "@/components/common";
 import { Loading } from "@/components/site/Loading";
-import { HgButton, HgCheckbox, PageTitle } from "@/components/ui";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Path } from "@/constants/path";
 import { isSessionEnded, ResultError } from "@/models/errors";
@@ -11,7 +11,7 @@ import { services } from "@/services/container";
 import { describeError, logger } from "@/services/logger";
 import { useErrorStore } from "@/stores/error.store";
 import { useUserStore } from "@/stores/user.store";
-import { TermsOfServiceBox } from "@/views/registration/TermsOfServiceBox";
+import { TermsOfServiceBox } from "@/views/private/registration/TermsOfServiceBox";
 
 /** Port of AcceptTermsOfServiceView.vue */
 export function AcceptTermsOfServiceView() {

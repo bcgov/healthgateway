@@ -1,7 +1,7 @@
 import { type ReactNode, useState } from "react";
 import { Platform, Pressable, View, type ViewStyle } from "react-native";
 
-import { AppText, Icon } from "@/components/ui";
+import { AppText, Icon } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
 
 /** Web: `visibility` also takes the hidden options out of the tab order and the accessibility tree. */

@@ -2,7 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, type ImageSourcePropType, View } from "react-native";
 
-import { AppText, Dialog, HgButton } from "@/components/ui";
+import { AppText, Dialog, HgButton } from "@/components/common";
 import { Path } from "@/constants/path";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 

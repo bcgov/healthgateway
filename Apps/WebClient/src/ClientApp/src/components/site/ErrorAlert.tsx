@@ -8,7 +8,7 @@ import {
     HgButton,
     Icon,
     MessageDialog,
-} from "@/components/ui";
+} from "@/components/common";
 import { Path } from "@/constants/path";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useErrorStore } from "@/stores/error.store";

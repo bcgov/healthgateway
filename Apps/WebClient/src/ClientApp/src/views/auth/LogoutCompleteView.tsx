@@ -2,7 +2,7 @@ import { usePathname, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
 
-import { AppText, HgButton } from "@/components/ui";
+import { AppText, HgButton } from "@/components/common";
 import { Path } from "@/constants/path";
 import { Action, InternalUrl, Text, Type } from "@/constants/tracking";
 import { usePageTitle } from "@/hooks/usePageTitle";

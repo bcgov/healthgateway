@@ -1,5 +1,5 @@
 import { PageScroll } from "@/components/site/PageScroll";
-import { DependentsView } from "@/views/dependents/DependentsView";
+import { DependentsView } from "@/views/private/dependents/DependentsView";
 
 export default function Dependents() {
     return (

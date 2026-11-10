@@ -9,9 +9,9 @@ import {
 } from "react-native";
 
 import EmptyStateNotifications from "@/assets/images/home/empty-state-notifications.svg";
-import { AppText, HgButton, Icon, ModalSafeArea } from "@/components/ui";
-import { AppModal } from "@/components/ui/AppModal";
-import { Backdrop } from "@/components/ui/Backdrop";
+import { AppText, HgButton, Icon, ModalSafeArea } from "@/components/common";
+import { AppModal } from "@/components/common/AppModal";
+import { Backdrop } from "@/components/common/Backdrop";
 import { EntryType } from "@/constants/entryType";
 import { Path } from "@/constants/path";
 import { useThemeColors } from "@/hooks/useTheme";

@@ -1,4 +1,4 @@
-import { AppText, HgAlert } from "@/components/ui";
+import { AppText, HgAlert } from "@/components/common";
 
 /** Native: says what a page can't show or do while the session banner's reason lasts. */
 export function OfflineNotice({

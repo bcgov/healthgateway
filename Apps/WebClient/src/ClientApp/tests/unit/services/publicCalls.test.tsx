@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { Platform } from "react-native";
 
-import { HgButton } from "@/components/ui/HgButton";
+import { HgButton } from "@/components/common/HgButton";
 import { CommunicationType } from "@/models/communication";
 import { HttpError } from "@/models/errors";
 import { CommunicationService } from "@/services/communication.service";

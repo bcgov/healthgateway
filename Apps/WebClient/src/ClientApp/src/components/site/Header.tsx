@@ -4,7 +4,7 @@ import { Platform, Pressable, useWindowDimensions, View } from "react-native";
 
 import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
-import { AppText, HgButton, Icon } from "@/components/ui";
+import { AppText, HgButton, Icon } from "@/components/common";
 import { Path } from "@/constants/path";
 import {
     Action,

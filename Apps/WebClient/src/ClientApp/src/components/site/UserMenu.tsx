@@ -1,6 +1,6 @@
 import { Pressable, View } from "react-native";
 
-import { AppText, AppVersion, Icon } from "@/components/ui";
+import { AppText, AppVersion, Icon } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
 import { selectUserName, useUserStore } from "@/stores/user.store";
 

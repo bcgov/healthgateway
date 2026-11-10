@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-import { AppText } from "@/components/ui";
+import { AppText } from "@/components/common";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { usePageTitle } from "@/hooks/usePageTitle";
 

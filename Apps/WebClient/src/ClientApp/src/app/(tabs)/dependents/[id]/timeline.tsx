@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 
 import { PageScroll } from "@/components/site/PageScroll";
-import { DependentTimelineView } from "@/views/dependents/DependentTimelineView";
+import { DependentTimelineView } from "@/views/private/dependents/DependentTimelineView";
 
 export default function DependentTimeline() {
     const { id } = useLocalSearchParams<{ id: string }>();

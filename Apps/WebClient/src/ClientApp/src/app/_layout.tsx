@@ -11,10 +11,10 @@ import { Appearance, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { Announcer } from "@/components/common/Announcer";
+import { NewTabHint } from "@/components/common/ExternalLink";
 import { AppShell } from "@/components/site/AppShell";
 import { LoadingOverlay, LoadingScope } from "@/components/site/LoadingOverlay";
-import { Announcer } from "@/components/ui/Announcer";
-import { NewTabHint } from "@/components/ui/ExternalLink";
 import { AppErrorType } from "@/constants/errorType";
 import { Path } from "@/constants/path";
 import { useAppLockLifecycle } from "@/hooks/useAppLock";
@@ -38,11 +38,11 @@ import {
 import { useThemeStore } from "@/stores/theme.store";
 import { fontAssets } from "@/theme";
 import { registerDevStores } from "@/utils/devStores";
-import { LockGate, LockScreen } from "@/views/appLock/LockScreen";
 import { AppErrorView } from "@/views/errors/AppErrorView";
 import { UpdateRequiredView } from "@/views/errors/UpdateRequiredView";
-import { OnboardingView } from "@/views/onboarding/OnboardingView";
-import { SplashView } from "@/views/splash/SplashView";
+import { LockGate, LockScreen } from "@/views/native/appLock/LockScreen";
+import { OnboardingView } from "@/views/native/onboarding/OnboardingView";
+import { SplashView } from "@/views/native/splash/SplashView";
 
 registerDevStores();
 

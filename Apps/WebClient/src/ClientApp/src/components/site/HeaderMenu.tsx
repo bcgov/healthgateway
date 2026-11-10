@@ -12,8 +12,8 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 
-import { AppModal } from "@/components/ui/AppModal";
-import { ModalSafeArea } from "@/components/ui/ModalSafeArea";
+import { AppModal } from "@/components/common/AppModal";
+import { ModalSafeArea } from "@/components/common/ModalSafeArea";
 import { useMotion } from "@/hooks/useMotion";
 
 const SLIDE_MS = 220;

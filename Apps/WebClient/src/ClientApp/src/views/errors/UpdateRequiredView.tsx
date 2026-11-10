@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { View } from "react-native";
 
-import { AppText, Dialog } from "@/components/ui";
+import { AppText, Dialog } from "@/components/common";
 import { useAppLockStore } from "@/stores/appLock.store";
 
 /**

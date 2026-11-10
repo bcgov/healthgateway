@@ -2,7 +2,7 @@ import { usePathname } from "expo-router";
 import { createElement, useEffect, useMemo, useState } from "react";
 import { Platform, View } from "react-native";
 
-import { AppText } from "@/components/ui";
+import { AppText } from "@/components/common";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { type Communication, CommunicationType } from "@/models/communication";
 import { isSessionEnded, isTooManyRequestsError } from "@/models/errors";

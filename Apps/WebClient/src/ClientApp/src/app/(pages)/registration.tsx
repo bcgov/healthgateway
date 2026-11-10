@@ -1,2 +1,2 @@
-import { RegistrationView } from "@/views/registration/RegistrationView";
+import { RegistrationView } from "@/views/private/registration/RegistrationView";
 export default RegistrationView;

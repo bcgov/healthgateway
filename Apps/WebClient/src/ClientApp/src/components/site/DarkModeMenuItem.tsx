@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-import { HgRadio } from "@/components/ui";
+import { HgRadio } from "@/components/common";
 import { type ThemePreference, useThemeStore } from "@/stores/theme.store";
 
 import { ExpandableMenuItem } from "./ExpandableMenuItem";

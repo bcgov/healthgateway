@@ -1,4 +1,4 @@
-import { HgAlert } from "@/components/ui";
+import { HgAlert } from "@/components/common";
 import { TooManyRequestsLocation } from "@/constants/errorType";
 import { useErrorStore } from "@/stores/error.store";
 

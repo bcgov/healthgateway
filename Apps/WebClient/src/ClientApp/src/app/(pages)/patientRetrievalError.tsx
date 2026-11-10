@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import {} from "react-native";
 
-import { AppText, HgButton } from "@/components/ui";
+import { AppText, HgButton } from "@/components/common";
 import { AppErrorType } from "@/constants/errorType";
 import { Path } from "@/constants/path";
 import { useErrorStore } from "@/stores/error.store";
