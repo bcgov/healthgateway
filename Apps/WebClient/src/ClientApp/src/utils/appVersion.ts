@@ -4,17 +4,26 @@ const parse = (version: string | undefined): number[] | undefined => {
 };
 
 /**
- * "major.minor (build)" for display, from the app's "major.minor.build" (any other text as it is), then " - label" when
- * there is one. The pipeline names the run major.minor.build[-custom] instead: it is also the image tag, which cannot
- * hold spaces or brackets (Build/hg-steps-template.yaml, "Set app version").
+ * "v<major.minor.fix>.<build>" for display, the build zero-padded to 4 digits: the same as the WebClient pipeline's run
+ * name (Build/hg-steps-template.yaml, "Set app version"), so a build can be matched to its run. Then " - label" when
+ * there is one. A version that is not major.minor.fix, or no build number, shows what there is.
  */
-export function formatAppVersion(version: string, label?: string): string {
-    const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(version.trim());
-    const shown = match ? `${match[1]}.${match[2]} (${match[3]})` : version;
+export function formatAppVersion(
+    version: string,
+    build?: number,
+    label?: string
+): string {
+    const trimmed = version.trim();
+    const isVersion = /^\d+\.\d+\.\d+$/.test(trimmed);
+    const hasBuild =
+        typeof build === "number" && Number.isInteger(build) && build >= 0;
+    const shown = isVersion
+        ? `v${trimmed}${hasBuild ? `.${String(build).padStart(4, "0")}` : ""}`
+        : version;
     return label ? `${shown} - ${label}` : shown;
 }
 
-/** Whether `current` is older than `minimum`, comparing major, then minor, then build. Unreadable versions: no. */
+/** Whether `current` is older than `minimum` (both major.minor.fix), comparing major, then minor, then fix. Unreadable versions: no. */
 export function isUpdateRequired(
     current: string | undefined,
     minimum: string | undefined

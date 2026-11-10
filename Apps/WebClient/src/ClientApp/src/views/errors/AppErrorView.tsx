@@ -26,6 +26,8 @@ export function AppErrorView({ type, onRetry }: Props) {
     // The menu is out of reach here: without this, a chosen environment that is down would strand the app on every launch
     const selector = useEnvironmentSelector();
     const switched = useEnvironmentStore((s) => s.selected !== undefined);
+    // a native dev build always: its environment may not be running, or may not serve what this build needs
+    const offerEnvironments = switched || (__DEV__ && Platform.OS !== "web");
     // the logo's height and the same light bar as the rest of the app, as in the web client's v-app-bar color="background"
     const Logo = useColorScheme() === "dark" ? HgLogoDark : HgLogo;
     return (
@@ -71,7 +73,7 @@ export function AppErrorView({ type, onRetry }: Props) {
                             onPress={onRetry}
                         />
                     ) : null}
-                    {switched ? (
+                    {offerEnvironments ? (
                         <>
                             <HgButton
                                 testID="errorChangeEnvironmentBtn"

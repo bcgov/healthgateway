@@ -17,9 +17,29 @@ npm run ios        # prebuilds ./ios (git-ignored), installs pods, builds and la
 npm run android    # same for ./android and an emulator
 ```
 
-Native builds choose their environment at run time: development builds start on Development, others on Production. The Security page's Environment section switches it, after a confirmation.
+Native builds choose their environment at run time: development builds start on Local (the services on this computer, e.g. the Aspire host: `http://localhost:3025`, or `10.0.2.2` from an Android emulator; set `EXPO_PUBLIC_LOCAL_CONFIG_URL` for a phone), others on Production. The Security page's Environment section switches it, after a confirmation.
 
 `npm run [ios/android] -- --device` lets you pick a specific simulator or physical device. iOS needs a free Apple developer signing identity in Xcode. Expo Go is **not** supported: the native OIDC redirect uses the custom `healthgateway://` scheme, which needs a real build.
+
+### With Aspire
+
+The Aspire host (`dotnet run --project Apps/AspireHost`, see its README) runs the services this app talks to and Metro, as the **ClientApp** resource: the web app is at http://localhost:5002 and the dev builds load from it, with hot reload. Don't run `npm run dev`, `npm run ios` or `npm run android` alongside it: they want port 5002 too. Two dashboard resources put the dev app on an emulator or simulator; neither runs until you press Start, and you start one of them, not both:
+
+| Start           | When                                                                                                                                                                     | What it does                                                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **MobileBuild** | The first time on an emulator or simulator, and after native changes: a native package, a config plugin, or native fields in `app.config.ts` (bundle ID, permissions, …) | Starts the device if needed, builds and installs the dev app, then opens it on Metro. A few minutes, more for iOS.                                                     |
+| **MobileApp**   | Every other time                                                                                                                                                         | Starts the device if needed, waits for WebClient, then opens the installed dev app on Metro. Seconds. If the app isn't installed there, it says so: start MobileBuild. |
+
+JavaScript changes, and the `app.config.ts` values the JavaScript reads (the version, `extra`), need neither: they come through Metro (restart **ClientApp** after an `app.config.ts` change). To relaunch the app, restart **MobileApp**; the device stays up.
+
+The device comes from two settings of the Aspire host, read when it starts (environment variables, or `dotnet user-secrets set <name> <value> --project Apps/AspireHost`):
+
+- `HG_MOBILE_PLATFORM`: `android` (default) or `ios` (macOS only).
+- `HG_MOBILE_DEVICE`: the AVD or simulator by name, e.g. `Pixel_10_Pro_XL` or `iPhone 18 Pro Max` (a simulator UDID also works). Without one: a running one, else the first AVD, or the newest iOS's first iPhone.
+
+An emulator or simulator these start is shut down when Aspire stops; one that was already running is left alone. iOS shows in Xcode 27's Device Hub (an older Xcode's Simulator app). A fresh install starts on Local, your Aspire services; to use another environment, choose it in Security → Environment (or **Change Environment** on the error page). Both resources run `scripts/mobile-dev.js` (`open` / `build`), which also works by hand with Metro running and the same two settings.
+
+The Maestro end-to-end runs (`npm run e2e:*`, below) start their own Metro on 5002 and stop one already there, Aspire's included: stop **ClientApp** first, and restart it after.
 
 ## Release builds on a phone
 
@@ -151,7 +171,7 @@ pkill -f maestro                                                                
 | `modules/hg-secure-vault/` | Native module for biometric-locked encryption          |
 | `plugins/`                 | Expo config plugins                                    |
 | `public/`                  | Static web files (silent SSO page, favicon, web fonts) |
-| `scripts/`                 | Web build, version bump, Maestro runners               |
+| `scripts/`                 | Web build, version bump, Maestro runners, dev device   |
 | `src/app/`                 | Expo Router routes (thin files)                        |
 | `src/components/`          | UI primitives (`common/`) and site shell (`site/`)     |
 | `src/config/`              | Native environments                                    |

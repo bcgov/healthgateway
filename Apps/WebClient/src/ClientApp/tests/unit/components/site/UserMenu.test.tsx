@@ -14,7 +14,7 @@ import { isExpanded, press, render, screen } from "@/test/ui";
 
 jest.mock("expo-constants", () => ({
     __esModule: true,
-    default: { expoConfig: { version: "1.2.345" } },
+    default: { expoConfig: { version: "3.0.1", extra: { build: 345 } } },
 }));
 
 const handlers = {
@@ -90,7 +90,7 @@ describe("UserMenu", () => {
 
     it("ends with the version, on every platform", async () => {
         await render(<UserMenu visible showProfile {...handlers} />);
-        expect(screen.getByText("Version 1.2 (345)")).toBeTruthy();
+        expect(screen.getByText("v3.0.1.0345")).toBeTruthy();
     });
 
     it("still logs out", async () => {

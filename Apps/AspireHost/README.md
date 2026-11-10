@@ -20,6 +20,29 @@ Aspire AppHost that orchestrates the full local Health Gateway development envir
   (GatewayApi 3000, WebClient 3025, JobScheduler 5005, Admin 5027, etc.), so existing
   inter-service URLs work unchanged. Drug data loads via JobScheduler's recurring
   Hangfire jobs.
+- **ClientApp** — Metro, the Expo dev server (`npm run dev`, port 5002), started straight
+  away so WebClient's SpaProxy doesn't start its own. The web app (http://localhost:5002)
+  and the iOS/Android dev builds load from it, with hot reload; its log is the resource's
+  console in the dashboard. Stop any `expo start` / `expo run:ios` of your own first, since
+  it uses port 5002. Restart the resource after changing `app.config.ts`.
+- **MobileApp** and **MobileBuild** — the dev app on an Android emulator or an iOS
+  simulator, started from the dashboard (Start; they don't run on their own). Two settings
+  pick the device; set them as environment variables (or in user secrets / appsettings):
+  - `HG_MOBILE_PLATFORM`: `android` (default) or `ios` (macOS only).
+  - `HG_MOBILE_DEVICE`: the AVD or simulator by name, e.g. `Pixel_10_Pro_XL` or
+    `iPhone 18 Pro Max` (a simulator UDID also works). Without one: a running one, else
+    the first AVD, or the newest iOS's first iPhone.
+
+  One that isn't running is started (iOS: shown in Xcode 27's Device Hub, or the
+  Simulator app of an older Xcode), and shut down when Aspire stops; one that was already
+  running is left alone. Restarting a resource in the dashboard keeps the device up.
+  **MobileBuild** builds and installs the dev app, then opens it: needed once per
+  emulator or simulator, then after native changes (a native package, a plugin, native
+  fields in `app.config.ts`); Android needs `JAVA_HOME`. **MobileApp** opens the installed
+  dev app on Metro, once WebClient is up. A development build starts on the Local
+  environment, these services; Security → Environment in the app switches it.
+  Both run `Apps/WebClient/src/ClientApp/scripts/mobile-dev.js` (`open` / `build`), which
+  also works by hand with the same two variables.
 
 The containers are removed when the AppHost stops; their data persists in the
 `gatewaydb.local` and `gatewaycache.local` Docker volumes — the same volumes used by

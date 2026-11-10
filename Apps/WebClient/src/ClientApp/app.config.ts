@@ -6,8 +6,10 @@ import appVersion from "./version.json";
 type AppEnv = "dev" | "test" | "prod";
 const appEnv = (process.env.APP_ENV ?? "dev") as AppEnv;
 
-// `npm run version:bump` raises these. BUILD_NUMBER lets a build pipeline set the last part instead.
+// `npm run version:bump` raises these. BUILD_NUMBER lets a build pipeline set the build number instead.
 const build = Number(process.env.BUILD_NUMBER) || appVersion.build;
+// The stores' version is major.minor.fix, and the build number is separate (ios.buildNumber, android.versionCode)
+const fix = (appVersion as { fix?: number }).fix ?? 0;
 
 const idSuffix: Record<AppEnv, string> = {
     dev: ".dev",
@@ -27,10 +29,13 @@ const expoConfig = (config: ConfigContext["config"]): ExpoConfig => ({
     ...config,
     name: `Health Gateway${nameSuffix[appEnv]}`,
     slug: "hgui",
-    version: `${appVersion.major}.${appVersion.minor}.${build}`,
-    // Shown after the build number ("Custom": a pipeline build not from dev). Not part of `version`: the stores take digits only.
+    version: `${appVersion.major}.${appVersion.minor}.${fix}`,
     extra: {
         ...config.extra,
+        // The app shows v<version>.<build> (AppVersion), the build zero-padded as in the pipeline's run name; web has no
+        // native build number to read it from
+        build,
+        // Shown after the version ("Custom": a pipeline build not from dev). Not part of `version`: the stores take digits only.
         versionLabel: (appVersion as { label?: string }).label,
     },
     orientation: "default",

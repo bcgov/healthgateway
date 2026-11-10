@@ -30,9 +30,8 @@ describe("config store selectors", () => {
     afterEach(resetStores);
 
     it("native reads the configuration URL from the chosen environment", () => {
-        expect(getConfigUrl()).toBe(
-            "https://dev.healthgateway.gov.bc.ca/configuration"
-        );
+        // a development build starts on Local: the services on this computer
+        expect(getConfigUrl()).toBe("http://localhost:3025/configuration");
         useEnvironmentStore.setState({ selected: "test" });
         expect(getConfigUrl()).toBe(
             "https://test.healthgateway.gov.bc.ca/configuration"

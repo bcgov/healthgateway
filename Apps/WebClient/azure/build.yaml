@@ -1,8 +1,10 @@
 name: $(Date:yyyyMMdd)$(Rev:.r) # Until the "Set app version" step names the run major.minor.fix.build[-custom]
 
 # The app version: Major, Minor and Fix from the BuildVersion variable group in Pipelines > Library, the build from a
-# pipeline counter (Build/hg.yaml), zero-padded to 4 digits in the run name. Changing the group needs no other change. BuildSeed only ever goes up: set it to the next build number the stores
-# will accept (above the highest iOS and Android upload) and the count continues from there.
+# pipeline counter (Build/hg.yaml), zero-padded to 4 digits in the run name. The app shows the run name (v3.0.0.0057);
+# the stores get major.minor.fix as the version and the build as the build number. Changing the group needs no other
+# change. BuildSeed only ever goes up: set it to the next build number the stores will accept (above the highest iOS
+# and Android upload) and the count continues from there.
 parameters:
   - name: BuildSeed
     type: number

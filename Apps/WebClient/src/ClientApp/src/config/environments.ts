@@ -64,9 +64,12 @@ export const environments: Environment[] = [
     },
 ];
 
-/** Local builds start on Development; anything else, on Production. */
+/**
+ * Development builds start on Local, the services this computer runs (the Aspire host); anything else, on Production.
+ * A saved choice (Security → Environment, or Change Environment on the error page) wins over either.
+ */
 export const defaultEnvironmentId = (): EnvironmentId =>
-    __DEV__ ? "dev" : "prod";
+    __DEV__ ? "local" : "prod";
 
 /** Release builds allow no plain http, so Local only works, and only appears, in development builds. */
 export const selectableEnvironments = (): Environment[] =>

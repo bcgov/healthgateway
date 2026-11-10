@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { Platform } from "react-native";
 
 import { AppErrorType } from "@/constants/errorType";
 import { useEnvironmentStore } from "@/stores/environment.store";
@@ -47,13 +48,34 @@ describe("AppErrorView (AppErrorView.vue port)", () => {
             );
         });
 
-        it("no way to change it for someone who never switched", async () => {
+        const setDev = (value: boolean) => {
+            (globalThis as unknown as { __DEV__: boolean }).__DEV__ = value;
+        };
+
+        it("a release build: no way to change it for someone who never switched", async () => {
+            setDev(false);
+            try {
+                await render(
+                    <AppErrorView
+                        type={AppErrorType.General}
+                        onRetry={jest.fn()}
+                    />
+                );
+                expect(
+                    screen.queryByTestId("errorChangeEnvironmentBtn")
+                ).toBeNull();
+            } finally {
+                setDev(true);
+            }
+        });
+
+        it("a native dev build offers it without a switch: a fresh install starts on Development", async () => {
             await render(
                 <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
             );
-            expect(
-                screen.queryByTestId("errorChangeEnvironmentBtn")
-            ).toBeNull();
+            const button = screen.queryByTestId("errorChangeEnvironmentBtn");
+            if (Platform.OS === "web") expect(button).toBeNull();
+            else expect(button).toBeTruthy();
         });
 
         it("offers to change it, so a chosen environment that is down cannot strand the app", async () => {

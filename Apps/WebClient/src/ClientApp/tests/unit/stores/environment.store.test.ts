@@ -46,8 +46,8 @@ describe("environments", () => {
         dev.__DEV__ = true;
     });
 
-    it("defaults to Development locally and Production otherwise", () => {
-        expect(defaultEnvironmentId()).toBe("dev");
+    it("defaults to Local in a development build and Production otherwise", () => {
+        expect(defaultEnvironmentId()).toBe("local");
         dev.__DEV__ = false;
         expect(defaultEnvironmentId()).toBe("prod");
     });
@@ -85,7 +85,7 @@ describe("environments", () => {
     it("ignores an unknown saved choice", async () => {
         await AsyncStorage.setItem(KEY, "staging");
         await state().hydrate();
-        expect(selectEnvironment(state()).id).toBe("dev");
+        expect(selectEnvironment(state()).id).toBe("local");
     });
 
     it("a release build never honours a saved Local", async () => {
@@ -134,7 +134,8 @@ describe("environments", () => {
         });
 
         it("does nothing when choosing the current one", async () => {
-            await switchEnvironment("dev", leavePage);
+            // a development build starts on Local
+            await switchEnvironment("local", leavePage);
             expect(signOut).not.toHaveBeenCalled();
             expect(state().restarts).toBe(0);
         });

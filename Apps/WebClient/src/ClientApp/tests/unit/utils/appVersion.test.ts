@@ -4,18 +4,33 @@ import { formatAppVersion, isUpdateRequired } from "@/utils/appVersion";
 
 describe("formatAppVersion", () => {
     it.each([
-        ["2.1.1234", "2.1 (1234)"],
-        ["0.0.0", "0.0 (0)"],
-        [" 1.0.7 ", "1.0 (7)"],
-        ["1.2", "1.2"],
-        ["dev", "dev"],
-    ])("%s shows as %s", (version, expected) => {
-        expect(formatAppVersion(version)).toBe(expected);
+        ["3.0.0", 57, "v3.0.0.0057"],
+        ["2.1.4", 1234, "v2.1.4.1234"],
+        ["2.1.4", 12345, "v2.1.4.12345"],
+        ["0.0.0", 0, "v0.0.0.0000"],
+        [" 1.0.7 ", 7, "v1.0.7.0007"],
+    ])(
+        "%s build %s shows as %s, the run's name",
+        (version, build, expected) => {
+            expect(formatAppVersion(version, build)).toBe(expected);
+        }
+    );
+
+    it.each([
+        ["3.0.0", undefined, "v3.0.0"],
+        ["3.0.0", -1, "v3.0.0"],
+        ["3.0.0", 1.5, "v3.0.0"],
+        ["1.2", 7, "1.2"],
+        ["dev", 7, "dev"],
+    ])("%s build %s shows what there is: %s", (version, build, expected) => {
+        expect(formatAppVersion(version, build)).toBe(expected);
     });
 
-    it("puts a label after the build number", () => {
-        expect(formatAppVersion("0.0.12", "Custom")).toBe("0.0 (12) - Custom");
-        expect(formatAppVersion("0.0.12", "")).toBe("0.0 (12)");
+    it("puts a label after the version", () => {
+        expect(formatAppVersion("3.0.0", 12, "Custom")).toBe(
+            "v3.0.0.0012 - Custom"
+        );
+        expect(formatAppVersion("3.0.0", 12, "")).toBe("v3.0.0.0012");
     });
 });
 

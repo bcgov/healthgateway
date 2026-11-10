@@ -10,7 +10,7 @@ export interface ExternalConfiguration {
 
 /** `webClient.mobile`: what iOS and Android use in place of the web client's settings. */
 export interface MobileConfiguration {
-    /** major.minor.build. An older app must update to continue. Missing: no check. */
+    /** major.minor.fix, compared with the app's version (not the build number). An older app must update to continue. Missing: no check. */
     minimumVersion?: string;
     timeouts?: {
         /** Idle time in milliseconds before the app logs out, or locks with device security on. Default 20 minutes. */

@@ -54,9 +54,9 @@ steps:
   # Before anything builds the client (the "Build client" step, or dotnet publish's PublishRunWebpack target), so the
   # bundle carries the version. Major, Minor and Fix come from the BuildVersion variable group. The run is named
   # major.minor.fix.build with the build zero-padded to 4 digits (2.0.1.0057), plus -custom when not built from dev.
-  # version.json holds major, minor and the build as a plain number, as the stores need (three parts, digits only), so
-  # Fix is not in it yet and the app shows "major.minor (57) - Custom". The run name is also the image tag, which
-  # the release scripts (Tools/Pipelines/scripts/azp_importImages.sh, azp_tagImages.sh) read as
+  # version.json holds major, minor, fix and the build as a plain number: the stores take major.minor.fix as the version
+  # and the build number separately, and the app shows the run's name, "v2.0.1.0057 - Custom". The run name is also the
+  # image tag, which the release scripts (Tools/Pipelines/scripts/azp_importImages.sh, azp_tagImages.sh) read as
   # RELEASE_ARTIFACTS_<artifact>_BUILDNUMBER, so it must stay tag-safe: no spaces or brackets. Downstream pipelines
   # (iOS, Android) read the version from resources.pipeline.<alias>.runName.
   - bash: |
@@ -71,7 +71,7 @@ steps:
       done
       label=""
       if [ "$(Build.SourceBranch)" != "refs/heads/dev" ]; then label="Custom"; fi
-      node scripts/bump-version.js set "$MAJOR" "$MINOR" "$BUILD" "$label"
+      node scripts/bump-version.js set "$MAJOR" "$MINOR" "$FIX" "$BUILD" "$label"
       name="$MAJOR.$MINOR.$FIX.$(printf '%04d' "$((10#$BUILD))")"
       if [ -n "$label" ]; then name="$name-custom"; fi
       echo "Version $name"

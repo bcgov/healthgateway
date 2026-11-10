@@ -10,23 +10,25 @@ interface Props {
 }
 
 /**
- * "Version major.minor (build)" on every platform, plus " - Custom" on a pipeline build not from dev: baked in from
- * `version.json` by `app.config.ts`. Its pipeline run (and image tag) is major.minor.build, plus -custom.
+ * "v<major.minor.fix>.<build>" on every platform (v3.0.0.0057), plus " - Custom" on a pipeline build not from dev: the
+ * WebClient pipeline's run name. Baked in from `version.json` by `app.config.ts`: `version` and `extra.build`.
  */
 export function AppVersion({ className }: Props) {
     const version = Constants.expoConfig?.version;
     if (!version) return null;
-    const label = (Constants.expoConfig?.extra as { versionLabel?: unknown })
-        ?.versionLabel;
+    const extra = Constants.expoConfig?.extra as
+        { versionLabel?: unknown; build?: unknown } | undefined;
+    const label = extra?.versionLabel;
+    const build = extra?.build;
     return (
         <AppText
             testID="appVersion"
             variant="body-medium"
             className={cn("text-bc-grey", className)}
         >
-            Version{" "}
             {formatAppVersion(
                 version,
+                typeof build === "number" ? build : undefined,
                 typeof label === "string" ? label : undefined
             )}
         </AppText>
