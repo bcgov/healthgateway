@@ -13,7 +13,8 @@
     // config:recommended (via config:best-practices) pulls in :ignoreModulesAndTests, which ignores **/test/** and
     // **/tests/**. That would silently drop Testing/functional/tests and the unit-test
     // projects. We want those covered, so only ignore node_modules.
-    ignorePaths: ["**/node_modules/**"],
+    // ClientApp.old is the retired Vue client, kept for reference only; don't raise updates for it.
+    ignorePaths: ["**/node_modules/**", "Apps/WebClient/src/ClientApp.old/**"],
 
     ignoreDeps: [
         // Deliberately pinned to a beta in Apps/Directory.Build.props; see comment there.
