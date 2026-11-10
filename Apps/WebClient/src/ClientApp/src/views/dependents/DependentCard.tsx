@@ -7,6 +7,7 @@ import {
     AppText,
     ExternalLink,
     HgButton,
+    HgCard,
     HgMenu,
     type HgTab,
     HgTabPanel,
@@ -40,7 +41,6 @@ import { formatDate, fromIsoDate } from "@/utils/dateUtil";
 import { decorativeProps } from "@/utils/decorative";
 import { isDependentExpired } from "@/utils/dependentAge";
 
-import { HomeCard } from "../home/HomeCard";
 import { RecommendationsDialog } from "../reports/RecommendationsDialog";
 import { ReportsComponent } from "../reports/ReportsComponent";
 
@@ -90,7 +90,7 @@ function DashboardTab({ dependent }: { dependent: Dependent }) {
     return (
         <View className="flex-row flex-wrap">
             <View className="p-1" style={{ width }}>
-                <HomeCard
+                <HgCard
                     testID={`dependent-health-records-button-${dependent.ownerId}`}
                     title="Health Records"
                     icon={
@@ -123,7 +123,7 @@ function DashboardTab({ dependent }: { dependent: Dependent }) {
             </View>
             {showRecommendations ? (
                 <View className="p-1" style={{ width }}>
-                    <HomeCard
+                    <HgCard
                         testID={`recommendations-card-${dependent.ownerId}`}
                         title="Vaccine Recommendations"
                         icon={

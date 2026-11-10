@@ -10,7 +10,14 @@ import HealthLinkLogo from "@/assets/images/services/health-link-logo.svg";
 import HealthLinkLogoDark from "@/assets/images/services/health-link-logo-dark.svg";
 import OdrLogo from "@/assets/images/services/odr-logo.svg";
 import { AppTourDialog } from "@/components/site/AppTourDialog";
-import { AppText, HgButton, Icon, LogoPlate, PageTitle } from "@/components/ui";
+import {
+    AppText,
+    HgButton,
+    HgCard,
+    Icon,
+    LogoPlate,
+    PageTitle,
+} from "@/components/ui";
 import {
     EntryType,
     entryTypes,
@@ -47,7 +54,6 @@ import { RecommendationsDialog } from "@/views/reports/RecommendationsDialog";
 
 import { AddQuickLinkDialog } from "./AddQuickLinkDialog";
 import { HomeBanners } from "./HomeBanners";
-import { HomeCard } from "./HomeCard";
 
 /** Port of HomeView.vue: banners, "Add Quick Link", the quick-link cards and "Other record sources". */
 export function HomeView() {
@@ -161,7 +167,7 @@ export function HomeView() {
     const cards: React.ReactNode[] = [
         cell(
             "health-records",
-            <HomeCard
+            <HgCard
                 title="Health Records"
                 testID="health-records-card"
                 icon={<RecordsIcon width={svgIconSize} height={svgIconSize} />}
@@ -182,14 +188,14 @@ export function HomeView() {
                     medications, health visits, lab results, immunizations, and
                     more.
                 </AppText>
-            </HomeCard>
+            </HgCard>
         ),
     ];
     if (showImmunizationRecord)
         cards.push(
             cell(
                 "immunization-record",
-                <HomeCard
+                <HgCard
                     title="Immunization Record"
                     testID="immunization-record-card-button"
                     icon={quickLinkIcon("cloud-arrow-down")}
@@ -220,14 +226,14 @@ export function HomeView() {
                         Download a record of your immunizations, including
                         recommended vaccines.
                     </AppText>
-                </HomeCard>
+                </HgCard>
             )
         );
     if (showRecommendations)
         cards.push(
             cell(
                 "recommendations",
-                <HomeCard
+                <HgCard
                     title="Immunizations"
                     testID="recommendations-card-button"
                     icon={quickLinkIcon("syringe")}
@@ -253,14 +259,14 @@ export function HomeView() {
                         pharmacies or public health, including vaccine
                         recommendations.
                     </AppText>
-                </HomeCard>
+                </HgCard>
             )
         );
     if (showHealthConnect)
         cards.push(
             cell(
                 "health-connect",
-                <HomeCard
+                <HgCard
                     testID="health-connect-registry-card"
                     accessibilityLabel="Health Connect Registry"
                     icon={<HealthLink height={46.2} width={201.3} />}
@@ -287,14 +293,14 @@ export function HomeView() {
                         with a family doctor or nurse practitioner in your
                         community.
                     </AppText>
-                </HomeCard>
+                </HgCard>
             )
         );
     if (showOrganDonor)
         cards.push(
             cell(
                 "organ-donor",
-                <HomeCard
+                <HgCard
                     title="Organ Donor Registration"
                     testID="organ-donor-registration-card"
                     icon={
@@ -325,7 +331,7 @@ export function HomeView() {
                         donation with BC Transplant. If you have registered your
                         decision, you can review the details here.
                     </AppText>
-                </HomeCard>
+                </HgCard>
             )
         );
     enabledQuickLinks.forEach((q, index) => {
@@ -336,7 +342,7 @@ export function HomeView() {
         cards.push(
             cell(
                 `quick-${q.name}-${index}`,
-                <HomeCard
+                <HgCard
                     title={q.name}
                     testID="quick-link-card"
                     icon={quickLinkIcon(details?.icon ?? "magnifying-glass")}
@@ -370,7 +376,7 @@ export function HomeView() {
                         {details?.description ??
                             "View your filtered health records."}
                     </AppText>
-                </HomeCard>
+                </HgCard>
             )
         );
     });
@@ -399,7 +405,7 @@ export function HomeView() {
             </View>
             {showOtherRecordSources ? (
                 <View className="mt-4">
-                    <HomeCard
+                    <HgCard
                         testID="other-record-sources-card"
                         accessibilityLabel="Other record sources"
                         onPress={() => {
@@ -433,7 +439,7 @@ export function HomeView() {
                                 </AppText>
                             </View>
                         </View>
-                    </HomeCard>
+                    </HgCard>
                 </View>
             ) : null}
             <AddQuickLinkDialog

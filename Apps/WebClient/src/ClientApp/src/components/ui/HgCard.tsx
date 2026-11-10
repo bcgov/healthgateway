@@ -1,10 +1,13 @@
 import { Platform, Pressable, View } from "react-native";
 
-import { AppText, HgMenu, Icon } from "@/components/ui";
-import { elevation1 } from "@/components/ui/elevation";
 import { usePressHighlight } from "@/hooks/usePressHighlight";
 import { useThemeColors } from "@/hooks/useTheme";
 import { cn } from "@/utils/cn";
+
+import { AppText } from "./AppText";
+import { elevation1 } from "./elevation";
+import { HgMenu } from "./HgMenu";
+import { Icon } from "./Icon";
 
 interface Props {
     title?: string;
@@ -26,7 +29,7 @@ interface Props {
  * text, hover = surfaceHover (the web client keeps the hover for clickable cards only, and this card always is). A press
  * shades it too, as the web client's `:hover` does on a tap in a mobile browser.
  */
-export function HomeCard({
+export function HgCard({
     title,
     accessibilityLabel,
     icon,

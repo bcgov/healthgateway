@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { Platform } from "react-native";
 
-import { AppText } from "@/components/ui";
+import { AppText, HgCard } from "@/components/ui";
 import { expectNoAxeViolations } from "@/test/axe";
 import {
     attrOf,
@@ -12,15 +12,14 @@ import {
     tagOf,
     waitFor,
 } from "@/test/ui";
-import { HomeCard } from "@/views/home/HomeCard";
 
-describe("HomeCard", () => {
+describe("HgCard", () => {
     it("opens on press and shows its title and body", async () => {
         const onPress = jest.fn();
         await render(
-            <HomeCard title="Medications" onPress={onPress} testID="card">
+            <HgCard title="Medications" onPress={onPress} testID="card">
                 <AppText>History since 1995</AppText>
-            </HomeCard>
+            </HgCard>
         );
         expect(screen.getByText("Medications")).toBeTruthy();
         expect(screen.getByText("History since 1995")).toBeTruthy();
@@ -32,7 +31,7 @@ describe("HomeCard", () => {
     it("offers Remove from the ⋮ menu when removable", async () => {
         const onRemove = jest.fn();
         await render(
-            <HomeCard
+            <HgCard
                 title="Labs"
                 onPress={() => undefined}
                 onRemove={onRemove}
@@ -52,7 +51,7 @@ describe("HomeCard", () => {
 
     it("is an elevated card with no border (HgCardComponent since healthgateway d7ab5c429)", async () => {
         await render(
-            <HomeCard title="Labs" onPress={() => undefined} testID="card" />
+            <HgCard title="Labs" onPress={() => undefined} testID="card" />
         );
         const card = screen.getByTestId("card");
         expect(hasShadow(card)).toBe(true);
@@ -64,14 +63,14 @@ describe("HomeCard", () => {
     it("the title is the card's button for the keyboard and the screen reader; the card itself is no tab stop", async () => {
         const onPress = jest.fn();
         await render(
-            <HomeCard
+            <HgCard
                 title="Medications"
                 onPress={onPress}
                 onRemove={() => undefined}
                 testID="card"
             >
                 <AppText>History since 1995</AppText>
-            </HomeCard>
+            </HgCard>
         );
         const control = screen.getByLabelText("Medications");
         await press(control);
@@ -89,13 +88,13 @@ describe("HomeCard", () => {
 
     it("a card with no title takes its name from accessibilityLabel", async () => {
         await render(
-            <HomeCard
+            <HgCard
                 accessibilityLabel="Other record sources"
                 onPress={() => undefined}
                 testID="card"
             >
                 <AppText>Some records may not appear here.</AppText>
-            </HomeCard>
+            </HgCard>
         );
         expect(screen.getByLabelText("Other record sources")).toBeTruthy();
     });

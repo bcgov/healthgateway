@@ -5,7 +5,7 @@ import AccessMyHealthLogo from "@/assets/images/home/other/access-my-health.svg"
 import IslandHealthLogo from "@/assets/images/home/other/island-health.svg";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { ExternalLinkConfirmationDialog } from "@/components/site/ExternalLinkConfirmationDialog";
-import { AppText, LogoPlate, PageTitle } from "@/components/ui";
+import { AppText, HgCard, LogoPlate, PageTitle } from "@/components/ui";
 import {
     getOtherRecordSourcesLinks,
     type RecordSourceTile,
@@ -31,7 +31,6 @@ import { selectWebConfig, useConfigStore } from "@/stores/config.store";
 import { ConfigUtil } from "@/utils/configUtil";
 import { hrefProps } from "@/utils/hrefProps";
 import { openExternal } from "@/utils/openExternal";
-import { HomeCard } from "@/views/home/HomeCard";
 
 // Each logo renders at its SVG's intrinsic size, exactly as the web client's <img> does. The three whose SVGs
 // only wrap a bitmap use that bitmap directly at the same intrinsic size.
@@ -234,7 +233,7 @@ export function OtherRecordSourcesView() {
                             key={tile.type}
                             className={`${cardWidth} p-2 flex`}
                         >
-                            <HomeCard
+                            <HgCard
                                 title={tile.name}
                                 testID={`other-record-sources-card-${tile.type}`}
                                 icon={<Logo name={tile.logo} />}
@@ -256,7 +255,7 @@ export function OtherRecordSourcesView() {
                                         </AppText>
                                     </Pressable>
                                 </View>
-                            </HomeCard>
+                            </HgCard>
                         </View>
                     );
                 })}
