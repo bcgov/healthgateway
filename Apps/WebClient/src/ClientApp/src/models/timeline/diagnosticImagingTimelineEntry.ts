@@ -1,11 +1,11 @@
-﻿// create public class DiagnosticImagingTimelineEntry which extends TimelineEntry
 import { EntryType } from "@/constants/entryType";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import { DiagnosticImagingExam } from "@/models/patientDataResponse";
-import TimelineEntry from "@/models/timeline/timelineEntry";
-import { UserComment } from "@/models/userComment";
+import type { DiagnosticImagingExam } from "@/models/patientData";
+import { fromIsoDate } from "@/utils/dateUtil";
 
-export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
+import { TimelineEntry, type UserComment } from "./timelineEntry";
+
+/** Port of models/timeline/diagnosticImagingTimelineEntry.ts */
+export class DiagnosticImagingTimelineEntry extends TimelineEntry {
     public title: string;
     public procedureDescription: string;
     public bodyPart: string;
@@ -14,25 +14,21 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
     public healthAuthority: string;
     public examStatus: string;
     public fileId: string | undefined;
-    public examDate: StringISODate;
+    public examDate: string;
 
     private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: DiagnosticImagingExam,
-        getComments: (entryId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null = () => null
     ) {
         super(
             model.id ?? `diagnosticImaging-${model.examDate}`,
             EntryType.DiagnosticImaging,
-            DateWrapper.fromIsoDate(model.examDate)
+            fromIsoDate(model.examDate)
         );
-
         this.title = model.modality || "N/A";
-        if (model.isUpdated) {
-            this.title = `${this.title} - Recently Updated`;
-        }
-
+        if (model.isUpdated) this.title = `${this.title} - Recently Updated`;
         this.procedureDescription = model.procedureDescription || "N/A";
         this.bodyPart = model.bodyPart || "N/A";
         this.modality = model.modality || "N/A";
@@ -49,14 +45,15 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
     }
 
     protected containsText(keyword: string): boolean {
-        const fields = [
+        return [
             this.procedureDescription,
             this.bodyPart,
             this.modality,
             this.organization,
             this.healthAuthority,
-        ];
-        const text = fields.join(" ").toUpperCase();
-        return text.includes(keyword.toUpperCase());
+        ]
+            .join(" ")
+            .toUpperCase()
+            .includes(keyword.toUpperCase());
     }
 }

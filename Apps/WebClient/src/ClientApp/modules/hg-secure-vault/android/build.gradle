@@ -1,0 +1,19 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'ca.bc.gov.healthgateway'
+version = '1.0.0'
+
+android {
+  namespace "ca.bc.gov.healthgateway.vault"
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+}
+
+dependencies {
+  implementation "androidx.biometric:biometric:1.1.0"
+}

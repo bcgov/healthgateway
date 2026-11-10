@@ -1,74 +1,20 @@
-import { EntryType } from "@/constants/entryType";
-import { DateWrapper } from "@/models/dateWrapper";
-import TimelineFilter from "@/models/timeline/timelineFilter";
-import { UserComment } from "@/models/userComment";
+import type { DateTime } from "luxon";
 
-export class DateGroup {
-    key: string;
-    date: DateWrapper;
-    entries: TimelineEntry[];
+import type { EntryType } from "@/constants/entryType";
+import type { UserComment } from "@/models/userComment";
+import { fromIsoDate } from "@/utils/dateUtil";
 
-    constructor(key: string, date: DateWrapper, entries: TimelineEntry[]) {
-        this.key = key;
-        this.date = date;
-        this.entries = entries;
-    }
+import type { TimelineFilter } from "./timelineFilter";
 
-    public static createGroups(timelineEntries: TimelineEntry[]): DateGroup[] {
-        if (timelineEntries.length === 0) {
-            return [];
-        }
-        const groups = timelineEntries.reduce<Record<string, TimelineEntry[]>>(
-            (previousValue, entry) => {
-                const date = entry.date.fromEpoch().toString();
+export type { UserComment } from "@/models/userComment";
 
-                // Create a new group if it the date doesnt exist in the map
-                if (!previousValue[date]) {
-                    previousValue[date] = [];
-                }
-                previousValue[date].push(entry);
-                return previousValue;
-            },
-            {}
-        );
-        return Object.keys(groups).map<DateGroup>((dateKey) => {
-            groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
-                a.type.localeCompare(b.type)
-            );
-            return new DateGroup(
-                dateKey,
-                groups[dateKey][0].date,
-                groups[dateKey]
-            );
-        });
-    }
-
-    public static sortGroups(
-        groupArrays: DateGroup[],
-        ascending = true
-    ): DateGroup[] {
-        groupArrays.sort((a, b) => {
-            const reverseMultiplier = ascending ? 1 : -1;
-
-            if (a.date.isBefore(b.date)) {
-                return 1 * reverseMultiplier;
-            }
-            if (a.date.isAfter(b.date)) {
-                return -1 * reverseMultiplier;
-            }
-            return 0;
-        });
-        return groupArrays;
-    }
-}
-
-// The base timeline entry model
-export default abstract class TimelineEntry {
+/** Port of models/timeline/timelineEntry.ts: the base timeline entry. */
+export abstract class TimelineEntry {
     public readonly id: string;
     public readonly type: EntryType;
-    public readonly date: DateWrapper;
+    public readonly date: DateTime;
 
-    public constructor(id: string, type: EntryType, date: DateWrapper) {
+    public constructor(id: string, type: EntryType, date: DateTime) {
         this.id = id;
         this.type = type;
         this.date = date;
@@ -95,10 +41,7 @@ export default abstract class TimelineEntry {
     }
 
     private commentApplies(keyword: string): boolean {
-        if (this.comments === null) {
-            return false;
-        }
-
+        if (this.comments === null) return false;
         return this.comments.some((comment) =>
             comment.text.toUpperCase().includes(keyword.toUpperCase())
         );
@@ -110,16 +53,48 @@ export default abstract class TimelineEntry {
 
     private dateRangeApplies(filter: TimelineFilter): boolean {
         return (
-            (!filter.startDate ||
-                this.date.isAfterOrSame(
-                    DateWrapper.fromIsoDate(filter.startDate)
-                )) &&
+            (!filter.startDate || this.date >= fromIsoDate(filter.startDate)) &&
             (!filter.endDate ||
-                this.date.isBefore(
-                    DateWrapper.fromIsoDate(filter.endDate).add({
-                        days: 1,
-                    })
-                ))
+                this.date < fromIsoDate(filter.endDate).plus({ days: 1 }))
         );
+    }
+}
+
+/** Port of DateGroup: entries sharing one exact timestamp, keyed by its epoch milliseconds. */
+export class DateGroup {
+    constructor(
+        public key: string,
+        public date: DateTime,
+        public entries: TimelineEntry[]
+    ) {}
+
+    public static createGroups(timelineEntries: TimelineEntry[]): DateGroup[] {
+        if (timelineEntries.length === 0) return [];
+        const groups = timelineEntries.reduce<Record<string, TimelineEntry[]>>(
+            (previous, entry) => {
+                const date = entry.date.valueOf().toString();
+                (previous[date] ??= []).push(entry);
+                return previous;
+            },
+            {}
+        );
+        return Object.keys(groups).map((dateKey) => {
+            groups[dateKey].sort((a, b) => a.type.localeCompare(b.type));
+            return new DateGroup(
+                dateKey,
+                groups[dateKey][0].date,
+                groups[dateKey]
+            );
+        });
+    }
+
+    public static sortGroups(groupArrays: DateGroup[], ascending = true) {
+        groupArrays.sort((a, b) => {
+            const reverseMultiplier = ascending ? 1 : -1;
+            if (a.date < b.date) return 1 * reverseMultiplier;
+            if (a.date > b.date) return -1 * reverseMultiplier;
+            return 0;
+        });
+        return groupArrays;
     }
 }

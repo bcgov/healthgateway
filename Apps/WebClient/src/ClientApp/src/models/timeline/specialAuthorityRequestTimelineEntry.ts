@@ -1,30 +1,31 @@
-import { EntryType } from "@/constants/entryType";
-import { DateWrapper } from "@/models/dateWrapper";
-import MedicationRequest from "@/models/medicationRequest";
-import TimelineEntry from "@/models/timeline/timelineEntry";
-import { UserComment } from "@/models/userComment";
+import type { DateTime } from "luxon";
 
-// The special authority timeline entry model
-export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
+import { EntryType } from "@/constants/entryType";
+import type { MedicationRequest } from "@/models/medicationRequest";
+import { fromIsoDate } from "@/utils/dateUtil";
+
+import { TimelineEntry, type UserComment } from "./timelineEntry";
+
+/** Port of models/timeline/specialAuthorityRequestTimelineEntry.ts */
+export class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
     public drugName: string;
     public requestStatus?: string;
     public prescriberName?: string;
-    public effectiveDate?: DateWrapper;
-    public expiryDate?: DateWrapper;
+    public effectiveDate?: DateTime;
+    public expiryDate?: DateTime;
     public referenceNumber: string;
 
     private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: MedicationRequest,
-        getComments: (entryId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null = () => null
     ) {
         super(
             model.referenceNumber,
             EntryType.SpecialAuthorityRequest,
-            DateWrapper.fromIsoDate(model.requestedDate)
+            fromIsoDate(model.requestedDate)
         );
-
         this.drugName = model.drugName ?? "";
         this.requestStatus = model.requestStatus;
         this.prescriberName = [
@@ -34,10 +35,10 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
             .filter(Boolean)
             .join(" ");
         this.effectiveDate = model.effectiveDate
-            ? DateWrapper.fromIsoDate(model.effectiveDate)
+            ? fromIsoDate(model.effectiveDate)
             : undefined;
         this.expiryDate = model.expiryDate
-            ? DateWrapper.fromIsoDate(model.expiryDate)
+            ? fromIsoDate(model.expiryDate)
             : undefined;
         this.referenceNumber = model.referenceNumber;
         this.getComments = getComments;
@@ -48,12 +49,13 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
     }
 
     public containsText(keyword: string): boolean {
-        let text =
+        return (
             (this.drugName ?? "") +
             (this.prescriberName ?? "") +
             (this.requestStatus ?? "") +
-            (this.referenceNumber ?? "");
-        text = text.toUpperCase();
-        return text.includes(keyword.toUpperCase());
+            (this.referenceNumber ?? "")
+        )
+            .toUpperCase()
+            .includes(keyword.toUpperCase());
     }
 }

@@ -1,0 +1,77 @@
+# Brings the app to Home, logged in, reusing the running app (owner, 2026-11-05: fewer relaunches). Logs in
+# (subflows/log-in.yaml) only when it is on the landing page. Run it through scripts/maestro-test.sh so the login can be
+# read from credentials.env. Maestro spends up to 7 s on any check whose answer is "no", so the usual path (already
+# logged in) only asks questions whose answer is "yes", and remembers the answer instead of asking the opposite.
+appId: ca.bc.gov.healthgateway.dev
+---
+- evalScript: ${output.signedIn = false}
+# to the front if running, launched if not
+- launchApp:
+      stopApp: false
+# Recognise the screen, or relaunch: a flow that failed (or ended) with a menu or dialog open hides the page from
+# Maestro on iOS. Recognising it is a quick "yes"; only a stuck screen pays for the wait and the relaunch.
+- evalScript: ${output.screenKnown = false}
+- extendedWaitUntil:
+      visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+      timeout: 10000
+      optional: true
+- runFlow:
+      when:
+          visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+      commands:
+          - evalScript: ${output.screenKnown = true}
+- runFlow:
+      when:
+          true: ${!output.screenKnown}
+      commands:
+          - launchApp:
+                stopApp: true
+          - extendedWaitUntil:
+                visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+                timeout: 60000
+# logged in (the tabs show, as a bottom bar or the iPhone Duo's side rail): Home by the app's own link. This check keeps
+# looking for a few seconds, which also outlasts the landing page a launch shows before a saved login moves to Home.
+- runFlow:
+      when:
+          visible:
+              id: "menu-btn-home-link"
+      commands:
+          - evalScript: ${output.signedIn = true}
+          - runFlow:
+                file: open-link.yaml
+                env:
+                    LINK: healthgateway://home
+- runFlow:
+      when:
+          true: ${!output.signedIn}
+      commands:
+          # the first-launch intro (a fresh install, or a reset) covers the app: finish it first
+          - runFlow:
+                when:
+                    visible: "Skip intro|Get started|Not now"
+                file: finish-intro.yaml
+          # from the Log In page (a cancelled login) or another signed-out page, the logo leads to the landing page
+          - tapOn:
+                text: "Go to Health Gateway home page"
+                optional: true
+          - runFlow:
+                when:
+                    visible:
+                        id: "btnLogin"
+                file: log-in.yaml
+                env:
+                    LOGIN_USERNAME: ${MAESTRO_HG_USERNAME}
+                    LOGIN_PASSWORD: ${MAESTRO_HG_PASSWORD}
+# logged in (the tabs show; after a login or a saved login this can take a while), then the top of Home
+- extendedWaitUntil:
+      visible:
+          id: "menu-btn-home-link"
+      timeout: 60000
+# Home keeps its scroll position when the link opens it again: scroll up until "Add Quick Link" (at the top) shows. When
+# it already shows, nothing scrolls.
+- scrollUntilVisible:
+      element:
+          id: "add-quick-link-button"
+      direction: UP
+      speed: 80
+      timeout: 10000

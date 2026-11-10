@@ -1,0 +1,4 @@
+# Tool: cancels an iOS "Open in …" sheet.
+appId: ca.bc.gov.healthgateway.dev
+---
+- tapOn: "Cancel"

@@ -1,0 +1,16 @@
+# Tool: scrolls the current page back to the top and takes a screenshot.
+appId: ca.bc.gov.healthgateway.dev
+---
+- swipe:
+      start: 50%,30%
+      end: 50%,75%
+      duration: 400
+- swipe:
+      start: 50%,30%
+      end: 50%,75%
+      duration: 400
+- swipe:
+      start: 50%,30%
+      end: 50%,75%
+      duration: 400
+- takeScreenshot: tests/maestro/out/scroll-top

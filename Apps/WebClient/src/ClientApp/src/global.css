@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Vuetify's .v-application sets these, which is why the original site's text renders lighter on macOS. */
+@layer base {
+    html,
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Accessibility (WCAG 2.4.7, 2.4.11): one focus ring from the `focus` token on every control, and room under the
+   sticky app bar when a focused control scrolls into view. react-native-web leaves the browser's own ring alone. */
+@layer base {
+    body :focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+    html {
+        scroll-padding-top: 80px;
+    }
+}

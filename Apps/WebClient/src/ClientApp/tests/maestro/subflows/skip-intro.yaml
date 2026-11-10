@@ -1,0 +1,17 @@
+appId: ca.bc.gov.healthgateway.dev
+---
+- extendedWaitUntil:
+      visible:
+          id: "onboardingSkipBtn"
+      timeout: 30000
+- tapOn:
+      id: "onboardingSkipBtn"
+- extendedWaitUntil:
+      visible: "Protect your personal information"
+      timeout: 5000
+- tapOn:
+      id: "localAuthNotNowBtn"
+- extendedWaitUntil:
+      visible:
+          id: "btnLogin"
+      timeout: 30000

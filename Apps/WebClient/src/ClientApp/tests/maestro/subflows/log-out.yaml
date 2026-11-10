@@ -1,0 +1,23 @@
+# From any signed-in page: account menu → Log Out, skipping the rating dialog if it asks, back to the landing page.
+appId: ca.bc.gov.healthgateway.dev
+---
+- tapOn:
+      id: "headerDropdownBtn"
+- extendedWaitUntil:
+      visible:
+          id: "logoutBtn"
+      timeout: 5000
+- tapOn:
+      id: "logoutBtn"
+- extendedWaitUntil:
+      visible:
+          id: "ratingModalSkipBtn"
+      timeout: 8000
+      optional: true
+- tapOn:
+      id: "ratingModalSkipBtn"
+      optional: true
+- extendedWaitUntil:
+      visible:
+          id: "btnLogin"
+      timeout: 60000

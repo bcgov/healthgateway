@@ -1,31 +1,21 @@
-import { ActionType } from "@/constants/actionType";
-import { ResultType } from "@/constants/resulttype";
+import type { ActionType } from "@/constants/actionType";
+import type { ResultType } from "@/constants/resultType";
 
-export default interface RequestResult<T> {
-    // The request resource payload
+/** Port of models/requestResult.ts: the HG API envelope. */
+export interface RequestResult<T> {
     resourcePayload: T;
-    // The total number of records for pagination
     totalResultCount: number;
-    // The current page index for pagination
     pageIndex: number;
-    // The current page size for pagnation
     pageSize: number;
-    //The status of the request
     resultStatus: ResultType;
-    // The result error associated to the request (could be empty)
     resultError?: ResultErrorDetails;
 }
 
-// HG API binding interface for ErrorResult model
+/** HG API binding for ErrorResult */
 export interface ResultErrorDetails {
-    // Message that will always be populated when ResultType is Error.
     resultMessage?: string;
-    // Code that will always be populated when ResultType is Error.
     errorCode: string;
-    // The trace ID associated with the request.
     traceId: string;
-    // The action code that will be set when ResultType is ActionRequired.
     actionCode?: ActionType;
-    // The HTTP status code returned by the request.
     statusCode?: number;
 }

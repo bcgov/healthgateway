@@ -1,0 +1,75 @@
+/*
+ * Web only: BC Sans as woff2 (the same files the web client serves), swapped in as they arrive.
+ * Family names match the expo-font registrations used on native (see src/theme/index.ts `fonts`), so the
+ * Tailwind font classes and AppText need no platform branches. Native loads the TTFs through expo-font.
+ *
+ * Every face declares the weight and style it really has. `font-bold` sets both the BCSans-Bold family (our
+ * fontFamily token) and Tailwind's font-weight: 700; were the Bold face declared `normal`, the browser would
+ * fake bold on top of the real Bold glyphs (font-synthesis), drawing headings heavier and wider than the web
+ * client. A family with a single face still serves every weight and style asked of it, and the browser only
+ * synthesises bolder or slanted, never lighter or upright, so these declarations never add synthesis.
+ */
+@font-face {
+    font-family: "BCSans-Regular";
+    src: url("/fonts/BCSans-Regular.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+/* bold and italic on the regular family: the real faces, as the web client's BCSans family has them */
+@font-face {
+    font-family: "BCSans-Regular";
+    src: url("/fonts/BCSans-Bold.woff2") format("woff2");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-Regular";
+    src: url("/fonts/BCSans-Italic.woff2") format("woff2");
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-Regular";
+    src: url("/fonts/BCSans-BoldItalic.woff2") format("woff2");
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-Bold";
+    src: url("/fonts/BCSans-Bold.woff2") format("woff2");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-Italic";
+    src: url("/fonts/BCSans-Italic.woff2") format("woff2");
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-BoldItalic";
+    src: url("/fonts/BCSans-BoldItalic.woff2") format("woff2");
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-Light";
+    src: url("/fonts/BCSans-Light.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BCSans-LightItalic";
+    src: url("/fonts/BCSans-LightItalic.woff2") format("woff2");
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}

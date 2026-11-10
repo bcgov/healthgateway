@@ -1,0 +1,158 @@
+import { NotificationPreferenceType } from "@/models/notificationPreferenceType";
+import {
+    UserProfileNotificationSettingModel,
+    UserProfileNotificationType,
+} from "@/models/userProfile";
+import { UserProfileNotificationSettings } from "@/models/userProfileNotificationSettings";
+import {
+    Destination,
+    ExternalUrl,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+
+/**
+ * Represents backend-supported notification types.
+ *
+ * IMPORTANT:
+ * - The string value must match the backend enum name (camelCase).
+ * - This value is used for API communication and feature toggle mapping.
+ *
+ * When adding a new notification type:
+ * 1. Add a new enum member here (e.g., DiagnosticImaging = "diagnosticImaging").
+ * 2. Add a corresponding entry in NOTIFICATION_PREFERENCE_TYPES below.
+ * 3. Add a matching feature toggle entry in featuretoggleconfig.json
+ *    under profile.notifications.type with the same "name" value.
+ */
+export enum ProfileNotificationType {
+    BcCancerScreening = "bcCancerScreening",
+}
+
+export enum ProfileNotificationPreference {
+    Email = "email",
+    Sms = "sms",
+}
+
+/**
+ * UI configuration for profile notification preference types.
+ *
+ * Each entry:
+ * - id: UI identifier (kebab-case; used as stable key in components)
+ * - type: Backend notification type (must match ProfileNotificationType)
+ * - label: Display text shown in the profile page
+ * - modal: Help text shown in the information modal
+ *
+ * IMPORTANT:
+ * - Every ProfileNotificationType must have a corresponding entry here.
+ * - The feature toggle (featuretoggleconfig.json) must contain a matching
+ *   "type.name" entry using the same camelCase value (e.g., "bcCancerScreening").
+ */
+export const NOTIFICATION_PREFERENCE_TYPES = [
+    {
+        id: "bc-cancer-screening",
+        type: ProfileNotificationType.BcCancerScreening,
+        label: "BC Cancer Screening Letters",
+        modal: {
+            buttonText: "Learn More",
+            content: {
+                title: "BC Cancer Screening Program Letters",
+                paragraphs: [
+                    {
+                        segments: [
+                            {
+                                type: "text",
+                                value: "Cancer screening program letters are available on Health Gateway. Health Gateway can email and/or text (SMS) you when new letters are added that show you need follow-up or when you are due to screen again.",
+                            },
+                        ],
+                    },
+                    {
+                        segments: [
+                            {
+                                type: "text",
+                                value: "Choosing to receive email and/or text (SMS) notifications will not change the paper letters that will be mailed to you.",
+                            },
+                        ],
+                    },
+                    {
+                        segments: [
+                            {
+                                type: "text",
+                                value: "For more information about BC Cancer Screening Program letters, visit ",
+                            },
+                            {
+                                type: "link",
+                                text: "screeningbc.ca/contact",
+                                href: ExternalUrl.ScreeningContact,
+                                analyticsText:
+                                    Text.ScreeningNotificationsContactLink,
+                                analyticsOrigin: Origin.Profile,
+                                analyticsDestination:
+                                    Destination.ScreeningContact,
+                                analyticsType: Type.Notifications,
+                                analysticsUrl: ExternalUrl.ScreeningContact,
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    },
+] as const satisfies ReadonlyArray<NotificationPreferenceType>;
+
+export function getNotificationPreferenceTypes(): ReadonlyArray<NotificationPreferenceType> {
+    return NOTIFICATION_PREFERENCE_TYPES;
+}
+
+function assertNever(x: never): never {
+    throw new Error(`Unhandled value: ${String(x)}`);
+}
+
+export function getUserProfileNotificationSettings(
+    settings: UserProfileNotificationSettingModel[] | undefined
+): UserProfileNotificationSettings[] {
+    return (settings ?? [])
+        .map((setting) => {
+            const profileNotificationType = getProfileNotificationType(
+                setting.type
+            ); // "BcCancerScreening" to "bcCancerScreening"
+
+            if (!profileNotificationType) return null;
+
+            const preferences: ProfileNotificationPreference[] = [];
+
+            if (setting.emailEnabled)
+                preferences.push(ProfileNotificationPreference.Email);
+
+            if (setting.smsEnabled)
+                preferences.push(ProfileNotificationPreference.Sms);
+
+            return { type: profileNotificationType, preferences };
+        })
+        .filter(
+            (result): result is UserProfileNotificationSettings =>
+                result !== null
+        );
+}
+
+export function getUserProfileNotificationType(
+    type: ProfileNotificationType
+): UserProfileNotificationType {
+    switch (type) {
+        case ProfileNotificationType.BcCancerScreening:
+            return UserProfileNotificationType.BcCancerScreening;
+        default:
+            return assertNever(type);
+    }
+}
+
+export function getProfileNotificationType(
+    type: UserProfileNotificationType
+): ProfileNotificationType | null {
+    switch (type) {
+        case "BcCancerScreening":
+            return ProfileNotificationType.BcCancerScreening;
+        default:
+            return null;
+    }
+}

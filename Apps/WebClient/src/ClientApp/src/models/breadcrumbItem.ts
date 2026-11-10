@@ -1,6 +1,6 @@
-export default interface BreadcrumbItem {
+export interface BreadcrumbItem {
     text: string;
     to?: string;
     active?: boolean;
-    dataTestId?: string;
+    testId?: string;
 }

@@ -1,8 +1,8 @@
-import { StringISODate } from "./dateWrapper";
-import EncodedMedia from "./encodedMedia";
-import { ResultError } from "./errors";
-import { LoadStatus } from "./storeOperations";
+import type { LoadStatus } from "./datasetState";
+import type { ResultError } from "./errors";
+import type { EncodedMedia } from "./laboratory";
 
+/** Port of models/clinicalDocument.ts */
 export interface ClinicalDocument {
     id: string;
     fileId: string;
@@ -10,7 +10,8 @@ export interface ClinicalDocument {
     type: string;
     facilityName: string;
     discipline: string;
-    serviceDate: StringISODate;
+    /** ISO date */
+    serviceDate: string;
 }
 
 export interface ClinicalDocumentFile {

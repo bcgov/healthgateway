@@ -1,15 +1,28 @@
-export default interface Communication {
-    // Gets or sets the communication text.
-    text: string;
+export enum CommunicationType {
+    Banner = 0,
+    Email = 1,
+    InApp = 2,
+    Mobile = 3,
+}
 
-    // Gets or sets the type of the Communication.
+export interface Communication {
+    id: string;
+    text: string;
+    subject: string;
+    effectiveDateTime: string;
+    expiryDateTime: string;
     communicationTypeCode: CommunicationType;
 }
 
-export enum CommunicationType {
-    // Banner communication.
-    Banner = 0,
-
-    // Communication inside the app.
-    InApp = 2,
+export interface RequestResult<T> {
+    resourcePayload: T;
+    totalResultCount?: number;
+    pageIndex?: number;
+    pageSize?: number;
+    resultStatus: number;
+    resultError?: {
+        resultMessage?: string;
+        errorCode?: string;
+        traceId?: string;
+    } | null;
 }

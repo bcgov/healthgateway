@@ -1,40 +1,17 @@
-import DateTimeFormat from "@/constants/dateTimeFormat";
+import type { DateTime } from "luxon";
+
 import { EntryType } from "@/constants/entryType";
-import { DateWrapper } from "@/models/dateWrapper";
-import {
+import type {
     Forecast,
     ImmunizationAgent,
     ImmunizationEvent,
-} from "@/models/immunizationModel";
-import TimelineEntry from "@/models/timeline/timelineEntry";
-import { UserComment } from "@/models/userComment";
+} from "@/models/immunization";
+import { formatDate, fromIso, fromIsoDate } from "@/utils/dateUtil";
 
-// The immunization timeline entry model
-export default class ImmunizationTimelineEntry extends TimelineEntry {
-    public immunization: ImmunizationViewModel;
+import { TimelineEntry, type UserComment } from "./timelineEntry";
 
-    public constructor(model: ImmunizationEvent) {
-        super(
-            model.id,
-            EntryType.Immunization,
-            DateWrapper.fromIso(model.dateOfImmunization)
-        );
-        this.immunization = new ImmunizationViewModel(model);
-    }
-
-    public get comments(): UserComment[] | null {
-        return null;
-    }
-
-    public containsText(keyword: string): boolean {
-        let text =
-            (this.immunization.name ?? "") +
-            (this.immunization.searchableAgentsText ?? "") +
-            (this.immunization.providerOrClinic ?? "");
-        text = text.toUpperCase();
-        return text.includes(keyword.toUpperCase());
-    }
-}
+/** DateTimeFormat.formatDateString */
+const formatDateString = "yyyy-MM-dd";
 
 class ImmunizationAgentViewModel {
     public code: string;
@@ -57,9 +34,7 @@ class ForecastViewModel {
 
     constructor(model: Forecast) {
         this.displayName = model.displayName;
-        this.dueDate = DateWrapper.fromIsoDate(model.dueDate).format(
-            DateTimeFormat.formatDateString
-        );
+        this.dueDate = formatDate(fromIsoDate(model.dueDate), formatDateString);
         this.status = model.status;
     }
 }
@@ -68,7 +43,7 @@ class ImmunizationViewModel {
     public id: string;
     public name: string;
     public status: string;
-    public dateOfImmunization: DateWrapper;
+    public dateOfImmunization: DateTime;
     public providerOrClinic: string | null;
     public immunizationAgents: ImmunizationAgentViewModel[];
     public forecast?: ForecastViewModel;
@@ -78,25 +53,47 @@ class ImmunizationViewModel {
         this.id = model.id;
         this.name = model.immunization.name;
         this.status = model.status;
-        this.dateOfImmunization = DateWrapper.fromIsoDate(
-            model.dateOfImmunization
-        );
+        this.dateOfImmunization = fromIsoDate(model.dateOfImmunization);
         this.providerOrClinic = model.providerOrClinic || null;
-        this.immunizationAgents = [];
-        model.immunization.immunizationAgents.forEach((agent) =>
-            this.immunizationAgents.push(new ImmunizationAgentViewModel(agent))
+        this.immunizationAgents = model.immunization.immunizationAgents.map(
+            (agent) => new ImmunizationAgentViewModel(agent)
         );
-        if (model.forecast) {
+        if (model.forecast)
             this.forecast = new ForecastViewModel(model.forecast);
-        }
-
         this.searchableAgentsText = this.immunizationAgents.reduce(
-            (accumulator: string, current: ImmunizationAgentViewModel) =>
+            (accumulator, current) =>
                 accumulator +
                 (current.lotNumber ?? "") +
                 (current.name ?? "") +
                 (current.productName ?? ""),
             ""
         );
+    }
+}
+
+/** Port of models/timeline/immunizationTimelineEntry.ts */
+export class ImmunizationTimelineEntry extends TimelineEntry {
+    public immunization: ImmunizationViewModel;
+
+    public constructor(model: ImmunizationEvent) {
+        super(
+            model.id,
+            EntryType.Immunization,
+            fromIso(model.dateOfImmunization)
+        );
+        this.immunization = new ImmunizationViewModel(model);
+    }
+
+    public get comments(): UserComment[] | null {
+        return null;
+    }
+
+    public containsText(keyword: string): boolean {
+        const text = (
+            (this.immunization.name ?? "") +
+            (this.immunization.searchableAgentsText ?? "") +
+            (this.immunization.providerOrClinic ?? "")
+        ).toUpperCase();
+        return text.includes(keyword.toUpperCase());
     }
 }

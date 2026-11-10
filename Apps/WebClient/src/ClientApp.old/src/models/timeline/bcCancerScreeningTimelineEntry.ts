@@ -1,0 +1,113 @@
+import { EntryType } from "@/constants/entryType";
+import { DateWrapper } from "@/models/dateWrapper";
+import {
+    BcCancerScreening,
+    BcCancerScreeningType,
+} from "@/models/patientDataResponse";
+import TimelineEntry from "@/models/timeline/timelineEntry";
+import { UserComment } from "@/models/userComment";
+import { BcCancerDestination, isBcCancerProgram } from "@/plugins/extensions";
+export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
+    public title!: string;
+    public documentType!: string;
+    public fileId: string;
+    public subtitle: string;
+    public callToActionText!: string;
+    public screeningType: BcCancerScreeningType;
+    public isResult!: boolean;
+    public fileName!: string;
+    public eventText!: string;
+    public programName!: string;
+    public bcCancerDestination!: string;
+
+    private readonly getComments: (entryId: string) => UserComment[] | null;
+    private readonly programKey: string;
+
+    private static readonly programResultTitleMap: Record<string, string> = {
+        "cervical cancer": "Cervix Screening Result Letter",
+        "breast cancer": "Breast Screening Result Letter",
+        "colon cancer": "Colon Screening Result Letter",
+        "lung cancer": "Lung Screening Result Letter",
+    };
+
+    private static readonly programReminderTitleMap: Record<string, string> = {
+        "cervical cancer": "Cervix Screening Reminder Letter",
+        "breast cancer": "Breast Screening Reminder Letter",
+        "colon cancer": "Colon Screening Reminder Letter",
+        "lung cancer": "Lung Screening Reminder Letter",
+    };
+
+    public constructor(
+        model: BcCancerScreening,
+        getComments: (entryId: string) => UserComment[] | null
+    ) {
+        const programDisplayNameMap: Record<string, string> = {
+            "cervical cancer": "Cervix",
+            "breast cancer": "Breast",
+            "colon cancer": "Colon",
+            "lung cancer": "Lung",
+        };
+
+        const isResult = model.eventType === BcCancerScreeningType.Result;
+        const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
+        super(
+            model.id ?? `cancerScreening-${dateTime}`,
+            EntryType.BcCancerScreening,
+            DateWrapper.fromIso(dateTime)
+        );
+        this.isResult = isResult;
+        this.fileId = model.fileId;
+        this.programName = model.programName?.trim() || "Unknown";
+
+        this.programKey = this.programName
+            .trim()
+            .toLowerCase()
+            .replaceAll(/\s+/g, " ");
+
+        const program =
+            programDisplayNameMap[this.programKey] ?? this.programName;
+
+        this.subtitle = `Program: ${program} Screening`;
+        this.screeningType = model.eventType;
+        this.setEntryProperties();
+        this.getComments = getComments;
+        this.bcCancerDestination = isBcCancerProgram(program)
+            ? BcCancerDestination[program]
+            : "";
+    }
+
+    private setEntryProperties(): void {
+        const defaultReminderTitle = `${this.programName} Screening Reminder Letter`;
+        const defaultResultTitle = `${this.programName} Screening Result Letter`;
+
+        if (this.screeningType === BcCancerScreeningType.Result) {
+            this.title =
+                BcCancerScreeningTimelineEntry.programResultTitleMap[
+                    this.programKey
+                ] ?? defaultResultTitle;
+            this.callToActionText = "View Letter";
+            this.documentType = "Screening results";
+            this.fileName = "bc_cancer_result";
+            this.eventText = "BC Cancer Result PDF";
+        } else {
+            this.title =
+                BcCancerScreeningTimelineEntry.programReminderTitleMap[
+                    this.programKey
+                ] ?? defaultReminderTitle;
+            this.callToActionText = "View Letter";
+            this.documentType = "Screening letter";
+            this.fileName = "bc_cancer_screening";
+            this.eventText = "BC Cancer Screening PDF";
+        }
+    }
+
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
+    }
+
+    protected containsText(keyword: string): boolean {
+        const fields = [this.title, this.documentType];
+        const text = fields.join(" ").toUpperCase();
+        return text.includes(keyword.toUpperCase());
+    }
+}

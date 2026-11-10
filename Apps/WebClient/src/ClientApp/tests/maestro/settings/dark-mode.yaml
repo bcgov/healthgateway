@@ -1,0 +1,32 @@
+# Dark Mode On, then back to Off, the default.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedOut
+---
+- runFlow: ../subflows/start-signed-out.yaml
+- tapOn:
+      id: "settingsMenuBtn"
+- extendedWaitUntil:
+      visible:
+          id: "menu-btn-dark-mode-link"
+      timeout: 5000
+- tapOn:
+      id: "menu-btn-dark-mode-link"
+- extendedWaitUntil:
+      visible:
+          id: "dark-mode-on"
+      timeout: 5000
+- tapOn:
+      id: "dark-mode-on"
+- takeScreenshot: tests/maestro/out/dark-mode-on
+- tapOn:
+      id: "dark-mode-off"
+# close the menu (the strip of page left of it: the backdrop's middle is under the menu itself)
+- tapOn:
+      point: "5%,50%"
+- extendedWaitUntil:
+      notVisible:
+          id: "headerMenu"
+      timeout: 5000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-out.yaml

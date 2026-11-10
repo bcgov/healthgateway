@@ -1,0 +1,55 @@
+# The logo goes straight to Home from every tab, including the first one opened (Dependents).
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-dependents-link"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-button"
+      timeout: 8000
+- tapOn: "Go to Health Gateway home page"
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-button"
+      timeout: 3000
+
+- tapOn:
+      id: "menu-btn-health-records-link"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-button"
+      timeout: 8000
+- tapOn: "Go to Health Gateway home page"
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-button"
+      timeout: 3000
+
+- tapOn:
+      id: "menu-btn-services-link"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-button"
+      timeout: 8000
+- tapOn: "Go to Health Gateway home page"
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-button"
+      timeout: 3000
+
+- tapOn:
+      id: "menu-btn-reports-link"
+- extendedWaitUntil:
+      notVisible:
+          id: "add-quick-link-button"
+      timeout: 8000
+- tapOn: "Go to Health Gateway home page"
+- extendedWaitUntil:
+      visible:
+          id: "add-quick-link-button"
+      timeout: 3000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

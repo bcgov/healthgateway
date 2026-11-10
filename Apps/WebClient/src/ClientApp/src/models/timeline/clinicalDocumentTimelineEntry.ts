@@ -1,26 +1,27 @@
 import { EntryType } from "@/constants/entryType";
-import { ClinicalDocument } from "@/models/clinicalDocument";
-import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry from "@/models/timeline/timelineEntry";
-import { UserComment } from "@/models/userComment";
+import type { ClinicalDocument } from "@/models/clinicalDocument";
+import { fromIsoDate } from "@/utils/dateUtil";
 
-// The hospital visit timeline entry model
-export default class ClinicalDocumentTimelineEntry extends TimelineEntry {
+import { TimelineEntry, type UserComment } from "./timelineEntry";
+
+/** Port of models/timeline/clinicalDocumentTimelineEntry.ts */
+export class ClinicalDocumentTimelineEntry extends TimelineEntry {
     public fileId: string;
     public name: string;
     public documentType: string;
     public facilityName: string;
     public discipline: string;
+
     private readonly getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
         model: ClinicalDocument,
-        getComments: (entryId: string) => UserComment[] | null
+        getComments: (entryId: string) => UserComment[] | null = () => null
     ) {
         super(
             model.id,
             EntryType.ClinicalDocument,
-            DateWrapper.fromIsoDate(model.serviceDate)
+            fromIsoDate(model.serviceDate)
         );
         this.fileId = model.fileId;
         this.name = model.name;
@@ -35,13 +36,14 @@ export default class ClinicalDocumentTimelineEntry extends TimelineEntry {
     }
 
     public containsText(keyword: string): boolean {
-        const fields = [
+        return [
             this.name,
             this.documentType,
             this.discipline,
             this.facilityName,
-        ];
-        const text = fields.join(" ").toUpperCase();
-        return text.includes(keyword.toUpperCase());
+        ]
+            .join(" ")
+            .toUpperCase()
+            .includes(keyword.toUpperCase());
     }
 }

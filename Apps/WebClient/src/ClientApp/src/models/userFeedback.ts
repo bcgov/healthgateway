@@ -1,6 +1,10 @@
-import { ClientType } from "@/constants/clientType";
-
-export default interface UserFeedback {
+export interface UserFeedback {
     comment: string;
-    clientType?: ClientType;
+    clientType?: string;
+    isSatisfied?: boolean;
+}
+
+export interface UserRating {
+    ratingValue: number;
+    skip: boolean;
 }

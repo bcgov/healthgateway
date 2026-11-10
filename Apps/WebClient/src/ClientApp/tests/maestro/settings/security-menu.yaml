@@ -1,0 +1,72 @@
+# The Security page from the account menu: Device Security, the cache, Environment and Reset App. In Environment, the
+# current one (Development) does nothing when tapped, and choosing Test asks first; Cancel keeps Development. Resets,
+# switches and turns on nothing.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "headerDropdownBtn"
+- extendedWaitUntil:
+      visible:
+          id: "menu-btn-security-link"
+      timeout: 5000
+- tapOn:
+      id: "menu-btn-security-link"
+- extendedWaitUntil:
+      visible:
+          id: "deviceSecuritySwitch"
+      timeout: 5000
+# Device Security is off for these flows, so the cache section says to turn it on
+- assertVisible:
+      id: "cacheUnavailable"
+
+# Environment: one choice per environment (a development build also lists Local)
+- scrollUntilVisible:
+      element:
+          id: "environment-prod"
+      direction: DOWN
+      # faster than the default (40); it still stops as soon as the element shows
+      speed: 80
+      timeout: 10000
+- assertVisible:
+      id: "environmentSection"
+- assertVisible:
+      id: "environment-local"
+- assertVisible:
+      id: "environment-dev"
+- assertVisible:
+      id: "environment-test"
+# each choice reads its name and host as one label ("Test. test.healthgateway.gov.bc.ca")
+- assertVisible:
+      id: "environment-test"
+      text: ".*test\\.healthgateway\\.gov\\.bc\\.ca.*"
+# the current one: nothing to confirm
+- tapOn:
+      id: "environment-dev"
+- assertNotVisible: "Switch to Development\\?"
+# another one asks first, and Cancel stays on Development
+- tapOn:
+      id: "environment-test"
+- extendedWaitUntil:
+      visible: "Switch to Test\\?"
+      timeout: 5000
+# Android may show the button in capitals
+- tapOn: "(?i)cancel"
+- extendedWaitUntil:
+      notVisible: "Switch to Test\\?"
+      timeout: 5000
+- assertVisible:
+      id: "environmentBanner"
+      text: "Development"
+
+- scrollUntilVisible:
+      element:
+          id: "resetAppBtn"
+      direction: DOWN
+      # faster than the default (40); it still stops as soon as the element shows
+      speed: 80
+      timeout: 10000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

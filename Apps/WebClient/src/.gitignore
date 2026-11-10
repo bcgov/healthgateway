@@ -1,1 +1,56 @@
 WebClient.xml
+
+###################
+## ClientApp (Expo / React Native)
+###################
+# node_modules/, dist/, coverage/, .DS_Store, .vscode/, .idea and *.log are already ignored by the Apps and repo
+# root .gitignore files.
+
+# Expo
+/ClientApp/.expo/
+/ClientApp/web-build/
+/ClientApp/expo-env.d.ts
+
+# Native
+/ClientApp/**/.kotlin/
+/ClientApp/**/*.orig.*
+/ClientApp/**/*.jks
+/ClientApp/**/*.p8
+/ClientApp/**/*.p12
+/ClientApp/**/*.key
+/ClientApp/**/*.mobileprovision
+/ClientApp/**/*.pem
+
+# Metro
+/ClientApp/.metro-health-check*
+
+# debug
+/ClientApp/npm-debug.*
+/ClientApp/yarn-debug.*
+/ClientApp/yarn-error.*
+
+# local env (commit .env.example only)
+/ClientApp/.env
+/ClientApp/.env*.local
+# test login for Maestro: never committed (ClientApp/scripts/maestro-test.sh loads it)
+/ClientApp/credentials.env
+
+# typescript
+/ClientApp/**/*.tsbuildinfo
+
+# generated native projects (npx expo prebuild)
+/ClientApp/ios
+/ClientApp/android
+
+# build outputs
+/ClientApp/**/*.ipa
+/ClientApp/**/*.apk
+/ClientApp/**/*.aab
+# Gradle output of the local Expo modules (written by every Android build)
+/ClientApp/modules/*/android/build/
+
+# Maestro screenshots
+/ClientApp/tests/maestro/out
+
+# local build/simulator logs
+/ClientApp/.logs

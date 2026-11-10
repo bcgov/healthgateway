@@ -1,17 +1,13 @@
-import { EntryType } from "@/constants/entryType";
-import { StringISODate } from "@/models/dateWrapper";
+import type { EntryType } from "@/constants/entryType";
 
-// Timeline filter model
-export default class TimelineFilter {
+/** Port of models/timeline/timelineFilter.ts */
+export class TimelineFilter {
     public readonly keyword: string;
-    public readonly startDate: StringISODate;
-    public readonly endDate: StringISODate;
+    public readonly startDate: string;
+    public readonly endDate: string;
     public readonly entryTypes: Set<EntryType>;
 
-    /**
-     * Note: Should only be called from the timeline filter builder
-     * @param builder The builder to use when constructing a TimelineFilter
-     */
+    /** Only the builder constructs a TimelineFilter. */
     public constructor(builder: TimelineFilterBuilder) {
         this.keyword = builder.keyword;
         this.entryTypes = builder.entryTypes;
@@ -30,17 +26,12 @@ export default class TimelineFilter {
 }
 
 export class TimelineFilterBuilder {
-    private _keyword: string;
-    private _entryTypes: Set<EntryType>;
-    private _startDate: StringISODate;
-    private _endDate: StringISODate;
+    private _keyword = "";
+    private _entryTypes = new Set<EntryType>();
+    private _startDate = "";
+    private _endDate = "";
 
-    private constructor() {
-        this._keyword = "";
-        this._entryTypes = new Set();
-        this._endDate = "";
-        this._startDate = "";
-    }
+    private constructor() {}
 
     public get keyword(): string {
         return this._keyword;
@@ -50,11 +41,11 @@ export class TimelineFilterBuilder {
         return this._entryTypes;
     }
 
-    public get startDate(): StringISODate {
+    public get startDate(): string {
         return this._startDate;
     }
 
-    public get endDate(): StringISODate {
+    public get endDate(): string {
         return this._endDate;
     }
 
@@ -82,12 +73,12 @@ export class TimelineFilterBuilder {
         return this;
     }
 
-    public withStartDate(dateString: StringISODate): this {
+    public withStartDate(dateString: string): this {
         this._startDate = dateString;
         return this;
     }
 
-    public withEndDate(dateString: StringISODate): this {
+    public withEndDate(dateString: string): this {
         this._endDate = dateString;
         return this;
     }

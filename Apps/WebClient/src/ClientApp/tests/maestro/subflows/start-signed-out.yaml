@@ -1,0 +1,70 @@
+# Brings the app to the landing page, logged out, reusing the running app (owner, 2026-11-05: fewer relaunches). Logs
+# out first (subflows/log-out.yaml) when it is logged in. As in start-signed-in, the usual path (already on the landing
+# page) only asks questions whose answer is "yes", since Maestro spends up to 7 s on each "no".
+appId: ca.bc.gov.healthgateway.dev
+---
+- evalScript: ${output.onLanding = false}
+# to the front if running, launched if not
+- launchApp:
+      stopApp: false
+# Recognise the screen, or relaunch: a flow that failed (or ended) with a menu or dialog open hides the page from
+# Maestro on iOS. Recognising it is a quick "yes"; only a stuck screen pays for the wait and the relaunch.
+- evalScript: ${output.screenKnown = false}
+- extendedWaitUntil:
+      visible: "Log In|.*(Log in with BC Services Card|Health Records|Go to Health Gateway home page).*"
+      timeout: 10000
+      optional: true
+- runFlow:
+      when:
+          visible: "Log In|.*(Log in with BC Services Card|Health Records|Go to Health Gateway home page).*"
+      commands:
+          - evalScript: ${output.screenKnown = true}
+- runFlow:
+      when:
+          true: ${!output.screenKnown}
+      commands:
+          - launchApp:
+                stopApp: true
+          - extendedWaitUntil:
+                visible: "Log In|.*(Log in with BC Services Card|Health Records|Go to Health Gateway home page).*"
+                timeout: 60000
+- runFlow:
+      when:
+          visible:
+              id: "btnLogin"
+      commands:
+          - evalScript: ${output.onLanding = true}
+- runFlow:
+      when:
+          true: ${!output.onLanding}
+      commands:
+          # the first-launch intro (a fresh install, or a reset) covers the app: finish it first
+          - runFlow:
+                when:
+                    visible: "Skip intro|Get started|Not now"
+                file: finish-intro.yaml
+          # logged in: Home by the app's own link (the header, with the account menu, hides when a page is scrolled
+          # down), then log out
+          - runFlow:
+                when:
+                    visible:
+                        id: "menu-btn-home-link"
+                commands:
+                    - runFlow:
+                          file: open-link.yaml
+                          env:
+                              LINK: healthgateway://home
+                    - extendedWaitUntil:
+                          visible:
+                              id: "add-quick-link-button"
+                          timeout: 10000
+                    - runFlow: log-out.yaml
+          # another signed-out page (Security from the gear menu, the VPP hand-off): the app's link to its start page
+          - runFlow:
+                file: open-link.yaml
+                env:
+                    LINK: healthgateway://
+- extendedWaitUntil:
+      visible:
+          id: "btnLogin"
+      timeout: 60000

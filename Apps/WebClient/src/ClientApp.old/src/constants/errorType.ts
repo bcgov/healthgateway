@@ -1,0 +1,47 @@
+export const enum AppErrorType {
+    General,
+    TooManyRequests,
+}
+
+export const enum ErrorType {
+    Create,
+    Retrieve,
+    Update,
+    Delete,
+    Download,
+    Custom,
+}
+
+export enum ErrorSourceType {
+    Comment = "comment",
+    Dependent = "dependent",
+    Encounter = "health visit",
+    HospitalVisit = "hospital visit",
+    Immunization = "immunization",
+    Laboratory = "laboratory result",
+    Covid19Laboratory = "COVID‑19 test",
+    MedicationRequests = "special authority",
+    MedicationStatements = "medication",
+    ClinicalDocument = "clinical document",
+    Note = "note",
+    Patient = "patient",
+    Profile = "profile",
+    User = "user",
+    TermsOfService = "terms of service",
+    QuickLinks = "quick links",
+    ExportRecords = "export record",
+    Notification = "notification",
+    OrganDonorRegistration = "organ donor registration",
+    DiagnosticImaging = "diagnostic imaging exam",
+    PatientData = "patient data",
+    BcCancerScreening = "BC Cancer screening",
+    DependentImmunizationReport = "dependent immunization report",
+    LaboratoryReport = "laboratory report",
+    Covid19LaboratoryReport = "COVID‑19 laboratory report",
+    MedicationReport = "medication report",
+    HealthVisitReport = "health visit report",
+    HospitalVisitReport = "hospital visit report",
+    ImmunizationReport = "immunization report",
+    NoteReport = "note report",
+    SpecialAuthorityRequestReport = "special authority report",
+}

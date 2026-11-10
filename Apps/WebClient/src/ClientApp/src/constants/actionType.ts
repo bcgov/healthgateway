@@ -1,4 +1,5 @@
-export const enum ActionType {
+/** Port of constants/actionType.ts */
+export enum ActionType {
     Protected = "PROTECTED",
     NoHdId = "NOHDID",
     InvalidName = "INVALIDNAME",

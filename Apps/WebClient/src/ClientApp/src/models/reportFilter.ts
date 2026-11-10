@@ -1,49 +1,42 @@
-import { DateWrapper, IDateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateTime } from "luxon";
 
+import { formatDate, fromIsoDate, today } from "@/utils/dateUtil";
+
+/** Port of models/reportFilter.ts */
 export interface IReportFilter {
-    readonly startDate: StringISODate | null;
-    readonly endDate: StringISODate | null;
+    readonly startDate: string | null;
+    readonly endDate: string | null;
     readonly medications: string[];
     readonly filterText: string;
-    allowsDate(date: IDateWrapper): boolean;
+    allowsDate(date: DateTime): boolean;
     allowsMedication(medicationName: string): boolean;
     hasActiveFilter(): boolean;
     hasMedicationsFilter(): boolean;
     hasDateFilter(): boolean;
 }
 
-// Report filter model
-export default class ReportFilter implements IReportFilter {
-    public readonly startDate: StringISODate | null;
-    public readonly endDate: StringISODate | null;
+export class ReportFilter implements IReportFilter {
+    public readonly startDate: string | null;
+    public readonly endDate: string | null;
     public readonly medications: string[];
 
-    /**
-     * Note: Should only be called from the report filter builder
-     * @param builder The builder to use when constructing a ReportFilter
-     */
+    /** Only the builder constructs a ReportFilter. */
     public constructor(builder: ReportFilterBuilder) {
         this.endDate = builder.endDate;
         this.startDate = builder.startDate;
         this.medications = builder.medications;
     }
 
-    public allowsDate(date: IDateWrapper): boolean {
+    public allowsDate(date: DateTime): boolean {
         let filterStart = true;
-        if (this.startDate !== null) {
-            filterStart = date.isAfterOrSame(
-                DateWrapper.fromIsoDate(this.startDate)
-            );
-        }
+        if (this.startDate !== null)
+            filterStart = date >= fromIsoDate(this.startDate);
 
         let filterEnd = true;
-        if (this.endDate !== null) {
-            filterEnd = date.isBefore(
-                DateWrapper.fromIsoDate(this.endDate)
-                    .add({ days: 1 })
-                    .startOf("day")
-            );
-        }
+        if (this.endDate !== null)
+            filterEnd =
+                date <
+                fromIsoDate(this.endDate).plus({ days: 1 }).startOf("day");
         return filterStart && filterEnd;
     }
 
@@ -64,32 +57,29 @@ export default class ReportFilter implements IReportFilter {
     }
 
     public get filterText(): string {
-        if (!this.hasDateFilter()) {
-            return "";
-        }
-
+        if (!this.hasDateFilter()) return "";
         const start = this.startDate
-            ? ` from ${DateWrapper.fromIsoDate(this.startDate).format()}`
+            ? ` from ${formatDate(fromIsoDate(this.startDate))}`
             : "";
         const end = this.endDate
-            ? DateWrapper.fromIsoDate(this.endDate).format()
-            : DateWrapper.today().format();
+            ? formatDate(fromIsoDate(this.endDate))
+            : formatDate(today());
         return `Displaying records${start} up to ${end}`;
     }
 }
 
 export class ReportFilterBuilder {
-    private _startDate: StringISODate | null = null;
-    private _endDate: StringISODate | null = null;
+    private _startDate: string | null = null;
+    private _endDate: string | null = null;
     private _medications: string[] = [];
 
     private constructor() {}
 
-    public get startDate(): StringISODate | null {
+    public get startDate(): string | null {
         return this._startDate;
     }
 
-    public get endDate(): StringISODate | null {
+    public get endDate(): string | null {
         return this._endDate;
     }
 
@@ -113,12 +103,12 @@ export class ReportFilterBuilder {
         return new ReportFilter(new ReportFilterBuilder());
     }
 
-    public withStartDate(dateString: StringISODate | null): this {
+    public withStartDate(dateString: string | null): this {
         this._startDate = dateString;
         return this;
     }
 
-    public withEndDate(dateString: StringISODate | null): this {
+    public withEndDate(dateString: string | null): this {
         this._endDate = dateString;
         return this;
     }

@@ -1,0 +1,34 @@
+/*
+ * The server's HTML needs what Tailwind's reset takes away. Same rules as the web client: _spacing.scss (hg-overrides) and
+ * HtmlTextAreaComponent.vue's `.document a`.
+ */
+.hg-document p,
+.hg-document ol,
+.hg-document ul {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.hg-document p:last-child,
+.hg-document ol:last-child,
+.hg-document ul:last-child {
+    margin-bottom: 0;
+}
+
+.hg-document ol,
+.hg-document ul {
+    padding-left: 40px;
+}
+
+.hg-document ol {
+    list-style: decimal;
+}
+
+.hg-document ul {
+    list-style: disc;
+}
+
+.hg-document a {
+    color: var(--hg-document-link);
+    text-decoration: underline;
+}

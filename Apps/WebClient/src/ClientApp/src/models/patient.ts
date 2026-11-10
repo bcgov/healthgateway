@@ -1,25 +1,23 @@
-import { StringISODate } from "@/models/dateWrapper";
-
-export default class Patient {
-    public hdid!: string;
-    public personalHealthNumber!: string;
-    public preferredName!: Name;
-    public commonName: Name | undefined;
-    public legalName: Name | undefined;
-    public birthdate?: StringISODate;
-    public physicalAddress?: Address;
-    public postalAddress?: Address;
+export interface Name {
+    givenName?: string;
+    surname?: string;
 }
 
-export class Name {
-    public givenName: string | undefined;
-    public surname: string | undefined;
+export interface Address {
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    streetLines: string[];
 }
 
-export class Address {
-    public city!: string;
-    public state!: string;
-    public postalCode!: string;
-    public country!: string;
-    public streetLines!: string[];
+export interface Patient {
+    hdid: string;
+    personalHealthNumber: string;
+    preferredName?: Name;
+    commonName?: Name;
+    legalName?: Name;
+    birthdate?: string;
+    physicalAddress?: Address | null;
+    postalAddress?: Address | null;
 }

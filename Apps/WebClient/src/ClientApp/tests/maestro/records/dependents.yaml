@@ -1,0 +1,22 @@
+# Dependents: the page opens, and the Add dependent form opens and cancels. Adds nothing.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-dependents-link"
+- extendedWaitUntil:
+      visible:
+          id: "add-dependent-button"
+      timeout: 15000
+- tapOn:
+      id: "add-dependent-button"
+- extendedWaitUntil:
+      visible:
+          id: "cancel-dependent-registration-btn"
+      timeout: 5000
+- tapOn:
+      id: "cancel-dependent-registration-btn"
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

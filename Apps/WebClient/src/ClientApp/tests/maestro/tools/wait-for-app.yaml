@@ -1,0 +1,6 @@
+# Tool: waits, without relaunching, for the app to show the landing page or Home (the first bundle can take minutes).
+appId: ca.bc.gov.healthgateway.dev
+---
+- extendedWaitUntil:
+      visible: ".*(Log in with BC Services Card|Health Records).*"
+      timeout: 300000

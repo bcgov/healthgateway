@@ -1,22 +1,20 @@
 {
+    "extends": "expo/tsconfig.base",
     "compilerOptions": {
+        "strict": true,
+        // TypeScript 6 no longer includes every @types package by default; fs/path in tests need node.
         "types": ["node"],
-        "target": "ESNext",
-        "useDefineForClassFields": true,
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "jsx": "preserve",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "esModuleInterop": true,
-        "lib": ["ESNext", "DOM"],
-        "skipLibCheck": true,
-        "noEmit": true,
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "@/test/*": ["./tests/unit/support/*"],
+            "@/assets/*": ["./assets/*"]
         }
     },
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-    "references": [{ "path": "./tsconfig.node.json" }],
-    "exclude": ["node_modules"]
+    "include": [
+        "**/*.ts",
+        "**/*.tsx",
+        ".expo/types/**/*.ts",
+        "expo-env.d.ts",
+        "nativewind-env.d.ts"
+    ]
 }

@@ -1,162 +1,116 @@
-import { Dictionary } from "@/models/baseTypes";
-import { StringISODate } from "@/models/dateWrapper";
+// Port of Apps/WebClient/src/ClientApp/src/models/configData.ts (Health Gateway repo).
+export type Dictionary<T> = Record<string, T>;
 
-// A collection of configuration items for use by Health Gateway and approved applications.
-export class ExternalConfiguration {
-    // Gets or sets the OpenIdConnect configuration.
-    public openIdConnect!: OpenIdConnectConfiguration;
-
-    // Gets or sets the List of Identity providers.
-    public identityProviders!: IdentityProviderConfiguration[];
-
-    // Gets or sets the Health Gateway Webclient specific configuration.
-    public webClient!: WebClientConfiguration;
-
-    // Gets or sets the Service Endpoints.
-    public serviceEndpoints!: Dictionary<string>;
+export interface ExternalConfiguration {
+    openIdConnect: OpenIdConnectConfiguration;
+    identityProviders: IdentityProviderConfiguration[];
+    webClient: WebClientConfiguration;
+    /** iOS and Android only, and optional: `configuration` may not serve it. */
+    mobile?: MobileConfiguration;
+    serviceEndpoints: Dictionary<string>;
 }
 
-// An object representing a configured Health Gateway IdentityProvider.
+export interface MobileConfiguration {
+    /** major.minor.build. An older app must update to continue. Missing: no check. */
+    minimumVersion?: string;
+    timeouts?: {
+        /** Idle time in milliseconds before the app logs out, or locks with device security on. Default 20 minutes. */
+        idle?: number;
+    };
+}
+
 export interface IdentityProviderConfiguration {
-    // Gets or sets the Id of the Identity Provider.
     id: string;
-    // Gets or sets the name of the Identity Provider.
     name: string;
-    // Gets or sets the Font Awesome Icon that we recommend to use.
+    /** Font Awesome icon name recommended by the server (e.g. "address-card"). */
     icon: string;
-    // Gets or sets the Identity Provider hint.
+    /** Keycloak kc_idp_hint value. */
     hint: string;
-    // Gets or sets a value indicating whether this identity provider should be used.
     disabled: boolean;
 }
 
-// Configuration to be used for OpenID Connect authentication.
 export interface OpenIdConnectConfiguration {
     authority: string;
     clientId: string;
+    audience?: string;
+    responseType?: string;
     scope: string;
-    callbacks: Dictionary<string>;
+    callbacks: Dictionary<string> | null;
 }
 
-// Configuration data to be used by the Health Gateway Webclient.
 export interface WebClientConfiguration {
-    // Gets or sets the logging level used by the Webclient.
     logLevel: string;
-    // Gets or sets the Webclient timeout values.
     timeouts: TimeOutsConfiguration;
-    // Gets or sets the URL for the Access My Health portal.
     accessMyHealthUrl?: string;
-    // Gets or sets the URL for the beta application.
     betaUrl?: string;
-    // Gets or sets the ExternalURLs used by the Webclient.
+    classicUrl?: string;
     externalURLs: Dictionary<string>;
-    // Gets or sets the FeatureToggleConfiguration state.
     featureToggleConfiguration: FeatureToggleConfiguration;
-    // Gets or sets the hours for deletion.
     hoursForDeletion: number;
-    // Gets or sets the minimum required patient age allowed for registration.
     minPatientAge: number;
-    // Gets or sets the maximum age of a dependent
     maxDependentAge: number;
-    // Gets or sets the client IP as reported by the server.
+    emailVerificationExpirySeconds?: number;
     clientIP?: string;
-    // Gets or sets the sets the offline configuration.
-    offlineMode?: OfflineModeConfiguration;
+    offlineMode?: OfflineModeConfiguration | null;
 }
 
-// Configuration data to be used by the Health Gateway Webclient.
 export interface FeatureToggleConfiguration {
     homepage: HomepageSettings;
-    notificationCentre: NotificationCentreSettings;
-    timeline: TimelineSettings;
-    datasets: DatasetSettings[];
+    notificationCentre: { enabled: boolean };
+    timeline: { comment: boolean };
+    datasets: NamedToggle[];
     dependents: DependentsSettings;
     services: ServicesSettings;
     profile: ProfileSettings;
 }
 
+export interface NamedToggle {
+    name: string;
+    enabled: boolean;
+}
+
 export interface HomepageSettings {
     showRecommendationsLink: boolean;
     showImmunizationRecordLink: boolean;
-    otherRecordSources: OtherRecordSourcesSettings;
-}
-
-export interface NotificationCentreSettings {
-    enabled: boolean;
-}
-
-export interface TimelineSettings {
-    comment: boolean;
-}
-
-export interface DatasetSettings {
-    name: string;
-    enabled: boolean;
+    otherRecordSources: { enabled: boolean; sources: NamedToggle[] };
 }
 
 export interface DependentsSettings {
     enabled: boolean;
     timelineEnabled: boolean;
-    datasets: DatasetSettings[];
+    datasets: NamedToggle[];
 }
 
 export interface ServicesSettings {
     enabled: boolean;
-    services: ServiceSettings[];
-}
-
-export interface ServiceSettings {
-    name: string;
-    enabled: boolean;
-}
-
-export interface OtherRecordSourcesSettings {
-    enabled: boolean;
-    sources: SourceSettings[];
-}
-
-export interface SourceSettings {
-    name: string;
-    enabled: boolean;
+    services: NamedToggle[];
 }
 
 export interface ProfileSettings {
-    notifications: ProfileNotificationSettings;
-}
-
-export interface ProfileNotificationSettings {
-    enabled: boolean;
-    type: ProfileNotificationTypeSettings[];
+    notifications: {
+        enabled: boolean;
+        type: ProfileNotificationTypeSettings[];
+    };
 }
 
 export interface ProfileNotificationTypeSettings {
     name: string;
     enabled: boolean;
-    preferences: NotificationPreferenceSettings;
-}
-export interface NotificationPreferenceSettings {
-    email: boolean;
-    sms: boolean;
+    preferences: { email: boolean; sms: boolean };
 }
 
-// Various timeout values used by the VUE WebClient application.
 export interface TimeOutsConfiguration {
-    // Gets or sets the idle time in seconds that the Webclient will use before it automatically logs the user out.
+    /** Idle time in milliseconds before the client logs the user out. */
     idle: number;
-    // Gets or sets the amount of time in seconds after which the user will be redirected from the logout page back to the home.
-    logoutRedirect: string;
-    // Gets or sets the aount of time in seconds that a user will have to wait between resending an SMS verification code.
+    /** Milliseconds before the logout-complete page returns home (served as a string). */
+    logoutRedirect: string | number;
+    /** Minutes a user must wait between SMS verification resends. */
     resendSMS: number;
 }
 
-// Configuration for offline mode.
 export interface OfflineModeConfiguration {
-    // The start datetime for offline mode.
-    startDateTime: StringISODate;
-    // The end datetime for offline mode.
-    endDateTime?: StringISODate;
-    //The message to display if in offline mode
+    startDateTime: string;
+    endDateTime?: string;
     message: string;
-    //The list of IPs that can connect during offline mode.
     whitelist: string[];
 }

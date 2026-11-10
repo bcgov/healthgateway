@@ -1,76 +1,13 @@
 import { EntryType } from "@/constants/entryType";
-import MedicationSummary from "@/models//medicationSummary";
-import { DateWrapper } from "@/models/dateWrapper";
-import MedicationActiveIngredient from "@/models/medicationActiveIngredient";
-import MedicationStatement from "@/models/medicationStatement";
-import Pharmacy from "@/models/pharmacy";
-import TimelineEntry from "@/models/timeline/timelineEntry";
-import { UserComment } from "@/models/userComment";
+import type {
+    MedicationActiveIngredient,
+    MedicationStatement,
+    MedicationSummary,
+    Pharmacy,
+} from "@/models/medication";
+import { fromIsoDate } from "@/utils/dateUtil";
 
-// The medication timeline entry model
-export default class MedicationTimelineEntry extends TimelineEntry {
-    public pharmacy: PharmacyViewModel;
-    public medication: MedicationViewModel;
-    public title: string;
-    public subtitle?: string;
-    public directions: string;
-    public practitionerSurname: string;
-    public prescriptionIdentifier: string;
-    public isPharmacistAssessment = false;
-    public prescriptionProvided?: boolean;
-    public redirectedToHealthCareProvider?: boolean;
-
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: MedicationStatement,
-        getComments: (entryId: string) => UserComment[] | null
-    ) {
-        super(
-            model.prescriptionIdentifier,
-            EntryType.Medication,
-            DateWrapper.fromIsoDate(model.dispensedDate)
-        );
-
-        const summary = model.medicationSummary;
-
-        this.medication = new MedicationViewModel(summary);
-        this.title = this.medication.title;
-        this.subtitle = this.medication.subtitle;
-        this.pharmacy = new PharmacyViewModel(
-            model.dispensingPharmacy?.pharmacyId
-        );
-
-        if (summary.isPharmacistAssessment) {
-            this.isPharmacistAssessment = true;
-            this.prescriptionProvided = summary.prescriptionProvided;
-            this.redirectedToHealthCareProvider =
-                summary.redirectedToHealthCareProvider;
-        }
-
-        if (model.dispensingPharmacy) {
-            this.pharmacy.populateFromModel(model.dispensingPharmacy);
-        }
-
-        this.practitionerSurname = model.practitionerSurname || "N/A";
-        this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
-        this.directions = model.directions || "N/A";
-        this.getComments = getComments;
-    }
-
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
-        let text =
-            (this.practitionerSurname ?? "") +
-            (this.title ?? "") +
-            (this.subtitle ?? "");
-        text = text.toUpperCase();
-        return text.includes(keyword.toUpperCase());
-    }
-}
+import { TimelineEntry, type UserComment } from "./timelineEntry";
 
 class PharmacyViewModel {
     public id: string;
@@ -87,15 +24,15 @@ class PharmacyViewModel {
         this.name = model.name;
         this.phoneNumber = model.phoneNumber;
         this.faxNumber = model.faxNumber;
-
+        // string concatenation as the web client does (an absent part reads "undefined")
         this.address =
-            model.addressLine1 +
+            String(model.addressLine1) +
             " " +
-            model.addressLine2 +
+            String(model.addressLine2) +
             ", " +
-            model.city +
+            String(model.city) +
             " " +
-            model.province;
+            String(model.province);
     }
 }
 
@@ -106,10 +43,10 @@ class MedicationViewModel {
     public quantity?: number;
     public form?: string;
     public manufacturer?: string;
-    public isPin!: boolean;
+    public isPin: boolean;
     public title: string;
     public subtitle: string;
-    public isPharmacistAssessment!: boolean;
+    public isPharmacistAssessment: boolean;
     public activeIngredients: MedicationActiveIngredient[];
 
     constructor(model: MedicationSummary) {
@@ -124,5 +61,64 @@ class MedicationViewModel {
         this.subtitle = model.subtitle;
         this.isPharmacistAssessment = model.isPharmacistAssessment;
         this.activeIngredients = model.activeIngredients ?? [];
+    }
+}
+
+/** Port of models/timeline/medicationTimelineEntry.ts */
+export class MedicationTimelineEntry extends TimelineEntry {
+    public pharmacy: PharmacyViewModel;
+    public medication: MedicationViewModel;
+    public title: string;
+    public subtitle?: string;
+    public directions: string;
+    public practitionerSurname: string;
+    public prescriptionIdentifier: string;
+    public isPharmacistAssessment = false;
+    public prescriptionProvided?: boolean;
+    public redirectedToHealthCareProvider?: boolean;
+
+    private readonly getComments: (entryId: string) => UserComment[] | null;
+
+    public constructor(
+        model: MedicationStatement,
+        getComments: (entryId: string) => UserComment[] | null = () => null
+    ) {
+        super(
+            model.prescriptionIdentifier,
+            EntryType.Medication,
+            fromIsoDate(model.dispensedDate)
+        );
+        const summary = model.medicationSummary;
+        this.medication = new MedicationViewModel(summary);
+        this.title = this.medication.title;
+        this.subtitle = this.medication.subtitle;
+        this.pharmacy = new PharmacyViewModel(
+            model.dispensingPharmacy?.pharmacyId
+        );
+        if (summary.isPharmacistAssessment) {
+            this.isPharmacistAssessment = true;
+            this.prescriptionProvided = summary.prescriptionProvided;
+            this.redirectedToHealthCareProvider =
+                summary.redirectedToHealthCareProvider;
+        }
+        if (model.dispensingPharmacy)
+            this.pharmacy.populateFromModel(model.dispensingPharmacy);
+        this.practitionerSurname = model.practitionerSurname || "N/A";
+        this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
+        this.directions = model.directions || "N/A";
+        this.getComments = getComments;
+    }
+
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
+    }
+
+    public containsText(keyword: string): boolean {
+        const text = (
+            (this.practitionerSurname ?? "") +
+            (this.title ?? "") +
+            (this.subtitle ?? "")
+        ).toUpperCase();
+        return text.includes(keyword.toUpperCase());
     }
 }

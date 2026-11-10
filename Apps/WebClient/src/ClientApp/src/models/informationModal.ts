@@ -1,11 +1,5 @@
-import {
-    Destination,
-    ExternalUrl,
-    InternalUrl,
-    Origin,
-    Text,
-    Type,
-} from "@/plugins/extensions";
+// Port of models/informationModal.ts
+import type { Destination, Origin, Text, Type } from "@/constants/tracking";
 
 export interface InformationModalTextSegment {
     type: "text";
@@ -25,7 +19,8 @@ export interface InformationModalLinkSegment {
     analyticsOrigin?: Origin;
     analyticsDestination?: Destination;
     analyticsType?: Type;
-    analysticsUrl?: InternalUrl | ExternalUrl;
+    /** (sic) the web client's property name */
+    analysticsUrl?: string;
 }
 
 export type InformationModalSegment =

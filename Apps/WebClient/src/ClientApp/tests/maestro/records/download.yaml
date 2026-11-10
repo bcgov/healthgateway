@@ -1,0 +1,14 @@
+# Download: the page opens with its record type picker. Creates no report.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- tapOn:
+      id: "menu-btn-reports-link"
+- extendedWaitUntil:
+      visible:
+          id: "report-type"
+      timeout: 15000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

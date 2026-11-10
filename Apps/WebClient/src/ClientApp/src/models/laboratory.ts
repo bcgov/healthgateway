@@ -1,13 +1,10 @@
-import { StringISODateTime } from "@/models/dateWrapper";
-
-// result model for retrieving COVID-19 lab orders
+/** Port of models/laboratory.ts */
 export interface Covid19LaboratoryOrderResult {
     loaded: boolean;
     retryin: number;
     orders: Covid19LaboratoryOrder[];
 }
 
-// COVID-19 lab order model
 export interface Covid19LaboratoryOrder {
     id: string;
     phn: string;
@@ -16,32 +13,30 @@ export interface Covid19LaboratoryOrder {
     reportingLab: string;
     location: string;
     labType: string;
-    messageDateTime: StringISODateTime;
+    messageDateTime: string;
     messageId: string;
     additionalData: string;
     reportAvailable: boolean;
     labResults: Covid19LaboratoryTest[];
 }
 
-// COVID-19 lab test model
 export interface Covid19LaboratoryTest {
     id: string;
     testType: string;
     outOfRange: boolean;
-    collectedDateTime: StringISODateTime;
+    collectedDateTime: string;
     testStatus: string;
     resultReady: boolean;
     resultDescription: string[];
     resultLink: string;
     labResultOutcome: string;
     filteredLabResultOutcome: string;
-    receivedDateTime: StringISODateTime;
-    resultDateTime: StringISODateTime;
+    receivedDateTime: string;
+    resultDateTime: string;
     loinc: string;
     loincName: string;
 }
 
-// result model for retrieving lab orders
 export interface LaboratoryOrderResult {
     loaded: boolean;
     queued: boolean;
@@ -49,13 +44,12 @@ export interface LaboratoryOrderResult {
     orders: LaboratoryOrder[];
 }
 
-// laboratory order model
 export interface LaboratoryOrder {
     labPdfId: string;
     reportingSource: string;
     reportId: string;
-    collectionDateTime: StringISODateTime | null;
-    timelineDateTime: StringISODateTime;
+    collectionDateTime: string | null;
+    timelineDateTime: string;
     commonName: string;
     orderingProvider: string;
     testStatus: string;
@@ -64,7 +58,6 @@ export interface LaboratoryOrder {
     laboratoryTests: LaboratoryTest[];
 }
 
-// laboratory test model
 export interface LaboratoryTest {
     batteryType: string;
     obxId: string;
@@ -74,8 +67,10 @@ export interface LaboratoryTest {
     result: string;
 }
 
+/** Also models/encodedMedia.ts */
 export interface LaboratoryReport {
     mediaType: string;
     encoding: string;
     data: string;
 }
+export type EncodedMedia = LaboratoryReport;

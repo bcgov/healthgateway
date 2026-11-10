@@ -1,52 +1,38 @@
-import { defineStore } from "pinia";
+import type { ReportHeader } from "@/models/report";
+import type { IReportFilter } from "@/models/reportFilter";
+import { formatDate, fromIsoDate, now } from "@/utils/dateUtil";
 
-import { DateWrapper } from "@/models/dateWrapper";
-import { IReportFilter } from "@/models/reportFilter";
-import { useDependentStore } from "@/stores/dependent";
-import { useUserStore } from "@/stores/user";
+import { useDependentStore } from "./dependent.store";
+import { useUserStore } from "./user.store";
 
-export const useReportStore = defineStore("reports", () => {
-    const dependentsStore = useDependentStore();
-    const userStore = useUserStore();
-
-    function getHeaderData(hdid: string, reportFilter: IReportFilter) {
-        const dependent = dependentsStore.dependents.find(
-            (d) => d.dependentInformation.hdid === hdid
-        );
-        if (dependent) {
-            return {
-                phn: dependent.dependentInformation.PHN,
-                dateOfBirth: DateWrapper.fromIsoDate(
-                    dependent.dependentInformation.dateOfBirth
-                ).format(),
-                name: dependent.dependentInformation
-                    ? dependent.dependentInformation.firstname +
-                      " " +
-                      dependent.dependentInformation.lastname
-                    : "",
-                isRedacted: reportFilter.hasMedicationsFilter(),
-                datePrinted: DateWrapper.now().format(),
-                filterText: reportFilter.filterText,
-            };
-        } else {
-            return {
-                phn: userStore.patient.personalHealthNumber,
-                dateOfBirth: DateWrapper.fromIsoDate(
-                    userStore.patient.birthdate
-                ).format(),
-                name: userStore.patient
-                    ? userStore.patient.preferredName.givenName +
-                      " " +
-                      userStore.patient.preferredName.surname
-                    : "",
-                isRedacted: reportFilter.hasMedicationsFilter(),
-                datePrinted: DateWrapper.now().format(),
-                filterText: reportFilter.filterText,
-            };
-        }
+/** Port of stores/report.ts getHeaderData: the dependent's details for a dependent's hdid, else the user's. */
+export function getReportHeaderData(
+    hdid: string,
+    reportFilter: IReportFilter
+): ReportHeader {
+    const dependent = useDependentStore
+        .getState()
+        .dependents.find((d) => d.dependentInformation.hdid === hdid);
+    if (dependent) {
+        const info = dependent.dependentInformation;
+        return {
+            phn: info.PHN,
+            dateOfBirth: formatDate(fromIsoDate(info.dateOfBirth)),
+            name: `${info.firstname} ${info.lastname}`,
+            isRedacted: reportFilter.hasMedicationsFilter(),
+            datePrinted: formatDate(now()),
+            filterText: reportFilter.filterText,
+        };
     }
-
+    const patient = useUserStore.getState().patient;
     return {
-        getHeaderData,
+        phn: patient?.personalHealthNumber ?? "",
+        dateOfBirth: formatDate(fromIsoDate(patient?.birthdate)),
+        name: patient
+            ? `${patient.preferredName?.givenName ?? ""} ${patient.preferredName?.surname ?? ""}`.trim()
+            : "",
+        isRedacted: reportFilter.hasMedicationsFilter(),
+        datePrinted: formatDate(now()),
+        filterText: reportFilter.filterText,
     };
-});
+}

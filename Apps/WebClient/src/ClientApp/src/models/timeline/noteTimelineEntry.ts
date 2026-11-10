@@ -1,25 +1,23 @@
 import { EntryType } from "@/constants/entryType";
-import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry from "@/models/timeline/timelineEntry";
-import { UserComment } from "@/models/userComment";
-import UserNote from "@/models/userNote";
+import type { UserNote } from "@/models/userNote";
+import { formatDate, fromIsoDate, today } from "@/utils/dateUtil";
 
-// The note timeline entry model
-export default class NoteTimelineEntry extends TimelineEntry {
+import { TimelineEntry, type UserComment } from "./timelineEntry";
+
+/** Port of models/timeline/noteTimelineEntry.ts */
+export class NoteTimelineEntry extends TimelineEntry {
+    private static readonly maxSumaryLength = 40;
     public text: string;
     public textSummary: string;
     public title: string;
     public hdid: string;
     public version?: number;
-    private static readonly maxSumaryLength = 40;
 
     public constructor(model: UserNote) {
         super(
             model.id ?? "TEMP_ID",
             EntryType.Note,
-            model.journalDate
-                ? DateWrapper.fromIsoDate(model.journalDate)
-                : DateWrapper.today()
+            model.journalDate ? fromIsoDate(model.journalDate) : today()
         );
         this.text = model.text ?? "";
         this.title = model.title || "No Title";
@@ -27,10 +25,8 @@ export default class NoteTimelineEntry extends TimelineEntry {
             0,
             NoteTimelineEntry.maxSumaryLength
         );
-        if (this.text.length > NoteTimelineEntry.maxSumaryLength) {
+        if (this.text.length > NoteTimelineEntry.maxSumaryLength)
             this.textSummary += "…";
-        }
-
         this.hdid = model.hdId ?? "";
         this.version = model.version;
     }
@@ -40,9 +36,9 @@ export default class NoteTimelineEntry extends TimelineEntry {
     }
 
     public containsText(keyword: string): boolean {
-        let text = (this.title ?? "") + (this.text ?? "");
-        text = text.toUpperCase();
-        return text.includes(keyword.toUpperCase());
+        return ((this.title ?? "") + (this.text ?? ""))
+            .toUpperCase()
+            .includes(keyword.toUpperCase());
     }
 
     public toModel(): UserNote {
@@ -51,7 +47,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             hdId: this.hdid,
             title: this.title,
             text: this.text,
-            journalDate: this.date.toISODate(),
+            journalDate: formatDate(this.date, "yyyy-MM-dd"),
             version: this.version ?? 0,
         };
     }

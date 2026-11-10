@@ -1,0 +1,68 @@
+# Puts a running app back on Development, past the intro, when it is anywhere else. Run once by prepare-run.yaml and when
+# the two environment flows end, pass or fail: only they switch environment, and one that stopped halfway could leave the
+# app on Test, where the test logins don't exist. Development's banner reads "Development"; Local's reads "Local
+# Development" and Production has none. The usual path (all well) only asks questions whose answer is "yes", as Maestro
+# spends up to 7 s on each "no"; the repairs can be slow.
+appId: ca.bc.gov.healthgateway.dev
+---
+- evalScript: ${output.ready = false; output.onDevelopment = false}
+# whatever the app shows: the landing page, a signed-in page (its tab bar), or the intro after a reset
+- extendedWaitUntil:
+      visible: "Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+      timeout: 30000
+      optional: true
+# The intro first (a fresh install, or a reset): it covers the app, and its pages quote the tab names ("Health Records"),
+# so the app's text can't tell the two apart. Its own buttons can. One "no" here per run is the price.
+- runFlow:
+      when:
+          visible: "Skip intro|Get started|Not now"
+      file: finish-intro.yaml
+- runFlow:
+      when:
+          visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+      commands:
+          - evalScript: ${output.ready = true}
+# a page this doesn't know (a dialog left open, say): relaunch
+- runFlow:
+      when:
+          true: ${!output.ready}
+      commands:
+          # the app's lock screen: Device Security is on, and no flow can pass Face ID or the passcode
+          - runFlow:
+                when:
+                    visible:
+                        id: "lockScreen"
+                commands:
+                    - assertTrue:
+                          condition: ${false}
+                          label: "The app is locked: Device Security is on for this device. Unlock it (Device Hub: Features, Face ID, Matching Face), turn Device Security off on the Security page, and run again."
+          - runFlow:
+                when:
+                    notVisible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+                commands:
+                    - launchApp:
+                          stopApp: true
+          - extendedWaitUntil:
+                visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+                timeout: 60000
+- runFlow:
+      when:
+          visible:
+              id: "environmentBanner"
+              text: "Development"
+      commands:
+          - evalScript: ${output.onDevelopment = true}
+# another environment: log out if needed, switch back, and get past the intro the switch brings
+- runFlow:
+      when:
+          true: ${!output.onDevelopment}
+      commands:
+          - runFlow: start-signed-out.yaml
+          - runFlow:
+                file: switch-environment.yaml
+                env:
+                    ENVIRONMENT: dev
+          - runFlow: skip-intro.yaml
+- assertVisible:
+      id: "environmentBanner"
+      text: "Development"

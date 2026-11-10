@@ -1,4 +1,5 @@
-export const enum CommentEntryType {
+/** Port of constants/commentEntryType.ts */
+export enum CommentEntryType {
     None = "NA",
     ClinicalDocument = "CDO",
     Covid19TestResult = "Lab",

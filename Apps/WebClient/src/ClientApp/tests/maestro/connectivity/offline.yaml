@@ -1,0 +1,31 @@
+# Android only (Maestro can only change airplane mode there): the offline banner, Download's notice, the quick link button disabled, and back online.
+appId: ca.bc.gov.healthgateway.dev
+tags:
+    - signedIn
+    - android
+# runs even when a step fails, so a failure never leaves the emulator offline for the flows after it
+onFlowComplete:
+    - setAirplaneMode: disabled
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- setAirplaneMode: enabled
+- extendedWaitUntil:
+      visible:
+          id: "offlineBanner"
+      timeout: 20000
+- assertVisible:
+      id: "add-quick-link-button"
+      enabled: false
+- tapOn:
+      id: "menu-btn-reports-link"
+- extendedWaitUntil:
+      visible:
+          id: "downloadOfflineNotice"
+      timeout: 8000
+- setAirplaneMode: disabled
+- extendedWaitUntil:
+      notVisible:
+          id: "offlineBanner"
+      timeout: 30000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml

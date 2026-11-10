@@ -1,15 +1,11 @@
-export const enum AppErrorType {
-    General,
-    TooManyRequests,
-}
-
-export const enum ErrorType {
-    Create,
-    Retrieve,
-    Update,
-    Delete,
-    Download,
-    Custom,
+// Port of constants/errorType.ts
+export enum ErrorType {
+    Create = "Create",
+    Retrieve = "Retrieve",
+    Update = "Update",
+    Delete = "Delete",
+    Download = "Download",
+    Custom = "Custom",
 }
 
 export enum ErrorSourceType {
@@ -45,3 +41,37 @@ export enum ErrorSourceType {
     NoteReport = "note report",
     SpecialAuthorityRequestReport = "special authority report",
 }
+
+export enum AppErrorType {
+    General = "General",
+    TooManyRequests = "TooManyRequests",
+}
+
+/** Port of constants/serviceCodes.ts */
+export enum ServiceCode {
+    DataBase = "DB",
+    ClientRegistries = "CR",
+    ODR = "ODR",
+    HealthGatewayUser = "HGU",
+    Medication = "MED",
+    SpecialAuthority = "SPA",
+    Laboratory = "LAB",
+    Immunization = "IMZ",
+    Encounter = "ENC",
+    HospitalVisit = "HOS",
+    Patient = "PAT",
+    PHSA = "PHSA",
+    Report = "REP",
+    ClinicalDocument = "CDO",
+    PatientData = "PATD",
+}
+
+/** Where a "too many requests" message is shown (TooManyRequestsComponent `location`). */
+export const TooManyRequestsLocation = {
+    Page: "page",
+    VerifySmsModal: "verifySmsModal",
+    AddQuickLinkModal: "addQuickLinkModal",
+    RecommendationsDialog: "recommendationsDialog",
+    NoteDialog: "noteDialog",
+    AddDependentDialog: "addDependentDialog",
+} as const;

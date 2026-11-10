@@ -1,73 +1,67 @@
-import { ActionType } from "@/constants/actionType";
-import { ResultErrorDetails } from "@/models/requestResult";
+import type { ActionType } from "@/constants/actionType";
 
-export interface BannerError {
-    title: string;
-    traceId?: string;
-    source: string;
-}
-
-export interface CustomBannerError {
-    title: string;
-    description: string;
-    detail?: string;
-}
+import type { ResultErrorDetails } from "./requestResult";
 
 export class HttpError extends Error {
-    // The HTTP status code returned by the request.
-    statusCode?: number;
-
-    constructor(message: string, statusCode?: number) {
+    constructor(
+        message: string,
+        public readonly statusCode?: number,
+        public readonly traceId?: string
+    ) {
         super(message);
-        this.statusCode = statusCode;
+        this.name = "HttpError";
     }
 }
 
+/**
+ * How a call cancelled by signing out ends. It belongs to a login that is over, so nothing may be written or reported
+ * because of it: `catch` blocks hand it on or return, while `finally` cleanup still runs.
+ */
+export class SessionEndedError extends Error {
+    constructor() {
+        super("The session ended");
+        this.name = "SessionEndedError";
+    }
+}
+
+export const isSessionEnded = (error: unknown) =>
+    error instanceof SessionEndedError;
+
+export function rethrowIfSessionEnded(error: unknown): void {
+    if (error instanceof SessionEndedError) throw error;
+}
+
+/** Error surfaced to stores/views; mirrors the web client's ResultError. */
 export class ResultError extends Error {
-    // Code associated with the error.
-    errorCode: string;
-    // The trace ID associated with the request.
-    traceId: string;
-    // The action code.
-    actionCode?: ActionType;
-    // The HTTP status code returned by the request.
-    statusCode?: number;
+    /** the action the API asks for (ActionType), e.g. PROTECTED */
+    public actionCode?: ActionType;
 
     constructor(
-        errorCode: string,
-        resultMessage: string,
-        traceId: string = "",
-        statusCode?: number
+        public readonly errorCode: string,
+        message: string,
+        public readonly statusCode?: number,
+        public readonly traceId?: string
     ) {
-        super(resultMessage);
-        this.errorCode = errorCode;
-        this.traceId = traceId;
-        this.statusCode = statusCode;
+        super(message);
+        this.name = "ResultError";
     }
 
-    /**
-     * Transform the API model into a ResultError type which is a throwable JS Error object.
-     * @param apiResultError Error model returned by the HealthGateway API
-     * @returns
-     */
+    /** ResultError.fromModel: from the API's resultError */
     public static fromModel(apiResultError: ResultErrorDetails): ResultError {
         const resultError = new ResultError(
             apiResultError.errorCode,
             apiResultError.resultMessage ?? "Unknown API Error",
-            apiResultError.traceId,
-            apiResultError.statusCode
+            apiResultError.statusCode,
+            apiResultError.traceId
         );
         resultError.actionCode = apiResultError.actionCode;
         return resultError;
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function instanceOfResultError(object: any): object is ResultError {
-    return "errorCode" in object && "traceId" in object && "message" in object;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isTooManyRequestsError(object: any): boolean {
-    return instanceOfResultError(object) && object.statusCode === 429;
+export function isTooManyRequestsError(error: unknown): boolean {
+    return (
+        (error instanceof HttpError || error instanceof ResultError) &&
+        error.statusCode === 429
+    );
 }
