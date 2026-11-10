@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { View } from "react-native";
 
 import { Breadcrumb } from "@/components/site/Breadcrumb";
+import { Loading } from "@/components/site/Loading";
 import { OfflineNotice } from "@/components/site/OfflineNotice";
-import { AppText, Loading, PageTitle } from "@/components/ui";
+import { AppText, PageTitle } from "@/components/ui";
 import { DataSource } from "@/constants/dataSource";
 import { ServiceName } from "@/constants/entryType";
 import { Path } from "@/constants/path";

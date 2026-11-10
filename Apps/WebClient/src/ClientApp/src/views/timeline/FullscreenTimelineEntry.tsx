@@ -20,7 +20,7 @@ import Reanimated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 
-import { ErrorCard } from "@/components/site/ErrorCard";
+import { ErrorAlert } from "@/components/site/ErrorAlert";
 import { Icon, ModalSafeArea } from "@/components/ui";
 import { AppModal } from "@/components/ui/AppModal";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
@@ -203,7 +203,7 @@ export function FullscreenTimelineEntry({
                                     contentContainerClassName="flex-grow"
                                 >
                                     <View className="mx-2">
-                                        <ErrorCard />
+                                        <ErrorAlert />
                                     </View>
                                     <TimelineEntryView
                                         testID="entryDetailsCard"

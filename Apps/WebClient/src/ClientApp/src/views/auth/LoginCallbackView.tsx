@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
 
-import { Loading } from "@/components/ui";
+import { Loading } from "@/components/site/Loading";
 import { Path } from "@/constants/path";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { isSessionEnded } from "@/models/errors";

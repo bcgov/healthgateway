@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Platform, View } from "react-native";
 
+import { Loading } from "@/components/site/Loading";
 import { TooManyRequests } from "@/components/site/TooManyRequests";
 import {
     AppText,
@@ -11,7 +12,6 @@ import {
     HgCheckbox,
     HgDatePicker,
     HgTextField,
-    Loading,
 } from "@/components/ui";
 import { ActionType } from "@/constants/actionType";
 import { TooManyRequestsLocation } from "@/constants/errorType";

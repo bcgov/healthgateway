@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { Breadcrumb } from "@/components/site/Breadcrumb";
-import { Icon, Loading, PageTitle } from "@/components/ui";
+import { Loading } from "@/components/site/Loading";
+import { Icon, PageTitle } from "@/components/ui";
 import { entryTypes as allEntryTypes } from "@/constants/entryType";
 import { Path } from "@/constants/path";
 import { useThemeColors } from "@/hooks/useTheme";

@@ -2,13 +2,13 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
+import { Loading } from "@/components/site/Loading";
 import {
     AppText,
     HgButton,
     HgCheckbox,
     HgTextField,
     Icon,
-    Loading,
     PageTitle,
 } from "@/components/ui";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";

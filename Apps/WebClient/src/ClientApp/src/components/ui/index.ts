@@ -29,7 +29,6 @@ export { InfoTooltip } from "./InfoTooltip";
 export { InternalLink } from "./InternalLink";
 export { LabelValue } from "./LabelValue";
 export { LiveRegion, VisuallyHidden } from "./LiveRegion";
-export { Loading } from "./Loading";
 export { LogoPlate } from "./LogoPlate";
 export { MessageDialog } from "./MessageDialog";
 export { ModalSafeArea } from "./ModalSafeArea";

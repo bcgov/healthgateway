@@ -2,6 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import { Image, Platform, View } from "react-native";
 
+import { Loading } from "@/components/site/Loading";
 import {
     AppText,
     HgAlert,
@@ -10,7 +11,6 @@ import {
     HgDatePicker,
     HgMenu,
     HgSelect,
-    Loading,
     MessageDialog,
 } from "@/components/ui";
 import { EntryType, getEntryTypeDetails } from "@/constants/entryType";

@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import { Platform, View } from "react-native";
 
+import { Loading } from "@/components/site/Loading";
 import { TooManyRequests } from "@/components/site/TooManyRequests";
 import {
     AppText,
@@ -9,7 +10,6 @@ import {
     HgAlert,
     HgButton,
     HgTextField,
-    Loading,
 } from "@/components/ui";
 import {
     ErrorSourceType,

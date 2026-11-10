@@ -3,7 +3,7 @@ import { act } from "react";
 import { Platform, Text } from "react-native";
 
 import { LazyTab } from "@/components/site/LazyTab";
-import { Loading } from "@/components/ui";
+import { Loading } from "@/components/site/Loading";
 import { useLoadingStore } from "@/stores/loading.store";
 import { useThemeStore } from "@/stores/theme.store";
 import { routerState } from "@/test/expoRouterMock";

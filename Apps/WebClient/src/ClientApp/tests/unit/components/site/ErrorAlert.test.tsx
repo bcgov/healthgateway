@@ -7,7 +7,7 @@ import {
     jest,
 } from "@jest/globals";
 
-import { ErrorCard } from "@/components/site/ErrorCard";
+import { ErrorAlert } from "@/components/site/ErrorAlert";
 import {
     ErrorSourceType,
     ErrorType,
@@ -23,7 +23,7 @@ jest.mock("@/utils/clipboard", () => ({
     copyToClipboard: jest.fn(async () => true),
 }));
 
-describe("ErrorCard (ErrorCardComponent.vue port)", () => {
+describe("ErrorAlert (ErrorCardComponent.vue port)", () => {
     beforeEach(() => {
         resetRouter("/home");
         signInRegistered();
@@ -34,12 +34,12 @@ describe("ErrorCard (ErrorCardComponent.vue port)", () => {
     });
 
     it("renders nothing without errors", async () => {
-        await render(<ErrorCard />);
+        await render(<ErrorAlert />);
         expect(screen.queryByTestId("errorBanner")).toBeNull();
     });
 
     it("shows one error's title, and details as source/date/hdid:traceId", async () => {
-        await render(<ErrorCard />);
+        await render(<ErrorAlert />);
         updateStores(() =>
             useErrorStore
                 .getState()
@@ -59,7 +59,7 @@ describe("ErrorCard (ErrorCardComponent.vue port)", () => {
     });
 
     it("summarises several errors and copies every detail line", async () => {
-        await render(<ErrorCard />);
+        await render(<ErrorAlert />);
         updateStores(() => {
             const s = useErrorStore.getState();
             s.addError(ErrorType.Retrieve, ErrorSourceType.User);
@@ -82,7 +82,7 @@ describe("ErrorCard (ErrorCardComponent.vue port)", () => {
     });
 
     it("shows the page too-many-requests error but not one for a dialog", async () => {
-        await render(<ErrorCard />);
+        await render(<ErrorAlert />);
         updateStores(() =>
             useErrorStore
                 .getState()
@@ -109,7 +109,7 @@ describe("ErrorCard (ErrorCardComponent.vue port)", () => {
     });
 
     it("shows the warning when there is no error for the location", async () => {
-        await render(<ErrorCard />);
+        await render(<ErrorAlert />);
         updateStores(() =>
             useErrorStore.getState().setTooManyRequestsWarning()
         );

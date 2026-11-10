@@ -27,7 +27,7 @@ const SUPPORT_EMAIL_LINK = "mailto:HealthGateway@gov.bc.ca";
  * "Multiple errors have occurred" for several errors, and a View / Hide Details panel listing
  * `source/date/hdid[:traceId]` per error with a Copy button.
  */
-export function ErrorCard() {
+export function ErrorAlert() {
     const colors = useThemeColors();
     const pathname = usePathname();
     const errors = useErrorStore((s) => s.errors);

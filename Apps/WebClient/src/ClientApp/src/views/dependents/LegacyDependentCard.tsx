@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 
+import { Loading } from "@/components/site/Loading";
 import {
     AppText,
     ExternalLink,
@@ -13,7 +14,6 @@ import {
     HgTabs,
     HgWindow,
     Icon,
-    Loading,
     MessageDialog,
 } from "@/components/ui";
 import { elevation1 } from "@/components/ui/elevation";

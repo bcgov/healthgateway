@@ -2,7 +2,8 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { Breadcrumb } from "@/components/site/Breadcrumb";
-import { HgAlert, Loading, PageTitle, Skeleton } from "@/components/ui";
+import { Loading } from "@/components/site/Loading";
+import { HgAlert, PageTitle, Skeleton } from "@/components/ui";
 import { Path } from "@/constants/path";
 import {
     Loader,

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { Breadcrumb } from "@/components/site/Breadcrumb";
-import { HgAlert, Loading, PageTitle } from "@/components/ui";
+import { Loading } from "@/components/site/Loading";
+import { HgAlert, PageTitle } from "@/components/ui";
 import { Path } from "@/constants/path";
 import { isSessionEnded } from "@/models/errors";
 import { services } from "@/services/container";
