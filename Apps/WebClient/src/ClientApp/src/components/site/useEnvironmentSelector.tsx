@@ -3,9 +3,9 @@ import { useState } from "react";
 import { ActionSheetIOS, Platform, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppText, Icon } from "@/components/ui";
-import { AppModal } from "@/components/ui/AppModal";
-import { Backdrop } from "@/components/ui/Backdrop";
+import { AppText, Icon } from "@/components/common";
+import { AppModal } from "@/components/common/AppModal";
+import { Backdrop } from "@/components/common/Backdrop";
 import type { EnvironmentId } from "@/config/environments";
 import { selectableEnvironments } from "@/config/environments";
 import { Path } from "@/constants/path";

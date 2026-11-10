@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { Platform, Pressable, View } from "react-native";
 
-import { AppText } from "@/components/ui";
+import { AppText } from "@/components/common";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { toHref } from "@/navigation/href";
 import {

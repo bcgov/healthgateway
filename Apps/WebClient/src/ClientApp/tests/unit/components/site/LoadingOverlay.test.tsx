@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it } from "@jest/globals";
 import { Platform, Pressable } from "react-native";
 
+import { AppText } from "@/components/common/AppText";
 import { LoadingOverlay, LoadingScope } from "@/components/site/LoadingOverlay";
-import { AppText } from "@/components/ui/AppText";
 import { useLoadingStore } from "@/stores/loading.store";
 import { updateStores } from "@/test/fixtures";
 import { attrOf, inAct, render, screen } from "@/test/ui";

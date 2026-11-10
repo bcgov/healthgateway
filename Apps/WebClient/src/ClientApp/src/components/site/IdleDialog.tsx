@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { announce, AppText, Dialog, HgButton } from "@/components/ui";
+import { announce, AppText, Dialog, HgButton } from "@/components/common";
 import { ReliableTimer } from "@/utils/reliableTimer";
 
 interface Props {

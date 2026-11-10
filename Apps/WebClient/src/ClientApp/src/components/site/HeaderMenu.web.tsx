@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { ScrollView, useWindowDimensions } from "react-native";
 
-import { AppModal } from "@/components/ui/AppModal";
-import { Backdrop } from "@/components/ui/Backdrop";
+import { AppModal } from "@/components/common/AppModal";
+import { Backdrop } from "@/components/common/Backdrop";
 
 /** The menu's `top-16`, and the gap it keeps from the bottom of the window. */
 const MENU_TOP = 64;

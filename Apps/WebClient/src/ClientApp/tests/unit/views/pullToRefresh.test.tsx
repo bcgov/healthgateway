@@ -32,8 +32,8 @@ import {
     updateStores,
 } from "@/test/fixtures";
 import { advanceTimers, render, screen, unmount } from "@/test/ui";
-import { DependentsView } from "@/views/dependents/DependentsView";
-import { ServicesView } from "@/views/services/ServicesView";
+import { DependentsView } from "@/views/private/dependents/DependentsView";
+import { ServicesView } from "@/views/private/services/ServicesView";
 
 jest.mock(
     "@/hooks/useBreakpoint",

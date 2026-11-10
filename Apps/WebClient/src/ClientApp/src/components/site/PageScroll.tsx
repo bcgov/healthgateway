@@ -3,7 +3,7 @@ import { Animated, RefreshControl, type ScrollView, View } from "react-native";
 import Reanimated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppText, LiveRegion } from "@/components/ui";
+import { AppText, LiveRegion } from "@/components/common";
 import { useMotion } from "@/hooks/useMotion";
 import { notifyScrollDragEnd } from "@/hooks/usePressHighlight";
 import { useRouteFeaturesEnabled } from "@/hooks/useRouteFeaturesEnabled";

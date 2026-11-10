@@ -9,9 +9,9 @@ import {
 import { type ComponentType, lazy, Suspense } from "react";
 import { Platform } from "react-native";
 
+import { AppText } from "@/components/common/AppText";
+import { PageTitle } from "@/components/common/PageTitle";
 import { AppShell } from "@/components/site/AppShell";
-import { AppText } from "@/components/ui/AppText";
-import { PageTitle } from "@/components/ui/PageTitle";
 import { Path } from "@/constants/path";
 import { resetPageTitles } from "@/hooks/usePageTitle";
 import { services } from "@/services/container";

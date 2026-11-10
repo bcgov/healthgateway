@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
-import { AppVersion, Icon } from "@/components/ui";
+import { AppVersion, Icon } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
 
 import { DarkModeMenuItem } from "./DarkModeMenuItem";

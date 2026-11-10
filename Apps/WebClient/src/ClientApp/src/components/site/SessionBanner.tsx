@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { Platform } from "react-native";
 
-import { AppText, HgButton, Icon, LiveRegion } from "@/components/ui";
+import { AppText, HgButton, Icon, LiveRegion } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useAuthStore } from "@/stores/auth.store";
 import { useConnectivityStore } from "@/stores/connectivity.store";

@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { Platform, Pressable, View } from "react-native";
 
-import { AppText, Icon } from "@/components/ui";
+import { AppText, Icon } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
 import { toHref } from "@/navigation/href";
 import {

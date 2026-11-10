@@ -1,2 +1,2 @@
-import { AcceptTermsOfServiceView } from "@/views/registration/AcceptTermsOfServiceView";
+import { AcceptTermsOfServiceView } from "@/views/private/acceptTermsOfService/AcceptTermsOfServiceView";
 export default AcceptTermsOfServiceView;

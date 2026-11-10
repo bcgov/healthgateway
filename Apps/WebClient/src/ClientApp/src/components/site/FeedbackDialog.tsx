@@ -9,7 +9,7 @@ import {
     HgButton,
     HgTextField,
     Icon,
-} from "@/components/ui";
+} from "@/components/common";
 import { Path } from "@/constants/path";
 import { useThemeColors } from "@/hooks/useTheme";
 import { isSessionEnded, ResultError } from "@/models/errors";

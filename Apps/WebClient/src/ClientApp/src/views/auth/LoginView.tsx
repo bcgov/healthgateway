@@ -2,7 +2,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
-import { AppText, HgAlert, HgButton, Loading } from "@/components/ui";
+import { AppText, HgAlert, HgButton } from "@/components/common";
+import { Loading } from "@/components/site/Loading";
 import { Path } from "@/constants/path";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import type { IdentityProviderConfiguration } from "@/models/configData";

@@ -1,5 +1,5 @@
 import { PageScroll } from "@/components/site/PageScroll";
-import { OtherRecordSourcesView } from "@/views/otherRecordSources/OtherRecordSourcesView";
+import { OtherRecordSourcesView } from "@/views/private/otherRecordSources/OtherRecordSourcesView";
 
 export default function OtherRecordSources() {
     return (

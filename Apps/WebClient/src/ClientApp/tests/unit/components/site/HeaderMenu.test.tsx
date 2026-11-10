@@ -9,8 +9,8 @@ import {
 import { useState } from "react";
 import { Platform, Text } from "react-native";
 
+import { HgButton } from "@/components/common";
 import { HeaderMenu } from "@/components/site/HeaderMenu";
-import { HgButton } from "@/components/ui";
 import { advanceTimers, press, render, screen } from "@/test/ui";
 
 function Harness() {

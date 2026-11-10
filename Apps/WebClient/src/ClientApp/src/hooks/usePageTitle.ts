@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
 
-import { announce } from "@/components/ui/announce";
+import { announce } from "@/components/common/announce";
 
 const SITE = "Health Gateway";
 

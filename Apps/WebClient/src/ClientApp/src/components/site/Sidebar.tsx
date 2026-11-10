@@ -15,8 +15,8 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 
-import { AppText, Icon } from "@/components/ui";
-import { webAttributeRef, webClassRef } from "@/components/ui/webClass";
+import { AppText, Icon } from "@/components/common";
+import { webAttributeRef, webClassRef } from "@/components/common/webClass";
 import { Action, Text, Type } from "@/constants/tracking";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useEscapeKey } from "@/hooks/useEscapeKey";

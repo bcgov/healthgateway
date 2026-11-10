@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
-import { AppText, Dialog, HgButton, Icon } from "@/components/ui";
-import { webClassRef } from "@/components/ui/webClass";
+import { AppText, Dialog, HgButton, Icon } from "@/components/common";
+import { webClassRef } from "@/components/common/webClass";
 import { Action, Rating, Text, Type } from "@/constants/tracking";
 import { useThemeColors } from "@/hooks/useTheme";
 import { services } from "@/services/container";

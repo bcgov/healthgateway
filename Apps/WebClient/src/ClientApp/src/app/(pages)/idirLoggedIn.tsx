@@ -1,4 +1,4 @@
-import { AppText } from "@/components/ui";
+import { AppText } from "@/components/common";
 import { PageError } from "@/views/errors/PageError";
 
 /** Port of IdirLoggedInView.vue */

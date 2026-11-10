@@ -7,7 +7,7 @@ import {
     ExternalLink,
     HgButton,
     HgTextField,
-} from "@/components/ui";
+} from "@/components/common";
 import { describeError, logger } from "@/services/logger";
 import {
     selectMedicationsAreLoading,

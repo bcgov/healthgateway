@@ -1,8 +1,8 @@
 import { Link, useRouter } from "expo-router";
 import { Platform, Pressable, View } from "react-native";
 
-import { AppText } from "@/components/ui";
-import { webClassRef } from "@/components/ui/webClass";
+import { AppText } from "@/components/common";
+import { webClassRef } from "@/components/common/webClass";
 import { Path } from "@/constants/path";
 import {
     Action,

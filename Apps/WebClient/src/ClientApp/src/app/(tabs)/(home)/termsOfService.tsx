@@ -1,5 +1,5 @@
 import { PageScroll } from "@/components/site/PageScroll";
-import { TermsOfServiceView } from "@/views/terms/TermsOfServiceView";
+import { TermsOfServiceView } from "@/views/public/termsOfService/TermsOfServiceView";
 
 export default function TermsOfService() {
     return (

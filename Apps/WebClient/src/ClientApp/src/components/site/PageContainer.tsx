@@ -2,7 +2,7 @@ import type { ComponentRef, Ref } from "react";
 import { View } from "react-native";
 
 import { CommunicationBanner } from "./CommunicationBanner";
-import { ErrorCard } from "./ErrorCard";
+import { ErrorAlert } from "./ErrorAlert";
 import { usePageChrome } from "./pageChrome";
 
 /** No box of its own (web only): the page lays out as if it were not there. */
@@ -34,7 +34,7 @@ export function PageContainer({
             {/* v-container fluid class="pt-6": full width, 16px sides at every width, 24px top; no max width,
                 so the page starts 16px from the drawer however wide the window is */}
             <View className="w-full px-4 pt-6 pb-8">
-                {!hideChrome ? <ErrorCard /> : null}
+                {!hideChrome ? <ErrorAlert /> : null}
                 {page}
             </View>
         </View>

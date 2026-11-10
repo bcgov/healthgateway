@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useRef } from "react";
 import { ActivityIndicator, Platform, View } from "react-native";
 
-import { AppText, LiveRegion } from "@/components/ui";
+import { AppText, LiveRegion } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
 import {
     selectIsLoading,

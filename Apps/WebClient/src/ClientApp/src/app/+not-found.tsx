@@ -1,5 +1,5 @@
+import { AppText } from "@/components/common";
 import { PageScroll } from "@/components/site/PageScroll";
-import { AppText } from "@/components/ui";
 import { PageError } from "@/views/errors/PageError";
 
 /** Port of NotFoundView.vue */

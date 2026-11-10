@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
 
-import { Loading } from "@/components/ui";
+import { Loading } from "@/components/site/Loading";
 import { Path } from "@/constants/path";
 import { describeError, logger } from "@/services/logger";
 import { useAuthStore } from "@/stores/auth.store";
