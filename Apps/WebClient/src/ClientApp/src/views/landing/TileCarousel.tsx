@@ -12,7 +12,7 @@ import {
     View,
 } from "react-native";
 
-import { AppText, CardActions, HgButton, HgCard } from "@/components/ui";
+import { AppText, HgButton } from "@/components/ui";
 import {
     Action,
     LandingAccessLinkDestination,
@@ -20,10 +20,14 @@ import {
     Origin,
     Type,
 } from "@/constants/tracking";
-import { notifyScrollDragEnd } from "@/hooks/usePressHighlight";
+import {
+    notifyScrollDragEnd,
+    usePressHighlight,
+} from "@/hooks/usePressHighlight";
 import type { InfoTile } from "@/models/infoTile";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
+import { cn } from "@/utils/cn";
 import { openExternal } from "@/utils/openExternal";
 
 import {
@@ -54,6 +58,7 @@ function Tile({
     cardTestID: string;
     carousel: boolean;
 }) {
+    const { highlighted, pressed, handlers } = usePressHighlight();
     const open = (action: Action) => {
         if (!tile.link) return;
         void openExternal(tile.link);
@@ -74,11 +79,21 @@ function Tile({
         });
     };
     return (
-        <HgCard
+        // v-card variant="outlined": a press target, not a button role, so it can hold the Read more button
+        <Pressable
+            accessible={false}
+            tabIndex={-1}
             onPress={() => open(Action.CardClick)}
-            // v-card: h-100 d-flex flex-column pa-5 pa-lg-4; the carousel card keeps pb-12 clear for the delimiters
-            className={`grow justify-between lg:p-4 ${carousel ? "pb-12" : ""}`}
+            {...handlers}
             testID={`${cardTestID}-${tile.type}`}
+            className={cn(
+                // v-card: h-100 d-flex flex-column pa-5 pa-lg-4; the carousel card keeps pb-12 clear for the delimiters
+                "grow justify-between rounded-md border border-border-light bg-surface p-5 lg:p-4 web:cursor-pointer",
+                carousel && "pb-12",
+                // a press shades at once; the hover, and the end of a press, fade
+                !pressed && "web:transition-colors",
+                highlighted && "bg-surface-hover"
+            )}
         >
             <View
                 // the min-height is the carousel's only (minHeight 120px on xs); the grid's flex-grow-1 has none
@@ -99,19 +114,18 @@ function Tile({
                     carousel ? "pt-2 pb-1" : "pt-4 pb-2"
                 }`}
             >
-                <CardActions>
-                    <HgButton
-                        text="Read more"
-                        variant="secondary"
-                        uppercase={false}
-                        className="self-center"
-                        accessibilityLabel={`Read more about ${tile.name}`}
-                        testID={`${carousel ? "mobile-" : ""}read-more-button-${tile.type}`}
-                        onPress={() => open(Action.ExternalLink)}
-                    />
-                </CardActions>
+                <HgButton
+                    text="Read more"
+                    variant="secondary"
+                    uppercase={false}
+                    slim
+                    className="self-center"
+                    accessibilityLabel={`Read more about ${tile.name}`}
+                    testID={`${carousel ? "mobile-" : ""}read-more-button-${tile.type}`}
+                    onPress={() => open(Action.ExternalLink)}
+                />
             </View>
-        </HgCard>
+        </Pressable>
     );
 }
 

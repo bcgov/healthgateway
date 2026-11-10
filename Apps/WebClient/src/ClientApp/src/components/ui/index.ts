@@ -9,7 +9,6 @@ export { ExternalLink, NewTabHint } from "./ExternalLink";
 export { FieldLabel } from "./FieldLabel";
 export { HgAlert } from "./HgAlert";
 export { CardActions, HgButton } from "./HgButton";
-export { HgCard } from "./HgCard";
 export { HgCheckbox } from "./HgCheckbox";
 export { HgChip } from "./HgChip";
 export { HgDataTable } from "./HgDataTable";
