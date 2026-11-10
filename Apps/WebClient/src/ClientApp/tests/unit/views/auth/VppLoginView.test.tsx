@@ -13,7 +13,7 @@ import { setBreakpoint } from "@/test/breakpointMock";
 import { resetRouter } from "@/test/expoRouterMock";
 import { configFixture, fakeAuth, resetStores } from "@/test/fixtures";
 import { render, screen, textOf } from "@/test/ui";
-import { VppLoginView } from "@/views/vpp/VppLoginView";
+import { VppLoginView } from "@/views/auth/VppLoginView";
 
 jest.mock(
     "@/hooks/useBreakpoint",
