@@ -8,7 +8,7 @@ appId: ca.bc.gov.healthgateway.dev
 - evalScript: ${output.ready = false; output.onDevelopment = false}
 # whatever the app shows: the landing page, a signed-in page (its tab bar), or the intro after a reset
 - extendedWaitUntil:
-      visible: "Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+      visible: "Log In|.*(Log in( with .+)?|Health Records|Skip intro|Protect your personal information).*"
       timeout: 30000
       optional: true
 # The intro first (a fresh install, or a reset): it covers the app, and its pages quote the tab names ("Health Records"),
@@ -19,7 +19,7 @@ appId: ca.bc.gov.healthgateway.dev
       file: finish-intro.yaml
 - runFlow:
       when:
-          visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+          visible: "Log In|.*(Log in( with .+)?|Health Records).*"
       commands:
           - evalScript: ${output.ready = true}
 # a page this doesn't know (a dialog left open, say): relaunch
@@ -38,12 +38,12 @@ appId: ca.bc.gov.healthgateway.dev
                           label: "The app is locked: Device Security is on for this device. Unlock it (Device Hub: Features, Face ID, Matching Face), turn Device Security off on the Security page, and run again."
           - runFlow:
                 when:
-                    notVisible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+                    notVisible: "Log In|.*(Log in( with .+)?|Health Records).*"
                 commands:
                     - launchApp:
                           stopApp: true
           - extendedWaitUntil:
-                visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+                visible: "Log In|.*(Log in( with .+)?|Health Records).*"
                 timeout: 60000
 - runFlow:
       when:

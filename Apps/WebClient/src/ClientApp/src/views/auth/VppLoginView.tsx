@@ -17,6 +17,7 @@ import {
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { toHref } from "@/navigation/href";
+import { loginHref } from "@/navigation/login";
 import { services } from "@/services/container";
 import { imageProps } from "@/utils/decorative";
 import { openExternal } from "@/utils/openExternal";
@@ -68,7 +69,7 @@ export function VppLoginView() {
         );
         if (Platform.OS === "web")
             globalThis.location.assign(`${globalThis.location.origin}/login`);
-        else router.push(Path.Login);
+        else router.push(loginHref());
     }
 
     return (

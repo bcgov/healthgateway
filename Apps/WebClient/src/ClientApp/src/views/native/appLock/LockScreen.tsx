@@ -15,6 +15,7 @@ import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { HgButton } from "@/components/common";
 import { DevBanner } from "@/components/site/DevBanner";
 import { useColorScheme } from "@/hooks/useTheme";
+import { useLoginLabel } from "@/navigation/login";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { decorativeProps } from "@/utils/decorative";
@@ -37,6 +38,7 @@ function LockedView() {
     const Logo = useColorScheme() === "dark" ? HgLogoDark : HgLogo;
     const logoWidth = Math.min(224, width - 180);
     const [signingOut, setSigningOut] = useState(false);
+    const loginLabel = useLoginLabel();
 
     useEffect(() => {
         Keyboard.dismiss();
@@ -84,7 +86,7 @@ function LockedView() {
                 <LandingIntro />
                 <HgButton
                     testID="lockLogInAgainBtn"
-                    text="Log in with BC Services Card"
+                    text={loginLabel}
                     uppercase={false}
                     disabled={signingOut || authenticating}
                     onPress={() => {

@@ -12,7 +12,8 @@ import { AppModal } from "@/components/common/AppModal";
 import { vault } from "@/services/vault";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
-import { updateStores } from "@/test/fixtures";
+import { useConfigStore } from "@/stores/config.store";
+import { configFixture, updateStores } from "@/test/fixtures";
 import { advanceTimers, press, render, screen } from "@/test/ui";
 import { LockGate, LockScreen } from "@/views/native/appLock/LockScreen";
 
@@ -46,12 +47,15 @@ describe("LockScreen", () => {
         authenticate.mockReset();
         authenticate.mockResolvedValue("unlocked");
         useAppLockStore.setState({ locked: true, authenticating: false });
+        // loaded before the lock can show: its button names the only provider
+        useConfigStore.setState({ config: configFixture, status: "loaded" });
     });
 
     afterEach(async () => {
-        updateStores(() =>
-            useAppLockStore.setState({ locked: false, authenticating: false })
-        );
+        updateStores(() => {
+            useAppLockStore.setState({ locked: false, authenticating: false });
+            useConfigStore.setState({ config: undefined, status: "idle" });
+        });
         jest.useRealTimers();
     });
 

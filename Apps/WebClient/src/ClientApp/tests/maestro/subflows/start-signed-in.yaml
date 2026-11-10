@@ -12,12 +12,12 @@ appId: ca.bc.gov.healthgateway.dev
 # Maestro on iOS. Recognising it is a quick "yes"; only a stuck screen pays for the wait and the relaunch.
 - evalScript: ${output.screenKnown = false}
 - extendedWaitUntil:
-      visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+      visible: "Log In|.*(Log in( with .+)?|Health Records).*"
       timeout: 10000
       optional: true
 - runFlow:
       when:
-          visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+          visible: "Log In|.*(Log in( with .+)?|Health Records).*"
       commands:
           - evalScript: ${output.screenKnown = true}
 - runFlow:
@@ -27,7 +27,7 @@ appId: ca.bc.gov.healthgateway.dev
           - launchApp:
                 stopApp: true
           - extendedWaitUntil:
-                visible: "Log In|.*(Log in with BC Services Card|Health Records).*"
+                visible: "Log In|.*(Log in( with .+)?|Health Records).*"
                 timeout: 60000
 # logged in (the tabs show, as a bottom bar or the iPhone Duo's side rail): Home by the app's own link. This check keeps
 # looking for a few seconds, which also outlasts the landing page a launch shows before a saved login moves to Home.
@@ -50,6 +50,10 @@ appId: ca.bc.gov.healthgateway.dev
                 when:
                     visible: "Skip intro|Get started|Not now"
                 file: finish-intro.yaml
+          # the login sheet (more than one provider, left open by a cancelled login) covers the page: close it first
+          - tapOn:
+                id: "loginSheetCloseBtn"
+                optional: true
           # from the Log In page (a cancelled login) or another signed-out page, the logo leads to the landing page
           - tapOn:
                 text: "Go to Health Gateway home page"

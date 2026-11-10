@@ -53,12 +53,12 @@ describe("Landing Page", () => {
         );
     });
 
-    it("Login BCSC", () => {
+    it("Login", () => {
         cy.visit("/");
         cy.get("[data-testid=btnLogin]")
             .should("be.visible")
             .and("not.be.disabled")
-            .and("contain", "Log in with BC Services Card")
+            .should("have.text", "Log in")
             .click({ force: true });
         cy.location("pathname", { timeout: 10000 }).should("eq", "/login");
     });

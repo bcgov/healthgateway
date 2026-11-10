@@ -7,6 +7,7 @@ import { create } from "zustand";
 import type {
     ExternalConfiguration,
     IdentityProviderConfiguration,
+    OpenIdConnectConfiguration,
 } from "@/models/configData";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
@@ -34,7 +35,8 @@ export function getConfigUrl(): string {
 
 let latestRetrieve = 0;
 
-const isText = (value: unknown) => typeof value === "string" && value !== "";
+const isText = (value: unknown): value is string =>
+    typeof value === "string" && value !== "";
 const isObject = (value: unknown) =>
     typeof value === "object" && value !== null && !Array.isArray(value);
 const isMissing = (value: unknown) => value === undefined || value === null;
@@ -180,33 +182,78 @@ export const useConfigStore = create<ConfigState>((set) => ({
 // A selector must return a stable reference: a fresh `[]` per call re-renders subscribers forever.
 const NO_PROVIDERS: IdentityProviderConfiguration[] = [];
 
+/** The login picker's providers: web from `identityProviders`, native from `webClient.mobile.authentication`. */
 export const selectIdentityProviders = (
     s: ConfigState
 ): IdentityProviderConfiguration[] =>
-    s.config?.identityProviders ?? NO_PROVIDERS;
+    (Platform.OS === "web"
+        ? s.config?.identityProviders
+        : s.config?.webClient?.mobile?.authentication?.identityProviders) ??
+    NO_PROVIDERS;
 
 export const selectWebConfig = (s: ConfigState) => s.config?.webClient;
 
 export const selectFeatureToggles = (s: ConfigState) =>
     s.config?.webClient?.featureToggleConfiguration;
 
-/** `mobile.timeouts.idle` when the configuration does not set a usable one. */
+/** `webClient.mobile.timeouts.idle` when the configuration does not set a usable one. */
 export const DEFAULT_MOBILE_IDLE_MS = 20 * 60 * 1000;
 
-/** Milliseconds without activity before logging out or locking: native from `mobile`, web from `webClient`. */
+/** Milliseconds without activity before logging out or locking: native from `webClient.mobile`, web from `webClient`. */
 export const selectIdleTimeout = (s: ConfigState): number => {
     if (Platform.OS === "web") return s.config?.webClient?.timeouts?.idle ?? 0;
-    const idle = s.config?.mobile?.timeouts?.idle;
+    const idle = s.config?.webClient?.mobile?.timeouts?.idle;
     return typeof idle === "number" && idle > 0 ? idle : DEFAULT_MOBILE_IDLE_MS;
 };
 
-/** Native: this version is older than `mobile.minimumVersion`. */
+/** Native: this version is older than `webClient.mobile.minimumVersion`. */
 export const selectUpdateRequired = (s: ConfigState): boolean =>
     Platform.OS !== "web" &&
     isUpdateRequired(
         Constants.expoConfig?.version,
-        s.config?.mobile?.minimumVersion
+        s.config?.webClient?.mobile?.minimumVersion
     );
+
+/** The server's configuration leaves out a setting the native app cannot sign in without. */
+export class MobileConfigurationError extends Error {
+    constructor(readonly missing: string[]) {
+        super(`The configuration is missing ${missing.join(" and ")}`);
+        this.name = "MobileConfigurationError";
+    }
+}
+
+/**
+ * iOS and Android sign in with their own Keycloak client: the realm is `webClient.mobile.authentication.endpoint`, the
+ * client ID is its `clientIdPrefix` plus "-ios" or "-android", and the login picker offers its `identityProviders`.
+ * None falls back to the web client's `openIdConnect` or `identityProviders`: a missing one is a server configuration
+ * error, and start-up stops on it. Only the scope is shared with the web client.
+ */
+export function nativeOidcConfig(
+    config: ExternalConfiguration,
+    os: string
+): OpenIdConnectConfiguration {
+    const auth = config.webClient?.mobile?.authentication;
+    const endpoint = auth?.endpoint;
+    const prefix = auth?.clientIdPrefix;
+    const providers = auth?.identityProviders;
+    const hasProviders = Array.isArray(providers) && providers.length > 0;
+    if (!isText(endpoint) || !isText(prefix) || !hasProviders) {
+        const missing: string[] = [];
+        if (!isText(endpoint))
+            missing.push("webClient.mobile.authentication.endpoint");
+        if (!isText(prefix))
+            missing.push("webClient.mobile.authentication.clientIdPrefix");
+        if (!hasProviders)
+            missing.push("webClient.mobile.authentication.identityProviders");
+        throw new MobileConfigurationError(missing);
+    }
+    return {
+        authority: endpoint,
+        clientId: `${prefix}-${os}`,
+        scope: config.openIdConnect.scope,
+        callbacks: null,
+    };
+}
 
 export const selectIsOffline = (s: ConfigState): boolean => {
     const webConfig = s.config?.webClient;

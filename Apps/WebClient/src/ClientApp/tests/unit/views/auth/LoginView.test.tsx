@@ -6,15 +6,16 @@ import {
     it,
     jest,
 } from "@jest/globals";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 
 import { Path } from "@/constants/path";
 import { services } from "@/services/container";
 import { useConfigStore } from "@/stores/config.store";
 import { resetRouter, router } from "@/test/expoRouterMock";
 import { configFixture, fakeAuth, resetStores } from "@/test/fixtures";
-import { idOf, render, screen, textOf, waitFor } from "@/test/ui";
+import { idOf, inAct, render, screen, textOf, waitFor } from "@/test/ui";
 import { LoginView } from "@/views/auth/LoginView";
+import { LOGIN_FAILED_MESSAGE } from "@/views/auth/useProviderSignIn";
 
 const idir = {
     id: "idir",
@@ -23,11 +24,29 @@ const idir = {
     hint: "idir",
     disabled: false,
 };
-const withProviders = (providers: typeof configFixture.identityProviders) =>
+/** The list this platform reads: native's is under webClient.mobile.authentication, web's at the top level. */
+const withProviders = (providers: typeof configFixture.identityProviders) => {
+    const mobile = configFixture.webClient.mobile!;
     useConfigStore.setState({
-        config: { ...configFixture, identityProviders: providers },
+        config:
+            Platform.OS === "web"
+                ? { ...configFixture, identityProviders: providers }
+                : {
+                      ...configFixture,
+                      webClient: {
+                          ...configFixture.webClient,
+                          mobile: {
+                              ...mobile,
+                              authentication: {
+                                  ...mobile.authentication,
+                                  identityProviders: providers,
+                              },
+                          },
+                      },
+                  },
         status: "loaded",
     });
+};
 
 describe("LoginView provider rules (LoginView.vue port)", () => {
     let auth: ReturnType<typeof fakeAuth>;
@@ -72,19 +91,71 @@ describe("LoginView provider rules (LoginView.vue port)", () => {
             expect(router.replace).toHaveBeenCalledWith(Path.Root);
         });
 
-        it("one provider, failed: stays to show the error and offer it again", async () => {
+        const failedAlert = () => {
+            const alert = jest.mocked(Alert.alert);
+            expect(alert).toHaveBeenCalledTimes(1);
+            const [title, message, buttons] = alert.mock.calls[0];
+            expect(title).toBe("Unable to log in");
+            expect(message).toBe(LOGIN_FAILED_MESSAGE);
+            return (buttons ?? []) as { text: string; onPress: () => void }[];
+        };
+        const button = (
+            buttons: { text: string; onPress: () => void }[],
+            text: string
+        ) => buttons.find((b) => b.text === text)!;
+
+        it("one provider, failed: the platform alert, not an error on the page", async () => {
+            jest.spyOn(Alert, "alert").mockImplementation(() => undefined);
             withProviders([configFixture.identityProviders[0]]);
             jest.mocked(router.replace).mockClear();
             jest.mocked(auth.signIn).mockRejectedValue(new Error("boom"));
             await render(<LoginView />);
-            expect(router.replace).not.toHaveBeenCalledWith(Path.Root);
-            expect(
-                screen.getByText(
-                    "An unexpected error occurred while processing the request, please try again."
-                )
-            ).toBeTruthy();
+            failedAlert();
+            expect(screen.queryByText(LOGIN_FAILED_MESSAGE)).toBeNull();
+            expect(router.replace).not.toHaveBeenCalled();
+        });
+
+        it("one provider, failed, Try again: starts the same provider again", async () => {
+            jest.spyOn(Alert, "alert").mockImplementation(() => undefined);
+            withProviders([configFixture.identityProviders[0]]);
+            jest.mocked(auth.signIn)
+                .mockRejectedValueOnce(new Error("boom"))
+                .mockReturnValue(new Promise(() => undefined));
+            await render(<LoginView />);
+            await inAct(() => button(failedAlert(), "Try again").onPress());
+            expect(auth.signIn).toHaveBeenCalledTimes(2);
+            expect(auth.signIn).toHaveBeenLastCalledWith(
+                "/home",
+                configFixture.identityProviders[0].hint
+            );
+        });
+
+        it("one provider, failed, Cancel: back to the landing page", async () => {
+            jest.spyOn(Alert, "alert").mockImplementation(() => undefined);
+            withProviders([configFixture.identityProviders[0]]);
+            jest.mocked(router.replace).mockClear();
+            jest.mocked(auth.signIn).mockRejectedValue(new Error("boom"));
+            await render(<LoginView />);
+            await inAct(() => button(failedAlert(), "Cancel").onPress());
+            expect(router.replace).toHaveBeenCalledWith(Path.Root);
         });
     }
+
+    it("uses this platform's list: native the mobile one, web the web client's", async () => {
+        useConfigStore.setState({ config: configFixture, status: "loaded" });
+        jest.mocked(auth.signIn).mockReturnValue(new Promise(() => undefined));
+        await render(<LoginView />);
+        const mobileHint =
+            configFixture.webClient.mobile!.authentication!
+                .identityProviders![0].hint;
+        expect(mobileHint).not.toBe(configFixture.identityProviders[0].hint);
+        expect(auth.signIn).toHaveBeenCalledWith(
+            "/home",
+            Platform.OS === "web"
+                ? configFixture.identityProviders[0].hint
+                : mobileHint
+        );
+    });
 
     it("several providers: lists them all and starts none", async () => {
         withProviders([...configFixture.identityProviders, idir]);

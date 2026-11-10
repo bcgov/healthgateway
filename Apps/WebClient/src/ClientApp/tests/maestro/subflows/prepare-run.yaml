@@ -6,11 +6,11 @@ appId: ca.bc.gov.healthgateway.dev
 - evalScript: ${output.appShown = false}
 - extendedWaitUntil:
       # the sheet's button reads exactly "Open"; the app's screens are matched by text they contain
-      visible: "Open|Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+      visible: "Open|Log In|.*(Log in( with .+)?|Health Records|Skip intro|Protect your personal information).*"
       timeout: 300000
 - runFlow:
       when:
-          visible: "Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+          visible: "Log In|.*(Log in( with .+)?|Health Records|Skip intro|Protect your personal information).*"
       commands:
           - evalScript: ${output.appShown = true}
 # not the app yet: the "Open in" sheet
@@ -22,7 +22,7 @@ appId: ca.bc.gov.healthgateway.dev
                 text: "Open"
                 optional: true
           - extendedWaitUntil:
-                visible: "Log In|.*(Log in with BC Services Card|Health Records|Skip intro|Protect your personal information).*"
+                visible: "Log In|.*(Log in( with .+)?|Health Records|Skip intro|Protect your personal information).*"
                 timeout: 300000
 - runFlow: ensure-development.yaml
 # Device Security must be off: with it on, the app can open locked or on a saved copy under an expired login, where

@@ -6,6 +6,7 @@ import { AppText, HgButton } from "@/components/common";
 import { Path } from "@/constants/path";
 import { Action, InternalUrl, Text, Type } from "@/constants/tracking";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { loginHref } from "@/navigation/login";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
 import { useAuthStore } from "@/stores/auth.store";
@@ -73,7 +74,7 @@ export function LogoutCompleteView() {
                             type: Type.Login,
                             url: InternalUrl.Login,
                         });
-                        router.push(Path.Login);
+                        router.push(loginHref());
                     }}
                 />
             ) : null}

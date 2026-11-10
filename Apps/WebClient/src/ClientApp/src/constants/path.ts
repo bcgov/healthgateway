@@ -7,6 +7,8 @@ export const Path = {
     IdirLoggedIn: "/idirLoggedIn",
     Login: "/login",
     LoginCallback: "/loginCallback",
+    /** Native only: the login picker as a sheet, when there is more than one identity provider. */
+    LoginProviders: "/loginProviders",
     Logout: "/logout",
     LogoutComplete: "/logoutComplete",
     NotFound: "/not-found",

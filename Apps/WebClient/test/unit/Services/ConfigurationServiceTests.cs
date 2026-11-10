@@ -212,6 +212,30 @@ namespace HealthGateway.WebClientTests.Services
                             new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]),
                             GetDefaultProfileSettings())
                         : null,
+                    Mobile = new MobileAppConfiguration
+                    {
+                        MinimumVersion = "3.0.0",
+                        Timeouts = new MobileAppTimeoutsConfiguration
+                        {
+                            Idle = 1200000,
+                        },
+                        Authentication = new MobileAppAuthenticationConfiguration
+                        {
+                            Endpoint = new Uri("https://loginproxy.gov.bc.ca/auth/realms/health-gateway-gold"),
+                            ClientIdPrefix = "hg-mobile",
+                            IdentityProviders =
+                            [
+                                new IdentityProviderConfiguration
+                                {
+                                    Id = "BCSC",
+                                    Name = "BC Services Card",
+                                    Icon = "address-card",
+                                    Hint = "bcsc-mobile",
+                                    Disabled = false,
+                                },
+                            ],
+                        },
+                    },
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
                 {

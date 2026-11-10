@@ -9,6 +9,7 @@ import { expireSessionIfIdle } from "@/utils/sessionExpiry";
 import { useAppLockStore } from "./appLock.store";
 import { useAuthStore } from "./auth.store";
 import {
+    nativeOidcConfig,
     selectIdleTimeout,
     selectUpdateRequired,
     useConfigStore,
@@ -43,7 +44,12 @@ async function boot(pathname: string, stale: () => boolean): Promise<void> {
     const { enabled: lockEnabled } = useAppLockStore.getState();
     const config = await useConfigStore.getState().retrieve(lockEnabled);
     if (stale()) return;
-    services.initialize(config, createAuthService(config.openIdConnect));
+    // native: its own Keycloak client, or a MobileConfigurationError that stops start-up (see nativeOidcConfig)
+    const oidcConfig =
+        Platform.OS === "web"
+            ? config.openIdConnect
+            : nativeOidcConfig(config, Platform.OS);
+    services.initialize(config, createAuthService(oidcConfig));
     const configState = useConfigStore.getState();
     if (selectUpdateRequired(configState)) return; // nothing else runs until the app is updated
     await services.auth.init({ keepSessionOnFailure: lockEnabled });

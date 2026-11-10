@@ -91,6 +91,21 @@ export const configFixture: ExternalConfiguration = {
         minPatientAge: 12,
         maxDependentAge: 12,
         offlineMode: null,
+        mobile: {
+            authentication: {
+                endpoint: "https://sso.test/auth/realms/hg-mobile",
+                clientIdPrefix: "hg-mobile",
+                identityProviders: [
+                    {
+                        id: "bcsc",
+                        name: "BC Services Card",
+                        icon: "address-card",
+                        hint: "bcsc-mobile",
+                        disabled: false,
+                    },
+                ],
+            },
+        },
     },
     serviceEndpoints: {
         GatewayApi: "https://api.test/gateway/",

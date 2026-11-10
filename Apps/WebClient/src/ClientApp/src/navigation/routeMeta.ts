@@ -26,6 +26,7 @@ export const routeMeta: Record<string, RouteMeta> = {
     [Path.Security]: { stateless: true },
     [Path.Login]: { validStates: [S.unauthenticated] },
     [Path.LoginCallback]: { stateless: true },
+    [Path.LoginProviders]: { validStates: [S.unauthenticated] },
     [Path.Logout]: { stateless: true },
     [Path.LogoutComplete]: { stateless: true },
     [Path.Registration]: { validStates: [S.notRegistered] },

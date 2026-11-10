@@ -27,6 +27,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useColorScheme } from "@/hooks/useTheme";
 import type { InfoTile } from "@/models/infoTile";
+import { loginHref, useLoginLabel } from "@/navigation/login";
 import { services } from "@/services/container";
 import { useAuthStore } from "@/stores/auth.store";
 import {
@@ -44,6 +45,7 @@ import { TileCarousel } from "./TileCarousel";
 export function LandingView() {
     usePageTitle("Health Gateway");
     const router = useRouter();
+    const loginLabel = useLoginLabel();
     const { lgAndUp } = useBreakpoint();
     const isOffline = useConfigStore(selectIsOffline);
     const offlineMessage = useConfigStore(
@@ -75,7 +77,7 @@ export function LandingView() {
                             <HgButton
                                 testID="btnLogin"
                                 nativeID="btnLogin"
-                                text="Log in with BC Services Card"
+                                text={loginLabel}
                                 uppercase={false}
                                 onPress={() => {
                                     services.tracking.trackEvent({
@@ -84,7 +86,7 @@ export function LandingView() {
                                         type: Type.Login,
                                         url: InternalUrl.Login,
                                     });
-                                    router.push(Path.Login);
+                                    router.push(loginHref());
                                 }}
                             />
                             <View className="flex-row items-center mt-4">
@@ -112,12 +114,9 @@ export function LandingView() {
                                         if (Platform.OS === "web")
                                             router.push(Path.Registration);
                                         else
-                                            router.push({
-                                                pathname: Path.Login,
-                                                params: {
-                                                    redirect: Path.Registration,
-                                                },
-                                            });
+                                            router.push(
+                                                loginHref(Path.Registration)
+                                            );
                                     }}
                                 />
                             </View>

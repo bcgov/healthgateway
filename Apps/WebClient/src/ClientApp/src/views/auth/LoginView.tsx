@@ -1,21 +1,28 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 import { AppText, HgAlert, HgButton } from "@/components/common";
 import { Loading } from "@/components/site/Loading";
 import { Path } from "@/constants/path";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import type { IdentityProviderConfiguration } from "@/models/configData";
-import { isSessionEnded } from "@/models/errors";
 import { toHref } from "@/navigation/href";
-import { describeError, logger } from "@/services/logger";
 import { useAuthStore } from "@/stores/auth.store";
 import { selectIdentityProviders, useConfigStore } from "@/stores/config.store";
 
 import { completeLogin } from "./completeLogin";
+import {
+    alertLoginFailed,
+    LOGIN_FAILED_MESSAGE,
+    useProviderSignIn,
+} from "./useProviderSignIn";
 
-/** Port of LoginView.vue. Identity providers come from /configuration on every platform. */
+/**
+ * Port of LoginView.vue. Identity providers come from /configuration on every platform. Native opens this page only to
+ * start one provider (the only one, or one named by a deep link): with more to choose from, "Log in" opens the login
+ * sheet instead (`loginHref`), and this page's own list is left for anything that still lands here.
+ */
 export function LoginView() {
     usePageTitle("Log In");
     const router = useRouter();
@@ -26,8 +33,6 @@ export function LoginView() {
     }>();
     const providers = useConfigStore(selectIdentityProviders);
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-    const signIn = useAuthStore((s) => s.signIn);
-    const clearStorage = useAuthStore((s) => s.clearStorage);
 
     const redirectPath = params.redirect ? String(params.redirect) : Path.Home;
     const enabled = providers.filter((p) => !p.disabled);
@@ -49,38 +54,38 @@ export function LoginView() {
     const [showError, setShowError] = useState(isRetry);
     const [showPicker, setShowPicker] = useState(isRetry);
     const autoStarted = useRef(false);
+    const { start } = useProviderSignIn(redirectPath);
 
     async function signInAndRedirect(provider: IdentityProviderConfiguration) {
         setIsLoading(true);
         setShowError(false);
-        try {
-            await signIn(redirectPath, provider.hint || undefined);
-            // Web never gets here (full-page redirect). Native continues inline.
-            const target = await completeLogin(redirectPath);
-            router.replace(toHref(target));
-        } catch (error) {
-            if (isSessionEnded(error)) {
-                setIsLoading(false);
-                return;
-            }
-            const cancelled =
-                error instanceof Error && error.name === "AuthCancelledError";
-            if (cancelled) {
-                logger.debug("Login cancelled by the user");
-            } else {
-                logger.error(`Login failed: ${describeError(error)}`);
-            }
-            clearStorage();
-            // nothing here to come back to: this page was only ever passed through
-            if (cancelled && enabled.length === 1) {
-                router.replace(Path.Root);
-                return;
-            }
-            setShowError(!cancelled);
-            // after a cancel or failure always offer the provider list so the person can try again
-            setShowPicker(true);
+        const outcome = await start(provider);
+        if (outcome === "done") return;
+        if (outcome === "ended") {
             setIsLoading(false);
+            return;
         }
+        if (Platform.OS !== "web") {
+            // Native: a failure is the platform alert, and a cancel goes back to where the person started. A page that
+            // was only passed through (one provider, or a deep link to one) has nothing to come back to.
+            const leave = () => {
+                if (autoRedirect) router.replace(Path.Root);
+                else setIsLoading(false);
+            };
+            if (outcome === "failed")
+                alertLoginFailed(() => void signInAndRedirect(provider), leave);
+            else leave();
+            return;
+        }
+        // nothing here to come back to: this page was only ever passed through
+        if (outcome === "cancelled" && enabled.length === 1) {
+            router.replace(Path.Root);
+            return;
+        }
+        setShowError(outcome === "failed");
+        // after a cancel or failure always offer the provider list so the person can try again
+        setShowPicker(true);
+        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -107,7 +112,7 @@ export function LoginView() {
                         type="error"
                         live="assertive"
                         title="Error"
-                        text="An unexpected error occurred while processing the request, please try again."
+                        text={LOGIN_FAILED_MESSAGE}
                         closable
                         onClose={() => setShowError(false)}
                     />

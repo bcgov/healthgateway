@@ -5,11 +5,10 @@ export interface ExternalConfiguration {
     openIdConnect: OpenIdConnectConfiguration;
     identityProviders: IdentityProviderConfiguration[];
     webClient: WebClientConfiguration;
-    /** iOS and Android only, and optional: `configuration` may not serve it. */
-    mobile?: MobileConfiguration;
     serviceEndpoints: Dictionary<string>;
 }
 
+/** `webClient.mobile`: what iOS and Android use in place of the web client's settings. */
 export interface MobileConfiguration {
     /** major.minor.build. An older app must update to continue. Missing: no check. */
     minimumVersion?: string;
@@ -17,6 +16,17 @@ export interface MobileConfiguration {
         /** Idle time in milliseconds before the app logs out, or locks with device security on. Default 20 minutes. */
         idle?: number;
     };
+    /** Required on iOS and Android: there is no fallback to `openIdConnect` (see `nativeOidcConfig`). */
+    authentication?: MobileAuthenticationConfiguration;
+}
+
+export interface MobileAuthenticationConfiguration {
+    /** The Keycloak realm the native apps sign in to. */
+    endpoint?: string;
+    /** The native app's client ID is this plus "-ios" or "-android". */
+    clientIdPrefix?: string;
+    /** The login picker's providers on iOS and Android, in place of the top-level `identityProviders`. */
+    identityProviders?: IdentityProviderConfiguration[];
 }
 
 export interface IdentityProviderConfiguration {
@@ -52,6 +62,8 @@ export interface WebClientConfiguration {
     emailVerificationExpirySeconds?: number;
     clientIP?: string;
     offlineMode?: OfflineModeConfiguration | null;
+    /** iOS and Android only; web never reads it. */
+    mobile?: MobileConfiguration | null;
 }
 
 export interface FeatureToggleConfiguration {

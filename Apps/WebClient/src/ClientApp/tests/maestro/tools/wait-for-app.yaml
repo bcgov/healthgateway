@@ -2,5 +2,5 @@
 appId: ca.bc.gov.healthgateway.dev
 ---
 - extendedWaitUntil:
-      visible: ".*(Log in with BC Services Card|Health Records).*"
+      visible: ".*(Log in( with .+)?|Health Records).*"
       timeout: 300000

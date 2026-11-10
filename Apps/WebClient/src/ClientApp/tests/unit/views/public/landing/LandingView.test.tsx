@@ -14,7 +14,7 @@ import { useConfigStore } from "@/stores/config.store";
 import { setBreakpoint } from "@/test/breakpointMock";
 import { resetRouter, router } from "@/test/expoRouterMock";
 import { configFixture, resetStores, signInRegistered } from "@/test/fixtures";
-import { press, render, screen } from "@/test/ui";
+import { press, render, screen, textOf } from "@/test/ui";
 import { LandingView } from "@/views/public/landing/LandingView";
 
 jest.mock(
@@ -55,6 +55,61 @@ describe("LandingView", () => {
                       params: { redirect: Path.Registration },
                   }
         );
+    });
+
+    describe("the login button's label", () => {
+        const keycloak = {
+            id: "KeyCloak",
+            name: "KeyCloak",
+            icon: "user-secret",
+            hint: "",
+            disabled: false,
+        };
+        const bcsc = configFixture.identityProviders[0];
+        /** The list this platform counts: native's is under webClient.mobile.authentication, web's at the top level. */
+        const withProviders = (
+            providers: typeof configFixture.identityProviders
+        ) => {
+            const mobile = configFixture.webClient.mobile!;
+            useConfigStore.setState({
+                status: "loaded",
+                config:
+                    Platform.OS === "web"
+                        ? { ...configFixture, identityProviders: providers }
+                        : {
+                              ...configFixture,
+                              webClient: {
+                                  ...configFixture.webClient,
+                                  mobile: {
+                                      ...mobile,
+                                      authentication: {
+                                          ...mobile.authentication,
+                                          identityProviders: providers,
+                                      },
+                                  },
+                              },
+                          },
+            });
+        };
+        const label = () => textOf(screen.getByTestId("btnLogin"));
+
+        it("one provider: names it", async () => {
+            withProviders([keycloak]);
+            await render(<LandingView />);
+            expect(label()).toBe("Log in with KeyCloak");
+        });
+
+        it("a choice of providers: just Log in", async () => {
+            withProviders([keycloak, bcsc]);
+            await render(<LandingView />);
+            expect(label()).toBe("Log in");
+        });
+
+        it("disabled providers are not a choice", async () => {
+            withProviders([{ ...keycloak, disabled: true }, bcsc]);
+            await render(<LandingView />);
+            expect(label()).toBe("Log in with BC Services Card");
+        });
     });
 
     it("ends at the Register line on native; web keeps the web client's sections", async () => {

@@ -106,5 +106,10 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the robots file path.
         /// </summary>
         public string RobotsFilePath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the overrides used by the Health Gateway mobile app, or null when not configured.
+        /// </summary>
+        public MobileAppConfiguration? Mobile { get; set; }
     }
 }

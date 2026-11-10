@@ -4,6 +4,7 @@ import { keepsScreenBeneath } from "@/navigation/RootNavigator";
 
 const pages = { name: "(pages)" };
 const tabs = { name: "(tabs)" };
+const sheet = { name: "loginProviders" };
 
 describe("root stack: which screen stays beneath", () => {
     it("signed out, the tabs pushed over the signed-out pages keep them beneath for the back swipe", () => {
@@ -27,5 +28,15 @@ describe("root stack: which screen stays beneath", () => {
 
     it("only while the tabs are on top", () => {
         expect(keepsScreenBeneath([pages, tabs], 0, true)).toBe(false);
+    });
+
+    it("the login sheet keeps the page that opened it beneath", () => {
+        expect(keepsScreenBeneath([pages, sheet], 1, true)).toBe(true);
+        expect(keepsScreenBeneath([sheet], 0, true)).toBe(false);
+    });
+
+    it("once the sheet is replaced by where the login leads, only that is kept", () => {
+        expect(keepsScreenBeneath([pages, tabs], 1, false)).toBe(false);
+        expect(keepsScreenBeneath([pages, pages], 1, false)).toBe(false);
     });
 });

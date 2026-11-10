@@ -10,22 +10,25 @@ import { useAuthStore } from "@/stores/auth.store";
 
 const PAGES = "(pages)";
 const TABS = "(tabs)";
+/** The login sheet (`src/app/loginProviders.tsx`): presented over the page that opened it. */
+const LOGIN_SHEET = "loginProviders";
 
 interface RootRoute {
     name: string;
 }
 
 /**
- * Whether the root stack keeps the screen beneath the top one. Only one case: signed out, the tabs group pushed over the
- * signed-out pages (the gear menu's Security, the Support menu's Terms of Service), so the platform's back swipe returns
- * there. Everything else keeps just the top screen, as the Slot this replaced did: signing out must not leave the
- * signed-in tabs mounted under the landing page.
+ * Whether the root stack keeps the screen beneath the top one. Two cases: the login sheet, which is presented over the
+ * page that opened it; and signed out, the tabs group pushed over the signed-out pages (the gear menu's Security, the
+ * Support menu's Terms of Service), so the platform's back swipe returns there. Everything else keeps just the top
+ * screen, as the Slot this replaced did: signing out must not leave the signed-in tabs mounted under the landing page.
  */
 export function keepsScreenBeneath(
     routes: readonly RootRoute[],
     index: number,
     signedOut: boolean
 ): boolean {
+    if (index > 0 && routes[index]?.name === LOGIN_SHEET) return true;
     return (
         signedOut &&
         routes.length === 2 &&
@@ -76,6 +79,18 @@ export function RootNavigator() {
                 options={{
                     animation: signedOut ? "default" : "none",
                     gestureEnabled: signedOut,
+                }}
+            />
+            <Stack.Screen
+                name={LOGIN_SHEET}
+                options={{
+                    presentation: "formSheet",
+                    sheetAllowedDetents: "fitToContents",
+                    sheetGrabberVisible: true,
+                    // drag down to close, as the close button does
+                    gestureEnabled: true,
+                    animation: "default",
+                    contentStyle: { backgroundColor: colors.surface },
                 }}
             />
         </Stack>

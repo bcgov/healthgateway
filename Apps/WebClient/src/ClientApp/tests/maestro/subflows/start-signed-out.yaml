@@ -11,12 +11,12 @@ appId: ca.bc.gov.healthgateway.dev
 # Maestro on iOS. Recognising it is a quick "yes"; only a stuck screen pays for the wait and the relaunch.
 - evalScript: ${output.screenKnown = false}
 - extendedWaitUntil:
-      visible: "Log In|.*(Log in with BC Services Card|Health Records|Go to Health Gateway home page).*"
+      visible: "Log In|.*(Log in( with .+)?|Health Records|Go to Health Gateway home page).*"
       timeout: 10000
       optional: true
 - runFlow:
       when:
-          visible: "Log In|.*(Log in with BC Services Card|Health Records|Go to Health Gateway home page).*"
+          visible: "Log In|.*(Log in( with .+)?|Health Records|Go to Health Gateway home page).*"
       commands:
           - evalScript: ${output.screenKnown = true}
 - runFlow:
@@ -26,7 +26,7 @@ appId: ca.bc.gov.healthgateway.dev
           - launchApp:
                 stopApp: true
           - extendedWaitUntil:
-                visible: "Log In|.*(Log in with BC Services Card|Health Records|Go to Health Gateway home page).*"
+                visible: "Log In|.*(Log in( with .+)?|Health Records|Go to Health Gateway home page).*"
                 timeout: 60000
 - runFlow:
       when:

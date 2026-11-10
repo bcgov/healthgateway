@@ -28,7 +28,14 @@ jest.mock("expo-secure-store", () => ({
 }));
 
 const IDLE = configFixture.webClient.timeouts.idle;
-const config = { ...configFixture, mobile: { timeouts: { idle: IDLE } } };
+const withMobileIdle = (idle: number) => ({
+    ...configFixture,
+    webClient: {
+        ...configFixture.webClient,
+        mobile: { ...configFixture.webClient.mobile, timeouts: { idle } },
+    },
+});
+const config = withMobileIdle(IDLE);
 const COUNTDOWN = 60000;
 
 describe("IdleTimeout", () => {
@@ -69,10 +76,8 @@ describe("IdleTimeout", () => {
         expect(router.push).not.toHaveBeenCalled();
     });
 
-    it("native uses mobile.timeouts.idle, web the web client's", async () => {
-        useConfigStore.setState({
-            config: { ...configFixture, mobile: { timeouts: { idle: 2000 } } },
-        });
+    it("native uses webClient.mobile.timeouts.idle, web the web client's", async () => {
+        useConfigStore.setState({ config: withMobileIdle(2000) });
         await render(<IdleTimeout />);
         await advanceTimers(3000);
         const dialog = screen.queryByText("Are you still there?");

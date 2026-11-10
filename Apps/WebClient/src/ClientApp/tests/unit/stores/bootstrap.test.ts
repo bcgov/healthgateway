@@ -12,7 +12,10 @@ import { services } from "@/services/container";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { bootstrap } from "@/stores/bootstrap";
-import { useConfigStore } from "@/stores/config.store";
+import {
+    MobileConfigurationError,
+    useConfigStore,
+} from "@/stores/config.store";
 import { useNotificationStore } from "@/stores/notification.store";
 import { useUserStore } from "@/stores/user.store";
 import { configFixture, resetStores } from "@/test/fixtures";
@@ -150,5 +153,46 @@ describe("start-up replaced by a newer one", () => {
         fail(new Error("old environment is down"));
         await expect(first).resolves.toBe(false);
         expect(useConfigStore.getState().status).toBe("loaded");
+    });
+});
+
+describe("native sign-in settings", () => {
+    beforeEach(() => {
+        useAppLockStore.setState({ enabled: false });
+    });
+    afterEach(() => {
+        jest.restoreAllMocks();
+        mockCreateAuth.mockReset();
+        resetStores();
+    });
+
+    it("signs in with the mobile client at the mobile endpoint, not the web client's", async () => {
+        jest.spyOn(services.config, "getConfiguration").mockResolvedValue(
+            configFixture
+        );
+        mockCreateAuth.mockReturnValue(
+            fakeService(Promise.resolve(), Promise.resolve({}))
+        );
+        await expect(bootstrap("/")).resolves.toBe(true);
+        expect(mockCreateAuth).toHaveBeenCalledWith({
+            authority: "https://sso.test/auth/realms/hg-mobile",
+            clientId: "hg-mobile-ios",
+            scope: configFixture.openIdConnect.scope,
+            callbacks: null,
+        });
+    });
+
+    it("stops start-up when the server leaves out a setting", async () => {
+        jest.spyOn(services.config, "getConfiguration").mockResolvedValue({
+            ...configFixture,
+            webClient: {
+                ...configFixture.webClient,
+                mobile: { authentication: { endpoint: "https://sso.test/x" } },
+            },
+        });
+        await expect(bootstrap("/")).rejects.toBeInstanceOf(
+            MobileConfigurationError
+        );
+        expect(mockCreateAuth).not.toHaveBeenCalled();
     });
 });
