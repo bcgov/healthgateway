@@ -1,15 +1,9 @@
-name: $(Date:yyyyMMdd)$(Rev:.r) # Until the "Set app version" step names the run major.minor.build[-custom]
+name: $(Date:yyyyMMdd)$(Rev:.r) # Until the "Set app version" step names the run major.minor.fix.build[-custom]
 
-# The app version: major.minor from here, the build from a pipeline counter (Build/hg.yaml). Changing a value here (or
-# for one run, in Run pipeline) needs no other change. BuildSeed only ever goes up: set it to the next build number the
-# stores will accept (above the highest iOS and Android upload) and the count continues from there.
+# The app version: Major, Minor and Fix from the BuildVersion variable group in Pipelines > Library, the build from a
+# pipeline counter (Build/hg.yaml), zero-padded to 4 digits in the run name. Changing the group needs no other change. BuildSeed only ever goes up: set it to the next build number the stores
+# will accept (above the highest iOS and Android upload) and the count continues from there.
 parameters:
-  - name: VersionMajor
-    type: number
-    default: 2
-  - name: VersionMinor
-    type: number
-    default: 0
   - name: BuildSeed
     type: number
     default: 0
@@ -40,6 +34,4 @@ extends:
     DotNetTests: true
     NPMInstall: true
     SetAppVersion: true
-    VersionMajor: ${{ parameters.VersionMajor }}
-    VersionMinor: ${{ parameters.VersionMinor }}
     BuildSeed: ${{ parameters.BuildSeed }}

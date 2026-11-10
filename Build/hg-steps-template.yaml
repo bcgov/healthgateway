@@ -52,22 +52,39 @@ steps:
     workingDirectory: "$(App.Home)/src/ClientApp"
 
   # Before anything builds the client (the "Build client" step, or dotnet publish's PublishRunWebpack target), so the
-  # bundle carries the version. The run is named major.minor.build, plus -custom when not built from dev; the app shows
-  # the same version as "major.minor (build) - Custom". The run name is also the image tag, which the release scripts
-  # (Tools/Pipelines/scripts/azp_importImages.sh, azp_tagImages.sh) read as RELEASE_ARTIFACTS_<artifact>_BUILDNUMBER,
-  # so it must stay tag-safe: no spaces or brackets. Downstream pipelines (iOS, Android) read the version from
-  # resources.pipeline.<alias>.runName.
-  - script: |
-      set -e
+  # bundle carries the version. Major, Minor and Fix come from the BuildVersion variable group. The run is named
+  # major.minor.fix.build with the build zero-padded to 4 digits (2.0.1.0057), plus -custom when not built from dev.
+  # version.json holds major, minor and the build as a plain number, as the stores need (three parts, digits only), so
+  # Fix is not in it yet and the app shows "major.minor (57) - Custom". The run name is also the image tag, which
+  # the release scripts (Tools/Pipelines/scripts/azp_importImages.sh, azp_tagImages.sh) read as
+  # RELEASE_ARTIFACTS_<artifact>_BUILDNUMBER, so it must stay tag-safe: no spaces or brackets. Downstream pipelines
+  # (iOS, Android) read the version from resources.pipeline.<alias>.runName.
+  - bash: |
+      set -euo pipefail
+      for pair in Major:MAJOR Minor:MINOR Fix:FIX; do
+        var="${pair#*:}"
+        value="${!var}"
+        if [[ ! "$value" =~ ^[0-9]+$ ]]; then
+          echo "##vso[task.logissue type=error]BuildVersion variable group: ${pair%%:*} must be a whole number of 0 or more, not '$value'."
+          exit 1
+        fi
+      done
       label=""
       if [ "$(Build.SourceBranch)" != "refs/heads/dev" ]; then label="Custom"; fi
-      node scripts/bump-version.js set "$(AppVersionMajor)" "$(AppVersionMinor)" "$(AppVersionBuild)" "$label"
-      name="$(AppVersionMajor).$(AppVersionMinor).$(AppVersionBuild)"
+      node scripts/bump-version.js set "$MAJOR" "$MINOR" "$BUILD" "$label"
+      name="$MAJOR.$MINOR.$FIX.$(printf '%04d' "$((10#$BUILD))")"
       if [ -n "$label" ]; then name="$name-custom"; fi
+      echo "Version $name"
       echo "##vso[build.updatebuildnumber]$name"
+      echo "##vso[task.setvariable variable=AppVersionFix]$FIX"
     displayName: "Set app version"
     condition: and(succeeded(), eq(variables['SetAppVersion'], true))
     workingDirectory: "$(App.Home)/src/ClientApp"
+    env:
+      MAJOR: $(Major)
+      MINOR: $(Minor)
+      FIX: $(Fix)
+      BUILD: $(AppVersionBuild)
 
   - script: |
       npm run build
