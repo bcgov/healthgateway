@@ -56,7 +56,8 @@ const expoConfig = (config: ConfigContext["config"]): ExpoConfig => ({
     },
     android: {
         package: `ca.bc.gov.healthgateway${idSuffix[appEnv]}`,
-        versionCode: build,
+        // Gradle rejects a versionCode below 1, and local builds have build 0 (version.json) unless BUILD_NUMBER is set
+        versionCode: Math.max(build, 1),
         predictiveBackGestureEnabled: false,
         // The old Android app's adaptive icon (myhealthBC-android `drawable/ic_launcher_foreground.xml`
         // on white): the full-bleed `icon` above was being cropped and masked by the launcher.
