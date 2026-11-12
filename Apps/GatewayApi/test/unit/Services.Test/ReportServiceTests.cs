@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             ReportRequestModel reportRequest = new()
             {
-                Data = JsonDocument.Parse("{}").RootElement,
+                Data = JsonElement.Parse("{}"),
                 Template = templateType,
                 Type = reportType,
             };
@@ -94,7 +94,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Arrange
             ReportRequestModel reportRequest = new()
             {
-                Data = JsonDocument.Parse("{}").RootElement,
+                Data = JsonElement.Parse("{}"),
                 Template = TemplateType.Covid,
                 Type = (ReportFormatType)999, // An invalid report format type value will not map to a valid file extension for any of our assets
             };
@@ -125,7 +125,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             ReportRequestModel reportRequest = new()
             {
-                Data = JsonDocument.Parse("{}").RootElement,
+                Data = JsonElement.Parse("{}"),
                 Template = TemplateType.Medication,
                 Type = ReportFormatType.Pdf,
             };

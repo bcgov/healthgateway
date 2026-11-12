@@ -179,7 +179,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             return new()
             {
-                Data = JsonDocument.Parse("{}").RootElement,
+                Data = JsonElement.Parse("{}"),
                 Options = new CDogsOptionsModel
                 {
                     Overwrite = true,

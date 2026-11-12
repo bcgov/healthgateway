@@ -49,7 +49,7 @@ namespace HealthGateway.Patient.Services
         public async Task<PatientDataResponse> QueryAsync(PatientDataQuery query, CancellationToken ct = default)
         {
             IList<PatientDataType> unblockedPatientDataTypes = await this.GetUnblockedPatientDataTypesAsync(query.Hdid, query.PatientDataTypes, ct);
-            if (!unblockedPatientDataTypes.Any())
+            if (unblockedPatientDataTypes.Count == 0)
             {
                 return new PatientDataResponse([]);
             }

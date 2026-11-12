@@ -164,6 +164,6 @@ public partial class AnalyticsPage : FluxorComponent
             ? $"{this.ReportName}_export_{this.StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}_to_{this.EndDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv"
             : $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
 
-        await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+        await this.JsRuntime.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
     }
 }

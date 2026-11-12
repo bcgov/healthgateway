@@ -110,12 +110,6 @@ namespace HealthGateway.Admin.Server
             HttpWeb.UseContentSecurityPolicy(app, configuration);
             SwaggerDoc.UseSwagger(app, logger);
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseWebAssemblyDebugging();
-            }
-
             app.UseBlazorFrameworkFiles();
 
             HttpWeb.UseHttp(app, logger, configuration, environment, true, false);

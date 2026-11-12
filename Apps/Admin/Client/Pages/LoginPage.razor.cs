@@ -69,7 +69,7 @@ public partial class LoginPage : ComponentBase
         {
             // Normalize the path and ensure it starts with "/"
             string normalizedPath = validatedUri.ToString();
-            if (normalizedPath.StartsWith('/'))
+            if (normalizedPath.StartsWith('/', StringComparison.Ordinal))
             {
                 return normalizedPath;
             }
