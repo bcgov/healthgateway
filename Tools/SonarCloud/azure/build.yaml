@@ -24,10 +24,10 @@ jobs:
           jdkSourceOption: "PreInstalled"
 
       - task: UseDotNet@2
-        displayName: "Install .NET SDK 10.x"
+        displayName: "Install .NET SDK 11.x"
         inputs:
           packageType: sdk
-          version: 10.x # Match global.json version
+          version: 11.x # Match global.json version
           installationPath: $(Agent.ToolsDirectory)/dotnet
 
       - task: DownloadSecureFile@1
