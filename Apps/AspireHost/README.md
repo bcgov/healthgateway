@@ -38,7 +38,8 @@ Aspire AppHost that orchestrates the full local Health Gateway development envir
   running is left alone. Restarting a resource in the dashboard keeps the device up.
   **MobileBuild** builds and installs the dev app, then opens it: needed once per
   emulator or simulator, then after native changes (a native package, a plugin, native
-  fields in `app.config.ts`); Android needs `JAVA_HOME`. **MobileApp** opens the installed
+  fields in `app.config.ts`); Android needs `JAVA_HOME` (and on Windows, see
+  [Android builds on Windows](#android-builds-on-windows)). **MobileApp** opens the installed
   dev app on Metro, once WebClient is up. A development build starts on the Local
   environment, these services; Security → Environment in the app switches it.
   Both run `Apps/WebClient/src/ClientApp/scripts/mobile-dev.js` (`open` / `build`), which
@@ -71,6 +72,30 @@ still comes from user secrets as before.
 - `dotnet-ef` global tool (`dotnet tool install --global dotnet-ef`)
 - Stop the old compose stack first if it's running, since both use ports 5432/6379:
   `docker compose -f Tools/Dev/Postgres/docker-compose.yml down`
+
+### Android builds on Windows
+
+The native (CMake) part of **MobileBuild**'s Android build creates paths longer than
+Windows' 260-character limit, failing with a ninja `mkdir(...): No such file or directory`
+error. Two one-time changes fix this:
+
+- Enable long paths, from an elevated PowerShell, then sign out or restart:
+
+  ```powershell
+  New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1 -PropertyType DWORD -Force
+  ```
+
+- Replace the ninja bundled with the Android SDK's CMake, as versions before 1.12 don't
+  support long paths. The Android Gradle Plugin uses the `ninja.exe` beside `cmake.exe`
+  (not one on `PATH`), e.g. `%LOCALAPPDATA%\Android\Sdk\cmake\3.22.1\bin\ninja.exe`.
+  Replace it with `ninja.exe` from `ninja-win.zip` in one of the more recent
+  [ninja releases](https://github.com/ninja-build/ninja/releases).
+  Reinstalling or adding a CMake version through the SDK Manager will bring back an old ninja.
+
+**MobileBuild** checks each SDK CMake's ninja version before building and stops with an
+error naming any that is older than 1.12. After fixing an earlier failure, delete
+`node_modules/<package>/android/.cxx` and `android/app/.cxx` in the ClientApp folder so
+the native build starts clean.
 
 ## Run and view the dashboard
 

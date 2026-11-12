@@ -134,6 +134,24 @@ function sdkTool(folder, name) {
 const adb = (...args) =>
     execFileSync(sdkTool("platform-tools", "adb"), args, { encoding: "utf8" });
 
+/** Fail early when an SDK CMake's ninja predates 1.12, the first to handle Windows's long paths. */
+function checkNinja() {
+    const cmakeDir = path.join(sdkRoot(), "cmake");
+    if (!fs.existsSync(cmakeDir)) return;
+    for (const version of fs.readdirSync(cmakeDir)) {
+        const ninja = path.join(cmakeDir, version, "bin", "ninja.exe");
+        if (!fs.existsSync(ninja)) continue;
+        const found = execFileSync(ninja, ["--version"], {
+            encoding: "utf8",
+        }).trim();
+        const [major, minor] = found.split(".").map(Number);
+        if (major === 1 && minor < 12)
+            throw new Error(
+                `${ninja} is ${found}: native builds fail on long paths before ninja 1.12. Replace it with ninja.exe from https://github.com/ninja-build/ninja/releases (ninja-win.zip)`
+            );
+    }
+}
+
 /** The running emulators, each with the AVD it runs. */
 function runningEmulators() {
     return adb("devices")
@@ -207,6 +225,7 @@ const android = {
     },
 
     build(device) {
+        if (isWindows) checkNinja();
         expoRun("android", device.name);
     },
 
