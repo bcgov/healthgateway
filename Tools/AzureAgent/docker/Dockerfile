@@ -1,5 +1,6 @@
 FROM ubuntu:26.04
-ARG NODE_VERSION=v22.20.0
+ARG NODE_VERSION=v24.22.3
+ARG NPM_VERSION=12.2.2
 ARG DOTNET_VERSION=11.0
 ARG SONARSCANNER_VERSION=11.0.0
 ARG VAULT_VERSION=1.20.4
@@ -59,8 +60,9 @@ ENV HOME=/tmp
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/bin:$HOME/.local/bin/:$HOME/.dotnet/tools
 
-# Update the version of `npm` that came with the packages above
-RUN npm i -g npm@latest && \
+# Update the version of `npm` that came with the packages above.
+# Pinned: an unpinned npm@latest broke this build when npm 12 raised its minimum Node version.
+RUN npm i -g npm@${NPM_VERSION} && \
     rm -rf ~/.npm && \
     node -v && \
     npm -v
