@@ -13,7 +13,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     ca-certificates lsb-release git tzdata iputils-ping netcat-openbsd traceroute curl \
     apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils zip unzip \
-    default-jdk python3 g++ build-essential gpg && \
+    default-jdk python3 g++ build-essential gpg libicu78 && \
     curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh \
     -o /tmp/dotnet-install.sh && \
     bash /tmp/dotnet-install.sh --channel ${DOTNET_VERSION} --install-dir /usr/share/dotnet && \
