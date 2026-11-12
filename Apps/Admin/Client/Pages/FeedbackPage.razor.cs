@@ -161,7 +161,6 @@ public partial class FeedbackPage : FluxorComponent
         {
             this.Snackbar.Add("Tag is invalid.", Severity.Warning);
             this.AddTagModel.Clear();
-            this.StateHasChanged();
             return;
         }
 
@@ -169,7 +168,6 @@ public partial class FeedbackPage : FluxorComponent
         {
             this.Snackbar.Add($"Tag \"{tagName}\" already exists.", Severity.Warning);
             this.AddTagModel.Clear();
-            this.StateHasChanged();
             return;
         }
 

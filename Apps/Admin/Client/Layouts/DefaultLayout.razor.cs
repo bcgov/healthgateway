@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Layouts
 {
+    using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
     using HealthGateway.Admin.Client.Store.Configuration;
@@ -40,14 +41,13 @@ namespace HealthGateway.Admin.Client.Layouts
         private MudTheme CurrentTheme { get; } = new HgTheme();
 
         /// <inheritdoc/>
-        protected override async void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             this.Dispatcher.Dispatch(new ConfigurationActions.LoadAction());
 
             if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey))
             {
                 this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey);
-                this.StateHasChanged();
             }
         }
     }

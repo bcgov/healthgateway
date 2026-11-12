@@ -321,10 +321,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             return path switch
             {
-                _ when path.EndsWith('*') => requestPathValue.StartsWith(
+                _ when path.EndsWith('*', StringComparison.Ordinal) => requestPathValue.StartsWith(
                     path.TrimEnd('*'),
                     StringComparison.InvariantCultureIgnoreCase),
-                _ when path.StartsWith('*') => requestPathValue.EndsWith(
+                _ when path.StartsWith('*', StringComparison.Ordinal) => requestPathValue.EndsWith(
                     path.TrimStart('*'),
                     StringComparison.InvariantCultureIgnoreCase),
                 _ => requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase),
