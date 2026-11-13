@@ -278,6 +278,51 @@ describe("environments", () => {
             jest.restoreAllMocks();
         });
 
+        it("a development install from before lastUsed was saved, with Local chosen: knows it ran on Local", async () => {
+            released.mockResolvedValue(452);
+            await AsyncStorage.setItem(KEY, "local");
+            await state().hydrate();
+            expect(selectEnvironment(state()).id).toBe("prod");
+            expect(state().lastUsed).toBe("local");
+            expect(await AsyncStorage.getItem(LAST_USED_KEY)).toBe("local");
+        });
+
+        describe("storage failing: start-up stops (the error page) rather than risk skipping the reset", () => {
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            it("when it can't be read", async () => {
+                jest.spyOn(AsyncStorage, "getItem").mockRejectedValueOnce(
+                    new Error("storage")
+                );
+                await expect(state().hydrate()).rejects.toThrow("storage");
+            });
+
+            it("when an install from before lastUsed can't record where it ran", async () => {
+                released.mockResolvedValue(452);
+                await AsyncStorage.setItem(KEY, "test");
+                jest.spyOn(AsyncStorage, "setItem").mockRejectedValueOnce(
+                    new Error("storage")
+                );
+                await expect(state().hydrate()).rejects.toThrow("storage");
+                // the choice, its only record of Test, is kept for the next try
+                expect(await AsyncStorage.getItem(KEY)).toBe("test");
+            });
+
+            it("but not when a forgotten choice can't be removed: the next start removes it", async () => {
+                released.mockResolvedValue(452);
+                await AsyncStorage.setItem(KEY, "test");
+                await AsyncStorage.setItem(LAST_USED_KEY, "test");
+                jest.spyOn(AsyncStorage, "removeItem").mockRejectedValueOnce(
+                    new Error("storage")
+                );
+                await state().hydrate();
+                expect(selectEnvironment(state()).id).toBe("prod");
+                expect(state().lastUsed).toBe("test");
+            });
+        });
+
         it("a fresh install last ran on Production", async () => {
             released.mockResolvedValue(451);
             await state().hydrate();

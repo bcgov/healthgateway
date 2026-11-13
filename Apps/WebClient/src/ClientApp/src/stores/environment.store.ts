@@ -35,7 +35,11 @@ interface EnvironmentState {
     lastUsed: EnvironmentId;
     /** raises when the app must start again on a newly chosen environment */
     restarts: number;
-    /** native, at start-up: works out `offered` and `effective` (environmentSelector.md, "App behaviour") */
+    /**
+     * Native, at start-up: works out `offered` and `effective` (environmentSelector.md, "App behaviour"). Rejects when
+     * storage can't be read or the last used environment can't be recorded: start-up then stops (the error page) rather
+     * than run on an environment without knowing where the app ran before, which could skip the reset.
+     */
     hydrate: () => Promise<void>;
     /** a choice from the selector: saved, and the app runs on it from the restart */
     select: (id: EnvironmentId) => Promise<void>;
@@ -140,8 +144,12 @@ export const useEnvironmentStore = create<EnvironmentState>((set, get) => ({
                     : undefined;
             // Where the app last ran, Local included: a release build installed over a development build (both are
             // hg.local) moves off Local, so start-up resets it. An install from before `lastUsed` was saved ran on its
-            // choice, or on Production.
-            const previous = isEnvironmentId(last) ? last : (choice ?? "prod");
+            // choice (Local too), or on Production.
+            const previous = isEnvironmentId(last)
+                ? last
+                : isEnvironmentId(stored)
+                  ? stored
+                  : "prod";
             // Recorded before the choice can be forgotten below, so a reset that fails or is cut short still has it,
             // and runs again on the next start
             if (!isEnvironmentId(last))
@@ -154,13 +162,20 @@ export const useEnvironmentStore = create<EnvironmentState>((set, get) => ({
             );
             if (started !== revision) return;
             set({ ...resolved, lastUsed: previous });
-            // a choice this build no longer offers (it was just released, say) is forgotten
+            // a choice this build no longer offers (it was just released, say) is forgotten; if that fails, the next
+            // start forgets it again
             if (choice && !resolved.selected)
-                await AsyncStorage.removeItem(STORAGE_KEY);
+                await AsyncStorage.removeItem(STORAGE_KEY).catch(
+                    (error: unknown) =>
+                        logger.warn(
+                            `Could not forget the environment choice: ${describeError(error)}`
+                        )
+                );
         } catch (error) {
             logger.warn(
                 `Could not read the environment: ${describeError(error)}`
             );
+            throw error;
         }
     },
     select: async (id) => {
