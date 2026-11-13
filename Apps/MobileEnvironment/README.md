@@ -31,7 +31,7 @@ build, Helm deploy or code change. Gold and GoldDR are kept in sync so a failove
 | `test.sh` | Builds the image and checks it locally, run as OpenShift runs it (needs Docker) |
 | `azure/build.yaml` | Builds the image and pushes it to Docker Hub (public) as `healthopenshift/mobileenvironment:1.0.0.<n>` |
 | `k8s/base/` | Deployment (3 replicas), service and pod disruption budget (at least 1 pod always available) |
-| `k8s/overlays/{dev,test,prod}/` | For each environment: the namespace, the name prefix (`<env>-mobileenvironment-deployment` and `<env>-mobileenvironment-pdb`; the service is `mobile-environment-svc` everywhere, the name Kong points at) and the image tag (the build number) |
+| `k8s/overlays/{dev,test,prod}/` | For each environment: the namespace, the name prefix (`<env>-mobileenvironment-deployment`, `<env>-mobileenvironment-svc`, the name Kong points at, and `<env>-mobileenvironment-pdb`) and the image tag (the build number) |
 | `../../Tools/Kong/environment.tmpl` | The public Kong route to the service |
 
 The pods are labelled `role: api`, so the Helm release's existing `<release>-aps-netpol` lets Kong reach them. There's

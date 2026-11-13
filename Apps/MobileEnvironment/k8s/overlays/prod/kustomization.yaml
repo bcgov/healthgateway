@@ -1,28 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: c8055e-prod
+# prod-mobileenvironment-deployment, prod-mobileenvironment-svc (the name Kong points at), prod-mobileenvironment-pdb
+namePrefix: prod-
 resources:
   - ../../base
 images:
   - name: docker.io/healthopenshift/mobileenvironment
     newTag: 1.0.0.1
-# prod- on the deployment and PDB only: the service keeps mobile-environment-svc, the name Kong (Tools/Kong) points at.
-patches:
-  - target:
-      kind: Deployment
-      name: mobileenvironment-deployment
-    patch: |-
-      - op: replace
-        path: /metadata/name
-        value: prod-mobileenvironment-deployment
-    options:
-      allowNameChange: true
-  - target:
-      kind: PodDisruptionBudget
-      name: mobileenvironment-pdb
-    patch: |-
-      - op: replace
-        path: /metadata/name
-        value: prod-mobileenvironment-pdb
-    options:
-      allowNameChange: true

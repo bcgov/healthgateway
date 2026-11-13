@@ -1,6 +1,8 @@
-  # Mobile app environments (Apps/MobileEnvironment): public, as the app calls it before anyone signs in.
-  - name: mobile-environment-$KONG_NAMESPACE
-    url: http://mobile-environment-svc.$LICENCE_PLATE-$ENVIRONMENT.svc:8080
+  # Mobile app environments (Apps/MobileEnvironment): public, as the app calls it before anyone signs in. The names carry
+  # the environment, like the other services (<env>-<service>-svc-<kong namespace>): one gateway namespace holds dev,
+  # test and prod, so names must be unique across them.
+  - name: $ENVIRONMENT-mobileenvironment-svc-$KONG_NAMESPACE
+    url: http://$ENVIRONMENT-mobileenvironment-svc.$LICENCE_PLATE-$ENVIRONMENT.svc:8080
     tags:
       - OAS3_import
       - ns.$KONG_NAMESPACE.$ENVIRONMENT
@@ -17,7 +19,7 @@
         config:
           access: [ return ]
     routes:
-      - name: mobile-environment-$KONG_NAMESPACE-get
+      - name: $ENVIRONMENT-mobileenvironment-svc-$KONG_NAMESPACE-get
         methods:
           - GET
         hosts:
