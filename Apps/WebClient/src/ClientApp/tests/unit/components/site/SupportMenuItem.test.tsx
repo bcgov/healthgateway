@@ -54,6 +54,16 @@ describe("SupportMenuItem", () => {
         );
     });
 
+    it("external links only: leaves out the app's own pages (Terms of Service)", async () => {
+        await render(<SupportMenuItem onClose={onClose} externalOnly />);
+        await open();
+        for (const link of allSupportLinks) {
+            if (link.to) expect(screen.queryByText(link.text)).toBeNull();
+            else expect(screen.getByText(link.text)).toBeTruthy();
+        }
+        expect(screen.queryByText("Terms of Service")).toBeNull();
+    });
+
     it("closes the menu first, then follows the link", async () => {
         await render(<SupportMenuItem onClose={onClose} />);
         await open();

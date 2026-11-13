@@ -1,5 +1,5 @@
 # Dark Mode On, then back to Off, the default.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedOut
 ---

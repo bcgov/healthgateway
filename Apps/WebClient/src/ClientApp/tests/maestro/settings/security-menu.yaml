@@ -1,7 +1,7 @@
 # The Security page from the account menu: Device Security, the cache, Environment and Reset App. In Environment, the
 # current one (Development) does nothing when tapped, and choosing Test asks first; Cancel keeps Development. Resets,
 # switches and turns on nothing.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

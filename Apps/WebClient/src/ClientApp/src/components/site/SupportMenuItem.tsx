@@ -13,8 +13,17 @@ import { hrefProps } from "@/utils/hrefProps";
 
 import { ExpandableMenuItem } from "./ExpandableMenuItem";
 
-/** Native header menu entry holding the footer's links, which native does not show (stated deviation). */
-export function SupportMenuItem({ onClose }: { onClose: () => void }) {
+/**
+ * Native header menu entry holding the footer's links, which native does not show (stated deviation). `externalOnly`
+ * leaves out the links to the app's own pages (Terms of Service), for a menu on a screen that covers them.
+ */
+export function SupportMenuItem({
+    onClose,
+    externalOnly = false,
+}: {
+    onClose: () => void;
+    externalOnly?: boolean;
+}) {
     const router = useRouter();
     const colors = useThemeColors();
 
@@ -34,32 +43,34 @@ export function SupportMenuItem({ onClose }: { onClose: () => void }) {
             testID="menu-btn-support-link"
         >
             <View testID="support-options" className="pl-6">
-                {allSupportLinks.map((link) => (
-                    <Pressable
-                        key={link.testID}
-                        testID={link.testID}
-                        accessibilityRole="link"
-                        // where the link goes (a real anchor should this ever render on web); the press does the work
-                        {...hrefProps(link.to ?? link.href)}
-                        onPress={(event) => {
-                            event.preventDefault();
-                            follow(link);
-                        }}
-                        className="flex-row items-center px-4 py-3 active:bg-surface-hover"
-                    >
-                        <Icon
-                            name={
-                                link.to
-                                    ? "file-lines"
-                                    : "arrow-up-right-from-square"
-                            }
-                            size={14}
-                            color={colors["bc-grey"]}
-                            style={{ width: 24 }}
-                        />
-                        <AppText className="shrink">{link.text}</AppText>
-                    </Pressable>
-                ))}
+                {allSupportLinks
+                    .filter((link) => !externalOnly || !link.to)
+                    .map((link) => (
+                        <Pressable
+                            key={link.testID}
+                            testID={link.testID}
+                            accessibilityRole="link"
+                            // where the link goes (a real anchor should this ever render on web); the press does the work
+                            {...hrefProps(link.to ?? link.href)}
+                            onPress={(event) => {
+                                event.preventDefault();
+                                follow(link);
+                            }}
+                            className="flex-row items-center px-4 py-3 active:bg-surface-hover"
+                        >
+                            <Icon
+                                name={
+                                    link.to
+                                        ? "file-lines"
+                                        : "arrow-up-right-from-square"
+                                }
+                                size={14}
+                                color={colors["bc-grey"]}
+                                style={{ width: 24 }}
+                            />
+                            <AppText className="shrink">{link.text}</AppText>
+                        </Pressable>
+                    ))}
             </View>
         </ExpandableMenuItem>
     );

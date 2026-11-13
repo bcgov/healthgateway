@@ -1,7 +1,7 @@
 # Opens one of the app's links (env LINK, e.g. healthgateway://home). iOS 18 and earlier ask "Open in “Health Gateway
 # Dev”?" every time; iOS 26 and later open the link straight away. scripts/maestro-all.sh passes HG_LINK_PROMPT=true for
 # a simulator that asks, so the answer costs nothing where there is no question to answer.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - openLink: ${LINK}
 - runFlow:

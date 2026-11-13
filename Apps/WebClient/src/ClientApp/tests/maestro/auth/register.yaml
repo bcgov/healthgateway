@@ -1,5 +1,5 @@
 # Register on the landing page starts a login, instead of coming back to the same page. Goes no further than the login.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedOut
 ---

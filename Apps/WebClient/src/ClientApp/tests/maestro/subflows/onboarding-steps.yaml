@@ -1,4 +1,4 @@
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 # First launch on a fresh install: the tutorial, then the security step, answered "Not now".
 # Reset first with `adb shell pm clear` or by reinstalling; the state is in AsyncStorage.
 ---

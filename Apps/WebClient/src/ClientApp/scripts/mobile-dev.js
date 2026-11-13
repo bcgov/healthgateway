@@ -22,7 +22,7 @@ const appDir = path.join(__dirname, "..");
 const METRO_PORT = 5002;
 // the Local environment's configuration (src/config/environments.ts), served by the .NET WebClient
 const CONFIG_URL = "http://localhost:3025/configuration";
-const APP_ID = "ca.bc.gov.healthgateway.dev"; // the dev build's Android package and iOS bundle ID
+const APP_ID = "hg.local"; // the dev build's Android package and iOS bundle ID
 // The dev app's own link: open the app on this Metro (Android: adb reverse makes the computer's localhost the emulator's)
 const DEV_APP_URL = `exp+hgui://expo-development-client/?url=${encodeURIComponent(`http://localhost:${METRO_PORT}`)}`;
 const isWindows = process.platform === "win32";

@@ -1,5 +1,5 @@
 # The gear menu when logged out: Dark Mode and Support open, and no Log in button in the header.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedOut
 ---

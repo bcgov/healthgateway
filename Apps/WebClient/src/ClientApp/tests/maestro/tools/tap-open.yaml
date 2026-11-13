@@ -1,5 +1,5 @@
 # Tool: accepts an iOS "Open in …" sheet (opening the dev build from a link). Does nothing when no sheet shows.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - extendedWaitUntil:
       visible: "Open"

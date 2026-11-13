@@ -1,4 +1,4 @@
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 # Signed out: gear menu → Security → Environment, choose ${ENVIRONMENT} (local, dev, test or prod) and confirm. The
 # switch is a Reset App, so the caller handles the intro that follows.
 ---

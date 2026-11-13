@@ -41,6 +41,33 @@ describe("AppErrorView (AppErrorView.vue port)", () => {
         );
     });
 
+    describe("environment banner", () => {
+        afterEach(() => {
+            updateStores(() =>
+                useEnvironmentStore.setState({ selected: undefined })
+            );
+        });
+
+        it("native: names the environment that failed to start", async () => {
+            useEnvironmentStore.setState({ selected: "test" });
+            await render(
+                <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
+            );
+            const banner = screen.queryByTestId("environmentBanner");
+            // web keeps the web client's page, which has no banner here
+            if (Platform.OS === "web") expect(banner).toBeNull();
+            else expect(textOf(banner!)).toBe("Test");
+        });
+
+        it("native: none on Production", async () => {
+            useEnvironmentStore.setState({ selected: "prod" });
+            await render(
+                <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
+            );
+            expect(screen.queryByTestId("environmentBanner")).toBeNull();
+        });
+    });
+
     describe("after switching environments", () => {
         afterEach(() => {
             updateStores(() =>
