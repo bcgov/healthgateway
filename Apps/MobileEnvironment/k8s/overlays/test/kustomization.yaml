@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: c8055e-test
+resources:
+  - ../../base
+images:
+  - name: image-registry.openshift-image-registry.svc:5000/c8055e-tools/mobileenvironment
+    newTag: test
+patches:
+  - target:
+      kind: Deployment
+      name: mobile-environment
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/image.openshift.io~1triggers
+        value: '[{"from":{"kind":"ImageStreamTag","name":"mobileenvironment:test","namespace":"c8055e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mobile-environment\")].image","pause":"false"}]'

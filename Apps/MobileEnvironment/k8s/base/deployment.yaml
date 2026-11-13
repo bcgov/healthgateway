@@ -1,0 +1,90 @@
+# RELEASED_BUILD is deliberately not set here. It's set on the live deployment (OpenShift console → Environment, or
+# oc set env) and `oc apply` keeps it, because it was never in an applied manifest. Adding it here would put the committed
+# value back on every apply. See ../../README.md.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobile-environment
+  labels:
+    app.kubernetes.io/name: mobile-environment
+    app.kubernetes.io/part-of: healthgateway
+    name: mobile-environment
+    role: api
+  annotations:
+    # Rolls out when the image stream tag moves, like the Helm deployments. The overlays set the tag.
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"mobileenvironment:dev","namespace":"c8055e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mobile-environment\")].image","pause":"false"}]'
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      name: mobile-environment
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # changing RELEASED_BUILD is a rollout: at least 2 of the 3 pods keep serving
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mobile-environment
+        app.kubernetes.io/part-of: healthgateway
+        name: mobile-environment
+        # puts the pods under the Helm release's <release>-aps-netpol, which lets Kong (APS) in
+        role: api
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              name: mobile-environment
+      containers:
+        - name: mobile-environment
+          image: image-registry.openshift-image-registry.svc:5000/c8055e-tools/mobileenvironment:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            # ready only once the response itself is served
+            httpGet:
+              path: /api/mobileservice/environment
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Mi

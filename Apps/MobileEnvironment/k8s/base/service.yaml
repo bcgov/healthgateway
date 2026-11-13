@@ -1,0 +1,17 @@
+# Kong reaches it as mobile-environment-svc.<licence plate>-<env>.svc:8080 (Tools/Kong/environment.tmpl).
+apiVersion: v1
+kind: Service
+metadata:
+  name: mobile-environment-svc
+  labels:
+    app.kubernetes.io/name: mobile-environment
+    app.kubernetes.io/part-of: healthgateway
+    name: mobile-environment
+spec:
+  selector:
+    name: mobile-environment
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

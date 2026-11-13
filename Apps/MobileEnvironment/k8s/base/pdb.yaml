@@ -1,0 +1,15 @@
+# Evictions (node drains, cluster maintenance) always leave at least 1 of the 3 pods. Rollouts are covered by the
+# deployment's rolling update instead.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mobile-environment-pdb
+  labels:
+    app.kubernetes.io/name: mobile-environment
+    app.kubernetes.io/part-of: healthgateway
+    name: mobile-environment
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: mobile-environment
