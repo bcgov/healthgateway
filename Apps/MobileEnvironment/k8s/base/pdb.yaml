@@ -3,7 +3,7 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: mobile-environment-pdb
+  name: mobileenvironment-pdb
   labels:
     app.kubernetes.io/name: mobile-environment
     app.kubernetes.io/part-of: healthgateway

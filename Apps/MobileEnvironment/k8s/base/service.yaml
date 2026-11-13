@@ -1,4 +1,5 @@
-# Kong reaches it as mobile-environment-svc.<licence plate>-<env>.svc:8080 (Tools/Kong/environment.tmpl).
+# The same name in every environment, without the dev-/test-/prod- prefix the other objects get: Kong reaches it as
+# mobile-environment-svc.<licence plate>-<env>.svc:8080 (Tools/Kong/environment.tmpl).
 apiVersion: v1
 kind: Service
 metadata:

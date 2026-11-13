@@ -3,4 +3,26 @@ kind: Kustomization
 namespace: c8055e-dev
 resources:
   - ../../base
-# the base already uses mobileenvironment:dev
+images:
+  - name: docker.io/healthopenshift/mobileenvironment
+    newTag: 1.0.0.1
+# dev- on the deployment and PDB only: the service keeps mobile-environment-svc, the name Kong (Tools/Kong) points at.
+patches:
+  - target:
+      kind: Deployment
+      name: mobileenvironment-deployment
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: dev-mobileenvironment-deployment
+    options:
+      allowNameChange: true
+  - target:
+      kind: PodDisruptionBudget
+      name: mobileenvironment-pdb
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: dev-mobileenvironment-pdb
+    options:
+      allowNameChange: true

@@ -29,9 +29,9 @@ build, Helm deploy or code change. Gold and GoldDR are kept in sync so a failove
 | `Dockerfile`, `nginx.conf` | nginx on port 8080: `/api/mobileservice/environment` (`application/json`, cached 60 seconds) and `/health` |
 | `released-build.sh` | Runs at container start and writes the response from `RELEASED_BUILD` |
 | `test.sh` | Builds the image and checks it locally, run as OpenShift runs it (needs Docker) |
-| `azure/build.yaml` | Builds the image and pushes it to Docker Hub as `mobileenvironment:1.0.0.<n>` |
+| `azure/build.yaml` | Builds the image and pushes it to Docker Hub (public) as `healthopenshift/mobileenvironment:1.0.0.<n>` |
 | `k8s/base/` | Deployment (3 replicas), service and pod disruption budget (at least 1 pod always available) |
-| `k8s/overlays/{dev,test,prod}/` | The namespace and image tag (`dev`, `test`, `production`) for each environment |
+| `k8s/overlays/{dev,test,prod}/` | For each environment: the namespace, the name prefix (`<env>-mobileenvironment-deployment` and `<env>-mobileenvironment-pdb`; the service is `mobile-environment-svc` everywhere, the name Kong points at) and the image tag (the build number) |
 | `../../Tools/Kong/environment.tmpl` | The public Kong route to the service |
 
 The pods are labelled `role: api`, so the Helm release's existing `<release>-aps-netpol` lets Kong reach them. There's
@@ -52,22 +52,12 @@ and that other paths and methods are refused.
 Do this once per environment. For Production, do it on Gold and then on GoldDR. Run the commands from the repository
 root, logged in to the cluster with `oc`.
 
-### 1. Make the image available
+### 1. The image
 
-The image is built by the `azure/build.yaml` pipeline when `Apps/MobileEnvironment` changes on `dev`. Create the
-pipeline in Azure DevOps from that file the first time. Then import the build into the tools namespace and point the
-environment's tag at it. This is the same registry the release pipeline imports the other images from:
-
-```bash
-BUILD=1.0.0.1   # the pipeline run's build number
-TAG=dev         # dev, test or production
-oc -n c8055e-tools import-image "mobileenvironment:$BUILD" \
-    --from="artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/mobileenvironment:$BUILD" \
-    --confirm --reference-policy=local
-oc -n c8055e-tools tag "mobileenvironment:$BUILD" "mobileenvironment:$TAG"
-```
-
-The deployment watches its tag, so moving the tag later rolls out the new image by itself.
+The image is built by the `azure/build.yaml` pipeline when `Apps/MobileEnvironment` changes on `dev`, and pushed to
+Docker Hub as the public `healthopenshift/mobileenvironment:<build number>`. The cluster pulls it from there directly,
+with no image stream in the tools namespace. Each overlay names the build it runs (`newTag` in
+`k8s/overlays/<env>/kustomization.yaml`), so check the overlay names a build that exists on Docker Hub.
 
 ### 2. Apply the manifests
 
@@ -83,7 +73,7 @@ Check:
 
 ```bash
 oc get pods -l name=mobile-environment      # 3 ready pods
-oc get pdb mobile-environment-pdb           # MIN AVAILABLE 1
+oc get pdb dev-mobileenvironment-pdb         # MIN AVAILABLE 1 (test-, prod- in those namespaces)
 ```
 
 ### 3. Publish the Kong route
@@ -108,9 +98,9 @@ and Test can stay unset, or be set to whatever a test needs.
 Do this on every release, once both stores have approved the build and before it's released in either. In Production,
 set it on Gold and on GoldDR, with the same value.
 
-- **Console:** Workloads → Deployments → mobile-environment → Environment. The first time, choose Add more and name it
+- **Console:** Workloads → Deployments → `<env>-mobileenvironment-deployment` (for example `prod-mobileenvironment-deployment`) → Environment. The first time, choose Add more and name it
   `RELEASED_BUILD`. After that, edit the value. Then Save.
-- **CLI:** `oc set env deployment/mobile-environment RELEASED_BUILD=<build>`
+- **CLI:** `oc set env deployment/<env>-mobileenvironment-deployment RELEASED_BUILD=<build>`
 
 Saving starts a rolling update that keeps at least 2 of the 3 pods serving. It takes a few seconds.
 
@@ -123,7 +113,7 @@ curl -s https://hg.api.gov.bc.ca/api/mobileservice/environment
 Public DNS reaches only the active cluster. To check the other one:
 
 ```bash
-oc port-forward deployment/mobile-environment 8080:8080
+oc port-forward deployment/prod-mobileenvironment-deployment 8080:8080
 curl -s localhost:8080/api/mobileservice/environment    # in another terminal
 ```
 
@@ -142,7 +132,11 @@ curl -s localhost:8080/api/mobileservice/environment    # in another terminal
 
 ## Other tasks
 
-- **New image:** run the pipeline, then step 1 of Deploy (import, then move the tag). Promote by moving the `test` and
-  `production` tags, on Gold and GoldDR for Production.
-- **Logs:** `oc logs deployment/mobile-environment`. The first lines show the value each pod started with
+- **New image:** run the pipeline, then set the new build number as `newTag` in the environment's overlay, commit, and
+  `oc apply -k` it. Promote by doing the same in the `test` and then `prod` overlays (Gold and GoldDR for Production).
+  `RELEASED_BUILD` is kept, as with any apply.
+- **Image pulls:** the image comes from Docker Hub anonymously, which limits pulls per IP address. The tags are build
+  numbers that never change, so the deployment uses `imagePullPolicy: IfNotPresent` and a node pulls each build at most
+  once. If pulls are ever refused (`ImagePullBackOff` with `toomanyrequests`), wait and retry.
+- **Logs:** `oc logs deployment/<env>-mobileenvironment-deployment`. The first lines show the value each pod started with
   (`releasedBuild is 452`).

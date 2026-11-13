@@ -4,15 +4,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mobile-environment
+  name: mobileenvironment-deployment
   labels:
     app.kubernetes.io/name: mobile-environment
     app.kubernetes.io/part-of: healthgateway
     name: mobile-environment
     role: api
-  annotations:
-    # Rolls out when the image stream tag moves, like the Helm deployments. The overlays set the tag.
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"mobileenvironment:dev","namespace":"c8055e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mobile-environment\")].image","pause":"false"}]'
 spec:
   replicas: 3
   revisionHistoryLimit: 5
@@ -43,8 +40,10 @@ spec:
               name: mobile-environment
       containers:
         - name: mobile-environment
-          image: image-registry.openshift-image-registry.svc:5000/c8055e-tools/mobileenvironment:dev
-          imagePullPolicy: Always
+          # Docker Hub, public. Each overlay sets the tag (the build number), so environments are promoted one at a time.
+          image: docker.io/healthopenshift/mobileenvironment:1.0.0.1
+          # build-number tags never change, so a node reuses an image it has: fewer Docker Hub pulls
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
               protocol: TCP

@@ -4,13 +4,25 @@ namespace: c8055e-test
 resources:
   - ../../base
 images:
-  - name: image-registry.openshift-image-registry.svc:5000/c8055e-tools/mobileenvironment
-    newTag: test
+  - name: docker.io/healthopenshift/mobileenvironment
+    newTag: 1.0.0.1
+# test- on the deployment and PDB only: the service keeps mobile-environment-svc, the name Kong (Tools/Kong) points at.
 patches:
   - target:
       kind: Deployment
-      name: mobile-environment
+      name: mobileenvironment-deployment
     patch: |-
       - op: replace
-        path: /metadata/annotations/image.openshift.io~1triggers
-        value: '[{"from":{"kind":"ImageStreamTag","name":"mobileenvironment:test","namespace":"c8055e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mobile-environment\")].image","pause":"false"}]'
+        path: /metadata/name
+        value: test-mobileenvironment-deployment
+    options:
+      allowNameChange: true
+  - target:
+      kind: PodDisruptionBudget
+      name: mobileenvironment-pdb
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: test-mobileenvironment-pdb
+    options:
+      allowNameChange: true
