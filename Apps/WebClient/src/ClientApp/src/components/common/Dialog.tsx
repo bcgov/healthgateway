@@ -50,6 +50,12 @@ interface Props {
     actionsAlign?: "end" | "center";
     /** a divider above the actions (`border-t-sm`, default true) */
     actionsDivider?: boolean;
+    /**
+     * Native: drawn in place over the screen (fill the parent) instead of in its own modal window. For a dialog that
+     * must show whatever else is open: iOS presents only one modal window at a time, so a second one opened over
+     * another may never appear (Update required). The caller places it and keeps the rest from screen readers.
+     */
+    inline?: boolean;
 }
 
 /**
@@ -74,6 +80,7 @@ export function Dialog({
     fullscreen = false,
     titleIcon,
     denseToolbar = false,
+    inline = false,
 }: Props) {
     const colors = useThemeColors();
     // the dialog is named by its title (WCAG 4.1.2); react-native-web puts the attribute on its role="dialog" element
@@ -86,16 +93,8 @@ export function Dialog({
             : tone === "accent"
               ? colors["on-accent"]
               : colors["bc-black"];
-    return (
-        <AppModal
-            // iOS: a modal supports portrait only unless told otherwise, which would rotate a landscape screen
-            supportedOrientations={["portrait", "landscape"]}
-            transparent
-            visible={visible}
-            animationType="fade"
-            onRequestClose={onRequestClose}
-            {...(Platform.OS === "web" ? { "aria-labelledby": titleId } : {})}
-        >
+    const content = (
+        <>
             {/* iOS does not resize the window for the keyboard; Android (adjustResize) and web need no help */}
             <KeyboardAvoidingView
                 className="flex-1"
@@ -219,6 +218,29 @@ export function Dialog({
                     </View>
                 </Backdrop>
             </KeyboardAvoidingView>
+        </>
+    );
+    if (inline)
+        return visible ? (
+            <View
+                className="absolute inset-0"
+                // VoiceOver stays inside, as in a modal window
+                accessibilityViewIsModal
+            >
+                {content}
+            </View>
+        ) : null;
+    return (
+        <AppModal
+            // iOS: a modal supports portrait only unless told otherwise, which would rotate a landscape screen
+            supportedOrientations={["portrait", "landscape"]}
+            transparent
+            visible={visible}
+            animationType="fade"
+            onRequestClose={onRequestClose}
+            {...(Platform.OS === "web" ? { "aria-labelledby": titleId } : {})}
+        >
+            {content}
         </AppModal>
     );
 }

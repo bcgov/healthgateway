@@ -27,6 +27,7 @@ import {
 import { isTooManyRequestsError } from "@/models/errors";
 import { RootNavigator } from "@/navigation/RootNavigator";
 import { logger } from "@/services/logger";
+import { useAuthStore } from "@/stores/auth.store";
 import { bootstrap } from "@/stores/bootstrap";
 import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 import { useEnvironmentStore } from "@/stores/environment.store";
@@ -39,7 +40,10 @@ import { useThemeStore } from "@/stores/theme.store";
 import { fontAssets } from "@/theme";
 import { registerDevStores } from "@/utils/devStores";
 import { AppErrorView } from "@/views/errors/AppErrorView";
-import { UpdateRequiredView } from "@/views/errors/UpdateRequiredView";
+import {
+    UpdateRequiredLanding,
+    UpdateRequiredView,
+} from "@/views/errors/UpdateRequiredView";
 import { LockGate, LockScreen } from "@/views/native/appLock/LockScreen";
 import { OnboardingView } from "@/views/native/onboarding/OnboardingView";
 import { SplashView } from "@/views/native/splash/SplashView";
@@ -113,6 +117,7 @@ export default function RootLayout() {
     }, [environmentRestarts]);
     const onboardingPending = useOnboardingStore(selectOnboardingPending);
     const updateRequired = useConfigStore(selectUpdateRequired);
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
     useRouteGuard(boot.status === "ready" && !updateRequired);
     useAppLockLifecycle();
     const scheme = useColorScheme();
@@ -145,11 +150,22 @@ export default function RootLayout() {
                             ) : (
                                 <SplashView />
                             )
+                        ) : updateRequired && !isAuthenticated ? (
+                            // Update required, signed out (start-up stops before sign-in): no page of the app is
+                            // mounted, so none can start a login or load anything; the dialog goes over this
+                            <View
+                                className="flex-1"
+                                accessibilityElementsHidden
+                                importantForAccessibility="no-hide-descendants"
+                            >
+                                <UpdateRequiredLanding />
+                            </View>
                         ) : boot.status === "error" && !updateRequired ? (
                             <AppErrorView type={boot.type} onRetry={retry} />
                         ) : (
+                            // update required while signed in: the user's page stays, under the dialog
                             <LockGate
-                                covered={onboardingPending && !updateRequired}
+                                covered={onboardingPending || updateRequired}
                             >
                                 <AppShell>
                                     <RootNavigator />
@@ -161,7 +177,7 @@ export default function RootLayout() {
                     <Announcer />
                     <NewTabHint />
                     {/* Over the loading overlay too. Overlays, so the routes stay mounted: remounting them restarts at Home. */}
-                    {/* update required: a dialog over the page the app is on (UpdateRequiredView) */}
+                    {/* update required: the dialog, drawn over the page and under the lock screen (UpdateRequiredView) */}
                     {ready && updateRequired ? <UpdateRequiredView /> : null}
                     {ready && boot.status === "ready" ? (
                         onboardingPending && !updateRequired ? (
