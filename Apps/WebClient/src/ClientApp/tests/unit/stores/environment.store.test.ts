@@ -13,6 +13,7 @@ import {
     environmentsOf,
     isEnvironmentId,
 } from "@/config/environments";
+import { clearStoredSession } from "@/services/auth/storedSession";
 import { services } from "@/services/container";
 import { fetchReleasedBuild } from "@/services/environments.service";
 import { useAppLockStore } from "@/stores/appLock.store";
@@ -37,6 +38,16 @@ jest.mock("expo-secure-store", () => ({
     setItemAsync: jest.fn(),
     deleteItemAsync: jest.fn(async () => undefined),
 }));
+// the real one, so a test can make deleting the stored login fail
+jest.mock("@/services/auth/storedSession", () => {
+    const actual = jest.requireActual<
+        typeof import("@/services/auth/storedSession")
+    >("@/services/auth/storedSession");
+    return {
+        ...actual,
+        clearStoredSession: jest.fn(actual.clearStoredSession),
+    };
+});
 jest.mock("@/services/environments.service", () => ({
     fetchReleasedBuild: jest.fn(),
 }));
@@ -217,6 +228,54 @@ describe("environments", () => {
             await AsyncStorage.setItem(KEY, "dev");
             await state().hydrate();
             expect(state().lastUsed).toBe("dev");
+        });
+
+        describe("installed over a development build (both are hg.local, so its storage stays)", () => {
+            beforeEach(async () => {
+                await AsyncStorage.setItem(KEY, "local");
+                await AsyncStorage.setItem(LAST_USED_KEY, "local");
+            });
+
+            it("knows it last ran on Local, so start-up resets it", async () => {
+                released.mockResolvedValue(452);
+                await state().hydrate();
+                expect(selectEnvironment(state()).id).toBe("prod");
+                expect(state().lastUsed).toBe("local");
+            });
+
+            it("with no answer: Production, never Local", async () => {
+                released.mockRejectedValue(new Error("offline"));
+                await state().hydrate();
+                expect(state().offered).toEqual(["prod"]);
+                expect(selectEnvironment(state()).id).toBe("prod");
+                expect(state().lastUsed).toBe("local");
+            });
+        });
+
+        it("an install from before lastUsed was saved: records where it ran before forgetting the choice, so a reset that fails runs again on the next start", async () => {
+            jest.spyOn(services, "isInitialized", "get").mockReturnValue(false);
+            // build 452 is released; the install only has its choice, Test
+            released.mockResolvedValue(452);
+            await AsyncStorage.setItem(KEY, "test");
+            await state().hydrate();
+            expect(await AsyncStorage.getItem(KEY)).toBeNull();
+            expect(await AsyncStorage.getItem(LAST_USED_KEY)).toBe("test");
+
+            // the stored login can't be deleted: the reset stops before clearing anything
+            jest.mocked(clearStoredSession).mockRejectedValueOnce(
+                new Error("keychain")
+            );
+            await expect(settleEnvironment()).rejects.toThrow("keychain");
+            expect(await AsyncStorage.getItem(LAST_USED_KEY)).toBe("test");
+
+            // the next start still sees Test, and resets
+            reset();
+            await state().hydrate();
+            expect(state().lastUsed).toBe("test");
+            await settleEnvironment();
+            expect(clearStoredSession).toHaveBeenCalledTimes(2);
+            expect(await AsyncStorage.getItem(LAST_USED_KEY)).toBe("prod");
+            jest.restoreAllMocks();
         });
 
         it("a fresh install last ran on Production", async () => {

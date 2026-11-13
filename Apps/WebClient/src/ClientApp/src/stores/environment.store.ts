@@ -138,12 +138,20 @@ export const useEnvironmentStore = create<EnvironmentState>((set, get) => ({
                 isEnvironmentId(stored) && stored !== "local"
                     ? stored
                     : undefined;
-            // an install from before `lastUsed` was saved ran on its choice, or on Production
-            const previous =
-                isEnvironmentId(last) && last !== "local"
-                    ? last
-                    : (choice ?? "prod");
-            const resolved = await resolveRelease(choice, previous);
+            // Where the app last ran, Local included: a release build installed over a development build (both are
+            // hg.local) moves off Local, so start-up resets it. An install from before `lastUsed` was saved ran on its
+            // choice, or on Production.
+            const previous = isEnvironmentId(last) ? last : (choice ?? "prod");
+            // Recorded before the choice can be forgotten below, so a reset that fails or is cut short still has it,
+            // and runs again on the next start
+            if (!isEnvironmentId(last))
+                await AsyncStorage.setItem(LAST_USED_KEY, previous);
+            if (started !== revision) return;
+            // what the release build may run on never includes Local
+            const resolved = await resolveRelease(
+                choice,
+                previous === "local" ? "prod" : previous
+            );
             if (started !== revision) return;
             set({ ...resolved, lastUsed: previous });
             // a choice this build no longer offers (it was just released, say) is forgotten
