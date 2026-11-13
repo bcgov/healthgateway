@@ -1,5 +1,5 @@
 # Tool: waits, without relaunching, for the app to show the landing page or Home (the first bundle can take minutes).
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - extendedWaitUntil:
       visible: ".*(Log in( with .+)?|Health Records).*"

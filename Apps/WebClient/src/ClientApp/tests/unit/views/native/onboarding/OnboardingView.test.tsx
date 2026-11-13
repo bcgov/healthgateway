@@ -75,6 +75,35 @@ describe("OnboardingView", () => {
             expect(screen.getByText("Test")).toBeTruthy();
         });
 
+        it.each([
+            ["tutorial", onboardingScreens],
+            ["security step", []],
+        ])(
+            "has the logo bar and the gear on the %s, like the app's header",
+            async (_name, screens) => {
+                if (Platform.OS === "web") return;
+                useOnboardingStore.setState({
+                    screens,
+                    securityOffered: false,
+                });
+                await render(<OnboardingView />);
+                expect(screen.getByTestId("brandHeader")).toBeTruthy();
+                expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
+            }
+        );
+
+        it("the gear leaves out Security, which the intro's own step sets", async () => {
+            if (Platform.OS === "web") return;
+            useOnboardingStore.setState({
+                screens: onboardingScreens,
+                securityOffered: false,
+            });
+            await render(<OnboardingView />);
+            await press(screen.getByTestId("settingsMenuBtn"));
+            expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
+            expect(screen.queryByTestId("menu-btn-security-link")).toBeNull();
+        });
+
         it("shows none on Production", async () => {
             if (Platform.OS === "web") return;
             useOnboardingStore.setState({

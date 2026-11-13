@@ -145,12 +145,12 @@ export default function RootLayout() {
                             ) : (
                                 <SplashView />
                             )
-                        ) : updateRequired ? (
-                            <UpdateRequiredView />
-                        ) : boot.status === "error" ? (
+                        ) : boot.status === "error" && !updateRequired ? (
                             <AppErrorView type={boot.type} onRetry={retry} />
                         ) : (
-                            <LockGate covered={onboardingPending}>
+                            <LockGate
+                                covered={onboardingPending && !updateRequired}
+                            >
                                 <AppShell>
                                     <RootNavigator />
                                 </AppShell>
@@ -161,8 +161,10 @@ export default function RootLayout() {
                     <Announcer />
                     <NewTabHint />
                     {/* Over the loading overlay too. Overlays, so the routes stay mounted: remounting them restarts at Home. */}
-                    {ready && boot.status === "ready" && !updateRequired ? (
-                        onboardingPending ? (
+                    {/* update required: a dialog over the page the app is on (UpdateRequiredView) */}
+                    {ready && updateRequired ? <UpdateRequiredView /> : null}
+                    {ready && boot.status === "ready" ? (
+                        onboardingPending && !updateRequired ? (
                             <View className="absolute inset-0 z-50 bg-background">
                                 <OnboardingView />
                             </View>

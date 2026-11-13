@@ -27,6 +27,8 @@ interface Props {
     visible: boolean;
     onClose: () => void;
     children: ReactNode;
+    /** Opened from the lock screen: shown while locked (`AppModal`). */
+    overLock?: boolean;
 }
 
 /**
@@ -34,7 +36,12 @@ interface Props {
  * in from the right, sized by its content. Collapsed entries still count towards that width (`ExpandableMenuItem`), so
  * opening one never resizes it. Closes with a tap outside, a swipe right or Android's back.
  */
-export function HeaderMenu({ visible, onClose, children }: Props) {
+export function HeaderMenu({
+    visible,
+    onClose,
+    children,
+    overLock = false,
+}: Props) {
     const { width: windowWidth } = useWindowDimensions();
     const slideMs = useMotion().ms(SLIDE_MS);
     const progress = useSharedValue(0);
@@ -86,6 +93,7 @@ export function HeaderMenu({ visible, onClose, children }: Props) {
             supportedOrientations={["portrait", "landscape"]}
             transparent
             visible={rendered}
+            overLock={overLock}
             animationType="none"
             onRequestClose={onClose}
         >

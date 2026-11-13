@@ -1,5 +1,5 @@
 # Virtual Patient Portal hand-off page: it opens with both its choices. Cancel leaves for AccessMyHealth, so neither is pressed.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedOut
 ---

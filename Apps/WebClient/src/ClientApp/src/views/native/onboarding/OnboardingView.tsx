@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppText, HgButton, Icon } from "@/components/common";
-import { DevBanner } from "@/components/site/DevBanner";
+import { BrandHeader } from "@/components/site/BrandHeader";
 import {
     type BubblePlacement,
     type OnboardingScreen,
@@ -237,12 +237,12 @@ export function OnboardingView() {
     const tutorialPending = useOnboardingStore((s) => s.screens.length > 0);
     const completeTutorial = useOnboardingStore((s) => s.completeTutorial);
     return (
-        // the environment banner on top, as on the lock screen and in the app (none on Production)
+        // the environment banner (none on Production) and the logo on top, as on the lock screen and in the app
         <View
             className="flex-1 bg-background"
             style={{ paddingTop: insets.top }}
         >
-            <DevBanner />
+            <BrandHeader />
             {tutorialPending ? (
                 <Tutorial onDone={() => void completeTutorial()} />
             ) : (
