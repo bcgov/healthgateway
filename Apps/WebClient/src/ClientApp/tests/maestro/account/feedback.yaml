@@ -1,5 +1,5 @@
 # Feedback: the dialog opens from the account menu and closes. Sends nothing.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

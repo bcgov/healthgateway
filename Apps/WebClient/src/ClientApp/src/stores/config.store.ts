@@ -206,12 +206,12 @@ export const selectIdleTimeout = (s: ConfigState): number => {
     return typeof idle === "number" && idle > 0 ? idle : DEFAULT_MOBILE_IDLE_MS;
 };
 
-/** Native: this version is older than `webClient.mobile.minimumVersion`. */
+/** Native: this app's build number is below `webClient.mobile.minimumBuild`. */
 export const selectUpdateRequired = (s: ConfigState): boolean =>
     Platform.OS !== "web" &&
     isUpdateRequired(
-        Constants.expoConfig?.version,
-        s.config?.webClient?.mobile?.minimumVersion
+        (Constants.expoConfig?.extra as { build?: unknown } | undefined)?.build,
+        s.config?.webClient?.mobile?.minimumBuild
     );
 
 /** The server's configuration leaves out a setting the native app cannot sign in without. */

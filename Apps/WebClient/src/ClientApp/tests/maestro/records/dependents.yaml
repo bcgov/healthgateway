@@ -1,5 +1,5 @@
 # Dependents: the page opens, and the Add dependent form opens and cancels. Adds nothing.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

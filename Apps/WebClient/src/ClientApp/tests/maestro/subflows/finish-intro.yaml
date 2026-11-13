@@ -1,6 +1,6 @@
 # From any page of the first-launch intro: skips the tutorial (or ends it on its last page), says "Not now" to device
 # security, and waits for the landing page.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - evalScript: ${output.introSkipped = false}
 - runFlow:

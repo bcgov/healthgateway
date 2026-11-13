@@ -1,6 +1,6 @@
 # Launches the app, taps the hero "Log in" button, then the BC Services Card provider,
 # and captures the auth sheet. Leaves the sheet open, so it is a tool, not a test. Run: maestro test tests/maestro/tools/login-sheet.yaml
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - launchApp
 - extendedWaitUntil:

@@ -13,6 +13,7 @@ import { vault } from "@/services/vault";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useConfigStore } from "@/stores/config.store";
+import { useEnvironmentStore } from "@/stores/environment.store";
 import { configFixture, updateStores } from "@/test/fixtures";
 import { advanceTimers, press, render, screen } from "@/test/ui";
 import { LockGate, LockScreen } from "@/views/native/appLock/LockScreen";
@@ -110,6 +111,29 @@ describe("LockScreen", () => {
         ).toBeNull();
     });
 
+    it("has the environment banner, the logo bar and the gear, like the app's header", async () => {
+        if (isWeb) return;
+        updateStores(() => useEnvironmentStore.setState({ selected: "test" }));
+        await render(<LockScreen />);
+        expect(screen.getByTestId("environmentBanner")).toBeTruthy();
+        expect(screen.getByTestId("brandHeader")).toBeTruthy();
+        expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
+        updateStores(() =>
+            useEnvironmentStore.setState({ selected: undefined })
+        );
+    });
+
+    it("the gear opens while locked, without Security", async () => {
+        if (isWeb) return;
+        authenticate.mockResolvedValue("cancelled");
+        await render(<LockScreen />);
+        await advanceTimers(500);
+        await press(screen.getByTestId("settingsMenuBtn"));
+        expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
+        expect(screen.queryByTestId("menu-btn-security-link")).toBeNull();
+        expect(useAppLockStore.getState().locked).toBe(true);
+    });
+
     it("after a failed prompt stays locked and doesn't ask again by itself", async () => {
         authenticate.mockResolvedValue("cancelled");
         await render(<LockScreen />);
@@ -157,5 +181,14 @@ describe("LockScreen", () => {
         expect(screen.queryByText("open dialog")).toBeNull();
         updateStores(() => useAppLockStore.setState({ locked: false }));
         expect(screen.getByText("open dialog")).toBeTruthy();
+    });
+
+    it("keeps a modal opened from the lock screen itself shown (overLock)", async () => {
+        await render(
+            <AppModal visible overLock>
+                <Text>lock screen menu</Text>
+            </AppModal>
+        );
+        expect(screen.getByText("lock screen menu")).toBeTruthy();
     });
 });

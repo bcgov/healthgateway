@@ -1,7 +1,7 @@
 # Ends a signed-out flow where the next one starts (owner, 2026-11-05: the app isn't relaunched between flows): back to
 # the landing page by the app's own link (from any page, including the VPP hand-off, which has no way back), and
 # checked. Close any menu or dialog the flow opened before this.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - runFlow:
       file: open-link.yaml

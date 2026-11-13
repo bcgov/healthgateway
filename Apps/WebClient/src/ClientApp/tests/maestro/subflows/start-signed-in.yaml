@@ -2,7 +2,7 @@
 # (subflows/log-in.yaml) only when it is on the landing page. Run it through scripts/maestro-test.sh so the login can be
 # read from credentials.env. Maestro spends up to 7 s on any check whose answer is "no", so the usual path (already
 # logged in) only asks questions whose answer is "yes", and remembers the answer instead of asking the opposite.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - evalScript: ${output.signedIn = false}
 # to the front if running, launched if not
@@ -41,6 +41,23 @@ appId: ca.bc.gov.healthgateway.dev
                 file: open-link.yaml
                 env:
                     LINK: healthgateway://home
+# iOS 26 and later: a page scrolled down collapses the tab bar to its current tab (NativeTabs minimizeBehavior
+# "onScrollDown"), and the collapsed tab has no id, so the check above misses a logged-in app. Tapping it opens the bar
+# again. Asked only here, where the tabs were not found, as a "no" costs up to 7 s.
+- runFlow:
+      when:
+          true: ${!output.signedIn}
+      commands:
+          - runFlow:
+                when:
+                    visible: "Collapsed"
+                commands:
+                    - tapOn: "Collapsed"
+                    - evalScript: ${output.signedIn = true}
+                    - runFlow:
+                          file: open-link.yaml
+                          env:
+                              LINK: healthgateway://home
 - runFlow:
       when:
           true: ${!output.signedIn}

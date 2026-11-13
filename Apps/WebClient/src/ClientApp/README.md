@@ -93,13 +93,13 @@ npx expo run:android --variant release --device
 
 **What's different from a development build:**
 
-- **It replaces the dev build:** both use the `ca.bc.gov.healthgateway.dev` ID unless `APP_ENV` says otherwise, so a phone holds one or the other. Your login and saved copy normally carry over.
+- **It replaces the dev build:** both use the local ID `hg.local` unless `APP_ENV` says otherwise, so a phone holds one or the other. Your login and saved copy normally carry over. Either installs beside the store app (`ca.bc.gov.myhealth`).
 - **Environment:** a release build starts on Production unless that phone already chose another, and doesn't offer Local. Normal use on Production counts in Production analytics.
 - **Errors:** no red or yellow error boxes, so reproduce problems on a dev build.
 
 ## Configuration
 
-Runtime configuration is fetched from the Health Gateway `/configuration` endpoint on every platform. Native uses the selected environment's URL (`src/config/environments.ts`). Web uses `EXPO_PUBLIC_WEB_CLIENT_BASE_URI` + `configuration`, as the web client does: `.env.development` sets it to `http://localhost:3025/` for local runs, and without it the app asks the server that hosted it. `APP_ENV=dev|test|prod` selects the native app name, bundle id / package (`ca.bc.gov.healthgateway[.dev|.test]`) and is read by `app.config.ts` at build time.
+Runtime configuration is fetched from the Health Gateway `/configuration` endpoint on every platform. Native uses the selected environment's URL (`src/config/environments.ts`). Web uses `EXPO_PUBLIC_WEB_CLIENT_BASE_URI` + `configuration`, as the web client does: `.env.development` sets it to `http://localhost:3025/` for local runs, and without it the app asks the server that hosted it. `app.config.ts` reads `APP_ENV` at build time for the native app name and bundle ID / package: unset or `local` gives a local build ("HG Local", `hg.local`); `dev`, `test` or `prod` gives the store identity ("Health Gateway", `ca.bc.gov.myhealth`, the listings taken over from the old apps). There's one store build for every environment, so the pipelines set `APP_ENV=prod`. After changing it, run `npx expo prebuild --clean` so `ios/` and `android/` pick up the new ID.
 
 ## Keycloak prerequisites (team-owned, dev realm `health-gateway-gold`, client `hg`)
 

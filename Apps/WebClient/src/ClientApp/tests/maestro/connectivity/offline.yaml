@@ -1,5 +1,5 @@
 # Android only (Maestro can only change airplane mode there): the offline banner, Download's notice, the quick link button disabled, and back online.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
     - android

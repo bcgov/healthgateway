@@ -214,7 +214,7 @@ namespace HealthGateway.WebClientTests.Services
                         : null,
                     Mobile = new MobileAppConfiguration
                     {
-                        MinimumVersion = "3.0.0",
+                        MinimumBuild = 300,
                         Timeouts = new MobileAppTimeoutsConfiguration
                         {
                             Idle = 1200000,

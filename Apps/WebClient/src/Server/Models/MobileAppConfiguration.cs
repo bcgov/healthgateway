@@ -21,9 +21,10 @@ namespace HealthGateway.WebClient.Server.Models
     public class MobileAppConfiguration
     {
         /// <summary>
-        /// Gets or sets the oldest app version (major.minor.build) allowed to continue; older apps must update.
+        /// Gets or sets the lowest app build number allowed to continue (the build in v3.0.0.0057, the same on iOS and
+        /// Android); an app with a lower build must update. Unset: no check.
         /// </summary>
-        public string? MinimumVersion { get; set; }
+        public int? MinimumBuild { get; set; }
 
         /// <summary>
         /// Gets or sets the mobile app timeout values.

@@ -5,20 +5,15 @@ import {
     Keyboard,
     Platform,
     ScrollView,
-    useWindowDimensions,
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
-import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { HgButton } from "@/components/common";
-import { DevBanner } from "@/components/site/DevBanner";
-import { useColorScheme } from "@/hooks/useTheme";
+import { BrandHeader } from "@/components/site/BrandHeader";
 import { useLoginLabel } from "@/navigation/login";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
-import { decorativeProps } from "@/utils/decorative";
 import { LandingIntro } from "@/views/public/landing/LandingIntro";
 
 /** Old iOS app, ticket HAPP-637: the first Face ID prompt fails if asked for as the view appears. */
@@ -34,9 +29,6 @@ function LockedView() {
     const authenticating = useAppLockStore((s) => s.authenticating);
     const signOut = useAuthStore((s) => s.signOut);
     const insets = useSafeAreaInsets();
-    const { width } = useWindowDimensions();
-    const Logo = useColorScheme() === "dark" ? HgLogoDark : HgLogo;
-    const logoWidth = Math.min(224, width - 180);
     const [signingOut, setSigningOut] = useState(false);
     const loginLabel = useLoginLabel();
 
@@ -73,15 +65,7 @@ function LockedView() {
 
     return (
         <View className="flex-1" style={{ paddingTop: insets.top }}>
-            <DevBanner />
-            <View className="bg-app-bar border-b-2 border-border-light flex-row items-center h-16 px-2">
-                <Logo
-                    width={logoWidth}
-                    height={logoWidth / 3.1924}
-                    // decorative: the page text names the app
-                    {...decorativeProps()}
-                />
-            </View>
+            <BrandHeader />
             <ScrollView contentContainerClassName="p-8">
                 <LandingIntro />
                 <HgButton

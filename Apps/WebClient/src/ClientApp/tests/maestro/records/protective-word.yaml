@@ -2,7 +2,7 @@
 # (MAESTRO_HG_PROTECTED_USERNAME and MAESTRO_HG_PROTECTED_PASSWORD in credentials.env), opens Health Records, enters
 # MAESTRO_HG_PROTECTIVE_WORD in the "Restricted PharmaNet Records" dialog, and checks it is accepted: the medications
 # show. On Android a wrong word first must be refused. Logs out at the end. Run it through scripts/maestro-test.sh.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - protectiveWord
 ---

@@ -1,6 +1,6 @@
 # The header hides scrolling down Home and comes back scrolling up. The swipes give their points: on iOS 18 (the iPhone
 # Xs) Maestro's "direction: UP" swipe doesn't move the page.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

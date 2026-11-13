@@ -2,7 +2,7 @@
 # LOGIN_PASSWORD, which the caller passes from ClientApp/credentials.env (start-signed-in: MAESTRO_HG_USERNAME and
 # MAESTRO_HG_PASSWORD), so run it through scripts/maestro-test.sh. Assumes the account is registered with the current
 # terms accepted, and Device Security off.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - assertTrue:
       condition: ${typeof LOGIN_USERNAME === 'string' && LOGIN_USERNAME.length > 0 && typeof LOGIN_PASSWORD === 'string' && LOGIN_PASSWORD.length > 0}

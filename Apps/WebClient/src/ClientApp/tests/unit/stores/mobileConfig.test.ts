@@ -15,7 +15,7 @@ import { configFixture } from "@/test/fixtures";
 
 jest.mock("expo-constants", () => ({
     __esModule: true,
-    default: { expoConfig: { version: "1.2.3" } },
+    default: { expoConfig: { version: "1.2.3", extra: { build: 57 } } },
 }));
 
 const configWithMobile = (mobile: unknown) => ({
@@ -35,30 +35,33 @@ describe("mobile configuration", () => {
         useConfigStore.setState({ config: undefined });
     });
 
-    describe("minimumVersion", () => {
+    describe("minimumBuild", () => {
         it("requires an update when this app is older", () => {
-            withMobile({ minimumVersion: "1.2.4" });
+            withMobile({ minimumBuild: 58 });
             expect(selectUpdateRequired(state())).toBe(true);
         });
 
         it("does not when this app is the same or newer", () => {
-            withMobile({ minimumVersion: "1.2.3" });
+            withMobile({ minimumBuild: 57 });
             expect(selectUpdateRequired(state())).toBe(false);
         });
 
-        it.each([[undefined], [null], [{}], [{ minimumVersion: "" }]])(
-            "ignores the check when missing: %j",
-            (mobile) => {
-                withMobile(mobile);
-                expect(selectUpdateRequired(state())).toBe(false);
-            }
-        );
+        it.each([
+            [undefined],
+            [null],
+            [{}],
+            [{ minimumBuild: null }],
+            [{ minimumBuild: "300" }],
+        ])("ignores the check when missing: %j", (mobile) => {
+            withMobile(mobile);
+            expect(selectUpdateRequired(state())).toBe(false);
+        });
 
         it("is not read from the top level", () => {
             useConfigStore.setState({
                 config: {
                     ...configWithMobile(undefined),
-                    mobile: { minimumVersion: "9.0.0" },
+                    mobile: { minimumBuild: 9999 },
                 } as never,
             });
             expect(selectUpdateRequired(state())).toBe(false);
@@ -206,21 +209,19 @@ describe("mobile configuration", () => {
         it("picks up a new minimum version while running", async () => {
             withMobile(undefined);
             jest.spyOn(services.config, "getConfiguration").mockResolvedValue(
-                configWithMobile({ minimumVersion: "9.0.0" })
+                configWithMobile({ minimumBuild: 9999 })
             );
             await state().refresh();
             expect(selectUpdateRequired(state())).toBe(true);
         });
 
         it("keeps the current configuration when it cannot be read", async () => {
-            withMobile({ minimumVersion: "1.0.0" });
+            withMobile({ minimumBuild: 1 });
             jest.spyOn(services.config, "getConfiguration").mockRejectedValue(
                 new Error("offline")
             );
             await state().refresh();
-            expect(state().config?.webClient.mobile?.minimumVersion).toBe(
-                "1.0.0"
-            );
+            expect(state().config?.webClient.mobile?.minimumBuild).toBe(1);
         });
     });
 });

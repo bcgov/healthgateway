@@ -1,5 +1,5 @@
 # Profile from the account menu, and the logo back to Home.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

@@ -3,7 +3,7 @@
 # app on Test, where the test logins don't exist. Development's banner reads "Development"; Local's reads "Local
 # Development" and Production has none. The usual path (all well) only asks questions whose answer is "yes", as Maestro
 # spends up to 7 s on each "no"; the repairs can be slow.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - evalScript: ${output.ready = false; output.onDevelopment = false}
 # whatever the app shows: the landing page, a signed-in page (its tab bar), or the intro after a reset

@@ -7,7 +7,7 @@
 #    running emulator, or one started (HG_IOS_SIMULATOR, default "iPhone 16 Pro"; the first AVD listed).
 # 2. Starts a fresh Metro on port 5002 (stopping any already there, so the run tests the current code; HG_METRO_CLEAR=1
 #    also clears its cache) and stops it at the end. Only one run at a time.
-# 3. Opens the installed dev build (ca.bc.gov.healthgateway.dev) on Metro and waits for the bundle.
+# 3. Opens the installed dev build (hg.local) on Metro and waits for the bundle.
 # 4. Runs, through scripts/maestro-test.sh (logins from credentials.env, values masked): the signedIn flows, the
 #    protective word flow (a second account), the signedOut flows, then the two flows that reset the app. A failed
 #    phase does not stop the next one.
@@ -27,7 +27,7 @@ cd "$(dirname "$0")/.."
 port=5002
 out=tests/maestro/out
 mkdir -p "$out"
-app_id=ca.bc.gov.healthgateway.dev
+app_id=hg.local
 android_sdk="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 
 maestro_env=() # extra -e values for every flow (none secret)

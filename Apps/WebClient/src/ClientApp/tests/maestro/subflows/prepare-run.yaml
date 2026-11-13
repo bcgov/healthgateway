@@ -1,7 +1,7 @@
 # Run once by scripts/maestro-all.sh after it opens the dev build on Metro, as one Maestro start instead of several:
 # accepts an iOS "Open in" sheet if one shows, waits for the bundle (minutes the first time), and puts the app on
 # Development (ensure-development.yaml).
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - evalScript: ${output.appShown = false}
 - extendedWaitUntil:

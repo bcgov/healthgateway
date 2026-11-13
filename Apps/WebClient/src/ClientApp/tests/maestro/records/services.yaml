@@ -1,5 +1,5 @@
 # Services: the page opens.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

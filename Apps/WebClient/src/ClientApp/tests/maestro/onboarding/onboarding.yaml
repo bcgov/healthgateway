@@ -1,5 +1,5 @@
 # The intro and security step, reached by switching environment (which is a Reset App), then back to Development.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedOut
     - resetsApp

@@ -1,5 +1,5 @@
 # Download: the page opens with its record type picker. Creates no report.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

@@ -1,5 +1,5 @@
 # Health Records: the page opens. With records on the account, the filter opens and cancels (no records, no filter).
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---
@@ -33,13 +33,14 @@ tags:
                     - tapOn:
                           id: "btnFilterCancel"
           # Maestro can't see inside a React Native dialog on iOS (AGENTS.md): Cancel by its place, bottom right of the
-          # full-screen Filter dialog
+          # full-screen Filter dialog. 72% is its middle: it spans about 64-81% across on the widest iPhones and 61-80%
+          # on the narrower ones (64% missed it on an iPhone 18 Pro Max)
           - runFlow:
                 when:
                     platform: iOS
                 commands:
                     - tapOn:
-                          point: "64%,92%"
+                          point: "72%,92%"
           - extendedWaitUntil:
                 visible:
                     id: "filterDropdown"

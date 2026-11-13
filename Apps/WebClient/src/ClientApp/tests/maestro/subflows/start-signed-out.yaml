@@ -1,7 +1,7 @@
 # Brings the app to the landing page, logged out, reusing the running app (owner, 2026-11-05: fewer relaunches). Logs
 # out first (subflows/log-out.yaml) when it is logged in. As in start-signed-in, the usual path (already on the landing
 # page) only asks questions whose answer is "yes", since Maestro spends up to 7 s on each "no".
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - evalScript: ${output.onLanding = false}
 # to the front if running, launched if not
@@ -43,6 +43,11 @@ appId: ca.bc.gov.healthgateway.dev
                 when:
                     visible: "Skip intro|Get started|Not now"
                 file: finish-intro.yaml
+          # iOS 26 and later: a page scrolled down collapses the tab bar, and its collapsed tab has no id: open it
+          # first, so the check below sees a logged-in app (start-signed-in.yaml)
+          - tapOn:
+                text: "Collapsed"
+                optional: true
           # logged in: Home by the app's own link (the header, with the account menu, hides when a page is scrolled
           # down), then log out
           - runFlow:

@@ -1,5 +1,5 @@
 # Pull to refresh on Dependents and Services shows the Refreshing pill. Android only: on iOS Maestro did not catch the 1.2 second pill.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
     - android

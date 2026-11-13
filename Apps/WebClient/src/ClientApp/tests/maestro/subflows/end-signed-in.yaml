@@ -1,7 +1,7 @@
 # Ends a signed-in flow where the next one starts (owner, 2026-11-05: the app isn't relaunched between flows): Home by
 # the app's own link, which works whether the tabs are a bottom bar or the iPhone Duo's side rail and from pages opened
 # from Home, and checked. Close any menu or dialog the flow opened before this.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - runFlow:
       file: open-link.yaml

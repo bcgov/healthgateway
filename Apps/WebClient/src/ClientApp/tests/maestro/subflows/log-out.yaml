@@ -1,5 +1,5 @@
 # From any signed-in page: account menu → Log Out, skipping the rating dialog if it asks, back to the landing page.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - tapOn:
       id: "headerDropdownBtn"

@@ -1,7 +1,5 @@
-const parse = (version: string | undefined): number[] | undefined => {
-    if (!version || !/^\d+(\.\d+)*$/.test(version.trim())) return undefined;
-    return version.trim().split(".").map(Number);
-};
+const isBuild = (value: unknown): value is number =>
+    typeof value === "number" && Number.isInteger(value) && value >= 0;
 
 /**
  * "v<major.minor.fix>.<build>" for display, the build zero-padded to 4 digits: the same as the WebClient pipeline's run
@@ -23,17 +21,10 @@ export function formatAppVersion(
     return label ? `${shown} - ${label}` : shown;
 }
 
-/** Whether `current` is older than `minimum` (both major.minor.fix), comparing major, then minor, then fix. Unreadable versions: no. */
-export function isUpdateRequired(
-    current: string | undefined,
-    minimum: string | undefined
-): boolean {
-    const have = parse(current);
-    const need = parse(minimum);
-    if (!have || !need) return false;
-    for (let i = 0; i < Math.max(have.length, need.length); i++) {
-        const difference = (have[i] ?? 0) - (need[i] ?? 0);
-        if (difference !== 0) return difference < 0;
-    }
-    return false;
+/**
+ * Whether this app's build number (`extra.build`, the 0057 in v3.0.0.0057, the same on iOS and Android) is below
+ * `minimum`. A missing or unreadable build or minimum: no.
+ */
+export function isUpdateRequired(build: unknown, minimum: unknown): boolean {
+    return isBuild(build) && isBuild(minimum) && build < minimum;
 }

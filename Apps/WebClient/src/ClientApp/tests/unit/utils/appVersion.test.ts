@@ -36,25 +36,27 @@ describe("formatAppVersion", () => {
 
 describe("isUpdateRequired", () => {
     it.each([
-        ["0.1.1", "0.1.2", true],
-        ["0.1.9", "0.2.0", true],
-        ["0.9.9", "1.0.0", true],
-        ["1.2.3", "1.2.3", false],
-        ["1.2.4", "1.2.3", false],
-        ["2.0.0", "1.9.9", false],
-        ["0.1.10", "0.1.9", false],
-        ["1.2", "1.2.1", true],
-        ["1.2.0", "1.2", false],
-    ])("%s against minimum %s: %s", (current, minimum, expected) => {
-        expect(isUpdateRequired(current, minimum)).toBe(expected);
+        [57, 300, true],
+        [0, 1, true],
+        [299, 300, true],
+        [300, 300, false],
+        [301, 300, false],
+        [57, 0, false],
+        [0, 0, false],
+    ])("build %s against minimum %s: %s", (build, minimum, expected) => {
+        expect(isUpdateRequired(build, minimum)).toBe(expected);
     });
 
     it.each([
-        ["1.0.0", undefined],
-        ["1.0.0", ""],
-        ["1.0.0", "latest"],
-        [undefined, "1.0.0"],
-    ])("ignores %s against %s", (current, minimum) => {
-        expect(isUpdateRequired(current, minimum)).toBe(false);
+        [57, undefined],
+        [57, null],
+        [57, "300"],
+        [57, 300.5],
+        [57, -1],
+        [undefined, 300],
+        ["57", 300],
+        [-1, 300],
+    ])("ignores build %j against %j", (build, minimum) => {
+        expect(isUpdateRequired(build, minimum)).toBe(false);
     });
 });

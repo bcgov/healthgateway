@@ -1,4 +1,4 @@
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedOut
     - resetsApp

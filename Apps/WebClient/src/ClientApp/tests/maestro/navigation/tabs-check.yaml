@@ -1,5 +1,5 @@
 # Signed in: the bottom tab bar replaces the drawer on native.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

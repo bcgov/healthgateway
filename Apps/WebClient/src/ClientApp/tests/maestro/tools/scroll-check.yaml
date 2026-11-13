@@ -1,5 +1,5 @@
 # Tool: scrolls the current page down twice and takes a screenshot.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 ---
 - swipe:
       start: 50%,75%

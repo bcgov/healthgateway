@@ -1,5 +1,5 @@
 # Home: its tiles, the Add Quick Link dialog (cancelled), and a tile into Health Records.
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

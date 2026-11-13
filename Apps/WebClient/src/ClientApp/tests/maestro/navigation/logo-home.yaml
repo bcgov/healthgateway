@@ -1,5 +1,5 @@
 # The logo goes straight to Home from every tab, including the first one opened (Dependents).
-appId: ca.bc.gov.healthgateway.dev
+appId: hg.local
 tags:
     - signedIn
 ---

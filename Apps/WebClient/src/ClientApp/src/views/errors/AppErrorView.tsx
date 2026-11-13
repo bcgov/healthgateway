@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { AppText, HgAlert, HgButton } from "@/components/common";
+import { DevBanner } from "@/components/site/DevBanner";
 import { useEnvironmentSelector } from "@/components/site/useEnvironmentSelector";
 import { AppErrorType } from "@/constants/errorType";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -35,6 +36,8 @@ export function AppErrorView({ type, onRetry }: Props) {
             className="flex-1 bg-background"
             edges={["top", "left", "right"]}
         >
+            {/* native: which environment failed (none on Production); web keeps the web client's page */}
+            {Platform.OS !== "web" ? <DevBanner /> : null}
             <View
                 testID="appErrorBar"
                 className="flex-row items-center bg-app-bar border-b-2 border-border-light px-4 h-16"
