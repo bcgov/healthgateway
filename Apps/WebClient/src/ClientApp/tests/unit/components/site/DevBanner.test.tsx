@@ -16,7 +16,10 @@ jest.mock(
 describe("DevBanner", () => {
     afterEach(() => {
         updateStores(() =>
-            useEnvironmentStore.setState({ selected: undefined })
+            useEnvironmentStore.setState({
+                selected: undefined,
+                effective: "local",
+            })
         );
     });
 
@@ -86,13 +89,13 @@ describe("DevBanner", () => {
         ["dev", "Development"],
         ["test", "Test"],
     ] as const)("%s reads %s, with no URL", async (selected, text) => {
-        useEnvironmentStore.setState({ selected });
+        useEnvironmentStore.setState({ selected, effective: selected });
         await render(<DevBanner />);
         expect(textOf(screen.getByTestId("environmentBanner"))).toBe(text);
     });
 
     it("has no banner on Production", async () => {
-        useEnvironmentStore.setState({ selected: "prod" });
+        useEnvironmentStore.setState({ selected: "prod", effective: "prod" });
         await render(<DevBanner />);
         expect(screen.queryByTestId("environmentBanner")).toBeNull();
     });

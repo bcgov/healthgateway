@@ -17,9 +17,56 @@ npm run ios        # prebuilds ./ios (git-ignored), installs pods, builds and la
 npm run android    # same for ./android and an emulator
 ```
 
-Native builds choose their environment at run time: development builds start on Local (the services on this computer, e.g. the Aspire host: `http://localhost:3025`; set `EXPO_PUBLIC_LOCAL_CONFIG_URL` for a phone on Wi-Fi), others on Production. The Security page's Environment section switches it, after a confirmation. On Android, Local needs the emulator's localhost forwarded to this computer: see [Android port forwarding](#android-port-forwarding).
+Native builds choose their environment at run time. Development builds offer every environment and start on Local (the services on this computer, e.g. the Aspire host: `http://localhost:3025`; set `EXPO_PUBLIC_LOCAL_CONFIG_URL` for a phone on Wi-Fi). On Android, Local needs the emulator's localhost forwarded to this computer: see [Android port forwarding](#android-port-forwarding). Release builds offer what the released build allows; see [Environments in release builds](#environments-in-release-builds). The Security page's Environment section switches it, after a confirmation, and shows only when more than one environment is offered.
 
 `npm run [ios/android] -- --device` lets you pick a specific simulator or physical device. iOS needs a free Apple developer signing identity in Xcode. Expo Go is **not** supported: the native OIDC redirect uses the custom `healthgateway://` scheme, which needs a real build.
+
+### Environments in release builds
+
+At start-up a release build asks Production's gateway for the last build released to the public on both stores: `GET https://hg.api.gov.bc.ca/api/mobileservice/environment`, which answers `{ "releasedBuild": 452 }` (`Apps/MobileEnvironment`; `environmentSelector.md` has the design). It always asks Production's gateway, whichever environment it's on.
+
+| This app's build                                                   | Offered                                        | Starts on              |
+| ------------------------------------------------------------------ | ---------------------------------------------- | ---------------------- |
+| Above the released build (TestFlight, Play testing, store review)  | Development, Test, Production                  | Test                   |
+| The released build or older, `null`, or no build number in the app | Production                                     | Production             |
+| No answer (offline, slow past 3 seconds, rate-limited, unreadable) | the environment it last ran on, and Production | the one it last ran on |
+
+A choice from the selector stands while it's offered; a build that is released forgets it. When a launch runs on another environment than the last one (a build was just released and moves from Test to Production, say), the app resets itself first, as switching does, so nothing carries from one environment to the next. Development builds (Aspire, `npm run ios`) skip all of this: every environment, starting on Local. To see it, use a release build (below).
+
+**Release steps:** submit build N to both stores with manual release (App Store Connect) and managed publishing (Play Console) on, so reviewers get Test. Once both have approved it, set Production's `RELEASED_BUILD` to N on Gold and GoldDR (`Apps/MobileEnvironment/README.md`, "Set the released build"), check both answer N, then release it in both stores.
+
+#### Trying it on a simulator
+
+A local release build, pointed at Development's gateway, whose released build you can move. A Custom pipeline build works the same way, with `EXPO_PUBLIC_ENVIRONMENTS_URL` set in its build.
+
+1. Set Development's released build below the number you'll build with, and check it (the answer is cached for up to 60 seconds):
+
+    ```bash
+    oc -n c8055e-dev set env deployment/dev-mobileenvironment-deployment RELEASED_BUILD=999
+    curl -s https://hg.dev.api.gov.bc.ca/api/mobileservice/environment   # {"releasedBuild":999}
+    ```
+
+2. Build and run a release build with a build number above it, asking Development's gateway (from this folder; for Android, `npx expo run:android --variant release`):
+
+    ```bash
+    BUILD_NUMBER=1000 \
+    EXPO_PUBLIC_ENVIRONMENTS_URL=https://hg.dev.api.gov.bc.ca/api/mobileservice/environment \
+    npx expo run:ios --configuration Release
+    ```
+
+    It needs no Metro (a release build carries its code) and installs as `hg.local`, replacing the dev build. Without `BUILD_NUMBER` a local build is build 0 (`version.json`), and without `EXPO_PUBLIC_ENVIRONMENTS_URL` it asks Production's gateway.
+
+3. Change Development's `RELEASED_BUILD` and relaunch the app, a minute after each change:
+
+    | `RELEASED_BUILD`                         | What the app does                                                                                    |
+    | ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+    | `999` (build 1000 is unreleased)         | Security → Environment lists Development, Test and Production, starting on Test                      |
+    | `1000` (build 1000 is released)          | Production only, no Environment section; it resets itself first, as it moves from Test to Production |
+    | unset (`oc … set env … RELEASED_BUILD-`) | Production only                                                                                      |
+
+    An environment whose `/configuration` can't load (Test, until it serves `WebClient.Mobile`) lands on the error page, whose **Change Environment** lists the same environments.
+
+4. Afterwards, put the dev build back: **MobileBuild** in Aspire, or `npm run ios`. Set Development's `RELEASED_BUILD` back to what it was, or unset it.
 
 ### With Aspire
 
@@ -94,7 +141,7 @@ npx expo run:android --variant release --device
 **What's different from a development build:**
 
 - **It replaces the dev build:** both use the local ID `hg.local` unless `APP_ENV` says otherwise, so a phone holds one or the other. Your login and saved copy normally carry over. Either installs beside the store app (`ca.bc.gov.myhealth`).
-- **Environment:** a release build starts on Production unless that phone already chose another, and doesn't offer Local. Normal use on Production counts in Production analytics.
+- **Environment:** a release build offers what the released build allows (see [Environments in release builds](#environments-in-release-builds)) and never Local. A local release build is build 0 (`version.json`) unless `BUILD_NUMBER` is set, so it gets Production only; build it with `BUILD_NUMBER` above the released build for the selector. Normal use on Production counts in Production analytics.
 - **Errors:** no red or yellow error boxes, so reproduce problems on a dev build.
 
 ## Configuration

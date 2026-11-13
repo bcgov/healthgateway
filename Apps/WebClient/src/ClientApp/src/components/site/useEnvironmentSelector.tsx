@@ -6,8 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText, Icon } from "@/components/common";
 import { AppModal } from "@/components/common/AppModal";
 import { Backdrop } from "@/components/common/Backdrop";
-import type { EnvironmentId } from "@/config/environments";
-import { selectableEnvironments } from "@/config/environments";
+import { type EnvironmentId, environmentsOf } from "@/config/environments";
 import { Path } from "@/constants/path";
 import { useThemeColors } from "@/hooks/useTheme";
 import {
@@ -29,7 +28,9 @@ export function useEnvironmentSelector() {
     const insets = useSafeAreaInsets();
     const current = useEnvironmentStore(selectEnvironment);
     const [visible, setVisible] = useState(false);
-    const options = selectableEnvironments();
+    // what this build offers (the error page shows the button only when that is more than one)
+    const offered = useEnvironmentStore((s) => s.offered);
+    const options = environmentsOf(offered);
 
     const choose = (id: EnvironmentId) => {
         runReset(() => switchEnvironment(id, () => router.replace(Path.Root)));
