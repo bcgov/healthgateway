@@ -22,4 +22,7 @@ EOF
       MSYS_NO_PATHCONV=1 envsubst < "$FILE" >> config-$environment.yaml
     fi
   done
+
+  # not a Helm API service: the mobile app's environment endpoint (Apps/MobileEnvironment)
+  MSYS_NO_PATHCONV=1 envsubst < environment.tmpl >> config-$environment.yaml
 done

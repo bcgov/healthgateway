@@ -2,7 +2,13 @@
 
 ## Enabling Access to OpenShift
 
-The Helm chart contains network policies to allow Kong access to the API services.
+The Helm chart contains network policies to allow Kong access to the API services. They admit Kong to any pod labelled `role: api`, which includes `Apps/MobileEnvironment`, deployed outside Helm.
+
+## Templates
+
+- `config.tmpl`: one Kong service per Helm API service, with its JWT-protected routes under `/api/<service>service`.
+- `routes-<service>.tmpl`: extra routes for one of those services, such as gatewayapi's public routes.
+- `environment.tmpl`: the mobile app's public `GET /api/mobileservice/environment`, served by `Apps/MobileEnvironment`. It isn't a Helm service, so `generate.sh` adds it once per environment, after the services loop.
 
 ## Publishing
 

@@ -1,0 +1,53 @@
+  # Mobile app environments (Apps/MobileEnvironment): public, as the app calls it before anyone signs in.
+  - name: mobile-environment-$KONG_NAMESPACE
+    url: http://mobile-environment-svc.$LICENCE_PLATE-$ENVIRONMENT.svc:8080
+    tags:
+      - OAS3_import
+      - ns.$KONG_NAMESPACE.$ENVIRONMENT
+    plugins:
+      - name: post-function
+        tags: [ ns.$KONG_NAMESPACE.$ENVIRONMENT ]
+        config:
+          rewrite:
+          - "--"
+      # override existing post-function_200 plugin that rewrites HTTP error responses
+      - name: post-function_200
+        tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
+        enabled: true
+        config:
+          access: [ return ]
+    routes:
+      - name: mobile-environment-$KONG_NAMESPACE-get
+        methods:
+          - GET
+        hosts:
+          - $SUBDOMAIN.api.gov.bc.ca
+        paths:
+          - /api/mobileservice/environment
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: ip
+              minute: $IP_RATE_LIMIT
+            protocols:
+              - http
+              - https
+          - name: rate-limiting_902
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: service
+              minute: $GLOBAL_RATE_LIMIT
+            protocols:
+              - http
+              - https
+        tags:
+          - OAS3_import
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT
