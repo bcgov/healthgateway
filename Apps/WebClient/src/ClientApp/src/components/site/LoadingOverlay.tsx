@@ -3,6 +3,7 @@ import { ActivityIndicator, Platform, View } from "react-native";
 
 import { AppText, LiveRegion } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
+import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 import {
     selectIsLoading,
     selectLoadingText,
@@ -13,13 +14,15 @@ import {
  * Full-screen scrim with the spinner and optional text, like the web client's
  * `<v-overlay>` + `<v-progress-circular size="64" color="primary">` (scrim: on-surface at 32 %).
  * A status region, so the screen reader hears that loading started; `LoadingScope` keeps the keyboard and the
- * reader off the page under it meanwhile.
+ * reader off the page under it meanwhile. Not while an update is required: the Update required dialog is drawn under
+ * this layer (`UpdateRequiredView`), so a load still running, or stalled, would cover its Update button.
  */
 export function LoadingOverlay() {
     const colors = useThemeColors();
     const isLoading = useLoadingStore(selectIsLoading);
     const text = useLoadingStore(selectLoadingText);
-    if (!isLoading) return null;
+    const updateRequired = useConfigStore(selectUpdateRequired);
+    if (!isLoading || updateRequired) return null;
     return (
         <View
             testID="loadingOverlay"
