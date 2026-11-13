@@ -59,7 +59,10 @@ describe("OnboardingView", () => {
     describe("environment banner", () => {
         afterEach(() => {
             updateStores(() =>
-                useEnvironmentStore.setState({ selected: undefined })
+                useEnvironmentStore.setState({
+                    selected: undefined,
+                    effective: "local",
+                })
             );
         });
 
@@ -69,7 +72,10 @@ describe("OnboardingView", () => {
         ])("shows the environment on the %s", async (_name, screens) => {
             if (Platform.OS === "web") return; // the intro is native only
             useOnboardingStore.setState({ screens, securityOffered: false });
-            useEnvironmentStore.setState({ selected: "test" });
+            useEnvironmentStore.setState({
+                selected: "test",
+                effective: "test",
+            });
             await render(<OnboardingView />);
             expect(screen.getByTestId("environmentBanner")).toBeTruthy();
             expect(screen.getByText("Test")).toBeTruthy();
@@ -110,7 +116,10 @@ describe("OnboardingView", () => {
                 screens: onboardingScreens,
                 securityOffered: false,
             });
-            useEnvironmentStore.setState({ selected: "prod" });
+            useEnvironmentStore.setState({
+                selected: "prod",
+                effective: "prod",
+            });
             await render(<OnboardingView />);
             expect(screen.queryByTestId("environmentBanner")).toBeNull();
         });

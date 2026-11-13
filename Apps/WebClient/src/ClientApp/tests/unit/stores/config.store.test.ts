@@ -32,11 +32,14 @@ describe("config store selectors", () => {
     it("native reads the configuration URL from the chosen environment", () => {
         // a development build starts on Local: the services on this computer
         expect(getConfigUrl()).toBe("http://localhost:3025/configuration");
-        useEnvironmentStore.setState({ selected: "test" });
+        useEnvironmentStore.setState({ selected: "test", effective: "test" });
         expect(getConfigUrl()).toBe(
             "https://test.healthgateway.gov.bc.ca/configuration"
         );
-        useEnvironmentStore.setState({ selected: undefined });
+        useEnvironmentStore.setState({
+            selected: undefined,
+            effective: "local",
+        });
     });
 
     it("web appends to the CLI's base URI, or asks the server that hosted it", () => {

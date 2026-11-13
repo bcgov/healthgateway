@@ -44,12 +44,18 @@ describe("AppErrorView (AppErrorView.vue port)", () => {
     describe("environment banner", () => {
         afterEach(() => {
             updateStores(() =>
-                useEnvironmentStore.setState({ selected: undefined })
+                useEnvironmentStore.setState({
+                    selected: undefined,
+                    effective: "local",
+                })
             );
         });
 
         it("native: names the environment that failed to start", async () => {
-            useEnvironmentStore.setState({ selected: "test" });
+            useEnvironmentStore.setState({
+                selected: "test",
+                effective: "test",
+            });
             await render(
                 <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
             );
@@ -60,7 +66,10 @@ describe("AppErrorView (AppErrorView.vue port)", () => {
         });
 
         it("native: none on Production", async () => {
-            useEnvironmentStore.setState({ selected: "prod" });
+            useEnvironmentStore.setState({
+                selected: "prod",
+                effective: "prod",
+            });
             await render(
                 <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
             );
@@ -68,51 +77,50 @@ describe("AppErrorView (AppErrorView.vue port)", () => {
         });
     });
 
-    describe("after switching environments", () => {
+    describe("Change Environment: only when this build offers several (environmentSelector.md)", () => {
         afterEach(() => {
             updateStores(() =>
-                useEnvironmentStore.setState({ selected: undefined })
+                useEnvironmentStore.setState({
+                    selected: undefined,
+                    effective: "local",
+                    offered: ["local", "dev", "test", "prod"],
+                })
             );
         });
 
-        const setDev = (value: boolean) => {
-            (globalThis as unknown as { __DEV__: boolean }).__DEV__ = value;
-        };
-
-        it("a release build: no way to change it for someone who never switched", async () => {
-            setDev(false);
-            try {
-                await render(
-                    <AppErrorView
-                        type={AppErrorType.General}
-                        onRetry={jest.fn()}
-                    />
-                );
-                expect(
-                    screen.queryByTestId("errorChangeEnvironmentBtn")
-                ).toBeNull();
-            } finally {
-                setDev(true);
-            }
-        });
-
-        it("a native dev build offers it without a switch: a fresh install starts on Development", async () => {
-            await render(
+        const renderError = () =>
+            render(
                 <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
             );
+
+        it("a released build (Production only): none", async () => {
+            useEnvironmentStore.setState({
+                effective: "prod",
+                offered: ["prod"],
+            });
+            await renderError();
+            expect(
+                screen.queryByTestId("errorChangeEnvironmentBtn")
+            ).toBeNull();
+        });
+
+        it("native: an unreleased build that couldn't reach the released build keeps its environment and Production, so a Test that is down can't strand it", async () => {
+            useEnvironmentStore.setState({
+                effective: "test",
+                offered: ["test", "prod"],
+            });
+            await renderError();
             const button = screen.queryByTestId("errorChangeEnvironmentBtn");
             if (Platform.OS === "web") expect(button).toBeNull();
             else expect(button).toBeTruthy();
         });
 
-        it("offers to change it, so a chosen environment that is down cannot strand the app", async () => {
-            useEnvironmentStore.setState({ selected: "test" });
-            await render(
-                <AppErrorView type={AppErrorType.General} onRetry={jest.fn()} />
-            );
-            expect(
-                screen.getByTestId("errorChangeEnvironmentBtn")
-            ).toBeTruthy();
+        it("native: a development build offers every environment", async () => {
+            await renderError();
+            const button = screen.queryByTestId("errorChangeEnvironmentBtn");
+            // web has no environments to choose
+            if (Platform.OS === "web") expect(button).toBeNull();
+            else expect(button).toBeTruthy();
         });
     });
 });

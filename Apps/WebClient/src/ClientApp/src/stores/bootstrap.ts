@@ -19,6 +19,7 @@ import { selectEnvironment, useEnvironmentStore } from "./environment.store";
 import { prepareLocalSession } from "./localSession";
 import { useNotificationStore } from "./notification.store";
 import { useOnboardingStore } from "./onboarding.store";
+import { settleEnvironment } from "./switchEnvironment";
 import { useThemeStore } from "./theme.store";
 import { selectIsValidIdentityProvider, useUserStore } from "./user.store";
 
@@ -26,7 +27,13 @@ import { selectIsValidIdentityProvider, useUserStore } from "./user.store";
 async function boot(pathname: string, stale: () => boolean): Promise<void> {
     await useThemeStore.getState().hydrate();
     if (stale()) return;
+    // network state first: offline, the environment store doesn't wait for the released build
+    await useConnectivityStore.getState().start();
+    if (stale()) return;
     await useEnvironmentStore.getState().hydrate();
+    if (stale()) return;
+    // a reset when this launch runs on another environment than the last (environmentSelector.md, step 5)
+    await settleEnvironment();
     if (stale()) return;
     if (Platform.OS !== "web")
         services.tracking.init(
@@ -38,8 +45,6 @@ async function boot(pathname: string, stale: () => boolean): Promise<void> {
     await useOnboardingStore
         .getState()
         .hydrate(useAppLockStore.getState().enabled);
-    if (stale()) return;
-    await useConnectivityStore.getState().start();
     if (stale()) return;
     const { enabled: lockEnabled } = useAppLockStore.getState();
     const config = await useConfigStore.getState().retrieve(lockEnabled);
