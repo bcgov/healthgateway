@@ -8,10 +8,10 @@ resource "keycloak_openid_client" "hg_mobile_android_client" {
   login_theme                  = "bcgov-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = false
-  valid_redirect_uris          = var.client_hg_mobile.valid_redirects
-  web_origins                  = var.client_hg_mobile.web_origins
+  valid_redirect_uris          = var.client_hg_mobile_android.valid_redirects
+  web_origins                  = var.client_hg_mobile_android.web_origins
   full_scope_allowed           = false
-  access_token_lifespan        = var.client_hg_mobile.token_lifespan
+  access_token_lifespan        = var.client_hg_mobile_android.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hg_mobile_android_client_default_scopes" {
@@ -34,6 +34,7 @@ resource "keycloak_openid_client_optional_scopes" "hg_mobile_android_client_opti
   client_id = keycloak_openid_client.hg_mobile_android_client.id
 
   optional_scopes = [
+    "offline_access",
     "address",
     "email",
     "phone",

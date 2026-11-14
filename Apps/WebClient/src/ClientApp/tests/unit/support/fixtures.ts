@@ -95,6 +95,7 @@ export const configFixture: ExternalConfiguration = {
             authentication: {
                 endpoint: "https://sso.test/auth/realms/hg-mobile",
                 clientIdPrefix: "hg-mobile",
+                scope: "openid profile web-origins email offline_access",
                 identityProviders: [
                     {
                         id: "bcsc",
