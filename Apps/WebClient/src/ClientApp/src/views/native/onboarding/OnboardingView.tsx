@@ -113,7 +113,9 @@ function Slide({
 /** Port of InitialOnboardingViewController: swipe or Next through the unseen screens, or skip them. */
 function Tutorial({ onDone }: { onDone: () => void }) {
     const insets = useSafeAreaInsets();
-    const { width } = useWindowDimensions();
+    const { width: windowWidth } = useWindowDimensions();
+    // OnboardingView pads the sides clear of the camera and iPhone Duo's rail: a page is the width left between them
+    const width = windowWidth - insets.left - insets.right;
     const screens = useOnboardingStore((s) => s.screens);
     const pager = useRef<ComponentRef<typeof ScrollView>>(null);
     const [index, setIndex] = useState(0);
@@ -240,7 +242,11 @@ export function OnboardingView() {
         // the environment banner (none on Production) and the logo on top, as on the lock screen and in the app
         <View
             className="flex-1 bg-background"
-            style={{ paddingTop: insets.top }}
+            style={{
+                paddingTop: insets.top,
+                paddingLeft: insets.left,
+                paddingRight: insets.right,
+            }}
         >
             <BrandHeader />
             {tutorialPending ? (
