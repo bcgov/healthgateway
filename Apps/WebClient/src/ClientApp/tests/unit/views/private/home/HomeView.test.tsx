@@ -6,10 +6,11 @@ import {
     it,
     jest,
 } from "@jest/globals";
-import { Platform } from "react-native";
+import { Dimensions, Platform } from "react-native";
 
 import { EntryType } from "@/constants/entryType";
 import { services } from "@/services/container";
+import { useConfigStore } from "@/stores/config.store";
 import { useTimelineStore } from "@/stores/timeline.store";
 import { useUserStore } from "@/stores/user.store";
 import { setBreakpoint } from "@/test/breakpointMock";
@@ -20,6 +21,7 @@ import {
     immunizationResultFixture,
     resetStores,
     signInRegistered,
+    updateStores,
 } from "@/test/fixtures";
 import {
     attrOf,
@@ -27,6 +29,7 @@ import {
     press,
     render,
     screen,
+    textOf,
     unmount,
     waitFor,
 } from "@/test/ui";
@@ -165,5 +168,117 @@ describe("HomeView (HomeView.vue port)", () => {
             EntryType.Immunization,
         ]);
         expect(router.push).toHaveBeenCalledWith("/timeline");
+    });
+});
+
+const healthRecordsDescription =
+    "View your available health records, including dispensed medications, health visits, lab results, immunizations, and more.";
+
+function enableHealthConnect() {
+    const base = configFixture.webClient.featureToggleConfiguration;
+    updateStores(() =>
+        useConfigStore.setState({
+            config: {
+                ...configFixture,
+                webClient: {
+                    ...configFixture.webClient,
+                    featureToggleConfiguration: {
+                        ...base,
+                        services: {
+                            enabled: true,
+                            services: [
+                                ...base.services.services,
+                                {
+                                    name: "HealthConnectRegistry",
+                                    enabled: true,
+                                },
+                            ],
+                        },
+                    },
+                },
+            },
+        })
+    );
+}
+
+const titles = () =>
+    screen.getAllByTestId("card-button-title").map((t) => textOf(t));
+
+/** Whether the Health Records card is a compact tile: its description describes the button rather than showing. */
+function isCompact() {
+    const control = screen.getByLabelText("Health Records");
+    return Platform.OS === "web"
+        ? attrOf(control, "aria-describedby") !== undefined
+        : screen.queryByText(healthRecordsDescription) === null;
+}
+
+/** The window's width and text scale: React Native's Jest setup reports a fontScale of 2 unless told otherwise. */
+function windowAt(width: number, fontScale = 1) {
+    jest.spyOn(Dimensions, "get").mockReturnValue({
+        width,
+        height: Math.max(width, 900),
+        scale: 3,
+        fontScale,
+    });
+    setBreakpoint(width);
+}
+
+describe("HomeView quick-access grid by width", () => {
+    beforeEach(() => {
+        resetRouter("/home");
+        services.initialize(configFixture, fakeAuth());
+        jest.spyOn(services.tracking, "trackEvent").mockImplementation(
+            () => undefined
+        );
+        jest.spyOn(
+            services.immunization,
+            "getPatientImmunizations"
+        ).mockResolvedValue(immunizationResultFixture);
+    });
+    afterEach(() => {
+        resetStores();
+        jest.restoreAllMocks();
+    });
+
+    it("full cards with their descriptions on a wide screen; Health Connect shows its logo, not a title", async () => {
+        windowAt(1366);
+        signInRegistered();
+        enableHealthConnect();
+        await render(<HomeView />);
+        expect(isCompact()).toBe(false);
+        expect(screen.getByText(healthRecordsDescription)).toBeTruthy();
+        expect(screen.getByTestId("health-connect-registry-card")).toBeTruthy();
+        expect(titles()).not.toContain("Health Connect Registry");
+    });
+
+    it("compact tiles on a phone, titled, with the menu kept on removable cards", async () => {
+        windowAt(390);
+        signInRegistered();
+        enableHealthConnect();
+        await render(<HomeView />);
+        expect(isCompact()).toBe(true);
+        expect(titles()).toEqual(
+            expect.arrayContaining([
+                "Health Records",
+                "Immunization Record",
+                "Immunizations",
+                "Health Connect Registry",
+                "Organ Donor Registration",
+            ])
+        );
+        // every card but Health Records can be removed
+        expect(screen.getAllByTestId("card-menu-button")).toHaveLength(4);
+        expect(screen.getByTestId("add-quick-link-button")).toBeTruthy();
+        expect(screen.getByTestId("other-record-sources-card")).toBeTruthy();
+        await press(screen.getByTestId("health-records-card"));
+        expect(router.push).toHaveBeenCalledWith("/timeline");
+    });
+
+    it("full cards on a phone with large text", async () => {
+        windowAt(390, 1.5);
+        signInRegistered();
+        await render(<HomeView />);
+        expect(isCompact()).toBe(false);
+        expect(screen.getByText(healthRecordsDescription)).toBeTruthy();
     });
 });

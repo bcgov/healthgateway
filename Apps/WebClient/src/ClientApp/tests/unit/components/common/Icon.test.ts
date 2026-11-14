@@ -4,7 +4,10 @@ import { join } from "path";
 
 import { webIconNames } from "@/components/common/Icon.web";
 
-/** Every icon name written in src: <Icon name="x">, name={c ? "x" : "y"}, icon="x" props and `icon: "x"` tables. */
+/**
+ * Every icon name written in src: <Icon name="x">, name={c ? "x" : "y"}, icon="x" props, `icon: "x"` tables and Home's
+ * quickLinkIcon("x").
+ */
 function iconNamesInSource(): string[] {
     const names = new Set<string>();
     const walk = (dir: string) => {
@@ -25,6 +28,10 @@ function iconNamesInSource(): string[] {
                     names.add(m[2]);
                 }
                 for (const m of s.matchAll(/\bicon[:=] ?"([a-z0-9-]+)"/g))
+                    names.add(m[1]);
+                for (const m of s.matchAll(
+                    /\bquickLinkIcon\("([a-z0-9-]+)"\)/g
+                ))
                     names.add(m[1]);
             }
         }

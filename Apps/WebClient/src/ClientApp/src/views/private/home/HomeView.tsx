@@ -38,7 +38,7 @@ import {
     Type,
 } from "@/constants/tracking";
 import { UserPreferenceType } from "@/constants/userPreferenceType";
-import { useColumns } from "@/hooks/useGrid";
+import { columnWidth, useCardGrid } from "@/hooks/useGrid";
 import { useColorScheme, useThemeColors } from "@/hooks/useTheme";
 import { isSessionEnded, ResultError } from "@/models/errors";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
@@ -66,7 +66,7 @@ export function HomeView() {
         : OtherRecordSourcesImage;
     const HealthLink = dark ? HealthLinkLogoDark : HealthLinkLogo;
     const router = useRouter();
-    const columns = useColumns();
+    const { columns, compact } = useCardGrid();
     const user = useUserStore((s) => s.user);
     const quickLinks = useQuickLinks();
     const setUserPreference = useUserStore((s) => s.setUserPreference);
@@ -133,16 +133,13 @@ export function HomeView() {
     const track = (data: Parameters<typeof services.tracking.trackEvent>[0]) =>
         services.tracking.trackEvent(data);
 
-    const cardWidth =
-        columns === 1
-            ? "w-full"
-            : columns === 2
-              ? "w-1/2"
-              : columns === 3
-                ? "w-1/3"
-                : "w-1/4";
+    // v-col: 12px each side; the compact phone grid halves it, for 12px between its tiles
     const cell = (key: string, node: React.ReactNode) => (
-        <View key={key} className={`${cardWidth} p-3 flex`}>
+        <View
+            key={key}
+            className={`${compact ? "p-1.5" : "p-3"} flex`}
+            style={{ width: columnWidth(columns) }}
+        >
             {node}
         </View>
     );
@@ -168,8 +165,10 @@ export function HomeView() {
         cell(
             "health-records",
             <HgCard
+                compact={compact}
                 title="Health Records"
                 testID="health-records-card"
+                description="View your available health records, including dispensed medications, health visits, lab results, immunizations, and more."
                 icon={<RecordsIcon width={svgIconSize} height={svgIconSize} />}
                 onPress={() => {
                     track({
@@ -182,13 +181,7 @@ export function HomeView() {
                     });
                     router.push(Path.Timeline);
                 }}
-            >
-                <AppText>
-                    View your available health records, including dispensed
-                    medications, health visits, lab results, immunizations, and
-                    more.
-                </AppText>
-            </HgCard>
+            />
         ),
     ];
     if (showImmunizationRecord)
@@ -196,8 +189,10 @@ export function HomeView() {
             cell(
                 "immunization-record",
                 <HgCard
+                    compact={compact}
                     title="Immunization Record"
                     testID="immunization-record-card-button"
+                    description="Download a record of your immunizations, including recommended vaccines."
                     icon={quickLinkIcon("cloud-arrow-down")}
                     onPress={() => {
                         track({
@@ -221,12 +216,7 @@ export function HomeView() {
                             "true"
                         )
                     }
-                >
-                    <AppText>
-                        Download a record of your immunizations, including
-                        recommended vaccines.
-                    </AppText>
-                </HgCard>
+                />
             )
         );
     if (showRecommendations)
@@ -234,8 +224,10 @@ export function HomeView() {
             cell(
                 "recommendations",
                 <HgCard
+                    compact={compact}
                     title="Immunizations"
                     testID="recommendations-card-button"
+                    description="View immunizations you received from community pharmacies or public health, including vaccine recommendations."
                     icon={quickLinkIcon("syringe")}
                     onPress={() => {
                         track({
@@ -253,13 +245,7 @@ export function HomeView() {
                             "true"
                         )
                     }
-                >
-                    <AppText>
-                        View immunizations you received from community
-                        pharmacies or public health, including vaccine
-                        recommendations.
-                    </AppText>
-                </HgCard>
+                />
             )
         );
     if (showHealthConnect)
@@ -267,9 +253,18 @@ export function HomeView() {
             cell(
                 "health-connect",
                 <HgCard
+                    compact={compact}
                     testID="health-connect-registry-card"
                     accessibilityLabel="Health Connect Registry"
-                    icon={<HealthLink height={46.2} width={201.3} />}
+                    description="Register for the Health Connect Registry and get matched with a family doctor or nurse practitioner in your community."
+                    // the HealthLink BC wordmark is wider than a compact tile: it shows its name under an icon instead
+                    icon={
+                        compact ? (
+                            quickLinkIcon("user-doctor")
+                        ) : (
+                            <HealthLink height={46.2} width={201.3} />
+                        )
+                    }
                     onPress={() => {
                         track({
                             action: Action.ExternalLink,
@@ -287,13 +282,7 @@ export function HomeView() {
                             "true"
                         )
                     }
-                >
-                    <AppText>
-                        Register for the Health Connect Registry and get matched
-                        with a family doctor or nurse practitioner in your
-                        community.
-                    </AppText>
-                </HgCard>
+                />
             )
         );
     if (showOrganDonor)
@@ -301,8 +290,10 @@ export function HomeView() {
             cell(
                 "organ-donor",
                 <HgCard
+                    compact={compact}
                     title="Organ Donor Registration"
                     testID="organ-donor-registration-card"
+                    description="Check whether you have registered your decision on organ donation with BC Transplant. If you have registered your decision, you can review the details here."
                     icon={
                         <LogoPlate>
                             <OdrLogo width={svgIconSize} height={svgIconSize} />
@@ -325,13 +316,7 @@ export function HomeView() {
                             "true"
                         )
                     }
-                >
-                    <AppText>
-                        Check whether you have registered your decision on organ
-                        donation with BC Transplant. If you have registered your
-                        decision, you can review the details here.
-                    </AppText>
-                </HgCard>
+                />
             )
         );
     enabledQuickLinks.forEach((q, index) => {
@@ -343,8 +328,13 @@ export function HomeView() {
             cell(
                 `quick-${q.name}-${index}`,
                 <HgCard
+                    compact={compact}
                     title={q.name}
                     testID="quick-link-card"
+                    description={
+                        details?.description ??
+                        "View your filtered health records."
+                    }
                     icon={quickLinkIcon(details?.icon ?? "magnifying-glass")}
                     onPress={() => {
                         if (details) {
@@ -371,12 +361,7 @@ export function HomeView() {
                         router.push(Path.Timeline);
                     }}
                     onRemove={() => void removeQuickLink(q)}
-                >
-                    <AppText>
-                        {details?.description ??
-                            "View your filtered health records."}
-                    </AppText>
-                </HgCard>
+                />
             )
         );
     });
@@ -399,8 +384,10 @@ export function HomeView() {
                     />
                 }
             />
-            {/* v-row / v-col: 24px gutters (12px each side) */}
-            <View className="flex-row flex-wrap -m-3 items-stretch">
+            {/* v-row / v-col: 24px gutters (12px each side); 12px on the compact phone grid */}
+            <View
+                className={`flex-row flex-wrap ${compact ? "-m-1.5" : "-m-3"} items-stretch`}
+            >
                 {cards}
             </View>
             {showOtherRecordSources ? (
