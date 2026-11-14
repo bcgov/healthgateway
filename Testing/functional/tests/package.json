@@ -32,6 +32,6 @@
         "eslint-plugin-unused-imports": "4.4.1",
         "mocha": "11.8.0",
         "mocha-junit-reporter": "2.2.1",
-        "prettier": "3.9.10"
+        "prettier": "3.10.0"
     }
 }
