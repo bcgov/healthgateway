@@ -7,4 +7,4 @@ resources:
   - ../../base
 images:
   - name: docker.io/healthopenshift/mobileenvironment
-    newTag: 1.0.0.3
+    newTag: 1.0.0.4
