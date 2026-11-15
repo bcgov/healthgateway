@@ -105,9 +105,16 @@ describe("connectivity store", () => {
         appStateListener?.("background");
         expect(mockGetNetworkState.mock.calls.length).toBe(reads);
 
+        // the failure is logged, not shown
+        const warn = jest
+            .spyOn(console, "warn")
+            .mockImplementation(() => undefined);
         mockGetNetworkState.mockRejectedValue(new Error("no permission"));
         appStateListener?.("active");
         await jest.advanceTimersByTimeAsync(WAKE_RECHECK_MS);
         expect(useConnectivityStore.getState().isOnline).toBe(true);
+        expect(warn).toHaveBeenCalledWith(
+            expect.stringContaining("Network state unavailable")
+        );
     });
 });
