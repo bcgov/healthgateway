@@ -8,6 +8,7 @@ import {
 } from "@jest/globals";
 import type {
     NativeStackHeaderItem,
+    NativeStackHeaderItemCustom,
     NativeStackHeaderItemMenu,
     NativeStackHeaderItemMenuAction,
     NativeStackHeaderItemMenuSubmenu,
@@ -18,6 +19,7 @@ import type {
 import { useNativeHeaderItems } from "@/components/site/nativeHeaderItems";
 import { useNativeStackOptions } from "@/components/site/useNativeStackOptions";
 import { Path } from "@/constants/path";
+import type { StackNavigation } from "@/navigation/stackBack";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useConfigStore } from "@/stores/config.store";
 import { usePageRefreshStore } from "@/stores/pageRefresh.store";
@@ -28,7 +30,7 @@ import {
     signInRegistered,
     updateStores,
 } from "@/test/fixtures";
-import { renderHook } from "@/test/ui";
+import { press, render, renderHook, screen } from "@/test/ui";
 
 // native only (a .ts test): web has no native navigation bar
 
@@ -213,6 +215,93 @@ describe("native navigation bar (iOS)", () => {
             expect(o.title).toBe("Profile");
             expect(o.headerBackTitle).toBe("Home");
             expect(rightItems(o)).not.toHaveLength(0);
+        });
+
+        it("names the back button for the page beneath when it has a title", async () => {
+            const { result } = await renderHook(() =>
+                useNativeStackOptions({
+                    roots: ["home"],
+                    titles: {
+                        security: "Security",
+                        termsOfService: "Terms of Service",
+                    },
+                    backTitle: "Home",
+                })
+            );
+            const routes = [
+                { key: "h", name: "home" },
+                { key: "t", name: "termsOfService" },
+                { key: "s", name: "security" },
+            ];
+            const navigation: StackNavigation = {
+                getState: () => ({ type: "stack", index: 2, routes }),
+                getParent: () => undefined,
+                goBack: () => undefined,
+            };
+            expect(
+                result.current({ route: routes[2], navigation }).headerBackTitle
+            ).toBe("Terms of Service");
+            expect(
+                result.current({ route: routes[1], navigation }).headerBackTitle
+            ).toBe("Home");
+        });
+
+        it("signed out, first in its stack over the page that opened it: a drawn back button named for that page", async () => {
+            const goBack = jest.fn();
+            const root: StackNavigation = {
+                getState: () => ({
+                    type: "stack",
+                    index: 1,
+                    routes: [
+                        {
+                            key: "pages",
+                            name: "(pages)",
+                            state: { routes: [{ name: "login" }] },
+                        },
+                        { key: "tabs", name: "(tabs)" },
+                    ],
+                }),
+                getParent: () => undefined,
+                goBack,
+            };
+            const route = { key: "s", name: "security" };
+            const navigation: StackNavigation = {
+                getState: () => ({ type: "stack", index: 0, routes: [route] }),
+                getParent: () => root,
+                goBack: () => undefined,
+            };
+            const { result } = await renderHook(() =>
+                useNativeStackOptions({
+                    roots: ["home"],
+                    titles: { security: "Security" },
+                    withoutMenu: ["security"],
+                })
+            );
+            const o = result.current({ route, navigation });
+            expect(o.title).toBe("Security");
+            const left = o.unstable_headerLeftItems?.({}) ?? [];
+            expect(left).toHaveLength(1);
+            await render((left[0] as NativeStackHeaderItemCustom).element);
+            const back = screen.getByTestId("headerBackBtn");
+            expect(back.props.accessibilityLabel).toBe("Back to Log In");
+            expect(screen.getByText("Log In")).toBeTruthy();
+            await press(back);
+            expect(goBack).toHaveBeenCalledTimes(1);
+        });
+
+        it("no drawn back button when the page has nothing to go back to", async () => {
+            const route = { key: "s", name: "security" };
+            const navigation: StackNavigation = {
+                getState: () => ({ type: "stack", index: 0, routes: [route] }),
+                getParent: () => undefined,
+                goBack: () => undefined,
+            };
+            const { result } = await renderHook(() =>
+                useNativeStackOptions({ roots: ["home"] })
+            );
+            expect(
+                result.current({ route, navigation }).unstable_headerLeftItems
+            ).toBeUndefined();
         });
 
         it("a page the menu opens has no menu: back is the way out", async () => {

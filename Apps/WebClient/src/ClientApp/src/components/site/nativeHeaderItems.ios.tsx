@@ -4,6 +4,8 @@ import type {
     NativeStackHeaderItemMenuSubmenu,
     NativeStackNavigationOptions,
 } from "expo-router/native-stack";
+import { SymbolView } from "expo-symbols";
+import { Pressable, Text } from "react-native";
 
 import { useThemeColors } from "@/hooks/useTheme";
 import {
@@ -12,8 +14,10 @@ import {
     type HeaderMenuGlyph,
     nonEmptySections,
 } from "@/navigation/headerMenu";
+import { DEFAULT_BACK_TITLE, type OuterBack } from "@/navigation/stackBack";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
+import { fonts } from "@/theme";
 
 import { HeaderLogo } from "./HeaderLogo";
 import { sfSymbols } from "./headerMenuSymbols";
@@ -49,6 +53,54 @@ function toMenuItem(
     };
 }
 
+/** The system back button's text size (17pt) and its chevron's. */
+const BACK_TEXT_SIZE = 17;
+const BACK_CHEVRON_SIZE = 20;
+
+/**
+ * The back button the bar draws for `outerBack` (UIKit draws none: the page is first in its own stack): the chevron and
+ * the name of the page it returns to, as the system back button shows them, in the bar's shared glass on iOS 26. A bar
+ * button item cannot show both an image and a title, so it is a custom item.
+ */
+function OuterBackButton({ label, goBack }: OuterBack) {
+    const colors = useThemeColors();
+    return (
+        <Pressable
+            testID="headerBackBtn"
+            accessibilityRole="button"
+            accessibilityLabel={
+                label === DEFAULT_BACK_TITLE ? label : `Back to ${label}`
+            }
+            onPress={goBack}
+            hitSlop={8}
+            style={{
+                height: 44,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+                paddingHorizontal: 4,
+            }}
+        >
+            <SymbolView
+                name="chevron.backward"
+                size={BACK_CHEVRON_SIZE}
+                weight="semibold"
+                tintColor={colors.primary}
+            />
+            <Text
+                numberOfLines={1}
+                style={{
+                    fontFamily: fonts.regular,
+                    fontSize: BACK_TEXT_SIZE,
+                    color: colors.primary,
+                }}
+            >
+                {label}
+            </Text>
+        </Pressable>
+    );
+}
+
 /**
  * iOS: the navigation bar's own items. The logo sits on the bar without the shared Liquid Glass background (iOS 26);
  * the bell, the page's Refresh (when it has pull to refresh) and the account (initials) or settings (gear) button share
@@ -58,6 +110,7 @@ function toMenuItem(
 export function useNativeHeaderItems(): {
     logo: NativeStackNavigationOptions;
     menu: NativeStackNavigationOptions;
+    back: (target: OuterBack) => NativeStackNavigationOptions;
 } {
     const colors = useThemeColors();
     const { menu, bell, refresh } = useHeaderMenu();
@@ -111,6 +164,11 @@ export function useNativeHeaderItems(): {
     });
 
     return {
+        back: (target) => ({
+            unstable_headerLeftItems: () => [
+                { type: "custom", element: <OuterBackButton {...target} /> },
+            ],
+        }),
         logo: {
             unstable_headerLeftItems: () => [
                 {

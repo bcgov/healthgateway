@@ -20,12 +20,40 @@ import type { NativeStackNavigationOptions } from "expo-router/native-stack";
 import { useState } from "react";
 
 import { useColorScheme, useThemeColors } from "@/hooks/useTheme";
+import { DEFAULT_BACK_TITLE, type OuterBack } from "@/navigation/stackBack";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 
 import { HeaderLogo } from "./HeaderLogo";
 import { icons, NativeMenuItems } from "./NativeMenuItems.android";
 import { useHeaderMenu } from "./useHeaderMenu";
+
+const arrowBack = require("@/assets/icons/android/arrow_back.xml") as number;
+
+/**
+ * The back arrow the bar draws for `outerBack` (the platform draws none: the page is first in its own stack), in the
+ * navigation slot, as the top app bar shows its own: an arrow, no label (the page's name is its description).
+ */
+function OuterBackButton({ label, goBack }: OuterBack) {
+    const colors = useThemeColors();
+    const scheme = useColorScheme();
+    return (
+        <Host matchContents colorScheme={scheme}>
+            <IconButton onClick={goBack} modifiers={[testID("headerBackBtn")]}>
+                <Icon
+                    source={arrowBack}
+                    tint={colors.primary}
+                    size={24}
+                    contentDescription={
+                        label === DEFAULT_BACK_TITLE
+                            ? label
+                            : `Back to ${label}`
+                    }
+                />
+            </IconButton>
+        </Host>
+    );
+}
 
 /**
  * Android: the top app bar's actions, in Jetpack Compose: the bell, the page's Refresh (when it has pull to refresh), and
@@ -138,14 +166,18 @@ function NativeHeaderMenu() {
 }
 
 /**
- * Android: the logo in the top app bar's navigation slot, and the actions above (Compose, from `@expo/ui`). iOS:
- * `nativeHeaderItems.ios.tsx`.
+ * Android: the logo in the top app bar's navigation slot, the drawn back arrow, and the actions above (Compose, from
+ * `@expo/ui`). iOS: `nativeHeaderItems.ios.tsx`.
  */
 export function useNativeHeaderItems(): {
     logo: NativeStackNavigationOptions;
     menu: NativeStackNavigationOptions;
+    back: (target: OuterBack) => NativeStackNavigationOptions;
 } {
     return {
+        back: (target) => ({
+            headerLeft: () => <OuterBackButton {...target} />,
+        }),
         logo: { headerLeft: () => <HeaderLogo /> },
         menu: { headerRight: () => <NativeHeaderMenu /> },
     };

@@ -1,6 +1,11 @@
 import type { NativeStackNavigationOptions } from "expo-router/native-stack";
 
 import { useThemeColors } from "@/hooks/useTheme";
+import {
+    outerBack,
+    routeBeneath,
+    type StackNavigation,
+} from "@/navigation/stackBack";
 import { fonts } from "@/theme";
 
 import { useNativeHeaderItems } from "./nativeHeaderItems";
@@ -13,7 +18,7 @@ interface Options {
     roots?: readonly string[];
     /** The titles of the pages pushed on the stack, by route name. */
     titles?: Readonly<Record<string, string>>;
-    /** The back button's label on pushed pages: the name of the page the stack starts on. */
+    /** The back button's label to a page the stack starts on (they have no title): the stack's name. */
     backTitle?: string;
     /** Routes shown with no navigation bar at all. */
     hidden?: readonly string[];
@@ -29,7 +34,9 @@ interface Options {
  * page). Under the shell's environment and session banners: the logo on a stack's first page, otherwise the back button
  * and the page's title; on the right, the page's Refresh (when it has pull to refresh) and the account menu (signed in)
  * or the settings menu (signed out), except on the pages that menu itself opens. It stays put while the page scrolls.
- * Returns `screenOptions` for the stack.
+ * The back button is named for the page it returns to; a pushed page first in its own stack (signed out, Security or
+ * Terms of Service over the page that opened them) gets one drawn by the bar (`outerBack`). Returns `screenOptions`
+ * for the stack.
  */
 export function useNativeStackOptions({
     roots,
@@ -39,7 +46,7 @@ export function useNativeStackOptions({
     withoutMenu = [],
 }: Options = {}) {
     const colors = useThemeColors();
-    const { logo, menu } = useNativeHeaderItems();
+    const { logo, menu, back } = useNativeHeaderItems();
     const base: NativeStackNavigationOptions = {
         headerShown: true,
         headerStyle: { backgroundColor: colors["app-bar"] },
@@ -56,8 +63,10 @@ export function useNativeStackOptions({
 
     return ({
         route,
+        navigation,
     }: {
-        route: { name: string };
+        route: { name: string; key?: string };
+        navigation?: StackNavigation;
     }): NativeStackNavigationOptions => {
         if (hidden.includes(route.name)) return { headerShown: false };
         const right = withoutMenu.includes(route.name) ? {} : menu;
@@ -69,11 +78,16 @@ export function useNativeStackOptions({
                 title: "",
                 headerBackVisible: false,
             };
+        const outer = outerBack(route, navigation);
+        const beneath = routeBeneath(route, navigation);
         return {
             ...base,
             ...right,
+            ...(outer ? back(outer) : {}),
             title: titles[route.name] ?? "",
-            headerBackTitle: backTitle,
+            headerBackTitle:
+                (beneath === undefined ? undefined : titles[beneath]) ??
+                backTitle,
         };
     };
 }
