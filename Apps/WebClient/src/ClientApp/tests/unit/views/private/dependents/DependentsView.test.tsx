@@ -477,9 +477,15 @@ describe("Dependents", () => {
             expect(textOf(screen.getByTestId("page-title"))).toContain(
                 "Health Records for Sam T"
             );
-            expect(
-                textOf(screen.getByTestId("breadcrumb-dependent-name"))
-            ).toContain("Sam T");
+            // breadcrumbs are web only
+            if (Platform.OS === "web")
+                expect(
+                    textOf(screen.getByTestId("breadcrumb-dependent-name"))
+                ).toContain("Sam T");
+            else
+                expect(
+                    screen.queryByTestId("breadcrumb-dependent-name")
+                ).toBeNull();
             expect(screen.queryByTestId("add-comment-text-area")).toBeNull();
             await press(screen.getByTestId("backBtn"));
             expect(

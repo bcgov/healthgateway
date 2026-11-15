@@ -6,14 +6,12 @@ tags:
     - signedIn
 ---
 - runFlow: ../subflows/start-signed-in.yaml
-- tapOn:
-      id: "headerDropdownBtn"
+# the account menu is the platform's own (UIMenu / Material menu): its entries are found by their text
+- tapOn: "Account menu"
 - extendedWaitUntil:
-      visible:
-          id: "menu-btn-security-link"
+      visible: "Security"
       timeout: 5000
-- tapOn:
-      id: "menu-btn-security-link"
+- tapOn: "Security"
 - extendedWaitUntil:
       visible:
           id: "deviceSecuritySwitch"

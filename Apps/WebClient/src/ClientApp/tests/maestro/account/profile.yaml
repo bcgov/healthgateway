@@ -4,14 +4,12 @@ tags:
     - signedIn
 ---
 - runFlow: ../subflows/start-signed-in.yaml
-- tapOn:
-      id: "headerDropdownBtn"
+# the account menu is the platform's own (UIMenu / Material menu): its entries are found by their text
+- tapOn: "Account menu"
 - extendedWaitUntil:
-      visible:
-          id: "profileBtn"
+      visible: "Profile"
       timeout: 5000
-- tapOn:
-      id: "profileBtn"
+- tapOn: "Profile"
 - extendedWaitUntil:
       visible: "Personal Information"
       timeout: 15000

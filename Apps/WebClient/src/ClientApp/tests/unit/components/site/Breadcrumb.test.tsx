@@ -42,7 +42,21 @@ describe("Breadcrumb", () => {
         expect(screen.queryByTestId("breadcrumbs")).toBeNull();
     });
 
-    it("prefixes Home, marks the active item, and tracks the Home link", async () => {
+    it("native: renders nothing (the navigation bar's back and title replace it)", async () => {
+        if (Platform.OS === "web") return;
+        signInRegistered();
+        await render(
+            <Breadcrumb
+                items={[
+                    { text: "Profile", active: true, testId: "bc-profile" },
+                ]}
+            />
+        );
+        expect(screen.queryByTestId("breadcrumbs")).toBeNull();
+    });
+
+    it("web: prefixes Home, marks the active item, and tracks the Home link", async () => {
+        if (Platform.OS !== "web") return;
         signInRegistered();
         const track = jest
             .spyOn(services.tracking, "trackEvent")
