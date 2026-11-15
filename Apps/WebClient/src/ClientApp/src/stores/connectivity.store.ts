@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { AppState, Platform } from "react-native";
 import { create } from "zustand";
 
 import { describeError, logger } from "@/services/logger";
@@ -33,6 +33,9 @@ interface ConnectivityState {
 }
 
 let started = false;
+
+/** Android may need a moment after waking to check the network again: the second read on coming to the foreground. */
+export const WAKE_RECHECK_MS = 2000;
 
 /** While the banner explains failures, or nobody asked for what is being fetched, log them quietly. */
 const updateLogger = (s: {
@@ -74,8 +77,24 @@ export const useConnectivityStore = create<ConnectivityState>((set, get) => ({
                 set({ isOnline });
                 updateLogger(get());
             };
-            apply(await network.getNetworkStateAsync());
+            const read = async () => {
+                try {
+                    apply(await network.getNetworkStateAsync());
+                } catch (error) {
+                    logger.warn(
+                        `Network state unavailable: ${describeError(error)}`
+                    );
+                }
+            };
+            await read();
             network.addNetworkStateListener(apply);
+            // Android: Doze cuts the app off while the device sleeps, and expo-network does not report the end of that
+            // (onBlockedStatusChanged), so the network seen asleep could stay "offline" after waking: read it again
+            AppState.addEventListener("change", (state) => {
+                if (state !== "active") return;
+                void read();
+                setTimeout(() => void read(), WAKE_RECHECK_MS);
+            });
         } catch (error) {
             logger.warn(`Network state unavailable: ${describeError(error)}`);
         }
