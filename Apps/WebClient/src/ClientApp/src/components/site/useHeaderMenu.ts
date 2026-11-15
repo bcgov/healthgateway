@@ -45,7 +45,7 @@ import { useSupportLinksShown } from "./useSupportLinksShown";
 /** iOS cannot present a dialog while the menu is still going away. */
 export const MENU_DISMISS_MS = Platform.OS === "ios" ? 400 : 0;
 
-/** DarkModeMenuItem's choices, in its order. */
+/** Dark Mode's choices, in the web menu's order (`DarkModeMenuItem`). */
 const darkModeChoices: {
     value: ThemePreference;
     label: string;
@@ -90,47 +90,12 @@ export function logOut(push: (path: string) => void) {
     push(Path.Logout);
 }
 
-/**
- * The native header menu's entries, the slide-in panels' (`UserMenu`, `SettingsMenu`) as one platform menu. Signed in:
- * the account menu, titled with the user's name. Signed out: the settings menu. Both end with the app's version.
- * Also the notification centre's bell, when it is on (HeaderComponent.vue's conditions), and the page's pull to refresh
- * as a button, on a page that has one.
- */
-export function useHeaderMenu(): {
-    menu: HeaderMenu;
-    bell?: HeaderBell;
-    refresh?: HeaderRefresh;
-} {
+/** The entries both menus share. `overApp`: see `useSettingsMenu`. */
+function useSharedEntries(overApp: boolean) {
     const router = useRouter();
-    const pathname = usePathname();
-    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-    const isOffline = useConfigStore(selectIsOffline);
-    const isNotificationCentreEnabled = useConfigStore(
-        (s) => selectFeatureToggles(s)?.notificationCentre?.enabled ?? false
-    );
-    const isValidIdp = useUserStore(selectIsValidIdentityProvider);
-    const patientRetrievalFailed = useUserStore(
-        (s) => s.patientRetrievalFailed
-    );
-    const userName = useUserStore(selectUserName);
-    const initials = useUserStore(selectUserInitials);
-    // subscribe so the derived state re-evaluates when the user record changes
-    useUserStore((s) => s.user);
     const preference = useThemeStore((s) => s.preference);
     const setPreference = useThemeStore((s) => s.setPreference);
     const supportShown = useSupportLinksShown();
-    const bellSeen = useHeaderMenuStore((s) => s.bellSeen);
-    const setBellSeen = useHeaderMenuStore((s) => s.setBellSeen);
-    const setNotificationCenterOpen = useNotificationStore(
-        (s) => s.setNotificationCenterOpen
-    );
-    const newNotifications = useNewNotifications();
-    const pageRefresh = usePageRefreshStore((s) => s.refresh);
-    const refreshing = usePageRefreshStore((s) => s.refreshing);
-    const refresh: HeaderRefresh | undefined = pageRefresh
-        ? { disabled: refreshing, onPress: pageRefresh }
-        : undefined;
-    const fullyRegistered = isFullyRegisteredUser();
     const push = (path: string) => router.push(toHref(path));
 
     const darkMode: HeaderMenuEntry = {
@@ -147,13 +112,17 @@ export function useHeaderMenu(): {
             onPress: () => void setPreference(value),
         })),
     };
-    const security: HeaderMenuAction = {
-        type: "action",
-        key: "menu-btn-security-link",
-        label: "Security",
-        glyph: "security",
-        onPress: () => push(Path.Security),
-    };
+    const security: HeaderMenuAction[] = overApp
+        ? []
+        : [
+              {
+                  type: "action",
+                  key: "menu-btn-security-link",
+                  label: "Security",
+                  glyph: "security",
+                  onPress: () => push(Path.Security),
+              },
+          ];
     const support: HeaderMenuEntry[] = supportShown
         ? [
               {
@@ -161,17 +130,19 @@ export function useHeaderMenu(): {
                   key: "menu-btn-support-link",
                   label: "Support",
                   glyph: "support",
-                  items: allSupportLinks.map((link) => ({
-                      type: "action",
-                      key: link.testID,
-                      label: link.text,
-                      glyph: link.to
-                          ? "document"
-                          : link.action === Action.Email
-                            ? "email"
-                            : "external",
-                      onPress: () => followSupportLink(link, push),
-                  })),
+                  items: allSupportLinks
+                      .filter((link) => !overApp || !link.to)
+                      .map((link) => ({
+                          type: "action",
+                          key: link.testID,
+                          label: link.text,
+                          glyph: link.to
+                              ? "document"
+                              : link.action === Action.Email
+                                ? "email"
+                                : "external",
+                          onPress: () => followSupportLink(link, push),
+                      })),
               },
           ]
         : [];
@@ -186,17 +157,73 @@ export function useHeaderMenu(): {
               },
           ]
         : [];
+    return { push, darkMode, security, support, versionSection };
+}
 
-    if (!isAuthenticated) {
-        return {
-            menu: {
-                kind: "settings",
-                buttonLabel: "Settings",
-                sections: [[darkMode, security, ...support], versionSection],
-            },
-            refresh,
-        };
-    }
+function settingsMenu({
+    darkMode,
+    security,
+    support,
+    versionSection,
+}: ReturnType<typeof useSharedEntries>): HeaderMenu {
+    return {
+        kind: "settings",
+        buttonLabel: "Settings",
+        sections: [[darkMode, ...security, ...support], versionSection],
+    };
+}
+
+/**
+ * The signed-out settings menu (gear). `overApp`: for a screen that covers the app (the intro, the lock screen, Update
+ * required: `BrandHeader`), so it leaves out what opens a page of the app, which would open behind the screen: Security
+ * (also not to be reached past the lock) and Terms of Service.
+ */
+export function useSettingsMenu({
+    overApp = false,
+}: { overApp?: boolean } = {}): HeaderMenu {
+    return settingsMenu(useSharedEntries(overApp));
+}
+
+/**
+ * The navigation bar's menu, drawn by each platform's own menu. Signed in: the account menu, titled with the user's
+ * name. Signed out: the settings menu. Both end with the app's version. Also the notification centre's bell, when it is
+ * on (HeaderComponent.vue's conditions), and the page's pull to refresh as a button, on a page that has one.
+ */
+export function useHeaderMenu(): {
+    menu: HeaderMenu;
+    bell?: HeaderBell;
+    refresh?: HeaderRefresh;
+} {
+    const pathname = usePathname();
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+    const isOffline = useConfigStore(selectIsOffline);
+    const isNotificationCentreEnabled = useConfigStore(
+        (s) => selectFeatureToggles(s)?.notificationCentre?.enabled ?? false
+    );
+    const isValidIdp = useUserStore(selectIsValidIdentityProvider);
+    const patientRetrievalFailed = useUserStore(
+        (s) => s.patientRetrievalFailed
+    );
+    const userName = useUserStore(selectUserName);
+    const initials = useUserStore(selectUserInitials);
+    // subscribe so the derived state re-evaluates when the user record changes
+    useUserStore((s) => s.user);
+    const bellSeen = useHeaderMenuStore((s) => s.bellSeen);
+    const setBellSeen = useHeaderMenuStore((s) => s.setBellSeen);
+    const setNotificationCenterOpen = useNotificationStore(
+        (s) => s.setNotificationCenterOpen
+    );
+    const newNotifications = useNewNotifications();
+    const pageRefresh = usePageRefreshStore((s) => s.refresh);
+    const refreshing = usePageRefreshStore((s) => s.refreshing);
+    const refresh: HeaderRefresh | undefined = pageRefresh
+        ? { disabled: refreshing, onPress: pageRefresh }
+        : undefined;
+    const fullyRegistered = isFullyRegisteredUser();
+    const shared = useSharedEntries(false);
+    const { push, darkMode, security, support, versionSection } = shared;
+
+    if (!isAuthenticated) return { menu: settingsMenu(shared), refresh };
 
     const showProfile = isValidIdp && !patientRetrievalFailed;
     const profile: HeaderMenuAction[] = showProfile
@@ -263,7 +290,7 @@ export function useHeaderMenu(): {
             initials,
             title: userName,
             sections: [
-                [...profile, darkMode, security],
+                [...profile, darkMode, ...security],
                 [...support, ...feedback],
                 [logout],
                 versionSection,

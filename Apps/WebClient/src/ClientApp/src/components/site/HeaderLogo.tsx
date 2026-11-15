@@ -1,8 +1,10 @@
-import { Pressable } from "react-native";
+import { useRef } from "react";
+import { Pressable, View } from "react-native";
 
 import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { useColorScheme } from "@/hooks/useTheme";
+import { useNavBarStore } from "@/stores/navBar.store";
 import { decorativeProps } from "@/utils/decorative";
 import { hrefProps } from "@/utils/hrefProps";
 
@@ -20,15 +22,40 @@ const LOGO_WIDTH = Math.round((LOGO_HEIGHT * ARTWORK.width) / ARTWORK.height);
 const VIEW_BOX = `${ARTWORK.x} ${ARTWORK.y} ${ARTWORK.width} ${ARTWORK.height}`;
 
 /**
+ * The logo as the navigation bar draws it, at the bar's size. Decorative: `HeaderLogo`'s link names it, and on
+ * `BrandHeader`'s screens their own text names the app.
+ */
+export function HeaderLogoImage() {
+    // Dark variant: the navy wordmark, crest text and mountains become pale blue (docs/theming.md).
+    const Logo = useColorScheme() === "dark" ? HgLogoDark : HgLogo;
+    return (
+        <Logo
+            width={LOGO_WIDTH}
+            height={LOGO_HEIGHT}
+            viewBox={VIEW_BOX}
+            preserveAspectRatio="xMinYMid meet"
+            {...decorativeProps()}
+            style={{ width: LOGO_WIDTH, height: LOGO_HEIGHT }}
+        />
+    );
+}
+
+/**
  * Native: the Health Gateway logo on the left of a navigation bar, on each tab's first page and every page outside the
  * tabs; the link home, as in the web header.
  */
 export function HeaderLogo() {
-    // Dark variant: the navy wordmark, crest text and mountains become pale blue (docs/theming.md).
-    const Logo = useColorScheme() === "dark" ? HgLogoDark : HgLogo;
     const logo = useLogoLink();
+    const ref = useRef<React.ComponentRef<typeof View>>(null);
     return (
         <Pressable
+            ref={ref}
+            // where the bar puts its leading item, for `BrandHeader`'s bar over the app
+            onLayout={() =>
+                ref.current?.measureInWindow((x) => {
+                    if (x > 0) useNavBarStore.setState({ leading: x });
+                })
+            }
             testID="headerLogo"
             accessibilityRole="link"
             accessibilityLabel="Go to Health Gateway home page"
@@ -41,15 +68,7 @@ export function HeaderLogo() {
             hitSlop={4}
             style={{ height: 44, justifyContent: "center" }}
         >
-            <Logo
-                width={LOGO_WIDTH}
-                height={LOGO_HEIGHT}
-                viewBox={VIEW_BOX}
-                preserveAspectRatio="xMinYMid meet"
-                // the link's label names the logo
-                {...decorativeProps()}
-                style={{ width: LOGO_WIDTH, height: LOGO_HEIGHT }}
-            />
+            <HeaderLogoImage />
         </Pressable>
     );
 }
