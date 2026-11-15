@@ -45,7 +45,7 @@
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="9.1.0" />
     <PackageReference Include="SerilogTraceListener" Version="3.2.0" />
-    <PackageReference Include="StackExchange.Redis" Version="3.4.31" />
+    <PackageReference Include="StackExchange.Redis" Version="3.4.35" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="11.0.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.21.0" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.21.0" />
