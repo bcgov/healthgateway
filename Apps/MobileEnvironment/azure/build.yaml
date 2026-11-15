@@ -10,6 +10,10 @@ trigger:
   paths:
     include:
       - Apps/MobileEnvironment
+    # docs and the deployment manifests aren't part of the image
+    exclude:
+      - Apps/MobileEnvironment/README.md
+      - Apps/MobileEnvironment/k8s
 
 pool:
   vmImage: "ubuntu-latest"

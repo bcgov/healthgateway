@@ -79,5 +79,13 @@
             matchUpdateTypes: ["lockFileMaintenance"],
             automerge: true,
         },
+        {
+            // androidx.* is published only to Google's Maven repository. The repositories Gradle uses come from the
+            // generated (git-ignored) android/ project, so Renovate can't see them and only searches Maven Central,
+            // e.g. for modules/hg-secure-vault/android/build.gradle.
+            matchDatasources: ["maven"],
+            matchPackageNames: ["/^androidx\\./"],
+            registryUrls: ["https://dl.google.com/android/maven2/"],
+        },
     ],
 }
