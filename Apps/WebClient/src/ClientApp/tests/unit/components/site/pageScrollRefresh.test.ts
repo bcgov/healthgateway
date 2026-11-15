@@ -70,6 +70,18 @@ describe("PageScroll: the navigation bar's Refresh", () => {
         expect(usePageRefreshStore.getState().refreshing).toBe(false);
     });
 
+    it("starts one refresh for presses in the same moment", async () => {
+        jest.useFakeTimers();
+        await render(page(true));
+        const refresh = usePageRefreshStore.getState().refresh;
+        await inAct(() => {
+            refresh?.();
+            refresh?.();
+        });
+        expect(pulls).toBe(1);
+        await advanceTimers(1500);
+    });
+
     it("is not offered by a page without pull to refresh", async () => {
         await render(page(false));
         expect(usePageRefreshStore.getState().refresh).toBeUndefined();

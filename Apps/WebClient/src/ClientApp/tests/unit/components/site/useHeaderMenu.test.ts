@@ -19,6 +19,7 @@ import type {
     HeaderMenuEntry,
 } from "@/navigation/headerMenu";
 import { services } from "@/services/container";
+import { endSessionGeneration } from "@/services/sessionFence";
 import { useConfigStore } from "@/stores/config.store";
 import { useHeaderMenuStore } from "@/stores/headerMenu.store";
 import { useThemeStore } from "@/stores/theme.store";
@@ -188,6 +189,16 @@ describe("useHeaderMenu", () => {
             await advanceTimers(MENU_DISMISS_MS);
             expect(useHeaderMenuStore.getState().dialog).toBe("rating");
             expect(router.push).not.toHaveBeenCalled();
+        });
+
+        it("drops a dialog still waiting for the menu to go when the session ends meanwhile", async () => {
+            jest.useFakeTimers();
+            const { result } = await renderHook(() => useHeaderMenu());
+            action(result.current.menu, "logoutBtn").onPress?.();
+            action(result.current.menu, "menu-btn-feedback-link").onPress?.();
+            endSessionGeneration();
+            await advanceTimers(MENU_DISMISS_MS);
+            expect(useHeaderMenuStore.getState().dialog).toBeUndefined();
         });
 
         it("leaves out Profile and Feedback while the patient cannot be found", async () => {

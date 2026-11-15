@@ -30,6 +30,8 @@ import {
     type HeaderMenuSubmenu,
     nonEmptySections,
 } from "@/navigation/headerMenu";
+import { useAppLockStore } from "@/stores/appLock.store";
+import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 
 import { HeaderLogo } from "./HeaderLogo";
 import { useHeaderMenu } from "./useHeaderMenu";
@@ -169,6 +171,12 @@ function NativeHeaderMenu() {
     const close = () => setExpanded(false);
     const open = () => setExpanded(true);
     const sections = nonEmptySections(menu);
+    // Compose menus are popup windows above the whole app, the lock screen and the update dialog included (both React
+    // Native views): while either covers the app, the actions go, open menus and submenus with them, as `AppModal`
+    // hides its dialogs.
+    const locked = useAppLockStore((s) => s.locked);
+    const updateRequired = useConfigStore(selectUpdateRequired);
+    if (locked || updateRequired) return null;
 
     return (
         <Host matchContents colorScheme={scheme}>
