@@ -1,4 +1,5 @@
-# Profile from the account menu, and the logo back to Home.
+# Profile from the account menu. Profile has no logo or account menu (Back is the way out): end-signed-in goes Home by
+# the app's own link.
 appId: hg.local
 tags:
     - signedIn
@@ -13,10 +14,5 @@ tags:
 - extendedWaitUntil:
       visible: "Personal Information"
       timeout: 15000
-- tapOn: "Go to Health Gateway home page"
-- extendedWaitUntil:
-      visible:
-          id: "add-quick-link-button"
-      timeout: 8000
 # end where the next flow starts, and check it
 - runFlow: ../subflows/end-signed-in.yaml

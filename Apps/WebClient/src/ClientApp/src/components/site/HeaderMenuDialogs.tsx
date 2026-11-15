@@ -14,7 +14,8 @@ import { logOut } from "./useHeaderMenu";
 
 /**
  * Native: what the header menu opens, mounted once in the shell (the menu itself is the platform's, inside each
- * navigation bar): Feedback, the rating asked for before logging out, and the notification centre.
+ * navigation bar): Feedback, the rating asked for before logging out, and the notification centre. Signed in only, as
+ * the account menu that opens them.
  */
 export function HeaderMenuDialogs() {
     const router = useRouter();
@@ -22,11 +23,14 @@ export function HeaderMenuDialogs() {
     const hideDialog = useHeaderMenuStore((s) => s.hideDialog);
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-    // the next sign-in starts with the bell's badge showing again
+    // Signed out (logged out, or the session ended while a dialog was open): the dialogs close and unmount, so nothing,
+    // a Feedback draft included, carries over to the next sign-in; that sign-in starts with the bell's badge showing.
     useEffect(() => {
-        if (!isAuthenticated) useHeaderMenuStore.getState().setBellSeen(false);
+        if (isAuthenticated) return;
+        useHeaderMenuStore.setState({ dialog: undefined, bellSeen: false });
     }, [isAuthenticated]);
 
+    if (!isAuthenticated) return null;
     return (
         <>
             <FeedbackDialog
@@ -45,9 +49,7 @@ export function HeaderMenuDialogs() {
                     );
                 }}
             />
-            {NOTIFICATION_CENTRE_SWITCHED_ON && isAuthenticated ? (
-                <NotificationCentre />
-            ) : null}
+            {NOTIFICATION_CENTRE_SWITCHED_ON ? <NotificationCentre /> : null}
         </>
     );
 }
