@@ -15,13 +15,17 @@ import { toHref } from "@/navigation/href";
 import { allSupportLinks, followSupportLink } from "@/navigation/supportLinks";
 import { isFullyRegisteredUser } from "@/navigation/userState";
 import { services } from "@/services/container";
+import { sessionGeneration } from "@/services/sessionFence";
 import { useAuthStore } from "@/stores/auth.store";
 import {
     selectFeatureToggles,
     selectIsOffline,
     useConfigStore,
 } from "@/stores/config.store";
-import { useHeaderMenuStore } from "@/stores/headerMenu.store";
+import {
+    type HeaderMenuDialog,
+    useHeaderMenuStore,
+} from "@/stores/headerMenu.store";
 import {
     NOTIFICATION_CENTRE_SWITCHED_ON,
     useNewNotifications,
@@ -56,6 +60,25 @@ const darkModeChoices: {
             "We'll adjust your appearance based on your device's system settings",
     },
 ];
+
+/**
+ * Runs `action` once the menu has gone, unless the session ended meanwhile (logged out, or timed out): a dialog opened
+ * then would wait for the next sign-in, and the rating's dismissal would log that session out.
+ */
+export function afterMenu(action: () => void) {
+    const session = sessionGeneration();
+    setTimeout(() => {
+        if (
+            session !== sessionGeneration() ||
+            !useAuthStore.getState().isAuthenticated
+        )
+            return;
+        action();
+    }, MENU_DISMISS_MS);
+}
+
+const showDialogAfterMenu = (dialog: HeaderMenuDialog) =>
+    afterMenu(() => useHeaderMenuStore.getState().showDialog(dialog));
 
 /** The Snowplow event and route of Log Out, shared with the rating dialog that may come first. */
 export function logOut(push: (path: string) => void) {
@@ -96,7 +119,6 @@ export function useHeaderMenu(): {
     const preference = useThemeStore((s) => s.preference);
     const setPreference = useThemeStore((s) => s.setPreference);
     const supportShown = useSupportLinksShown();
-    const showDialog = useHeaderMenuStore((s) => s.showDialog);
     const bellSeen = useHeaderMenuStore((s) => s.bellSeen);
     const setBellSeen = useHeaderMenuStore((s) => s.setBellSeen);
     const setNotificationCenterOpen = useNotificationStore(
@@ -209,7 +231,7 @@ export function useHeaderMenu(): {
                           text: Text.SendFeedback,
                           type: Type.Sidebar,
                       });
-                      setTimeout(() => showDialog("feedback"), MENU_DISMISS_MS);
+                      showDialogAfterMenu("feedback");
                   },
               },
           ]
@@ -221,8 +243,7 @@ export function useHeaderMenu(): {
         glyph: "logout",
         destructive: true,
         onPress: () => {
-            if (isValidIdp)
-                setTimeout(() => showDialog("rating"), MENU_DISMISS_MS);
+            if (isValidIdp) showDialogAfterMenu("rating");
             else logOut(push);
         },
     };

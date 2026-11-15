@@ -105,7 +105,11 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
         (handler: RefreshHandler | undefined) => setRefresh(() => handler),
         []
     );
+    // set at once, so a second pull or Refresh press in the same moment cannot start another before state catches up
+    const inFlight = useRef(false);
     const onRefresh = async () => {
+        if (inFlight.current) return;
+        inFlight.current = true;
         setRefreshing(true);
         flashRefreshPill(true);
         useConnectivityStore.setState({ pullInProgress: true });
@@ -117,6 +121,7 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
             await refresh?.();
             await shownLongEnough;
         } finally {
+            inFlight.current = false;
             setRefreshing(false);
             // this change is also what saves the copy
             useConnectivityStore.setState({ pullInProgress: false });
@@ -132,10 +137,7 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
     const refreshable = refresh !== undefined;
     useEffect(() => {
         if (!focused || !refreshable) return;
-        const run = () => {
-            if (!usePageRefreshStore.getState().refreshing)
-                void latestRefresh.current();
-        };
+        const run = () => void latestRefresh.current();
         usePageRefreshStore.setState({ refresh: run });
         return () => {
             if (usePageRefreshStore.getState().refresh === run)
