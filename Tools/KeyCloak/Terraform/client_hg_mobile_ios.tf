@@ -12,6 +12,9 @@ resource "keycloak_openid_client" "hg_mobile_ios_client" {
   web_origins                  = var.client_hg_mobile_ios.web_origins
   full_scope_allowed           = false
   access_token_lifespan        = var.client_hg_mobile_ios.token_lifespan
+
+  client_offline_session_idle_timeout = var.client_hg_mobile_ios.offline_session_idle_timeout
+  client_offline_session_max_lifespan = var.client_hg_mobile_ios.offline_session_max_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hg_mobile_ios_client_default_scopes" {

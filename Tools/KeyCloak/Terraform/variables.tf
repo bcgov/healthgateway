@@ -134,6 +134,8 @@ variable "client_hg_mobile_android" {
     valid_redirects = list(string)
     web_origins     = list(string)
     token_lifespan  = number
+    offline_session_idle_timeout = optional(number)
+    offline_session_max_lifespan = optional(number)
   })
   description = "HealthGateway mobile android client configuration"
 }
@@ -144,6 +146,8 @@ variable "client_hg_mobile_ios" {
     valid_redirects = list(string)
     web_origins     = list(string)
     token_lifespan  = number
+    offline_session_idle_timeout = optional(number)
+    offline_session_max_lifespan = optional(number)
   })
   description = "HealthGateway mobile ios client configuration"
 }
