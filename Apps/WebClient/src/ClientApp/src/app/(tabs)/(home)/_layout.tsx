@@ -1,9 +1,31 @@
 import { Stack } from "expo-router";
 
 import { useNativeStackOptions } from "@/components/site/useNativeStackOptions";
+import { calculateUserState, UserState } from "@/navigation/userState";
+import { useAuthStore } from "@/stores/auth.store";
+import { useUserStore } from "@/stores/user.store";
 
 /** Deep links into Profile or Other record sources get Home beneath them, so back leads somewhere. */
 export const unstable_settings = { initialRouteName: "home" };
+
+/** The pages the account menu itself opens: Back is the way out of them, so the menu is left off. */
+const MENU_PAGES = ["profile", "security"];
+
+/**
+ * Whether Back leads somewhere from Profile and Security: registered (Home is beneath them), or signed out (the page
+ * that opened Security). Otherwise the route guard holds the user on Profile (an account pending deletion, Terms of
+ * Service to accept) with no tab bar and no Home to go back to, and the account menu's Log Out is the only way out.
+ */
+function useBackLeadsSomewhere(): boolean {
+    // subscribe so the decision follows sign-in and the user's record
+    useAuthStore((s) => s.isAuthenticated);
+    useUserStore((s) => s.user);
+    useUserStore((s) => s.patientRetrievalFailed);
+    const state = calculateUserState();
+    return (
+        state === UserState.registered || state === UserState.unauthenticated
+    );
+}
 
 const titles = {
     otherRecordSources: "Other record sources",
@@ -25,8 +47,7 @@ export default function HomeStackLayout() {
         roots: ["home"],
         titles,
         backTitle: "Home",
-        // the account menu would only open these again: back is the way out
-        withoutMenu: ["profile", "security"],
+        withoutMenu: useBackLeadsSomewhere() ? MENU_PAGES : [],
     });
     return (
         <Stack screenOptions={screenOptions}>
