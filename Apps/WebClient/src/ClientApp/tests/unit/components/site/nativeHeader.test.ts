@@ -1,4 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import {
+    afterEach,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    jest,
+} from "@jest/globals";
 import type {
     NativeStackHeaderItem,
     NativeStackHeaderItemMenu,
@@ -11,6 +18,7 @@ import type {
 import { useNativeHeaderItems } from "@/components/site/nativeHeaderItems";
 import { useNativeStackOptions } from "@/components/site/useNativeStackOptions";
 import { Path } from "@/constants/path";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { useConfigStore } from "@/stores/config.store";
 import { usePageRefreshStore } from "@/stores/pageRefresh.store";
 import { resetRouter } from "@/test/expoRouterMock";
@@ -23,6 +31,12 @@ import {
 import { renderHook } from "@/test/ui";
 
 // native only (a .ts test): web has no native navigation bar
+
+// a build number, for the update-required case (minimumBuild above it)
+jest.mock("expo-constants", () => ({
+    __esModule: true,
+    default: { expoConfig: { version: "1.2.3", extra: { build: 57 } } },
+}));
 
 const rightItems = (options: NativeStackNavigationOptions) =>
     options.unstable_headerRightItems?.({}) ?? [];
@@ -128,6 +142,34 @@ describe("native navigation bar (iOS)", () => {
             expect(rightItems(result.current.menu).map((i) => i.type)).toEqual([
                 "menu",
             ]);
+        });
+
+        it("takes the actions (and an open menu with them) away while the app is locked", async () => {
+            signInRegistered();
+            const { result } = await renderHook(() => useNativeHeaderItems());
+            expect(rightItems(result.current.menu)).not.toHaveLength(0);
+            updateStores(() => useAppLockStore.setState({ locked: true }));
+            expect(rightItems(result.current.menu)).toEqual([]);
+            updateStores(() => useAppLockStore.setState({ locked: false }));
+            expect(rightItems(result.current.menu)).not.toHaveLength(0);
+        });
+
+        it("takes the actions away while an update is required", async () => {
+            useConfigStore.setState({
+                config: {
+                    ...configFixture,
+                    webClient: {
+                        ...configFixture.webClient,
+                        mobile: {
+                            ...configFixture.webClient.mobile,
+                            minimumBuild: 58,
+                        },
+                    },
+                },
+                status: "loaded",
+            });
+            const { result } = await renderHook(() => useNativeHeaderItems());
+            expect(rightItems(result.current.menu)).toEqual([]);
         });
 
         it("the logo sits on the bar without the shared glass background", async () => {

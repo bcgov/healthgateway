@@ -12,6 +12,8 @@ import {
     type HeaderMenuGlyph,
     nonEmptySections,
 } from "@/navigation/headerMenu";
+import { useAppLockStore } from "@/stores/appLock.store";
+import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 
 import { HeaderLogo } from "./HeaderLogo";
 import { useHeaderMenu } from "./useHeaderMenu";
@@ -78,6 +80,12 @@ export function useNativeHeaderItems(): {
 } {
     const colors = useThemeColors();
     const { menu, bell, refresh } = useHeaderMenu();
+    // UIMenu is UIKit's, above every React Native view: the lock screen (it can lock in the foreground, after the idle
+    // timeout) and the update dialog would not cover an open menu. While either covers the app, the bar's actions go,
+    // and the menu presented from them with them, as `AppModal` hides its dialogs (Android: the same).
+    const locked = useAppLockStore((s) => s.locked);
+    const updateRequired = useConfigStore(selectUpdateRequired);
+    const covered = locked || updateRequired;
 
     const items: NativeStackHeaderItem[] = [];
     if (bell)
@@ -129,6 +137,6 @@ export function useNativeHeaderItems(): {
                 },
             ],
         },
-        menu: { unstable_headerRightItems: () => items },
+        menu: { unstable_headerRightItems: () => (covered ? [] : items) },
     };
 }
