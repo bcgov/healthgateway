@@ -16,27 +16,8 @@ import { useAppLockStore } from "@/stores/appLock.store";
 import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 
 import { HeaderLogo } from "./HeaderLogo";
+import { sfSymbols } from "./headerMenuSymbols";
 import { useHeaderMenu } from "./useHeaderMenu";
-
-type SFSymbol = Extract<
-    NonNullable<NativeStackHeaderItemMenuAction["icon"]>,
-    { type: "sfSymbol" }
->["name"];
-
-const sfSymbols: Record<HeaderMenuGlyph, SFSymbol> = {
-    bell: "bell",
-    darkMode: "moon",
-    document: "doc.text",
-    email: "envelope",
-    external: "arrow.up.right.square",
-    feedback: "bubble.left",
-    logout: "rectangle.portrait.and.arrow.right",
-    profile: "person",
-    refresh: "arrow.clockwise",
-    security: "lock.shield",
-    settings: "gearshape",
-    support: "questionmark.circle",
-};
 
 const icon = (name?: HeaderMenuGlyph) =>
     name ? { type: "sfSymbol" as const, name: sfSymbols[name] } : undefined;
@@ -114,6 +95,8 @@ export function useNativeHeaderItems(): {
         label: menu.initials ?? menu.buttonLabel,
         labelStyle: { fontWeight: "700", color: colors.primary },
         icon: menu.kind === "settings" ? icon("settings") : undefined,
+        // a lone icon is drawn as a circle: wider, the gear sits in a pill like the initials (`NativeSettingsMenu`)
+        width: menu.kind === "settings" ? 64 : undefined,
         tintColor: colors.primary,
         accessibilityLabel: menu.buttonLabel,
         menu: {

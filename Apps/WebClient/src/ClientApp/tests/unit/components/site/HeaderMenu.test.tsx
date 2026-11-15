@@ -10,8 +10,8 @@ import { useState } from "react";
 import { Platform, Text } from "react-native";
 
 import { HgButton } from "@/components/common";
-import { HeaderMenu } from "@/components/site/HeaderMenu";
-import { advanceTimers, press, render, screen } from "@/test/ui";
+import { HeaderMenu } from "@/components/site/HeaderMenu.web";
+import { render, screen } from "@/test/ui";
 
 function Harness() {
     const [visible, setVisible] = useState(true);
@@ -29,7 +29,10 @@ function Harness() {
     );
 }
 
-describe("HeaderMenu", () => {
+// web only: native's menus are the platform's own (nativeHeader.test.ts, NativeSettingsMenu.test.tsx)
+const describeWeb = Platform.OS === "web" ? describe : describe.skip;
+
+describeWeb("HeaderMenu", () => {
     beforeEach(() => {
         jest.useFakeTimers();
     });
@@ -41,18 +44,5 @@ describe("HeaderMenu", () => {
     it("shows its content while open", async () => {
         await render(<Harness />);
         expect(screen.getByText("menu content")).toBeTruthy();
-    });
-
-    if (Platform.OS === "web") return;
-
-    it("is a panel that stays mounted while it slides away", async () => {
-        await render(<Harness />);
-        expect(screen.getByTestId("headerMenu")).toBeTruthy();
-
-        await press(screen.getByTestId("headerMenuBackdrop"));
-        expect(screen.getByText("menu content")).toBeTruthy();
-
-        await advanceTimers(1000);
-        expect(screen.queryByText("menu content")).toBeNull();
     });
 });

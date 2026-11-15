@@ -131,12 +131,13 @@ describe("LockScreen", () => {
         );
     });
 
-    it("the gear opens while locked, without Security", async () => {
+    it("the gear's native menu stays while locked, without Security", async () => {
         if (isWeb) return;
         authenticate.mockResolvedValue("cancelled");
         await render(<LockScreen />);
         await advanceTimers(500);
-        await press(screen.getByTestId("settingsMenuBtn"));
+        // SwiftUI's menu (Jest is iOS) holds its entries before it opens
+        expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
         expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
         expect(screen.queryByTestId("menu-btn-security-link")).toBeNull();
         expect(useAppLockStore.getState().locked).toBe(true);

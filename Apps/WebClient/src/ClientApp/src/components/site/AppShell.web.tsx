@@ -14,7 +14,7 @@ import { selectIsLoading, useLoadingStore } from "@/stores/loading.store";
 
 import { DevBanner } from "./DevBanner";
 import { Footer } from "./Footer";
-import { Header } from "./Header";
+import { Header } from "./Header.web";
 import { IdleTimeout } from "./IdleTimeout";
 import { usePageChrome } from "./pageChrome";
 import { PageContainer } from "./PageContainer";

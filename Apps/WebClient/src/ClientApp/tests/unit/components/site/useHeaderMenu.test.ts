@@ -10,6 +10,7 @@ import {
 import {
     MENU_DISMISS_MS,
     useHeaderMenu,
+    useSettingsMenu,
 } from "@/components/site/useHeaderMenu";
 import { Path } from "@/constants/path";
 import { Action, Text, Type } from "@/constants/tracking";
@@ -128,6 +129,61 @@ describe("useHeaderMenu", () => {
             );
             await inAct(() => action(menu, "dark-mode-on").onPress?.());
             expect(useThemeStore.getState().preference).toBe("dark");
+        });
+    });
+
+    describe("the settings menu over the app (BrandHeader)", () => {
+        it("leaves out Security and the app's own pages, which would open behind the screen", async () => {
+            const { result } = await renderHook(() =>
+                useSettingsMenu({ overApp: true })
+            );
+            const menu = result.current;
+            expect(menu.kind).toBe("settings");
+            expect(keys(menu)[0]).toEqual([
+                "menu-btn-dark-mode-link",
+                "menu-btn-support-link",
+            ]);
+            const support = entry(menu, "menu-btn-support-link");
+            const labels =
+                support.type === "submenu"
+                    ? support.items.map((i) => i.label)
+                    : [];
+            expect(labels).toContain("Support Guide");
+            expect(labels).not.toContain("Terms of Service");
+        });
+
+        it("is the bar's settings menu without overApp", async () => {
+            const { result } = await renderHook(() => ({
+                settings: useSettingsMenu(),
+                bar: useHeaderMenu().menu,
+            }));
+            expect(keys(result.current.settings)).toEqual(
+                keys(result.current.bar)
+            );
+        });
+
+        it("keeps Dark Mode when the links are hidden for maintenance", async () => {
+            useConfigStore.setState({
+                config: {
+                    ...configFixture,
+                    webClient: {
+                        ...configFixture.webClient,
+                        offlineMode: {
+                            startDateTime: "2000-01-01T00:00:00Z",
+                            endDateTime: "2999-01-01T00:00:00Z",
+                            message: "Down",
+                            whitelist: [],
+                        },
+                    },
+                },
+                status: "loaded",
+            });
+            const { result } = await renderHook(() =>
+                useSettingsMenu({ overApp: true })
+            );
+            expect(keys(result.current)[0]).toEqual([
+                "menu-btn-dark-mode-link",
+            ]);
         });
     });
 

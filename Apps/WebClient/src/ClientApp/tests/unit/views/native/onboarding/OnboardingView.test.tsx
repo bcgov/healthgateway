@@ -105,7 +105,8 @@ describe("OnboardingView", () => {
                 securityOffered: false,
             });
             await render(<OnboardingView />);
-            await press(screen.getByTestId("settingsMenuBtn"));
+            // SwiftUI's menu (Jest is iOS) holds its entries before it opens
+            expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
             expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
             expect(screen.queryByTestId("menu-btn-security-link")).toBeNull();
         });
