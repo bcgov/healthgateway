@@ -1,6 +1,6 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Animated, RefreshControl, type ScrollView, View } from "react-native";
-import Reanimated from "react-native-reanimated";
+import { useIsFocused } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText, LiveRegion } from "@/components/common";
@@ -9,13 +9,13 @@ import { notifyScrollDragEnd } from "@/hooks/usePressHighlight";
 import { useRouteFeaturesEnabled } from "@/hooks/useRouteFeaturesEnabled";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useConnectivityStore } from "@/stores/connectivity.store";
+import { usePageRefreshStore } from "@/stores/pageRefresh.store";
 import { playRefreshFeedback } from "@/utils/refreshFeedback";
 
 import { PageContainer } from "./PageContainer";
 import {
     PageRefreshContext,
     PageRetrievingContext,
-    PageScrollContext,
     type RefreshHandler,
     ScrollToTopContext,
     ScrollToViewContext,
@@ -68,14 +68,15 @@ function StatusPill({ testID, label }: { testID: string; label: string }) {
 }
 
 /**
- * Native: each page owns its scroll view so the native tab bar can sit below the shell's header and
- * read the scroll (Liquid Glass minimises on scroll down, content runs behind the translucent bar).
+ * Native: each page owns its scroll view so the native tab bar and navigation bar can read the scroll (Liquid Glass
+ * minimises on scroll down, content runs behind the translucent bar).
  * No footer on native: its links live in the header menus' Support entry (`SupportMenuItem.tsx`).
  * Web (`PageScroll.web.tsx`): a pass-through; the shell's single scroll view scrolls the page.
  * Both hold the page's content back on a route whose feature is switched off (`useRouteFeaturesEnabled`).
+ * Native: while the page is on screen, its pull to refresh is also the navigation bar's Refresh button
+ * (`usePageRefreshStore`).
  */
 export function PageScroll({ children }: { children: React.ReactNode }) {
-    const onScroll = useContext(PageScrollContext);
     const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null);
     const scrollToTop = useCallback(
         () => scroll.current?.scrollTo({ y: 0, animated: false }),
@@ -121,9 +122,34 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
             useConnectivityStore.setState({ pullInProgress: false });
         }
     };
+
+    // the navigation bar's Refresh button runs the same refresh, while this page is the one on screen
+    const focused = useIsFocused();
+    const latestRefresh = useRef(onRefresh);
+    useEffect(() => {
+        latestRefresh.current = onRefresh;
+    });
+    const refreshable = refresh !== undefined;
+    useEffect(() => {
+        if (!focused || !refreshable) return;
+        const run = () => {
+            if (!usePageRefreshStore.getState().refreshing)
+                void latestRefresh.current();
+        };
+        usePageRefreshStore.setState({ refresh: run });
+        return () => {
+            if (usePageRefreshStore.getState().refresh === run)
+                usePageRefreshStore.setState({ refresh: undefined });
+        };
+    }, [focused, refreshable]);
+    useEffect(() => {
+        if (!focused || !refreshing) return;
+        usePageRefreshStore.setState({ refreshing: true });
+        return () => usePageRefreshStore.setState({ refreshing: false });
+    }, [focused, refreshing]);
     return (
         <View className="flex-1">
-            <Reanimated.ScrollView
+            <ScrollView
                 ref={scroll}
                 testID="pageScroll"
                 refreshControl={
@@ -143,8 +169,6 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
                 }}
                 contentInsetAdjustmentBehavior="automatic"
                 keyboardShouldPersistTaps="handled"
-                onScroll={onScroll}
-                scrollEventThrottle={16}
                 // a card touched as the drag began stays shaded until the finger lifts (usePressHighlight)
                 onScrollEndDrag={notifyScrollDragEnd}
             >
@@ -170,7 +194,7 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
                         </PageRefreshContext.Provider>
                     </ScrollToTopContext.Provider>
                 </ScrollToViewContext.Provider>
-            </Reanimated.ScrollView>
+            </ScrollView>
             {refreshPill ? (
                 <StatusPill testID="pageRefreshIndicator" label="Refreshing…" />
             ) : retrieving ? (

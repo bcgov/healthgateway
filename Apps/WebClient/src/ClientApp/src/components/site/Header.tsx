@@ -6,13 +6,7 @@ import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { AppText, HgButton, Icon } from "@/components/common";
 import { Path } from "@/constants/path";
-import {
-    Action,
-    Destination,
-    InternalUrl,
-    Text,
-    Type,
-} from "@/constants/tracking";
+import { Action, InternalUrl, Text, Type } from "@/constants/tracking";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useColorScheme, useThemeColors } from "@/hooks/useTheme";
 import { toHref } from "@/navigation/href";
@@ -41,6 +35,7 @@ import { FeedbackDialog } from "./FeedbackDialog";
 import { NotificationCentre } from "./NotificationCentre";
 import { RatingDialog } from "./RatingDialog";
 import { SettingsMenu } from "./SettingsMenu";
+import { useLogoLink } from "./useLogoLink";
 import { UserMenu } from "./UserMenu";
 import { useSupportLinksShown } from "./useSupportLinksShown";
 
@@ -94,19 +89,7 @@ export function Header() {
         pathname.toLowerCase() !== Path.Login;
     const showProfileLink =
         isAuthenticated && isValidIdp && !patientRetrievalFailed;
-    // Signed in → Home (the route guard redirects non-registered states to the right page);
-    // signed out → landing. Avoids the web client's gap where a signed-in user who is not yet in
-    // the "registered" state (profile still loading, pending deletion) was sent to the marketing page.
-    const logoDestination = isAuthenticated ? Path.Home : Path.Root;
-
-    /**
-     * Web: browser history, like the web client's link. Native: replaces the page. `dismissTo` did nothing on real devices
-     * from another tab, and a push would stack another copy, leaving something to swipe back to.
-     */
-    function goToLogoDestination() {
-        if (Platform.OS === "web") router.push(logoDestination);
-        else if (pathname !== logoDestination) router.replace(logoDestination);
-    }
+    const logo = useLogoLink();
 
     const accountButton = (
         <Pressable
@@ -167,17 +150,11 @@ export function Header() {
             {/* the web client's <router-link>: a real link on web, so the keyboard can follow it; the press tracks
                 and navigates itself */}
             <Link
-                href={toHref(logoDestination)}
+                href={toHref(logo.destination)}
                 asChild
                 onPress={(event) => {
                     event.preventDefault();
-                    services.tracking.trackEvent({
-                        action: Action.InternalLink,
-                        text: Text.HealthGatewayLogo,
-                        destination: Destination.Home,
-                        url: InternalUrl.Home,
-                    });
-                    goToLogoDestination();
+                    logo.follow();
                 }}
             >
                 <Pressable

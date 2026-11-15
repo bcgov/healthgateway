@@ -13,6 +13,10 @@ jest.mock("expo-router", () => {
     Stack.Screen = Screen;
     return { Stack };
 });
+// the navigation bar's options are their own test
+jest.mock("@/components/site/useNativeStackOptions", () => ({
+    useNativeStackOptions: () => () => ({}),
+}));
 
 // eslint-disable-next-line import/first
 import HomeStackLayout from "@/app/(tabs)/(home)/_layout";

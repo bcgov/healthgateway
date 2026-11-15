@@ -13,24 +13,31 @@ interface Props {
  * "v<major.minor.fix>.<build>" on every platform (v3.0.0.0057), plus " - Custom" on a pipeline build not from dev: the
  * WebClient pipeline's run name. Baked in from `version.json` by `app.config.ts`: `version` and `extra.build`.
  */
-export function AppVersion({ className }: Props) {
+/** The installed app's version as `AppVersion` shows it, or undefined when the build carries none. */
+export function appVersionText(): string | undefined {
     const version = Constants.expoConfig?.version;
-    if (!version) return null;
+    if (!version) return undefined;
     const extra = Constants.expoConfig?.extra as
         { versionLabel?: unknown; build?: unknown } | undefined;
     const label = extra?.versionLabel;
     const build = extra?.build;
+    return formatAppVersion(
+        version,
+        typeof build === "number" ? build : undefined,
+        typeof label === "string" ? label : undefined
+    );
+}
+
+export function AppVersion({ className }: Props) {
+    const text = appVersionText();
+    if (!text) return null;
     return (
         <AppText
             testID="appVersion"
             variant="body-medium"
             className={cn("text-bc-grey", className)}
         >
-            {formatAppVersion(
-                version,
-                typeof build === "number" ? build : undefined,
-                typeof label === "string" ? label : undefined
-            )}
+            {text}
         </AppText>
     );
 }

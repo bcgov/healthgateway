@@ -5,6 +5,7 @@ import {
     type ParamListBase,
 } from "expo-router/react-navigation";
 
+import { useNativeStackOptions } from "@/components/site/useNativeStackOptions";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -12,6 +13,8 @@ const PAGES = "(pages)";
 const TABS = "(tabs)";
 /** The login sheet (`src/app/loginProviders.tsx`): presented over the page that opened it. */
 const LOGIN_SHEET = "loginProviders";
+/** An unknown address (`src/app/+not-found.tsx`). */
+const NOT_FOUND = "+not-found";
 
 interface RootRoute {
     name: string;
@@ -19,7 +22,7 @@ interface RootRoute {
 
 /**
  * Whether the root stack keeps the screen beneath the top one. Two cases: the login sheet, which is presented over the
- * page that opened it; and signed out, the tabs group pushed over the signed-out pages (the gear menu's Security, the
+ * page that opened it; and signed out, the tabs group pushed over the signed-out pages (the settings menu's Security, the
  * Support menu's Terms of Service), so the platform's back swipe returns there. Everything else keeps just the top
  * screen, as the Slot this replaced did: signing out must not leave the signed-in tabs mounted under the landing page.
  */
@@ -61,6 +64,8 @@ function pruneRootStack(navigation: NavigationProp<ParamListBase>) {
 export function RootNavigator() {
     const colors = useThemeColors();
     const signedOut = useAuthStore((s) => !s.isAuthenticated);
+    // the groups draw their own navigation bars; Page Not Found is a page of its own here
+    const notFoundOptions = useNativeStackOptions();
     return (
         <Stack
             screenOptions={{
@@ -81,6 +86,7 @@ export function RootNavigator() {
                     gestureEnabled: signedOut,
                 }}
             />
+            <Stack.Screen name={NOT_FOUND} options={notFoundOptions} />
             <Stack.Screen
                 name={LOGIN_SHEET}
                 options={{

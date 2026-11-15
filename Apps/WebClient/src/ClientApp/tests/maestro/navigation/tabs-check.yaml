@@ -7,7 +7,7 @@ tags:
       id: "menu-btn-health-records-link"
 - extendedWaitUntil:
       visible:
-          id: "breadcrumb-timeline"
+          id: "timeline-page-title"
       timeout: 8000
 - tapOn:
       id: "menu-btn-home-link"

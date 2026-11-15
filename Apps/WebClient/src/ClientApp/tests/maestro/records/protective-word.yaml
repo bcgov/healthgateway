@@ -61,12 +61,12 @@ tags:
       commands:
           - extendedWaitUntil:
                 visible:
-                    id: "breadcrumb-timeline"
+                    id: "timeline-page-title"
                 timeout: 20000
                 optional: true
           - extendedWaitUntil:
                 notVisible:
-                    id: "breadcrumb-timeline"
+                    id: "timeline-page-title"
                 timeout: 120000
           - inputText: ${MAESTRO_HG_PROTECTIVE_WORD}
           - pressKey: Enter
@@ -83,10 +83,10 @@ tags:
       id: "protectiveWordModal"
 - assertVisible:
       id: "medicationTitle"
-# back to the top, where the header (and its menu, for logging out) shows again
+# back to the top of the page
 - scrollUntilVisible:
       element:
-          id: "breadcrumb-timeline"
+          id: "timeline-page-title"
       direction: UP
       speed: 80
       timeout: 20000
