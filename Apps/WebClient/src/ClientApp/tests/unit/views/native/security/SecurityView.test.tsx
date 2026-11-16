@@ -56,7 +56,7 @@ describe("SecurityView", () => {
         reset.mockClear();
         switchTo.mockClear();
         useAppLockStore.setState({ enabled: false, authenticating: false });
-        useEnvironmentStore.setState({ selected: "dev" });
+        useEnvironmentStore.setState({ selected: "dev", effective: "dev" });
     });
 
     afterEach(async () => {
@@ -65,7 +65,10 @@ describe("SecurityView", () => {
             useAppLockStore.setState({ enabled: false, authenticating: false })
         );
         updateStores(() =>
-            useEnvironmentStore.setState({ selected: undefined })
+            useEnvironmentStore.setState({
+                selected: undefined,
+                effective: "local",
+            })
         );
     });
 
@@ -146,6 +149,40 @@ describe("SecurityView", () => {
             await choose("Switch");
             expect(switchTo).toHaveBeenCalledTimes(1);
             expect(switchTo.mock.calls[0][0]).toBe("prod");
+        });
+
+        describe("only what this build offers (environmentSelector.md)", () => {
+            afterEach(() => {
+                updateStores(() =>
+                    useEnvironmentStore.setState({
+                        offered: ["local", "dev", "test", "prod"],
+                    })
+                );
+            });
+
+            it("a released build (Production only): no section", async () => {
+                useEnvironmentStore.setState({
+                    effective: "prod",
+                    offered: ["prod"],
+                });
+                await open();
+                expect(screen.queryByTestId("environmentSection")).toBeNull();
+                expect(screen.getByTestId("resetAppBtn")).toBeTruthy();
+            });
+
+            it("an unreleased build: Development, Test and Production", async () => {
+                useEnvironmentStore.setState({
+                    effective: "test",
+                    offered: ["dev", "test", "prod"],
+                });
+                await open();
+                expect(screen.queryByTestId("environment-local")).toBeNull();
+                for (const id of ["dev", "test", "prod"])
+                    expect(
+                        screen.getByTestId(`environment-${id}`)
+                    ).toBeTruthy();
+                expect(checked("test")).toBe(true);
+            });
         });
 
         it("does nothing on the current environment", async () => {
