@@ -10,6 +10,7 @@ import {
     render,
     screen,
     tagOf,
+    textOf,
     waitFor,
 } from "@/test/ui";
 
@@ -97,5 +98,108 @@ describe("HgCard", () => {
             </HgCard>
         );
         expect(screen.getByLabelText("Other record sources")).toBeTruthy();
+    });
+
+    it("shows its description as the body of the full card", async () => {
+        await render(
+            <HgCard
+                title="Medications"
+                description="History since 1995"
+                onPress={() => undefined}
+                testID="card"
+            />
+        );
+        expect(screen.getByText("History since 1995")).toBeTruthy();
+        expect(
+            attrOf(screen.getByLabelText("Medications"), "aria-describedby")
+        ).toBeUndefined();
+    });
+});
+
+describe("HgCard compact (Home's phone tile)", () => {
+    const description = "History since 1995";
+
+    it("shows the title and opens on press, from the tile or its button", async () => {
+        const onPress = jest.fn();
+        await render(
+            <HgCard
+                compact
+                title="Medications"
+                description={description}
+                onPress={onPress}
+                testID="card"
+            />
+        );
+        expect(textOf(screen.getByTestId("card-button-title"))).toBe(
+            "Medications"
+        );
+        await press(screen.getByTestId("card"));
+        await press(screen.getByLabelText("Medications"));
+        expect(onPress).toHaveBeenCalledTimes(2);
+        expect(hasShadow(screen.getByTestId("card"))).toBe(true);
+    });
+
+    it("leaves the description off the tile: it describes the button for the screen reader", async () => {
+        await render(
+            <HgCard
+                compact
+                title="Medications"
+                description={description}
+                onPress={() => undefined}
+                testID="card"
+            />
+        );
+        const control = screen.getByLabelText("Medications");
+        if (Platform.OS === "web") {
+            // react-native-web drops accessibilityHint: hidden text describes the button instead
+            const describedBy = attrOf(control, "aria-describedby")!;
+            expect(document.getElementById(describedBy)?.textContent).toBe(
+                description
+            );
+            expect(tagOf(control)).toBe("button");
+            await expectNoAxeViolations(
+                screen.getByTestId("card") as unknown as HTMLElement
+            );
+        } else {
+            expect(screen.queryByText(description)).toBeNull();
+            expect(control.props.accessibilityHint).toBe(description);
+        }
+    });
+
+    it("titles a card with no title from its accessibilityLabel", async () => {
+        await render(
+            <HgCard
+                compact
+                accessibilityLabel="Health Connect Registry"
+                onPress={() => undefined}
+                testID="card"
+            />
+        );
+        expect(textOf(screen.getByTestId("card-button-title"))).toBe(
+            "Health Connect Registry"
+        );
+        expect(screen.getByLabelText("Health Connect Registry")).toBeTruthy();
+    });
+
+    it("keeps the ⋮ menu with Remove", async () => {
+        const onRemove = jest.fn();
+        await render(
+            <HgCard
+                compact
+                title="Labs"
+                onPress={() => undefined}
+                onRemove={onRemove}
+                testID="card"
+            />
+        );
+        expect(screen.getByLabelText("Menu")).toBeTruthy();
+        // the menu is anchored with measureInWindow, which the native test renderer never answers
+        if (Platform.OS !== "web") return;
+        await press(screen.getByTestId("card-menu-button"));
+        await waitFor(() =>
+            expect(screen.getByTestId("remove-quick-link-button")).toBeTruthy()
+        );
+        await press(screen.getByTestId("remove-quick-link-button"));
+        expect(onRemove).toHaveBeenCalledTimes(1);
     });
 });
