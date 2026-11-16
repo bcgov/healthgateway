@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 
 import { useBreakpoint } from "./useBreakpoint";
 
@@ -14,6 +14,22 @@ export function useColumns() {
     if (width >= 960) return 2;
     if (Platform.OS !== "web" && width >= 600) return 2;
     return 1;
+}
+
+/** Above this text scale two compact tiles to a row no longer fit their titles, so the grid falls back to one column. */
+const MaxCompactFontScale = 1.3;
+
+/**
+ * Home's quick-access grid. Below Vuetify's "sm" (600pt), on web and native, it is two columns of compact tiles (icon,
+ * title and arrow, as the earlier iOS app had) rather than one column of full cards: a stated deviation from the web
+ * client. Elsewhere, and with large text, it is useColumns() with full cards.
+ */
+export function useCardGrid() {
+    const { xs } = useBreakpoint();
+    const { fontScale } = useWindowDimensions();
+    const columns = useColumns();
+    const compact = xs && fontScale <= MaxCompactFontScale;
+    return { columns: compact ? 2 : columns, compact };
 }
 
 /** The width of one card of the grid, as a percentage. */

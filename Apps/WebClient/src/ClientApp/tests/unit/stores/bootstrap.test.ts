@@ -53,6 +53,14 @@ const fakeService = (init: Promise<void>, info: Promise<unknown>) => ({
     refreshToken: jest.fn(async () => false),
 });
 
+/**
+ * A start-up that signs in schedules the token refresh for `refreshTokenTime`, five minutes out, on a real timer.
+ * resetStores() leaves it running, which keeps the Jest worker alive after the file ends; clearStorage() cancels it.
+ */
+const clearSession = () => {
+    if (services.isInitialized) useAuthStore.getState().clearStorage();
+};
+
 describe("start-up replaced by a newer one", () => {
     beforeEach(() => {
         jest.spyOn(services.config, "getConfiguration").mockResolvedValue(
@@ -61,6 +69,7 @@ describe("start-up replaced by a newer one", () => {
         useAppLockStore.setState({ enabled: false });
     });
     afterEach(() => {
+        clearSession();
         jest.restoreAllMocks();
         mockCreateAuth.mockReset();
         resetStores();
@@ -161,6 +170,7 @@ describe("native sign-in settings", () => {
         useAppLockStore.setState({ enabled: false });
     });
     afterEach(() => {
+        clearSession();
         jest.restoreAllMocks();
         mockCreateAuth.mockReset();
         resetStores();

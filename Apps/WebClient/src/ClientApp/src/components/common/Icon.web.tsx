@@ -9,6 +9,7 @@ import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons/faS
 import { faAddressCard } from "@fortawesome/free-solid-svg-icons/faAddressCard";
 import { faAnglesRight } from "@fortawesome/free-solid-svg-icons/faAnglesRight";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { faArrowRotateLeft } from "@fortawesome/free-solid-svg-icons/faArrowRotateLeft";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons/faArrowUp";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons/faArrowUpRightFromSquare";
@@ -63,6 +64,7 @@ import { faSun } from "@fortawesome/free-solid-svg-icons/faSun";
 import { faSyringe } from "@fortawesome/free-solid-svg-icons/faSyringe";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faUserDoctor } from "@fortawesome/free-solid-svg-icons/faUserDoctor";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons/faUserGroup";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { faUserSecret } from "@fortawesome/free-solid-svg-icons/faUserSecret";
@@ -95,10 +97,12 @@ const solid: Record<string, IconDefinition> = {
     bars: faBars,
     "box-archive": faBoxArchive,
     "arrow-left": faArrowLeft,
+    "arrow-right": faArrowRight,
     "arrow-up": faArrowUp,
     calendar: faCalendar,
     "caret-down": faCaretDown,
     "user-plus": faUserPlus,
+    "user-doctor": faUserDoctor,
     "calendar-check": faCalendarCheck,
     "angles-right": faAnglesRight,
     bell: faBell,
