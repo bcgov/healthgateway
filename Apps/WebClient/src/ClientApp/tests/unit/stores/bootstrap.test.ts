@@ -176,7 +176,7 @@ describe("native sign-in settings", () => {
         resetStores();
     });
 
-    it("signs in with the mobile client at the mobile endpoint, not the web client's", async () => {
+    it("signs in with the mobile client and scopes at the mobile endpoint, not the web client's", async () => {
         jest.spyOn(services.config, "getConfiguration").mockResolvedValue(
             configFixture
         );
@@ -187,7 +187,7 @@ describe("native sign-in settings", () => {
         expect(mockCreateAuth).toHaveBeenCalledWith({
             authority: "https://sso.test/auth/realms/hg-mobile",
             clientId: "hg-mobile-ios",
-            scope: configFixture.openIdConnect.scope,
+            scope: configFixture.webClient.mobile!.authentication!.scope,
             callbacks: null,
         });
     });

@@ -34,6 +34,11 @@ namespace HealthGateway.WebClient.Server.Models
         public string? ClientIdPrefix { get; set; }
 
         /// <summary>
+        /// Gets or sets the space-separated OpenID Connect scopes the app requests, in place of the web client's.
+        /// </summary>
+        public string? Scope { get; set; }
+
+        /// <summary>
         /// Gets or sets the identity providers the mobile app offers, in place of the web client's list.
         /// </summary>
         [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]

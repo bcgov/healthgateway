@@ -99,6 +99,7 @@ describe("mobile configuration", () => {
         const authentication = {
             endpoint: "https://sso.test/auth/realms/mobile",
             clientIdPrefix: "hg-mobile",
+            scope: "openid profile offline_access",
             identityProviders: [
                 {
                     id: "bcsc",
@@ -109,10 +110,10 @@ describe("mobile configuration", () => {
                 },
             ],
         };
-        const { identityProviders } = authentication;
+        const { identityProviders, scope } = authentication;
 
         it.each([["ios"], ["android"]])(
-            "signs in on %s with its own client at the mobile endpoint",
+            "signs in on %s with its own client and scopes at the mobile endpoint",
             (os) => {
                 const oidc = nativeOidcConfig(
                     configWithMobile({ authentication }),
@@ -121,9 +122,10 @@ describe("mobile configuration", () => {
                 expect(oidc).toEqual({
                     authority: "https://sso.test/auth/realms/mobile",
                     clientId: `hg-mobile-${os}`,
-                    scope: configFixture.openIdConnect.scope,
+                    scope: "openid profile offline_access",
                     callbacks: null,
                 });
+                expect(oidc.scope).not.toBe(configFixture.openIdConnect.scope);
             }
         );
 
@@ -134,27 +136,44 @@ describe("mobile configuration", () => {
                 [
                     "webClient.mobile.authentication.endpoint",
                     "webClient.mobile.authentication.clientIdPrefix",
+                    "webClient.mobile.authentication.scope",
                     "webClient.mobile.authentication.identityProviders",
                 ],
             ],
             [
                 "the endpoint",
-                { clientIdPrefix: "hg-mobile", identityProviders },
+                { clientIdPrefix: "hg-mobile", scope, identityProviders },
                 ["webClient.mobile.authentication.endpoint"],
             ],
             [
                 "the client ID prefix",
                 {
                     endpoint: "https://sso.test/auth/realms/mobile",
+                    scope,
                     identityProviders,
                 },
                 ["webClient.mobile.authentication.clientIdPrefix"],
+            ],
+            [
+                "the scope",
+                {
+                    endpoint: "https://sso.test/auth/realms/mobile",
+                    clientIdPrefix: "hg-mobile",
+                    identityProviders,
+                },
+                ["webClient.mobile.authentication.scope"],
+            ],
+            [
+                "an empty scope",
+                { ...authentication, scope: "" },
+                ["webClient.mobile.authentication.scope"],
             ],
             [
                 "the identity providers",
                 {
                     endpoint: "https://sso.test/auth/realms/mobile",
                     clientIdPrefix: "hg-mobile",
+                    scope,
                 },
                 ["webClient.mobile.authentication.identityProviders"],
             ],

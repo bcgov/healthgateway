@@ -25,6 +25,8 @@ export interface MobileAuthenticationConfiguration {
     endpoint?: string;
     /** The native app's client ID is this plus "-ios" or "-android". */
     clientIdPrefix?: string;
+    /** The space-separated scopes the native apps request, in place of `openIdConnect.scope`. */
+    scope?: string;
     /** The login picker's providers on iOS and Android, in place of the top-level `identityProviders`. */
     identityProviders?: IdentityProviderConfiguration[];
 }

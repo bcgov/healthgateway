@@ -223,6 +223,7 @@ namespace HealthGateway.WebClientTests.Services
                         {
                             Endpoint = new Uri("https://loginproxy.gov.bc.ca/auth/realms/health-gateway-gold"),
                             ClientIdPrefix = "hg-mobile",
+                            Scope = "openid profile web-origins email offline_access",
                             IdentityProviders =
                             [
                                 new IdentityProviderConfiguration

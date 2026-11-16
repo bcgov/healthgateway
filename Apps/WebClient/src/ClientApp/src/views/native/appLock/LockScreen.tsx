@@ -64,7 +64,14 @@ function LockedView() {
     }, []);
 
     return (
-        <View className="flex-1" style={{ paddingTop: insets.top }}>
+        <View
+            className="flex-1"
+            style={{
+                paddingTop: insets.top,
+                paddingLeft: insets.left,
+                paddingRight: insets.right,
+            }}
+        >
             <BrandHeader />
             <ScrollView contentContainerClassName="p-8">
                 <LandingIntro />
