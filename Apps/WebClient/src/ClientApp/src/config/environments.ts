@@ -62,12 +62,30 @@ export const environments: Environment[] = [
 ];
 
 /**
- * Development builds start on Local, the services this computer runs (the Aspire host); anything else, on Production.
- * A saved choice (Security → Environment, or Change Environment on the error page) wins over either.
+ * Production's gateway says which build was last released to the public on both stores (Apps/MobileEnvironment,
+ * environmentSelector.md). Always Production's, whichever environment the app is on, so a lower environment can never
+ * widen the choice. `EXPO_PUBLIC_ENVIRONMENTS_URL` points a test build at another gateway (hg.dev.api.gov.bc.ca).
  */
-export const defaultEnvironmentId = (): EnvironmentId =>
-    __DEV__ ? "local" : "prod";
+export const ENVIRONMENTS_URL =
+    process.env.EXPO_PUBLIC_ENVIRONMENTS_URL ||
+    "https://hg.api.gov.bc.ca/api/mobileservice/environment";
 
-/** Release builds allow no plain http, so Local only works, and only appears, in development builds. */
-export const selectableEnvironments = (): Environment[] =>
-    __DEV__ ? environments : environments.filter((e) => e.id !== "local");
+/** What a release build above the released one offers (store reviewers and staff), and starts on. */
+export const UNRELEASED_ENVIRONMENTS: readonly EnvironmentId[] = [
+    "dev",
+    "test",
+    "prod",
+];
+export const UNRELEASED_DEFAULT: EnvironmentId = "test";
+
+/** Development builds: every environment, Local (the services this computer runs, e.g. the Aspire host) first. */
+export const DEVELOPMENT_ENVIRONMENTS: readonly EnvironmentId[] =
+    environments.map((e) => e.id);
+export const DEVELOPMENT_DEFAULT: EnvironmentId = "local";
+
+/** These environments, in the selector's order. */
+export const environmentsOf = (ids: readonly EnvironmentId[]): Environment[] =>
+    environments.filter((e) => ids.includes(e.id));
+
+export const isEnvironmentId = (value: unknown): value is EnvironmentId =>
+    environments.some((e) => e.id === value);

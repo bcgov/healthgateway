@@ -12,10 +12,7 @@ import {
     PageTitle,
 } from "@/components/common";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
-import {
-    type Environment,
-    selectableEnvironments,
-} from "@/config/environments";
+import { type Environment, environmentsOf } from "@/config/environments";
 import { Path } from "@/constants/path";
 import { useLocalAuthMethod } from "@/hooks/useAppLock";
 import { useThemeColors } from "@/hooks/useTheme";
@@ -24,6 +21,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useDependentStore } from "@/stores/dependent.store";
 import {
     selectEnvironment,
+    selectHasEnvironmentChoice,
     useEnvironmentStore,
 } from "@/stores/environment.store";
 import {
@@ -230,10 +228,15 @@ const hostOf = (environment: Environment) =>
         .replace(/^https?:\/\//, "")
         .replace(/\/configuration$/, "");
 
-/** Choosing another environment is a Reset App (`switchEnvironment`), so it asks first. Local only in development builds. */
+/**
+ * Choosing another environment is a Reset App (`switchEnvironment`), so it asks first. Only what this build offers
+ * (environmentSelector.md): a released build has Production only, so no section; Local only in development builds.
+ */
 function EnvironmentSection() {
     const router = useRouter();
     const current = useEnvironmentStore(selectEnvironment);
+    const offered = useEnvironmentStore((s) => s.offered);
+    const hasChoice = useEnvironmentStore(selectHasEnvironmentChoice);
 
     const confirmSwitch = (environment: Environment) => {
         if (environment.id === current.id) return;
@@ -256,6 +259,7 @@ function EnvironmentSection() {
         );
     };
 
+    if (!hasChoice) return null;
     return (
         <View testID="environmentSection">
             <AppText variant="h3" className="mt-8 mb-2">
@@ -266,7 +270,7 @@ function EnvironmentSection() {
                 app.
             </AppText>
             <View role="radiogroup" aria-label="Environment">
-                {selectableEnvironments().map((environment) => (
+                {environmentsOf(offered).map((environment) => (
                     <HgRadio
                         key={environment.id}
                         testID={`environment-${environment.id}`}

@@ -113,13 +113,21 @@ describe("LockScreen", () => {
 
     it("has the environment banner, the logo bar and the gear, like the app's header", async () => {
         if (isWeb) return;
-        updateStores(() => useEnvironmentStore.setState({ selected: "test" }));
+        updateStores(() =>
+            useEnvironmentStore.setState({
+                selected: "test",
+                effective: "test",
+            })
+        );
         await render(<LockScreen />);
         expect(screen.getByTestId("environmentBanner")).toBeTruthy();
         expect(screen.getByTestId("brandHeader")).toBeTruthy();
         expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
         updateStores(() =>
-            useEnvironmentStore.setState({ selected: undefined })
+            useEnvironmentStore.setState({
+                selected: undefined,
+                effective: "local",
+            })
         );
     });
 

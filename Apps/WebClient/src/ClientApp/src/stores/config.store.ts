@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
 import { DateTime } from "luxon";
 import { Platform } from "react-native";
 import { create } from "zustand";
@@ -11,7 +10,7 @@ import type {
 } from "@/models/configData";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
-import { isUpdateRequired } from "@/utils/appVersion";
+import { appBuild, isUpdateRequired } from "@/utils/appVersion";
 
 import { selectEnvironment, useEnvironmentStore } from "./environment.store";
 
@@ -209,10 +208,7 @@ export const selectIdleTimeout = (s: ConfigState): number => {
 /** Native: this app's build number is below `webClient.mobile.minimumBuild`. */
 export const selectUpdateRequired = (s: ConfigState): boolean =>
     Platform.OS !== "web" &&
-    isUpdateRequired(
-        (Constants.expoConfig?.extra as { build?: unknown } | undefined)?.build,
-        s.config?.webClient?.mobile?.minimumBuild
-    );
+    isUpdateRequired(appBuild(), s.config?.webClient?.mobile?.minimumBuild);
 
 /** The server's configuration leaves out a setting the native app cannot sign in without. */
 export class MobileConfigurationError extends Error {
