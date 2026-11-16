@@ -1,18 +1,12 @@
 import { Link, usePathname, useRouter } from "expo-router";
 import { useState } from "react";
-import { Platform, Pressable, useWindowDimensions, View } from "react-native";
+import { Pressable, useWindowDimensions, View } from "react-native";
 
 import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { AppText, HgButton, Icon } from "@/components/common";
 import { Path } from "@/constants/path";
-import {
-    Action,
-    Destination,
-    InternalUrl,
-    Text,
-    Type,
-} from "@/constants/tracking";
+import { Action, InternalUrl, Text, Type } from "@/constants/tracking";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useColorScheme, useThemeColors } from "@/hooks/useTheme";
 import { toHref } from "@/navigation/href";
@@ -37,14 +31,14 @@ import {
 } from "@/stores/user.store";
 import { decorativeProps } from "@/utils/decorative";
 
-import { FeedbackDialog } from "./FeedbackDialog";
 import { NotificationCentre } from "./NotificationCentre";
 import { RatingDialog } from "./RatingDialog";
-import { SettingsMenu } from "./SettingsMenu";
-import { UserMenu } from "./UserMenu";
-import { useSupportLinksShown } from "./useSupportLinksShown";
+import { useLogoLink } from "./useLogoLink";
+import { UserMenu } from "./UserMenu.web";
 
-/** Port of HeaderComponent.vue (v-app-bar). */
+/**
+ * Port of HeaderComponent.vue (v-app-bar). Web only: native shows each stack's navigation bar (`useNativeStackOptions`).
+ */
 export function Header() {
     const colors = useThemeColors();
     // Dark variant: the navy wordmark, crest text and mountains become pale blue (docs/theming.md).
@@ -70,7 +64,6 @@ export function Header() {
     const logoHeight = logoWidth / 3.1924;
     const [menuOpen, setMenuOpen] = useState(false);
     const [ratingOpen, setRatingOpen] = useState(false);
-    const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [notificationButtonClicked, setNotificationButtonClicked] =
         useState(false);
     const isNotificationCentreEnabled = useConfigStore(
@@ -80,33 +73,14 @@ export function Header() {
         (s) => s.setNotificationCenterOpen
     );
     const newNotifications = useNewNotifications();
-    // Native: the footer is suppressed; its links open from the account menu, or the gear menu when signed out
-    const supportShown = useSupportLinksShown() && Platform.OS !== "web";
 
     const fullyRegistered = isFullyRegisteredUser();
-    // Native main navigation is the bottom tab bar: no drawer, so no hamburger.
-    const showSidebarButton = fullyRegistered && Platform.OS === "web";
-    // Native: signed out, the header only has the gear. The way in is on the page itself (stated deviation)
+    const showSidebarButton = fullyRegistered;
     const showLogin =
-        Platform.OS === "web" &&
-        !isAuthenticated &&
-        !isOffline &&
-        pathname.toLowerCase() !== Path.Login;
+        !isAuthenticated && !isOffline && pathname.toLowerCase() !== Path.Login;
     const showProfileLink =
         isAuthenticated && isValidIdp && !patientRetrievalFailed;
-    // Signed in → Home (the route guard redirects non-registered states to the right page);
-    // signed out → landing. Avoids the web client's gap where a signed-in user who is not yet in
-    // the "registered" state (profile still loading, pending deletion) was sent to the marketing page.
-    const logoDestination = isAuthenticated ? Path.Home : Path.Root;
-
-    /**
-     * Web: browser history, like the web client's link. Native: replaces the page. `dismissTo` did nothing on real devices
-     * from another tab, and a push would stack another copy, leaving something to swipe back to.
-     */
-    function goToLogoDestination() {
-        if (Platform.OS === "web") router.push(logoDestination);
-        else if (pathname !== logoDestination) router.replace(logoDestination);
-    }
+    const logo = useLogoLink();
 
     const accountButton = (
         <Pressable
@@ -114,9 +88,7 @@ export function Header() {
             accessibilityRole="button"
             accessibilityLabel="Account menu"
             aria-expanded={menuOpen}
-            {...(Platform.OS === "web"
-                ? ({ "aria-haspopup": "menu" } as object)
-                : {})}
+            {...({ "aria-haspopup": "menu" } as object)}
             onPress={() => setMenuOpen(true)}
             className="mx-2 w-12 h-12 rounded-full bg-surface-hover items-center justify-center"
         >
@@ -128,14 +100,8 @@ export function Header() {
 
     function handleLogout() {
         setMenuOpen(false);
-        // let the menu slide away first: iOS cannot present a modal over one still on screen
-        setTimeout(
-            () => {
-                if (isValidIdp) setRatingOpen(true);
-                else processLogout();
-            },
-            Platform.OS === "web" ? 0 : 400
-        );
+        if (isValidIdp) setRatingOpen(true);
+        else processLogout();
     }
 
     function processLogout() {
@@ -155,9 +121,7 @@ export function Header() {
                     accessibilityRole="button"
                     accessibilityLabel="Toggle navigation"
                     aria-expanded={sidebarOpen}
-                    {...(Platform.OS === "web"
-                        ? ({ "aria-controls": "sidenavbar" } as object)
-                        : {})}
+                    {...({ "aria-controls": "sidenavbar" } as object)}
                     onPress={() => toggleSidebar(isMobile)}
                     className="p-3 mr-1"
                 >
@@ -167,17 +131,11 @@ export function Header() {
             {/* the web client's <router-link>: a real link on web, so the keyboard can follow it; the press tracks
                 and navigates itself */}
             <Link
-                href={toHref(logoDestination)}
+                href={toHref(logo.destination)}
                 asChild
                 onPress={(event) => {
                     event.preventDefault();
-                    services.tracking.trackEvent({
-                        action: Action.InternalLink,
-                        text: Text.HealthGatewayLogo,
-                        destination: Destination.Home,
-                        url: InternalUrl.Home,
-                    });
-                    goToLogoDestination();
+                    logo.follow();
                 }}
             >
                 <Pressable
@@ -255,46 +213,17 @@ export function Header() {
                                 router.push(Path.Profile);
                         }}
                         onLogout={handleLogout}
-                        // Native: the drawer's Feedback entry lives here instead
-                        onFeedback={
-                            Platform.OS !== "web" && fullyRegistered
-                                ? () => {
-                                      setMenuOpen(false);
-                                      services.tracking.trackEvent({
-                                          action: Action.ButtonClick,
-                                          text: Text.SendFeedback,
-                                          type: Type.Sidebar,
-                                      });
-                                      // let the menu modal dismiss before the next one presents (iOS)
-                                      setTimeout(
-                                          () => setFeedbackOpen(true),
-                                          Platform.OS === "ios" ? 400 : 0
-                                      );
-                                  }
-                                : undefined
-                        }
-                        showSupport={supportShown}
-                    />
-                    <FeedbackDialog
-                        visible={feedbackOpen}
-                        onClose={() => setFeedbackOpen(false)}
                     />
                     <RatingDialog
                         visible={ratingOpen}
                         onClose={() => {
                             setRatingOpen(false);
-                            // let the modal finish dismissing before the route changes (iOS otherwise can leave a
-                            // stuck invisible modal window that blocks touches)
-                            setTimeout(
-                                processLogout,
-                                Platform.OS === "ios" ? 400 : 0
-                            );
+                            processLogout();
                         }}
                     />
                 </>
             ) : (
                 <>
-                    {Platform.OS !== "web" ? <SettingsMenu /> : null}
                     {showLogin ? (
                         <HgButton
                             testID="loginBtn"

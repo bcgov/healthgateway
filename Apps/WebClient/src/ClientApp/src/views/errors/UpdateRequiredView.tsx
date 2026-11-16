@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BackHandler, ScrollView, View } from "react-native";
+import { BackHandler, Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppText, Dialog, HgButton } from "@/components/common";
@@ -32,14 +32,14 @@ export function UpdateRequiredView() {
         };
         clear();
         const unsubscribe = useAppLockStore.subscribe(clear);
-        // Android's back must not move the page underneath (a modal window would have taken it)
-        const back = BackHandler.addEventListener(
-            "hardwareBackPress",
-            () => true
-        );
+        // Android's back must not move the page underneath (a modal window would have taken it); web has none
+        const back =
+            Platform.OS === "web"
+                ? undefined
+                : BackHandler.addEventListener("hardwareBackPress", () => true);
         return () => {
             unsubscribe();
-            back.remove();
+            back?.remove();
         };
     }, []);
     return (

@@ -2,14 +2,12 @@ appId: hg.local
 # Signed out: gear menu → Security → Environment, choose ${ENVIRONMENT} (local, dev, test or prod) and confirm. The
 # switch is a Reset App, so the caller handles the intro that follows.
 ---
-- tapOn:
-      id: "settingsMenuBtn"
+# the settings menu is the platform's own (UIMenu / Material menu): its entries are found by their text
+- tapOn: "Settings"
 - extendedWaitUntil:
-      visible:
-          id: "menu-btn-security-link"
+      visible: "Security"
       timeout: 5000
-- tapOn:
-      id: "menu-btn-security-link"
+- tapOn: "Security"
 - scrollUntilVisible:
       element:
           id: "environment-${ENVIRONMENT}"
@@ -17,7 +15,7 @@ appId: hg.local
       # faster than the default (40); it still stops as soon as the element shows
       speed: 80
       timeout: 10000
-# the confirmation's button (Android may show it in capitals). A tap while the gear menu is still closing can be lost,
+# the confirmation's button (Android may show it in capitals). A tap while the settings menu is still closing can be lost,
 # so the choice is tapped again if no confirmation shows.
 - retry:
       maxRetries: 2

@@ -5,9 +5,7 @@ import { useThemeColors } from "@/hooks/useTheme";
 import { selectUserName, useUserStore } from "@/stores/user.store";
 
 import { DarkModeMenuItem } from "./DarkModeMenuItem";
-import { HeaderMenu } from "./HeaderMenu";
-import { SecurityMenuItem } from "./SecurityMenuItem";
-import { SupportMenuItem } from "./SupportMenuItem";
+import { HeaderMenu } from "./HeaderMenu.web";
 
 interface Props {
     visible: boolean;
@@ -15,21 +13,18 @@ interface Props {
     onClose: () => void;
     onProfile: () => void;
     onLogout: () => void;
-    /** Native only: the drawer's Feedback entry (the web client keeps it in the sidebar). */
-    onFeedback?: () => void;
-    /** Native only: the footer's links (the web client keeps the footer). */
-    showSupport?: boolean;
 }
 
-/** The v-menu under the avatar button: user name, Profile, Log Out. */
+/**
+ * Web: the v-menu under the avatar button: user name, Profile, Dark Mode, Log Out. Native draws its account menu in the
+ * navigation bar (`useHeaderMenu`).
+ */
 export function UserMenu({
     visible,
     showProfile,
     onClose,
     onProfile,
     onLogout,
-    onFeedback,
-    showSupport = false,
 }: Props) {
     const colors = useThemeColors();
     const userName = useUserStore(selectUserName);
@@ -59,24 +54,6 @@ export function UserMenu({
             ) : null}
             {/* Health Gateway UI only: the web client has no theme switch. */}
             <DarkModeMenuItem />
-            <SecurityMenuItem onClose={onClose} />
-            {showSupport ? <SupportMenuItem onClose={onClose} /> : null}
-            {onFeedback ? (
-                <Pressable
-                    testID="menu-btn-feedback-link"
-                    accessibilityRole="menuitem"
-                    onPress={onFeedback}
-                    className="flex-row items-center px-4 py-3 active:bg-surface-hover"
-                >
-                    <Icon
-                        name="comments"
-                        size={16}
-                        color={colors["bc-grey"]}
-                        style={{ width: 24 }}
-                    />
-                    <AppText>Feedback</AppText>
-                </Pressable>
-            ) : null}
             <Pressable
                 testID="logoutBtn"
                 accessibilityRole="menuitem"

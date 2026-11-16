@@ -1,11 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
 
 import {
-    HEADER_REVEAL_DISTANCE,
     HEADER_SCROLL_THRESHOLD,
     initialWebScrollState,
-    type NativeScrollState,
-    nextNativeHeaderState,
     nextWebHeaderState,
     type WebScrollSample,
 } from "@/components/site/headerScroll";
@@ -110,50 +107,5 @@ describe("nextWebHeaderState", () => {
 
     it("never hides at phone width", () => {
         expect(scrollWeb([850, 900], { alwaysShown: true }).shown).toBe(true);
-    });
-});
-
-describe("nextNativeHeaderState", () => {
-    const start: NativeScrollState = {
-        shown: true,
-        anchorY: 0,
-        contentHeight: 5000,
-        viewportHeight: 800,
-    };
-    const scroll = (state: NativeScrollState, ...ys: number[]) =>
-        ys.reduce((s, y) => nextNativeHeaderState(s, y, 5000, 800), state);
-    const hidden = scroll(start, 50, 150, 900);
-
-    it("hides past the threshold going down", () => {
-        expect(scroll(start, 50).shown).toBe(true);
-        expect(hidden.shown).toBe(false);
-    });
-
-    it("stays hidden through the small moves back up between drags", () => {
-        const y = 900 - HEADER_REVEAL_DISTANCE + 1;
-        expect(scroll(hidden, y, 950, 945, 1200).shown).toBe(false);
-    });
-
-    it("comes back once the user really scrolls up, and near the top", () => {
-        expect(scroll(hidden, 900 - HEADER_REVEAL_DISTANCE).shown).toBe(true);
-        // measured from the furthest point down, across several small moves
-        expect(scroll(hidden, 880).shown).toBe(false);
-        expect(scroll(hidden, 880, 868).shown).toBe(true);
-        expect(scroll(hidden, 50).shown).toBe(true);
-    });
-
-    it("once back, hides again going down", () => {
-        expect(scroll(hidden, 800, 830).shown).toBe(false);
-    });
-
-    it("ignores offset changes while the page changes size", () => {
-        // records arrive, or the bar resizes the viewport: the offset moves without the user
-        const moved = nextNativeHeaderState(hidden, 700, 4000, 800);
-        expect(moved.shown).toBe(false);
-        expect(nextNativeHeaderState(moved, 690, 4000, 900).shown).toBe(false);
-    });
-
-    it("does not come back near the bottom", () => {
-        expect(scroll(hidden, 4190).shown).toBe(false);
     });
 });

@@ -31,17 +31,17 @@ jest.mock("react-native-safe-area-context", () => {
     };
 });
 jest.mock("@/components/site/DevBanner", () => ({ DevBanner: () => null }));
-jest.mock("@/components/site/Header", () => {
+jest.mock("@/components/site/SessionBanner", () => {
     const react = jest.requireActual<typeof import("react")>("react");
     const native =
         jest.requireActual<typeof import("react-native")>("react-native");
     return {
-        Header: () =>
-            react.createElement(native.Text, { testID: "header" }, "header"),
+        SessionBanner: () =>
+            react.createElement(native.Text, { testID: "banner" }, "banner"),
     };
 });
-jest.mock("@/components/site/SessionBanner", () => ({
-    SessionBanner: () => null,
+jest.mock("@/components/site/HeaderMenuDialogs", () => ({
+    HeaderMenuDialogs: () => null,
 }));
 jest.mock("@/components/site/IdleTimeout", () => ({ IdleTimeout: () => null }));
 
@@ -64,12 +64,12 @@ describe("iPhone Duo's vertical rail", () => {
             expect(within(padded).queryByTestId("routes")).toBeNull();
     });
 
-    it("the shell's own bars stay clear of it", async () => {
+    it("the shell's own banners stay clear of it", async () => {
         await shell();
         expect(
             screen
                 .getAllByTestId("safe-left-right")
-                .some((v) => within(v).queryByTestId("header") !== null)
+                .some((v) => within(v).queryByTestId("banner") !== null)
         ).toBe(true);
     });
 

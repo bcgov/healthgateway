@@ -27,12 +27,16 @@ const home: BreadcrumbItem = {
     testId: "breadcrumb-home",
 };
 
-/** Port of BreadcrumbComponent.vue. */
+/**
+ * Port of BreadcrumbComponent.vue. Web only (stated deviation): on native the navigation bar's back button and title,
+ * and the tab bar, say where the page is; breadcrumbs there only repeated them, and each link pushed another copy of a
+ * page onto the stack instead of going back to it.
+ */
 export function Breadcrumb({ items = [] }: { items?: BreadcrumbItem[] }) {
     const router = useRouter();
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
     const isValidIdp = useUserStore(selectIsValidIdentityProvider);
-    if (!isAuthenticated || !isValidIdp) return null;
+    if (Platform.OS !== "web" || !isAuthenticated || !isValidIdp) return null;
 
     function follow(item: BreadcrumbItem) {
         if (!item.to) return;

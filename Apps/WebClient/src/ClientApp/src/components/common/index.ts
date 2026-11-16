@@ -2,7 +2,7 @@ export { announce, type Politeness } from "./announce";
 export { Announcer } from "./Announcer";
 export { AppModal } from "./AppModal";
 export { AppText } from "./AppText";
-export { AppVersion } from "./AppVersion";
+export { AppVersion, appVersionText } from "./AppVersion";
 export { Dialog } from "./Dialog";
 export { DisplayField } from "./DisplayField";
 export { ExternalLink, NewTabHint } from "./ExternalLink";

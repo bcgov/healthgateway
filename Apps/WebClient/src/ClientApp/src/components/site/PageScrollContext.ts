@@ -1,13 +1,5 @@
 import { createContext, useContext, useEffect, useRef } from "react";
 import type { View } from "react-native";
-import type { useAnimatedScrollHandler } from "react-native-reanimated";
-
-export type ScrollHandler = ReturnType<typeof useAnimatedScrollHandler>;
-
-/** Lets a page's own scroll view (native) report to the shell's collapsible header, on the UI thread. */
-export const PageScrollContext = createContext<ScrollHandler | undefined>(
-    undefined
-);
 
 /** Scrolls the page back to the top (window.scrollTo(0, 0) in the web client, e.g. on a timeline page change). */
 export const ScrollToTopContext = createContext<() => void>(() => undefined);

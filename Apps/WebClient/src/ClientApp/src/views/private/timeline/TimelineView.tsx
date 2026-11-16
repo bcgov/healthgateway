@@ -50,6 +50,7 @@ export function TimelineView() {
                 ]}
             />
             <PageTitle
+                testID="timeline-page-title"
                 title="Health Records"
                 append={
                     notesAreEnabled && !notesAreLoading ? (

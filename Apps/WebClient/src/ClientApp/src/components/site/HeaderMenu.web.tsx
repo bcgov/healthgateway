@@ -14,7 +14,7 @@ interface Props {
     children: ReactNode;
 }
 
-/** The v-menu card under the avatar button; clicking outside closes it. Native: `HeaderMenu.tsx`, a slide-out panel. */
+/** Web: the v-menu card under the avatar button; clicking outside closes it. Native menus are the platform's own. */
 export function HeaderMenu({ visible, onClose, children }: Props) {
     const { height } = useWindowDimensions();
     return (
