@@ -130,14 +130,24 @@ variable "client_hg_mobile" {
 
 variable "client_hg_mobile_android" {
   type = object({
-    id = optional(string, "hg-mobile-android")
+    id              = optional(string, "hg-mobile-android")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+    offline_session_idle_timeout = optional(number)
+    offline_session_max_lifespan = optional(number)
   })
   description = "HealthGateway mobile android client configuration"
 }
 
 variable "client_hg_mobile_ios" {
   type = object({
-    id = optional(string, "hg-mobile-ios")
+    id              = optional(string, "hg-mobile-ios")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+    offline_session_idle_timeout = optional(number)
+    offline_session_max_lifespan = optional(number)
   })
   description = "HealthGateway mobile ios client configuration"
 }

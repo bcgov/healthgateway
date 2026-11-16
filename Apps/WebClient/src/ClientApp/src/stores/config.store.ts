@@ -220,9 +220,9 @@ export class MobileConfigurationError extends Error {
 
 /**
  * iOS and Android sign in with their own Keycloak client: the realm is `webClient.mobile.authentication.endpoint`, the
- * client ID is its `clientIdPrefix` plus "-ios" or "-android", and the login picker offers its `identityProviders`.
- * None falls back to the web client's `openIdConnect` or `identityProviders`: a missing one is a server configuration
- * error, and start-up stops on it. Only the scope is shared with the web client.
+ * client ID is its `clientIdPrefix` plus "-ios" or "-android", the scopes requested are its `scope`, and the login
+ * picker offers its `identityProviders`. None falls back to the web client's `openIdConnect` or `identityProviders`: a
+ * missing one is a server configuration error, and start-up stops on it.
  */
 export function nativeOidcConfig(
     config: ExternalConfiguration,
@@ -231,14 +231,22 @@ export function nativeOidcConfig(
     const auth = config.webClient?.mobile?.authentication;
     const endpoint = auth?.endpoint;
     const prefix = auth?.clientIdPrefix;
+    const scope = auth?.scope;
     const providers = auth?.identityProviders;
     const hasProviders = Array.isArray(providers) && providers.length > 0;
-    if (!isText(endpoint) || !isText(prefix) || !hasProviders) {
+    if (
+        !isText(endpoint) ||
+        !isText(prefix) ||
+        !isText(scope) ||
+        !hasProviders
+    ) {
         const missing: string[] = [];
         if (!isText(endpoint))
             missing.push("webClient.mobile.authentication.endpoint");
         if (!isText(prefix))
             missing.push("webClient.mobile.authentication.clientIdPrefix");
+        if (!isText(scope))
+            missing.push("webClient.mobile.authentication.scope");
         if (!hasProviders)
             missing.push("webClient.mobile.authentication.identityProviders");
         throw new MobileConfigurationError(missing);
@@ -246,7 +254,7 @@ export function nativeOidcConfig(
     return {
         authority: endpoint,
         clientId: `${prefix}-${os}`,
-        scope: config.openIdConnect.scope,
+        scope,
         callbacks: null,
     };
 }
