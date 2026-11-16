@@ -1,14 +1,12 @@
 # From any signed-in page: account menu → Log Out, skipping the rating dialog if it asks, back to the landing page.
 appId: hg.local
 ---
-- tapOn:
-      id: "headerDropdownBtn"
+# the account menu is the platform's own (UIMenu / Material menu): its entries are found by their text
+- tapOn: "Account menu"
 - extendedWaitUntil:
-      visible:
-          id: "logoutBtn"
+      visible: "Log Out"
       timeout: 5000
-- tapOn:
-      id: "logoutBtn"
+- tapOn: "Log Out"
 - extendedWaitUntil:
       visible:
           id: "ratingModalSkipBtn"

@@ -8,7 +8,7 @@ import {
 } from "@jest/globals";
 import { Platform } from "react-native";
 
-import { UserMenu } from "@/components/site/UserMenu";
+import { UserMenu } from "@/components/site/UserMenu.web";
 import { resetStores } from "@/test/fixtures";
 import { isExpanded, press, render, screen } from "@/test/ui";
 
@@ -23,7 +23,10 @@ const handlers = {
     onLogout: jest.fn(),
 };
 
-describe("UserMenu", () => {
+// web only: native's account menu is the navigation bar's (useHeaderMenu.test.ts)
+const describeWeb = Platform.OS === "web" ? describe : describe.skip;
+
+describeWeb("UserMenu", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -32,48 +35,20 @@ describe("UserMenu", () => {
         resetStores();
     });
 
-    it("lists Dark Mode among the entries, and Support only when asked to", async () => {
+    it("orders the entries Profile, Dark Mode, Log Out, with no Security, Support or Feedback", async () => {
         await render(<UserMenu visible showProfile {...handlers} />);
         expect(screen.getByTestId("profileUserName")).toBeTruthy();
-        expect(screen.getByTestId("profileBtn")).toBeTruthy();
-        expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
-        expect(screen.getByTestId("logoutBtn")).toBeTruthy();
         expect(screen.queryByTestId("appearance-toggle")).toBeNull();
-        expect(screen.queryByTestId("menu-btn-support-link")).toBeNull();
-    });
-
-    it("shows Support when told to", async () => {
-        await render(
-            <UserMenu visible showProfile showSupport {...handlers} />
-        );
-        expect(screen.getByTestId("menu-btn-support-link")).toBeTruthy();
-    });
-
-    it("orders the entries Profile, Dark Mode, Security (native), Support, Feedback, Log Out", async () => {
-        await render(
-            <UserMenu
-                visible
-                showProfile
-                showSupport
-                onFeedback={jest.fn()}
-                {...handlers}
-            />
-        );
         const ids = screen
             .getAllByTestId(
                 /^(profileBtn|menu-btn-(dark-mode|security|support|feedback)-link|logoutBtn)$/
             )
             .map((el) =>
-                Platform.OS === "web"
-                    ? (el as unknown as Element).getAttribute("data-testid")
-                    : (el.props.testID as string)
+                (el as unknown as Element).getAttribute("data-testid")
             );
         expect(ids).toEqual([
             "profileBtn",
             "menu-btn-dark-mode-link",
-            ...(Platform.OS === "web" ? [] : ["menu-btn-security-link"]),
-            "menu-btn-support-link",
-            "menu-btn-feedback-link",
             "logoutBtn",
         ]);
     });
@@ -88,7 +63,7 @@ describe("UserMenu", () => {
         );
     });
 
-    it("ends with the version, on every platform", async () => {
+    it("ends with the version", async () => {
         await render(<UserMenu visible showProfile {...handlers} />);
         expect(screen.getByText("v3.0.1.0345")).toBeTruthy();
     });

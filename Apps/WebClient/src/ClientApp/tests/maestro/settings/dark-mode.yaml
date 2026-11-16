@@ -4,29 +4,32 @@ tags:
     - signedOut
 ---
 - runFlow: ../subflows/start-signed-out.yaml
-- tapOn:
-      id: "settingsMenuBtn"
+# the settings menu is the platform's own (UIMenu / Material menu): its entries are found by their text; picking a
+# choice closes it
+- tapOn: "Settings"
 - extendedWaitUntil:
-      visible:
-          id: "menu-btn-dark-mode-link"
+      visible: "Dark Mode"
       timeout: 5000
-- tapOn:
-      id: "menu-btn-dark-mode-link"
+- tapOn: "Dark Mode"
 - extendedWaitUntil:
-      visible:
-          id: "dark-mode-on"
+      visible: "On"
       timeout: 5000
-- tapOn:
-      id: "dark-mode-on"
+- tapOn: "On"
+- extendedWaitUntil:
+      notVisible: "Dark Mode"
+      timeout: 5000
 - takeScreenshot: tests/maestro/out/dark-mode-on
-- tapOn:
-      id: "dark-mode-off"
-# close the menu (the strip of page left of it: the backdrop's middle is under the menu itself)
-- tapOn:
-      point: "5%,50%"
+- tapOn: "Settings"
 - extendedWaitUntil:
-      notVisible:
-          id: "headerMenu"
+      visible: "Dark Mode"
+      timeout: 5000
+- tapOn: "Dark Mode"
+- extendedWaitUntil:
+      visible: "Off"
+      timeout: 5000
+- tapOn: "Off"
+- extendedWaitUntil:
+      notVisible: "Dark Mode"
       timeout: 5000
 # end where the next flow starts, and check it
 - runFlow: ../subflows/end-signed-out.yaml

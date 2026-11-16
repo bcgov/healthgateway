@@ -8,7 +8,7 @@ import {
 } from "@jest/globals";
 import { Platform, View } from "react-native";
 
-import { Header } from "@/components/site/Header";
+import { Header } from "@/components/site/Header.web";
 import { Path } from "@/constants/path";
 import { services } from "@/services/container";
 import { useConfigStore } from "@/stores/config.store";
@@ -31,7 +31,10 @@ jest.mock(
     () => require("@/test/breakpointMock") as object
 );
 
-describe("Header", () => {
+// web only: native shows each stack's navigation bar (nativeHeader.test.ts)
+const describeWeb = Platform.OS === "web" ? describe : describe.skip;
+
+describeWeb("Header", () => {
     beforeEach(() => {
         resetRouter("/");
         setBreakpoint(1366);
@@ -45,60 +48,44 @@ describe("Header", () => {
         jest.restoreAllMocks();
     });
 
-    it("shows the logo link for a visitor, with a Log in button that routes to login on web", async () => {
+    it("shows the logo link for a visitor, with a Log in button that routes to login", async () => {
         await render(<Header />);
         expect(
             screen.getByLabelText("Go to Health Gateway home page")
         ).toBeTruthy();
-        if (Platform.OS === "web") {
-            await press(screen.getByTestId("loginBtn"));
-            expect(router.push).toHaveBeenCalledWith(Path.Login);
-        }
+        await press(screen.getByTestId("loginBtn"));
+        expect(router.push).toHaveBeenCalledWith(Path.Login);
         expect(screen.queryByTestId("headerDropdownBtn")).toBeNull();
         expect(screen.queryByTestId("navbar-toggle-button")).toBeNull();
     });
 
-    it("has a header Log in button on the landing page on web only", async () => {
+    it("has a header Log in button on the landing page", async () => {
         resetRouter(Path.Root);
         await render(<Header />);
-        if (Platform.OS === "web") {
-            expect(screen.getByTestId("loginBtn")).toBeTruthy();
-        } else {
-            expect(screen.queryByTestId("loginBtn")).toBeNull();
-            expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
-        }
+        expect(screen.getByTestId("loginBtn")).toBeTruthy();
     });
 
     it.each([Path.LogoutComplete, Path.Unauthorized, Path.NotFound])(
-        "on %s, signed out: native has only the gear, web the Log in button",
+        "on %s, signed out: the Log in button",
         async (path) => {
             resetRouter(path);
             await render(<Header />);
-            const login = screen.queryByTestId("loginBtn");
-            if (Platform.OS === "web") expect(login).toBeTruthy();
-            else {
-                expect(login).toBeNull();
-                expect(screen.getByLabelText("Settings")).toBeTruthy();
-            }
+            expect(screen.getByTestId("loginBtn")).toBeTruthy();
         }
     );
 
-    it("has the signed-out gear on native only, including on the login page", async () => {
+    it("has no gear: signed out, the web header has no menu", async () => {
         resetRouter(Path.Login);
         await render(<Header />);
-        const gear = screen.queryByTestId("settingsMenuBtn");
-        if (Platform.OS === "web") expect(gear).toBeNull();
-        else expect(gear).toBeTruthy();
+        expect(screen.queryByTestId("settingsMenuBtn")).toBeNull();
     });
 
-    it("replaces the gear with the account menu once signed in", async () => {
+    it("signed in, the account menu has no Support: the web keeps the footer", async () => {
         signInRegistered();
         await render(<Header />);
-        expect(screen.queryByTestId("settingsMenuBtn")).toBeNull();
         await press(screen.getByTestId("headerDropdownBtn"));
-        const support = screen.queryByTestId("menu-btn-support-link");
-        if (Platform.OS === "web") expect(support).toBeNull();
-        else expect(support).toBeTruthy();
+        expect(screen.getByTestId("logoutBtn")).toBeTruthy();
+        expect(screen.queryByTestId("menu-btn-support-link")).toBeNull();
     });
 
     it("hides the Log in button on the login page itself", async () => {
@@ -107,19 +94,17 @@ describe("Header", () => {
         expect(screen.queryByTestId("loginBtn")).toBeNull();
     });
 
-    it("shows the initials avatar for a registered user and the drawer toggle on web only", async () => {
+    it("shows the initials avatar and the drawer toggle for a registered user", async () => {
         signInRegistered();
         await render(<Header />);
         expect(screen.getByText("DG")).toBeTruthy();
         expect(screen.queryByTestId("loginBtn")).toBeNull();
-        const toggle = screen.queryByTestId("navbar-toggle-button");
-        if (Platform.OS === "web") expect(toggle).toBeTruthy();
-        else expect(toggle).toBeNull();
+        expect(screen.getByTestId("navbar-toggle-button")).toBeTruthy();
     });
 
     it("sends the logo to Home when signed in and to the landing page otherwise", async () => {
-        // web: browser history; native: replaces the page, so no copy is left to swipe back to
-        const went = Platform.OS === "web" ? router.push : router.replace;
+        // browser history
+        const went = router.push;
         resetRouter(Path.LogoutComplete);
         await render(<Header />);
         await press(screen.getByLabelText("Go to Health Gateway home page"));
@@ -140,24 +125,7 @@ describe("Header", () => {
         expect(router.push).not.toHaveBeenCalled();
     });
 
-    if (Platform.OS !== "web") {
-        it("does not navigate when the logo is tapped on Home: it stays the bottom of the stack", async () => {
-            signInRegistered();
-            resetRouter(Path.Home);
-            await render(<Header />);
-            const logo = screen.getByLabelText(
-                "Go to Health Gateway home page"
-            );
-            await press(logo);
-            await press(logo);
-            await press(logo);
-            expect(router.push).not.toHaveBeenCalled();
-            expect(router.replace).not.toHaveBeenCalled();
-        });
-    }
-
-    it("web: the logo is a real link to its destination, which the keyboard can follow", async () => {
-        if (Platform.OS !== "web") return;
+    it("the logo is a real link to its destination, which the keyboard can follow", async () => {
         await render(<Header />);
         const logo = screen.getByLabelText("Go to Health Gateway home page");
         expect(tagOf(logo)).toBe("a");
@@ -175,8 +143,7 @@ describe("Header", () => {
         ).toBe(Path.Home);
     });
 
-    it("web: the drawer toggle and account button say what they open and whether it is open; axe is clean", async () => {
-        if (Platform.OS !== "web") return;
+    it("the drawer toggle and account button say what they open and whether it is open; axe is clean", async () => {
         signInRegistered();
         // the drawer the toggle controls lives beside the header in the shell
         await render(
