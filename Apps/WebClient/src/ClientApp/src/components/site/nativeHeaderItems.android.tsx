@@ -1,21 +1,11 @@
 import {
-    Box,
     DropdownMenu,
     Host,
     Icon,
     IconButton,
     Row,
-    Text,
 } from "@expo/ui/jetpack-compose";
-import {
-    background,
-    clickable,
-    clip,
-    semantics,
-    Shapes,
-    size,
-    testID,
-} from "@expo/ui/jetpack-compose/modifiers";
+import { testID } from "@expo/ui/jetpack-compose/modifiers";
 import type { NativeStackNavigationOptions } from "expo-router/native-stack";
 import { useState } from "react";
 
@@ -57,8 +47,8 @@ function OuterBackButton({ label, goBack }: OuterBack) {
 
 /**
  * Android: the top app bar's actions, in Jetpack Compose: the bell, the page's Refresh (when it has pull to refresh), and
- * the account button (the initials in a filled circle) or the settings gear, opening a Material dropdown
- * (`NativeMenuItems`).
+ * the account or settings button, a gear either way (owner, 2026-11-16: the initials are web's), opening a Material
+ * dropdown (`NativeMenuItems`).
  */
 function NativeHeaderMenu() {
     const colors = useThemeColors();
@@ -110,51 +100,23 @@ function NativeHeaderMenu() {
                     color={colors.surface}
                 >
                     <DropdownMenu.Trigger>
-                        {menu.kind === "account" ? (
-                            <Box
-                                contentAlignment="center"
-                                modifiers={[
-                                    size(48, 48),
-                                    clip(Shapes.Circle),
-                                    clickable(open),
-                                    semantics({
-                                        contentDescription: menu.buttonLabel,
-                                    }),
-                                    testID("headerDropdownBtn"),
-                                ]}
-                            >
-                                <Box
-                                    contentAlignment="center"
-                                    modifiers={[
-                                        size(32, 32),
-                                        clip(Shapes.Circle),
-                                        background(colors.primary),
-                                    ]}
-                                >
-                                    <Text
-                                        color={colors["on-primary"]}
-                                        style={{
-                                            fontSize: 14,
-                                            fontWeight: "500",
-                                        }}
-                                    >
-                                        {menu.initials ?? ""}
-                                    </Text>
-                                </Box>
-                            </Box>
-                        ) : (
-                            <IconButton
-                                onClick={open}
-                                modifiers={[testID("settingsMenuBtn")]}
-                            >
-                                <Icon
-                                    source={icons.settings}
-                                    tint={colors["bc-grey"]}
-                                    size={24}
-                                    contentDescription={menu.buttonLabel}
-                                />
-                            </IconButton>
-                        )}
+                        <IconButton
+                            onClick={open}
+                            modifiers={[
+                                testID(
+                                    menu.kind === "account"
+                                        ? "headerDropdownBtn"
+                                        : "settingsMenuBtn"
+                                ),
+                            ]}
+                        >
+                            <Icon
+                                source={icons.settings}
+                                tint={colors["bc-grey"]}
+                                size={24}
+                                contentDescription={menu.buttonLabel}
+                            />
+                        </IconButton>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Items>
                         <NativeMenuItems menu={menu} close={close} />

@@ -103,8 +103,8 @@ function OuterBackButton({ label, goBack }: OuterBack) {
 
 /**
  * iOS: the navigation bar's own items. The logo sits on the bar without the shared Liquid Glass background (iOS 26);
- * the bell, the page's Refresh (when it has pull to refresh) and the account (initials) or settings (gear) button share
- * one glass capsule, the account or settings menu
+ * the bell, the page's Refresh (when it has pull to refresh) and the account or settings button (a gear either way,
+ * as the app's own settings; web shows the initials) share one glass capsule, the account or settings menu
  * being a UIMenu: sections become inline groups, Dark Mode and Support submenus. Android: `nativeHeaderItems.android.tsx`.
  */
 export function useNativeHeaderItems(): {
@@ -144,12 +144,12 @@ export function useNativeHeaderItems(): {
         });
     items.push({
         type: "menu",
-        // the account button shows the initials; the settings button only its gear
-        label: menu.initials ?? menu.buttonLabel,
+        // signed in or out, only its gear (owner, 2026-11-16: the initials are web's), named by its accessibility label
+        label: menu.buttonLabel,
         labelStyle: { fontWeight: "700", color: colors.primary },
-        icon: menu.kind === "settings" ? icon("settings") : undefined,
-        // a lone icon is drawn as a circle: wider, the gear sits in a pill like the initials (`NativeSettingsMenu`)
-        width: menu.kind === "settings" ? 64 : undefined,
+        icon: icon("settings"),
+        // a lone icon is drawn as a circle: wider, the gear sits in a pill (`NativeSettingsMenu`)
+        width: 64,
         tintColor: colors.primary,
         accessibilityLabel: menu.buttonLabel,
         menu: {

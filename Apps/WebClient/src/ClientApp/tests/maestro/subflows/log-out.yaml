@@ -2,7 +2,7 @@
 appId: hg.local
 ---
 # the account menu is the platform's own (UIMenu / Material menu): its entries are found by their text
-- tapOn: "Account menu"
+- tapOn: "Settings"
 - extendedWaitUntil:
       visible: "Log Out"
       timeout: 5000

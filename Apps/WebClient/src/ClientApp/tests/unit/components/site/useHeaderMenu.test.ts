@@ -194,7 +194,7 @@ describe("useHeaderMenu", () => {
             const { result } = await renderHook(() => useHeaderMenu());
             const { menu } = result.current;
             expect(menu.kind).toBe("account");
-            expect(menu.buttonLabel).toBe("Account menu");
+            expect(menu.buttonLabel).toBe("Settings");
             expect(menu.initials).toBe("DG");
             expect(menu.title).toBe("Dr Gateway");
             expect(keys(menu).slice(0, 3)).toEqual([

@@ -90,13 +90,13 @@ describe("native navigation bar (iOS)", () => {
                 );
         });
 
-        it("signed in: the initials, opening the account menu titled with the name", async () => {
+        it("signed in: a gear too (the initials are web's), opening the account menu titled with the name", async () => {
             signInRegistered();
             const { result } = await renderHook(() => useNativeHeaderItems());
             const menu = menuOf(rightItems(result.current.menu));
-            expect(menu.label).toBe("DG");
-            expect(menu.icon).toBeUndefined();
-            expect(menu.accessibilityLabel).toBe("Account menu");
+            expect(menu.icon).toEqual({ type: "sfSymbol", name: "gearshape" });
+            expect(menu.label).not.toBe("DG");
+            expect(menu.accessibilityLabel).toBe("Settings");
             expect(menu.menu.title).toBe("Dr Gateway");
             expect(sectionLabels(menu).slice(0, 3)).toEqual([
                 ["Profile", "Dark Mode", "Security"],
