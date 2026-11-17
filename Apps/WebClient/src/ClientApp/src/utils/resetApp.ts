@@ -6,6 +6,7 @@ import { services } from "@/services/container";
 import { describeError, logger } from "@/services/logger";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCommunicationStore } from "@/stores/communication.store";
 import { useOnboardingStore } from "@/stores/onboarding.store";
 import { useThemeStore } from "@/stores/theme.store";
 
@@ -17,6 +18,8 @@ import { useThemeStore } from "@/stores/theme.store";
 export async function resetApp(leavePage: () => void): Promise<void> {
     // the app may never have started, on an environment that is down: the stored tokens still go
     if (services.isInitialized) await useAuthStore.getState().signOut();
+    // an environment switch is a reset too: the next environment's banner may differ
+    useCommunicationStore.getState().reset();
     await clearStoredSession();
     leavePage();
     await useAppLockStore.getState().reset();

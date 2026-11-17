@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { create } from "zustand";
 
 import type {
+    CacheConfiguration,
     ExternalConfiguration,
     IdentityProviderConfiguration,
     OpenIdConnectConfiguration,
@@ -203,6 +204,45 @@ export const selectIdleTimeout = (s: ConfigState): number => {
     if (Platform.OS === "web") return s.config?.webClient?.timeouts?.idle ?? 0;
     const idle = s.config?.webClient?.mobile?.timeouts?.idle;
     return typeof idle === "number" && idle > 0 ? idle : DEFAULT_MOBILE_IDLE_MS;
+};
+
+/** How long a service's results are kept when the configuration sets nothing usable for it. */
+export const DEFAULT_CACHE_MS = 30 * 60 * 1000;
+
+/** A usable duration: a finite number of seconds, zero or more (zero: ask every time). */
+const usableSeconds = (value: unknown): value is number =>
+    typeof value === "number" && Number.isFinite(value) && value >= 0;
+
+/** The service's own value, matched without regard to case ("communications" finds "Communications"). */
+function serviceSeconds(
+    cache: CacheConfiguration | null | undefined,
+    service: string
+): number | undefined {
+    const services = cache?.services;
+    if (!services) return undefined;
+    const wanted = service.toLowerCase();
+    const key = Object.keys(services).find((k) => k.toLowerCase() === wanted);
+    const seconds = key === undefined ? undefined : services[key];
+    return usableSeconds(seconds) ? seconds : undefined;
+}
+
+/**
+ * Milliseconds to keep what `service` returned. Each level overrides the one before: the embedded default, then
+ * `webClient.cache.default`, then (iOS and Android) `webClient.mobile.cache.default`, then `webClient.cache.services`,
+ * then (iOS and Android) `webClient.mobile.cache.services`. A service's own value always beats any default.
+ */
+export const selectCacheMs = (s: ConfigState, service: string): number => {
+    const web = s.config?.webClient?.cache;
+    const mobile =
+        Platform.OS === "web" ? undefined : s.config?.webClient?.mobile?.cache;
+    const levels = [
+        mobile ? serviceSeconds(mobile, service) : undefined,
+        serviceSeconds(web, service),
+        mobile?.default,
+        web?.default,
+    ];
+    const seconds = levels.find(usableSeconds);
+    return seconds === undefined ? DEFAULT_CACHE_MS : seconds * 1000;
 };
 
 /** Native: this app's build number is below `webClient.mobile.minimumBuild`. */

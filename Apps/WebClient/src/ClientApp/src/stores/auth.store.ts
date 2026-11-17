@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { create } from "zustand";
 
+import { CommunicationType } from "@/models/communication";
 import { isSessionEnded, SessionEndedError } from "@/models/errors";
 import type { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { classifyAuthFailure } from "@/services/auth/authFailure";
@@ -14,6 +15,7 @@ import {
     useClinicalDocumentStore,
 } from "./clinicalDocument.store";
 import { useCommentStore } from "./comment.store";
+import { useCommunicationStore } from "./communication.store";
 import { selectCanFetch, useConnectivityStore } from "./connectivity.store";
 import { useCovid19TestResultStore } from "./covid19TestResult.store";
 import { useDependentStore } from "./dependent.store";
@@ -71,6 +73,8 @@ function resetRecordStores() {
     useCommentStore.getState().reset();
     useDependentStore.getState().reset();
     useNotificationStore.getState().reset();
+    // the in-app message may be for the person who was signed in; the public banner stays
+    useCommunicationStore.getState().clear(CommunicationType.InApp);
 }
 
 let refreshTimer: ReturnType<typeof setTimeout> | undefined;

@@ -1,6 +1,8 @@
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useCommunicationRetrieval } from "@/hooks/useCommunication";
+
 import { DevBanner } from "./DevBanner";
 import { HeaderMenuDialogs } from "./HeaderMenuDialogs";
 import { notifyIdleActivity } from "./idleActivity";
@@ -18,6 +20,8 @@ import { SessionBanner } from "./SessionBanner";
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
     const { hideChrome } = usePageChrome();
+    // once for the whole app: every tab's page has its own banner, all reading what this fetched
+    useCommunicationRetrieval();
 
     return (
         <SafeAreaView

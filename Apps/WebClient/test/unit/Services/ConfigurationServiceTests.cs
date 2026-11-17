@@ -212,6 +212,14 @@ namespace HealthGateway.WebClientTests.Services
                             new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]),
                             GetDefaultProfileSettings())
                         : null,
+                    Cache = new CacheConfiguration
+                    {
+                        Default = 3600,
+                        Services = new Dictionary<string, int>
+                        {
+                            { "Communications", 21600 },
+                        },
+                    },
                     Mobile = new MobileAppConfiguration
                     {
                         MinimumBuild = 300,
@@ -235,6 +243,10 @@ namespace HealthGateway.WebClientTests.Services
                                     Disabled = false,
                                 },
                             ],
+                        },
+                        Cache = new CacheConfiguration
+                        {
+                            Default = 600,
                         },
                     },
                 },

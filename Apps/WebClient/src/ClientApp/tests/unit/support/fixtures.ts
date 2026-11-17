@@ -27,6 +27,7 @@ import {
     useClinicalDocumentStore,
 } from "@/stores/clinicalDocument.store";
 import { useCommentStore } from "@/stores/comment.store";
+import { useCommunicationStore } from "@/stores/communication.store";
 import { useConfigStore } from "@/stores/config.store";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult.store";
 import { useDependentStore } from "@/stores/dependent.store";
@@ -270,6 +271,7 @@ export function resetStores() {
         useCommentStore.getState().reset();
         useDependentStore.getState().reset();
         useNotificationStore.getState().reset();
+        useCommunicationStore.getState().reset();
     });
 }
 

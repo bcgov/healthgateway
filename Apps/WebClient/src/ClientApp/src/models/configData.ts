@@ -18,6 +18,16 @@ export interface MobileConfiguration {
     };
     /** Required on iOS and Android: there is no fallback to `openIdConnect` (see `nativeOidcConfig`). */
     authentication?: MobileAuthenticationConfiguration;
+    /** iOS and Android overrides of `webClient.cache`, level for level (see `selectCacheMs`). */
+    cache?: CacheConfiguration | null;
+}
+
+/** How long, in seconds, the client keeps what a service returned before asking again. */
+export interface CacheConfiguration {
+    /** For any service without its own value. */
+    default?: number | null;
+    /** Per service, keyed by service name (e.g. "Communications"). */
+    services?: Dictionary<number> | null;
 }
 
 export interface MobileAuthenticationConfiguration {
@@ -64,6 +74,8 @@ export interface WebClientConfiguration {
     emailVerificationExpirySeconds?: number;
     clientIP?: string;
     offlineMode?: OfflineModeConfiguration | null;
+    /** Cache durations for every client; iOS and Android override them with `mobile.cache`. */
+    cache?: CacheConfiguration | null;
     /** iOS and Android only; web never reads it. */
     mobile?: MobileConfiguration | null;
 }
