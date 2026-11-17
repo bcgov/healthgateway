@@ -21,7 +21,7 @@ import {
     selectDependentsAreLoading,
     useDependentStore,
 } from "@/stores/dependent.store";
-import { refreshDependentsAndRecords } from "@/stores/refreshDatasets";
+import { pullDependents } from "@/stores/firstRecordSync";
 import { useUserStore } from "@/stores/user.store";
 
 import { AddDependentDialog } from "./AddDependentDialog";
@@ -55,7 +55,7 @@ function DependentManagementView() {
     const retrieveDependents = useDependentStore((s) => s.retrieveDependents);
     const isLive = useConnectivityStore(selectIsLive);
     const syncing = useConnectivityStore((s) => s.syncing);
-    const pulling = usePagePull(() => refreshDependentsAndRecords(hdid));
+    const pulling = usePagePull(() => pullDependents(hdid));
 
     const refreshDependents = () => {
         retrieveDependents(hdid, true).catch((error: unknown) =>
@@ -97,7 +97,7 @@ function LegacyDependentsView() {
     const retrieveDependents = useDependentStore((s) => s.retrieveDependents);
     const isLive = useConnectivityStore(selectIsLive);
     const syncing = useConnectivityStore((s) => s.syncing);
-    const pulling = usePagePull(() => refreshDependentsAndRecords(hdid));
+    const pulling = usePagePull(() => pullDependents(hdid));
 
     const refreshDependents = () => {
         retrieveDependents(hdid, true).catch((error: unknown) =>

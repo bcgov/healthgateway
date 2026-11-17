@@ -111,11 +111,23 @@ export function markPatientDataStale(hdid: string): void {
     usePatientDataStore.setState((s) => ({ states: stale(s.states, hdid) }));
 }
 
+/** A data API a pull fetched again: whose, and its name in the saved copy. */
+export interface RefreshedDataset {
+    person: string;
+    name: string;
+}
+
 /**
  * Dependents pull to refresh: the list, then whichever of each dependent's records were already opened or saved. One
  * dependent at a time, so someone with several does not hit the rate limit. Failures show as they do on the page.
+ * Resolves to what it fetched again, so the saved copy can record each one's time (`pullDependents`).
  */
-export async function refreshDependentsAndRecords(hdid: string): Promise<void> {
+export async function refreshDependentsAndRecords(
+    hdid: string
+): Promise<RefreshedDataset[]> {
+    const refreshed: RefreshedDataset[] = [
+        { person: hdid, name: "dependents" },
+    ];
     await useDependentStore.getState().retrieveDependents(hdid, true);
     for (const { ownerId } of useDependentStore.getState().dependents) {
         const isLoaded = (state?: { status: LoadStatus }) =>
@@ -128,6 +140,7 @@ export async function refreshDependentsAndRecords(hdid: string): Promise<void> {
             retrievals.push(() =>
                 useImmunizationStore.getState().retrieveImmunizations(ownerId)
             );
+            refreshed.push({ person: ownerId, name: "immunization" });
         }
         if (isLoaded(useLabResultStore.getState().states[ownerId])) {
             useLabResultStore.setState((s) => ({
@@ -136,6 +149,7 @@ export async function refreshDependentsAndRecords(hdid: string): Promise<void> {
             retrievals.push(() =>
                 useLabResultStore.getState().retrieveLabResults(ownerId)
             );
+            refreshed.push({ person: ownerId, name: "labResult" });
         }
         if (isLoaded(useClinicalDocumentStore.getState().states[ownerId])) {
             useClinicalDocumentStore.setState((s) => ({
@@ -144,9 +158,11 @@ export async function refreshDependentsAndRecords(hdid: string): Promise<void> {
             retrievals.push(() =>
                 useClinicalDocumentStore.getState().retrieve(ownerId)
             );
+            refreshed.push({ person: ownerId, name: "clinicalDocument" });
         }
         await Promise.allSettled(retrievals.map((retrieve) => retrieve()));
     }
+    return refreshed;
 }
 
 const perPerson = {

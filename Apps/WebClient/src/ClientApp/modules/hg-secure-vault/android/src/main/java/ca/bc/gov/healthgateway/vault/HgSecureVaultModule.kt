@@ -101,6 +101,10 @@ class HgSecureVaultModule : Module() {
     AsyncFunction("destroy") {
       deleteKeys()
     }
+
+    // Nothing to do: the app's backup rules (expo-secure-store's) include only shared preferences, so the files
+    // folder, where the record cache lives, is already left out of Auto Backup and device transfer.
+    AsyncFunction("excludeFromBackup") { _: String -> }
   }
 
   private fun openAfterPrompt(ciphertext: String, promise: Promise) {

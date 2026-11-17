@@ -600,16 +600,16 @@ describe("local session", () => {
             });
         });
 
-        it("records when the copy expires", () => {
+        it("saves with no expiry: the copy stays until it is cleared", () => {
             jest.useFakeTimers();
             signedIn();
             setCopyReadFor(HDID);
             const stop = startRecordCacheSync();
             seedImmunizations();
             jest.advanceTimersByTime(2000);
-            const [, , savedAt, expiresAt] = jest.mocked(recordCache.save).mock
-                .calls[0];
-            expect(expiresAt).toBe(savedAt + 24 * 60 * 60 * 1000);
+            const call = jest.mocked(recordCache.save).mock.calls[0];
+            expect(call).toHaveLength(3);
+            expect(call[0]).toBe(HDID);
             stop();
         });
 

@@ -16,6 +16,11 @@ export interface HgSecureVaultNative {
     ): Promise<string>;
     /** Deletes the key pair for good, which makes everything encrypted with it unreadable. */
     destroy(): Promise<void>;
+    /**
+     * iOS: keeps a file or folder (a `file://` URI) out of iCloud and computer backups. Android: nothing to do, as the
+     * app's backup rules already leave app files out. Missing from dev clients built before it was added.
+     */
+    excludeFromBackup?(uri: string): Promise<void>;
 }
 
 export default requireOptionalNativeModule<HgSecureVaultNative>(
