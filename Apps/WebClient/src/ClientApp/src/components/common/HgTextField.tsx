@@ -98,13 +98,9 @@ export function HgTextField({
             <View
                 // v-field variant solo: elevated, with an outline only for an error
                 style={hasError ? undefined : elevation1}
-                // web: the focus ring goes round this box, with its icon, × and slots, while the input has focus
-                // (global.css, `data-hg-field`)
-                {...(Platform.OS === "web"
-                    ? ({ dataSet: { hgField: "" } } as object)
-                    : {})}
+                // web: the input's focus ring goes round this box (global.css, .hg-field-focus-host)
                 className={cn(
-                    "flex-row items-center bg-surface rounded",
+                    "hg-field-focus-host flex-row items-center bg-surface rounded",
                     compact ? "min-h-[40px]" : "min-h-[48px]",
                     hasError
                         ? "border border-error"
@@ -141,7 +137,7 @@ export function HgTextField({
                             : {})}
                         testID={web ? undefined : testID}
                         className={cn(
-                            "flex-1 min-w-0 font-sans text-body-large text-bc-black px-3",
+                            "hg-field-focus-target flex-1 min-w-0 font-sans text-body-large text-bc-black px-3",
                             floatingLabel
                                 ? "min-h-[28px]"
                                 : compact

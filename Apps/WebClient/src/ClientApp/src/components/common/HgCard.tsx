@@ -33,6 +33,7 @@ interface Props {
  * (elevation 1, no border, since healthgateway d7ab5c429), icon + title row, optional "⋮" menu with Remove, body
  * text, hover = surfaceHover (the web client keeps the hover for clickable cards only, and this card always is). A press
  * shades it too, as the web client's `:hover` does on a tap in a mobile browser.
+ * The focus of the button inside appears around the outer Pressable (global.css, .hg-card-focus-host).
  * `compact` is the phone tile of Home's two-column grid (a stated deviation, after the earlier iOS app): icon top left,
  * title and arrow along the bottom, the ⋮ menu in the top right corner, and no body; the description becomes the hint.
  */
@@ -111,7 +112,7 @@ export function HgCard({
                 {...handlers}
                 style={elevation1}
                 className={cn(
-                    "grow rounded",
+                    "hg-card-focus-host grow rounded",
                     highlighted ? "bg-surface-hover" : "bg-surface",
                     "web:cursor-pointer",
                     className
@@ -130,7 +131,7 @@ export function HgCard({
                     onPress={onPress}
                     onPressIn={handlers.onPressIn}
                     onPressOut={handlers.onPressOut}
-                    className="grow min-h-[140px] p-4"
+                    className="hg-card-focus-target grow min-h-[140px] p-4"
                 >
                     {icon ? (
                         // leaves the top right corner to the ⋮ button
@@ -171,18 +172,16 @@ export function HgCard({
 
     return (
         // the whole card takes a press (mouse, touch), but the control the keyboard and the screen reader get is the
-        // title row inside: a button containing the ⋮ button or a link would hide them from assistive technology. Web:
-        // the focus ring goes round the whole card while that row has it (global.css, `data-hg-card`)
+        // title row inside: a button containing the ⋮ button or a link would hide them from assistive technology
         <Pressable
             testID={testID}
             accessible={false}
             tabIndex={-1}
             onPress={onPress}
             {...handlers}
-            {...(web ? ({ dataSet: { hgCard: "" } } as object) : {})}
             style={elevation1}
             className={cn(
-                "grow rounded",
+                "hg-card-focus-host grow rounded",
                 highlighted ? "bg-surface-hover" : "bg-surface",
                 "web:cursor-pointer",
                 className
@@ -194,13 +193,10 @@ export function HgCard({
                     accessibilityRole="button"
                     accessibilityLabel={name}
                     onPress={onPress}
-                    {...(web
-                        ? ({ dataSet: { hgCardButton: "" } } as object)
-                        : {})}
                     // a press here is the card's own, so it shades the card
                     onPressIn={handlers.onPressIn}
                     onPressOut={handlers.onPressOut}
-                    className="flex-1 flex-row items-center"
+                    className="hg-card-focus-target flex-1 flex-row items-center"
                 >
                     {icon ? (
                         <View

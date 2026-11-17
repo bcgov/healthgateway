@@ -87,24 +87,51 @@ describe("HgCard", () => {
         );
     });
 
-    it("web: the focus ring goes round the whole card while its title row has it (global.css)", async () => {
-        if (Platform.OS !== "web") return;
+    it("wears its button's keyboard focus round the whole card on web", async () => {
         await render(
-            <HgCard
-                accessibilityLabel="Other record sources"
-                onPress={() => undefined}
-                testID="card"
-            >
-                <AppText>Some records may not appear here.</AppText>
-            </HgCard>
+            <>
+                <HgCard
+                    title="Labs"
+                    onPress={() => undefined}
+                    onRemove={() => undefined}
+                    testID="card"
+                />
+                <HgCard
+                    compact
+                    title="Notes"
+                    onPress={() => undefined}
+                    onRemove={() => undefined}
+                    testID="compact"
+                />
+            </>
         );
-        expect(attrOf(screen.getByTestId("card"), "data-hg-card")).toBe("");
-        expect(
-            attrOf(
-                screen.getByLabelText("Other record sources"),
-                "data-hg-card-button"
-            )
-        ).toBe("");
+        // NativeWind classes compile away in the web tests (in the browser they reach the DOM); the native test
+        // renderer keeps them
+        if (Platform.OS === "web") return;
+        const menus = screen.getAllByLabelText("Menu");
+        expect(menus).toHaveLength(2);
+        for (const [id, label] of [
+            ["card", "Labs"],
+            ["compact", "Notes"],
+        ]) {
+            const host = screen.getByTestId(id);
+            const card = String(host.props.className);
+            // global.css draws the ring round the host while its target has keyboard focus
+            expect(card).toMatch(/\bhg-card-focus-host\b/);
+            const control = screen.getByLabelText(label);
+            expect(String(control.props.className)).toMatch(
+                /\bhg-card-focus-target\b/
+            );
+            // :has() only matches a target inside its host
+            let node = control.parent;
+            while (node && node !== host) node = node.parent;
+            expect(node).toBe(host);
+        }
+        // the ⋮ button keeps its own ring
+        for (const menu of menus)
+            expect(String(menu.props.className)).not.toMatch(
+                /\bhg-card-focus-target\b/
+            );
     });
 
     it("a card with no title takes its name from accessibilityLabel", async () => {

@@ -86,8 +86,7 @@ describe("HgTextField", () => {
         expect(containsInput(screen.getByTestId("email-input"))).toBe(true);
     });
 
-    it("web: the focus ring goes round the whole field box, its icon, × and slot included (global.css)", async () => {
-        if (Platform.OS !== "web") return;
+    it("wears its input's keyboard focus round the whole field box on web, its icon, × and slot included", async () => {
         await render(
             <HgTextField
                 label="Search"
@@ -99,18 +98,34 @@ describe("HgTextField", () => {
                 testID="search"
             />
         );
-        const input = screen.getByLabelText("Search") as unknown as HTMLElement;
-        const box = input.closest("[data-hg-field]");
-        expect(box).not.toBeNull();
-        for (const id of ["search-icon", "send"])
-            expect(
-                box?.contains(screen.getByTestId(id) as unknown as Node)
-            ).toBe(true);
+        // NativeWind classes compile away in the web tests (in the browser they reach the DOM); the native test
+        // renderer keeps them
+        if (Platform.OS === "web") return;
+        const input = screen.getByLabelText("Search");
+        // global.css draws the ring round the host while its target has keyboard focus
+        expect(String(input.props.className)).toMatch(
+            /\bhg-field-focus-target\b/
+        );
+        let box = input.parent;
+        while (
+            box &&
+            !/\bhg-field-focus-host\b/.test(String(box.props.className))
+        )
+            box = box.parent;
+        expect(box).toBeTruthy();
+        for (const el of [
+            screen.getByTestId("search-icon"),
+            screen.getByTestId("send"),
+            screen.getByLabelText("Clear Search"),
+        ]) {
+            let node = el.parent;
+            while (node && node !== box) node = node.parent;
+            expect(node).toBe(box);
+        }
+        // the × keeps its own ring
         expect(
-            box?.contains(
-                screen.getByLabelText("Clear Search") as unknown as Node
-            )
-        ).toBe(true);
+            String(screen.getByLabelText("Clear Search").props.className)
+        ).not.toMatch(/\bhg-field-focus-target\b/);
     });
 
     it("names the input after the placeholder when there is no label", async () => {
