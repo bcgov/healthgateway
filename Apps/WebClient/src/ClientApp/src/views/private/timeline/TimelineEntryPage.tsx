@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useNavigation } from "expo-router/react-navigation";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,25 +20,54 @@ const BACK_TITLE = "Health Records";
  * (`FullscreenTimelineEntry`), titled with the record type. Leaving it (Back, the back swipe, Android's back) closes the
  * entry. Widening the window (a Duo unfolding) goes back to the timeline at once, where the entry's card carries on
  * expanded. With no entry to show (a link opened straight to it, or the app restarted there) it goes to `timelinePath`.
+ *
+ * The Health Records and Dependents tabs can each have one open at once, so each page keeps the entry it opened with
+ * rather than following the shared selection, which the other tab's page may have taken over.
  */
 export function TimelineEntryPage({ timelinePath }: { timelinePath: string }) {
     const navigation = useNavigation();
     const router = useRouter();
     const { inlineEntryDetails } = useBreakpoint();
-    const entry = useTimelineStore((s) => s.fullscreenEntry);
-    const owner = useTimelineStore((s) => s.entryPageFor);
+    // this page's own entry, as the timeline left it when it pushed the page
+    const [opened] = useState(() => {
+        const { fullscreenEntry, entryPageFor } = useTimelineStore.getState();
+        return fullscreenEntry && entryPageFor
+            ? { entry: fullscreenEntry, owner: entryPageFor }
+            : undefined;
+    });
     const instant = useTimelineStore((s) => s.entryPageInstant);
-    const title = getEntryTypeDetails(entry?.type)?.recordName ?? "";
+    const updated = useTimelineStore((s) => s.updatedEntry);
+    const updatedOnArrival = useRef(updated);
+    const title = getEntryTypeDetails(opened?.entry.type)?.recordName ?? "";
+
+    const leave = () => {
+        if (navigation.canGoBack()) navigation.goBack();
+        else router.replace(toHref(timelinePath));
+    };
 
     useLayoutEffect(() => {
         navigation.setOptions({ title, headerBackTitle: BACK_TITLE });
     }, [navigation, title]);
 
-    // leaving the page, however it is left, closes the entry
+    // leaving the page, however it is left, closes its entry: only its own, not one the other tab has open since
     useEffect(
-        () => () => useTimelineStore.getState().closeFullscreenEntry(),
-        []
+        () => () => {
+            const timeline = useTimelineStore.getState();
+            if (opened && timeline.fullscreenEntry === opened.entry)
+                timeline.closeFullscreenEntry();
+        },
+        [opened]
     );
+
+    // its note edited or deleted: back to the timeline, as web's dialog closes
+    useEffect(() => {
+        if (
+            updated !== updatedOnArrival.current &&
+            updated?.id === opened?.entry.id
+        )
+            leave();
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only when an entry changes
+    }, [updated]);
 
     // Unfolding: back to the timeline, without the animation (the stack reads `entryPageInstant` for this page). The
     // entry stays open until the page has gone, so its card sees it and opens expanded.
@@ -53,13 +82,12 @@ export function TimelineEntryPage({ timelinePath }: { timelinePath: string }) {
 
     // nothing to show: to the timeline
     useEffect(() => {
-        if (entry && owner) return;
-        if (navigation.canGoBack()) navigation.goBack();
-        else router.replace(toHref(timelinePath));
+        if (!opened) leave();
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only on arrival
     }, []);
 
-    if (!entry || !owner) return null;
+    if (!opened) return null;
+    const { entry, owner } = opened;
     return (
         <ScrollView
             testID="entryDetailsPage"

@@ -355,6 +355,19 @@ describe("first record sync", () => {
             immunizations.mockResolvedValue(immunizationResultFixture);
         });
 
+        it("a configured lifetime of zero is raised to five minutes: one sync, not one after another", async () => {
+            withMobileCache({ services: { Immunization: 0 } });
+            await start();
+            await flush();
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(1);
+            // the sync's own status changes (syncing on and off) must not start another
+            useConnectivityStore.getState().setSyncing(true);
+            useConnectivityStore.getState().setSyncing(false);
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(1);
+        });
+
         it("sets no timer: an open app doesn't check on its own", async () => {
             const interval = jest.spyOn(global, "setInterval");
             await start();

@@ -22,6 +22,8 @@ interface TimelineState {
     entryPageFor?: { hdid: string; commentsAreEnabled: boolean };
     /** native: the entry page comes and goes without the push animation, as when the window folds or unfolds */
     entryPageInstant: boolean;
+    /** native: the entry last changed (a note edited or deleted): the page showing it goes back, as web's dialog closes */
+    updatedEntry?: { id: string };
     setFilter: (filterBuilder: TimelineFilterBuilder) => void;
     clearFilter: () => void;
     setLinearDate: (linearDate: DateTime) => void;

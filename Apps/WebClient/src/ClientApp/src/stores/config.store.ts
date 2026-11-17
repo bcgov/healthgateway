@@ -209,7 +209,16 @@ export const selectIdleTimeout = (s: ConfigState): number => {
 /** How long a service's results are kept when the configuration sets nothing usable for it. */
 export const DEFAULT_CACHE_MS = 30 * 60 * 1000;
 
-/** A usable duration: a finite number of seconds, zero or more (zero: ask every time). */
+/**
+ * The shortest cache time used, whatever the configuration says (owner, 2026-11-16): anything shorter would have the app
+ * asking again almost at once, and the record sync starting another round as one ends.
+ */
+export const MIN_CACHE_MS = 5 * 60 * 1000;
+
+/** What has been warned about already: `selectCacheMs` runs on every render that reads it. */
+const warnedShortCache = new Set<string>();
+
+/** A usable duration: a finite number of seconds, zero or more (raised to `MIN_CACHE_MS`). */
 const usableSeconds = (value: unknown): value is number =>
     typeof value === "number" && Number.isFinite(value) && value >= 0;
 
@@ -229,7 +238,8 @@ function serviceSeconds(
 /**
  * Milliseconds to keep what `service` returned. Each level overrides the one before: the embedded default, then
  * `webClient.cache.default`, then (iOS and Android) `webClient.mobile.cache.default`, then `webClient.cache.services`,
- * then (iOS and Android) `webClient.mobile.cache.services`. A service's own value always beats any default.
+ * then (iOS and Android) `webClient.mobile.cache.services`. A service's own value always beats any default. A value
+ * under `MIN_CACHE_MS` is raised to it, with a warning in the console.
  */
 export const selectCacheMs = (s: ConfigState, service: string): number => {
     const web = s.config?.webClient?.cache;
@@ -242,7 +252,18 @@ export const selectCacheMs = (s: ConfigState, service: string): number => {
         web?.default,
     ];
     const seconds = levels.find(usableSeconds);
-    return seconds === undefined ? DEFAULT_CACHE_MS : seconds * 1000;
+    if (seconds === undefined) return DEFAULT_CACHE_MS;
+    const ms = seconds * 1000;
+    if (ms >= MIN_CACHE_MS) return ms;
+    const warning = `${service}:${seconds}`;
+    if (!warnedShortCache.has(warning)) {
+        warnedShortCache.add(warning);
+        const minSeconds = MIN_CACHE_MS / 1000;
+        logger.warn(
+            `Cache time for ${service} is ${seconds}s, under the ${minSeconds}s minimum: using ${minSeconds}s`
+        );
+    }
+    return MIN_CACHE_MS;
 };
 
 /** Native: this app's build number is below `webClient.mobile.minimumBuild`. */

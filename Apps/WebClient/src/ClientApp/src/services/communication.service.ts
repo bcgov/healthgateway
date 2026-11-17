@@ -11,13 +11,15 @@ import type { IHttpClient } from "./http/httpClient";
 import { describeError, logger } from "./logger";
 
 export interface ICommunicationService {
+    /** Where it asks, which names the environment: a cached communication from another is not this one's. */
+    readonly baseUri: string;
     getActive(
         type: CommunicationType
     ): Promise<RequestResult<Communication | null>>;
 }
 
 export class CommunicationService implements ICommunicationService {
-    private readonly baseUri: string;
+    readonly baseUri: string;
 
     constructor(
         private readonly http: IHttpClient,

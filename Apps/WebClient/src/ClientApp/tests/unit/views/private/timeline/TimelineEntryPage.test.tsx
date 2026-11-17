@@ -105,6 +105,60 @@ describe("TimelineEntryPage (native)", () => {
         expect(useTimelineStore.getState().fullscreenEntry).toBe(note);
     });
 
+    it("keeps its own entry when the other tab's page takes the selection, and leaving clears only its own", async () => {
+        opened();
+        await render(<TimelineEntryPage timelinePath="/timeline" />);
+        const dependentNote = new NoteTimelineEntry({
+            id: "n2",
+            hdId: "DEP1",
+            title: "Dependent",
+            text: "Theirs",
+            journalDate: "2026-09-01",
+            version: 1,
+        });
+        // the Dependents tab opens one of a dependent's entries on its own page
+        updateStores(() => {
+            useTimelineStore.getState().openFullscreenEntry(dependentNote);
+            useTimelineStore.setState({
+                entryPageFor: { hdid: "DEP1", commentsAreEnabled: false },
+            });
+        });
+        expect(screen.getByText("Flu shot")).toBeTruthy();
+        expect(screen.queryByText("Dependent")).toBeNull();
+        // and its page goes: this one stays as it is
+        updateStores(() => useTimelineStore.getState().closeFullscreenEntry());
+        expect(screen.getByText("Flu shot")).toBeTruthy();
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+        // this one leaving doesn't clear a selection that isn't its own
+        updateStores(() =>
+            useTimelineStore.getState().openFullscreenEntry(dependentNote)
+        );
+        await unmount();
+        expect(useTimelineStore.getState().fullscreenEntry).toBe(dependentNote);
+    });
+
+    it("goes back when its note is edited or deleted, as web's dialog closes", async () => {
+        opened();
+        await render(<TimelineEntryPage timelinePath="/timeline" />);
+        updateStores(() =>
+            useTimelineStore.setState({ updatedEntry: { id: "other" } })
+        );
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+        updateStores(() =>
+            useTimelineStore.setState({ updatedEntry: { id: "n1" } })
+        );
+        expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores a change to its note from before it opened", async () => {
+        updateStores(() =>
+            useTimelineStore.setState({ updatedEntry: { id: "n1" } })
+        );
+        opened();
+        await render(<TimelineEntryPage timelinePath="/timeline" />);
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+    });
+
     it("with nothing to show goes back to the timeline", async () => {
         await render(<TimelineEntryPage timelinePath="/timeline" />);
         expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);

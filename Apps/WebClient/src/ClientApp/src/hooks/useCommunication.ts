@@ -20,6 +20,9 @@ import {
     useUserStore,
 } from "@/stores/user.store";
 
+/** The service endpoint (`serviceEndpoints`) the communications come from. */
+const GATEWAY_API = "GatewayApi";
+
 /** Which communication the banner shows (CommunicationComponent.vue): InApp once registered, Banner otherwise. */
 export function useCommunicationType(): CommunicationType {
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -43,14 +46,32 @@ export function useCommunicationRetrieval(): void {
     const maxAgeMs = useConfigStore((s) =>
         selectCacheMs(s, COMMUNICATIONS_CACHE_SERVICE)
     );
+    // the environment's endpoint: a switch loads another configuration, and its banner must be asked for
+    const endpoint = useConfigStore(
+        (s) => s.config?.serviceEndpoints?.[GATEWAY_API]
+    );
     // what the foreground listener asks for: the latest, without subscribing again on every change
     const latest = useRef({ type, maxAgeMs });
 
     useEffect(() => {
         latest.current = { type, maxAgeMs };
-        if (!services.isInitialized) return;
-        void useCommunicationStore.getState().retrieve(type, maxAgeMs);
-    }, [type, pathname, maxAgeMs]);
+        const retrieve = () => {
+            if (services.isInitialized)
+                void useCommunicationStore.getState().retrieve(type, maxAgeMs);
+        };
+        // A newly loaded configuration can arrive just before the services built from it (bootstrap): until they are,
+        // asking would reach the previous environment, so wait the moment it takes.
+        if (
+            !services.isInitialized ||
+            endpoint === undefined ||
+            services.communication.baseUri.startsWith(endpoint)
+        ) {
+            retrieve();
+            return;
+        }
+        const timer = setTimeout(retrieve, 0);
+        return () => clearTimeout(timer);
+    }, [type, pathname, maxAgeMs, endpoint]);
 
     // back from the background (web: the tab shown again), with no page change to prompt a check
     useEffect(() => {

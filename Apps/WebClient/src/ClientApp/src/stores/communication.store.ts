@@ -17,6 +17,8 @@ export const TOO_MANY_REQUESTS_TEXT =
 export interface CommunicationEntry {
     /** The active communication, or null when there is none. */
     communication: Communication | null;
+    /** The endpoint it came from (`ICommunicationService.baseUri`): after an environment switch, not the current one. */
+    source?: string;
     /** When the last fetch succeeded. */
     fetchedAt?: number;
     /** When the last fetch failed: no new fetch until `COMMUNICATION_RETRY_MS` has passed. */
@@ -36,8 +38,10 @@ interface CommunicationState {
     reset: () => void;
 }
 
-/** Kept out of the state: a promise changing should not repaint anything. */
-const inFlight = new Map<CommunicationType, Promise<void>>();
+/** Kept out of the state: a promise changing should not repaint anything. By type and endpoint. */
+const inFlight = new Map<string, Promise<void>>();
+const flightKey = (type: CommunicationType, source: string) =>
+    `${type}|${source}`;
 /** Raised by `clear` and `reset`, so a fetch that started before them cannot bring back what they dropped. */
 const generations = new Map<CommunicationType, number>();
 const generationOf = (type: CommunicationType) => generations.get(type) ?? 0;
@@ -65,12 +69,17 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => {
             },
         }));
 
-    async function fetchType(type: CommunicationType, generation: number) {
+    async function fetchType(
+        type: CommunicationType,
+        generation: number,
+        source: string
+    ) {
         try {
             const result = await services.communication.getActive(type);
             if (generation !== generationOf(type)) return;
             update(type, {
                 communication: result.resourcePayload ?? null,
+                source,
                 fetchedAt: Date.now(),
                 failedAt: undefined,
             });
@@ -78,6 +87,7 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => {
             if (isSessionEnded(error)) return; // signed out while it ran: nothing to show, nothing to wait for
             if (generation !== generationOf(type)) return;
             update(type, {
+                source,
                 failedAt: Date.now(),
                 // what was shown stays, unless the server is turning requests away
                 ...(isTooManyRequestsError(error)
@@ -99,9 +109,21 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => {
         entries: {},
 
         retrieve: (type, maxAgeMs) => {
-            const running = inFlight.get(type);
+            const source = services.communication.baseUri;
+            const key = flightKey(type, source);
+            const running = inFlight.get(key);
             if (running) return running;
-            const entry = get().entries[type];
+            let entry = get().entries[type];
+            // another environment's (fetched as the app switched): not this one's, so neither shown nor kept
+            if (entry && entry.source !== source) {
+                update(type, {
+                    communication: null,
+                    source,
+                    fetchedAt: undefined,
+                    failedAt: undefined,
+                });
+                entry = get().entries[type];
+            }
             const now = Date.now();
             if (
                 entry?.fetchedAt !== undefined &&
@@ -113,16 +135,19 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => {
                 now - entry.failedAt < COMMUNICATION_RETRY_MS
             )
                 return Promise.resolve();
-            const request = fetchType(type, generationOf(type)).finally(() => {
-                if (inFlight.get(type) === request) inFlight.delete(type);
-            });
-            inFlight.set(type, request);
+            const request = fetchType(type, generationOf(type), source).finally(
+                () => {
+                    if (inFlight.get(key) === request) inFlight.delete(key);
+                }
+            );
+            inFlight.set(key, request);
             return request;
         },
 
         clear: (type) => {
             nextGeneration(type);
-            inFlight.delete(type);
+            for (const key of [...inFlight.keys()])
+                if (key.startsWith(`${type}|`)) inFlight.delete(key);
             set((s) => {
                 const entries = { ...s.entries };
                 delete entries[type];

@@ -22,6 +22,7 @@ import {
     fakeAuth,
     resetStores,
     signInRegistered,
+    updateStores,
 } from "@/test/fixtures";
 import { render, renderHook, screen, unmount, waitFor } from "@/test/ui";
 
@@ -154,6 +155,28 @@ describe("useCommunicationRetrieval", () => {
         const hook = await renderHook(() => useCommunicationRetrieval());
         await hook.unmount();
         expect(appStateListeners).toHaveLength(0);
+    });
+
+    it("after an environment switch, asks the new environment once its services are ready", async () => {
+        await renderHook(() => useCommunicationRetrieval());
+        expect(getActive).toHaveBeenCalledTimes(1);
+        const other = {
+            ...configFixture,
+            serviceEndpoints: {
+                ...configFixture.serviceEndpoints,
+                GatewayApi: "https://api.other/gateway/",
+            },
+        };
+        // bootstrap: the new configuration arrives just before the services built from it
+        updateStores(() =>
+            useConfigStore.setState({ config: other, status: "loaded" })
+        );
+        services.initialize(other, fakeAuth());
+        const otherGetActive = jest
+            .spyOn(services.communication, "getActive")
+            .mockResolvedValue({ resourcePayload: null } as never);
+        await waitFor(() => expect(otherGetActive).toHaveBeenCalledTimes(1));
+        expect(getActive).toHaveBeenCalledTimes(1);
     });
 
     it("fetches the in-app message once registered, and the banners show it", async () => {

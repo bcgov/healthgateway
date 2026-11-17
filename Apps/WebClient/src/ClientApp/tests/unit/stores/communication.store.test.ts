@@ -169,6 +169,32 @@ describe("communication store", () => {
         expect(textOf(CommunicationType.Banner)).toBe("public");
     });
 
+    it("an entry from another environment is neither shown nor kept: the current one is asked", async () => {
+        await retrieve(CommunicationType.Banner);
+        expect(textOf(CommunicationType.Banner)).toBe("first");
+        // the app switched environment: new services, another endpoint
+        services.initialize(
+            {
+                ...configFixture,
+                serviceEndpoints: {
+                    ...configFixture.serviceEndpoints,
+                    GatewayApi: "https://api.other/gateway/",
+                },
+            },
+            fakeAuth()
+        );
+        const other = jest
+            .spyOn(services.communication, "getActive")
+            .mockResolvedValue(payload("other environment") as never);
+        await retrieve(CommunicationType.Banner);
+        expect(other).toHaveBeenCalledTimes(1);
+        expect(textOf(CommunicationType.Banner)).toBe("other environment");
+        expect(
+            useCommunicationStore.getState().entries[CommunicationType.Banner]
+                ?.source
+        ).toBe("https://api.other/gateway/Communication");
+    });
+
     it("reset drops every type", async () => {
         await retrieve(CommunicationType.Banner);
         useCommunicationStore.getState().reset();

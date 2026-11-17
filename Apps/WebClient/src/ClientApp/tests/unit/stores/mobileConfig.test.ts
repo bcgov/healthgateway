@@ -6,9 +6,11 @@ import type {
     MobileConfiguration,
 } from "@/models/configData";
 import { services } from "@/services/container";
+import { logger } from "@/services/logger";
 import {
     DEFAULT_CACHE_MS,
     DEFAULT_MOBILE_IDLE_MS,
+    MIN_CACHE_MS,
     MobileConfigurationError,
     nativeOidcConfig,
     selectCacheMs,
@@ -286,9 +288,9 @@ describe("mobile configuration", () => {
             expect(cacheMs()).toBe(21600000);
             withCache(
                 { default: 3600, services: { Communications: 21600 } },
-                { default: 600, services: { Communications: 60 } }
+                { default: 600, services: { Communications: 360 } }
             );
-            expect(cacheMs()).toBe(60000);
+            expect(cacheMs()).toBe(360000);
         });
 
         it("gives a service not in the list the default", () => {
@@ -304,9 +306,26 @@ describe("mobile configuration", () => {
             expect(cacheMs("Communications")).toBe(21600000);
         });
 
-        it("takes zero (ask every time) but skips values it can't use", () => {
+        it("raises anything under five minutes to five minutes, once warned", () => {
+            const warn = jest
+                .spyOn(logger, "warn")
+                .mockImplementation(() => undefined);
+            expect(MIN_CACHE_MS).toBe(300000);
             withCache({ default: 0 }, undefined);
-            expect(cacheMs()).toBe(0);
+            expect(cacheMs()).toBe(MIN_CACHE_MS);
+            withCache({ services: { Communications: 299 } }, undefined);
+            expect(cacheMs()).toBe(MIN_CACHE_MS);
+            expect(cacheMs()).toBe(MIN_CACHE_MS);
+            expect(warn).toHaveBeenCalledTimes(2);
+            expect(warn).toHaveBeenCalledWith(
+                "Cache time for Communications is 299s, under the 300s minimum: using 300s"
+            );
+            withCache({ services: { Communications: 300 } }, undefined);
+            expect(cacheMs()).toBe(300000);
+            expect(warn).toHaveBeenCalledTimes(2);
+        });
+
+        it("skips values it can't use", () => {
             withCache(
                 {
                     default: 3600,
@@ -326,7 +345,7 @@ describe("mobile configuration", () => {
             try {
                 withCache(
                     { default: 3600, services: { Communications: 21600 } },
-                    { default: 600, services: { Communications: 60 } }
+                    { default: 600, services: { Communications: 360 } }
                 );
                 expect(cacheMs()).toBe(21600000);
                 expect(cacheMs("Immunization")).toBe(3600000);
