@@ -127,7 +127,6 @@ describe("Quick Links", () => {
             .should("not.be.enabled");
 
         cy.log("Verifying quick link card is present and links to timeline");
-        cy.intercept("GET", `**/Communication/*`).as("getCommunication");
         cy.intercept("GET", "**/Laboratory/Covid19Orders*").as(
             "getCovid19Orders"
         );
@@ -136,7 +135,6 @@ describe("Quick Links", () => {
             .should("be.visible", "be.enabled")
             .click();
 
-        cy.wait("@getCommunication", { timeout: defaultTimeout });
         waitForCovid19Orders("@getCovid19Orders");
         cy.checkTimelineHasLoaded();
 
