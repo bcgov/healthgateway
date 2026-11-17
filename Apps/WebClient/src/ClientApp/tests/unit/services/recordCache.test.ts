@@ -277,8 +277,19 @@ describe("recordCache", () => {
             jest.mocked(freshVault.excludeFromBackup).mockRejectedValueOnce(
                 new Error("no")
             );
+            // expected: it says so, then carries on
+            const { logger } = await import("@/services/logger");
+            const warn = jest
+                .spyOn(logger, "warn")
+                .mockImplementation(() => undefined);
             const fresh = (await import("@/services/recordCache")).recordCache;
             await expect(fresh.save("H", {}, 10)).resolves.toBe(true);
+            expect(warn).toHaveBeenCalledWith(
+                expect.stringMatching(
+                    /^Could not keep the record cache out of backups/
+                )
+            );
+            warn.mockRestore();
         });
     });
 });
