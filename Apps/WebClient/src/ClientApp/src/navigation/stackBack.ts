@@ -1,5 +1,9 @@
+import { Path } from "@/constants/path";
+
+import { menuItems, menuRouteName } from "./menu";
+
 /** A route as a navigation state holds it; a partial state (a deep link not yet opened) may lack the key. */
-interface StackRoute {
+export interface StackRoute {
     key?: string;
     name: string;
     state?: StackState;
@@ -19,14 +23,38 @@ export interface StackNavigation {
 }
 
 /**
- * The pages outside the tabs that the back button names, by route name: the places one goes to, by their own title
- * (`usePageTitle`), the landing page being the signed-out Home. Any other page, a status rather than a place (Logged
+ * The pages outside the tabs that the back button names, by route name: the places one goes to. On iOS and Android the
+ * landing page is where one logs in, so it is named for that. Any other page, a status rather than a place (Logged
  * Out, Page Not Found, Unauthorized): "Back".
  */
 export const outsidePageTitles: Readonly<Record<string, string>> = {
-    index: "Home",
+    index: "Log In",
     login: "Log In",
 };
+
+/** The titles of the pages pushed on the Home tab's stack, by route name. */
+export const homeStackTitles: Readonly<Record<string, string>> = {
+    otherRecordSources: "Other record sources",
+    profile: "Profile",
+};
+
+/** The titles of the pages pushed on the Dependents tab's stack, by route name. */
+export const dependentsStackTitles: Readonly<Record<string, string>> = {
+    "[id]/index": "Health Records",
+    "[id]/timeline": "Health Records",
+};
+
+/** The pages pushed on each tab's stack, by the tab's route name. */
+const tabStackTitles: Readonly<
+    Record<string, Readonly<Record<string, string>>>
+> = {
+    [menuRouteName(Path.Home)]: homeStackTitles,
+    [menuRouteName(Path.Dependents)]: dependentsStackTitles,
+};
+
+/** Each tab's name, by its route name: what the back button says to a tab's first page, which shows the logo. */
+const tabTitle = (name: string) =>
+    menuItems.find((item) => menuRouteName(item.path) === name)?.title;
 
 /** The back button's label when the page beneath has no name. */
 export const DEFAULT_BACK_TITLE = "Back";
@@ -45,6 +73,26 @@ function shownRoute(route: StackRoute): StackRoute {
     while (shown.state && shown.state.routes.length > 0)
         shown = shown.state.routes[topIndex(shown.state)] ?? shown;
     return shown;
+}
+
+/**
+ * What the back button calls the page `route` shows. The tabs: the tab's name on its first page, or the title of the
+ * page pushed on its stack (Profile). Outside the tabs: `outsidePageTitles`. Otherwise "Back".
+ */
+export function shownTitle(route: StackRoute): string {
+    if (route.name === "(tabs)" && route.state) {
+        const tab = route.state.routes[topIndex(route.state)];
+        const stack = tab?.state;
+        const page = stack ? stack.routes[topIndex(stack)] : undefined;
+        if (tab && page && stack && topIndex(stack) > 0)
+            return (
+                tabStackTitles[tab.name]?.[page.name] ??
+                tabTitle(tab.name) ??
+                DEFAULT_BACK_TITLE
+            );
+        return (tab && tabTitle(tab.name)) ?? DEFAULT_BACK_TITLE;
+    }
+    return outsidePageTitles[shownRoute(route).name] ?? DEFAULT_BACK_TITLE;
 }
 
 function indexInStack(
@@ -70,10 +118,10 @@ export function routeBeneath(
 }
 
 /**
- * The way back from a page that is the first in its own stack while a stack around it has a page beneath: signed out,
- * the tabs group is pushed over the page outside the tabs that opened Security or Terms of Service (`RootNavigator`).
- * The platform draws no back button there (its stack has nothing beneath), so the bar draws one that goes back in that
- * outer stack, named for the page it returns to. None for a page with a page beneath in its own stack, or with nothing
+ * The way back from a page that is the first in its own stack while a stack around it has a page beneath: Security or
+ * Terms of Service, pushed over whatever page opened them, in a tab or outside the tabs (`RootNavigator`). The platform
+ * draws no back button there (its stack has nothing beneath), so the bar draws one that goes back in that outer stack,
+ * named for the page it returns to (`shownTitle`). None for a page with a page beneath in its own stack, or with nothing
  * to go back to.
  */
 export function outerBack(
@@ -90,9 +138,7 @@ export function outerBack(
         if (!beneath) continue;
         const target = outer;
         return {
-            label:
-                outsidePageTitles[shownRoute(beneath).name] ??
-                DEFAULT_BACK_TITLE,
+            label: shownTitle(beneath),
             goBack: () => target.goBack(),
         };
     }

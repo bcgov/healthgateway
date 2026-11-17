@@ -2,14 +2,10 @@ import { Stack } from "expo-router";
 
 import { LazyTab } from "@/components/site/LazyTab";
 import { useNativeStackOptions } from "@/components/site/useNativeStackOptions";
+import { dependentsStackTitles } from "@/navigation/stackBack";
 
 /** Deep links into a dependent's timeline get the list beneath them, so back leads somewhere. */
 export const unstable_settings = { initialRouteName: "index" };
-
-const titles = {
-    "[id]/index": "Health Records",
-    "[id]/timeline": "Health Records",
-};
 
 /**
  * Native: the Dependents tab is a stack so a dependent's timeline keeps the tab bar and gets the platform back
@@ -19,7 +15,7 @@ const titles = {
 export default function DependentsStackLayout() {
     const screenOptions = useNativeStackOptions({
         roots: ["index"],
-        titles,
+        titles: dependentsStackTitles,
         backTitle: "Dependents",
     });
     return (
