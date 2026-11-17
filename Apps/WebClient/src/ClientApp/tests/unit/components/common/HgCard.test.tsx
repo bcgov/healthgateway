@@ -87,6 +87,26 @@ describe("HgCard", () => {
         );
     });
 
+    it("web: the focus ring goes round the whole card while its title row has it (global.css)", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <HgCard
+                accessibilityLabel="Other record sources"
+                onPress={() => undefined}
+                testID="card"
+            >
+                <AppText>Some records may not appear here.</AppText>
+            </HgCard>
+        );
+        expect(attrOf(screen.getByTestId("card"), "data-hg-card")).toBe("");
+        expect(
+            attrOf(
+                screen.getByLabelText("Other record sources"),
+                "data-hg-card-button"
+            )
+        ).toBe("");
+    });
+
     it("a card with no title takes its name from accessibilityLabel", async () => {
         await render(
             <HgCard
