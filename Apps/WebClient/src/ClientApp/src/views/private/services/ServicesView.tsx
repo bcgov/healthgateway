@@ -16,6 +16,7 @@ import {
     selectIsLive,
     useConnectivityStore,
 } from "@/stores/connectivity.store";
+import { pullDatasets } from "@/stores/firstRecordSync";
 import {
     selectPatientDataAreLoading,
     usePatientDataStore,
@@ -55,8 +56,13 @@ export function ServicesView() {
     const pulling = usePagePull(async () => {
         if (!available) return;
         markPatientDataStale(hdid);
-        await retrievePatientData(hdid, [
-            PatientDataType.OrganDonorRegistrationStatus,
+        // device security: the saved copy's whole patient data call, and its time; the page's own call joins it
+        const pulled = pullDatasets(hdid, ["patientData"]);
+        await Promise.all([
+            retrievePatientData(hdid, [
+                PatientDataType.OrganDonorRegistrationStatus,
+            ]),
+            pulled,
         ]);
     });
     // a pull keeps the status on screen until the new one arrives

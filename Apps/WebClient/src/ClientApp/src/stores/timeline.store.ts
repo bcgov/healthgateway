@@ -18,11 +18,21 @@ interface TimelineState {
     fullscreenEntry?: TimelineEntry;
     /** native: the entries expanded in place on the focused screen, oldest first; folding moves the newest to full screen */
     inlineEntries: TimelineEntry[];
+    /** native: whose records the entry page shows, set by the timeline that pushes it (`FullscreenTimelineEntry`) */
+    entryPageFor?: { hdid: string; commentsAreEnabled: boolean };
+    /** native: the entry page comes and goes without the push animation, as when the window folds or unfolds */
+    entryPageInstant: boolean;
+    /** native: the entry last changed (a note edited or deleted): the page showing it goes back, as web's dialog closes */
+    updatedEntry?: { id: string };
     setFilter: (filterBuilder: TimelineFilterBuilder) => void;
     clearFilter: () => void;
     setLinearDate: (linearDate: DateTime) => void;
     setSelectedDate: (selectedDate?: DateTime) => void;
-    openFullscreenEntry: (entry: TimelineEntry) => void;
+    /** `instant`: native, the entry page appears without the push animation (the window folding). */
+    openFullscreenEntry: (
+        entry: TimelineEntry,
+        options?: { instant?: boolean }
+    ) => void;
     closeFullscreenEntry: () => void;
     addInlineEntry: (entry: TimelineEntry) => void;
     removeInlineEntry: (entry: TimelineEntry) => void;
@@ -36,6 +46,8 @@ export const useTimelineStore = create<TimelineState>((set) => ({
     selectedDate: undefined,
     fullscreenEntry: undefined,
     inlineEntries: [],
+    entryPageFor: undefined,
+    entryPageInstant: false,
     setFilter: (filterBuilder) => {
         logger.verbose("Setting filter in timeline store.");
         set({ filter: filterBuilder.build() });
@@ -52,8 +64,17 @@ export const useTimelineStore = create<TimelineState>((set) => ({
         logger.verbose("Setting selected date in timeline store.");
         set({ selectedDate });
     },
-    openFullscreenEntry: (entry) => set({ fullscreenEntry: entry }),
-    closeFullscreenEntry: () => set({ fullscreenEntry: undefined }),
+    openFullscreenEntry: (entry, options) =>
+        set({
+            fullscreenEntry: entry,
+            entryPageInstant: options?.instant ?? false,
+        }),
+    closeFullscreenEntry: () =>
+        set({
+            fullscreenEntry: undefined,
+            entryPageFor: undefined,
+            entryPageInstant: false,
+        }),
     addInlineEntry: (entry) =>
         set((s) => ({ inlineEntries: [...s.inlineEntries, entry] })),
     removeInlineEntry: (entry) =>

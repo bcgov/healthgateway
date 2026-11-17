@@ -42,6 +42,23 @@ public class HgSecureVaultModule: Module {
       self.queue.async { self.decrypt(ciphertext, prompt: prompt, promise: promise) }
     }
 
+    // The record cache's folder: Documents is backed up to iCloud and computers by default, and the copy is only readable
+    // on this device (the key never leaves it), so a backup would carry a file nothing can open.
+    AsyncFunction("excludeFromBackup") { (uri: String, promise: Promise) in
+      guard var url = URL(string: uri), url.isFileURL else {
+        promise.reject("ERR_VAULT_PATH", "Not a file URL")
+        return
+      }
+      var values = URLResourceValues()
+      values.isExcludedFromBackup = true
+      do {
+        try url.setResourceValues(values)
+        promise.resolve(nil)
+      } catch {
+        promise.reject("ERR_VAULT_PATH", "Could not exclude from backup: \(error.localizedDescription)")
+      }
+    }
+
     AsyncFunction("destroy") { (promise: Promise) in
       self.queue.async {
         self.forgetPrompt()

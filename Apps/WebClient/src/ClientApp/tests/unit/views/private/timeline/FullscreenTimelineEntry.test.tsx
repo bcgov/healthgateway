@@ -6,13 +6,13 @@ import {
     it,
     jest,
 } from "@jest/globals";
-import { Platform, StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Platform } from "react-native";
 
 import { NoteTimelineEntry } from "@/models/timeline/noteTimelineEntry";
 import { services } from "@/services/container";
 import { useTimelineStore } from "@/stores/timeline.store";
 import { setBreakpoint } from "@/test/breakpointMock";
+import { resetRouter, router, routerState } from "@/test/expoRouterMock";
 import {
     configFixture,
     fakeAuth,
@@ -20,8 +20,11 @@ import {
     signInRegistered,
     updateStores,
 } from "@/test/fixtures";
-import { press, render, screen, waitFor } from "@/test/ui";
-import { FullscreenTimelineEntry } from "@/views/private/timeline/FullscreenTimelineEntry";
+import { render, screen, waitFor } from "@/test/ui";
+import {
+    entryPagePath,
+    FullscreenTimelineEntry,
+} from "@/views/private/timeline/FullscreenTimelineEntry";
 
 jest.mock(
     "@/hooks/useBreakpoint",
@@ -38,61 +41,89 @@ const entry = new NoteTimelineEntry({
     version: 1,
 });
 
+const openEntry = () =>
+    updateStores(() => useTimelineStore.getState().openFullscreenEntry(entry));
+
 describe("FullscreenTimelineEntry", () => {
     beforeEach(() => {
         setBreakpoint(390);
+        resetRouter("/timeline");
+        routerState.focused = true;
         services.initialize(configFixture, fakeAuth());
         signInRegistered();
     });
     afterEach(() => {
         updateStores(() => useTimelineStore.getState().closeFullscreenEntry());
+        routerState.focused = true;
         resetStores();
     });
 
-    const open = async () => {
-        await render(<FullscreenTimelineEntry hdid="HDID1" />);
-        updateStores(() =>
-            useTimelineStore.getState().openFullscreenEntry(entry)
-        );
-        await waitFor(() =>
-            expect(screen.getByTestId("entryDetailsCard")).toBeTruthy()
-        );
-    };
+    if (Platform.OS === "web") {
+        it("web: opens the web client's full-screen dialog, with its back button", async () => {
+            await render(<FullscreenTimelineEntry hdid="HDID1" />);
+            openEntry();
+            await waitFor(() =>
+                expect(screen.getByTestId("entryDetailsCard")).toBeTruthy()
+            );
+            expect(screen.getByTestId("backBtn")).toBeTruthy();
+            expect(router.push).not.toHaveBeenCalled();
+        });
+        return;
+    }
 
-    it("has the swipe strip on iOS only", async () => {
-        await open();
-        if (Platform.OS === "ios")
-            expect(screen.getByTestId("swipeBackStrip")).toBeTruthy();
-        else expect(screen.queryByTestId("swipeBackStrip")).toBeNull();
-    });
+    describe("native: the entry's own page", () => {
+        it("is pushed beside the timeline that opened it, for whose records they are", async () => {
+            await render(
+                <FullscreenTimelineEntry hdid="HDID1" commentsAreEnabled />
+            );
+            openEntry();
+            expect(router.push).toHaveBeenCalledWith("/timeline/entry");
+            expect(useTimelineStore.getState().entryPageFor).toEqual({
+                hdid: "HDID1",
+                commentsAreEnabled: true,
+            });
+            expect(useTimelineStore.getState().entryPageInstant).toBe(false);
+            expect(screen.queryByTestId("entryDetailsCard")).toBeNull();
+        });
 
-    it("iOS: the swipe strip still reaches the screen's edge in landscape", async () => {
-        if (Platform.OS !== "ios") return;
-        await render(
-            <SafeAreaProvider
-                initialMetrics={{
-                    insets: { top: 0, right: 62, bottom: 21, left: 62 },
-                    frame: { x: 0, y: 0, width: 956, height: 440 },
-                }}
-            >
-                <FullscreenTimelineEntry hdid="HDID1" />
-            </SafeAreaProvider>
-        );
-        updateStores(() =>
-            useTimelineStore.getState().openFullscreenEntry(entry)
-        );
-        const strip = await waitFor(() => screen.getByTestId("swipeBackStrip"));
-        const props = (strip as unknown as { props: { style: unknown } }).props;
-        expect(StyleSheet.flatten(props.style as never)).toMatchObject({
-            left: -62,
-            width: 86,
+        it("a dependent's timeline pushes its own", async () => {
+            resetRouter("/dependents/DEP1/timeline");
+            await render(<FullscreenTimelineEntry hdid="DEP1" />);
+            openEntry();
+            expect(router.push).toHaveBeenCalledWith("/dependents/DEP1/entry");
+        });
+
+        it("not from a timeline that isn't on screen (the other tab's)", async () => {
+            routerState.focused = false;
+            await render(<FullscreenTimelineEntry hdid="HDID1" />);
+            openEntry();
+            expect(router.push).not.toHaveBeenCalled();
+        });
+
+        it("not on a wide window, where the entry opens in its card", async () => {
+            setBreakpoint(1366, 1024);
+            await render(<FullscreenTimelineEntry hdid="HDID1" />);
+            openEntry();
+            expect(router.push).not.toHaveBeenCalled();
+        });
+
+        it("not again when the timeline is back on screen with the entry still open (leaving the page)", async () => {
+            await render(<FullscreenTimelineEntry hdid="HDID1" />);
+            openEntry();
+            expect(router.push).toHaveBeenCalledTimes(1);
+            // redraws at the same layout, as the page covering the timeline and going again cause
+            routerState.focused = false;
+            updateStores(() => setBreakpoint(390, 800));
+            routerState.focused = true;
+            updateStores(() => setBreakpoint(390, 844));
+            expect(router.push).toHaveBeenCalledTimes(1);
         });
     });
 
-    it("closes with the back button", async () => {
-        if (Platform.OS === "web") return; // web closes through browser history
-        await open();
-        await press(screen.getByTestId("backBtn"));
-        expect(useTimelineStore.getState().fullscreenEntry).toBeUndefined();
+    it("the page's path beside each timeline", () => {
+        expect(entryPagePath("/timeline")).toBe("/timeline/entry");
+        expect(entryPagePath("/dependents/DEP1/timeline")).toBe(
+            "/dependents/DEP1/entry"
+        );
     });
 });

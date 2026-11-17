@@ -6,6 +6,7 @@ import {
     it,
     jest,
 } from "@jest/globals";
+import { AppState, type AppStateStatus } from "react-native";
 
 import { ActionType } from "@/constants/actionType";
 import { EntryType } from "@/constants/entryType";
@@ -25,12 +26,14 @@ import {
     cachedDatasets,
     clearAllDatasets,
     clearDataset,
+    pullDatasets,
+    pullDependents,
     resyncAllDatasets,
     resyncDataset,
     startFirstRecordSync,
 } from "@/stores/firstRecordSync";
 import { useImmunizationStore } from "@/stores/immunization.store";
-import { buildSnapshot, copyExpiresAt } from "@/stores/localSession";
+import { buildSnapshot } from "@/stores/localSession";
 import {
     datasetFailedAt,
     datasetKey,
@@ -68,6 +71,20 @@ const noDependentsOrComments = () =>
             },
         } as never,
     });
+/** `webClient.mobile.cache` on top of whatever configuration is loaded. */
+const withMobileCache = (cache: {
+    default?: number;
+    services?: Record<string, number>;
+}) => {
+    const config = useConfigStore.getState().config ?? configFixture;
+    useConfigStore.setState({
+        config: {
+            ...config,
+            webClient: { ...config.webClient, mobile: { cache } },
+        },
+    });
+};
+const HOUR = 60 * 60 * 1000;
 const onlyDatasets = (...types: EntryType[]) =>
     jest
         .spyOn(ConfigUtil, "isDatasetEnabled")
@@ -134,38 +151,48 @@ describe("first record sync", () => {
         expect(connectivity().syncing).toBe(true);
     });
 
-    it("does not fetch while a data API is under 24 hours old", async () => {
-        noDependentsOrComments();
-        onlyDatasets(EntryType.Immunization);
-        jest.spyOn(ConfigUtil, "isServiceEnabled").mockReturnValue(false);
+    const savedImmunizationsRefreshed = (refreshedAt: number) =>
         jest.spyOn(recordCache, "load").mockResolvedValue({
             version: 2,
             savedAt: 1,
             hdid: "h",
             data: {
                 datasets: {},
-                refreshed: {
-                    [key("immunization")]: Date.now() - 23 * 60 * 60 * 1000,
-                },
+                refreshed: { [key("immunization")]: refreshedAt },
             },
         });
+
+    it("does not fetch while a data API is younger than its configured lifetime", async () => {
+        noDependentsOrComments();
+        withMobileCache({ services: { Immunization: 21600 } });
+        onlyDatasets(EntryType.Immunization);
+        jest.spyOn(ConfigUtil, "isServiceEnabled").mockReturnValue(false);
+        savedImmunizationsRefreshed(Date.now() - 6 * HOUR + 60 * 1000);
         await start();
         expect(immunizations).not.toHaveBeenCalled();
         expect(connectivity().syncing).toBe(false);
     });
 
-    it("fetches again once a data API is 24 hours old", async () => {
-        jest.spyOn(recordCache, "load").mockResolvedValue({
-            version: 2,
-            savedAt: Date.now(),
-            hdid: "h",
-            data: {
-                datasets: {},
-                refreshed: {
-                    [key("immunization")]: Date.now() - 24 * 60 * 60 * 1000,
-                },
-            },
-        });
+    it("fetches again once a data API reaches its configured lifetime", async () => {
+        withMobileCache({ services: { Immunization: 21600 } });
+        savedImmunizationsRefreshed(Date.now() - 6 * HOUR);
+        await start();
+        expect(immunizations).toHaveBeenCalledTimes(1);
+    });
+
+    it("gives a data API with no entry of its own the default, then the embedded 30 minutes", async () => {
+        noDependentsOrComments();
+        onlyDatasets(EntryType.Immunization);
+        jest.spyOn(ConfigUtil, "isServiceEnabled").mockReturnValue(false);
+        withMobileCache({ default: 2 * HOUR, services: { Medication: 60 } });
+        savedImmunizationsRefreshed(Date.now() - HOUR);
+        await start();
+        expect(immunizations).not.toHaveBeenCalled();
+        stop();
+
+        resetSavedCopyState();
+        withMobileCache({});
+        savedImmunizationsRefreshed(Date.now() - 31 * 60 * 1000);
         await start();
         expect(immunizations).toHaveBeenCalledTimes(1);
     });
@@ -310,6 +337,58 @@ describe("first record sync", () => {
         expect(immunizations).toHaveBeenCalledTimes(2);
     });
 
+    describe("when it checks what is due", () => {
+        let appStateListeners: ((state: AppStateStatus) => void)[];
+
+        beforeEach(() => {
+            appStateListeners = [];
+            jest.spyOn(AppState, "addEventListener").mockImplementation(
+                (_type, listener) => {
+                    appStateListeners.push(listener);
+                    return { remove: jest.fn() };
+                }
+            );
+            noDependentsOrComments();
+            onlyDatasets(EntryType.Immunization);
+            jest.spyOn(ConfigUtil, "isServiceEnabled").mockReturnValue(false);
+            withMobileCache({ services: { Immunization: 21600 } });
+            immunizations.mockResolvedValue(immunizationResultFixture);
+        });
+
+        it("a configured lifetime of zero is raised to five minutes: one sync, not one after another", async () => {
+            withMobileCache({ services: { Immunization: 0 } });
+            await start();
+            await flush();
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(1);
+            // the sync's own status changes (syncing on and off) must not start another
+            useConnectivityStore.getState().setSyncing(true);
+            useConnectivityStore.getState().setSyncing(false);
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(1);
+        });
+
+        it("sets no timer: an open app doesn't check on its own", async () => {
+            const interval = jest.spyOn(global, "setInterval");
+            await start();
+            expect(interval).not.toHaveBeenCalled();
+        });
+
+        it("refreshes what turned old once the app is back in the foreground", async () => {
+            await start();
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(1);
+            const now = Date.now();
+            jest.spyOn(Date, "now").mockReturnValue(now + 6 * HOUR);
+            appStateListeners.forEach((listener) => listener("background"));
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(1);
+            appStateListeners.forEach((listener) => listener("active"));
+            await flush();
+            expect(immunizations).toHaveBeenCalledTimes(2);
+        });
+    });
+
     it("refreshes only the data API that is due", async () => {
         noDependentsOrComments();
         onlyDatasets(EntryType.Immunization, EntryType.Note);
@@ -447,24 +526,95 @@ describe("first record sync", () => {
         });
     });
 
-    it("logging out keeps the saved copy; another person's expired one goes at login", async () => {
-        const removeExpired = jest
-            .spyOn(recordCache, "removeExpired")
+    it("logging out keeps the saved copy, and a login only tidies copies from another version", async () => {
+        const removeOutdated = jest
+            .spyOn(recordCache, "removeOutdated")
             .mockResolvedValue();
         const remove = jest.spyOn(recordCache, "remove").mockResolvedValue();
+        const removeFor = jest
+            .spyOn(recordCache, "removeFor")
+            .mockResolvedValue();
         await start();
         await flush();
-        const hdid = useUserStore.getState().user.hdid;
-        expect(removeExpired).toHaveBeenCalledWith(hdid, expect.any(Number));
-        const now = Date.now();
-        const day = 24 * 60 * 60 * 1000;
-        const expiry = (refreshed: Record<string, number>) =>
-            copyExpiresAt({ refreshed } as never, now);
-        expect(expiry({ a: now - day })).toBe(now);
-        expect(expiry({ a: now - day, b: now - 1000 })).toBe(now - 1000 + day);
-        expect(expiry({})).toBe(now + day);
+        expect(removeOutdated).toHaveBeenCalledWith();
         await useAuthStore.getState().signOut();
         expect(remove).not.toHaveBeenCalled();
+        expect(removeFor).not.toHaveBeenCalled();
+    });
+
+    describe("pull to refresh", () => {
+        const immunizationKey = () => key("immunization");
+
+        beforeEach(() => {
+            noDependentsOrComments();
+            onlyDatasets(EntryType.Immunization);
+            jest.spyOn(ConfigUtil, "isServiceEnabled").mockReturnValue(false);
+        });
+
+        it("records each data API's time when its own fetch ends, however recent its last one", async () => {
+            immunizations.mockResolvedValue(immunizationResultFixture);
+            const hdid = useUserStore.getState().user.hdid;
+            await pullDatasets(hdid, ["immunization"]);
+            expect(immunizations).toHaveBeenCalledTimes(1);
+            const first = datasetRefreshedAt(immunizationKey());
+            expect(first).toBeDefined();
+            await pullDatasets(hdid, ["immunization"]);
+            expect(immunizations).toHaveBeenCalledTimes(2);
+            expect(
+                datasetRefreshedAt(immunizationKey())
+            ).toBeGreaterThanOrEqual(first);
+            expect(datasetFailedAt(immunizationKey())).toBeUndefined();
+        });
+
+        it("records a failure, keeping the last good time", async () => {
+            const hdid = useUserStore.getState().user.hdid;
+            immunizations.mockResolvedValue(immunizationResultFixture);
+            await pullDatasets(hdid, ["immunization"]);
+            const good = datasetRefreshedAt(immunizationKey());
+            immunizations.mockRejectedValue(new Error("down"));
+            await pullDatasets(hdid, ["immunization"]);
+            expect(datasetFailedAt(immunizationKey())).toBeDefined();
+            expect(datasetRefreshedAt(immunizationKey())).toBe(good);
+        });
+
+        it("records nothing without device security: there is no saved copy", async () => {
+            useAppLockStore.setState({ enabled: false });
+            immunizations.mockResolvedValue(immunizationResultFixture);
+            await pullDatasets(useUserStore.getState().user.hdid, [
+                "immunization",
+            ]);
+            expect(immunizations).not.toHaveBeenCalled();
+            expect(datasetRefreshedAt(immunizationKey())).toBeUndefined();
+        });
+
+        it("records the dependents list after the Dependents pull", async () => {
+            const hdid = useUserStore.getState().user.hdid;
+            jest.spyOn(
+                useDependentStore.getState(),
+                "retrieveDependents"
+            ).mockImplementation(async () => {
+                useDependentStore.setState({
+                    status: LoadStatus.LOADED,
+                    dependents: [],
+                });
+            });
+            await pullDependents(hdid);
+            expect(
+                datasetRefreshedAt(datasetKey(hdid, "dependents"))
+            ).toBeDefined();
+        });
+
+        it("records the dependents list as failed when it could not be fetched", async () => {
+            const hdid = useUserStore.getState().user.hdid;
+            jest.spyOn(
+                useDependentStore.getState(),
+                "retrieveDependents"
+            ).mockRejectedValue(new Error("down"));
+            await expect(pullDependents(hdid)).rejects.toThrow("down");
+            expect(
+                datasetFailedAt(datasetKey(hdid, "dependents"))
+            ).toBeDefined();
+        });
     });
 
     describe("when the prompt to read the copy is turned down", () => {

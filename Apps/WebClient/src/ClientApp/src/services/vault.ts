@@ -47,4 +47,8 @@ export const vault = {
     destroy: async () => {
         await NativeVault?.destroy();
     },
+    /** iOS: keeps the record cache's folder out of backups. A dev client built before this was added skips it. */
+    excludeFromBackup: async (uri: string) => {
+        await NativeVault?.excludeFromBackup?.(uri);
+    },
 };

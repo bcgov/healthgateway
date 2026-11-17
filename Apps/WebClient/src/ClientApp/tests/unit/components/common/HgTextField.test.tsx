@@ -86,6 +86,33 @@ describe("HgTextField", () => {
         expect(containsInput(screen.getByTestId("email-input"))).toBe(true);
     });
 
+    it("web: the focus ring goes round the whole field box, its icon, × and slot included (global.css)", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <HgTextField
+                label="Search"
+                value="flu"
+                onChangeText={() => undefined}
+                clearable
+                prependInner={<Text testID="search-icon">S</Text>}
+                appendInner={<Text testID="send">Send</Text>}
+                testID="search"
+            />
+        );
+        const input = screen.getByLabelText("Search") as unknown as HTMLElement;
+        const box = input.closest("[data-hg-field]");
+        expect(box).not.toBeNull();
+        for (const id of ["search-icon", "send"])
+            expect(
+                box?.contains(screen.getByTestId(id) as unknown as Node)
+            ).toBe(true);
+        expect(
+            box?.contains(
+                screen.getByLabelText("Clear Search") as unknown as Node
+            )
+        ).toBe(true);
+    });
+
     it("names the input after the placeholder when there is no label", async () => {
         await render(
             <HgTextField

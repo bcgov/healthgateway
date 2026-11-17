@@ -12,6 +12,7 @@ import { CommunicationBanner } from "@/components/site/CommunicationBanner";
 import { Path } from "@/constants/path";
 import { type Communication, CommunicationType } from "@/models/communication";
 import { services } from "@/services/container";
+import { useCommunicationStore } from "@/stores/communication.store";
 import { setBreakpoint } from "@/test/breakpointMock";
 import { resetRouter } from "@/test/expoRouterMock";
 import { configFixture, fakeAuth, resetStores } from "@/test/fixtures";
@@ -43,16 +44,30 @@ describe("CommunicationBanner (CommunicationComponent.vue)", () => {
     beforeEach(() => {
         resetRouter(Path.Root);
         services.initialize(configFixture, fakeAuth());
-        jest.spyOn(services.communication, "getActive").mockResolvedValue({
-            resourcePayload: {
-                text: html,
-                communicationTypeCode: CommunicationType.Banner,
-            } as Communication,
-        } as never);
+        // what the shell's useCommunicationRetrieval fetched: the banner only shows it
+        useCommunicationStore.setState({
+            entries: {
+                [CommunicationType.Banner]: {
+                    communication: {
+                        text: html,
+                        communicationTypeCode: CommunicationType.Banner,
+                    } as Communication,
+                    fetchedAt: Date.now(),
+                },
+            },
+        });
     });
     afterEach(() => {
         resetStores();
         jest.restoreAllMocks();
+    });
+
+    it("fetches nothing itself: the shell's useCommunicationRetrieval does", async () => {
+        const getActive = jest.spyOn(services.communication, "getActive");
+        setBreakpoint(1366);
+        await render(<CommunicationBanner />);
+        expect(screen.getByTestId("communicationBanner")).toBeTruthy();
+        expect(getActive).not.toHaveBeenCalled();
     });
 
     it("keeps v-banner-text's 90px end padding on a wide window", async () => {

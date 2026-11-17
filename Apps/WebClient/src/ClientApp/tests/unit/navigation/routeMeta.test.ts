@@ -87,6 +87,13 @@ describe("getRouteMeta", () => {
             getRouteMeta("/dependents")?.requiredFeaturesEnabled?.(off as never)
         ).toBe(true);
     });
+
+    it("an entry's own page (native) needs what its timeline needs", () => {
+        expect(getRouteMeta("/dependents/HDID/entry")).toBe(
+            getRouteMeta("/dependents/HDID/timeline")
+        );
+        expect(getRouteMeta("/timeline/entry")).toBe(getRouteMeta("/timeline"));
+    });
 });
 
 describe("routeFeaturesEnabled", () => {

@@ -171,13 +171,15 @@ export function HgCard({
 
     return (
         // the whole card takes a press (mouse, touch), but the control the keyboard and the screen reader get is the
-        // title row inside: a button containing the ⋮ button or a link would hide them from assistive technology
+        // title row inside: a button containing the ⋮ button or a link would hide them from assistive technology. Web:
+        // the focus ring goes round the whole card while that row has it (global.css, `data-hg-card`)
         <Pressable
             testID={testID}
             accessible={false}
             tabIndex={-1}
             onPress={onPress}
             {...handlers}
+            {...(web ? ({ dataSet: { hgCard: "" } } as object) : {})}
             style={elevation1}
             className={cn(
                 "grow rounded",
@@ -192,6 +194,9 @@ export function HgCard({
                     accessibilityRole="button"
                     accessibilityLabel={name}
                     onPress={onPress}
+                    {...(web
+                        ? ({ dataSet: { hgCardButton: "" } } as object)
+                        : {})}
                     // a press here is the card's own, so it shades the card
                     onPressIn={handlers.onPressIn}
                     onPressOut={handlers.onPressOut}

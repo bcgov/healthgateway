@@ -34,7 +34,6 @@ import {
     getFailedTimes,
     getLastCopy,
     getRefreshedTimes,
-    REFRESH_AFTER_MS,
     retryCopyRead,
     setLastCopy,
     setSavedTimes,
@@ -332,11 +331,6 @@ export async function recoverSession(): Promise<void> {
 }
 
 /** Nothing in a copy is still good once its newest data API has expired. */
-export const copyExpiresAt = (copy: SnapshotData, savedAt: number) => {
-    const times = Object.values(copy.refreshed ?? {});
-    return (times.length > 0 ? Math.max(...times) : savedAt) + REFRESH_AFTER_MS;
-};
-
 /** How often the saved copy may be rewritten while records keep arriving. */
 const SAVE_DEBOUNCE_MS = 2000;
 
@@ -365,7 +359,7 @@ export function startRecordCacheSync(): () => void {
         }
         setLastCopy(copy);
         const now = Date.now();
-        void recordCache.save(user.hdid, copy, now, copyExpiresAt(copy, now));
+        void recordCache.save(user.hdid, copy, now);
     };
     const schedule = () => {
         if (timer !== undefined) clearTimeout(timer);

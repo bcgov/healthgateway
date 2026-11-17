@@ -10,6 +10,7 @@ import { Animated, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useCommunicationRetrieval } from "@/hooks/useCommunication";
 import { selectIsLoading, useLoadingStore } from "@/stores/loading.store";
 
 import { DevBanner } from "./DevBanner";
@@ -87,6 +88,7 @@ function usePhoneFooterReady(pathname: string) {
 export function AppShell({ children }: { children: React.ReactNode }) {
     const { isMobile } = useBreakpoint();
     const { hideChrome, hideFooter, hideSidebar } = usePageChrome();
+    useCommunicationRetrieval();
     const header = useCollapsibleHeader();
     const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null);
     const scrollToTop = useCallback(

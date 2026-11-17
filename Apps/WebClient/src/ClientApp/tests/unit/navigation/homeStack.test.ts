@@ -36,20 +36,16 @@ describe("Home tab stack", () => {
         resetStores();
     });
 
-    it("keeps a single Security: opening it again moves the open one up instead of stacking another", async () => {
+    it("holds no Security or Terms of Service: they go over whichever tab opened them", async () => {
         await render(createElement(HomeStackLayout));
-        expect(screens).toContainEqual(
-            expect.objectContaining({
-                name: "security",
-                dangerouslySingular: true,
-            })
-        );
+        expect(screens.map((s) => s.name)).not.toContain("security");
+        expect(screens.map((s) => s.name)).not.toContain("termsOfService");
     });
 
-    it("leaves the account menu off Profile and Security while Back leads somewhere", async () => {
+    it("leaves the account menu off Profile while Back leads somewhere", async () => {
         signInRegistered();
         await render(createElement(HomeStackLayout));
-        expect(lastWithoutMenu()).toEqual(["profile", "security"]);
+        expect(lastWithoutMenu()).toEqual(["profile"]);
     });
 
     it("keeps the account menu on Profile for an account pending deletion: its Log Out is the only way out", async () => {

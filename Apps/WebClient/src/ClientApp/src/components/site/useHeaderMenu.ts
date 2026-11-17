@@ -286,7 +286,9 @@ export function useHeaderMenu(): {
     return {
         menu: {
             kind: "account",
-            buttonLabel: "Account menu",
+            // iOS and Android only (web's initials button names itself, Header.web.tsx): the same gear as signed out,
+            // named the same (owner, 2026-11-16)
+            buttonLabel: "Settings",
             initials,
             title: userName,
             sections: [

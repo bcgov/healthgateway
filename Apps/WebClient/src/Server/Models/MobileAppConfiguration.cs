@@ -35,5 +35,11 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the mobile app authentication settings.
         /// </summary>
         public MobileAppAuthenticationConfiguration? Authentication { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mobile app's cache durations, which override WebClient.Cache at the same level (default or
+        /// service), or null when not configured.
+        /// </summary>
+        public CacheConfiguration? Cache { get; set; }
     }
 }

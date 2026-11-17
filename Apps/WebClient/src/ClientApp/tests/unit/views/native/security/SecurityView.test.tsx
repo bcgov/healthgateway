@@ -10,9 +10,21 @@ import { Alert, type AlertButton, Platform } from "react-native";
 
 import { vault } from "@/services/vault";
 import { useAppLockStore } from "@/stores/appLock.store";
+import { useConfigStore } from "@/stores/config.store";
 import { useEnvironmentStore } from "@/stores/environment.store";
+import {
+    datasetKey,
+    markDatasetRefreshed,
+    resetSavedCopyState,
+} from "@/stores/savedCopyState";
 import { switchEnvironment } from "@/stores/switchEnvironment";
-import { updateStores } from "@/test/fixtures";
+import { useUserStore } from "@/stores/user.store";
+import {
+    configFixture,
+    resetStores,
+    signInRegistered,
+    updateStores,
+} from "@/test/fixtures";
 import { isChecked, press, render, screen } from "@/test/ui";
 import { getLocalAuthMethod } from "@/utils/localAuth";
 import { resetApp } from "@/utils/resetApp";
@@ -115,6 +127,58 @@ describe("SecurityView", () => {
         expect(screen.getByTestId("cacheUnavailable")).toBeTruthy();
         expect(screen.getByTestId("environmentSection")).toBeTruthy();
         expect(screen.getByTestId("resetAppBtn")).toBeTruthy();
+    });
+
+    describe("Cache", () => {
+        const HOUR = 60 * 60 * 1000;
+        const showSaved = async (hoursAgo: number) => {
+            signInRegistered();
+            updateStores(() => {
+                useConfigStore.setState({
+                    config: {
+                        ...configFixture,
+                        webClient: {
+                            ...configFixture.webClient,
+                            mobile: {
+                                cache: { services: { Immunization: 21600 } },
+                            },
+                        },
+                    },
+                });
+                useAppLockStore.setState({ enabled: true });
+            });
+            const hdid = useUserStore.getState().user.hdid;
+            markDatasetRefreshed(
+                datasetKey(hdid, "immunization"),
+                Date.now() - hoursAgo * HOUR
+            );
+            await open();
+        };
+        const status = () =>
+            String(
+                (
+                    screen.getByTestId("cacheStatus-immunization").props as {
+                        children?: unknown;
+                    }
+                ).children
+            );
+
+        afterEach(() => {
+            updateStores(() => {
+                resetSavedCopyState();
+                resetStores();
+            });
+        });
+
+        it("shows a record type within its configured lifetime as saved", async () => {
+            await showSaved(5);
+            expect(status()).toMatch(/^Saved /);
+        });
+
+        it("shows one past its lifetime as due to refresh, still saved", async () => {
+            await showSaved(7);
+            expect(status()).toMatch(/^Due to refresh, saved /);
+        });
     });
 
     describe("Environment", () => {

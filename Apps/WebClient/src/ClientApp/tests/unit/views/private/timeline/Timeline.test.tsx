@@ -19,6 +19,7 @@ import { services } from "@/services/container";
 import { useErrorStore } from "@/stores/error.store";
 import { useTimelineStore } from "@/stores/timeline.store";
 import { setBreakpoint } from "@/test/breakpointMock";
+import { resetRouter, router } from "@/test/expoRouterMock";
 import {
     configFixture,
     encountersFixture,
@@ -185,7 +186,7 @@ describe("Timeline (TimelineComponent.vue port)", () => {
         );
     });
 
-    it("desktop: pressing a card shows its details; mobile: it opens the full-screen details", async () => {
+    it("desktop: pressing a card shows its details; mobile: it opens the full-screen details (native: its own page)", async () => {
         jest.spyOn(
             services.immunization,
             "getPatientImmunizations"
@@ -204,7 +205,14 @@ describe("Timeline (TimelineComponent.vue port)", () => {
         await render(
             <Timeline hdid="HDID1" entryTypes={[EntryType.Immunization]} />
         );
+        resetRouter("/timeline");
         await press(screen.getByLabelText(/^2021-Mar-01/));
+        if (Platform.OS !== "web") {
+            // iOS and Android: the entry's own page, with the platform's back button (TimelineEntryPage)
+            expect(router.push).toHaveBeenCalledWith("/timeline/entry");
+            expect(useTimelineStore.getState().fullscreenEntry).toBeDefined();
+            return;
+        }
         await waitFor(() =>
             expect(screen.getByTestId("entryDetailsCard")).toBeTruthy()
         );

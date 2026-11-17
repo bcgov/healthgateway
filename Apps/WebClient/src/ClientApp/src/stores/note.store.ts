@@ -29,11 +29,15 @@ interface NoteState {
     reset: () => void;
 }
 
-/** EventName.UpdateTimelineEntry: the full-screen details close when they show the changed note */
+/**
+ * EventName.UpdateTimelineEntry: the full-screen details close when they show the changed note. Native, the entry page
+ * showing it goes back (`TimelineEntryPage`), whatever the shared selection holds by then.
+ */
 function timelineEntryUpdated(id?: string) {
+    if (!id) return;
+    useTimelineStore.setState({ updatedEntry: { id } });
     const timeline = useTimelineStore.getState();
-    if (id && timeline.fullscreenEntry?.id === id)
-        timeline.closeFullscreenEntry();
+    if (timeline.fullscreenEntry?.id === id) timeline.closeFullscreenEntry();
 }
 
 /** Port of stores/note.ts (one list for the signed-in user, not per hdid). */

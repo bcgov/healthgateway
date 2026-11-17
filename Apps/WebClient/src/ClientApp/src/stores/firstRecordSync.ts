@@ -40,7 +40,11 @@ import {
 import { useMedicationStore } from "./medication.store";
 import { useNoteStore } from "./note.store";
 import { usePatientDataStore } from "./patientData.store";
-import { clearDatasetRecords, markDatasetStale } from "./refreshDatasets";
+import {
+    clearDatasetRecords,
+    markDatasetStale,
+    refreshDependentsAndRecords,
+} from "./refreshDatasets";
 import {
     allowDataset,
     clearDatasetFailures,
@@ -49,9 +53,9 @@ import {
     datasetRefreshedAt,
     forgetDataset,
     isDatasetCleared,
+    isDatasetStale,
     markDatasetFailed,
     markDatasetRefreshed,
-    REFRESH_AFTER_MS,
     resetSavedCopyState,
     setCopyReadFor,
     setCopyReadRetry,
@@ -59,10 +63,8 @@ import {
 import { useSpecialAuthorityRequestStore } from "./specialAuthorityRequest.store";
 import { useUserStore } from "./user.store";
 
-/** After a data API failed. */
+/** After a data API failed: not asked for again before this, at the next check. */
 const RETRY_FAILED_MS = 5 * 60 * 1000;
-/** How often an open app checks that. */
-const AGE_CHECK_MS = 5 * 60 * 1000;
 /** As long as the Refreshing pill: says it started, without making anyone wait for it. */
 const PILL_MS = 1200;
 /** Failures stay quiet until this at most; anything slower (lab results can take minutes) still arrives and is saved. */
@@ -145,12 +147,12 @@ const isComplete = (state: { status?: LoadStatus } | undefined) =>
     state?.status === LoadStatus.LOADED ||
     state?.status === LoadStatus.PROTECTED;
 
-/** Due: no refresh that finished, or an old one, and not one that failed moments ago. */
-const isDue = (key: string) => {
+/** Due: no refresh that finished, or one past its lifetime (`datasetLifetimeMs`), and not one that failed moments ago. */
+const isDue = (key: string, name: string) => {
     if (isDatasetCleared(key)) return false;
     const now = Date.now();
     const refreshedAt = datasetRefreshedAt(key);
-    if (refreshedAt !== undefined && now - refreshedAt < REFRESH_AFTER_MS)
+    if (refreshedAt !== undefined && !isDatasetStale(refreshedAt, name, now))
         return false;
     const failedAt = datasetFailedAt(key);
     return failedAt === undefined || now - failedAt >= RETRY_FAILED_MS;
@@ -165,7 +167,7 @@ async function refresh(
     force = false
 ): Promise<void> {
     const key = datasetKey(person, name);
-    if (!force && !isDue(key)) return;
+    if (!force && !isDue(key, name)) return;
     markDatasetStale(name, person);
     try {
         await retrieve();
@@ -360,6 +362,10 @@ export const cachedDatasets = (hdid: string): CachedDataset[] => [
 ];
 
 const allKeys = (hdid: string) => cachedDatasets(hdid).map((d) => d.key);
+const dueKeys = (hdid: string) =>
+    cachedDatasets(hdid)
+        .filter((d) => isDue(d.key, d.name))
+        .map((d) => d.key);
 
 /** A dataset's fetch and how to tell it finished, for a refresh asked for by hand. */
 const refreshByHand = (hdid: string, { person, name }: CachedDataset) => {
@@ -460,6 +466,76 @@ export async function resyncAllDatasets(hdid: string): Promise<void> {
     });
 }
 
+/**
+ * Pull to refresh, with device security on: fetches the named data APIs of `person` (the user or a dependent) now, whatever
+ * their age, and records each one's time, or its failure, when its own fetch ends, as the background sync does. Called
+ * before the page starts its own fetches: the stores share a request in flight (and a patient data call covers any that
+ * asks for fewer types), so the page's fetches join these and nothing is asked twice.
+ */
+export function pullDatasets(person: string, names: string[]): Promise<void> {
+    const hdid = useUserStore.getState().user.hdid;
+    if (!hdid || !useAppLockStore.getState().enabled) return Promise.resolve();
+    const datasets = cachedDatasets(hdid).filter(
+        (d) => d.person === person && names.includes(d.name)
+    );
+    return Promise.all(
+        datasets.map((dataset) => {
+            allowDataset(dataset.key);
+            return refreshByHand(hdid, dataset);
+        })
+    ).then(() => undefined);
+}
+
+/** Where a data API's records and status are, by its name in the copy. */
+const datasetState = (
+    person: string,
+    name: string
+): { status?: LoadStatus } | undefined => {
+    if (name === "comments") return useCommentStore.getState();
+    if (name === "dependents") return useDependentStore.getState();
+    if (name === "patientData")
+        return usePatientDataStore.getState().states[person];
+    return Object.values(retrievers)
+        .find((r) => r.name === name)
+        ?.state(person);
+};
+
+/**
+ * Dependents pull to refresh: the list and the dependents' records it fetched again (`refreshDependentsAndRecords`),
+ * then, with device security on, each one's time, or its failure, as the background sync records them.
+ */
+export async function pullDependents(hdid: string): Promise<void> {
+    let refreshed: { person: string; name: string }[] = [];
+    try {
+        refreshed = await refreshDependentsAndRecords(hdid);
+    } finally {
+        if (useAppLockStore.getState().enabled) {
+            const now = Date.now();
+            // the list itself failed: nothing after it ran
+            const results =
+                refreshed.length > 0
+                    ? refreshed
+                    : [{ person: hdid, name: "dependents" }];
+            for (const { person, name } of results) {
+                const key = datasetKey(person, name);
+                allowDataset(key);
+                if (isComplete(datasetState(person, name)))
+                    markDatasetRefreshed(key, now);
+                else markDatasetFailed(key, now);
+            }
+        }
+    }
+}
+
+/** Every data API `person` has in the copy, apart from the dependents list: what a page of their records pulls. */
+export const pulledRecordNames = (person: string): string[] => {
+    const hdid = useUserStore.getState().user.hdid;
+    if (!hdid) return [];
+    return cachedDatasets(hdid)
+        .filter((d) => d.person === person && d.name !== "dependents")
+        .map((d) => d.name);
+};
+
 /** Security page: removes one data API's records until the next launch or a resync. Opening its page still fetches it. */
 export function clearDataset(dataset: CachedDataset): void {
     clearDatasetRecords(dataset.name, dataset.person);
@@ -475,9 +551,11 @@ export async function clearAllDatasets(hdid: string): Promise<void> {
 
 /**
  * Native, with device security: the saved copy is what the app shows. It opens straight away on launch, and each data API
- * is only fetched again, in the background, when it has no finished copy or one older than `REFRESH_AFTER_MS`. One that
- * fails is retried on its own after `RETRY_FAILED_MS`, and doesn't hold back the rest. Otherwise new records come from
- * pulling to refresh or the Security page. Logging out keeps the copy for that person's next login; another person logging in removes it once expired.
+ * is only fetched again, in the background, when it has no finished copy or one past its lifetime (`datasetLifetimeMs`).
+ * That is checked at launch, on return to the foreground, and when signing in, unlocking or the connection changes; not on
+ * a timer. One that fails is retried on its own, no sooner than `RETRY_FAILED_MS`, and doesn't hold back the rest.
+ * Otherwise new records come from pulling to refresh or the Security page. Logging out, or another person logging in, keeps the copy for that
+ * person's next login.
  * Reading it may make the OS ask. Turned down, the first save asks again, as it can't overwrite an unread copy; turned down
  * twice, this login has no saved copy: nothing here runs, and pages fetch into their stores as they would without device security.
  */
@@ -514,9 +592,9 @@ export function startFirstRecordSync(): () => void {
             else resetSavedCopyState();
             setCopyReadFor(hdid);
             loadedFor = hdid;
-            void recordCache.removeExpired(hdid, Date.now());
+            void recordCache.removeOutdated();
         }
-        const due = allKeys(hdid).filter(isDue);
+        const due = dueKeys(hdid);
         if (due.length === 0) {
             running = false;
             return;
@@ -603,11 +681,10 @@ export function startFirstRecordSync(): () => void {
     const foreground = AppState.addEventListener("change", (state) => {
         if (state === "active") check();
     });
-    // still open when the copy turns old
-    const clock = setInterval(check, AGE_CHECK_MS);
+    // No timer: what turns old while the app stays open waits for the next launch, return to the foreground, unlock,
+    // login or connection, or for the user's own pull to refresh or Security page resync (owner, 2026-11-16).
     check();
     return () => {
-        clearInterval(clock);
         clearTimeout(pillTimer);
         clearTimeout(quietTimer);
         foreground.remove();

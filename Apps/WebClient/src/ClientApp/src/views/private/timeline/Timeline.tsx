@@ -73,6 +73,7 @@ import {
     useCovid19TestResultStore,
 } from "@/stores/covid19TestResult.store";
 import { useErrorStore } from "@/stores/error.store";
+import { pullDatasets, pulledRecordNames } from "@/stores/firstRecordSync";
 import {
     selectHealthVisits,
     selectHealthVisitsAreLoading,
@@ -651,11 +652,16 @@ export function Timeline({
         if (fromEmpty)
             clearTimelineDatasets(hdid, useUserStore.getState().user.hdid);
         else markTimelineDatasetsStale(hdid);
+        // device security: each data API's saved time, or its failure, as its own fetch ends; started first, so the
+        // page's fetches below join these calls rather than make their own
+        const pulls = pulled
+            ? pullDatasets(hdid, pulledRecordNames(hdid))
+            : Promise.resolve();
         // the page's own refresh indicator says this already
         setPulling(true);
         let timer: ReturnType<typeof setTimeout> | undefined;
         await Promise.race([
-            fetchTimelineData(),
+            Promise.all([fetchTimelineData(), pulls]),
             new Promise((resolve) => {
                 timer = setTimeout(resolve, REFRESH_SPINNER_MAX_MS);
             }),

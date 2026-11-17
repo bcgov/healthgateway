@@ -1,11 +1,19 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import { Platform } from "react-native";
 
-import type { MobileConfiguration } from "@/models/configData";
+import type {
+    CacheConfiguration,
+    MobileConfiguration,
+} from "@/models/configData";
 import { services } from "@/services/container";
+import { logger } from "@/services/logger";
 import {
+    DEFAULT_CACHE_MS,
     DEFAULT_MOBILE_IDLE_MS,
+    MIN_CACHE_MS,
     MobileConfigurationError,
     nativeOidcConfig,
+    selectCacheMs,
     selectIdentityProviders,
     selectIdleTimeout,
     selectUpdateRequired,
@@ -241,6 +249,112 @@ describe("mobile configuration", () => {
             );
             await state().refresh();
             expect(state().config?.webClient.mobile?.minimumBuild).toBe(1);
+        });
+    });
+
+    describe("cache", () => {
+        const withCache = (
+            web: CacheConfiguration | undefined,
+            mobile: CacheConfiguration | undefined
+        ) =>
+            useConfigStore.setState({
+                config: {
+                    ...configFixture,
+                    webClient: {
+                        ...configFixture.webClient,
+                        cache: web,
+                        mobile: { cache: mobile },
+                    },
+                },
+            });
+        const cacheMs = (service = "Communications") =>
+            selectCacheMs(state(), service);
+
+        it("uses the embedded 30 minutes with no cache block", () => {
+            withCache(undefined, undefined);
+            expect(cacheMs()).toBe(DEFAULT_CACHE_MS);
+            expect(DEFAULT_CACHE_MS).toBe(1800000);
+        });
+
+        it("stacks: web default, then mobile default, then web service, then mobile service", () => {
+            withCache({ default: 3600 }, undefined);
+            expect(cacheMs()).toBe(3600000);
+            withCache({ default: 3600 }, { default: 600 });
+            expect(cacheMs()).toBe(600000);
+            withCache(
+                { default: 3600, services: { Communications: 21600 } },
+                { default: 600 }
+            );
+            expect(cacheMs()).toBe(21600000);
+            withCache(
+                { default: 3600, services: { Communications: 21600 } },
+                { default: 600, services: { Communications: 360 } }
+            );
+            expect(cacheMs()).toBe(360000);
+        });
+
+        it("gives a service not in the list the default", () => {
+            withCache(
+                { default: 3600, services: { Communications: 21600 } },
+                undefined
+            );
+            expect(cacheMs("Immunization")).toBe(3600000);
+        });
+
+        it("matches the service name without regard to case", () => {
+            withCache({ services: { communications: 21600 } }, undefined);
+            expect(cacheMs("Communications")).toBe(21600000);
+        });
+
+        it("raises anything under five minutes to five minutes, once warned", () => {
+            const warn = jest
+                .spyOn(logger, "warn")
+                .mockImplementation(() => undefined);
+            expect(MIN_CACHE_MS).toBe(300000);
+            withCache({ default: 0 }, undefined);
+            expect(cacheMs()).toBe(MIN_CACHE_MS);
+            withCache({ services: { Communications: 299 } }, undefined);
+            expect(cacheMs()).toBe(MIN_CACHE_MS);
+            expect(cacheMs()).toBe(MIN_CACHE_MS);
+            expect(warn).toHaveBeenCalledTimes(2);
+            expect(warn).toHaveBeenCalledWith(
+                "Cache time for Communications is 299s, under the 300s minimum: using 300s"
+            );
+            withCache({ services: { Communications: 300 } }, undefined);
+            expect(cacheMs()).toBe(300000);
+            expect(warn).toHaveBeenCalledTimes(2);
+        });
+
+        it("skips values it can't use", () => {
+            withCache(
+                {
+                    default: 3600,
+                    services: { Communications: -1 },
+                },
+                { default: "soon" } as never
+            );
+            expect(cacheMs()).toBe(3600000);
+        });
+
+        it("web reads only webClient.cache", () => {
+            const os = Platform.OS;
+            Object.defineProperty(Platform, "OS", {
+                configurable: true,
+                value: "web",
+            });
+            try {
+                withCache(
+                    { default: 3600, services: { Communications: 21600 } },
+                    { default: 600, services: { Communications: 360 } }
+                );
+                expect(cacheMs()).toBe(21600000);
+                expect(cacheMs("Immunization")).toBe(3600000);
+            } finally {
+                Object.defineProperty(Platform, "OS", {
+                    configurable: true,
+                    value: os,
+                });
+            }
         });
     });
 });

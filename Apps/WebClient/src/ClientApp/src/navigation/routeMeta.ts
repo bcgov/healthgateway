@@ -53,7 +53,7 @@ export const routeMeta: Record<string, RouteMeta> = {
     [Path.VppLogin]: { validStates: [S.unauthenticated, S.registered] },
 };
 
-/** `/dependents/:id/timeline` also needs the dependent timeline feature (router/index.ts). */
+/** `/dependents/:id/timeline` (and, native, its entry page `/dependents/:id/entry`) also needs the dependent timeline feature (router/index.ts). */
 const dependentTimelineMeta: RouteMeta = {
     validStates: [S.registered],
     requiredFeaturesEnabled: (c) =>
@@ -78,7 +78,7 @@ export function routeFeaturesEnabled(
 
 export function getRouteMeta(pathname: string): RouteMeta | undefined {
     const normalized = pathname.toLowerCase().replace(/\/+$/, "") || "/";
-    if (/^\/dependents\/[^/]+(\/timeline)?$/.test(normalized))
+    if (/^\/dependents\/[^/]+(\/timeline|\/entry)?$/.test(normalized))
         return dependentTimelineMeta;
     const exact = Object.keys(routeMeta).find(
         (p) => p.toLowerCase() === normalized

@@ -22,4 +22,24 @@
     html {
         scroll-padding-top: 80px;
     }
+
+    /* A card's keyboard control is its title row (`HgCard`: the ⋮ button can't sit inside a button), but the ring goes
+       round the whole card, which is what the row stands for. */
+    [data-hg-card]:has([data-hg-card-button]:focus-visible) {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+    [data-hg-card-button]:focus-visible {
+        outline: none;
+    }
+
+    /* A text field's ring goes round its whole box (`HgTextField`): the search icon, the × and any button inside it
+       included, not just the text. The × keeps its own ring when tabbed to. */
+    [data-hg-field]:has(:is(input, textarea):focus-visible) {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+    [data-hg-field] :is(input, textarea):focus-visible {
+        outline: none;
+    }
 }

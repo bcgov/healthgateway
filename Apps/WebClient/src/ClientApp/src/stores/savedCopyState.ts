@@ -1,8 +1,22 @@
+import { selectCacheMs, useConfigStore } from "./config.store";
+
 /** Each person's data APIs refresh on their own, so one that fails or is slow holds nothing else back. */
 export const datasetKey = (person: string, name: string) => `${person}:${name}`;
 
-/** Each data API's saved records are good for this long (owner, 2026-11-01). */
-export const REFRESH_AFTER_MS = 24 * 60 * 60 * 1000;
+/**
+ * How long a data API's saved records are current, by its name in the copy ("immunization", "patientData", "notes"…),
+ * matched without regard to case against `webClient.mobile.cache.services` ("Immunization", "PatientData", "Notes"…),
+ * with the same fallbacks as every other cache (`selectCacheMs`). A dependent's data APIs use the same names.
+ */
+export const datasetLifetimeMs = (name: string) =>
+    selectCacheMs(useConfigStore.getState(), name);
+
+/** Past its lifetime: due to refresh when it can be. Its records stay, saved and shown, until then. */
+export const isDatasetStale = (
+    refreshedAt: number,
+    name: string,
+    now = Date.now()
+) => now - refreshedAt >= datasetLifetimeMs(name);
 
 let refreshedTimes: Record<string, number> = {};
 let failedTimes: Record<string, number> = {};

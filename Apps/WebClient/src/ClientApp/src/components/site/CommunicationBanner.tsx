@@ -1,20 +1,10 @@
-import { usePathname } from "expo-router";
-import { createElement, useEffect, useMemo, useState } from "react";
+import { createElement, useMemo } from "react";
 import { Platform, View } from "react-native";
 
 import { AppText } from "@/components/common";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
-import { type Communication, CommunicationType } from "@/models/communication";
-import { isSessionEnded, isTooManyRequestsError } from "@/models/errors";
-import { services } from "@/services/container";
-import { describeError, logger } from "@/services/logger";
-import { useAuthStore } from "@/stores/auth.store";
-import { selectIsOffline, useConfigStore } from "@/stores/config.store";
-import {
-    selectIsValidIdentityProvider,
-    selectUserIsRegistered,
-    useUserStore,
-} from "@/stores/user.store";
+import { useCommunicationType } from "@/hooks/useCommunication";
+import { useCommunicationStore } from "@/stores/communication.store";
 import { breakpoints } from "@/theme";
 import { parseCommunicationHtml } from "@/utils/communicationHtml";
 import { openExternal } from "@/utils/openExternal";
@@ -27,9 +17,6 @@ const bannerText = { fontSize: 14, lineHeight: 20 } as const;
  * window as mobile (`v-banner--stacked`, below its lg breakpoint, 1280).
  */
 const textEndPadding = (width: number) => (width < breakpoints.lg ? 36 : 90);
-
-const TOO_MANY_REQUESTS_TEXT =
-    "We are experiencing higher than usual site traffic, which may cause delays in accessing your health records. Please try again later.";
 
 /** Native: the banner's HTML as styled runs of text, with links tappable. */
 function NativeBannerText({ html }: { html: string }) {
@@ -67,43 +54,18 @@ function NativeBannerText({ html }: { html: string }) {
     );
 }
 
-/** Port of CommunicationComponent.vue: Banner for the public site, InApp once registered. */
+/**
+ * Port of CommunicationComponent.vue: Banner for the public site, InApp once registered. Shows what the communication
+ * store holds; `useCommunicationRetrieval`, mounted once in the shell, keeps it current, so every page's banner (iOS
+ * and Android keep each tab's page mounted) shares one call.
+ */
 export function CommunicationBanner() {
-    const pathname = usePathname();
     const { width } = useBreakpoint();
-    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-    const isOffline = useConfigStore(selectIsOffline);
-    const isRegistered = useUserStore(selectUserIsRegistered);
-    const isValidIdp = useUserStore(selectIsValidIdentityProvider);
-    const [banner, setBanner] = useState<Communication | null>(null);
-    const [inApp, setInApp] = useState<Communication | null>(null);
+    const type = useCommunicationType();
+    const text = useCommunicationStore(
+        (s) => s.entries[type]?.communication?.text
+    );
 
-    const showInApp =
-        isAuthenticated && isRegistered && isValidIdp && !isOffline;
-
-    useEffect(() => {
-        if (!services.isInitialized) return;
-        const type = showInApp
-            ? CommunicationType.InApp
-            : CommunicationType.Banner;
-        const setCommunication = showInApp ? setInApp : setBanner;
-        services.communication
-            .getActive(type)
-            .then((r) => setCommunication(r.resourcePayload))
-            .catch((error: unknown) => {
-                if (isSessionEnded(error)) return;
-                if (isTooManyRequestsError(error))
-                    setCommunication({
-                        text: TOO_MANY_REQUESTS_TEXT,
-                        communicationTypeCode: type,
-                    } as Communication);
-                logger.debug(
-                    `Communication retrieval failed: ${describeError(error)}`
-                );
-            });
-    }, [showInApp, pathname]);
-
-    const text = (showInApp ? inApp : banner)?.text;
     if (!text) return null;
     return (
         <View

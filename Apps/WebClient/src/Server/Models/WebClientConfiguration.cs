@@ -108,6 +108,11 @@ namespace HealthGateway.WebClient.Server.Models
         public string RobotsFilePath { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the client cache durations, or null when not configured.
+        /// </summary>
+        public CacheConfiguration? Cache { get; set; }
+
+        /// <summary>
         /// Gets or sets the overrides used by the Health Gateway mobile app, or null when not configured.
         /// </summary>
         public MobileAppConfiguration? Mobile { get; set; }

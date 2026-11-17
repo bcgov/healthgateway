@@ -7,7 +7,7 @@ tags:
 ---
 - runFlow: ../subflows/start-signed-in.yaml
 # the account menu is the platform's own (UIMenu / Material menu): its entries are found by their text
-- tapOn: "Account menu"
+- tapOn: "Settings"
 - extendedWaitUntil:
       visible: "Security"
       timeout: 5000

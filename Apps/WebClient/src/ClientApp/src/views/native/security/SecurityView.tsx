@@ -36,7 +36,7 @@ import {
     datasetFailedAt,
     datasetRefreshedAt,
     getSavedTimesVersion,
-    REFRESH_AFTER_MS,
+    isDatasetStale,
     subscribeSavedTimes,
 } from "@/stores/savedCopyState";
 import { switchEnvironment } from "@/stores/switchEnvironment";
@@ -70,13 +70,14 @@ const datasetNames: Record<string, string> = {
 const when = (at: number) =>
     DateTime.fromMillis(at).toFormat("yyyy-MMM-dd, h:mm a");
 
-function statusText(key: string): string {
+/** Past its lifetime a record type stays saved and shown: it is only due to refresh, when the app next can. */
+function statusText({ key, name }: CachedDataset): string {
     const refreshedAt = datasetRefreshedAt(key);
     const failedAt = datasetFailedAt(key);
     const saved =
         refreshedAt === undefined
             ? "Not saved"
-            : `${Date.now() - refreshedAt >= REFRESH_AFTER_MS ? "Expired, saved" : "Saved"} ${when(refreshedAt)}`;
+            : `${isDatasetStale(refreshedAt, name) ? "Due to refresh, saved" : "Saved"} ${when(refreshedAt)}`;
     return failedAt === undefined
         ? saved
         : `${saved}. Last sync failed ${when(failedAt)}`;
@@ -143,7 +144,8 @@ function CacheSection({ hdid }: { hdid: string }) {
             </AppText>
             <AppText className="mb-4">
                 Records saved on this device, encrypted, so they open quickly
-                and offline. Each record type is kept for 24 hours.
+                and offline. Each record type stays until you clear it, and is
+                refreshed when it is out of date.
             </AppText>
             <View className="flex-row flex-wrap gap-3 mb-4">
                 <HgButton
@@ -185,7 +187,7 @@ function CacheSection({ hdid }: { hdid: string }) {
                                     variant="body-medium"
                                     className="mt-1"
                                 >
-                                    {statusText(dataset.key)}
+                                    {statusText(dataset)}
                                 </AppText>
                                 <View className="flex-row gap-3 mt-2">
                                     <HgButton
