@@ -12,7 +12,7 @@ import { NoteTimelineEntry } from "@/models/timeline/noteTimelineEntry";
 import { services } from "@/services/container";
 import { useTimelineStore } from "@/stores/timeline.store";
 import { setBreakpoint } from "@/test/breakpointMock";
-import { routerState } from "@/test/expoRouterMock";
+import { resetRouter, router, routerState } from "@/test/expoRouterMock";
 import {
     configFixture,
     fakeAuth,
@@ -45,6 +45,9 @@ const first = note("n1", "First", "2026-10-01");
 const second = note("n2", "Second", "2026-09-01");
 
 const fullscreen = () => useTimelineStore.getState().fullscreenEntry;
+/** Native: what the entry page does once it has gone (Back, or going back as the window widens): close the entry. */
+const pageGone = () =>
+    updateStores(() => useTimelineStore.getState().closeFullscreenEntry());
 
 describe("an open timeline entry across a fold", () => {
     const Timeline = () => (
@@ -63,6 +66,7 @@ describe("an open timeline entry across a fold", () => {
     const secondCard = /^2026-Sep-01/;
 
     beforeEach(() => {
+        resetRouter("/timeline");
         routerState.focused = true;
         services.initialize(configFixture, fakeAuth());
         signInRegistered();
@@ -86,22 +90,26 @@ describe("an open timeline entry across a fold", () => {
         return;
     }
 
-    it("folding moves an expanded entry to full screen", async () => {
+    it("folding moves an expanded entry to its own page, without the push animation", async () => {
         setBreakpoint(669, 951);
         await render(<Timeline />);
         await pressCard(firstCard);
         expect(fullscreen()).toBeUndefined();
+        expect(router.push).not.toHaveBeenCalled();
         fold();
         expect(fullscreen()).toBe(first);
-        expect(screen.getByTestId("entryDetailsCard")).toBeTruthy();
+        expect(useTimelineStore.getState().entryPageInstant).toBe(true);
+        expect(router.push).toHaveBeenCalledWith("/timeline/entry");
     });
 
-    it("unfolding moves a full-screen entry back to its card, expanded", async () => {
+    it("unfolding moves the entry on its page back to its card, expanded", async () => {
         setBreakpoint(466, 678);
         await render(<Timeline />);
         await pressCard(firstCard);
         expect(fullscreen()).toBe(first);
+        expect(router.push).toHaveBeenCalledWith("/timeline/entry");
         unfold();
+        pageGone();
         expect(fullscreen()).toBeUndefined();
         expect(screen.getByText(body("First"))).toBeTruthy();
         expect(screen.queryByText(body("Second"))).toBeNull();
@@ -113,9 +121,12 @@ describe("an open timeline entry across a fold", () => {
         await pressCard(firstCard);
         fold();
         unfold();
+        pageGone();
         fold();
         expect(fullscreen()).toBe(first);
+        expect(router.push).toHaveBeenCalledTimes(2);
         unfold();
+        pageGone();
         expect(screen.getByText(body("First"))).toBeTruthy();
     });
 
@@ -127,16 +138,18 @@ describe("an open timeline entry across a fold", () => {
         fold();
         expect(fullscreen()).toBe(second);
         unfold();
+        pageGone();
         expect(screen.getByText(body("Second"))).toBeTruthy();
         expect(screen.queryByText(body("First"))).toBeNull();
     });
 
-    it("does not bring back an entry closed with Back", async () => {
+    it("does not bring back an entry left with Back", async () => {
         setBreakpoint(669, 951);
         await render(<Timeline />);
         await pressCard(firstCard);
         fold();
-        await press(screen.getByTestId("backBtn"));
+        // Back: the page goes, closing the entry
+        pageGone();
         expect(fullscreen()).toBeUndefined();
         unfold();
         expect(screen.queryByText(body("First"))).toBeNull();

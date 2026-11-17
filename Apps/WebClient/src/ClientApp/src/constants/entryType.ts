@@ -20,6 +20,8 @@ export interface EntryTypeDetails {
     type: EntryType;
     name: string;
     title: string;
+    /** One record of this type: the title of its page when it opens on its own (native). */
+    recordName: string;
     description: string;
     icon: string;
     moduleName: string;
@@ -33,6 +35,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.Immunization,
         name: "Immunizations",
         title: "Immunizations",
+        recordName: "Immunization",
         description:
             "View immunizations you received from community pharmacies or public health, including COVID-19, and vaccine recommendations.",
         icon: "syringe",
@@ -44,6 +47,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.Medication,
         name: "Medications",
         title: "Medications",
+        recordName: "Medication",
         description: "See your medication history dating back to 1995.",
         icon: "pills",
         moduleName: "Medication",
@@ -54,6 +58,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.LabResult,
         name: "Lab Results",
         title: "Lab Results",
+        recordName: "Lab Result",
         description: "View and download the results of your lab tests.",
         icon: "microscope",
         moduleName: "AllLaboratory",
@@ -64,6 +69,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.Covid19TestResult,
         name: "COVID‑19 Tests",
         title: "COVID‑19 Tests",
+        recordName: "COVID‑19 Test",
         description:
             "View and download your COVID‑19 test results as soon as they are available.",
         icon: "vial",
@@ -75,6 +81,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.HealthVisit,
         name: "Health Visits",
         title: "Health Visits",
+        recordName: "Health Visit",
         description:
             "See the last seven years of your health visits billed to the BC Medical Services Plan.",
         icon: "stethoscope",
@@ -86,6 +93,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.None,
         name: "My Notes",
         title: "Note",
+        recordName: "Note",
         description: "Create and edit your own notes on your health records.",
         icon: "pen-to-square",
         moduleName: "Note",
@@ -96,6 +104,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.SpecialAuthorityRequest,
         name: "Special Authority",
         title: "Special Authority",
+        recordName: "Special Authority",
         description:
             "Check the status of your Special Authority Requests since March 2021.",
         icon: "file-medical",
@@ -107,6 +116,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.ClinicalDocument,
         name: "Clinical Documents",
         title: "Clinical Documents",
+        recordName: "Clinical Document",
         description:
             "View documents shared by your care providers. You can get consultation notes, hospital discharge summaries, outpatient clinic notes and more.",
         icon: "file-waveform",
@@ -118,6 +128,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.HospitalVisit,
         name: "Hospital Visits",
         title: "Hospital Visits",
+        recordName: "Hospital Visit",
         description:
             "View a list of your hospital visits. You can get the admission and discharge dates, location and provider for each visit.",
         icon: "house-medical",
@@ -129,6 +140,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.DiagnosticImaging,
         name: "Imaging Reports",
         title: "Imaging Reports",
+        recordName: "Imaging Report",
         description:
             "View imaging reports for X-Rays, MRIs, Ultrasounds and more.",
         icon: "x-ray",
@@ -140,6 +152,7 @@ export const entryTypes: EntryTypeDetails[] = [
         commentType: CommentEntryType.BcCancerScreening,
         name: "BC Cancer Screening",
         title: "BC Cancer Screening",
+        recordName: "BC Cancer Screening",
         description:
             "View and download your notices and results as soon as they are available.",
         icon: "ribbon",
