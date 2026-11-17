@@ -7,7 +7,6 @@ import { elevation1 } from "@/components/common/elevation";
 import { EntryType, getEntryTypeDetails } from "@/constants/entryType";
 import { Action, Origin } from "@/constants/tracking";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
-import { usePressHighlight } from "@/hooks/usePressHighlight";
 import { useThemeColors } from "@/hooks/useTheme";
 import type { TimelineEntry } from "@/models/timeline/timelineEntry";
 import { services } from "@/services/container";
@@ -71,8 +70,6 @@ export function TimelineEntryCard({
             s.fullscreenEntry?.type === entry.type
     );
     const [detailsOpen, setDetailsOpen] = useState(isMobileDetails);
-    // the header shades on hover and on a press (the web client's `:hover` also shows on a tap in a mobile browser)
-    const { highlighted, handlers } = usePressHighlight();
     // the details close when the layout becomes mobile (watch on layoutStore.isMobile)
     const [wasInline, setWasInline] = useState(inlineEntryDetails);
     if (wasInline !== inlineEntryDetails) {
@@ -165,7 +162,8 @@ export function TimelineEntryCard({
                 <View
                     className={cn(
                         "relative",
-                        isInteractive && highlighted && "bg-surface-hover"
+                        // the header's buttons sit over the layer, so the hover is the header's, not the layer's
+                        isInteractive && "web:hover:bg-surface-hover"
                     )}
                     {...(Platform.OS === "web"
                         ? { onClick: handleContentClick }
@@ -187,8 +185,10 @@ export function TimelineEntryCard({
                         }
                         disabled={!isInteractive}
                         onPress={handleCardPress}
-                        {...handlers}
-                        className="absolute inset-0"
+                        className={cn(
+                            "absolute inset-0",
+                            isInteractive && "active:bg-surface-hover"
+                        )}
                     />
                     <View
                         pointerEvents="box-none"

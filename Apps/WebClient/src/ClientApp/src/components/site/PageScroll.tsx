@@ -15,7 +15,6 @@ import {
 
 import { AppText, LiveRegion } from "@/components/common";
 import { useMotion } from "@/hooks/useMotion";
-import { notifyScrollDragEnd } from "@/hooks/usePressHighlight";
 import { useRouteFeaturesEnabled } from "@/hooks/useRouteFeaturesEnabled";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useConnectivityStore } from "@/stores/connectivity.store";
@@ -194,8 +193,6 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
                 }}
                 contentInsetAdjustmentBehavior="automatic"
                 keyboardShouldPersistTaps="handled"
-                // a card touched as the drag began stays shaded until the finger lifts (usePressHighlight)
-                onScrollEndDrag={notifyScrollDragEnd}
             >
                 <ScrollToViewContext.Provider value={scrollToView}>
                     <ScrollToTopContext.Provider value={scrollToTop}>

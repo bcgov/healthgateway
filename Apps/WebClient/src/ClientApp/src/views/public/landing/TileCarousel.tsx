@@ -20,10 +20,6 @@ import {
     Origin,
     Type,
 } from "@/constants/tracking";
-import {
-    notifyScrollDragEnd,
-    usePressHighlight,
-} from "@/hooks/usePressHighlight";
 import type { InfoTile } from "@/models/infoTile";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
@@ -58,7 +54,6 @@ function Tile({
     cardTestID: string;
     carousel: boolean;
 }) {
-    const { highlighted, pressed, handlers } = usePressHighlight();
     const open = (action: Action) => {
         if (!tile.link) return;
         void openExternal(tile.link);
@@ -84,15 +79,13 @@ function Tile({
             accessible={false}
             tabIndex={-1}
             onPress={() => open(Action.CardClick)}
-            {...handlers}
             testID={`${cardTestID}-${tile.type}`}
             className={cn(
                 // v-card: h-100 d-flex flex-column pa-5 pa-lg-4; the carousel card keeps pb-12 clear for the delimiters
                 "grow justify-between rounded-md border border-border-light bg-surface p-5 lg:p-4 web:cursor-pointer",
                 carousel && "pb-12",
                 // a press shades at once; the hover, and the end of a press, fade
-                !pressed && "web:transition-colors",
-                highlighted && "bg-surface-hover"
+                "hover:bg-surface-hover active:bg-surface-hover web:transition-colors web:active:transition-none"
             )}
         >
             <View
@@ -205,8 +198,6 @@ export function TileCarousel({
                     showsHorizontalScrollIndicator={false}
                     onScroll={onScroll}
                     scrollEventThrottle={16}
-                    // a tile touched as the swipe began stays shaded until the finger lifts (usePressHighlight)
-                    onScrollEndDrag={notifyScrollDragEnd}
                 >
                     {tiles.map((tile) => (
                         <View

@@ -1,13 +1,11 @@
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 
-import { useColorScheme, useThemeColors } from "@/hooks/useTheme";
+import { useThemeColors } from "@/hooks/useTheme";
 import { cn } from "@/utils/cn";
 import { spaceToggleProps } from "@/utils/spaceToggle";
 
 import { AppText } from "./AppText";
 import { Icon } from "./Icon";
-import { HoverOpacity, overlayOpacity } from "./overlay";
 import { webClassRef } from "./webClass";
 
 interface Props {
@@ -38,17 +36,6 @@ export function HgChip({
     const colors = useThemeColors();
     const selectable = selected !== undefined;
     const height = size === "small" ? 24 : 32;
-    // v-chip__overlay on hover: 4 % of the text colour, doubled on a fill that contrasts with the theme (Vuetify's overlay multiplier)
-    const [hovered, setHovered] = useState(false);
-    const chipBackground = selected ? colors.primary : colors.surface;
-    const hoverOverlay = {
-        backgroundColor: selected ? colors["on-primary"] : colors.primary,
-        opacity: overlayOpacity(
-            HoverOpacity,
-            chipBackground,
-            useColorScheme() === "dark"
-        ),
-    };
     return (
         <Pressable
             ref={webClassRef({
@@ -61,12 +48,10 @@ export function HgChip({
             accessibilityLabel={accessibilityLabel}
             disabled={!onPress}
             onPress={onPress}
-            onHoverIn={() => setHovered(true)}
-            onHoverOut={() => setHovered(false)}
             {...spaceToggleProps(selectable ? onPress : undefined)}
             style={{ minHeight: height }}
             className={cn(
-                "flex-row items-center rounded-full",
+                "group flex-row items-center rounded-full",
                 size === "small" ? "px-2.5" : "px-3",
                 selectable
                     ? selected
@@ -75,12 +60,18 @@ export function HgChip({
                     : "bg-border-light"
             )}
         >
-            {selectable && onPress && hovered ? (
+            {selectable && onPress ? (
+                // v-chip__overlay on hover: 4 % of the text colour, doubled on the selected chip's fill, which
+                // contrasts with the theme in both palettes (Vuetify's overlay multiplier)
                 <View
                     testID="chip-hover-overlay"
                     pointerEvents="none"
-                    className="absolute inset-0 rounded-full"
-                    style={hoverOverlay}
+                    className={cn(
+                        "absolute inset-0 rounded-full opacity-0",
+                        selected
+                            ? "bg-on-primary group-hover:opacity-[.08]"
+                            : "bg-primary group-hover:opacity-[.04]"
+                    )}
                 />
             ) : null}
             <AppText

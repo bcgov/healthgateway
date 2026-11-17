@@ -87,7 +87,7 @@ describe("HgCard", () => {
         );
     });
 
-    it("wears its button's keyboard focus round the whole card on web", async () => {
+    it("shades on hover and press, and wears its button's keyboard focus round the whole card on web", async () => {
         await render(
             <>
                 <HgCard
@@ -118,6 +118,8 @@ describe("HgCard", () => {
             const card = String(host.props.className);
             // global.css draws the ring round the host while its target has keyboard focus
             expect(card).toMatch(/\bhg-card-focus-host\b/);
+            expect(card).toMatch(/\bhover:bg-surface-hover\b/);
+            expect(card).toMatch(/\bactive:bg-surface-hover\b/);
             const control = screen.getByLabelText(label);
             expect(String(control.props.className)).toMatch(
                 /\bhg-card-focus-target\b/
@@ -126,6 +128,8 @@ describe("HgCard", () => {
             let node = control.parent;
             while (node && node !== host) node = node.parent;
             expect(node).toBe(host);
+            // pointer presses go to the card, which shades
+            expect(control.props.pointerEvents).toBe("none");
         }
         // the ⋮ button keeps its own ring
         for (const menu of menus)

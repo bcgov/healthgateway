@@ -1,7 +1,6 @@
 import { useId } from "react";
 import { Platform, Pressable, View } from "react-native";
 
-import { usePressHighlight } from "@/hooks/usePressHighlight";
 import { useThemeColors } from "@/hooks/useTheme";
 import { cn } from "@/utils/cn";
 
@@ -32,8 +31,9 @@ interface Props {
  * Port of HgCardComponent.vue as used on Home, Other record sources and the dependent dashboard: elevated card
  * (elevation 1, no border, since healthgateway d7ab5c429), icon + title row, optional "⋮" menu with Remove, body
  * text, hover = surfaceHover (the web client keeps the hover for clickable cards only, and this card always is). A press
- * shades it too, as the web client's `:hover` does on a tap in a mobile browser.
- * The focus of the button inside appears around the outer Pressable (global.css, .hg-card-focus-host).
+ * shades it too.
+ * The card takes every pointer press; its button inside is the control for the keyboard and the screen reader, and
+ * the focus appears around the outer Pressable (global.css, .hg-card-focus-host).
  * `compact` is the phone tile of Home's two-column grid (a stated deviation, after the earlier iOS app): icon top left,
  * title and arrow along the bottom, the ⋮ menu in the top right corner, and no body; the description becomes the hint.
  */
@@ -51,10 +51,13 @@ export function HgCard({
     className = "",
 }: Props) {
     const colors = useThemeColors();
-    const { highlighted, handlers } = usePressHighlight();
     const descriptionId = `${useId()}-description`;
     const name = title ?? accessibilityLabel;
     const web = Platform.OS === "web";
+    const cardClass = cn(
+        "hg-card-focus-host grow rounded bg-surface hover:bg-surface-hover active:bg-surface-hover web:cursor-pointer",
+        className
+    );
     const decorative = {
         accessibilityElementsHidden: true,
         importantForAccessibility: "no-hide-descendants" as const,
@@ -109,14 +112,8 @@ export function HgCard({
                 accessible={false}
                 tabIndex={-1}
                 onPress={onPress}
-                {...handlers}
                 style={elevation1}
-                className={cn(
-                    "hg-card-focus-host grow rounded",
-                    highlighted ? "bg-surface-hover" : "bg-surface",
-                    "web:cursor-pointer",
-                    className
-                )}
+                className={cardClass}
             >
                 {/* the whole tile is the one control: icon top left, the title and an arrow along the bottom */}
                 <Pressable
@@ -129,8 +126,9 @@ export function HgCard({
                         ? ({ "aria-describedby": descriptionId } as object)
                         : {})}
                     onPress={onPress}
-                    onPressIn={handlers.onPressIn}
-                    onPressOut={handlers.onPressOut}
+                    // pointer presses fall through to the tile, which shades; this button is for the keyboard and
+                    // the screen reader
+                    pointerEvents="none"
                     className="hg-card-focus-target grow min-h-[140px] p-4"
                 >
                     {icon ? (
@@ -178,14 +176,8 @@ export function HgCard({
             accessible={false}
             tabIndex={-1}
             onPress={onPress}
-            {...handlers}
             style={elevation1}
-            className={cn(
-                "hg-card-focus-host grow rounded",
-                highlighted ? "bg-surface-hover" : "bg-surface",
-                "web:cursor-pointer",
-                className
-            )}
+            className={cardClass}
         >
             {/* v-card-item: 10px top, 16px sides; v-row density comfortable: 16px between its columns */}
             <View className="flex-row items-center px-4 pt-2.5">
@@ -193,9 +185,9 @@ export function HgCard({
                     accessibilityRole="button"
                     accessibilityLabel={name}
                     onPress={onPress}
-                    // a press here is the card's own, so it shades the card
-                    onPressIn={handlers.onPressIn}
-                    onPressOut={handlers.onPressOut}
+                    // pointer presses fall through to the card, which shades; this button is for the keyboard and
+                    // the screen reader
+                    pointerEvents="none"
                     className="hg-card-focus-target flex-1 flex-row items-center"
                 >
                     {icon ? (
