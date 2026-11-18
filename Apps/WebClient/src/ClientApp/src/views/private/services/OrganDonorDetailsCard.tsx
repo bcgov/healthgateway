@@ -40,7 +40,7 @@ import { useUserStore } from "@/stores/user.store";
 import { savePatientDataFile } from "../timeline/entries/patientDataFile";
 
 const REGISTER_YOUR_DECISION_URL =
-    "http://www.transplant.bc.ca/Pages/Register-your-Decision.aspx";
+    "https://www.transplant.bc.ca/Pages/Register-your-Decision.aspx";
 
 /** Port of OrganDonorDetailsCard.vue */
 export function OrganDonorDetailsCard({ hdid }: { hdid: string }) {
