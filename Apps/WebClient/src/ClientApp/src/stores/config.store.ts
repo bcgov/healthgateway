@@ -123,17 +123,26 @@ interface ConfigState {
     config?: ExternalConfiguration;
     status: LoadStatus;
     errorMessage?: string;
+    /** When the configuration was last read (start-up's load or a refresh), for how often coming back re-reads it. */
+    checkedAt: number;
     /** `allowSaved`: with no connection, fall back on the configuration from the last launch. */
     retrieve: (allowSaved?: boolean) => Promise<ExternalConfiguration>;
-    /** Quietly picks up a changed configuration while the app is running, for a required update. */
+    /**
+     * Quietly picks up a changed configuration while the app is running, for a required update. Only once a
+     * configuration has loaded: before that (a cold start, a retry, an environment switch) the environment may not be
+     * known yet, so it would read the wrong one, and start-up's `retrieve` is reading it anyway.
+     */
     refresh: () => Promise<void>;
 }
 
-export const useConfigStore = create<ConfigState>((set) => ({
+export const useConfigStore = create<ConfigState>((set, get) => ({
     config: undefined,
     status: "idle",
     errorMessage: undefined,
+    checkedAt: 0,
     refresh: async () => {
+        if (get().status !== "loaded") return;
+        set({ checkedAt: Date.now() });
         const run = latestRetrieve;
         try {
             const config =
@@ -152,7 +161,7 @@ export const useConfigStore = create<ConfigState>((set) => ({
             const config =
                 await services.config.getConfiguration(getConfigUrl());
             if (run !== latestRetrieve) return config;
-            set({ config, status: "loaded" });
+            set({ config, status: "loaded", checkedAt: Date.now() });
             if (Platform.OS !== "web")
                 AsyncStorage.setItem(
                     savedConfigKey(),

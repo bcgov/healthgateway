@@ -249,6 +249,7 @@ export function resetStores() {
             config: undefined,
             status: "idle",
             errorMessage: undefined,
+            checkedAt: 0,
         });
         useErrorStore.getState().clearErrors();
         useErrorStore.setState({

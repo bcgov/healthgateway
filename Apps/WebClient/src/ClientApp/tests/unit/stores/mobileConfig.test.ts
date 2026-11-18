@@ -34,7 +34,10 @@ const configWithMobile = (mobile: unknown) => ({
     },
 });
 const withMobile = (mobile: unknown) =>
-    useConfigStore.setState({ config: configWithMobile(mobile) });
+    useConfigStore.setState({
+        config: configWithMobile(mobile),
+        status: "loaded",
+    });
 const state = () => useConfigStore.getState();
 
 describe("mobile configuration", () => {
@@ -249,6 +252,38 @@ describe("mobile configuration", () => {
             );
             await state().refresh();
             expect(state().config?.webClient.mobile?.minimumBuild).toBe(1);
+        });
+
+        it("reads nothing before start-up has loaded a configuration", async () => {
+            // a cold start: the environment isn't known yet, so this would read Production's
+            useConfigStore.setState({
+                config: undefined,
+                status: "idle",
+                checkedAt: 0,
+            });
+            const read = jest.spyOn(services.config, "getConfiguration");
+            await state().refresh();
+            expect(read).not.toHaveBeenCalled();
+            expect(state().config).toBeUndefined();
+            expect(state().checkedAt).toBe(0);
+        });
+
+        it("reads nothing while start-up is loading one (a retry, an environment switch)", async () => {
+            withMobile({ minimumBuild: 1 });
+            useConfigStore.setState({ status: "loading" });
+            const read = jest.spyOn(services.config, "getConfiguration");
+            await state().refresh();
+            expect(read).not.toHaveBeenCalled();
+        });
+
+        it("notes when it read the configuration", async () => {
+            withMobile(undefined);
+            useConfigStore.setState({ checkedAt: 0 });
+            jest.spyOn(services.config, "getConfiguration").mockResolvedValue(
+                configWithMobile(undefined)
+            );
+            await state().refresh();
+            expect(state().checkedAt).toBeGreaterThan(0);
         });
     });
 

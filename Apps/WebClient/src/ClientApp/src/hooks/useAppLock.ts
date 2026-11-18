@@ -27,7 +27,6 @@ const startNothing = () => undefined;
 
 /** How often coming back to the app re-reads the configuration. */
 const CONFIG_CHECK_INTERVAL_MS = 60 * 60 * 1000;
-let lastConfigCheck = 0;
 
 /** How often to check whether Health Gateway is back. */
 const SERVICE_PROBE_INTERVAL_MS = 30000;
@@ -87,11 +86,10 @@ export function useAppLockLifecycle() {
                 );
                 if (useConnectivityStore.getState().serviceUnavailable)
                     void probeService();
-                // a running app must hear about a required update too
-                if (Date.now() - lastConfigCheck >= CONFIG_CHECK_INTERVAL_MS) {
-                    lastConfigCheck = Date.now();
-                    void useConfigStore.getState().refresh();
-                }
+                // a running app must hear about a required update too: an hour after the last read, start-up's included
+                const config = useConfigStore.getState();
+                if (Date.now() - config.checkedAt >= CONFIG_CHECK_INTERVAL_MS)
+                    void config.refresh();
             }
         });
         return () => subscription.remove();

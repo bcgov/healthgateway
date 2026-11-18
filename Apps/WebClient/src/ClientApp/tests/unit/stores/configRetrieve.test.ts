@@ -24,6 +24,8 @@ describe("config store retrieve", () => {
             status: "loaded",
             config: configFixture,
         });
+        // the hourly re-read on returning to the app counts from here
+        expect(useConfigStore.getState().checkedAt).toBeGreaterThan(0);
     });
 
     it("records the error and rethrows when it cannot load", async () => {
