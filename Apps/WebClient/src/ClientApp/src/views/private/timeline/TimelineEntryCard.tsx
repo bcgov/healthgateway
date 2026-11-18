@@ -187,7 +187,7 @@ export function TimelineEntryCard({
                         onPress={handleCardPress}
                         className={cn(
                             "absolute inset-0",
-                            isInteractive && "active:bg-surface-hover"
+                            isInteractive && "native:active:bg-surface-hover"
                         )}
                     />
                     <View
