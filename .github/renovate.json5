@@ -56,6 +56,14 @@
             dependencyDashboardApproval: true,
         },
         {
+            // The Expo SDK dictates these versions (exact react, ~ range for the types). Bump them
+            // with `npx expo install --fix` during an SDK upgrade instead. Otherwise Renovate opens an
+            // immortal "Pin dependencies" PR for @types/react* that drags react past the SDK version.
+            matchFileNames: ["Apps/WebClient/src/ClientApp/package.json"],
+            matchPackageNames: ["react", "react-dom", "react-native", "@types/react", "@types/react-dom"],
+            enabled: false,
+        },
+        {
             // .NET SDK
             matchDatasources: ["dotnet-version"],
             matchUpdateTypes: ["patch"],
