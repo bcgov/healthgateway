@@ -87,7 +87,7 @@ const darkColors = {
     "border-light": "rgba(255,255,255,0.12)",
     "nav-highlight": "rgba(255,255,255,0.12)",
     "border-divider": "rgba(255,255,255,0.12)",
-    "surface-hover": "rgba(255,255,255,0.08)",
+    "surface-hover": "#1b394e",
     "table-header": "rgba(255,255,255,0.05)",
     "tooltip-background": "#c8c8c8",
     "tooltip-text": "#000000",

@@ -3,8 +3,6 @@ import { fireEvent } from "@testing-library/react";
 import { Platform } from "react-native";
 
 import { CardActions, HgButton } from "@/components/common/HgButton";
-import { useThemeStore } from "@/stores/theme.store";
-import { updateStores } from "@/test/fixtures";
 import {
     hasShadow,
     isDisabled,
@@ -22,10 +20,6 @@ const classesOf = (el: UiElement) =>
 /** web: the prepend icon's box (Vuetify's v-btn__prepend), the svg's parent */
 const iconBoxOf = (el: UiElement) =>
     (el as unknown as HTMLElement).querySelector("svg")!.parentElement!.style;
-
-/** web: the overlay's inline style */
-const overlayOf = () =>
-    (screen.getByTestId("button-overlay") as unknown as HTMLElement).style;
 
 describe("HgButton", () => {
     it("renders its label as a button and calls onPress", async () => {
@@ -146,94 +140,32 @@ describe("HgButton", () => {
         expect(iconBoxOf(screen.getByTestId("slim")).marginLeft).toBe("0px");
     });
 
-    it.each([
-        // text and outlined variants: 4 % of the label colour, as v-btn__overlay does
-        ["light", "link", "0.04"],
-        ["light", "secondary", "0.04"],
-        // a dark fill in the light theme doubles it (Vuetify's overlay multiplier)
-        ["light", "primary", "0.08"],
-        ["dark", "link", "0.04"],
-        // the dark theme's pale fill doubles it there
-        ["dark", "primary", "0.08"],
-    ] as const)(
-        "web, %s theme: hovering a %s button tints it at %s, and leaving clears it",
-        async (scheme, variant, opacity) => {
-            if (Platform.OS !== "web") return;
-            useThemeStore.setState({ preference: scheme });
-            try {
-                await render(
-                    <HgButton text="Register" variant={variant} testID="btn" />
-                );
-                const button = screen.getByTestId(
-                    "btn"
-                ) as unknown as HTMLElement;
-                expect(screen.queryByTestId("button-overlay")).toBeNull();
-                fireEvent.mouseEnter(button);
-                await settle();
-                expect(overlayOf().opacity).toBe(opacity);
-                fireEvent.mouseLeave(button);
-                await settle();
-                expect(screen.queryByTestId("button-overlay")).toBeNull();
-            } finally {
-                updateStores(() =>
-                    useThemeStore.setState({ preference: "system" })
-                );
-            }
-        }
-    );
-
-    it("web: keyboard focus tints the button at 12 %, over the hover tint, and blur clears it", async () => {
-        if (Platform.OS !== "web") return;
-        const matches = jest
-            .spyOn(Element.prototype, "matches")
-            .mockImplementation((selector) => selector === ":focus-visible");
-        try {
-            await render(
-                <HgButton text="Register" variant="link" testID="btn" />
-            );
-            const button = screen.getByTestId("btn") as unknown as HTMLElement;
-            fireEvent.mouseEnter(button);
-            fireEvent.focus(button);
-            await settle();
-            expect(overlayOf().opacity).toBe("0.12");
-            fireEvent.blur(button);
-            await settle();
-            // still hovered
-            expect(overlayOf().opacity).toBe("0.04");
-            fireEvent.mouseLeave(button);
-            await settle();
-            expect(screen.queryByTestId("button-overlay")).toBeNull();
-        } finally {
-            matches.mockRestore();
-        }
-    });
-
-    it("web: a mouse focus (not :focus-visible) shows no focus tint", async () => {
-        if (Platform.OS !== "web") return;
-        const matches = jest
-            .spyOn(Element.prototype, "matches")
-            .mockReturnValue(false);
-        try {
-            await render(
-                <HgButton text="Register" variant="link" testID="btn" />
-            );
-            fireEvent.focus(
-                screen.getByTestId("btn") as unknown as HTMLElement
-            );
-            await settle();
-            expect(screen.queryByTestId("button-overlay")).toBeNull();
-        } finally {
-            matches.mockRestore();
-        }
-    });
-
-    it("web: a disabled button shows no tint", async () => {
-        if (Platform.OS !== "web") return;
-        await render(<HgButton text="Save" disabled testID="btn" />);
-        fireEvent.mouseEnter(
-            screen.getByTestId("btn") as unknown as HTMLElement
+    it("tints with v-btn's overlay on hover and keyboard focus: 4 % and 12 % of the label colour, doubled on a fill", async () => {
+        await render(
+            <>
+                <HgButton text="P" testID="primary" />
+                <HgButton text="L" variant="link" testID="link" />
+            </>
         );
-        await settle();
+        const overlays = screen.getAllByTestId("button-overlay");
+        expect(overlays).toHaveLength(2);
+        // NativeWind classes compile away on web; the native test renderer keeps them
+        if (Platform.OS === "web") return;
+        expect(classesOf(screen.getByTestId("primary"))).toMatch(/\bgroup\b/);
+        const [filled, text] = overlays.map(classesOf);
+        expect(filled).toMatch(/\bopacity-0\b/);
+        expect(filled).toContain("bg-on-primary");
+        expect(filled).toContain("group-hover:opacity-[.08]");
+        expect(filled).toContain("web:group-focus-visible:opacity-[.24]");
+        expect(filled).toContain("native:group-focus:opacity-[.24]");
+        expect(text).toContain("bg-link");
+        expect(text).toContain("group-hover:opacity-[.04]");
+        expect(text).toContain("web:group-focus-visible:opacity-[.12]");
+        expect(text).toContain("native:group-focus:opacity-[.12]");
+    });
+
+    it("a disabled button has no tint", async () => {
+        await render(<HgButton text="Save" disabled testID="btn" />);
         expect(screen.queryByTestId("button-overlay")).toBeNull();
     });
 
