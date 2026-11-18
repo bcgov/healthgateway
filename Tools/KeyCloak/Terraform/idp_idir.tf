@@ -2,7 +2,7 @@ resource "keycloak_oidc_identity_provider" "idiridp" {
   realm                         = data.keycloak_realm.hg_realm.id
   alias                         = "idir"
   display_name                  = "IDIR"
-  enabled                       = false
+  enabled                       = var.keycloak_idp_idir_enabled
   store_token                   = false
   trust_email                   = true
   first_broker_login_flow_alias = keycloak_authentication_flow.first_login.alias

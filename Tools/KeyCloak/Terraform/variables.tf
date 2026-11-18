@@ -25,6 +25,12 @@ variable "keycloak_idp_idir_client" {
   description = "The keycloak client and secret used for the IDIR IDP"
 }
 
+variable "keycloak_idp_idir_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether the IDIR IDP is enabled"
+}
+
 variable "keycloak_idp_azure_idir_client" {
   type = object({
     id     = string
@@ -32,6 +38,12 @@ variable "keycloak_idp_azure_idir_client" {
   })
   sensitive   = true
   description = "The keycloak client and secret used for the Azure IDIR IDP"
+}
+
+variable "keycloak_idp_azure_idir_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether the Azure IDIR (IDIR - MFA) IDP is enabled"
 }
 
 variable "keycloak_idp_bcsc" {
@@ -130,10 +142,10 @@ variable "client_hg_mobile" {
 
 variable "client_hg_mobile_android" {
   type = object({
-    id              = optional(string, "hg-mobile-android")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-    token_lifespan  = number
+    id                           = optional(string, "hg-mobile-android")
+    valid_redirects              = list(string)
+    web_origins                  = list(string)
+    token_lifespan               = number
     offline_session_idle_timeout = optional(number)
     offline_session_max_lifespan = optional(number)
   })
@@ -142,10 +154,10 @@ variable "client_hg_mobile_android" {
 
 variable "client_hg_mobile_ios" {
   type = object({
-    id              = optional(string, "hg-mobile-ios")
-    valid_redirects = list(string)
-    web_origins     = list(string)
-    token_lifespan  = number
+    id                           = optional(string, "hg-mobile-ios")
+    valid_redirects              = list(string)
+    web_origins                  = list(string)
+    token_lifespan               = number
     offline_session_idle_timeout = optional(number)
     offline_session_max_lifespan = optional(number)
   })

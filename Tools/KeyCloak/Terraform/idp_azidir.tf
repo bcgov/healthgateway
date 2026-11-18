@@ -2,7 +2,7 @@ resource "keycloak_oidc_identity_provider" "azidiridp" {
   realm                         = data.keycloak_realm.hg_realm.id
   alias                         = "azureidir"
   display_name                  = "IDIR - MFA"
-  enabled                       = true
+  enabled                       = var.keycloak_idp_azure_idir_enabled
   store_token                   = false
   trust_email                   = true
   first_broker_login_flow_alias = keycloak_authentication_flow.first_login.alias
