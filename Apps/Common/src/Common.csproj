@@ -61,7 +61,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="11.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="11.0.0" />
-    <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Database\src\Database.csproj" />

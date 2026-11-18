@@ -9,7 +9,6 @@
     <PackageReference Include="Hl7.Fhir.R4" Version="6.8.0" />
     <PackageReference Include="Refit" Version="16.4.0" />
     <PackageReference Include="Refit.HttpClientFactory" Version="16.4.0" />
-    <PackageReference Update="Microsoft.CodeAnalysis" Version="5.9.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
