@@ -48,15 +48,15 @@ const hasFile = computed(() => Boolean(props.entry.fileId));
 const programLink = computed(() => {
     const name = props.entry.programName?.toLowerCase().trim() ?? "unknown";
     if (name.includes("breast")) {
-        return "http://www.bccancer.bc.ca/screening/breast";
+        return "https://www.bccancer.bc.ca/screening/breast";
     } else if (name.includes("colon")) {
-        return "http://www.bccancer.bc.ca/screening/colon";
+        return "https://www.bccancer.bc.ca/screening/colon";
     } else if (name.includes("lung")) {
-        return "http://www.bccancer.bc.ca/screening/lung";
+        return "https://www.bccancer.bc.ca/screening/lung";
     } else if (name.includes("cervical")) {
-        return "http://www.bccancer.bc.ca/screening/cervix";
+        return "https://www.bccancer.bc.ca/screening/cervix";
     } else {
-        return "http://www.bccancer.bc.ca/screening";
+        return "https://www.bccancer.bc.ca/screening";
     }
 });
 

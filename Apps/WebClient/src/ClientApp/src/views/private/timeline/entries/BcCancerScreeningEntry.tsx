@@ -26,14 +26,14 @@ import { savePatientDataFile } from "./patientDataFile";
 function programLinkFor(programName: string | undefined): string {
     const name = programName?.toLowerCase().trim() ?? "unknown";
     if (name.includes("breast"))
-        return "http://www.bccancer.bc.ca/screening/breast";
+        return "https://www.bccancer.bc.ca/screening/breast";
     if (name.includes("colon"))
-        return "http://www.bccancer.bc.ca/screening/colon";
+        return "https://www.bccancer.bc.ca/screening/colon";
     if (name.includes("lung"))
-        return "http://www.bccancer.bc.ca/screening/lung";
+        return "https://www.bccancer.bc.ca/screening/lung";
     if (name.includes("cervical"))
-        return "http://www.bccancer.bc.ca/screening/cervix";
-    return "http://www.bccancer.bc.ca/screening";
+        return "https://www.bccancer.bc.ca/screening/cervix";
+    return "https://www.bccancer.bc.ca/screening";
 }
 
 function programDisplayNameFor(programName: string | undefined): string {

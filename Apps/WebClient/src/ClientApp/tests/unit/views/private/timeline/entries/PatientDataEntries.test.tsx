@@ -104,7 +104,7 @@ describe("imaging and BC Cancer entries (Diagnostic Imaging / BC Cancer Screenin
         const link = screen.getByText("check the BC Cancer website");
         if (Platform.OS === "web")
             expect(attrOf(link, "href")).toBe(
-                "http://www.bccancer.bc.ca/screening/breast"
+                "https://www.bccancer.bc.ca/screening/breast"
             );
         await press(screen.getByTestId("bc-cancer-screening-download-button"));
         await press(screen.getByTestId("generic-message-submit-btn"));
