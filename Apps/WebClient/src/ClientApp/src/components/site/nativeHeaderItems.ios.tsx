@@ -19,9 +19,9 @@ import { useAppLockStore } from "@/stores/appLock.store";
 import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 import { fonts } from "@/theme";
 
-import { HeaderLogo } from "./HeaderLogo";
+import { HeaderLogo, StaticHeaderLogo } from "./HeaderLogo";
 import { sfSymbols } from "./headerMenuSymbols";
-import { useHeaderMenu } from "./useHeaderMenu";
+import { useHeaderMenu, useSettingsMenu } from "./useHeaderMenu";
 
 const icon = (name?: HeaderMenuGlyph) =>
     name ? { type: "sfSymbol" as const, name: sfSymbols[name] } : undefined;
@@ -102,24 +102,44 @@ function OuterBackButton({ label, goBack }: OuterBack) {
 }
 
 /**
+ * The options that put `OuterBackButton` on a page's bar. One function for the app's life: `SettingsPage` sets them from
+ * an effect that runs again when it changes, and setting them renders it again.
+ */
+function outerBackOptions(target: OuterBack): NativeStackNavigationOptions {
+    return {
+        unstable_headerLeftItems: () => [
+            { type: "custom", element: <OuterBackButton {...target} /> },
+        ],
+    };
+}
+
+/**
  * iOS: the navigation bar's own items. The logo sits on the bar without the shared Liquid Glass background (iOS 26);
  * the bell, the page's Refresh (when it has pull to refresh) and the account or settings button (a gear either way,
  * as the app's own settings; web shows the initials) share one glass capsule, the account or settings menu
  * being a UIMenu: sections become inline groups, Dark Mode and Support submenus. Android: `nativeHeaderItems.android.tsx`.
+ * `overApp`: the bar of a screen that covers the app (`OverAppScreen`: the intro, the lock screen, Update required): the
+ * logo is not a link and the settings menu leaves out the app's own pages, as those are behind the screen
+ * (`useSettingsMenu`); no bell or Refresh.
  */
-export function useNativeHeaderItems(): {
+export function useNativeHeaderItems({
+    overApp = false,
+}: { overApp?: boolean } = {}): {
     logo: NativeStackNavigationOptions;
     menu: NativeStackNavigationOptions;
     back: (target: OuterBack) => NativeStackNavigationOptions;
 } {
     const colors = useThemeColors();
-    const { menu, bell, refresh } = useHeaderMenu();
+    const bar = useHeaderMenu();
+    const overAppMenu = useSettingsMenu({ overApp: true });
+    const { menu, bell, refresh } = overApp ? { menu: overAppMenu } : bar;
     // UIMenu is UIKit's, above every React Native view: the lock screen (it can lock in the foreground, after the idle
     // timeout) and the update dialog would not cover an open menu. While either covers the app, the bar's actions go,
-    // and the menu presented from them with them, as `AppModal` hides its dialogs (Android: the same).
+    // and the menu presented from them with them, as `AppModal` hides its dialogs (Android: the same). The bar over the
+    // app keeps them: it is on the screen that covers the app.
     const locked = useAppLockStore((s) => s.locked);
     const updateRequired = useConfigStore(selectUpdateRequired);
-    const covered = locked || updateRequired;
+    const covered = !overApp && (locked || updateRequired);
 
     const items: NativeStackHeaderItem[] = [];
     if (bell)
@@ -148,7 +168,7 @@ export function useNativeHeaderItems(): {
         label: menu.buttonLabel,
         labelStyle: { fontWeight: "700", color: colors.primary },
         icon: icon("settings"),
-        // a lone icon is drawn as a circle: wider, the gear sits in a pill (`NativeSettingsMenu`)
+        // a lone icon is drawn as a circle: wider, the gear sits in a pill
         width: 64,
         tintColor: colors.primary,
         accessibilityLabel: menu.buttonLabel,
@@ -164,16 +184,12 @@ export function useNativeHeaderItems(): {
     });
 
     return {
-        back: (target) => ({
-            unstable_headerLeftItems: () => [
-                { type: "custom", element: <OuterBackButton {...target} /> },
-            ],
-        }),
+        back: outerBackOptions,
         logo: {
             unstable_headerLeftItems: () => [
                 {
                     type: "custom",
-                    element: <HeaderLogo />,
+                    element: overApp ? <StaticHeaderLogo /> : <HeaderLogo />,
                     hidesSharedBackground: true,
                 },
             ],

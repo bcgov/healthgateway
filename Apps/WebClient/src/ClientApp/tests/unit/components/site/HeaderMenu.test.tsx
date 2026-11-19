@@ -29,7 +29,7 @@ function Harness() {
     );
 }
 
-// web only: native's menus are the platform's own (nativeHeader.test.ts, NativeSettingsMenu.test.tsx)
+// web only: native's menus are the platform's own (nativeHeader.test.ts)
 const describeWeb = Platform.OS === "web" ? describe : describe.skip;
 
 describeWeb("HeaderMenu", () => {

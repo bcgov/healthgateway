@@ -42,8 +42,8 @@ export type HeaderMenuEntry = HeaderMenuAction | HeaderMenuSubmenu;
 /**
  * Native header menu, drawn by each platform's own menu (UIMenu on iOS, a Material dropdown on Android): signed in, the
  * account menu under the user's initials; signed out, the settings menu under a gear. Sections are separated by
- * dividers. Built by `useHeaderMenu`; drawn in the navigation bar by `nativeHeaderItems.ios.tsx` and
- * `nativeHeaderItems.android.tsx`, and on the screens over the app by `NativeSettingsMenu`.
+ * dividers. Built by `useHeaderMenu` (the screens over the app: `useSettingsMenu`); drawn in the navigation bar by
+ * `nativeHeaderItems.ios.tsx` and `nativeHeaderItems.android.tsx`.
  */
 export interface HeaderMenu {
     kind: "account" | "settings";

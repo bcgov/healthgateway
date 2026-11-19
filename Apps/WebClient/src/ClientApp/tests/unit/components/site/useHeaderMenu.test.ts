@@ -132,7 +132,7 @@ describe("useHeaderMenu", () => {
         });
     });
 
-    describe("the settings menu over the app (BrandHeader)", () => {
+    describe("the settings menu over the app (OverAppScreen)", () => {
         it("leaves out Security and the app's own pages, which would open behind the screen", async () => {
             const { result } = await renderHook(() =>
                 useSettingsMenu({ overApp: true })

@@ -14,9 +14,9 @@ import { DEFAULT_BACK_TITLE, type OuterBack } from "@/navigation/stackBack";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
 
-import { HeaderLogo } from "./HeaderLogo";
+import { HeaderLogo, StaticHeaderLogo } from "./HeaderLogo";
 import { icons, NativeMenuItems } from "./NativeMenuItems.android";
-import { useHeaderMenu } from "./useHeaderMenu";
+import { useHeaderMenu, useSettingsMenu } from "./useHeaderMenu";
 
 const arrowBack = require("@/assets/icons/android/arrow_back.xml") as number;
 
@@ -48,21 +48,23 @@ function OuterBackButton({ label, goBack }: OuterBack) {
 /**
  * Android: the top app bar's actions, in Jetpack Compose: the bell, the page's Refresh (when it has pull to refresh), and
  * the account or settings button, a gear either way (owner, 2026-11-16: the initials are web's), opening a Material
- * dropdown (`NativeMenuItems`).
+ * dropdown (`NativeMenuItems`). `overApp`: see `useNativeHeaderItems`.
  */
-function NativeHeaderMenu() {
+function NativeHeaderMenu({ overApp }: { overApp: boolean }) {
     const colors = useThemeColors();
     const scheme = useColorScheme();
-    const { menu, bell, refresh } = useHeaderMenu();
+    const bar = useHeaderMenu();
+    const overAppMenu = useSettingsMenu({ overApp: true });
+    const { menu, bell, refresh } = overApp ? { menu: overAppMenu } : bar;
     const [expanded, setExpanded] = useState(false);
     const close = () => setExpanded(false);
     const open = () => setExpanded(true);
     // Compose menus are popup windows above the whole app, the lock screen and the update dialog included (both React
     // Native views): while either covers the app, the actions go, open menus and submenus with them, as `AppModal`
-    // hides its dialogs.
+    // hides its dialogs. The bar over the app keeps them: it is on the screen that covers the app.
     const locked = useAppLockStore((s) => s.locked);
     const updateRequired = useConfigStore(selectUpdateRequired);
-    if (locked || updateRequired) return null;
+    if (!overApp && (locked || updateRequired)) return null;
 
     return (
         <Host matchContents colorScheme={scheme}>
@@ -128,19 +130,31 @@ function NativeHeaderMenu() {
 }
 
 /**
- * Android: the logo in the top app bar's navigation slot, the drawn back arrow, and the actions above (Compose, from
- * `@expo/ui`). iOS: `nativeHeaderItems.ios.tsx`.
+ * The options that put `OuterBackButton` on a page's bar. One function for the app's life: `SettingsPage` sets them from
+ * an effect that runs again when it changes, and setting them renders it again.
  */
-export function useNativeHeaderItems(): {
+function outerBackOptions(target: OuterBack): NativeStackNavigationOptions {
+    return { headerLeft: () => <OuterBackButton {...target} /> };
+}
+
+/**
+ * Android: the logo in the top app bar's navigation slot, the drawn back arrow, and the actions above (Compose, from
+ * `@expo/ui`). `overApp`: the bar of a screen that covers the app (`OverAppScreen`): the logo is not a link, and the
+ * settings menu leaves out the app's own pages, which are behind the screen; no bell or Refresh. iOS:
+ * `nativeHeaderItems.ios.tsx`.
+ */
+export function useNativeHeaderItems({
+    overApp = false,
+}: { overApp?: boolean } = {}): {
     logo: NativeStackNavigationOptions;
     menu: NativeStackNavigationOptions;
     back: (target: OuterBack) => NativeStackNavigationOptions;
 } {
     return {
-        back: (target) => ({
-            headerLeft: () => <OuterBackButton {...target} />,
-        }),
-        logo: { headerLeft: () => <HeaderLogo /> },
-        menu: { headerRight: () => <NativeHeaderMenu /> },
+        back: outerBackOptions,
+        logo: {
+            headerLeft: () => (overApp ? <StaticHeaderLogo /> : <HeaderLogo />),
+        },
+        menu: { headerRight: () => <NativeHeaderMenu overApp={overApp} /> },
     };
 }

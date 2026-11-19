@@ -32,6 +32,11 @@ Aspire AppHost that orchestrates the full local Health Gateway development envir
   - `HG_MOBILE_DEVICE`: the AVD or simulator by name, e.g. `Pixel_10_Pro_XL` or
     `iPhone 18 Pro Max` (a simulator UDID also works). Without one: a running one, else
     the first AVD, or the newest iOS's first iPhone.
+  - `HG_MOBILE_EMULATOR_ARGS` (optional, Android): extra options for an emulator the
+    resource starts, e.g. `-gpu swiftshader_indirect` when the login page stays blank
+    because Chrome can't draw with the computer's GPU (logcat shows
+    `GrContext creation failed`). The emulator's own Graphics Acceleration setting isn't
+    kept between starts. It doesn't apply to an emulator that's already running.
 
   One that isn't running is started (iOS: shown in Xcode 27's Device Hub, or the
   Simulator app of an older Xcode), and shut down when Aspire stops; one that was already

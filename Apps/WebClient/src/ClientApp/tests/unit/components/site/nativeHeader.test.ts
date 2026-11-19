@@ -174,6 +174,88 @@ describe("native navigation bar (iOS)", () => {
             expect(rightItems(result.current.menu)).toEqual([]);
         });
 
+        describe("over the app (the intro, the lock screen, Update required)", () => {
+            it("only the settings menu, without the app's pages behind the screen, even signed in with a Refresh", async () => {
+                signInRegistered();
+                usePageRefreshStore.setState({
+                    refresh: () => undefined,
+                    refreshing: false,
+                });
+                const { result } = await renderHook(() =>
+                    useNativeHeaderItems({ overApp: true })
+                );
+                const items = rightItems(result.current.menu);
+                expect(items.map((i) => i.type)).toEqual(["menu"]);
+                const menu = menuOf(items);
+                expect(menu.accessibilityLabel).toBe("Settings");
+                expect(menu.menu.title).toBeUndefined();
+                expect(sectionLabels(menu)[0]).toEqual([
+                    "Dark Mode",
+                    "Support",
+                ]);
+            });
+
+            it("keeps the menu while the app is locked or an update is required: it is on the screen that covers the app", async () => {
+                const { result } = await renderHook(() =>
+                    useNativeHeaderItems({ overApp: true })
+                );
+                updateStores(() => useAppLockStore.setState({ locked: true }));
+                expect(rightItems(result.current.menu)).toHaveLength(1);
+                updateStores(() => {
+                    useAppLockStore.setState({ locked: false });
+                    useConfigStore.setState({
+                        config: {
+                            ...configFixture,
+                            webClient: {
+                                ...configFixture.webClient,
+                                mobile: {
+                                    ...configFixture.webClient.mobile,
+                                    minimumBuild: 58,
+                                },
+                            },
+                        },
+                    });
+                });
+                expect(rightItems(result.current.menu)).toHaveLength(1);
+            });
+
+            it("the logo is not a link: the app's pages are behind the screen", async () => {
+                const { result } = await renderHook(() =>
+                    useNativeHeaderItems({ overApp: true })
+                );
+                const [logo] = result.current.logo.unstable_headerLeftItems?.(
+                    {}
+                ) ?? [undefined];
+                await render((logo as NativeStackHeaderItemCustom).element);
+                expect(
+                    screen.getByTestId("headerLogo").props
+                ).not.toHaveProperty("accessibilityRole", "link");
+            });
+
+            it("stack options: the logo, no title, no back, the menu", async () => {
+                const { result } = await renderHook(() =>
+                    useNativeStackOptions({ overApp: true })
+                );
+                const o = result.current({ route: { name: "overApp" } });
+                expect(o.headerShown).toBe(true);
+                expect(o.unstable_headerLeftItems).toBeDefined();
+                expect(o.headerBackVisible).toBe(false);
+                expect(o.title).toBe("");
+                expect(rightItems(o)).toHaveLength(1);
+            });
+        });
+
+        it("the drawn back button's options builder is the same function on every render", async () => {
+            // `SettingsPage` sets it from a layout effect that depends on it; setting options renders the page again,
+            // so a new function each render loops (Security from the gear, signed out: maximum update depth)
+            const { result, rerender } = await renderHook(() =>
+                useNativeHeaderItems()
+            );
+            const first = result.current.back;
+            await rerender();
+            expect(result.current.back).toBe(first);
+        });
+
         it("the logo sits on the bar without the shared glass background", async () => {
             const { result } = await renderHook(() => useNativeHeaderItems());
             expect(result.current.logo.unstable_headerLeftItems?.({})).toEqual([

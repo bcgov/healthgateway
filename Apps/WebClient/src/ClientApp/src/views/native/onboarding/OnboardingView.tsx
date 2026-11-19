@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppText, HgButton, Icon } from "@/components/common";
-import { BrandHeader } from "@/components/site/BrandHeader";
+import { OverAppScreen } from "@/components/site/OverAppScreen";
 import {
     type BubblePlacement,
     type OnboardingScreen,
@@ -235,25 +235,16 @@ function SecurityOffer() {
 
 /** First launch on iOS and Android: the intro, then the security step. The root shows it instead of the app. */
 export function OnboardingView() {
-    const insets = useSafeAreaInsets();
     const tutorialPending = useOnboardingStore((s) => s.screens.length > 0);
     const completeTutorial = useOnboardingStore((s) => s.completeTutorial);
     return (
-        // the environment banner (none on Production) and the logo on top, as on the lock screen and in the app
-        <View
-            className="flex-1 bg-background"
-            style={{
-                paddingTop: insets.top,
-                paddingLeft: insets.left,
-                paddingRight: insets.right,
-            }}
-        >
-            <BrandHeader />
+        // the environment banner (none on Production) and the navigation bar on top, as on the lock screen and in the app
+        <OverAppScreen>
             {tutorialPending ? (
                 <Tutorial onDone={() => void completeTutorial()} />
             ) : (
                 <SecurityOffer />
             )}
-        </View>
+        </OverAppScreen>
     );
 }

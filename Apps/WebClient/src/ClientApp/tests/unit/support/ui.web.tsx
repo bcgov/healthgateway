@@ -69,6 +69,20 @@ export const screen = {
     getAllByLabelText: (label: string | RegExp) => q().getAllByLabelText(label),
     queryByLabelText: (label: string | RegExp) => q().queryByLabelText(label),
 };
+/** Native only: web has no native navigation bar (`ui.tsx`). */
+export interface NavigationBarItem {
+    type?: string;
+    accessibilityLabel?: string;
+    menu?: { title?: string; items: NavigationBarMenuElement[] };
+}
+export interface NavigationBarMenuElement {
+    title?: string;
+    items?: NavigationBarMenuElement[];
+}
+export const navigationBarRightItems = (): NavigationBarItem[] => [];
+export const navigationBarMenuTitles = (
+    _item: NavigationBarItem
+): string[] => [];
 /** Whether an element with this test id is mounted, shown or not (Cypress `exist`, not `be.visible`). */
 export const existsByTestId = (id: string) => q().queryByTestId(id) !== null;
 /** An element by test id even when it is hidden from the screen reader (aria-hidden does not hide it from the DOM). */

@@ -14,7 +14,7 @@ import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useConfigStore } from "@/stores/config.store";
 import { configFixture, updateStores } from "@/test/fixtures";
-import { press, render, screen } from "@/test/ui";
+import { navigationBarRightItems, press, render, screen } from "@/test/ui";
 import {
     UpdateRequiredLanding,
     UpdateRequiredView,
@@ -161,13 +161,22 @@ describe("UpdateRequiredView", () => {
 });
 
 describe("UpdateRequiredLanding", () => {
-    it("native: the landing page's text and the app's header, with no way in", async () => {
+    it("native: the landing page's text and the app's navigation bar, with no way in", async () => {
         if (Platform.OS === "web") return;
+        // the app's own bars drop their menu while an update is required; this bar is over the app, so keeps it
+        requireUpdate();
         await render(<UpdateRequiredLanding />);
         expect(
             screen.getByText("Access your health information online")
         ).toBeTruthy();
-        expect(screen.getByTestId("brandHeader")).toBeTruthy();
+        expect(screen.getByTestId("overAppScreen")).toBeTruthy();
+        expect(screen.getByTestId("headerLogo")).toBeTruthy();
+        expect(
+            navigationBarRightItems().map((i) => [i.type, i.accessibilityLabel])
+        ).toEqual([["menu", "Settings"]]);
         expect(screen.queryByTestId("btnLogin")).toBeNull();
+        updateStores(() =>
+            useConfigStore.setState({ config: undefined, status: "idle" })
+        );
     });
 });
