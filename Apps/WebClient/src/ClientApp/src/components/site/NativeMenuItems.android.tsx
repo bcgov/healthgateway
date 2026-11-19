@@ -142,7 +142,7 @@ function MenuEntry({ entry, close }: ItemProps & { entry: HeaderMenuEntry }) {
 
 /**
  * Android: a header menu's entries, inside a Compose `DropdownMenu`, for the navigation bar's menu
- * (`nativeHeaderItems.android.tsx`) and `NativeSettingsMenu`. Material menus have no title, so the menu's title (the
+ * (`nativeHeaderItems.android.tsx`). Material menus have no title, so the menu's title (the
  * user's name) is the first, inactive line; sections are split by dividers.
  */
 export function NativeMenuItems({

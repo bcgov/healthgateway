@@ -17,7 +17,13 @@ import {
     useOnboardingStore,
 } from "@/stores/onboarding.store";
 import { updateStores } from "@/test/fixtures";
-import { press, render, screen } from "@/test/ui";
+import {
+    navigationBarMenuTitles,
+    navigationBarRightItems,
+    press,
+    render,
+    screen,
+} from "@/test/ui";
 import { getLocalAuthMethod } from "@/utils/localAuth";
 import { OnboardingView } from "@/views/native/onboarding/OnboardingView";
 
@@ -85,7 +91,7 @@ describe("OnboardingView", () => {
             ["tutorial", onboardingScreens],
             ["security step", []],
         ])(
-            "has the logo bar and the gear on the %s, like the app's header",
+            "has the app's navigation bar on the %s: the logo and the gear",
             async (_name, screens) => {
                 if (Platform.OS === "web") return;
                 useOnboardingStore.setState({
@@ -93,8 +99,14 @@ describe("OnboardingView", () => {
                     securityOffered: false,
                 });
                 await render(<OnboardingView />);
-                expect(screen.getByTestId("brandHeader")).toBeTruthy();
-                expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
+                expect(screen.getByTestId("overAppScreen")).toBeTruthy();
+                expect(screen.getByTestId("headerLogo")).toBeTruthy();
+                expect(
+                    navigationBarRightItems().map((i) => [
+                        i.type,
+                        i.accessibilityLabel,
+                    ])
+                ).toEqual([["menu", "Settings"]]);
             }
         );
 
@@ -105,10 +117,12 @@ describe("OnboardingView", () => {
                 securityOffered: false,
             });
             await render(<OnboardingView />);
-            // SwiftUI's menu (Jest is iOS) holds its entries before it opens
-            expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
-            expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
-            expect(screen.queryByTestId("menu-btn-security-link")).toBeNull();
+            // the bar's UIMenu (Jest is iOS)
+            const titles = navigationBarMenuTitles(
+                navigationBarRightItems()[0]
+            );
+            expect(titles).toContain("Dark Mode");
+            expect(titles).not.toContain("Security");
         });
 
         it("shows none on Production", async () => {

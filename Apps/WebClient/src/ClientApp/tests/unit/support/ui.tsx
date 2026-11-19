@@ -8,6 +8,11 @@ import {
     type RenderResult,
     waitFor,
 } from "@testing-library/react-native";
+import {
+    DefaultTheme,
+    LocaleDirContext,
+    ThemeProvider,
+} from "expo-router/react-navigation";
 import type { ReactElement } from "react";
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -29,7 +34,8 @@ const q = () => {
 
 /**
  * Components under test may read safe-area insets; a provider with fixed metrics stands in for the app root, as does
- * the gesture handler root view.
+ * the gesture handler root view, and the navigation theme and text direction expo-router's container gives the app
+ * (`OverAppScreen`'s bar reads them, as the stacks' bars do).
  */
 const withProviders = (ui: ReactElement) => (
     <GestureHandlerRootView>
@@ -39,7 +45,11 @@ const withProviders = (ui: ReactElement) => (
                 insets: { top: 47, right: 0, bottom: 34, left: 0 },
             }}
         >
-            {ui}
+            <ThemeProvider value={DefaultTheme}>
+                <LocaleDirContext.Provider value="ltr">
+                    {ui}
+                </LocaleDirContext.Provider>
+            </ThemeProvider>
         </SafeAreaProvider>
     </GestureHandlerRootView>
 );
@@ -85,6 +95,37 @@ export const screen = {
     getByLabelText: (label: string | RegExp) => q().getByLabelText(label),
     getAllByLabelText: (label: string | RegExp) => q().getAllByLabelText(label),
     queryByLabelText: (label: string | RegExp) => q().queryByLabelText(label),
+};
+/** A navigation bar item a page hands the platform, as far as tests read it: a UIKit bar button or its UIMenu. */
+export interface NavigationBarItem {
+    type?: string;
+    accessibilityLabel?: string;
+    menu?: { title?: string; items: NavigationBarMenuElement[] };
+}
+/** An action or submenu of a navigation bar item's UIMenu. */
+export interface NavigationBarMenuElement {
+    title?: string;
+    items?: NavigationBarMenuElement[];
+}
+/**
+ * Native: the right-hand items of the navigation bar on screen (`OverAppScreen`'s), as handed to react-native-screens:
+ * UIKit bar items (iOS), not React elements, so no query finds them. Empty without a bar.
+ */
+export const navigationBarRightItems = (): NavigationBarItem[] => {
+    const config = q().container.queryAll(
+        (i) => i.type === "RNSScreenStackHeaderConfig"
+    )[0];
+    return (config?.props.headerRightBarButtonItems ??
+        []) as NavigationBarItem[];
+};
+/** The titles in a navigation bar item's UIMenu, submenus' entries included, in order. */
+export const navigationBarMenuTitles = (item: NavigationBarItem): string[] => {
+    const walk = (elements: NavigationBarMenuElement[]): string[] =>
+        elements.flatMap((e) => [
+            ...(e.title ? [e.title] : []),
+            ...walk(e.items ?? []),
+        ]);
+    return walk(item.menu?.items ?? []);
 };
 /** Whether an element with this test id is mounted, shown or not (Cypress `exist`, not `be.visible`). */
 export const existsByTestId = (id: string) =>

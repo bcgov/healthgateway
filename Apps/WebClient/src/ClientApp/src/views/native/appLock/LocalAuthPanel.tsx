@@ -126,7 +126,7 @@ export function LocalAuthPanel({ onAuthenticate, busy, secondary }: Props) {
     return (
         <View
             className="flex-1 bg-background"
-            // the top inset is OnboardingView's, above the environment banner
+            // the top inset is OnboardingView's (`OverAppScreen`), above the environment banner
             style={{ paddingBottom: insets.bottom }}
         >
             {showTips ? (

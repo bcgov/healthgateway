@@ -4,7 +4,7 @@ import type { HeaderMenuGlyph } from "@/navigation/headerMenu";
 
 type SFSymbol = NonNullable<ButtonProps["systemImage"]>;
 
-/** iOS: each header menu glyph's SF Symbol, for the navigation bar's UIMenu and `NativeSettingsMenu`'s SwiftUI menu. */
+/** iOS: each header menu glyph's SF Symbol, for the navigation bar's UIMenu. */
 export const sfSymbols: Record<HeaderMenuGlyph, SFSymbol> = {
     bell: "bell",
     darkMode: "moon",

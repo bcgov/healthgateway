@@ -175,7 +175,7 @@ function settingsMenu({
 
 /**
  * The signed-out settings menu (gear). `overApp`: for a screen that covers the app (the intro, the lock screen, Update
- * required: `BrandHeader`), so it leaves out what opens a page of the app, which would open behind the screen: Security
+ * required: `OverAppScreen`), so it leaves out what opens a page of the app, which would open behind the screen: Security
  * (also not to be reached past the lock) and Terms of Service.
  */
 export function useSettingsMenu({

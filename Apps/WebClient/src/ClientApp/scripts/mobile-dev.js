@@ -9,6 +9,9 @@
 // or "iPhone 18 Pro Max" (a simulator, as `xcrun simctl list devices` gives it; a UDID also works). Without one: a running
 // one, else the first AVD, or the newest iOS's first iPhone. One that isn't running is started: run by the Aspire host
 // (HG_ASPIRE_PID), it is shut down when Aspire stops; run by hand, it is left running.
+// HG_MOBILE_EMULATOR_ARGS: Android only, extra emulator options for an emulator this script starts (not one already
+// running), separated by spaces, e.g. "-gpu swiftshader_indirect" where Chrome can't draw with the computer's GPU (the
+// login page stays blank). The emulator's own Graphics Acceleration setting is not kept between starts.
 // Android: the SDK comes from ANDROID_HOME (or ANDROID_SDK_ROOT), else its default place; building needs JAVA_HOME.
 // `adb reverse` makes the computer's localhost the emulator's for Metro, the WebClient's /configuration, and each
 // localhost service endpoint that configuration lists, so the app's Local environment works unchanged; it needs the
@@ -198,9 +201,14 @@ const android = {
             throw new Error(
                 `No AVD named "${avd}": the AVDs are ${avds.join(", ")}`
             );
-        console.log(`Starting the emulator ${avd}`);
+        const extra =
+            process.env.HG_MOBILE_EMULATOR_ARGS?.split(/\s+/).filter(Boolean) ??
+            [];
+        console.log(
+            `Starting the emulator ${avd}${extra.length ? ` with ${extra.join(" ")}` : ""}`
+        );
         // detached: it stays up after this script (shutDownWithAspire stops it with Aspire)
-        spawn(emulator, ["-avd", avd], {
+        spawn(emulator, ["-avd", avd, ...extra], {
             detached: true,
             stdio: "ignore",
         }).unref();

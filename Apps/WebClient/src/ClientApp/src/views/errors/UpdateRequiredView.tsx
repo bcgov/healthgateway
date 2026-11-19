@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { BackHandler, Platform, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppText, Dialog, HgButton } from "@/components/common";
-import { BrandHeader } from "@/components/site/BrandHeader";
+import { OverAppScreen } from "@/components/site/OverAppScreen";
 import { storeListingUrl } from "@/config/storeListings";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
@@ -76,17 +75,13 @@ export function UpdateRequiredView() {
  * before the update; start-up stops before sign-in.
  */
 export function UpdateRequiredLanding() {
-    const insets = useSafeAreaInsets();
     return (
-        <View
-            testID="updateRequiredLanding"
-            className="flex-1 bg-background"
-            style={{ paddingTop: insets.top }}
-        >
-            <BrandHeader />
-            <ScrollView contentContainerClassName="p-8">
-                <LandingIntro />
-            </ScrollView>
+        <View testID="updateRequiredLanding" className="flex-1 bg-background">
+            <OverAppScreen>
+                <ScrollView contentContainerClassName="p-8">
+                    <LandingIntro />
+                </ScrollView>
+            </OverAppScreen>
         </View>
     );
 }

@@ -1,10 +1,8 @@
-import { useRef } from "react";
 import { Pressable, View } from "react-native";
 
 import HgLogo from "@/assets/images/gov/hg-logo-rev.svg";
 import HgLogoDark from "@/assets/images/gov/hg-logo-rev-dark.svg";
 import { useColorScheme } from "@/hooks/useTheme";
-import { useNavBarStore } from "@/stores/navBar.store";
 import { decorativeProps } from "@/utils/decorative";
 import { hrefProps } from "@/utils/hrefProps";
 
@@ -21,11 +19,14 @@ const LOGO_HEIGHT = 38;
 const LOGO_WIDTH = Math.round((LOGO_HEIGHT * ARTWORK.width) / ARTWORK.height);
 const VIEW_BOX = `${ARTWORK.x} ${ARTWORK.y} ${ARTWORK.width} ${ARTWORK.height}`;
 
+/** The bar's item height: iOS's navigation bar; the logo is centred in it. */
+const ITEM_HEIGHT = 44;
+
 /**
- * The logo as the navigation bar draws it, at the bar's size. Decorative: `HeaderLogo`'s link names it, and on
- * `BrandHeader`'s screens their own text names the app.
+ * The logo as the navigation bar draws it, at the bar's size. Decorative: `HeaderLogo`'s link names it, and on the
+ * screens over the app (`StaticHeaderLogo`) their own text names the app.
  */
-export function HeaderLogoImage() {
+function HeaderLogoImage() {
     // Dark variant: the navy wordmark, crest text and mountains become pale blue (docs/theming.md).
     const Logo = useColorScheme() === "dark" ? HgLogoDark : HgLogo;
     return (
@@ -46,16 +47,8 @@ export function HeaderLogoImage() {
  */
 export function HeaderLogo() {
     const logo = useLogoLink();
-    const ref = useRef<React.ComponentRef<typeof View>>(null);
     return (
         <Pressable
-            ref={ref}
-            // where the bar puts its leading item, for `BrandHeader`'s bar over the app
-            onLayout={() =>
-                ref.current?.measureInWindow((x) => {
-                    if (x > 0) useNavBarStore.setState({ leading: x });
-                })
-            }
             testID="headerLogo"
             accessibilityRole="link"
             accessibilityLabel="Go to Health Gateway home page"
@@ -66,9 +59,24 @@ export function HeaderLogo() {
                 logo.follow();
             }}
             hitSlop={4}
-            style={{ height: 44, justifyContent: "center" }}
+            style={{ height: ITEM_HEIGHT, justifyContent: "center" }}
         >
             <HeaderLogoImage />
         </Pressable>
+    );
+}
+
+/**
+ * Native: the logo on the navigation bar of a screen that covers the app (`OverAppScreen`: the intro, the lock screen,
+ * Update required). Not a link: the app's pages are behind the screen.
+ */
+export function StaticHeaderLogo() {
+    return (
+        <View
+            testID="headerLogo"
+            style={{ height: ITEM_HEIGHT, justifyContent: "center" }}
+        >
+            <HeaderLogoImage />
+        </View>
     );
 }

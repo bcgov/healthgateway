@@ -27,6 +27,11 @@ interface Options {
      * itself again (Profile, Security).
      */
     withoutMenu?: readonly string[];
+    /**
+     * The bar of a screen that covers the app (`OverAppScreen`: the intro, the lock screen, Update required): its logo
+     * and settings menu leave out the app's pages, which are behind it (`useNativeHeaderItems`).
+     */
+    overApp?: boolean;
 }
 
 /**
@@ -44,9 +49,10 @@ export function useNativeStackOptions({
     backTitle,
     hidden = [],
     withoutMenu = [],
+    overApp = false,
 }: Options = {}) {
     const colors = useThemeColors();
-    const { logo, menu, back } = useNativeHeaderItems();
+    const { logo, menu, back } = useNativeHeaderItems({ overApp });
     const base: NativeStackNavigationOptions = {
         headerShown: true,
         headerStyle: { backgroundColor: colors["app-bar"] },

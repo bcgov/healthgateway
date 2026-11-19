@@ -1,24 +1,13 @@
 import { useIsFocused } from "expo-router";
-import { HeaderHeightContext } from "expo-router/react-navigation";
-import { use, useCallback, useEffect, useRef, useState } from "react";
-import {
-    Animated,
-    Platform,
-    RefreshControl,
-    ScrollView,
-    View,
-} from "react-native";
-import {
-    SafeAreaView,
-    useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, RefreshControl, ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText, LiveRegion } from "@/components/common";
 import { useMotion } from "@/hooks/useMotion";
 import { useRouteFeaturesEnabled } from "@/hooks/useRouteFeaturesEnabled";
 import { useThemeColors } from "@/hooks/useTheme";
 import { useConnectivityStore } from "@/stores/connectivity.store";
-import { useNavBarStore } from "@/stores/navBar.store";
 import { usePageRefreshStore } from "@/stores/pageRefresh.store";
 import { playRefreshFeedback } from "@/utils/refreshFeedback";
 
@@ -140,18 +129,6 @@ export function PageScroll({ children }: { children: React.ReactNode }) {
 
     // the navigation bar's Refresh button runs the same refresh, while this page is the one on screen
     const focused = useIsFocused();
-    // the bar's height, for `BrandHeader`'s bar over the app; 0 or none where the page has no bar. Android: React
-    // Navigation counts the status bar into it, which our bars sit below (`disableTopInsetApplication`)
-    const headerHeight = use(HeaderHeightContext);
-    const statusBarInset = useSafeAreaInsets().top;
-    useEffect(() => {
-        if (!focused || !headerHeight) return;
-        const height =
-            Platform.OS === "android"
-                ? headerHeight - statusBarInset
-                : headerHeight;
-        if (height > 0) useNavBarStore.setState({ height });
-    }, [focused, headerHeight, statusBarInset]);
     const latestRefresh = useRef(onRefresh);
     useEffect(() => {
         latestRefresh.current = onRefresh;

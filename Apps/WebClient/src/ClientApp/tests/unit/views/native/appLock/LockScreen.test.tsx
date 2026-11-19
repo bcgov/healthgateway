@@ -15,7 +15,14 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useConfigStore } from "@/stores/config.store";
 import { useEnvironmentStore } from "@/stores/environment.store";
 import { configFixture, updateStores } from "@/test/fixtures";
-import { advanceTimers, press, render, screen } from "@/test/ui";
+import {
+    advanceTimers,
+    navigationBarMenuTitles,
+    navigationBarRightItems,
+    press,
+    render,
+    screen,
+} from "@/test/ui";
 import { LockGate, LockScreen } from "@/views/native/appLock/LockScreen";
 
 jest.mock("@/services/vault", () => ({
@@ -111,7 +118,7 @@ describe("LockScreen", () => {
         ).toBeNull();
     });
 
-    it("has the environment banner, the logo bar and the gear, like the app's header", async () => {
+    it("has the environment banner and the app's navigation bar: the logo and the gear", async () => {
         if (isWeb) return;
         updateStores(() =>
             useEnvironmentStore.setState({
@@ -121,8 +128,11 @@ describe("LockScreen", () => {
         );
         await render(<LockScreen />);
         expect(screen.getByTestId("environmentBanner")).toBeTruthy();
-        expect(screen.getByTestId("brandHeader")).toBeTruthy();
-        expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
+        expect(screen.getByTestId("overAppScreen")).toBeTruthy();
+        expect(screen.getByTestId("headerLogo")).toBeTruthy();
+        expect(
+            navigationBarRightItems().map((i) => [i.type, i.accessibilityLabel])
+        ).toEqual([["menu", "Settings"]]);
         updateStores(() =>
             useEnvironmentStore.setState({
                 selected: undefined,
@@ -131,15 +141,15 @@ describe("LockScreen", () => {
         );
     });
 
-    it("the gear's native menu stays while locked, without Security", async () => {
+    it("the gear's menu stays while locked, without Security", async () => {
         if (isWeb) return;
         authenticate.mockResolvedValue("cancelled");
         await render(<LockScreen />);
         await advanceTimers(500);
-        // SwiftUI's menu (Jest is iOS) holds its entries before it opens
-        expect(screen.getByTestId("settingsMenuBtn")).toBeTruthy();
-        expect(screen.getByTestId("menu-btn-dark-mode-link")).toBeTruthy();
-        expect(screen.queryByTestId("menu-btn-security-link")).toBeNull();
+        // the bar's UIMenu (Jest is iOS); the app's own bars drop theirs while locked
+        const titles = navigationBarMenuTitles(navigationBarRightItems()[0]);
+        expect(titles).toContain("Dark Mode");
+        expect(titles).not.toContain("Security");
         expect(useAppLockStore.getState().locked).toBe(true);
     });
 

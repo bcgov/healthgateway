@@ -84,12 +84,14 @@ IResourceBuilder<JavaScriptAppResource> clientApp = builder.AddJavaScriptApp("Cl
 
 // The dev app on an emulator or simulator, started from the dashboard (Start), so a run without mobile work starts
 // none. HG_MOBILE_PLATFORM: android (default) or ios (macOS only). HG_MOBILE_DEVICE: the AVD or simulator by name, e.g.
-// Pixel_10_Pro_XL or "iPhone 18 Pro Max" (without one: a running one, else the first). Both come from the AppHost's
+// Pixel_10_Pro_XL or "iPhone 18 Pro Max" (without one: a running one, else the first). HG_MOBILE_EMULATOR_ARGS: extra
+// options for an Android emulator it starts, e.g. "-gpu swiftshader_indirect". All come from the AppHost's
 // configuration: environment variables, user secrets or appsettings. One that isn't running is started, and shut down
 // when Aspire stops. See
 // Apps/WebClient/src/ClientApp/scripts/mobile-dev.js.
 string mobilePlatform = builder.Configuration["HG_MOBILE_PLATFORM"] ?? "android";
 string mobileDevice = builder.Configuration["HG_MOBILE_DEVICE"] ?? string.Empty;
+string mobileEmulatorArgs = builder.Configuration["HG_MOBILE_EMULATOR_ARGS"] ?? string.Empty;
 // An emulator or simulator the script starts is shut down when this host exits (Aspire stops).
 string aspirePid = Environment.ProcessId.ToString(CultureInfo.InvariantCulture);
 
@@ -99,6 +101,7 @@ string aspirePid = Environment.ProcessId.ToString(CultureInfo.InvariantCulture);
 builder.AddExecutable("MobileApp", "node", "../WebClient/src/ClientApp", "scripts/mobile-dev.js", "open")
     .WithEnvironment("HG_MOBILE_PLATFORM", mobilePlatform)
     .WithEnvironment("HG_MOBILE_DEVICE", mobileDevice)
+    .WithEnvironment("HG_MOBILE_EMULATOR_ARGS", mobileEmulatorArgs)
     .WithEnvironment("HG_ASPIRE_PID", aspirePid)
     .WithExplicitStart()
     .WaitFor(clientApp)
@@ -110,6 +113,7 @@ builder.AddExecutable("MobileApp", "node", "../WebClient/src/ClientApp", "script
 builder.AddExecutable("MobileBuild", "node", "../WebClient/src/ClientApp", "scripts/mobile-dev.js", "build")
     .WithEnvironment("HG_MOBILE_PLATFORM", mobilePlatform)
     .WithEnvironment("HG_MOBILE_DEVICE", mobileDevice)
+    .WithEnvironment("HG_MOBILE_EMULATOR_ARGS", mobileEmulatorArgs)
     .WithEnvironment("HG_ASPIRE_PID", aspirePid)
     .WithExplicitStart()
     .WaitFor(clientApp)

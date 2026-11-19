@@ -7,10 +7,9 @@ import {
     ScrollView,
     View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HgButton } from "@/components/common";
-import { BrandHeader } from "@/components/site/BrandHeader";
+import { OverAppScreen } from "@/components/site/OverAppScreen";
 import { useLoginLabel } from "@/navigation/login";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
@@ -28,7 +27,6 @@ function LockedView() {
     const unlock = useAppLockStore((s) => s.unlock);
     const authenticating = useAppLockStore((s) => s.authenticating);
     const signOut = useAuthStore((s) => s.signOut);
-    const insets = useSafeAreaInsets();
     const [signingOut, setSigningOut] = useState(false);
     const loginLabel = useLoginLabel();
 
@@ -64,15 +62,7 @@ function LockedView() {
     }, []);
 
     return (
-        <View
-            className="flex-1"
-            style={{
-                paddingTop: insets.top,
-                paddingLeft: insets.left,
-                paddingRight: insets.right,
-            }}
-        >
-            <BrandHeader />
+        <OverAppScreen>
             <ScrollView contentContainerClassName="p-8">
                 <LandingIntro />
                 <HgButton
@@ -89,7 +79,7 @@ function LockedView() {
                     }}
                 />
             </ScrollView>
-        </View>
+        </OverAppScreen>
     );
 }
 
