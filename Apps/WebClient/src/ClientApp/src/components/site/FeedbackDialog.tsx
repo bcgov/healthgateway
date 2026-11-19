@@ -170,11 +170,11 @@ export function FeedbackDialog({ visible, onClose }: Props) {
                         onFocus={() => setFocused(true)}
                         onBlur={() => setFocused(false)}
                         multiline
+                        autoGrow
                         numberOfLines={5}
                         placeholder="Describe your suggestion or idea..."
                         editable={!loading}
                         errorMessages={errors}
-                        style={{ minHeight: 120, textAlignVertical: "top" }}
                     />
                     {/* v-textarea `counter`: the length, while the field has focus */}
                     {focused ? (

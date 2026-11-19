@@ -143,6 +143,7 @@ export function CommentItem({
                             onChangeText={setCommentInput}
                             placeholder="Editing a comment"
                             multiline
+                            autoGrow
                             maxLength={1000}
                             editable={!isUpdating}
                         />

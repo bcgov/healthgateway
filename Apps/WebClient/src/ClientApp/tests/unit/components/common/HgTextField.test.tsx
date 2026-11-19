@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { Platform, Text } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
 
 import { HgTextField } from "@/components/common/HgTextField";
 import { expectNoAxeViolations } from "@/test/axe";
@@ -138,6 +138,56 @@ describe("HgTextField", () => {
             />
         );
         expect(screen.getByLabelText("Your email address")).toBeTruthy();
+    });
+
+    it("multiline numberOfLines is a minimum height on web and iOS (24px a line plus padding)", async () => {
+        await render(
+            <HgTextField
+                accessibilityLabel="Note"
+                value=""
+                onChangeText={() => undefined}
+                multiline
+                numberOfLines={3}
+            />
+        );
+        const input = screen.getByLabelText("Note");
+        if (Platform.OS === "web")
+            expect((input as unknown as HTMLElement).style.minHeight).toBe(
+                "96px"
+            );
+        else
+            expect(
+                (
+                    StyleSheet.flatten(input.props.style as never) as
+                        { minHeight?: number } | undefined
+                )?.minHeight
+            ).toBe(96);
+    });
+
+    it("android: numberOfLines is left to the platform, without a minimum height", async () => {
+        if (Platform.OS === "web") return;
+        const os = jest.replaceProperty(Platform, "OS", "android");
+        try {
+            await render(
+                <HgTextField
+                    accessibilityLabel="Note"
+                    value=""
+                    onChangeText={() => undefined}
+                    multiline
+                    numberOfLines={3}
+                />
+            );
+            const input = screen.getByLabelText("Note");
+            expect(
+                (
+                    StyleSheet.flatten(input.props.style as never) as
+                        { minHeight?: number } | undefined
+                )?.minHeight
+            ).toBeUndefined();
+            expect(input.props.numberOfLines).toBe(3);
+        } finally {
+            os.restore();
+        }
     });
 
     it("web: the error messages describe the invalid input, and nothing does while it is valid", async () => {

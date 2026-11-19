@@ -33,6 +33,8 @@ interface Props extends TextInputProps {
     floatingLabel?: boolean;
     /** v-text-field density="compact": 40px */
     compact?: boolean;
+    /** v-textarea `auto-grow`: on web a multiline field grows with its content (global.css, .hg-field-auto-grow) */
+    autoGrow?: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ export function HgTextField({
     counter = false,
     compact = false,
     floatingLabel = false,
+    autoGrow = false,
     testID,
     autoComplete = "off",
     ...rest
@@ -84,6 +87,14 @@ export function HgTextField({
             .filter(Boolean)
             .join(" ") || undefined;
     const errorHint = hasError ? errorMessages.join(". ") : undefined;
+    // multiline: the side content sits on the bottom line (py-3 plus a 24px line) as the field grows
+    const sideClass = rest.multiline ? "h-12 justify-center" : undefined;
+    // numberOfLines only affects the field height on Android, so web and iOS set a minimum height with CSS
+    // (text-body-large's 24px line height, plus py-3)
+    const minLinesStyle =
+        rest.multiline && rest.numberOfLines && Platform.OS !== "android"
+            ? { minHeight: rest.numberOfLines * 24 + 24 }
+            : undefined;
     return (
         <View
             ref={webClassRef({ "v-input--error": hasError })}
@@ -100,7 +111,8 @@ export function HgTextField({
                 style={hasError ? undefined : elevation1}
                 // web: the input's focus ring goes round this box (global.css, .hg-field-focus-host)
                 className={cn(
-                    "hg-field-focus-host flex-row items-center bg-surface rounded",
+                    "hg-field-focus-host flex-row bg-surface rounded",
+                    rest.multiline ? "items-end" : "items-center",
                     compact ? "min-h-[40px]" : "min-h-[48px]",
                     hasError
                         ? "border border-error"
@@ -108,7 +120,9 @@ export function HgTextField({
                 )}
             >
                 {prependInner ? (
-                    <View className="ml-3">{prependInner}</View>
+                    <View className={cn("ml-3", sideClass)}>
+                        {prependInner}
+                    </View>
                 ) : null}
                 <View className="flex-1 min-w-0">
                     {label && floatingLabel ? (
@@ -143,29 +157,33 @@ export function HgTextField({
                                 : compact
                                   ? "min-h-[38px]"
                                   : "min-h-[46px]",
-                            rest.multiline && "py-3"
+                            rest.multiline && "py-3",
+                            rest.multiline && autoGrow && "hg-field-auto-grow"
                         )}
                         textAlignVertical={rest.multiline ? "top" : undefined}
+                        style={[minLinesStyle, rest.style]}
                     />
                 </View>
                 {appendInner ? (
-                    <View className="mr-2">{appendInner}</View>
+                    <View className={cn("mr-2", sideClass)}>{appendInner}</View>
                 ) : null}
                 {showClear ? (
-                    <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel={`Clear ${name ?? ""}`.trim()}
-                        hitSlop={8}
-                        onPress={() => rest.onChangeText?.("")}
-                        // a 24px box around the 18px glyph: the web has no hitSlop (WCAG 2.5.8)
-                        className="mr-3 min-w-6 min-h-6 items-center justify-center"
-                    >
-                        <Icon
-                            name="circle-xmark"
-                            size={18}
-                            color={colors["bc-grey"]}
-                        />
-                    </Pressable>
+                    <View className={sideClass}>
+                        <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`Clear ${name ?? ""}`.trim()}
+                            hitSlop={8}
+                            onPress={() => rest.onChangeText?.("")}
+                            // a 24px box around the 18px glyph: the web has no hitSlop (WCAG 2.5.8)
+                            className="mr-3 min-w-6 min-h-6 items-center justify-center"
+                        >
+                            <Icon
+                                name="circle-xmark"
+                                size={18}
+                                color={colors["bc-grey"]}
+                            />
+                        </Pressable>
+                    </View>
                 ) : null}
             </View>
             {errorMessages.length > 0 || counter ? (

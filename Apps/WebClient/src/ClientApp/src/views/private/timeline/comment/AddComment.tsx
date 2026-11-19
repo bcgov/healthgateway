@@ -62,9 +62,8 @@ export function AddComment({
     }
 
     return (
-        <View className="flex-row items-center p-1">
-            {/* #prepend: the lock with its tooltip */}
-            <View className="mr-2">
+        <View className="flex-row items-end p-1">
+            <View className="mr-2 h-12 justify-center">
                 <InfoTooltip
                     accessibilityLabel="Who can see comments"
                     icon="lock"
@@ -81,6 +80,7 @@ export function AddComment({
                     onChangeText={setCommentInput}
                     placeholder="Write a comment"
                     multiline
+                    autoGrow
                     maxLength={1000}
                     className="mb-0"
                     appendInner={
