@@ -16,10 +16,12 @@ import {
 import { useUserStore } from "@/stores/user.store";
 import { ConfigUtil } from "@/utils/configUtil";
 
-import { NoteDialog } from "./NoteDialog";
 import { Timeline } from "./Timeline";
 
-/** Port of UserTimelineView.vue */
+/**
+ * Port of UserTimelineView.vue. Its note dialog is in the Health Records layout (`app/(tabs)/timeline/_layout*.tsx`), so
+ * a note's entry page can open it too.
+ */
 export function TimelineView() {
     const hdid = useUserStore((s) => s.user.hdid);
     const commentsAreEnabled = useConfigStore(
@@ -79,7 +81,6 @@ export function TimelineView() {
                 commentsAreEnabled={commentsAreEnabled}
                 refreshable
             />
-            <NoteDialog />
         </View>
     );
 }

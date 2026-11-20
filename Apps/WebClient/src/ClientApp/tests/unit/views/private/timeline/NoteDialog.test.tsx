@@ -20,7 +20,15 @@ import {
     signInRegistered,
     updateStores,
 } from "@/test/fixtures";
-import { changeText, press, render, screen, textOf, waitFor } from "@/test/ui";
+import {
+    changeText,
+    inputValue,
+    press,
+    render,
+    screen,
+    textOf,
+    waitFor,
+} from "@/test/ui";
 import { NoteDialog } from "@/views/private/timeline/NoteDialog";
 
 jest.mock(
@@ -80,6 +88,17 @@ describe("NoteDialog (NoteDialogComponent.vue port)", () => {
             })
         );
         expect(useNoteStore.getState().notes.map((n) => n.id)).toEqual(["new"]);
+    });
+
+    it("Update Note: mounted while already open (its layout remounting mid-edit), it still loads the note", async () => {
+        updateStores(() => useNoteStore.setState({ notes: [existing] }));
+        updateStores(() => useNoteDialogStore.getState().openDialog("n1"));
+        await render(<NoteDialog />);
+        await waitFor(() =>
+            expect(screen.getByText("Update Note")).toBeTruthy()
+        );
+        expect(inputValue(screen.getByTestId("noteTitleInput"))).toBe("Old");
+        expect(inputValue(screen.getByTestId("noteTextInput"))).toBe("Body");
     });
 
     it("Update Note: prefilled; an API error shows the edit error banner", async () => {
