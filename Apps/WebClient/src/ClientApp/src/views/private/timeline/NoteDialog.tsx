@@ -50,8 +50,10 @@ export function NoteDialog() {
     const [errorMessage, setErrorMessage] = useState("");
     const [touched, setTouched] = useState({ title: false, date: false });
 
-    // openDialog(existingEntry?)
-    const [prevOpen, setPrevOpen] = useState(open);
+    // openDialog(existingEntry?): the form is set as the dialog opens, during render (React's "adjusting state when a prop
+    // changes": an effect would first paint the previous form). Starts closed, so mounting while already open (its layout
+    // remounting mid-edit) still loads the note.
+    const [prevOpen, setPrevOpen] = useState(false);
     if (prevOpen !== open) {
         setPrevOpen(open);
         if (open) {

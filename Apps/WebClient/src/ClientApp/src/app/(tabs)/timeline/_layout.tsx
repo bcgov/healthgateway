@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 
 import { useNativeStackOptions } from "@/components/site/useNativeStackOptions";
 import { useTimelineStore } from "@/stores/timeline.store";
+import { NoteDialog } from "@/views/private/timeline/NoteDialog";
 
 /** An entry page opened by a link (or the app restarting on it) gets the timeline beneath it, so back leads somewhere. */
 export const unstable_settings = { initialRouteName: "index" };
@@ -11,6 +12,9 @@ export const unstable_settings = { initialRouteName: "index" };
  * (`useNativeStackOptions`). An entry opens over it on a page of its own (`entry`, titled with its record type): the
  * platform's back button, and no menu or Refresh. It comes and goes without the animation when the window folds or
  * unfolds. Web: `_layout.web.tsx`.
+ *
+ * The note dialog is here, above both pages, not in the timeline page: a note's Edit is on its entry page, and iOS
+ * doesn't present a modal from a page another covers (the dialog only showed once back on Health Records).
  */
 export default function TimelineStackLayout() {
     const screenOptions = useNativeStackOptions({
@@ -20,11 +24,14 @@ export default function TimelineStackLayout() {
     });
     const instant = useTimelineStore((s) => s.entryPageInstant);
     return (
-        <Stack screenOptions={screenOptions}>
-            <Stack.Screen
-                name="entry"
-                options={{ animation: instant ? "none" : "default" }}
-            />
-        </Stack>
+        <>
+            <Stack screenOptions={screenOptions}>
+                <Stack.Screen
+                    name="entry"
+                    options={{ animation: instant ? "none" : "default" }}
+                />
+            </Stack>
+            <NoteDialog />
+        </>
     );
 }
