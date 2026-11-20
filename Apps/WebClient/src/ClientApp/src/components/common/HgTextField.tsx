@@ -168,22 +168,23 @@ export function HgTextField({
                     <View className={cn("mr-2", sideClass)}>{appendInner}</View>
                 ) : null}
                 {showClear ? (
-                    <View className={sideClass}>
-                        <Pressable
-                            accessibilityRole="button"
-                            accessibilityLabel={`Clear ${name ?? ""}`.trim()}
-                            hitSlop={8}
-                            onPress={() => rest.onChangeText?.("")}
-                            // a 24px box around the 18px glyph: the web has no hitSlop (WCAG 2.5.8)
-                            className="mr-3 min-w-6 min-h-6 items-center justify-center"
-                        >
-                            <Icon
-                                name="circle-xmark"
-                                size={18}
-                                color={colors["bc-grey"]}
-                            />
-                        </Pressable>
-                    </View>
+                    <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Clear ${name ?? ""}`.trim()}
+                        hitSlop={8}
+                        onPress={() => rest.onChangeText?.("")}
+                        // a 24px box around the 18px glyph: the web has no hitSlop (WCAG 2.5.8)
+                        className={cn(
+                            "mr-3 min-w-6 min-h-6 items-center justify-center",
+                            rest.multiline && "mb-3"
+                        )}
+                    >
+                        <Icon
+                            name="circle-xmark"
+                            size={18}
+                            color={colors["bc-grey"]}
+                        />
+                    </Pressable>
                 ) : null}
             </View>
             {errorMessages.length > 0 || counter ? (
