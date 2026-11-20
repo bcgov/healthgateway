@@ -165,13 +165,13 @@ export const headingLevelOf = (el: UiElement): number | undefined =>
         ? (el.props["aria-level"] as number | undefined)
         : undefined;
 /** Rendered text of an element and its descendants. */
-/** Whether the element casts a shadow (the port's v-card elevation: `shadow*` / Android `elevation` on native). */
+/** Whether the element casts a shadow (the port's v-card elevation: `boxShadow`, or `elevation` on Android before 9). */
 export const hasShadow = (el: UiElement): boolean => {
     const style = (StyleSheet.flatten(el.props.style as never) ?? {}) as {
-        shadowOpacity?: number;
+        boxShadow?: unknown;
         elevation?: number;
     };
-    return (style.shadowOpacity ?? 0) > 0 && (style.elevation ?? 0) > 0;
+    return Boolean(style.boxShadow) || (style.elevation ?? 0) > 0;
 };
 export const textOf = (el: UiElement): string => {
     const walk = (node: unknown): string =>
