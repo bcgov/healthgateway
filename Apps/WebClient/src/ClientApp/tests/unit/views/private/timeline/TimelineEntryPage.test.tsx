@@ -77,13 +77,13 @@ describe("TimelineEntryPage (native)", () => {
         return;
     }
 
-    it("shows the entry, titled with its record type, back to Health Records", async () => {
+    it("shows the entry, titled with its record type, with an unlabelled back button", async () => {
         opened();
         await render(<TimelineEntryPage timelinePath="/timeline" />);
         expect(screen.getByTestId("entryDetailsCard")).toBeTruthy();
         expect(mockNavigation.setOptions).toHaveBeenCalledWith({
             title: "Note",
-            headerBackTitle: "Health Records",
+            headerBackButtonDisplayMode: "minimal",
         });
         expect(mockNavigation.goBack).not.toHaveBeenCalled();
     });
