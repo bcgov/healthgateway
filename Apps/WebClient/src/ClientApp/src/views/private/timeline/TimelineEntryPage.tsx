@@ -12,9 +12,6 @@ import { useTimelineStore } from "@/stores/timeline.store";
 
 import { TimelineEntryView } from "./entries";
 
-/** The page's back button, to the timeline beneath (the platform's own, named for it). */
-const BACK_TITLE = "Health Records";
-
 /**
  * iOS and Android: a timeline entry on a page of its own, pushed on the tab's stack over the timeline that opened it
  * (`FullscreenTimelineEntry`), titled with the record type. Leaving it (Back, the back swipe, Android's back) closes the
@@ -46,7 +43,10 @@ export function TimelineEntryPage({ timelinePath }: { timelinePath: string }) {
     };
 
     useLayoutEffect(() => {
-        navigation.setOptions({ title, headerBackTitle: BACK_TITLE });
+        navigation.setOptions({
+            title,
+            headerBackButtonDisplayMode: "minimal",
+        });
     }, [navigation, title]);
 
     // leaving the page, however it is left, closes its entry: only its own, not one the other tab has open since
