@@ -146,13 +146,6 @@ export function HgCard({
                         >
                             {name}
                         </AppText>
-                        <View className="ml-2 mb-0.5" {...decorative}>
-                            <Icon
-                                name="arrow-right"
-                                size={16}
-                                color={colors.primary}
-                            />
-                        </View>
                     </View>
                 </Pressable>
                 {web && description ? (
