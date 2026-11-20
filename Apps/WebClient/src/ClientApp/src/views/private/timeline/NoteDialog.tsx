@@ -237,6 +237,7 @@ export function NoteDialog() {
                 onChangeText={setNoteText}
                 placeholder="Enter your note here. Your notes are only available for your own viewing."
                 multiline
+                autoGrow
                 numberOfLines={3}
                 maxLength={1000}
                 counter

@@ -36,4 +36,11 @@
             outline: none;
         }
     }
+
+    /* for multiline HgTextFields that grow with their content */
+    @supports (field-sizing: content) {
+        .hg-field-auto-grow {
+            field-sizing: content;
+        }
+    }
 }
