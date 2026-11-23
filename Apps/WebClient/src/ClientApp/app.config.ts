@@ -11,6 +11,12 @@ import appVersion from "./version.json";
 const local = (process.env.APP_ENV || "local") === "local";
 const appId = local ? "hg.local" : "ca.bc.gov.myhealth";
 
+// The dev client registers an exp+<slug> URL scheme so `expo start` can open it; a store build has no dev launcher, so
+// it doesn't take the scheme.
+const devClientPlugin: NonNullable<ExpoConfig["plugins"]> = local
+    ? []
+    : [["expo-dev-client", { addGeneratedScheme: false }]];
+
 // `npm run version:bump` raises these. BUILD_NUMBER lets a build pipeline set the build number instead.
 const build = Number(process.env.BUILD_NUMBER) || appVersion.build;
 // The stores' version is major.minor.fix, and the build number is separate (ios.buildNumber, android.versionCode)
@@ -46,6 +52,15 @@ const expoConfig = (config: ConfigContext["config"]): ExpoConfig => ({
         supportsTablet: true,
         infoPlist: {
             ITSAppUsesNonExemptEncryption: false,
+            // The Expo template allows plain HTTP to the local network (NSAllowsLocalNetworking), which a local build
+            // may need for services on this machine; a store build only talks to HTTPS servers.
+            ...(local
+                ? {}
+                : {
+                      NSAppTransportSecurity: {
+                          NSAllowsArbitraryLoads: false,
+                      },
+                  }),
         },
     },
     android: {
@@ -53,6 +68,13 @@ const expoConfig = (config: ConfigContext["config"]): ExpoConfig => ({
         // Gradle rejects a versionCode below 1, and local builds have build 0 (version.json) unless BUILD_NUMBER is set
         versionCode: Math.max(build, 1),
         predictiveBackGestureEnabled: false,
+        // Expo template defaults the app doesn't use: saving a file goes through the system's save sheet, which needs no
+        // storage permission, and nothing draws over other apps.
+        blockedPermissions: [
+            "android.permission.SYSTEM_ALERT_WINDOW",
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+        ],
         // The old Android app's adaptive icon (myhealthBC-android `drawable/ic_launcher_foreground.xml`
         // on white): the full-bleed `icon` above was being cropped and masked by the launcher.
         adaptiveIcon: {
@@ -93,13 +115,19 @@ const expoConfig = (config: ConfigContext["config"]): ExpoConfig => ({
                     "Unlock Health Gateway with Face ID to keep your health information safe and secure.",
             },
         ],
-        // playback only: no microphone permission on either platform
+        // Playback only, and only while the app is open (the refresh sound): no microphone permission, no background
+        // audio mode or Android media playback service.
         [
             "expo-audio",
-            { microphonePermission: false, recordAudioAndroid: false },
+            {
+                microphonePermission: false,
+                recordAudioAndroid: false,
+                enableBackgroundPlayback: false,
+            },
         ],
         "expo-secure-store",
         "expo-web-browser",
+        ...devClientPlugin,
     ],
     experiments: {
         typedRoutes: true,
