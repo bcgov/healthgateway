@@ -1,0 +1,34 @@
+# From Home, logged in: account menu → Log Out, then answers the rating dialog with RATING ("skip", or a star from 1 to 5).
+# Either answer must close the dialog by itself and log out, back to the landing page.
+appId: hg.local
+---
+- tapOn: "Settings"
+- extendedWaitUntil:
+      visible: "Log Out"
+      timeout: 5000
+- tapOn: "Log Out"
+- extendedWaitUntil:
+      visible:
+          id: "ratingModalSkipBtn"
+      timeout: 8000
+- runFlow:
+      when:
+          true: ${RATING == 'skip'}
+      commands:
+          - tapOn:
+                id: "ratingModalSkipBtn"
+- runFlow:
+      when:
+          true: ${RATING != 'skip'}
+      commands:
+          - tapOn:
+                id: "formRating-${RATING}"
+# closes on its own: no second tap
+- extendedWaitUntil:
+      notVisible:
+          id: "ratingModalSkipBtn"
+      timeout: 5000
+- extendedWaitUntil:
+      visible:
+          id: "btnLogin"
+      timeout: 60000

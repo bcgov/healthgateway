@@ -1,0 +1,36 @@
+# The rating dialog Log Out shows: Skip, and each star from 1 to 5, closes it by itself and logs out. Logs in again
+# before each answer, so it ends signed out.
+appId: hg.local
+tags:
+    - logoutRating
+---
+- runFlow: ../subflows/start-signed-in.yaml
+- runFlow:
+      file: ../subflows/rate-and-log-out.yaml
+      env:
+          RATING: skip
+- runFlow: ../subflows/start-signed-in.yaml
+- runFlow:
+      file: ../subflows/rate-and-log-out.yaml
+      env:
+          RATING: "1"
+- runFlow: ../subflows/start-signed-in.yaml
+- runFlow:
+      file: ../subflows/rate-and-log-out.yaml
+      env:
+          RATING: "2"
+- runFlow: ../subflows/start-signed-in.yaml
+- runFlow:
+      file: ../subflows/rate-and-log-out.yaml
+      env:
+          RATING: "3"
+- runFlow: ../subflows/start-signed-in.yaml
+- runFlow:
+      file: ../subflows/rate-and-log-out.yaml
+      env:
+          RATING: "4"
+- runFlow: ../subflows/start-signed-in.yaml
+- runFlow:
+      file: ../subflows/rate-and-log-out.yaml
+      env:
+          RATING: "5"

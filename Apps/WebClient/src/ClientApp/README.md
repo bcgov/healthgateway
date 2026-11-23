@@ -46,15 +46,15 @@ A local release build, pointed at Development's gateway, whose released build yo
     curl -s https://hg.dev.api.gov.bc.ca/api/mobileservice/environment   # {"releasedBuild":999}
     ```
 
-2. Build and run a release build with a build number above it, asking Development's gateway (from this folder; for Android, `npx expo run:android --variant release`):
+2. Build and run a release build with a build number above it, asking Development's gateway (from this folder; for Android, `npm run android:release`):
 
     ```bash
     BUILD_NUMBER=1000 \
     EXPO_PUBLIC_ENVIRONMENTS_URL=https://hg.dev.api.gov.bc.ca/api/mobileservice/environment \
-    npx expo run:ios --configuration Release
+    npm run ios:release
     ```
 
-    It needs no Metro (a release build carries its code) and installs as `hg.local`, replacing the dev build. Without `BUILD_NUMBER` a local build is build 0 (`version.json`), and without `EXPO_PUBLIC_ENVIRONMENTS_URL` it asks Production's gateway.
+    It asks which simulator or device to use (`npm run ios:release -- "iPhone 18 Pro Max"` names one). It needs no Metro (a release build carries its code) and installs as `hg.local`, replacing the dev build. Without `BUILD_NUMBER` a local build is build 0 (`version.json`), and without `EXPO_PUBLIC_ENVIRONMENTS_URL` it asks Production's gateway.
 
 3. Change Development's `RELEASED_BUILD` and relaunch the app, a minute after each change:
 
@@ -123,8 +123,10 @@ Plug the phone in over USB, then run these in your own terminal, from this folde
 **iOS** (Developer Mode must be on, under Settings > Privacy & Security):
 
 ```sh
-npx expo run:ios --configuration Release --device
+npm run ios:release
 ```
+
+It asks which device to use: pick the phone.
 
 - **Signing:** needs a signing identity in Xcode. `ios/` is git-ignored, so on a fresh checkout set `APPLE_TEAM_ID` before the first build, or choose the team in Xcode. A free Apple account's build stops opening after 7 days; a paid team's lasts as long as its provisioning profile.
 - **If it stalls at "Connecting":** the build has already finished, so install it directly. Get the ID from `xcrun devicectl list devices`, and the `.app` path from the build output: `xcrun devicectl device install app --device <udid> <path to .app>`.
@@ -132,7 +134,7 @@ npx expo run:ios --configuration Release --device
 **Android** (USB debugging must be on, under Developer options; check the phone is listed by `adb devices`):
 
 ```sh
-npx expo run:android --variant release --device
+npm run android:release
 ```
 
 - **Signing:** release builds use the debug key from `android/app/build.gradle`. That's fine on your own phone, but a store release needs a real key.
@@ -146,7 +148,7 @@ npx expo run:android --variant release --device
 
 ## Configuration
 
-Runtime configuration is fetched from the Health Gateway `/configuration` endpoint on every platform. Native uses the selected environment's URL (`src/config/environments.ts`). Web uses `EXPO_PUBLIC_WEB_CLIENT_BASE_URI` + `configuration`, as the web client does: `.env.development` sets it to `http://localhost:3025/` for local runs, and without it the app asks the server that hosted it. `app.config.ts` reads `APP_ENV` at build time for the native app name and bundle ID / package: unset or `local` gives a local build ("HG Local", `hg.local`); `dev`, `test` or `prod` gives the store identity ("Health Gateway", `ca.bc.gov.myhealth`, the listings taken over from the old apps). There's one store build for every environment, so the pipelines set `APP_ENV=prod`. After changing it, run `npx expo prebuild --clean` so `ios/` and `android/` pick up the new ID.
+Runtime configuration is fetched from the Health Gateway `/configuration` endpoint on every platform. Native uses the selected environment's URL (`src/config/environments.ts`). Web uses `EXPO_PUBLIC_WEB_CLIENT_BASE_URI` + `configuration`, as the web client does: `.env.development` sets it to `http://localhost:3025/` for local runs, and without it the app asks the server that hosted it. `app.config.ts` reads `APP_ENV` at build time for the native app name and bundle ID / package: unset or `local` gives a local build ("HG Local", `hg.local`); `dev`, `test` or `prod` gives the store identity ("Health Gateway", `ca.bc.gov.myhealth`, the listings taken over from the old apps). There's one store build for every environment, so the pipelines set `APP_ENV=prod`. After changing it, run `npm run native:prebuild -- --clean` so `ios/` and `android/` pick up the new ID.
 
 ## Keycloak prerequisites (team-owned, dev realm `health-gateway-gold`, client `hg`)
 
@@ -265,6 +267,40 @@ pkill -f maestro                                                                
 
 ## Scripts
 
-`npm run typecheck`, `npm run lint` (fix + format), `npm run lintcheck` (CI, zero warnings), `npm run export:web` (static bundle in `dist/`, using `.env`).
+Run each one from this folder (`Apps/WebClient/src/ClientApp`) as `npm run <script>`. Arguments after `--` go to the command underneath, for example `npm run ios -- --device`. Settings such as `BUILD_NUMBER` go in front, as environment variables: `BUILD_NUMBER=263 npm run ios:release`.
+
+**Run the app**
+
+| Script            | Runs                                            | Typical use                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `start`, `dev`    | `expo start --port 5002`                        | `npm start`: Metro alone, for a dev build that's already installed. Not alongside Aspire's **ClientApp**, which also uses 5002.                                                                                                                                                                                                                                                                                                                                                |
+| `web`             | `expo start --web --port 5002`                  | `npm run web`: the web app at http://localhost:5002.                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `ios`             | `expo run:ios --port 5002`                      | `npm run ios`: builds and installs the dev build on a simulator, then starts Metro. `npm run ios -- --device` picks the simulator or phone.                                                                                                                                                                                                                                                                                                                                    |
+| `android`         | `expo run:android --port 5002`                  | `npm run android`: the same for an emulator, or a phone on USB.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `ios:release`     | `expo run:ios --configuration Release --device` | `BUILD_NUMBER=263 npm run ios:release`: a release build, with no Metro, on a simulator or phone you pick (`npm run ios:release -- "iPhone 18 Pro Max"` names one). Without `BUILD_NUMBER` the app is build 0 (`version.json`). `BUILD_NUMBER` sets the number the app shows and checks; the native build number (`CFBundleVersion`) only changes on `npm run native:prebuild`. See [Release builds on a phone](#release-builds-on-a-phone).                                    |
+| `android:release` | `expo run:android --variant release --device`   | `BUILD_NUMBER=263 npm run android:release`: the same for Android. Its `versionCode` also only changes on `npm run native:prebuild`, and Android won't install a lower `versionCode` over a higher one.                                                                                                                                                                                                                                                                         |
+| `native:prebuild` | `expo prebuild`                                 | `npm run native:prebuild`: regenerates `ios/` and `android/` (git-ignored) from `app.config.ts` and its plugins, and installs the pods. `BUILD_NUMBER=263 npm run native:prebuild` also sets the native build numbers (`CFBundleVersion`, `versionCode`). After changing `APP_ENV`, the bundle ID or a native package, `npm run native:prebuild -- --clean` starts both folders afresh. It isn't called `prebuild` because npm would then run it before every `npm run build`. |
+
+**Test**
+
+| Script          | Runs                             | Typical use                                                                                                                                  |
+| --------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `test`          | `jest`                           | `npm test`: the unit tests in `tests/unit/`. `npm test -- RatingDialog` runs the matching files.                                             |
+| `test:coverage` | `jest --coverage`                | `npm run test:coverage`: the same, with a report in `coverage/`.                                                                             |
+| `e2e:ios`       | `scripts/maestro-all.sh ios`     | `npm run e2e:ios`, or `npm run e2e:ios -- "iPhone Duo"`: every Maestro flow on a simulator. See [End-to-end (Maestro)](#end-to-end-maestro). |
+| `e2e:android`   | `scripts/maestro-all.sh android` | `npm run e2e:android`, or `HG_ANDROID_AVD=Pixel_10_Pro_XL npm run e2e:android`: the same on an emulator.                                     |
+
+**Check and build**
+
+| Script          | Runs                                                            | Typical use                                                                                                                                        |
+| --------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `types`         | `expo customize tsconfig.json`                                  | Run by `typecheck` and `lintcheck:app`; rarely on its own. Brings `tsconfig.json` up to date with Expo's.                                          |
+| `typecheck`     | `types`, then `tsc --noEmit`                                    | `npm run typecheck`: type errors only.                                                                                                             |
+| `lint`          | `eslint . --fix && prettier --write .`                          | `npm run lint`: fixes what ESLint can and formats everything. Before you commit.                                                                   |
+| `lintcheck`     | `lintcheck:app`                                                 | `npm run lintcheck`: what CI checks, changing nothing.                                                                                             |
+| `lintcheck:app` | `types`, then `eslint . --max-warnings 0 && prettier --check .` | The check itself: zero ESLint warnings, and every file formatted. Run through `lintcheck` or `build`.                                              |
+| `build`         | `typecheck`, `lintcheck:app`, then `node scripts/build-web.js`  | `npm run build`: the deployed web build, into `dist/` (below).                                                                                     |
+| `export:web`    | `expo export --platform web --clear`                            | `npm run export:web`: a static web bundle in `dist/`, using `.env`, without the checks.                                                            |
+| `version:bump`  | `node scripts/bump-version.js`                                  | `npm run version:bump -- minor` (or `major`, `fix`, `build`; `build` without one): raises `version.json`. Every bump also raises the build number. |
 
 `npm run build` is the deployed web build, the contract the Health Gateway WebClient publish relies on (its csproj runs `npm ci` then `npm run build` and ships `dist/`, as for the Vue ClientApp). It typechecks, lints the app with zero warnings, then exports `dist/` with `/configuration` from the hosting server and Snowplow on (its own environment can override either; `.env` cannot), and drops source maps and the native-only `.ttf` fonts.

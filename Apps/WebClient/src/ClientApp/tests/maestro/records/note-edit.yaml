@@ -1,0 +1,106 @@
+# A note: added on Health Records, then edited from its own page (the entry page a phone opens for it), then deleted.
+# Edit there must open the note dialog over that page. It didn't on iOS while the dialog was mounted in the timeline page
+# (TimelineView): iOS doesn't present a modal from a page another covers, and the dialog only showed once back on Health
+# Records. The dialog is now in the Health Records layout, above both pages. Leaves no note behind when it passes.
+appId: hg.local
+tags:
+    - signedIn
+# A failure can leave the dialog open, or stop on the note's page with the note still there (Edit didn't open the
+# dialog): close it, and delete the note from its page, so no run leaves one behind.
+onFlowComplete:
+    - runFlow:
+          when:
+              visible:
+                  id: "cancelRegistrationBtn"
+          commands:
+              - tapOn:
+                    id: "cancelRegistrationBtn"
+    - runFlow:
+          when:
+              visible:
+                  id: "noteMenuBtn"
+          commands:
+              - tapOn:
+                    id: "noteMenuBtn"
+              - tapOn:
+                    id: "deleteNoteMenuBtn"
+              - tapOn: "(?i)ok"
+              - extendedWaitUntil:
+                    notVisible:
+                        id: "noteMenuBtn"
+                    timeout: 30000
+---
+- runFlow: ../subflows/start-signed-in.yaml
+# a title of this run's own, so the note is found by it
+- evalScript: ${output.noteTitle = 'Maestro note ' + Date.now()}
+- runFlow:
+      file: ../subflows/open-link.yaml
+      env:
+          LINK: healthgateway://timeline
+- extendedWaitUntil:
+      visible:
+          id: "addNoteBtn"
+      timeout: 30000
+
+# add it (today's date, so it's at the top of the timeline)
+- tapOn:
+      id: "addNoteBtn"
+- extendedWaitUntil:
+      visible:
+          id: "noteTitleInput"
+      timeout: 10000
+- tapOn:
+      id: "noteTitleInput"
+- inputText: ${output.noteTitle}
+- tapOn:
+      id: "noteTextInput"
+- inputText: "Made by the Maestro note-edit flow"
+- tapOn:
+      id: "saveNoteBtn"
+- extendedWaitUntil:
+      notVisible:
+          id: "noteDialog"
+      timeout: 30000
+
+# its own page
+- scrollUntilVisible:
+      element: ${output.noteTitle}
+      direction: DOWN
+      speed: 80
+      timeout: 30000
+- tapOn: ${output.noteTitle}
+- extendedWaitUntil:
+      visible:
+          id: "entryDetailsPage"
+      timeout: 15000
+
+# Edit, from that page: the dialog opens over it, with the note's title
+- tapOn:
+      id: "noteMenuBtn"
+- tapOn:
+      id: "editNoteMenuBtn"
+- extendedWaitUntil:
+      visible:
+          id: "noteTitleInput"
+      timeout: 10000
+- assertVisible:
+      id: "noteTitleInput"
+      text: ${output.noteTitle}
+- tapOn:
+      id: "cancelRegistrationBtn"
+- extendedWaitUntil:
+      notVisible:
+          id: "noteDialog"
+      timeout: 10000
+
+# delete it (the platform's alert: Cancel / OK)
+- tapOn:
+      id: "noteMenuBtn"
+- tapOn:
+      id: "deleteNoteMenuBtn"
+- tapOn: "(?i)ok"
+- extendedWaitUntil:
+      notVisible: ${output.noteTitle}
+      timeout: 30000
+# end where the next flow starts, and check it
+- runFlow: ../subflows/end-signed-in.yaml
