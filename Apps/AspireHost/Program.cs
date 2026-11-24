@@ -1,4 +1,5 @@
 using System.Globalization;
+using Aspire.Hosting.Dotnet;
 using Aspire.Hosting.JavaScript;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -23,8 +24,14 @@ string redisConnection = builder.Configuration["RedisConnection"]
 
 NpgsqlConnectionStringBuilder gatewayDb = new(gatewayConnection);
 
-IResourceBuilder<ParameterResource> postgresUser = builder.AddParameter("postgres-user", gatewayDb.Username!);
-IResourceBuilder<ParameterResource> postgresPassword = builder.AddParameter("postgres-password", gatewayDb.Password!, secret: true);
+// Aspire 17 rejects empty values for required parameters, so fail here with a clearer message.
+if (string.IsNullOrEmpty(gatewayDb.Username) || string.IsNullOrEmpty(gatewayDb.Password))
+{
+    throw new InvalidOperationException("The ConnectionStrings:GatewayConnection user secret needs a Username and Password.");
+}
+
+IResourceBuilder<ParameterResource> postgresUser = builder.AddParameter("postgres-user", gatewayDb.Username);
+IResourceBuilder<ParameterResource> postgresPassword = builder.AddParameter("postgres-password", gatewayDb.Password, secret: true);
 IResourceBuilder<PostgresServerResource> postgres = builder.AddPostgres("GatewayDb", userName: postgresUser, password: postgresPassword, port: gatewayDb.Port)
     .WithImageTag("15")
     .WithContainerName("GatewayDB")
@@ -38,6 +45,11 @@ int redisPort = redisEndpoint.Contains(':', StringComparison.Ordinal) ? int.Pars
 string? redisPasswordValue = redisConnection.Split(',')
     .Select(part => part.Trim())
     .FirstOrDefault(part => part.StartsWith("password=", StringComparison.OrdinalIgnoreCase))?["password=".Length..];
+// Aspire 17 rejects empty values for required parameters, so an empty "password=" means no password.
+if (string.IsNullOrEmpty(redisPasswordValue))
+{
+    redisPasswordValue = null;
+}
 // Aspire 13.5 enables TLS on the Redis endpoint by default when a trusted ASP.NET developer
 // certificate exists. The apps connect with the plaintext RedisConnection user secret, so opt out.
 // WithoutHttpsCertificate is still marked experimental (ASPIRECERTIFICATES001).
@@ -62,16 +74,18 @@ IResourceBuilder<ExecutableResource> migrations = builder
     .WithArgs("ef", "database", "update", "--project", "../Database/src")
     .WaitFor(postgres);
 
-AddApp<Projects.Patient>("Patient");
-AddApp<Projects.GatewayApi>("GatewayApi");
-AddApp<Projects.Immunization>("Immunization");
-AddApp<Projects.Medication>("Medication");
-AddApp<Projects.Laboratory>("Laboratory");
-AddApp<Projects.Encounter>("Encounter");
-AddApp<Projects.ClinicalDocument>("ClinicalDocument");
-AddApp<Projects.JobScheduler>("JobScheduler");
-IResourceBuilder<ProjectResource> webClient = AddApp<Projects.WebClient>("WebClient");
-AddApp<Projects.Admin_Server>("Admin");
+// Paths are relative to this project's directory. Aspire builds each project itself, so the AppHost has no
+// ProjectReference to them.
+AddApp("Patient", "../Patient/src/Patient.csproj");
+AddApp("GatewayApi", "../GatewayApi/src/GatewayApi.csproj");
+AddApp("Immunization", "../Immunization/src/Immunization.csproj");
+AddApp("Medication", "../Medication/src/Medication.csproj");
+AddApp("Laboratory", "../Laboratory/src/Laboratory.csproj");
+AddApp("Encounter", "../Encounter/src/Encounter.csproj");
+AddApp("ClinicalDocument", "../ClinicalDocument/src/ClinicalDocument.csproj");
+AddApp("JobScheduler", "../JobScheduler/src/JobScheduler.csproj");
+IResourceBuilder<DotnetProjectResource> webClient = AddApp("WebClient", "../WebClient/src/WebClient.csproj");
+AddApp("Admin", "../Admin/Server/Admin.Server.csproj");
 
 // Metro, the Expo dev server for the ClientApp (npm run dev = expo start --port 5002). The simulator's dev build and the
 // web app (http://localhost:5002) load from it, so each start serves the latest code and app.config.ts, with hot reload.
@@ -121,12 +135,11 @@ builder.AddExecutable("MobileBuild", "node", "../WebClient/src/ClientApp", "scri
 
 await builder.Build().RunAsync();
 
-IResourceBuilder<ProjectResource> AddApp<TProject>(string name)
-    where TProject : IProjectMetadata, new()
+IResourceBuilder<DotnetProjectResource> AddApp(string name, string path)
 {
     // HealthGateway_-prefixed environment variables are loaded last by ProgramConfiguration,
     // so these override user secrets and appsettings.local.json in every app.
-    return builder.AddProject<TProject>(name)
+    return builder.AddDotnetProject(name, path)
         .WithEnvironment("HealthGateway_ConnectionStrings__GatewayConnection", gatewayConnectionParam)
         .WithEnvironment("HealthGateway_RedisConnection", redisConnectionParam)
         .WaitFor(postgres)

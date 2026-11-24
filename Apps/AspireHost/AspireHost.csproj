@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Aspire.AppHost.Sdk" Version="13.6.5" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>HealthGateway.AspireHost</RootNamespace>
@@ -10,35 +9,25 @@
     <!-- Local orchestration project only; solution-wide analyzers are not applied. -->
     <AnalysisMode>None</AnalysisMode>
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-    <!-- ASPIRE010: the Aspire CLI bundle is only needed for `aspire` CLI features; `dotnet run` works without it.
+    <!-- C# AppHosts need the Aspire CLI bundle (dashboard and DCP; ASPIRE013 if it is turned off). `dotnet run` runs
+         the host through the Aspire CLI: the `aspire` command on PATH, or else the matching aspire.cli package via dnx.
          CA1506 (class coupling): an orchestration composition root wires many types by design. -->
-    <NoWarn>$(NoWarn);ASPIRE010;CA1506</NoWarn>
+    <NoWarn>$(NoWarn);CA1506</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.6.5" />
-    <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.6.5" />
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.6.5" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="13.6.5" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="17.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <!-- Explicit because appsettings.json references its formatter type by assembly name. -->
     <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Admin\Server\Admin.Server.csproj" />
-    <ProjectReference Include="..\ClinicalDocument\src\ClinicalDocument.csproj" />
-    <ProjectReference Include="..\Encounter\src\Encounter.csproj" />
-    <ProjectReference Include="..\GatewayApi\src\GatewayApi.csproj" />
-    <ProjectReference Include="..\Immunization\src\Immunization.csproj" />
-    <ProjectReference Include="..\JobScheduler\src\JobScheduler.csproj" />
-    <ProjectReference Include="..\Laboratory\src\Laboratory.csproj" />
-    <ProjectReference Include="..\Medication\src\Medication.csproj" />
-    <ProjectReference Include="..\Patient\src\Patient.csproj" />
-    <ProjectReference Include="..\WebClient\src\WebClient.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
