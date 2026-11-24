@@ -27,20 +27,15 @@ jest.mock("expo-secure-store", () => ({
     }),
     WHEN_UNLOCKED_THIS_DEVICE_ONLY: "x",
 }));
+// only the vault itself is replaced: what its error codes mean stays the service's own (`isVaultKeyGone` and the like)
 jest.mock("@/services/vault", () => ({
+    ...jest.requireActual<typeof import("@/services/vault")>(
+        "@/services/vault"
+    ),
     vault: {
         encrypt: jest.fn(async (text: string) => `sealed:${text}`),
         decrypt: jest.fn(async (text: string) => text.slice("sealed:".length)),
     },
-    isVaultCancelled: (error: unknown) =>
-        (error as { code?: string } | undefined)?.code ===
-        "ERR_VAULT_CANCELLED",
-    isVaultCorrupt: (error: unknown) =>
-        (error as { code?: string } | undefined)?.code === "ERR_VAULT_CORRUPT",
-    isVaultKeyGone: (error: unknown) =>
-        ["ERR_VAULT_NO_KEY", "ERR_VAULT_INVALIDATED"].includes(
-            (error as { code?: string } | undefined)?.code ?? ""
-        ),
 }));
 
 const encrypt = jest.mocked(vault.encrypt);

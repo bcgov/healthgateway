@@ -30,6 +30,19 @@ function LockedView() {
     const [signingOut, setSigningOut] = useState(false);
     const loginLabel = useLoginLabel();
 
+    /** Ending the login takes the same prompt as unlocking; turned down, the lock stays as it was. */
+    const signOut = async () => {
+        setSigningOut(true);
+        let signedOut = false;
+        try {
+            signedOut = await signOutFromLock();
+        } catch (error) {
+            logger.warn(`Could not sign out: ${describeError(error)}`);
+        }
+        // signed out, this view goes with the lock
+        if (!signedOut) setSigningOut(false);
+    };
+
     useEffect(() => {
         Keyboard.dismiss();
         // Android back must not navigate the pages underneath
@@ -72,20 +85,7 @@ function LockedView() {
                     text={loginLabel}
                     uppercase={false}
                     disabled={signingOut || authenticating}
-                    onPress={() => {
-                        setSigningOut(true);
-                        // ending the login takes the same prompt as unlocking; turned down, the lock stays as it was
-                        signOutFromLock()
-                            .then((signedOut) => {
-                                if (!signedOut) setSigningOut(false);
-                            })
-                            .catch((error: unknown) => {
-                                logger.warn(
-                                    `Could not sign out: ${describeError(error)}`
-                                );
-                                setSigningOut(false);
-                            });
-                    }}
+                    onPress={() => void signOut()}
                 />
             </ScrollView>
         </OverAppScreen>

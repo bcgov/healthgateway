@@ -284,7 +284,8 @@ export async function refreshTokenIfDue(): Promise<void> {
 
 /**
  * Device security, the lock going on: the tokens leave memory, sealed by the vault until the prompt passes again
- * (`unsealSession`). The signed-in screens and records stay under the lock.
+ * (`unsealSession`, which is in `localSession.ts` as it may go on to recover the session). The signed-in screens and
+ * records stay under the lock.
  */
 export function sealSession(): Promise<void> {
     if (
@@ -314,8 +315,8 @@ export async function whenSealed(): Promise<void> {
 }
 
 /** Device security turned on or off: the stored login is sealed by the vault, or no longer. */
-export async function protectSession(on: boolean): Promise<void> {
-    if (services.isInitialized) await services.auth.setSealed?.(on);
+export async function setSessionSealed(sealed: boolean): Promise<void> {
+    if (services.isInitialized) await services.auth.setSealed?.(sealed);
 }
 
 /**

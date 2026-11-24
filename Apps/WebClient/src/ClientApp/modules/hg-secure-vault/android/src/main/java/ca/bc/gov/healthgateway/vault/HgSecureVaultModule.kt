@@ -29,6 +29,7 @@ import java.security.PrivateKey
 import java.security.ProviderException
 import java.security.PublicKey
 import java.security.SecureRandom
+import java.security.UnrecoverableKeyException
 import java.security.spec.MGF1ParameterSpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.AEADBadTagException
@@ -248,8 +249,13 @@ class HgSecureVaultModule : Module() {
         throw CorruptException(error)
       }
     val secret =
-      keyStore().getKey(KEY_ALIAS, null) as? PrivateKey
-        ?: throw NoKeyException()
+      try {
+        keyStore().getKey(KEY_ALIAS, null) as? PrivateKey
+      } catch (error: UnrecoverableKeyException) {
+        // How the Keystore reports a key invalidated for good when it is found so on loading, not on use
+        // (AndroidKeyStoreSpi.engineGetKey): with no cause. A Keystore that could not be asked this time has one.
+        throw if (error.cause == null) KeyPermanentlyInvalidatedException(error.message) else error
+      } ?: throw NoKeyException()
     val rsa = Cipher.getInstance(RSA_OAEP)
     rsa.init(Cipher.DECRYPT_MODE, secret, oaep)
     val aesKey =

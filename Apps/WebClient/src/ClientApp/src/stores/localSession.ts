@@ -269,7 +269,10 @@ export function prepareLocalSession(): boolean {
     if (!status) return false;
     useAppLockStore.setState({
         locked: true,
-        beforeUnlock: () => restoreLocalSession(details.hdid, status),
+        beforeUnlock: async () => {
+            await restoreLocalSession(details.hdid, status);
+            return true;
+        },
     });
     return true;
 }
@@ -311,6 +314,7 @@ function localSessionStatus(
 
 /**
  * Passing the prompt after the lock went on while the app was open: the tokens come back, and are refreshed if due.
+ * The other half of `sealSession` (`auth.store.ts`).
  * False when the key's own prompt was turned down, or the login could not be read this time, which keeps the lock on.
  */
 export async function unsealSession(): Promise<boolean> {

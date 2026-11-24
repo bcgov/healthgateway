@@ -188,7 +188,10 @@ public class HgSecureVaultModule: Module {
     if let key = storedPublicKey() { return key }
     let context = LAContext()
     context.interactionNotAllowed = true
-    guard let secret = privateKey(context: context).key ?? createPrivateKey(),
+    // A new key only when there is none. One that could not be read this time (the device is locked) is still the key
+    // the stored copies were sealed with: a second under the same tag would leave them unreadable.
+    let (existing, status) = privateKey(context: context)
+    guard let secret = existing ?? (status == errSecItemNotFound ? createPrivateKey() : nil),
       let key = SecKeyCopyPublicKey(secret),
       let data = SecKeyCopyExternalRepresentation(key, nil) as Data?
     else { return nil }

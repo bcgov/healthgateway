@@ -115,7 +115,7 @@ describe("useRouteGuard (beforeEachGuard port)", () => {
             resetRouter(Path.Timeline);
             useAppLockStore.setState({
                 locked: true,
-                beforeUnlock: async () => undefined,
+                beforeUnlock: async () => true,
             });
             await renderHook(() => useRouteGuard(true));
             expect(router.replace).not.toHaveBeenCalled();
@@ -135,7 +135,7 @@ describe("useRouteGuard (beforeEachGuard port)", () => {
             resetRouter(Path.Timeline);
             useAppLockStore.setState({
                 locked: true,
-                beforeUnlock: async () => undefined,
+                beforeUnlock: async () => true,
             });
             await renderHook(() => useRouteGuard(true));
             updateStores(() =>

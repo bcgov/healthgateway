@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { AppState, Platform } from "react-native";
 
-import { setSessionLock, useAppLockStore } from "@/stores/appLock.store";
 import {
-    protectSession,
+    selectOpensOnUnlock,
+    setSessionLock,
+    useAppLockStore,
+} from "@/stores/appLock.store";
+import {
     refreshTokenIfDue,
     sealSession,
+    setSessionSealed,
     useAuthStore,
 } from "@/stores/auth.store";
 import { selectIdleTimeout, useConfigStore } from "@/stores/config.store";
@@ -42,7 +46,7 @@ export function useAppLockLifecycle() {
     const locked = useAppLockStore((s) => s.locked);
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
     // a locked launch that opens the saved copy only signs in after the prompt
-    const opening = useAppLockStore((s) => s.beforeUnlock !== undefined);
+    const opening = useAppLockStore(selectOpensOnUnlock);
     const isOnline = useConnectivityStore((s) => s.isOnline);
 
     useEffect(() => {
@@ -50,7 +54,7 @@ export function useAppLockLifecycle() {
         return setSessionLock({
             seal: sealSession,
             unseal: unsealSession,
-            protect: protectSession,
+            setSealed: setSessionSealed,
         });
     }, []);
 

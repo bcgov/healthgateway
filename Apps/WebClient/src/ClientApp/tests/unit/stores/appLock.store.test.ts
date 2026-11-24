@@ -160,6 +160,7 @@ describe("app lock store", () => {
     it("opens the saved copy after the prompt, before the lock lifts", async () => {
         const beforeUnlock = jest.fn(async () => {
             expect(store().locked).toBe(true);
+            return true;
         });
         useAppLockStore.setState({ locked: true, beforeUnlock });
         await store().unlock();
@@ -233,13 +234,13 @@ describe("app lock store", () => {
         const hooks = {
             seal: jest.fn(async () => undefined),
             unseal: jest.fn(async (): Promise<boolean> => true),
-            protect: jest.fn(async (_on: boolean) => undefined),
+            setSealed: jest.fn(async (_sealed: boolean) => undefined),
         };
         let remove: () => void = () => undefined;
         beforeEach(() => {
             hooks.seal.mockReset().mockResolvedValue(undefined);
             hooks.unseal.mockReset().mockResolvedValue(true);
-            hooks.protect.mockReset().mockResolvedValue(undefined);
+            hooks.setSealed.mockReset().mockResolvedValue(undefined);
             remove = setSessionLock(hooks);
         });
         afterEach(() => remove());
@@ -281,7 +282,10 @@ describe("app lock store", () => {
         it("counts as authenticating while the opening runs, so a second prompt can't start it again", async () => {
             let finish: () => void = () => undefined;
             const beforeUnlock = jest.fn(
-                () => new Promise<void>((resolve) => (finish = resolve))
+                () =>
+                    new Promise<boolean>(
+                        (resolve) => (finish = () => resolve(true))
+                    )
             );
             useAppLockStore.setState({ locked: true, beforeUnlock });
             const first = store().unlock();
@@ -298,11 +302,11 @@ describe("app lock store", () => {
 
         it("turning on seals the stored login", async () => {
             await expect(store().enable()).resolves.toBe(true);
-            expect(hooks.protect).toHaveBeenCalledWith(true);
+            expect(hooks.setSealed).toHaveBeenCalledWith(true);
         });
 
         it("stays off, and forgets the opt-in, when the login can't be sealed", async () => {
-            hooks.protect.mockRejectedValue(new Error("no vault"));
+            hooks.setSealed.mockRejectedValue(new Error("no vault"));
             await expect(store().enable()).resolves.toBe(false);
             expect(store().enabled).toBe(false);
             expect(secure.deleteItemAsync).toHaveBeenCalledWith(KEY);
@@ -311,7 +315,7 @@ describe("app lock store", () => {
         it("turning off unseals the stored login before the key goes", async () => {
             useAppLockStore.setState({ enabled: true });
             jest.mocked(vault.destroy).mockImplementation(async () => {
-                expect(hooks.protect).toHaveBeenCalledWith(false);
+                expect(hooks.setSealed).toHaveBeenCalledWith(false);
             });
             await expect(store().disable()).resolves.toBe(true);
             expect(vault.destroy).toHaveBeenCalled();
@@ -322,7 +326,7 @@ describe("app lock store", () => {
             secure.deleteItemAsync.mockRejectedValueOnce(new Error("locked"));
             await expect(store().disable()).resolves.toBe(false);
             // still on: the login must not be left unsealed behind a switch that says it is protected
-            expect(hooks.protect.mock.calls).toEqual([[false], [true]]);
+            expect(hooks.setSealed.mock.calls).toEqual([[false], [true]]);
             expect(store().enabled).toBe(true);
             expect(vault.destroy).not.toHaveBeenCalled();
         });
@@ -334,14 +338,14 @@ describe("app lock store", () => {
             );
             await expect(store().disable()).resolves.toBe(true);
             expect(store().enabled).toBe(false);
-            expect(hooks.protect.mock.calls).toEqual([[false]]);
+            expect(hooks.setSealed.mock.calls).toEqual([[false]]);
             // without the key, what could not be removed can't be read
             expect(vault.destroy).toHaveBeenCalled();
         });
 
         it("stays on, key and all, when the login can't be unsealed", async () => {
             useAppLockStore.setState({ enabled: true });
-            hooks.protect.mockRejectedValue(new Error("locked"));
+            hooks.setSealed.mockRejectedValue(new Error("locked"));
             await expect(store().disable()).resolves.toBe(false);
             expect(store().enabled).toBe(true);
             expect(vault.destroy).not.toHaveBeenCalled();

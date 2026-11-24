@@ -21,6 +21,7 @@ export type RestoreFailure = "rejected" | "network";
  * "unsealed": the session is in memory. "cancelled": the prompt was turned down, and the session stays sealed.
  * "unavailable": it could not be read this time, for a reason that may pass; it stays sealed too.
  * "unreadable": the key or the stored copy is no good (device security removed and set up again); the session is gone.
+ * Also the answer when there was no session, sealed or in memory, to begin with.
  */
 export type UnsealResult =
     "unsealed" | "cancelled" | "unavailable" | "unreadable";
