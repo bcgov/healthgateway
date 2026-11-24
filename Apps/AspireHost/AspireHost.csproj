@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Aspire.AppHost.Sdk" Version="13.6.5" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>HealthGateway.AspireHost</RootNamespace>
@@ -18,27 +17,16 @@
     <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.6.5" />
-    <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.6.5" />
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.6.5" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="13.6.5" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="17.0.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="17.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <!-- Explicit because appsettings.json references its formatter type by assembly name. -->
     <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Admin\Server\Admin.Server.csproj" />
-    <ProjectReference Include="..\ClinicalDocument\src\ClinicalDocument.csproj" />
-    <ProjectReference Include="..\Encounter\src\Encounter.csproj" />
-    <ProjectReference Include="..\GatewayApi\src\GatewayApi.csproj" />
-    <ProjectReference Include="..\Immunization\src\Immunization.csproj" />
-    <ProjectReference Include="..\JobScheduler\src\JobScheduler.csproj" />
-    <ProjectReference Include="..\Laboratory\src\Laboratory.csproj" />
-    <ProjectReference Include="..\Medication\src\Medication.csproj" />
-    <ProjectReference Include="..\Patient\src\Patient.csproj" />
-    <ProjectReference Include="..\WebClient\src\WebClient.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
