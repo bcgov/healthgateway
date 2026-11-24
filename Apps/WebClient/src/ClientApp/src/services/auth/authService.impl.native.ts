@@ -112,6 +112,8 @@ export class NativeAuthService implements IAuthService {
      * first save removes it (`write`).
      */
     private storedSealed?: boolean;
+    /** An unsealed copy could not be removed from beside the sealed login: the next save, or unsealing, tries again. */
+    private unsealedCopyLeft = false;
     private readonly redirectUri = AuthSession.makeRedirectUri({
         scheme: SCHEME,
         path: "loginCallback",
@@ -173,14 +175,24 @@ export class NativeAuthService implements IAuthService {
         }
         if (!sealed || login !== this.login) return false;
         this.sealedCopy = true;
+        await this.removeUnsealedCopy();
+        return true;
+    }
+
+    /**
+     * The unsealed copy left beside a sealed login goes. One that could not be removed is remembered, so unsealing and
+     * every save after it try again: otherwise the tokens would stay outside the vault for as long as the login lasts.
+     */
+    private async removeUnsealedCopy(): Promise<void> {
         try {
             await inOrder(() => SecureStore.deleteItemAsync(STORAGE_KEY));
+            this.unsealedCopyLeft = false;
         } catch (error) {
+            this.unsealedCopyLeft = true;
             logger.warn(
                 `Unable to delete the unsealed session: ${describeError(error)}`
             );
         }
-        return true;
     }
 
     /** An expired access token is refreshed straight away. */
@@ -237,6 +249,8 @@ export class NativeAuthService implements IAuthService {
         this.session = session;
         this.sealedCopy = false;
         this.storedSealed = true;
+        if (this.unsealedCopyLeft) await this.removeUnsealedCopy();
+        if (login !== this.login) return "unreadable";
         if (options?.restore) await this.restore(true);
         return "unsealed";
     }
@@ -277,7 +291,8 @@ export class NativeAuthService implements IAuthService {
         const login = this.login;
         try {
             await inOrder(async () => {
-                if (login === this.login) await this.write(session, sealed);
+                if (login === this.login)
+                    await this.write(session, sealed, true);
             });
         } catch (error) {
             this.protect = previous;
@@ -524,10 +539,14 @@ export class NativeAuthService implements IAuthService {
     /**
      * Call in order (`inOrder`). The other copy goes once this one is saved, so a failure between never leaves neither.
      * It must not leave both for long either: an unsealed copy beside a sealed one is a login on disk without the
-     * protection the setting promises. A move from one kind to the other that can't finish is undone; if that fails too,
-     * which copy is current is no longer known, and the next save clears the other away again.
+     * protection the setting promises, and a sealed one left beside a newer unsealed one would be taken for the login at
+     * the next start. So an other copy that could not be removed is remembered, and removed at the next save.
+     *
+     * `move`: Device Security is being turned on or off, and the caller must know whether it worked. The session is the
+     * same in both copies, so a move that can't finish is undone and rejects. A save of new tokens is never undone,
+     * which would put the old ones back on disk: it stands, and only the clearing up is left for later.
      */
-    private async write(session: StoredSession, sealed: boolean) {
+    private async write(session: StoredSession, sealed: boolean, move = false) {
         const text = JSON.stringify(session);
         if (sealed) {
             const encrypted = await vault.encrypt(text);
@@ -539,30 +558,44 @@ export class NativeAuthService implements IAuthService {
         } else {
             await SecureStore.setItemAsync(STORAGE_KEY, text, STORE_OPTIONS);
         }
-        if (this.storedSealed !== sealed) {
-            const [saved, other] = sealed
-                ? [SEALED_STORAGE_KEY, STORAGE_KEY]
-                : [STORAGE_KEY, SEALED_STORAGE_KEY];
-            try {
-                await SecureStore.deleteItemAsync(other);
-            } catch (error) {
-                // the other copy is known to be this login's only when this was a move from it
-                const moved = this.storedSealed === !sealed;
-                this.storedSealed = undefined;
-                if (moved) {
-                    try {
-                        await SecureStore.deleteItemAsync(saved);
-                        this.storedSealed = !sealed;
-                    } catch (undoError) {
-                        logger.warn(
-                            `Unable to undo the stored session's move: ${describeError(undoError)}`
-                        );
-                    }
+        if (this.storedSealed === sealed && !(sealed && this.unsealedCopyLeft))
+            return;
+        const [saved, other] = sealed
+            ? [SEALED_STORAGE_KEY, STORAGE_KEY]
+            : [STORAGE_KEY, SEALED_STORAGE_KEY];
+        try {
+            await SecureStore.deleteItemAsync(other);
+        } catch (error) {
+            if (move && this.storedSealed === !sealed) {
+                let undone = false;
+                try {
+                    await SecureStore.deleteItemAsync(saved);
+                    undone = true;
+                } catch (undoError) {
+                    logger.warn(
+                        `Unable to undo the stored session's move: ${describeError(undoError)}`
+                    );
                 }
-                throw error;
+                // as it was before the move
+                if (undone) throw error;
             }
+            // both are there. Sealed, the new copy is the login and the unsealed one is only left over. Unsealed, it
+            // is no longer known that this is the only copy, so every save tries again, and the tokens stay in memory
+            // under the lock (`seal`)
+            if (sealed) {
+                this.storedSealed = true;
+                this.unsealedCopyLeft = true;
+            } else {
+                this.storedSealed = undefined;
+            }
+            if (move) throw error;
+            logger.warn(
+                `Unable to delete the stored session's other copy: ${describeError(error)}`
+            );
+            return;
         }
         this.storedSealed = sealed;
+        if (sealed) this.unsealedCopyLeft = false;
     }
 
     private async clearSession() {
@@ -571,6 +604,7 @@ export class NativeAuthService implements IAuthService {
         this.userInfo = undefined;
         this.sealedCopy = false;
         this.storedSealed = undefined;
+        this.unsealedCopyLeft = false;
         // logout and expiry still end the session in memory; Reset App deletes the stored copy itself and stops on
         // a failure (resetApp)
         try {

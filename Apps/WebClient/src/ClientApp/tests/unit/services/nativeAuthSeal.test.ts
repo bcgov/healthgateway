@@ -118,6 +118,45 @@ describe("native session sealed by the vault", () => {
             expect(mockStore.has(STORAGE_KEY)).toBe(false);
         });
 
+        it("an unsealed copy that could not be removed at the start goes once the login is unsealed", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1"))}`
+            );
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("old")));
+            jest.mocked(SecureStore.deleteItemAsync).mockRejectedValueOnce(
+                new Error("keychain")
+            );
+            const auth = service();
+            await auth.init({ sealed: true });
+            expect(plainCopy()?.refreshToken).toBe("old");
+
+            // or the tokens would stay outside the vault for as long as the login lasts
+            expect(await auth.unseal()).toBe("unsealed");
+            expect(plainCopy()).toBeUndefined();
+            expect(sealedCopy()?.refreshToken).toBe("r1");
+        });
+
+        it("or, failing that, at the next save", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1", 0))}`
+            );
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("old")));
+            jest.mocked(SecureStore.deleteItemAsync)
+                .mockRejectedValueOnce(new Error("keychain"))
+                .mockRejectedValueOnce(new Error("keychain"));
+            const auth = service();
+            await auth.init({ sealed: true });
+            expect(await auth.unseal()).toBe("unsealed");
+            expect(plainCopy()?.refreshToken).toBe("old");
+
+            mockRefreshAsync.mockResolvedValueOnce(tokens);
+            await auth.refreshToken(true);
+            expect(plainCopy()).toBeUndefined();
+            expect(sealedCopy()?.refreshToken).toBe("r2");
+        });
+
         it("seals a login kept unsealed by an earlier build, before anything uses it", async () => {
             mockStore.set(STORAGE_KEY, JSON.stringify(session("r1", 0)));
             const auth = service();
@@ -466,6 +505,40 @@ describe("native session sealed by the vault", () => {
             await auth.refreshToken(true);
             expect(plainCopy()).toBeUndefined();
             expect(sealedCopy()?.refreshToken).toBe("r2");
+        });
+
+        it("a save of new tokens stands when the other copy could not be removed, and the next save clears it", async () => {
+            // sealing failed once, so this login is stored unsealed with device security on
+            const auth = await unsealed(session("r1", 0));
+            encrypt.mockRejectedValueOnce(new Error("no vault"));
+            mockRefreshAsync.mockResolvedValueOnce(tokens);
+            await auth.refreshToken(true);
+            expect(plainCopy()?.refreshToken).toBe("r2");
+            expect(sealedCopy()).toBeUndefined();
+
+            // the next refresh seals it, but the unsealed copy can't be removed
+            jest.mocked(SecureStore.deleteItemAsync).mockRejectedValueOnce(
+                new Error("keychain")
+            );
+            mockRefreshAsync.mockResolvedValueOnce({
+                ...tokens,
+                refreshToken: "r3",
+            });
+            (
+                auth as unknown as { session: { expiresAt: number } }
+            ).session.expiresAt = 0;
+            await auth.refreshToken(true);
+            // the new tokens are not undone, or the old ones would be all that is on disk
+            expect(sealedCopy()?.refreshToken).toBe("r3");
+            expect(plainCopy()?.refreshToken).toBe("r2");
+
+            mockRefreshAsync.mockResolvedValueOnce({
+                ...tokens,
+                refreshToken: "r4",
+            });
+            await auth.refreshToken(true);
+            expect(sealedCopy()?.refreshToken).toBe("r4");
+            expect(plainCopy()).toBeUndefined();
         });
 
         it("signed out, only the next login is stored to match", async () => {

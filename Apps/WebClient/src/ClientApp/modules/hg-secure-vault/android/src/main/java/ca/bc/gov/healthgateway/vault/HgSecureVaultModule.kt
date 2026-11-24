@@ -32,6 +32,7 @@ import java.security.SecureRandom
 import java.security.spec.MGF1ParameterSpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.AEADBadTagException
+import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.OAEPParameterSpec
@@ -236,7 +237,8 @@ class HgSecureVaultModule : Module() {
       try {
         val input = ByteBuffer.wrap(Base64.decode(ciphertext, Base64.NO_WRAP))
         val lockedSize = input.int
-        require(lockedSize > 0 && lockedSize <= input.remaining() - IV_BYTES)
+        // the AES key locked with this module's RSA key is always the key's size
+        require(lockedSize == RSA_BITS / 8 && lockedSize <= input.remaining() - IV_BYTES)
         Triple(
           ByteArray(lockedSize).also { input.get(it) },
           ByteArray(IV_BYTES).also { input.get(it) },
@@ -250,7 +252,14 @@ class HgSecureVaultModule : Module() {
         ?: throw NoKeyException()
     val rsa = Cipher.getInstance(RSA_OAEP)
     rsa.init(Cipher.DECRYPT_MODE, secret, oaep)
-    val aesKey = rsa.doFinal(locked)
+    val aesKey =
+      try {
+        rsa.doFinal(locked)
+      } catch (error: BadPaddingException) {
+        // the locked AES key was changed after it was sealed, or was locked with another key. A key that could not be
+        // used this time (not authenticated, a Keystore failure) arrives as another exception, and may pass later.
+        throw CorruptException(error)
+      }
     try {
       val aes = Cipher.getInstance(AES_GCM)
       aes.init(Cipher.DECRYPT_MODE, SecretKeySpec(aesKey, "AES"), GCMParameterSpec(TAG_BITS, iv))
