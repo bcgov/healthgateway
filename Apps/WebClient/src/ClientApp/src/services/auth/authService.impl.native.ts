@@ -521,7 +521,12 @@ export class NativeAuthService implements IAuthService {
         });
     }
 
-    /** Call in order (`inOrder`). The other copy goes once this one is saved, so a failure between leaves both, never neither. */
+    /**
+     * Call in order (`inOrder`). The other copy goes once this one is saved, so a failure between never leaves neither.
+     * It must not leave both for long either: an unsealed copy beside a sealed one is a login on disk without the
+     * protection the setting promises. A move from one kind to the other that can't finish is undone; if that fails too,
+     * which copy is current is no longer known, and the next save clears the other away again.
+     */
     private async write(session: StoredSession, sealed: boolean) {
         const text = JSON.stringify(session);
         if (sealed) {
@@ -534,10 +539,29 @@ export class NativeAuthService implements IAuthService {
         } else {
             await SecureStore.setItemAsync(STORAGE_KEY, text, STORE_OPTIONS);
         }
-        if (this.storedSealed !== sealed)
-            await SecureStore.deleteItemAsync(
-                sealed ? STORAGE_KEY : SEALED_STORAGE_KEY
-            );
+        if (this.storedSealed !== sealed) {
+            const [saved, other] = sealed
+                ? [SEALED_STORAGE_KEY, STORAGE_KEY]
+                : [STORAGE_KEY, SEALED_STORAGE_KEY];
+            try {
+                await SecureStore.deleteItemAsync(other);
+            } catch (error) {
+                // the other copy is known to be this login's only when this was a move from it
+                const moved = this.storedSealed === !sealed;
+                this.storedSealed = undefined;
+                if (moved) {
+                    try {
+                        await SecureStore.deleteItemAsync(saved);
+                        this.storedSealed = !sealed;
+                    } catch (undoError) {
+                        logger.warn(
+                            `Unable to undo the stored session's move: ${describeError(undoError)}`
+                        );
+                    }
+                }
+                throw error;
+            }
+        }
         this.storedSealed = sealed;
     }
 

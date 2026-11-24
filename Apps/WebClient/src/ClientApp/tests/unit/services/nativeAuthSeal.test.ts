@@ -436,6 +436,38 @@ describe("native session sealed by the vault", () => {
             expect(plainCopy()?.refreshToken).toBe("r2");
         });
 
+        it("turning it off leaves no unsealed copy when the sealed one could not be removed", async () => {
+            const auth = await unsealed();
+            jest.mocked(SecureStore.deleteItemAsync).mockRejectedValueOnce(
+                new Error("keychain")
+            );
+
+            await expect(auth.setSealed(false)).rejects.toThrow("keychain");
+            // still on: the move is undone, or the tokens would sit on disk without the key
+            expect(plainCopy()).toBeUndefined();
+            expect(sealedCopy()?.refreshToken).toBe("r1");
+            await auth.seal();
+            expect(auth.isSealed()).toBe(true);
+        });
+
+        it("a move that could not be undone is cleared up by the next save", async () => {
+            const auth = await unsealed(session("r1", 0));
+            jest.mocked(SecureStore.deleteItemAsync)
+                .mockRejectedValueOnce(new Error("keychain"))
+                .mockRejectedValueOnce(new Error("keychain"));
+
+            await expect(auth.setSealed(false)).rejects.toThrow("keychain");
+            expect(plainCopy()?.refreshToken).toBe("r1");
+            // the tokens stay in memory while it isn't known that only the sealed copy is stored
+            await auth.seal();
+            expect(auth.isSealed()).toBe(false);
+
+            mockRefreshAsync.mockResolvedValue(tokens);
+            await auth.refreshToken(true);
+            expect(plainCopy()).toBeUndefined();
+            expect(sealedCopy()?.refreshToken).toBe("r2");
+        });
+
         it("signed out, only the next login is stored to match", async () => {
             const auth = service();
             await auth.init();
