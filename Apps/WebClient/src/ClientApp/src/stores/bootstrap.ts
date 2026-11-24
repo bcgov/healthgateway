@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import { Path } from "@/constants/path";
 import { createAuthService } from "@/services/auth";
 import { classifyAuthFailure } from "@/services/auth/authFailure";
+import { keepsSealed } from "@/services/auth/authService";
 import { services } from "@/services/container";
 import { describeError, logger } from "@/services/logger";
 import { expireSessionIfIdle } from "@/utils/sessionExpiry";
@@ -105,8 +106,7 @@ async function openSealedSession(stale: () => boolean): Promise<boolean> {
     const result =
         (await services.auth.unseal?.({ restore: true })) ?? "unreadable";
     if (stale()) return true;
-    // turned down, or not readable this time: the login stays sealed
-    if (result === "cancelled" || result === "unavailable") return false;
+    if (keepsSealed(result)) return false;
     // gone for good: the lock lifts onto the login
     if (result === "unreadable") return true;
     if (await openLocalSession()) return true;

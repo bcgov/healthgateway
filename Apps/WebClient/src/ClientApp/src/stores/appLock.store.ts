@@ -65,7 +65,32 @@ interface AppLockState {
 
 let revision = 0;
 
+/** Runs `work`, logging what could not be done instead of throwing. Resolves whether it worked. */
+async function attempt(
+    what: string,
+    work: () => Promise<unknown>,
+    level: "warn" | "error" = "warn"
+): Promise<boolean> {
+    try {
+        await work();
+        return true;
+    } catch (error) {
+        logger[level](`Could not ${what}: ${describeError(error)}`);
+        return false;
+    }
+}
+
 export const useAppLockStore = create<AppLockState>((set, get) => {
+    /** One system prompt at a time, as a second would cancel the first: `busy` is the answer while one is open. */
+    const exclusive = async <T>(busy: T, work: () => Promise<T>) => {
+        if (get().authenticating) return busy;
+        set({ authenticating: true });
+        try {
+            return await work();
+        } finally {
+            set({ authenticating: false });
+        }
+    };
     const prompt = async () => (await get().authenticate()) === "unlocked";
 
     return {
@@ -77,17 +102,13 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
 
         hydrate: async () => {
             if (Platform.OS === "web") return;
-            try {
-                revision += 1;
-                const started = revision;
+            revision += 1;
+            const started = revision;
+            await attempt("read the app lock setting", async () => {
                 const stored = await SecureStore.getItemAsync(ENABLED_KEY);
                 // reset, or turned on or off, while this waited: this answer is out of date
                 if (started === revision) set({ enabled: stored === "true" });
-            } catch (error) {
-                logger.warn(
-                    `Could not read the app lock setting: ${describeError(error)}`
-                );
-            }
+            });
         },
 
         lockOnLaunch: (signedIn) => {
@@ -111,22 +132,12 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
             if (away > idleMs || away < 0) get().lock();
         },
 
-        authenticate: async () => {
-            if (get().authenticating) return "cancelled";
-            set({ authenticating: true });
-            try {
-                return await vault.unlock();
-            } finally {
-                set({ authenticating: false });
-            }
-        },
+        authenticate: () => exclusive("cancelled", () => vault.unlock()),
 
         // Still authenticating while `beforeUnlock` runs: it may wait on the network, and a second prompt meanwhile
         // would run it twice. It stays set until done, so the lock isn't dropped for want of a login meanwhile.
-        unlock: async () => {
-            if (get().authenticating) return false;
-            set({ authenticating: true });
-            try {
+        unlock: () =>
+            exclusive(false, async () => {
                 if ((await vault.unlock()) !== "unlocked") return false;
                 const { beforeUnlock } = get();
                 // a lock that went on while the app was open: the login's tokens come back
@@ -141,39 +152,27 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
                             : get().beforeUnlock,
                 });
                 return true;
-            } finally {
-                set({ authenticating: false });
-            }
-        },
+            }),
 
         enable: async () => {
             revision += 1;
             if (!(await prompt())) return false;
-            try {
-                await SecureStore.setItemAsync(ENABLED_KEY, "true", {
+            const saved = await attempt("save the app lock setting", () =>
+                SecureStore.setItemAsync(ENABLED_KEY, "true", {
                     keychainAccessible:
                         SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-                });
-            } catch (error) {
-                logger.warn(
-                    `Could not save the app lock setting: ${describeError(error)}`
-                );
-                return false;
-            }
-            try {
-                await sessionLock?.protect(true);
-            } catch (error) {
+                })
+            );
+            if (!saved) return false;
+            if (
+                !(await attempt("seal the login", async () =>
+                    sessionLock?.protect(true)
+                ))
+            ) {
                 // on without it would promise the login a protection it doesn't have
-                logger.warn(
-                    `Could not seal the login: ${describeError(error)}`
+                await attempt("remove the app lock setting", () =>
+                    SecureStore.deleteItemAsync(ENABLED_KEY)
                 );
-                try {
-                    await SecureStore.deleteItemAsync(ENABLED_KEY);
-                } catch (deleteError) {
-                    logger.warn(
-                        `Could not remove the app lock setting: ${describeError(deleteError)}`
-                    );
-                }
                 return false;
             }
             set({ enabled: true });
@@ -184,48 +183,33 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
         disable: async () => {
             revision += 1;
             if (!(await prompt())) return false;
-            try {
-                // before the key goes, or nothing could read the login after
-                await sessionLock?.protect(false);
-            } catch (error) {
-                logger.warn(
-                    `Could not unseal the login: ${describeError(error)}`
-                );
+            // before the key goes, or nothing could read the login after
+            if (
+                !(await attempt("unseal the login", async () =>
+                    sessionLock?.protect(false)
+                ))
+            )
                 return false;
-            }
-            try {
-                await SecureStore.deleteItemAsync(ENABLED_KEY);
-            } catch (error) {
-                logger.warn(
-                    `Could not save the app lock setting: ${describeError(error)}`
-                );
+            if (
+                !(await attempt("save the app lock setting", () =>
+                    SecureStore.deleteItemAsync(ENABLED_KEY)
+                ))
+            ) {
                 // still on: the login goes back under the key, or the setting would promise a protection it doesn't have
-                try {
-                    await sessionLock?.protect(true);
-                } catch (sealError) {
-                    logger.error(
-                        `Could not seal the login again: ${describeError(sealError)}`
-                    );
-                }
+                await attempt(
+                    "seal the login again",
+                    async () => sessionLock?.protect(true),
+                    "error"
+                );
                 return false;
             }
             // off from here: the setting is gone and the login is unsealed, so what is left is only cleared away
             set({ enabled: false });
-            try {
-                await recordCache.remove();
-            } catch (error) {
-                logger.warn(
-                    `Could not remove the saved records: ${describeError(error)}`
-                );
-            }
-            try {
-                // without the key, records that could not be removed can't be read either
-                await vault.destroy();
-            } catch (error) {
-                logger.warn(
-                    `Could not remove the vault key: ${describeError(error)}`
-                );
-            }
+            await attempt("remove the saved records", () =>
+                recordCache.remove()
+            );
+            // without the key, records that could not be removed can't be read either
+            await attempt("remove the vault key", () => vault.destroy());
             return true;
         },
 
@@ -251,13 +235,9 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
             await vault.destroy();
             // signed out by now: only the next login is stored unsealed
             await sessionLock?.protect(false).catch(() => undefined);
-            try {
-                await SecureStore.deleteItemAsync(ENABLED_KEY);
-            } catch (error) {
-                logger.warn(
-                    `Could not remove the app lock setting: ${describeError(error)}`
-                );
-            }
+            await attempt("remove the app lock setting", () =>
+                SecureStore.deleteItemAsync(ENABLED_KEY)
+            );
         },
     };
 });

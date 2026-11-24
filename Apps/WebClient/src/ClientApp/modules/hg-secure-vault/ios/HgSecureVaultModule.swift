@@ -157,16 +157,15 @@ public class HgSecureVaultModule: Module {
     return SecKeyCreateRandomKey(attributes as CFDictionary, nil)
   }
 
-  /** `status`: why there is none, so a key that is gone can be told from one that could not be read this time. */
-  private func privateKey(context: LAContext, status: UnsafeMutablePointer<OSStatus>? = nil) -> SecKey? {
+  /** `status`: why there is no key, so a key that is gone can be told from one that could not be read this time. */
+  private func privateKey(context: LAContext) -> (key: SecKey?, status: OSStatus) {
     var query = privateKeyQuery()
     query[kSecReturnRef as String] = true
     query[kSecUseAuthenticationContext as String] = context
     var item: CFTypeRef?
-    let result = SecItemCopyMatching(query as CFDictionary, &item)
-    status?.pointee = result
-    guard result == errSecSuccess else { return nil }
-    return (item as! SecKey)
+    let status = SecItemCopyMatching(query as CFDictionary, &item)
+    guard status == errSecSuccess else { return (nil, status) }
+    return ((item as! SecKey), status)
   }
 
   private func storedPublicKey() -> SecKey? {
@@ -189,7 +188,7 @@ public class HgSecureVaultModule: Module {
     if let key = storedPublicKey() { return key }
     let context = LAContext()
     context.interactionNotAllowed = true
-    guard let secret = privateKey(context: context) ?? createPrivateKey(),
+    guard let secret = privateKey(context: context).key ?? createPrivateKey(),
       let key = SecKeyCopyPublicKey(secret),
       let data = SecKeyCopyExternalRepresentation(key, nil) as Data?
     else { return nil }
@@ -235,8 +234,8 @@ public class HgSecureVaultModule: Module {
       context = LAContext()
       context.localizedReason = prompt
     }
-    var status: OSStatus = errSecSuccess
-    guard let secret = privateKey(context: context, status: &status) else {
+    let (found, status) = privateKey(context: context)
+    guard let secret = found else {
       // gone with the passcode it was kept under, as opposed to a Keychain that could not be read this time
       if status == errSecItemNotFound {
         promise.reject("ERR_VAULT_NO_KEY", "There is no key")

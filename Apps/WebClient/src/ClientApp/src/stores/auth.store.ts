@@ -89,9 +89,9 @@ const isSealing = () =>
     sealing !== undefined && sealing.session === sessionGeneration();
 
 /** Locked with device security: nothing may use the tokens, or put them back in the HTTP client, until unsealed. */
-const isSealed = () => isSealing() || services.auth.isSealed?.() === true;
-
-export const isSessionSealed = () => services.isInitialized && isSealed();
+export const isSessionSealed = () =>
+    isSealing() ||
+    (services.isInitialized && services.auth.isSealed?.() === true);
 
 function clearRefreshTimer() {
     unexpectedFailures = 0;
@@ -108,7 +108,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     handleSuccessfulAuthentication: (details) => {
         // a refresh that finished as the lock went on: its tokens are sealed, not put back to work
-        if (isSealed()) return;
+        if (isSessionSealed()) return;
         useConnectivityStore.getState().setSessionStatus("live");
         services.http.setAuthorizationHeader(details.accessToken);
         set({
@@ -201,7 +201,7 @@ async function refresh() {
     const session = sessionGeneration();
     try {
         const refreshed = await services.auth.refreshToken();
-        if (session !== sessionGeneration() || isSealed()) return;
+        if (session !== sessionGeneration() || isSessionSealed()) return;
         unexpectedFailures = 0;
         if (refreshed) {
             const details = services.auth.getOidcTokenDetails();
@@ -222,7 +222,7 @@ async function refresh() {
                 );
         }
     } catch (error) {
-        if (session !== sessionGeneration() || isSealed()) return;
+        if (session !== sessionGeneration() || isSessionSealed()) return;
         logger.warn(
             `Could not refresh the access token: ${describeError(error)}`
         );
@@ -271,7 +271,7 @@ export async function refreshTokenIfDue(): Promise<void> {
     if (
         !auth.isAuthenticated ||
         !services.isInitialized ||
-        isSealed() ||
+        isSessionSealed() ||
         !selectCanFetch(useConnectivityStore.getState())
     )
         return;
@@ -309,7 +309,7 @@ export function sealSession(): Promise<void> {
 }
 
 /** Resolves once a lock that went on has finished taking this login's tokens out of memory. */
-export async function sealed(): Promise<void> {
+export async function whenSealed(): Promise<void> {
     if (isSealing()) await sealing?.run;
 }
 
@@ -330,7 +330,7 @@ export async function signOutFromLock(): Promise<boolean> {
     if (result === "cancelled" || result === "unavailable") return false;
     if (result === "unlocked" && services.isInitialized) {
         // a lock still taking the tokens out of memory would take them from under the sign-out
-        await sealed();
+        await whenSealed();
         const unsealed = await services.auth.unseal?.();
         // the key's own prompt was turned down: the login and the lock stay as they were
         if (unsealed === "cancelled") return false;

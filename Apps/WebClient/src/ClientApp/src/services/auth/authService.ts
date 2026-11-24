@@ -25,6 +25,10 @@ export type RestoreFailure = "rejected" | "network";
 export type UnsealResult =
     "unsealed" | "cancelled" | "unavailable" | "unreadable";
 
+/** Turned down, or not readable this time: the login stays sealed, and the lock stays on. */
+export const keepsSealed = (result: UnsealResult) =>
+    result === "cancelled" || result === "unavailable";
+
 export interface UnsealOptions {
     /** As `init` would: an expired access token is refreshed, and a failure kept for `getRestoreFailure`. */
     restore?: boolean;

@@ -157,21 +157,21 @@ class HgSecureVaultModule : Module() {
       promise.reject("ERR_VAULT_UNAVAILABLE", "No activity to show the prompt", null)
       return
     }
+    val secure = activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
     val canAuthenticate =
       if (credentialsPerUse) {
         BiometricManager.from(context).canAuthenticate(allowedAuthenticators()) ==
           BiometricManager.BIOMETRIC_SUCCESS
       } else {
-        activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
+        secure
       }
     if (!canAuthenticate) {
       // no screen lock: the key, which needs one, is no good any more. Anything else may pass at the next try.
-      val secure = activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
-      promise.reject(
-        if (secure) "ERR_VAULT_UNAVAILABLE" else "ERR_VAULT_NO_KEY",
-        "Device security is not set up",
-        null
-      )
+      if (secure) {
+        promise.reject("ERR_VAULT_UNAVAILABLE", "The prompt is not available", null)
+      } else {
+        promise.reject("ERR_VAULT_NO_KEY", "Device security is not set up", null)
+      }
       return
     }
 

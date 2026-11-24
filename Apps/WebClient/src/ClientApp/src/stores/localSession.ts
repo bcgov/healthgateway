@@ -3,6 +3,7 @@ import { isSessionEnded } from "@/models/errors";
 import type { Patient } from "@/models/patient";
 import { type OidcUserInfo, User } from "@/models/user";
 import { classifyAuthFailure } from "@/services/auth/authFailure";
+import { keepsSealed } from "@/services/auth/authService";
 import { services } from "@/services/container";
 import { describeError, logger } from "@/services/logger";
 import { COPY_DECLINED, recordCache } from "@/services/recordCache";
@@ -12,8 +13,8 @@ import { useAppLockStore } from "./appLock.store";
 import {
     isSessionSealed,
     refreshTokenIfDue,
-    sealed,
     useAuthStore,
+    whenSealed,
 } from "./auth.store";
 import { useClinicalDocumentStore } from "./clinicalDocument.store";
 import { useCommentStore } from "./comment.store";
@@ -313,7 +314,7 @@ function localSessionStatus(
  * False when the key's own prompt was turned down, or the login could not be read this time, which keeps the lock on.
  */
 export async function unsealSession(): Promise<boolean> {
-    await sealed();
+    await whenSealed();
     if (!services.isInitialized || !useAuthStore.getState().isAuthenticated)
         return true;
     // not sealed when the stored copy couldn't be: the tokens stayed, and only go back to work
@@ -321,7 +322,7 @@ export async function unsealSession(): Promise<boolean> {
         const session = sessionGeneration();
         const result = await services.auth.unseal();
         if (session !== sessionGeneration()) return true;
-        if (result === "cancelled" || result === "unavailable") return false;
+        if (keepsSealed(result)) return false;
         if (result === "unreadable") {
             // the key went with the device's security, and the saved records with it: a new login is the way back in
             useAuthStore.getState().clearStorage();
